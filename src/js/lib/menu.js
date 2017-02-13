@@ -88,7 +88,7 @@ module.exports = {
       _extra = '<span class="fa fa-'+opts.extraIcon+' extra-icon"></span>';
     }
     return [
-      '<li id="'+opts.id+'"" class="dubplus-switch '+opts.cssClass+'" title="'+opts.desc+'">',  
+      '<li id="'+opts.id+'" class="dubplus-switch '+opts.cssClass+'" title="'+opts.desc+'">',  
         '<div class="dubplus-switch-bg '+_state+'">',
           '<div class="dubplus-switcher"></div>', 
         '</div>',
@@ -106,7 +106,7 @@ module.exports = {
     };
     var opts  = $.extend({}, defaults, options);
     return [
-      '<li id="'+opts.id+'"" class="dubplus-menu-icon '+opts.cssClass+'" title="'+opts.desc+'">',  
+      '<li id="'+opts.id+'" class="dubplus-menu-icon '+opts.cssClass+'" title="'+opts.desc+'">',  
         '<span class="fa fa-'+icon+'"></span>',
         '<a href="'+link+'" class="dubplus-menu-label" target="_blank">'+menuTitle+'</a>',
       '</li>',

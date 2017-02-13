@@ -379,27 +379,7 @@ var menuObj = {
   'General' : '',
   'User Interface' : '',
   'Settings' : '',
-  'Customize' : '',
-  'Contact' : [
-    '<div id="dubplus-contact" class="dubplus-menu-section-header">',
-      '<span class="fa fa-angle-down"></span>',
-      '<p>Contact</p>',
-    '</div>',
-    '<ul class="dubplus-menu-section">',
-      '<li class="dubplus-menu-icon">',
-        '<span class="fa fa-bug"></span>',
-        '<a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>',
-      '</li>',
-       '<li class="dubplus-menu-icon">',
-        '<span class="fa fa-facebook"></span>',
-        '<a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>',
-      '</li>',
-      '<li class="dubplus-menu-icon">',
-        '<span class="fa fa-twitter"></span>',
-        '<a href="https://twitter.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Twitter</a>',
-      '</li>',
-    '</ul>',
-  ].join(''),
+  'Customize' : ''
 };
 
 /**
@@ -425,7 +405,6 @@ var loadAllModulesTo = function(globalObject){
           mod.init.bind(mod); 
         }
 
-        debugger;
         // add the menu item to the appropriate category section
         if (mod.menuHTML && mod.category && typeof menuObj[mod.category] === "string") {
           menuObj[mod.category] += mod.menuHTML;
@@ -455,6 +434,27 @@ var options = require('../utils/options.js');
 var settings = require('./settings.js');
 var css = require('../utils/css.js');
 
+var contactSection = [
+    '<div id="dubplus-contact" class="dubplus-menu-section-header">',
+      '<span class="fa fa-angle-down"></span>',
+      '<p>Contact</p>',
+    '</div>',
+    '<ul class="dubplus-menu-section">',
+      '<li class="dubplus-menu-icon">',
+        '<span class="fa fa-bug"></span>',
+        '<a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>',
+      '</li>',
+       '<li class="dubplus-menu-icon">',
+        '<span class="fa fa-facebook"></span>',
+        '<a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>',
+      '</li>',
+      '<li class="dubplus-menu-icon">',
+        '<span class="fa fa-twitter"></span>',
+        '<a href="https://twitter.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Twitter</a>',
+      '</li>',
+    '</ul>',
+  ].join('');
+
 module.exports = {
   beginMenu : function(){
     // load font-awesome icons from CDN to be used in the menu
@@ -481,7 +481,6 @@ module.exports = {
   finishMenu  : function(menuObj, menuString) {
     // dynamically create our menu from strings provided by each module
     for (var category in menuObj) {
-      if (category === 'Contact') { continue; }
       var id = 'dubplus-' + category.replace(" ", "-").toLowerCase();
       menuString += [
         '<div id="'+id+'" class="dubplus-menu-section-header">',
@@ -495,7 +494,7 @@ module.exports = {
     }
 
     // contact section last, is already fully formed, not dynamic
-    menuString += menuObj.contact;
+    menuString += contactSection;
     // final part of the menu string
     menuString += '</section>';
 
@@ -520,7 +519,7 @@ module.exports = {
       _extra = '<span class="fa fa-'+opts.extraIcon+' extra-icon"></span>';
     }
     return [
-      '<li id="'+opts.id+'"" class="dubplus-switch '+opts.cssClass+'" title="'+opts.desc+'">',  
+      '<li id="'+opts.id+'" class="dubplus-switch '+opts.cssClass+'" title="'+opts.desc+'">',  
         '<div class="dubplus-switch-bg '+_state+'">',
           '<div class="dubplus-switcher"></div>', 
         '</div>',
@@ -538,7 +537,7 @@ module.exports = {
     };
     var opts  = $.extend({}, defaults, options);
     return [
-      '<li id="'+opts.id+'"" class="dubplus-menu-icon '+opts.cssClass+'" title="'+opts.desc+'">',  
+      '<li id="'+opts.id+'" class="dubplus-menu-icon '+opts.cssClass+'" title="'+opts.desc+'">',  
         '<span class="fa fa-'+icon+'"></span>',
         '<a href="'+link+'" class="dubplus-menu-label" target="_blank">'+menuTitle+'</a>',
       '</li>',
