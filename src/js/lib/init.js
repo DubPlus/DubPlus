@@ -31,10 +31,10 @@ module.exports = function(){
 
   // load all our modules into the 'dubplus' global object
   // it also builds the menu dynamically
-  modules.loadAllModulesTo('dubplus');
+  var menuObj = modules.loadAllModulesTo('dubplus');
 
   // finalize the menu and add it to the UI
-  menu.finishMenu(menuString);
+  menu.finishMenu(menuObj, menuString);
 
   // dubplus.previewListInit();
   // dubplus.userAutoComplete();

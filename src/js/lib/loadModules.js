@@ -1,8 +1,14 @@
 'use strict';
 var options = require('../utils/options.js');
-var menu = require('../lib/menu.js');
 var modules = require('../modules/index.js');
 var storedSettings = options.getAllOptions();
+
+var menuObj = {
+  'General' : '',
+  'User Interface' : '',
+  'Settings' : '',
+  'Customize' : ''
+};
 
 /**
  * Loads all the modules in /modules and initliazes them
@@ -14,8 +20,8 @@ var loadAllModulesTo = function(globalObject){
     }
 
     modules.forEach(function(mod, i, r){
-        globalObject[mod.id] = mod;
-        globalObject[mod.id].toggleAndSave = options.toggleAndSave;
+        window[globalObject][mod.id] = mod;
+        window[globalObject][mod.id].toggleAndSave = options.toggleAndSave;
         
         // add event listener
         if (typeof mod.go === 'function'){
@@ -28,8 +34,8 @@ var loadAllModulesTo = function(globalObject){
         }
 
         // add the menu item to the appropriate category section
-        if (mod.menuHTML && mod.category) {
-          menu.appendToSection(mod.category, mod.menuHTML );
+        if (mod.menuHTML && mod.category && typeof menuObj[mod.category] === "string") {
+          menuObj[mod.category] += mod.menuHTML;
         }
 
         // check localStorage for saved settings and update modules optionState
@@ -44,6 +50,7 @@ var loadAllModulesTo = function(globalObject){
     
     });
 
+  return menuObj;
 };
 
 module.exports = {

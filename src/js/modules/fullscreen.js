@@ -5,19 +5,19 @@
 
 var menu = require('../lib/menu.js');
 
-var myModule = {};
+var fs_module = {};
 
-myModule.id = "fullscreen";
-myModule.moduleName = "Fullscreen Video";
-myModule.description = "Toggle fullscreen video mode";
-myModule.optionState = false;
-myModule.category = "User Interface";
-myModule.menuHTML = menu.makeOptionMenu(myModule.moduleName, {
-    id : 'dubplus-fullscreen',
-    desc : myModule.description
+fs_module.id = "dubplus-fullscreen";
+fs_module.moduleName = "Fullscreen Video";
+fs_module.description = "Toggle fullscreen video mode";
+fs_module.optionState = false;
+fs_module.category = "User Interface";
+fs_module.menuHTML = menu.makeOptionMenu(fs_module.moduleName, {
+    id : fs_module.id,
+    desc : fs_module.description
   });
 
-myModule.go = function(e) {
+fs_module.go = function(e) {
     var elem = document.querySelector('.playerElement iframe');
     if (elem.requestFullscreen) {
         elem.requestFullscreen();
@@ -30,4 +30,4 @@ myModule.go = function(e) {
     }
 };
 
-module.exports = myModule;
+module.exports = fs_module;

@@ -11,13 +11,13 @@ var dubplus_emoji = require('../emojiUtils/prepEmoji.js');
 
 var emote_module = {};
 
-emote_module.id = "emotes";
+emote_module.id = "dubplus-emotes";
 emote_module.moduleName = "Emotes";
 emote_module.description = "Toggle addiontal emotes support. (twitch, bttv, etc)";
 emote_module.optionState = false;
 emote_module.category = "General";
 emote_module.menuHTML = menu.makeOptionMenu(emote_module.moduleName, {
-    id : 'dubplus-emotes',
+    id : emote_module.id,
     desc : emote_module.description
   });
 

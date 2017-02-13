@@ -40,14 +40,13 @@ var getAllOptions = function(){
  * @return {undefined}         
  */
 var toggle = function(selector, state){
-  var item = document.querySelector(selector + ' .for_content_off i');
-  
+  var item = document.querySelector(selector);
+  if (!item) { return; }
+
   if (state === true) {
-    item.classList.remove('fi-x');
-    item.classList.add('fi-check');
+    item.classList.add('dubplus-switch-on');
   } else {
-    item.classList.remove('fi-check');
-    item.classList.add('fi-x');
+    item.classList.remove('dubplus-switch-on');
   }
 };
 
@@ -65,7 +64,7 @@ var off = function(selector) {
 };
 
 var toggleAndSave = function(optionName, state){
-  toggle("."+optionName, state);
+  toggle("#"+optionName, state);
   return saveOption(optionName, state.toString());
 };
 

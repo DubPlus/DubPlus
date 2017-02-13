@@ -10,13 +10,13 @@ var settings = require("../lib/settings.js");
 
 var dubshover = {};
 
-dubshover.id = "dubs-hover";
+dubshover.id = "dubplus-dubs-hover";
 dubshover.moduleName = "Show Dub info on Hover";
 dubshover.description = "Show Dub info on Hover.";
 dubshover.optionState = false;
 dubshover.category = "General";
 dubshover.menuHTML = menu.makeOptionMenu(dubshover.moduleName, {
-    id : 'dubplus-dubs-hover',
+    id : dubshover.id,
     desc : dubshover.description
   });
 

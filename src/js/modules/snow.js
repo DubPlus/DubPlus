@@ -2,13 +2,13 @@ var menu = require('../lib/menu.js');
 
 var snow = {};
 
-snow.id = "snow";
+snow.id = "dubplus-snow";
 snow.moduleName = "Snow";
 snow.description = "Make it snow!";
 snow.optionState = false;
 snow.category = "General";
 snow.menuHTML = menu.makeOptionMenu(snow.moduleName, {
-    id : 'dubplus-snow',
+    id : snow.id,
     desc : snow.description
   });
 

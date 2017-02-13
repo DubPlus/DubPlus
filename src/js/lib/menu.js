@@ -3,32 +3,26 @@ var options = require('../utils/options.js');
 var settings = require('./settings.js');
 var css = require('../utils/css.js');
 
-var menu = {
-    'General' : '',
-    'User Interface' : '',
-    'Settings' : '',
-    'Customize' : '',
-    'Contact' : [
-      '<div id="dubplus-contact" class="dubplus-menu-section-header">',
-        '<span class="fa fa-angle-down"></span>',
-        '<p>Contact</p>',
-      '</div>',
-      '<ul class="dubplus-menu-section">',
-        '<li class="dubplus-menu-icon">',
-          '<span class="fa fa-bug"></span>',
-          '<a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>',
-        '</li>',
-         '<li class="dubplus-menu-icon">',
-          '<span class="fa fa-facebook"></span>',
-          '<a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>',
-        '</li>',
-        '<li class="dubplus-menu-icon">',
-          '<span class="fa fa-twitter"></span>',
-          '<a href="https://twitter.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Twitter</a>',
-        '</li>',
-      '</ul>',
-    ].join(''),
-  };
+var contactSection = [
+    '<div id="dubplus-contact" class="dubplus-menu-section-header">',
+      '<span class="fa fa-angle-down"></span>',
+      '<p>Contact</p>',
+    '</div>',
+    '<ul class="dubplus-menu-section">',
+      '<li class="dubplus-menu-icon">',
+        '<span class="fa fa-bug"></span>',
+        '<a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>',
+      '</li>',
+       '<li class="dubplus-menu-icon">',
+        '<span class="fa fa-facebook"></span>',
+        '<a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>',
+      '</li>',
+      '<li class="dubplus-menu-icon">',
+        '<span class="fa fa-twitter"></span>',
+        '<a href="https://twitter.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Twitter</a>',
+      '</li>',
+    '</ul>',
+  ].join('');
 
 module.exports = {
   beginMenu : function(){
@@ -47,23 +41,15 @@ module.exports = {
     // make the menu
     var dp_menu_html = [
         '<section class="menu-container dubplus-menu dubplus-open">',
-          '<p class="dubplus-menu-header">Dub+ Settings</p>',
-        '</section>'
+          '<p class="dubplus-menu-header">Dub+ Settings</p>'
     ].join('');
 
     return dp_menu_html;
   },
 
-  appendToSection : function(section, menuItemHtml) {
-    if (menu[section]) {
-      menu[section] += menuItemHtml;
-    }
-  },
-
-  finishMenu  : function(menuString) {
+  finishMenu  : function(menuObj, menuString) {
     // dynamically create our menu from strings provided by each module
-    for (var category in menu) {
-      if (category === 'Contact') { continue; }
+    for (var category in menuObj) {
       var id = 'dubplus-' + category.replace(" ", "-").toLowerCase();
       menuString += [
         '<div id="'+id+'" class="dubplus-menu-section-header">',
@@ -72,12 +58,12 @@ module.exports = {
         '</div>',
         '<ul class="dubplus-menu-section">'
       ].join('');
-      menuString += menu[category];
+      menuString += menuObj[category];
       menuString += '</ul>';
     }
 
     // contact section last, is already fully formed, not dynamic
-    menuString += menu.contact;
+    menuString += contactSection;
     // final part of the menu string
     menuString += '</section>';
 

@@ -351,10 +351,10 @@ module.exports = function(){
 
   // load all our modules into the 'dubplus' global object
   // it also builds the menu dynamically
-  modules.loadAllModulesTo('dubplus');
+  var menuObj = modules.loadAllModulesTo('dubplus');
 
   // finalize the menu and add it to the UI
-  menu.finishMenu(menuString);
+  menu.finishMenu(menuObj, menuString);
 
   // dubplus.previewListInit();
   // dubplus.userAutoComplete();
@@ -372,9 +372,35 @@ module.exports = function(){
 },{"../utils/css.js":18,"./convertSettings.js":3,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
 'use strict';
 var options = require('../utils/options.js');
-var menu = require('../lib/menu.js');
 var modules = require('../modules/index.js');
 var storedSettings = options.getAllOptions();
+
+var menuObj = {
+  'General' : '',
+  'User Interface' : '',
+  'Settings' : '',
+  'Customize' : '',
+  'Contact' : [
+    '<div id="dubplus-contact" class="dubplus-menu-section-header">',
+      '<span class="fa fa-angle-down"></span>',
+      '<p>Contact</p>',
+    '</div>',
+    '<ul class="dubplus-menu-section">',
+      '<li class="dubplus-menu-icon">',
+        '<span class="fa fa-bug"></span>',
+        '<a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>',
+      '</li>',
+       '<li class="dubplus-menu-icon">',
+        '<span class="fa fa-facebook"></span>',
+        '<a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>',
+      '</li>',
+      '<li class="dubplus-menu-icon">',
+        '<span class="fa fa-twitter"></span>',
+        '<a href="https://twitter.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Twitter</a>',
+      '</li>',
+    '</ul>',
+  ].join(''),
+};
 
 /**
  * Loads all the modules in /modules and initliazes them
@@ -386,8 +412,8 @@ var loadAllModulesTo = function(globalObject){
     }
 
     modules.forEach(function(mod, i, r){
-        globalObject[mod.id] = mod;
-        globalObject[mod.id].toggleAndSave = options.toggleAndSave;
+        window[globalObject][mod.id] = mod;
+        window[globalObject][mod.id].toggleAndSave = options.toggleAndSave;
         
         // add event listener
         if (typeof mod.go === 'function'){
@@ -399,9 +425,10 @@ var loadAllModulesTo = function(globalObject){
           mod.init.bind(mod); 
         }
 
+        debugger;
         // add the menu item to the appropriate category section
-        if (mod.menuHTML && mod.category) {
-          menu.appendToSection(mod.category, mod.menuHTML );
+        if (mod.menuHTML && mod.category && typeof menuObj[mod.category] === "string") {
+          menuObj[mod.category] += mod.menuHTML;
         }
 
         // check localStorage for saved settings and update modules optionState
@@ -416,43 +443,17 @@ var loadAllModulesTo = function(globalObject){
     
     });
 
+  return menuObj;
 };
 
 module.exports = {
   loadAllModulesTo : loadAllModulesTo
 };
-},{"../lib/menu.js":6,"../modules/index.js":14,"../utils/options.js":21}],6:[function(require,module,exports){
+},{"../modules/index.js":14,"../utils/options.js":21}],6:[function(require,module,exports){
 'use strict';
 var options = require('../utils/options.js');
 var settings = require('./settings.js');
 var css = require('../utils/css.js');
-
-var menu = {
-    'General' : '',
-    'User Interface' : '',
-    'Settings' : '',
-    'Customize' : '',
-    'Contact' : [
-      '<div id="dubplus-contact" class="dubplus-menu-section-header">',
-        '<span class="fa fa-angle-down"></span>',
-        '<p>Contact</p>',
-      '</div>',
-      '<ul class="dubplus-menu-section">',
-        '<li class="dubplus-menu-icon">',
-          '<span class="fa fa-bug"></span>',
-          '<a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>',
-        '</li>',
-         '<li class="dubplus-menu-icon">',
-          '<span class="fa fa-facebook"></span>',
-          '<a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>',
-        '</li>',
-        '<li class="dubplus-menu-icon">',
-          '<span class="fa fa-twitter"></span>',
-          '<a href="https://twitter.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Twitter</a>',
-        '</li>',
-      '</ul>',
-    ].join(''),
-  };
 
 module.exports = {
   beginMenu : function(){
@@ -471,22 +472,15 @@ module.exports = {
     // make the menu
     var dp_menu_html = [
         '<section class="menu-container dubplus-menu dubplus-open">',
-          '<p class="dubplus-menu-header">Dub+ Settings</p>',
-        '</section>'
+          '<p class="dubplus-menu-header">Dub+ Settings</p>'
     ].join('');
 
     return dp_menu_html;
   },
 
-  appendToSection : function(section, menuItemHtml) {
-    if (menu[section]) {
-      menu[section] += menuItemHtml;
-    }
-  },
-
-  finishMenu  : function(menuString) {
+  finishMenu  : function(menuObj, menuString) {
     // dynamically create our menu from strings provided by each module
-    for (var category in menu) {
+    for (var category in menuObj) {
       if (category === 'Contact') { continue; }
       var id = 'dubplus-' + category.replace(" ", "-").toLowerCase();
       menuString += [
@@ -496,12 +490,12 @@ module.exports = {
         '</div>',
         '<ul class="dubplus-menu-section">'
       ].join('');
-      menuString += menu[category];
+      menuString += menuObj[category];
       menuString += '</ul>';
     }
 
     // contact section last, is already fully formed, not dynamic
-    menuString += menu.contact;
+    menuString += menuObj.contact;
     // final part of the menu string
     menuString += '</section>';
 
@@ -621,13 +615,13 @@ var menu = require('../lib/menu.js');
 var settings = require("../lib/settings.js");
 
 var afk_module = {};
-afk_module.id = "afk";
+afk_module.id = "dubplus-afk";
 afk_module.moduleName = "AFK Autorespond";
 afk_module.description = "Toggle Away from Keyboard and customize AFK message.";
 afk_module.optionState = false;
 afk_module.category = "General";
 afk_module.menuHTML = menu.makeOptionMenu(afk_module.moduleName, {
-    id : 'dubplus-afk',
+    id : afk_module.id,
     desc : afk_module.description,
     extraIcon : 'pencil',
   });
@@ -703,13 +697,13 @@ var menu = require('../lib/menu.js');
 
 var autovote = {};
 
-autovote.id = "autovote";
+autovote.id = "dubplus-autovote";
 autovote.moduleName = "Autovote";
 autovote.description = "Toggles auto upvoting for every song";
 autovote.optionState = false;
 autovote.category = "General";
 autovote.menuHTML = menu.makeOptionMenu(autovote.moduleName, {
-    id : 'dubplus-autovote',
+    id : autovote.id,
     desc : autovote.description
   });
 
@@ -768,13 +762,13 @@ var dubplus_emoji = require('../emojiUtils/prepEmoji.js');
 
 var emote_module = {};
 
-emote_module.id = "emotes";
+emote_module.id = "dubplus-emotes";
 emote_module.moduleName = "Emotes";
 emote_module.description = "Toggle addiontal emotes support. (twitch, bttv, etc)";
 emote_module.optionState = false;
 emote_module.category = "General";
 emote_module.menuHTML = menu.makeOptionMenu(emote_module.moduleName, {
-    id : 'dubplus-emotes',
+    id : emote_module.id,
     desc : emote_module.description
   });
 
@@ -903,19 +897,19 @@ module.exports = myModule;
 
 var menu = require('../lib/menu.js');
 
-var myModule = {};
+var fs_module = {};
 
-myModule.id = "fullscreen";
-myModule.moduleName = "Fullscreen Video";
-myModule.description = "Toggle fullscreen video mode";
-myModule.optionState = false;
-myModule.category = "User Interface";
-myModule.menuHTML = menu.makeOptionMenu(myModule.moduleName, {
-    id : 'dubplus-fullscreen',
-    desc : myModule.description
+fs_module.id = "dubplus-fullscreen";
+fs_module.moduleName = "Fullscreen Video";
+fs_module.description = "Toggle fullscreen video mode";
+fs_module.optionState = false;
+fs_module.category = "User Interface";
+fs_module.menuHTML = menu.makeOptionMenu(fs_module.moduleName, {
+    id : fs_module.id,
+    desc : fs_module.description
   });
 
-myModule.go = function(e) {
+fs_module.go = function(e) {
     var elem = document.querySelector('.playerElement iframe');
     if (elem.requestFullscreen) {
         elem.requestFullscreen();
@@ -928,7 +922,7 @@ myModule.go = function(e) {
     }
 };
 
-module.exports = myModule;
+module.exports = fs_module;
 },{"../lib/menu.js":6}],13:[function(require,module,exports){
 /**
  * Grabs in Chat
@@ -1042,13 +1036,13 @@ var settings = require("../lib/settings.js");
 
 var dubshover = {};
 
-dubshover.id = "dubs-hover";
+dubshover.id = "dubplus-dubs-hover";
 dubshover.moduleName = "Show Dub info on Hover";
 dubshover.description = "Show Dub info on Hover.";
 dubshover.optionState = false;
 dubshover.category = "General";
 dubshover.menuHTML = menu.makeOptionMenu(dubshover.moduleName, {
-    id : 'dubplus-dubs-hover',
+    id : dubshover.id,
     desc : dubshover.description
   });
 
@@ -1655,13 +1649,13 @@ var menu = require('../lib/menu.js');
 
 var snow = {};
 
-snow.id = "snow";
+snow.id = "dubplus-snow";
 snow.moduleName = "Snow";
 snow.description = "Make it snow!";
 snow.optionState = false;
 snow.category = "General";
 snow.menuHTML = menu.makeOptionMenu(snow.moduleName, {
-    id : 'dubplus-snow',
+    id : snow.id,
     desc : snow.description
   });
 
@@ -1867,14 +1861,13 @@ var getAllOptions = function(){
  * @return {undefined}         
  */
 var toggle = function(selector, state){
-  var item = document.querySelector(selector + ' .for_content_off i');
-  
+  var item = document.querySelector(selector);
+  if (!item) { return; }
+
   if (state === true) {
-    item.classList.remove('fi-x');
-    item.classList.add('fi-check');
+    item.classList.add('dubplus-switch-on');
   } else {
-    item.classList.remove('fi-check');
-    item.classList.add('fi-x');
+    item.classList.remove('dubplus-switch-on');
   }
 };
 
@@ -1892,7 +1885,7 @@ var off = function(selector) {
 };
 
 var toggleAndSave = function(optionName, state){
-  toggle("."+optionName, state);
+  toggle("#"+optionName, state);
   return saveOption(optionName, state.toString());
 };
 

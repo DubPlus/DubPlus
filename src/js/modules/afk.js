@@ -11,13 +11,13 @@ var menu = require('../lib/menu.js');
 var settings = require("../lib/settings.js");
 
 var afk_module = {};
-afk_module.id = "afk";
+afk_module.id = "dubplus-afk";
 afk_module.moduleName = "AFK Autorespond";
 afk_module.description = "Toggle Away from Keyboard and customize AFK message.";
 afk_module.optionState = false;
 afk_module.category = "General";
 afk_module.menuHTML = menu.makeOptionMenu(afk_module.moduleName, {
-    id : 'dubplus-afk',
+    id : afk_module.id,
     desc : afk_module.description,
     extraIcon : 'pencil',
   });
