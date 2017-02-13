@@ -1,0 +1,85 @@
+// holds the icon/button in the header
+.for {
+  width: 21px;
+  font-size: 1.2rem;
+  line-height: 1.2;
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 1rem;
+}
+
+.isUser {
+  text-transform: capitalize;
+}
+.for_content {
+  display: none;
+  position: absolute;
+  width: 325px;
+  height: calc(100% - 114px);
+  right: 0px;
+  top: 58px;
+  overflow-y: hidden;
+  background: #222;
+  background: -moz-linear-gradient(top,  rgba(26,26,26,1) 0%, rgba(68,68,68,1) 100%);
+  background: -webkit-linear-gradient(top,  rgba(26,26,26,1) 0%,rgba(68,68,68,1) 100%);
+  background: linear-gradient(to bottom,  rgba(26,26,26,1) 0%,rgba(68,68,68,1) 100%);
+  z-index: 99;
+  -webkit-box-shadow: inset 0px -5px 5px -3px rgba(0,0,0,0.75);
+  -moz-box-shadow: inset 0px -5px 5px -3px rgba(0,0,0,0.75);
+  box-shadow: inset 0px -5px 5px -3px rgba(0,0,0,0.75);
+}
+.for_content_ver {
+  display: block;
+  padding: 0 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: white;
+  font-size: 16px;
+  margin-top: 1rem;
+}
+.for_content_version {
+  padding: 0 1rem;
+  color: #878c8e;
+  font-size: .85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+.for_content_ul {
+  padding: 1rem 1rem;
+}
+.for_content_li {
+  cursor: pointer;
+}
+.for_content_c {
+  border-bottom: 1px solid white;
+}
+.for_content_c i {
+  float: right;
+  margin-right: 5px;
+}
+.for_content_off {
+  display: inline-block;
+  color: #878c8e;
+  font-size: .85rem;
+  font-weight: bold;
+  margin: 0 1rem 0 0;
+}
+.for_content_p {
+  display: inline-block;
+  color: #878c8e;
+  font-size: .85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  position: relative;
+  bottom: 1px;
+}
+.for_content_edit .fi-pencil {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-right: 15px;
+  padding-left: 15px;
+}

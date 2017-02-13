@@ -1,0 +1,36 @@
+/* Dubtracks adds Admin class to its own admins */
+#avatar-list li.admin {
+  color: roleColor("admin");
+}
+
+#avatar-list li.admin:after {
+  color: roleColor("admin");
+}
+#avatar-list li.admin p {
+  color: roleColor("admin");
+}
+
+// dubplus Team
+// @include addRole("team", "USERNAME", "USERID");
+
+// Dubtrack Admins
+// @include makeAdmin("52c8ef6037e22b0200000005"); // IamBubbles
+// @include makeAdmin("52c8efcf37e22b0200000008"); // alexreinhart
+// @include makeAdmin("52d24bff4cf9670200000515"); // bubbles
+// @include makeAdmin("52c8254ca7b7260200000001"); //  yofred
+// @include makeAdmin("52c821781e2b1fd945000001"); //  nAmbokInator
+
+// VIP section, velvet rope 
+// no icon means they get the standard sherriff-badge
+// @include makeVIP("USERNAME", "USERID", "ICON", "#COLOR"); // icon: paw 
+
+// dubplus Owners
+@include makeOwner("mbsurfer", "560892bf8e9cb60300550aa2");
+@include makeOwner("ciscog", "56008425621a9e0300317238");
+
+// Dubtrack Admins who also work on dubplus
+// @include makeAdmindubplus("USERNAME","USERID");
+
+// for testing:
+// dTest3xf12
+// 56a68a6daa267464004f1247

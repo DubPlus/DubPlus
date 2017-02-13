@@ -1,0 +1,18 @@
+
+@import 'variables';
+@import 'mixins';
+
+@import 'modules/menu';
+@import 'modules/modal';
+@import 'modules/player';
+@import 'modules/chat';
+@import 'modules/roles';
+
+// options
+@import 'options/split_chat';
+@import 'options/autocomplete';
+@import 'options/chat_window';
+@import 'options/dubinfo';
+@import 'options/hide_avatars';
+@import 'options/show_timestamp.scss';
+@import 'options/video_window';

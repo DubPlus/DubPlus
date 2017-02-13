@@ -1,0 +1,127 @@
+//******************************************
+// Helper functions
+// 
+@function roleColor($key) {
+  @return map-get($roles, $key);
+}
+
+@function unicode($str){
+ @return unquote("\"")+unquote(str-insert($str, "\\", 1))+unquote("\"")
+}
+
+@function doubleUnicode($icon1, $icon2){
+ @return unquote("\"")+unquote(str-insert($icon1, "\\", 1))+" "+unquote(str-insert($icon2, "\\", 1))+unquote("\"")
+}
+
+//******************************************
+// ROLES
+// 
+
+@mixin addRole($role, $USER_NAME, $USER_ID, $icon:"", $overrideColor:"") {
+  @include rolesAvatars($role, $USER_NAME, $overrideColor);
+  @include rolesChat($role, $USER_ID, $icon, $overrideColor);
+}
+
+// makes a user an admin
+@mixin makeAdmin($USER_ID, $icon:"", $overrideColor:"") {
+  @include rolesChat("admin", $USER_ID, $icon, $overrideColor);
+}
+
+@mixin makeVIP($USER_NAME, $USER_ID, $icon: "", $overrideColor:"") {
+  @include rolesAvatars("vip", $USER_NAME, $overrideColor);
+  @include rolesChat("vip", $USER_ID, $icon, $overrideColor);
+}
+
+@mixin makeOwner($USER_NAME, $USER_ID, $icon: "", $overrideColor:""){
+  @include rolesAvatars("owner", $USER_NAME, $overrideColor);
+  @include rolesChat("owner", $USER_ID, $icon, $overrideColor);
+
+  #avatar-list .user-#{to-lower-case($USER_NAME)} p.dubs:hover:before {
+      content: "Dub+ Owner  -  ";
+      font-weight: 700 !important;
+      color: #89BE6C !important;
+  }
+}
+
+@mixin makeAdmindubplus($USER_NAME, $USER_ID, $icon: "", $overrideColor:""){
+  @include rolesAvatars("admin_dubplus", $USER_NAME, $overrideColor);
+  @include rolesChat("admin_dubplus", $USER_ID, $icon, $overrideColor);
+}
+
+//******************************************
+// includes for roles
+//
+
+// Add styles to the user avatar list tab in the chat window
+@mixin rolesAvatars($role, $USER_NAME, $clr:"") {
+  
+  @if $clr != "" {
+    $clr : $clr;
+  } @else {
+    $clr : roleColor($role);
+  }
+
+  #avatar-list .user-#{to-lower-case($USER_NAME)} .dubs:before {
+      content: map-get($roleAvatarListText, $role);
+      font-weight: 700 !important;
+      color: #{$clr} !important;
+  }
+
+  #avatar-list .user-#{to-lower-case($USER_NAME)} {
+      color: #{$clr} !important;
+  }
+}
+
+// this mixin only deals with adding the color and hover text with icon
+// in the chat window for user roles. 
+@mixin rolesChat($role, $USER_ID, $icon:"", $clr:"") {
+  
+  @if $clr != "" {
+    $clr : $clr;
+  } @else {
+    $clr : roleColor($role);
+  }
+
+  @if $icon != "" {
+    $icon : $icon;
+  } @else {
+    $icon : map-get($icons, $role);
+  }
+
+  #chat .chat-container ul.chat-main li.user-#{$USER_ID} .activity-row .text p a.username {
+    &:before {
+       @if $role == "admin_dubplus" or $role == "owner"{
+          content: doubleUnicode(nth($icon,1), nth($icon,2)) !important;
+        } @else {
+          content: unicode($icon) !important;
+        }
+    }
+
+    color: #{$clr} !important;
+    text-shadow: 0px 0px 1px rgba(0,0,0,.5);
+
+    &:before {
+        font-family: "foundation-icons";
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        display: inline-block;
+        text-decoration: inherit;
+        margin-right: 5px;
+    }
+
+    @if map-get($roleChatHover, $role) != "" {
+
+      &:hover:before {
+          content: map-get($roleChatHover, $role) !important;
+          font-weight: 700;
+          font-family: proxima-nova,sans-serif;
+          font-size: 10px;
+      }
+    }
+  }
+}
+

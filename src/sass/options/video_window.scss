@@ -1,0 +1,16 @@
+// hide the chat and only show thev video
+
+.dubplus-video-only {
+  .right_section {
+    display: none !important;
+  }
+
+  .left_section {
+    margin: 0 auto !important;
+    margin-left: 90px !important;
+    right: initial !important;
+    position: relative !important;
+    float: inherit !important;
+    padding-right: 200px !important;
+  }
+}

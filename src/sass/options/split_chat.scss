@@ -1,0 +1,20 @@
+
+.dubplus-split-chat .chat-main li:nth-child(2n) {
+  background: linear-gradient(to right, rgba(155,157,160,0.10) 0%, rgba(0,0,0,0) 100%);
+  box-shadow: -16px 0px 0px 0px rgba(155,157,160,0.10);
+  width: 100%;
+
+  .chatDelete {
+      right: 1.7em !important;
+  }
+}
+
+.split {
+    background: linear-gradient(to right, rgba(155,157,160,0.10) 0%, rgba(0,0,0,0) 100%);
+    box-shadow: -16px 0px 0px 0px rgba(155,157,160,0.10);
+    width: 100%;
+}
+
+.splitfix {
+    right: 1.7em !important;
+}
