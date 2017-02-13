@@ -2,7 +2,6 @@
  * Dub+ menu styles
  */
 /* css switch layout related variables */
-/* switch color related variables */
 .dubplus-icon {
   width: 21px;
   font-size: 1.2rem;
@@ -78,7 +77,7 @@
 .dubplus-switch,
 .dubplus-menu-icon {
   position: relative;
-  height: 11px;
+  height: 14px;
   margin: 20px 0; }
 
 .dubplus-menu-icon a {
@@ -93,7 +92,7 @@
   z-index: 2;
   padding: 1px;
   height: 100%;
-  width: 23px;
+  width: 25px;
   border-radius: 20px;
   background: #333;
   border: 2px solid #444;
@@ -102,9 +101,9 @@
 
 .dubplus-switcher {
   display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
   vertical-align: middle;
   position: absolute;
   z-index: 2;
@@ -123,7 +122,7 @@
 
 .dubplus-switch .dubplus-menu-label,
 .dubplus-menu-icon .dubplus-menu-label {
-  padding-left: 38px;
+  padding-left: 40px;
   display: block;
   cursor: pointer; }
 

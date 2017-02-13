@@ -6,21 +6,20 @@ $menuWidth : 255px;
 
 /* css switch layout related variables */
 $labelBorder : 2;
-$switcher : 7; // <--- this affects the overall size of the switch
+$switcher : 8;
 $padding : 1;
 
-// don't really need to touch these,  they are calcutated based
-// off the above variables
+// don't really need to touch these,  they are calcutated based off the above variables
 $width : ($switcher * 2) + $labelBorder + 7;
-$height : $switcher + $labelBorder + ($padding*2) + px;
+$height : $switcher + ($labelBorder*2) + ($padding*2) + px;
 
-/* switch color related variables */
-// off state
+// switch color related variables
+// off state:
 $labelBgOff : #333;
 $labelBorderOff : #444;
 $buttonBgOff : #eb008b;
 $buttonBorderOff : #eb008b;
-// on state
+// on state:
 $labelBgOn : #666;
 $labelBorderOn : $labelBgOn;
 $buttonBgOn : #6fcbdc;
