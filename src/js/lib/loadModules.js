@@ -46,4 +46,6 @@ var loadAllModulesTo = function(globalObject){
 
 };
 
-module.exports = loadAllModulesTo;
+module.exports = {
+  loadAllModulesTo : loadAllModulesTo
+};

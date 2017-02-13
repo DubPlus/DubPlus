@@ -3,8 +3,7 @@ var options = require('../utils/options.js');
 var settings = require('./settings.js');
 var css = require('../utils/css.js');
 
-module.exports = {
-  menu : {
+var menu = {
     'General' : '',
     'User Interface' : '',
     'Settings' : '',
@@ -29,7 +28,9 @@ module.exports = {
         '</li>',
       '</ul>',
     ].join(''),
-  },
+  };
+
+module.exports = {
   beginMenu : function(){
     // load font-awesome icons from CDN to be used in the menu
     css.loadExternal('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
@@ -54,14 +55,14 @@ module.exports = {
   },
 
   appendToSection : function(section, menuItemHtml) {
-    if (this.menu[section]) {
-      this.menu[section] += menuItemHtml;
+    if (menu[section]) {
+      menu[section] += menuItemHtml;
     }
   },
 
   finishMenu  : function(menuString) {
     // dynamically create our menu from strings provided by each module
-    for (var category in this.menu) {
+    for (var category in menu) {
       if (category === 'Contact') { continue; }
       var id = 'dubplus-' + category.replace(" ", "-").toLowerCase();
       menuString += [
@@ -71,12 +72,12 @@ module.exports = {
         '</div>',
         '<ul class="dubplus-menu-section">'
       ].join('');
-      menuString += this.menu[category];
+      menuString += menu[category];
       menuString += '</ul>';
     }
 
     // contact section last, is already fully formed, not dynamic
-    menuString += this.menu.contact;
+    menuString += menu.contact;
     // final part of the menu string
     menuString += '</section>';
 
