@@ -1,36 +1,39 @@
 var menu = require('../lib/menu.js');
 
-var myModule = {};
+var snow = {};
 
-myModule.id = "snow";
-myModule.moduleName = "Snow";
-myModule.description = "Toggle snow.";
-myModule.optionState = false;
-myModule.category = "general";
-myModule.menuHTML = menu.makeStandardMenuHTML(myModule.id, myModule.description, myModule.id, myModule.moduleName);
+snow.id = "snow";
+snow.moduleName = "Snow";
+snow.description = "Make it snow!";
+snow.optionState = false;
+snow.category = "General";
+snow.menuHTML = menu.makeOptionMenu(snow.moduleName, {
+    id : 'dubplus-snow',
+    desc : snow.description
+  });
 
 // this function will be run on each click of the menu
-myModule.go = function(e){
+snow.go = function(e){
   var newOptionState;
 
   if (!this.optionState) {
-      newOptionState = true;
-      $(document).snowfall({
-          round: true,
-          shadow: true,
-          flakeCount: 50,
-          minSize: 1,
-          maxSize: 5,
-          minSpeed: 5,
-          maxSpeed: 5
-      });
+    newOptionState = true;
+    $(document).snowfall({
+      round: true,
+      shadow: true,
+      flakeCount: 50,
+      minSize: 1,
+      maxSize: 5,
+      minSpeed: 5,
+      maxSpeed: 5
+    });
   } else {
-      newOptionState= false;
-      $(document).snowfall('clear');
+    newOptionState= false;
+    $(document).snowfall('clear');
   }
 
   this.optionState = newOptionState;
   this.toggleAndSave(this.id, newOptionState);
 };
 
-module.exports = myModule;
+module.exports = snow;

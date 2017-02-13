@@ -10,40 +10,42 @@ var menu = require('./menu.js');
 */
 
 module.exports = function(){
-  $('.isUser').text(Dubtrack.session.get('username'));
-
-  css.load('/css/options/dubinfo.css');
-
+  // load our main CSS
+  css.load('/css/dubplus.css');
+  
+  // convert all old settings to the new system
   convertSettings.go();
   convertSettings.delOldSettings();
 
+  // add a 'global' css class just in case we need more specificity in our css
   $('html').addClass('dubplus');
 
+  // load third party snowfall feature
   $.getScript('https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js');
 
-  $('.icon-mute.snooze_btn:after').css({"content": "1", "vertical-align": "top", "font-size": "0.75rem", "font-weight": "700"});
-
-  // click event on the dubplus icon in the upper right which shows the whole menu
-  $('.for').click(function() {
-      $('.for_content').show();
-  });
+  // ?
+  // $('.icon-mute.snooze_btn:after').css({"content": "1", "vertical-align": "top", "font-size": "0.75rem", "font-weight": "700"});
 
   // make menu before loading the modules
-  menu.makeMenu();
+  var menuString = menu.beginMenu();
 
+  // load all our modules into the 'dubplus' global object
+  // it also builds the menu dynamically
   modules.loadAllModulesTo('dubplus');
 
-  // dubplus.previewListInit();
+  // finalize the menu and add it to the UI
+  menu.finishMenu(menuString);
 
+  // dubplus.previewListInit();
   // dubplus.userAutoComplete();
 
-  // Ref 5:
-  $('.chat-main').on('DOMNodeInserted', function(e) {
-      var itemEl = $(e.target);
-      if(itemEl.prop('tagName').toLowerCase() !== 'li' || itemEl.attr('class').substring(0, 'user-'.length) !== 'user-') return;
-      var user = Dubtrack.room.users.collection.findWhere({userid: itemEl.attr('class').split(/-| /)[1]});
-      var role = !user.get('roleid') ? 'default' : Dubtrack.helpers.isDubtrackAdmin(user.get('userid')) ? 'admin' : user.get('roleid').type;
-      itemEl.addClass('is' + (role.charAt(0).toUpperCase() + role.slice(1)));
-  });
+  // I'm not sure we need this anymore now that they added
+  // $('.chat-main').on('DOMNodeInserted', function(e) {
+  //     var itemEl = $(e.target);
+  //     if(itemEl.prop('tagName').toLowerCase() !== 'li' || itemEl.attr('class').substring(0, 'user-'.length) !== 'user-') return;
+  //     var user = Dubtrack.room.users.collection.findWhere({userid: itemEl.attr('class').split(/-| /)[1]});
+  //     var role = !user.get('roleid') ? 'default' : Dubtrack.helpers.isDubtrackAdmin(user.get('userid')) ? 'admin' : user.get('roleid').type;
+  //     itemEl.addClass('is' + (role.charAt(0).toUpperCase() + role.slice(1)));
+  // });
 
 };

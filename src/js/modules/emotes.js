@@ -9,14 +9,17 @@ var menu = require('../lib/menu.js');
 var dubplus_emoji = require('../emojiUtils/prepEmoji.js');
 
 
-var myModule = {};
+var emote_module = {};
 
-myModule.id = "twitch_emotes";
-myModule.moduleName = "Emotes";
-myModule.description = "Toggle Twitch Emotes support.";
-myModule.optionState = false;
-myModule.category = "general";
-myModule.menuHTML = menu.makeStandardMenuHTML(myModule.id, myModule.description, "twitch_emotes", myModule.moduleName);
+emote_module.id = "emotes";
+emote_module.moduleName = "Emotes";
+emote_module.description = "Toggle addiontal emotes support. (twitch, bttv, etc)";
+emote_module.optionState = false;
+emote_module.category = "General";
+emote_module.menuHTML = menu.makeOptionMenu(emote_module.moduleName, {
+    id : 'dubplus-emotes',
+    desc : emote_module.description
+  });
 
 function makeImage(type, src, name, w, h){
   return '<img class="emoji '+type+'-emote" '+
@@ -29,7 +32,7 @@ function makeImage(type, src, name, w, h){
  * handles replacing twitch emotes in the chat box with the images
  */
 
-myModule.replaceTextWithEmote = function(){
+emote_module.replaceTextWithEmote = function(){
     var _regex = dubplus_emoji.twitch.chatRegex;
 
     if (!dubplus_emoji.twitchJSONSLoaded) { return; } // can't do anything until jsons are loaded
@@ -66,14 +69,14 @@ myModule.replaceTextWithEmote = function(){
 /**************************************************************************
  * Turn on/off the twitch emoji in chat
  */
-myModule.go = function(){
+emote_module.go = function(){
     document.body.addEventListener('twitch:loaded', dubplus_emoji.loadBTTVEmotes);
     document.body.addEventListener('bttv:loaded', dubplus_emoji.loadTastyEmotes);
     
     var newOptionState;
     var optionName = 'twitch_emotes';
 
-    if (!myModule.optionState) {
+    if (!emote_module.optionState) {
         
         if (!dubplus_emoji.twitchJSONSLoaded) {
             dubplus_emoji.loadTwitchEmotes();
@@ -93,4 +96,4 @@ myModule.go = function(){
 };
 
 
-module.exports = myModule;
+module.exports = emote_module;

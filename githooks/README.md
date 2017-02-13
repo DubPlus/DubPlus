@@ -2,6 +2,4 @@
 
 Copy these git hook files into `.git/hooks` directory in the root of the repo
 
-and 
-
-`chmod +x ./.git/hook/hook-filename.sh`
+and then `chmod +x` each file so that they are executable by git

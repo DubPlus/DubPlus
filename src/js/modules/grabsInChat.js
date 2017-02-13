@@ -8,16 +8,19 @@ var css = require('../utils/css.js');
 var modal = require('../utils/modal.js');
 var settings = require("../lib/settings.js");
 
-var myModule = {};
+var grabs_chat = {};
 
-myModule.id = "grabChat";
-myModule.moduleName = "Grabs in Chat";
-myModule.description = "Puts a message in the chat when another user grabs your song";
-myModule.optionState = false;
-myModule.category = "general";
-myModule.menuHTML = menu.makeStandardMenuHTML(myModule.id, myModule.description, myModule.id, myModule.moduleName);
+grabs_chat.id = "grabChat";
+grabs_chat.moduleName = "Grabs in Chat";
+grabs_chat.description = "Puts a message in the chat when another user grabs your song";
+grabs_chat.optionState = false;
+grabs_chat.category = "General";
+grabs_chat.menuHTML = menu.makeOptionMenu(grabs_chat.moduleName, {
+    id : 'dubplus-grabs-chat',
+    desc : grabs_chat.description
+  });
 
-myModule.grabChatWatcher = function(e){
+grabs_chat.grabChatWatcher = function(e){
     var user = Dubtrack.session.get('username');
     var currentDj = Dubtrack.room.users.collection.findWhere({
         userid: Dubtrack.room.player.activeSong.attributes.song.userid
@@ -35,7 +38,7 @@ myModule.grabChatWatcher = function(e){
     }
 };
 
-myModule.go = function() {
+grabs_chat.go = function() {
   var newOptionState;
   if (!this.optionState) {
     newOptionState = true;
@@ -51,4 +54,4 @@ myModule.go = function() {
   this.toggleAndSave(this.id, newOptionState);
 };
 
-module.exports = myModule;
+module.exports = grabs_chat;

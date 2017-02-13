@@ -1,17 +1,20 @@
 /* global Dubtrack */
 var menu = require('../lib/menu.js');
 
-var myModule = {};
+var autovote = {};
 
-myModule.id = "autovote";
-myModule.moduleName = "Autovote";
-myModule.description = "Toggles support for auto upvoting for every song";
-myModule.optionState = false;
-myModule.category = "general";
-myModule.menuHTML = menu.makeStandardMenuHTML(myModule.id, myModule.description, myModule.id, myModule.moduleName);
+autovote.id = "autovote";
+autovote.moduleName = "Autovote";
+autovote.description = "Toggles auto upvoting for every song";
+autovote.optionState = false;
+autovote.category = "General";
+autovote.menuHTML = menu.makeOptionMenu(autovote.moduleName, {
+    id : 'dubplus-autovote',
+    desc : autovote.description
+  });
 
 // this function will be run on each click of the menu
-myModule.go = function(e){
+autovote.go = function(e){
   var newOptionState;
   
   if (!this.optionState) {
@@ -40,14 +43,14 @@ myModule.go = function(e){
 };
 
 // add any custom functions to this module
-myModule.advance_vote = function() {
+autovote.advance_vote = function() {
   $('.dubup').click();
 };
 
-myModule.voteCheck = function (obj) {
+autovote.voteCheck = function (obj) {
   if (obj.startTime < 2) {
       this.advance_vote();
   }
 };
 
-module.exports = myModule;
+module.exports = autovote;

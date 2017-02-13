@@ -29,7 +29,7 @@ var loadAllModulesTo = function(globalObject){
 
         // add the menu item to the appropriate category section
         if (mod.menuHTML && mod.category) {
-          menu.appendToSection(mod.category, mod.menuHTML.bind(mod) );
+          menu.appendToSection(mod.category, mod.menuHTML );
         }
 
         // check localStorage for saved settings and update modules optionState

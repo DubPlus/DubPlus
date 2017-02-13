@@ -38,11 +38,12 @@ gulp.task('sass', function () {
  */
 gulp.task('browserify', function() {
   return browserify('./src/js/dubplus.js', {
+      // insert the branch name as a module scoped variable
       insertGlobalVars: { CURRENT_BRANCH: function () { return "'" + CURRENT_BRANCH + "'"; } }
     })
     .bundle()
     //Pass desired output filename to vinyl-source-stream
-    .pipe(source('dubplus-test.js'))
+    .pipe(source('dubplus.js'))
     // Start piping stream to tasks!
     .pipe(gulp.dest('./'));
 });

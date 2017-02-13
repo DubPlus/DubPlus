@@ -5,7 +5,7 @@
 module.exports = {
   // options and constants  
   our_version : '03.06.00 - The rewrite',
-  srcRoot: 'https://rawgit.com/DubPlus/DubPlus/'+CURRENT_BRANCH,
+  srcRoot: 'https://rawgit.com/FranciscoG/DubPlus/'+CURRENT_BRANCH,
   options : {
       let_autovote: false,
       let_split_chat: false,

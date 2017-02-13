@@ -8,17 +8,19 @@ var css = require('../utils/css.js');
 var modal = require('../utils/modal.js');
 var settings = require("../lib/settings.js");
 
-var myModule = {};
+var dubshover = {};
 
-myModule.id = "dubs_hover";
-myModule.moduleName = "Show Dub info on Hover";
-myModule.description = "Show Dub info on Hover.";
-myModule.optionState = false;
-myModule.category = "ui";
-myModule.menuHTML = menu.makeStandardMenuHTML(myModule.id, myModule.description, myModule.id, myModule.moduleName);
+dubshover.id = "dubs-hover";
+dubshover.moduleName = "Show Dub info on Hover";
+dubshover.description = "Show Dub info on Hover.";
+dubshover.optionState = false;
+dubshover.category = "General";
+dubshover.menuHTML = menu.makeOptionMenu(dubshover.moduleName, {
+    id : 'dubplus-dubs-hover',
+    desc : dubshover.description
+  });
 
-
-myModule.go = function(e) {
+dubshover.go = function(e) {
   
   var newOptionState;
   if (!this.optionState) {
@@ -36,16 +38,16 @@ myModule.go = function(e) {
   this.toggleAndSave(this.id, newOptionState);
 };
 
-module.exports = myModule;
+module.exports = dubshover;
 
 /*******************************/
 
 
-myModule.resetGrabs = function(){
+dubshover.resetGrabs = function(){
   this.dubs.grabs = []; //TODO: Remove when we can hit the api for all grabs of current playing song
 };
 
-myModule.grabInfoWarning = function(){
+dubshover.grabInfoWarning = function(){
     modal.create({
       title: 'Grab Vote Info',
       content: 'Please note that this feature is currently still in development. We are waiting on the ability to pull grab vote information from Dubtrack on load. Until then the only grabs you will be able to see are those you are present in the room for.',
@@ -53,7 +55,7 @@ myModule.grabInfoWarning = function(){
     });
 };
 
-myModule.showDubsOnHover = function(){
+dubshover.showDubsOnHover = function(){
   var self = this;
 
   this.resetDubs();
@@ -345,7 +347,7 @@ myModule.showDubsOnHover = function(){
  
 };
 
-myModule.stopDubsOnHover = function(){
+dubshover.stopDubsOnHover = function(){
     Dubtrack.Events.unbind("realtime:room_playlist-dub", this.dubWatcher);
     Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabWatcher);
     Dubtrack.Events.unbind("realtime:user-leave", this.dubUserLeaveWatcher);
@@ -354,7 +356,7 @@ myModule.stopDubsOnHover = function(){
 };
 
 
-myModule.dubUserLeaveWatcher = function(e){
+dubshover.dubUserLeaveWatcher = function(e){
     var self = this;
     //Remove user from dub list
     if($.grep(this.dubs.upDubs, function(el){ return el.userid === e.user._id; }).length > 0){
@@ -383,7 +385,7 @@ myModule.dubUserLeaveWatcher = function(e){
     }
 };
 
-myModule.grabWatcher = function(e){
+dubshover.grabWatcher = function(e){
     var self = this;
     //If grab already casted
     if($.grep(this.dubs.grabs, function(el){ return el.userid == e.user._id; }).length <= 0){
@@ -394,22 +396,22 @@ myModule.grabWatcher = function(e){
     }
 };
 
-myModule.updateChatInputWithString = function(str){
+dubshover.updateChatInputWithString = function(str){
     $("#chat-txt-message").val(str).focus();
 };
 
-myModule.userIsAtLeastMod = function(userid){
+dubshover.userIsAtLeastMod = function(userid){
     return Dubtrack.helpers.isDubtrackAdmin(userid) ||
             Dubtrack.room.users.getIfOwner(userid) ||
             Dubtrack.room.users.getIfManager(userid) ||
             Dubtrack.room.users.getIfMod(userid);
 };
 
-myModule.deleteChatMessageClientSide = function(el){
+dubshover.deleteChatMessageClientSide = function(el){
   $(el).parent('li')[0].remove();
 };
 
-myModule.dubWatcher = function(e){
+dubshover.dubWatcher = function(e){
     if(e.dubtype === 'updub'){
         //If dub already casted
         if($.grep(this.dubs.upDubs, function(el){ return el.userid === e.user._id; }).length <= 0){
@@ -468,7 +470,7 @@ myModule.dubWatcher = function(e){
     }*/
 };
 
-myModule.resetDubs = function(){
+dubshover.resetDubs = function(){
     var self = this;
     this.dubs.upDubs = [];
     this.dubs.downDubs = [];
