@@ -3,19 +3,19 @@
  */
 /* css switch layout related variables */
 .dubplus-icon {
-  width: 21px;
+  width: 26px;
   font-size: 1.2rem;
   line-height: 1.2;
   cursor: pointer;
   position: relative;
   display: inline-block;
-  vertical-align: middle;
+  vertical-align: bottom;
   margin-left: 1rem; }
 
 .dubplus-menu {
   position: fixed;
   z-index: 999;
-  background-color: rgba(10, 10, 10, 0.9);
+  background-color: rgba(10, 10, 10, 0.98);
   transition: transform 0.3s;
   width: 255px;
   height: 100%;

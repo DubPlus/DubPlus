@@ -38,9 +38,9 @@ var modal = require('./utils/modal.js');
 var init = require('./lib/init.js');
 var css = require('./utils/css.js');
 
-/* globals Dubtrack, dubplusLoaded */
+/* globals Dubtrack */
 window.dubplusLoaded = false;
-if (!dubplusLoaded && Dubtrack.session.id) {
+if (!window.dubplusLoaded && Dubtrack.session.id) {
     window.dubplusLoaded = true;
 
     init();

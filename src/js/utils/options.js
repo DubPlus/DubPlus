@@ -1,26 +1,14 @@
+'use strict';
 var settings = require("../lib/settings.js");
+
 /**
- * Save an option to localStorage. 
- * 
- * @param  {String} selector    the name of the option
- * @param  {String} value       'true' or 'false'
+ * Update settings and save all options to localStorage
+ * @param  {String} where      Location in the settings object to save to
+ * @param  {String} optionName 
+ * @param  {String|Number|Boolean} value      
  */
-var saveOption = function(optionName, value) {
-  localStorage.setItem(optionName,value);
-
-  // new options
-  if ( /^draw/i.test(optionName) ) {
-    settings.menu[optionName] = value;
-  } else if (/(css|customAfkMessage)/i.test(optionName)) {
-    settings.custom[optionName] = value;
-  } else {
-    settings.options[optionName] = value;
-  }
-  localStorage.setItem( 'dubplusUserSettings', JSON.stringify(settings) );
-};
-
-var saveMenuOption = function(optionName, value){
-  settings.menu[optionName] = value;
+var saveOption = function(where, optionName, value) {
+  settings[where][optionName] = value;
   localStorage.setItem( 'dubplusUserSettings', JSON.stringify(settings) );
 };
 
@@ -50,29 +38,14 @@ var toggle = function(selector, state){
   }
 };
 
-/**
- * TODO: go through all the files and replace .on and .off with the new toggle
- */
-// deprecating these 2 eventually, for now they are pass-throughs
-var on = function(selector) {
-  // $(selector + ' .for_content_off i').replaceWith('<i class="fi-check"></i>');
-  toggle(selector, true);
-};
-var off = function(selector) {
-  // $(selector + ' .for_content_off i').replaceWith('<i class="fi-x"></i>');
-  toggle(selector, false);
-};
-
 var toggleAndSave = function(optionName, state){
   toggle("#"+optionName, state);
-  return saveOption(optionName, state.toString());
+  return saveOption('options', optionName, state);
 };
 
 module.exports = {
-  on: on,
-  off: off,
   toggle: toggle,
   toggleAndSave: toggleAndSave,
-  saveMenuOption: saveMenuOption,
-  getAllOptions: getAllOptions
+  getAllOptions: getAllOptions,
+  saveOption : saveOption
 };

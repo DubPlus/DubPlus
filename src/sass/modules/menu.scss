@@ -29,13 +29,13 @@ $buttonBorderOn : #6fcbdc;
 // This is the Dub+ icon in the top right that's always showing
 // and triggers the open/close of Dub+
 .dubplus-icon {
-  width: 21px;
+  width: 26px;
   font-size: 1.2rem;
   line-height: 1.2;
   cursor: pointer;
   position: relative;
   display: inline-block;
-  vertical-align: middle;
+  vertical-align: bottom;
   margin-left: 1rem;
 }
 
@@ -44,7 +44,7 @@ $buttonBorderOn : #6fcbdc;
 .dubplus-menu {
   position: fixed;
   z-index: 999;
-  background-color: rgba(10,10,10,0.9);
+  background-color: rgba(10,10,10,0.98);
   transition: transform 0.3s;
   width: $menuWidth;
   height: 100%;

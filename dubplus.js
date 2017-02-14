@@ -39,9 +39,9 @@ var modal = require('./utils/modal.js');
 var init = require('./lib/init.js');
 var css = require('./utils/css.js');
 
-/* globals Dubtrack, dubplusLoaded */
+/* globals Dubtrack */
 window.dubplusLoaded = false;
-if (!dubplusLoaded && Dubtrack.session.id) {
+if (!window.dubplusLoaded && Dubtrack.session.id) {
     window.dubplusLoaded = true;
 
     init();
@@ -60,7 +60,7 @@ if (!dubplusLoaded && Dubtrack.session.id) {
         confirmButtonClass: 'confirm-err'
     });
 }
-},{"./lib/init.js":4,"./utils/css.js":18,"./utils/modal.js":20}],2:[function(require,module,exports){
+},{"./lib/init.js":3,"./utils/css.js":17,"./utils/modal.js":19}],2:[function(require,module,exports){
 /* global Dubtrack, emojify */
 
 var getJSON = require('../utils/getJSON.js');
@@ -220,107 +220,8 @@ prepEmoji.processTastyEmotes = function(data) {
 };
 
 module.exports = prepEmoji;
-},{"../lib/settings.js":7,"../utils/getJSON.js":19}],3:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/getJSON.js":18}],3:[function(require,module,exports){
 'use strict';
-/**
- * convert all the current individual saved settings to the new version
- *
- * Options will be saved as JSON made from the dubplus.options object under one location
- */
-
-var oldSettings = {
-  general : [
-    'autovote',
-    'split_chat',
-    'medium_disable',
-    'warn_redirect',
-    'chat_window',
-    'hide_avatars',
-    'show_timestamps',
-    'video_window',
-    'css_world',
-    'twitch_emotes',
-    'emoji_preview',
-    'autocomplete_mentions',
-    'mention_notifications',
-    'custom_mentions',
-    'spacebar_mute',
-    'downdub_chat',
-    'updub_chat',
-    'grab_chat',
-    'dubs_hover',
-    'snow',
-    'medium'
-  ],
-  menu: [
-    'draw_general',
-    'draw_userinterface',
-    'draw_settings',
-    'draw_customize',
-    'draw_contact',
-    'draw_social',
-    'draw_chrome',
-  ],
-  custom: [
-    'css',
-    'customAfkMessage'
-  ]
-};
-
-
-var convertSettings = function(){
-
-  if ( localStorage.getItem( 'dubplusUserSettings') !== null ) {
-    // new settings already exist, nothing do here, load old settings and return it
-    return JSON.parse( localStorage.getItem( 'dubplusUserSettings' ) );
-  }
-
-  var newSettings = {
-    options : {},
-    menu : {},
-    custom : {}
-  };
-
-  oldSettings.general.forEach(function(el,i,r){
-    newSettings.options[el] = localStorage.getItem(el);
-  });
-
-  oldSettings.menu.forEach(function(el,i,r){
-    newSettings.menu[el] = localStorage.getItem(el);
-  });
-
-  oldSettings.custom.forEach(function(el,i,r){
-    newSettings.custom[el] = localStorage.getItem(el);
-  });
-
-  localStorage.setItem( 'dubplusUserSettings', JSON.stringify(newSettings) );
-  return newSettings;
-};
-
-var delOldSettings = function(){
-
-  oldSettings.general.forEach(function(el,i,r){
-    localStorage.removeItem(el);
-  });
-
-  oldSettings.menu.forEach(function(el,i,r){
-    localStorage.removeItem(el);
-  });
-
-  oldSettings.custom.forEach(function(el,i,r){
-    localStorage.removeItem(el);
-  });
-};
-
-
-module.exports = {
-  go: convertSettings,
-  delOldSettings: delOldSettings
-};
-},{}],4:[function(require,module,exports){
-'use strict';
-/* global Dubtrack */
-var convertSettings = require('./convertSettings.js');
 var modules = require('./loadModules.js');
 var css = require('../utils/css.js');
 var menu = require('./menu.js');
@@ -332,10 +233,6 @@ var menu = require('./menu.js');
 module.exports = function(){
   // load our main CSS
   css.load('/css/dubplus.css');
-  
-  // convert all old settings to the new system
-  convertSettings.go();
-  convertSettings.delOldSettings();
 
   // add a 'global' css class just in case we need more specificity in our css
   $('html').addClass('dubplus');
@@ -343,7 +240,7 @@ module.exports = function(){
   // load third party snowfall feature
   $.getScript('https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js');
 
-  // ?
+  // what is this for?
   // $('.icon-mute.snooze_btn:after').css({"content": "1", "vertical-align": "top", "font-size": "0.75rem", "font-weight": "700"});
 
   // make menu before loading the modules
@@ -351,6 +248,7 @@ module.exports = function(){
 
   // load all our modules into the 'dubplus' global object
   // it also builds the menu dynamically
+  // returns an object to be passed to menu.finish
   var menuObj = modules.loadAllModulesTo('dubplus');
 
   // finalize the menu and add it to the UI
@@ -369,11 +267,10 @@ module.exports = function(){
   // });
 
 };
-},{"../utils/css.js":18,"./convertSettings.js":3,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
+},{"../utils/css.js":17,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
 'use strict';
 var options = require('../utils/options.js');
-var modules = require('../modules/index.js');
-var storedSettings = options.getAllOptions();
+var dubPlus_modules = require('../modules/index.js');
 
 var menuObj = {
   'General' : '',
@@ -388,38 +285,32 @@ var menuObj = {
  */
 var loadAllModulesTo = function(globalObject){
     if (typeof window[globalObject] === "undefined") {
-        window[globalObject] = {};
+      window[globalObject] = {};
     }
 
-    modules.forEach(function(mod, i, r){
-        window[globalObject][mod.id] = mod;
-        window[globalObject][mod.id].toggleAndSave = options.toggleAndSave;
-        
-        // add event listener
-        if (typeof mod.go === 'function'){
-          $('body').on('click', '#'+mod.id, mod.go.bind(mod) );
-        }
+    dubPlus_modules.forEach(function(mod){
+      // add each module to the new global object
+      window[globalObject][mod.id] = mod;
+      // add the toggleAndSave function as a member of each module
+      window[globalObject][mod.id].toggleAndSave = options.toggleAndSave;
+      
+      // add event listener
+      if (typeof mod.go === 'function'){
+        $('body').on('click', '#'+mod.id, mod.go.bind(mod) );
+      }
 
-        // if module has a definied init function, run that first
-        if (typeof mod.init === 'function') { 
-          mod.init.bind(mod); 
-        }
+      // This is run only once, when the script is loaded.
+      // this is also where you should check stored settings 
+      // to see if an option should be automatically turned on
+      if (typeof mod.init === 'function') { 
+        mod.init.bind(mod); 
+      }
 
-        // add the menu item to the appropriate category section
-        if (mod.menuHTML && mod.category && typeof menuObj[mod.category] === "string") {
-          menuObj[mod.category] += mod.menuHTML;
-        }
+      // add the menu item to the appropriate category section
+      if (mod.menuHTML && mod.category && typeof menuObj[mod.category] === "string") {
+        menuObj[mod.category] += mod.menuHTML;
+      }
 
-        // check localStorage for saved settings and update modules optionState
-        if (typeof storedSettings.options[mod.id] !== 'undefined') {
-          mod.optionState = storedSettings.options[mod.id];
-
-          // run module's go function if setting was true
-          if ( (storedSettings.options[mod.id] === 'true' || storedSettings.options[mod.id] === true) && typeof mod.go === 'function' ) {
-            mod.go.call(mod, "onLoad");
-          }
-        }
-    
     });
 
   return menuObj;
@@ -428,18 +319,27 @@ var loadAllModulesTo = function(globalObject){
 module.exports = {
   loadAllModulesTo : loadAllModulesTo
 };
-},{"../modules/index.js":14,"../utils/options.js":21}],6:[function(require,module,exports){
+},{"../modules/index.js":13,"../utils/options.js":20}],5:[function(require,module,exports){
 'use strict';
 var options = require('../utils/options.js');
 var settings = require('./settings.js');
 var css = require('../utils/css.js');
 
+// this is used to set the state of the contact menu section
+var arrow = "down";
+var isClosedClass = "";
+if (settings.menu.contact === "closed") {
+  isClosedClass = "dubplus-menu-section-closed";
+  arrow =  "right";
+}
+
+// the contact section is hardcoded and setup up here
 var contactSection = [
     '<div id="dubplus-contact" class="dubplus-menu-section-header">',
-      '<span class="fa fa-angle-down"></span>',
+      '<span class="fa fa-angle-'+arrow+'"></span>',
       '<p>Contact</p>',
     '</div>',
-    '<ul class="dubplus-menu-section">',
+    '<ul class="dubplus-menu-section '+isClosedClass+'">',
       '<li class="dubplus-menu-icon">',
         '<span class="fa fa-bug"></span>',
         '<a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>',
@@ -481,13 +381,23 @@ module.exports = {
   finishMenu  : function(menuObj, menuString) {
     // dynamically create our menu from strings provided by each module
     for (var category in menuObj) {
-      var id = 'dubplus-' + category.replace(" ", "-").toLowerCase();
+      var fixed = category.replace(" ", "-").toLowerCase();
+      var menuSettings = settings.menu[fixed];
+      var id = 'dubplus-'+fixed;
+
+      var arrow = "down";
+      var isClosedClass = "";
+      if (menuSettings === "closed") {
+        isClosedClass = "dubplus-menu-section-closed";
+        arrow =  "right";
+      }
+      
       menuString += [
         '<div id="'+id+'" class="dubplus-menu-section-header">',
-          '<span class="fa fa-angle-down"></span>',
+          '<span class="fa fa-angle-'+arrow+'"></span>',
           '<p>'+category+'</p>',
         '</div>',
-        '<ul class="dubplus-menu-section">'
+        '<ul class="dubplus-menu-section '+isClosedClass+'">'
       ].join('');
       menuString += menuObj[category];
       menuString += '</ul>';
@@ -499,9 +409,26 @@ module.exports = {
     menuString += '</section>';
 
     // add it to the DOM
-    $('body').prepend(menuString);
+    $('body').append(menuString);
     // use the perfectScrollBar plugin to make it look nice
     // $('.dubplus-menu').perfectScrollbar();
+    
+    // add event handler for menu sections
+    $('body').on('click', '.dubplus-menu-section-header', function(e){
+      var $menuSec = $(this).next('.dubplus-menu-section');
+      var $icon = $(this).find('span');
+      var menuName = $(this).text().trim().replace(" ", "-").toLowerCase();
+      $menuSec.toggleClass('dubplus-menu-section-closed');
+      if ($menuSec.hasClass('dubplus-menu-section-closed')) {
+        // menu is closed
+        $icon.removeClass('fa-angle-down').addClass('fa-angle-right');
+        options.saveOption( 'menu', menuName , 'closed');
+      } else {
+        // menu is open
+        $icon.removeClass('fa-angle-right').addClass('fa-angle-down');
+        options.saveOption( 'menu', menuName , 'open');
+      }
+    });
   },
 
   makeOptionMenu : function(menuTitle, options){
@@ -519,8 +446,8 @@ module.exports = {
       _extra = '<span class="fa fa-'+opts.extraIcon+' extra-icon"></span>';
     }
     return [
-      '<li id="'+opts.id+'" class="dubplus-switch '+opts.cssClass+'" title="'+opts.desc+'">',  
-        '<div class="dubplus-switch-bg '+_state+'">',
+      '<li id="'+opts.id+'" class="dubplus-switch '+_state+' '+opts.cssClass+'" title="'+opts.desc+'">',  
+        '<div class="dubplus-switch-bg">',
           '<div class="dubplus-switcher"></div>', 
         '</div>',
         '<span class="dubplus-menu-label">'+menuTitle+'</span>',
@@ -548,59 +475,40 @@ module.exports = {
 
 
 
-},{"../utils/css.js":18,"../utils/options.js":21,"./settings.js":7}],7:[function(require,module,exports){
+},{"../utils/css.js":17,"../utils/options.js":20,"./settings.js":6}],6:[function(require,module,exports){
 (function (CURRENT_BRANCH){
-/**
- * Settings
- * this will hold all the "global" (dubplus) settings
- */
-module.exports = {
-  // options and constants  
-  our_version : '03.06.00 - The rewrite',
+'use strict';
+
+var defaults = {
+  our_version : '0.1.0',
   srcRoot: 'https://rawgit.com/FranciscoG/DubPlus/'+CURRENT_BRANCH,
-  options : {
-      let_autovote: false,
-      let_split_chat: false,
-      let_fs: false,
-      let_medium_disable: false,
-      let_warn_redirect: false,
-      let_afk: false,
-      let_active_afk: true,
-      let_chat_window: false,
-      let_css: false,
-      let_hide_avatars: false,
-      let_show_timestamps: false,
-      let_video_window: false,
-      let_twitch_emotes: false,
-      let_emoji_preview: false,
-      let_spacebar_mute: false,
-      let_autocomplete_mentions: false,
-      let_mention_notifications: false,
-      let_downdub_chat_notifications: false,
-      let_updub_chat_notifications: false,
-      let_grab_chat_notifications: false,
-      let_dubs_hover: false,
-      let_custom_mentions: false,
-      let_snow: false,
-      draw_general: false,
-      draw_userinterface: false,
-      draw_settings: false,
-      draw_customize: false,
-      draw_contact: false,
-      draw_social: false,
-      draw_chrome: false
-    },
-    dubs : {
-      upDubs: [],
-      downDubs: [],
-      grabs: []
-    },
-    menu : {},
-    custom: {}
+  // this will store all the on/off states
+  options : {},
+  // this will store the open/close state of the menu sections
+  menu : {
+    "general" : "open",
+    "user-interface" : "open",
+    "settings" : "open",
+    "customize" : "open",
+    "contact" : "open"
+  },
+  // this will store custom strings for options like custom css, afk message, etc
+  custom: {
+
+  }
 };
 
+var savedSettings = {};
+var _storageRaw = localStorage.getItem('dubplusUserSettings');
+if (_storageRaw) {
+  savedSettings = JSON.parse(_storageRaw);
+}
+
+module.exports = $.extend({}, defaults, savedSettings);
+
 }).call(this,'dev')
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
+'use strict';
 /**
  * AFK -  Away from Keyboard
  * Toggles the afk auto response on/off
@@ -651,7 +559,7 @@ var afk_chat_respond = function(e) {
 
 var saveAFKmessage =function() {
     var customAfkMessage = $('.input').val();
-    options.saveOption('customAfkMessage', customAfkMessage);
+    options.saveOption('custom', 'customAfkMessage', customAfkMessage);
 };
 
 var editAFKmessage = function() {
@@ -668,7 +576,7 @@ var editAFKmessage = function() {
 
 afk_module.init = function(){
   // this opens the dialog modal to add your custom away message
-  $('body').on('click', '#dubplus-afk .extra-icon', editAFKmessage);
+  $('body').on('click', '#'+afk_module.id+' .extra-icon', editAFKmessage);
 };
 
 afk_module.go = function(e) {
@@ -690,50 +598,63 @@ afk_module.go = function(e) {
 };
 
 module.exports = afk_module;
-},{"../lib/menu.js":6,"../lib/settings.js":7,"../utils/modal.js":20,"../utils/options.js":21}],9:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/modal.js":19,"../utils/options.js":20}],8:[function(require,module,exports){
+'use strict';
 /* global Dubtrack */
 var menu = require('../lib/menu.js');
+var settings = require("../lib/settings.js");
 
 var autovote = {};
 
 autovote.id = "dubplus-autovote";
 autovote.moduleName = "Autovote";
 autovote.description = "Toggles auto upvoting for every song";
-autovote.optionState = false;
+autovote.optionState = settings.options[autovote.id] || false; // initial state from stored settings
 autovote.category = "General";
 autovote.menuHTML = menu.makeOptionMenu(autovote.moduleName, {
     id : autovote.id,
-    desc : autovote.description
+    desc : autovote.description,
+    state : autovote.optionState
   });
 
+autovote.init = function(){
+  if (this.optionState === true) {
+    this.start();
+  }
+};
+
 // this function will be run on each click of the menu
-autovote.go = function(e){
+autovote.go = function(){
   var newOptionState;
   
   if (!this.optionState) {
-      newOptionState = true;
-
-      var song = Dubtrack.room.player.activeSong.get('song');
-      var dubCookie = Dubtrack.helpers.cookie.get('dub-' + Dubtrack.room.model.get("_id"));
-      var dubsong = Dubtrack.helpers.cookie.get('dub-song');
-
-      if (!Dubtrack.room || !song || song.songid !== dubsong) {
-          dubCookie = false;
-      }
-      //Only cast the vote if user hasn't already voted
-      if (!$('.dubup, .dubdown').hasClass('voted') && !dubCookie) {
-          this.advance_vote();
-      }
-
-      Dubtrack.Events.bind("realtime:room_playlist-update", this.voteCheck);
+    newOptionState = true;
+    this.start();
   } else {
-      newOptionState = false;
-      Dubtrack.Events.unbind("realtime:room_playlist-update", this.voteCheck);
+    newOptionState = false;
+    Dubtrack.Events.unbind("realtime:room_playlist-update", this.voteCheck);
   }
 
   this.optionState = newOptionState;
   this.toggleAndSave(this.id, newOptionState);
 };
+
+autovote.start = function(){
+  var song = Dubtrack.room.player.activeSong.get('song');
+  var dubCookie = Dubtrack.helpers.cookie.get('dub-' + Dubtrack.room.model.get("_id"));
+  var dubsong = Dubtrack.helpers.cookie.get('dub-song');
+
+  if (!Dubtrack.room || !song || song.songid !== dubsong) {
+    dubCookie = false;
+  }
+  //Only cast the vote if user hasn't already voted
+  if (!$('.dubup, .dubdown').hasClass('voted') && !dubCookie) {
+    this.advance_vote();
+  }
+
+  Dubtrack.Events.bind("realtime:room_playlist-update", this.voteCheck);
+};
+
 
 // add any custom functions to this module
 autovote.advance_vote = function() {
@@ -742,12 +663,12 @@ autovote.advance_vote = function() {
 
 autovote.voteCheck = function (obj) {
   if (obj.startTime < 2) {
-      this.advance_vote();
+    this.advance_vote();
   }
 };
 
 module.exports = autovote;
-},{"../lib/menu.js":6}],10:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6}],9:[function(require,module,exports){
 /**
  * Emotes
  * Adds additional Twitch, BTTV, and Tasty Emotes to the chat window 
@@ -847,7 +768,7 @@ emote_module.go = function(){
 
 
 module.exports = emote_module;
-},{"../emojiUtils/prepEmoji.js":2,"../lib/menu.js":6,"../utils/options.js":21}],11:[function(require,module,exports){
+},{"../emojiUtils/prepEmoji.js":2,"../lib/menu.js":5,"../utils/options.js":20}],10:[function(require,module,exports){
 /**
  * ETA
  *
@@ -888,7 +809,7 @@ myModule.init = function() {
 };
 
 module.exports = myModule;
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /**
  * Fullscreen video
  * Toggle fullscreen video mode
@@ -922,7 +843,7 @@ fs_module.go = function(e) {
 };
 
 module.exports = fs_module;
-},{"../lib/menu.js":6}],13:[function(require,module,exports){
+},{"../lib/menu.js":5}],12:[function(require,module,exports){
 /**
  * Grabs in Chat
  */
@@ -980,7 +901,7 @@ grabs_chat.go = function() {
 };
 
 module.exports = grabs_chat;
-},{"../lib/menu.js":6,"../lib/settings.js":7,"../utils/css.js":18,"../utils/modal.js":20}],14:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":17,"../utils/modal.js":19}],13:[function(require,module,exports){
 // put this in order of appearance in the menu
 module.exports = [
   // General 
@@ -1022,7 +943,7 @@ module.exports = [
   require('./snooze.js'),
   require('./eta.js')
 ];
-},{"./afk.js":8,"./autovote.js":9,"./emotes.js":10,"./eta.js":11,"./fullscreen.js":12,"./grabsInChat.js":13,"./showDubsOnHover.js":15,"./snooze.js":16,"./snow.js":17}],15:[function(require,module,exports){
+},{"./afk.js":7,"./autovote.js":8,"./emotes.js":9,"./eta.js":10,"./fullscreen.js":11,"./grabsInChat.js":12,"./showDubsOnHover.js":14,"./snooze.js":15,"./snow.js":16}],14:[function(require,module,exports){
 /**
  * Show Dubs on Hover
  */
@@ -1575,7 +1496,7 @@ dubshover.resetDubs = function(){
         }
     });
 };
-},{"../lib/menu.js":6,"../lib/settings.js":7,"../utils/css.js":18,"../utils/modal.js":20}],16:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":17,"../utils/modal.js":19}],15:[function(require,module,exports){
 /**
  * Snooze
  * Mutes audio for one song.
@@ -1643,7 +1564,7 @@ module.exports = myModule;
 
 
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var menu = require('../lib/menu.js');
 
 var snow = {};
@@ -1683,7 +1604,7 @@ snow.go = function(e){
 };
 
 module.exports = snow;
-},{"../lib/menu.js":6}],18:[function(require,module,exports){
+},{"../lib/menu.js":5}],17:[function(require,module,exports){
 'use strict';
 var settings = require("../lib/settings.js");
 
@@ -1717,7 +1638,7 @@ module.exports = {
   load : load,
   loadExternal: loadExternal
 };
-},{"../lib/settings.js":7}],19:[function(require,module,exports){
+},{"../lib/settings.js":6}],18:[function(require,module,exports){
 // jQuery's getJSON kept returning errors so making my own with promise-like
 // structure and added optional Event to fire when done so can hook in elsewhere
 var getJSON = (function (url, optionalEvent) {
@@ -1740,7 +1661,7 @@ var getJSON = (function (url, optionalEvent) {
 });
 
 module.exports = getJSON;
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /**
  * input is a modal used to display messages and also capture data
  * 
@@ -1817,30 +1738,18 @@ module.exports = {
     create: create,
     close : close
 };
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
+'use strict';
 var settings = require("../lib/settings.js");
+
 /**
- * Save an option to localStorage. 
- * 
- * @param  {String} selector    the name of the option
- * @param  {String} value       'true' or 'false'
+ * Update settings and save all options to localStorage
+ * @param  {String} where      Location in the settings object to save to
+ * @param  {String} optionName 
+ * @param  {String|Number|Boolean} value      
  */
-var saveOption = function(optionName, value) {
-  localStorage.setItem(optionName,value);
-
-  // new options
-  if ( /^draw/i.test(optionName) ) {
-    settings.menu[optionName] = value;
-  } else if (/(css|customAfkMessage)/i.test(optionName)) {
-    settings.custom[optionName] = value;
-  } else {
-    settings.options[optionName] = value;
-  }
-  localStorage.setItem( 'dubplusUserSettings', JSON.stringify(settings) );
-};
-
-var saveMenuOption = function(optionName, value){
-  settings.menu[optionName] = value;
+var saveOption = function(where, optionName, value) {
+  settings[where][optionName] = value;
   localStorage.setItem( 'dubplusUserSettings', JSON.stringify(settings) );
 };
 
@@ -1870,30 +1779,15 @@ var toggle = function(selector, state){
   }
 };
 
-/**
- * TODO: go through all the files and replace .on and .off with the new toggle
- */
-// deprecating these 2 eventually, for now they are pass-throughs
-var on = function(selector) {
-  // $(selector + ' .for_content_off i').replaceWith('<i class="fi-check"></i>');
-  toggle(selector, true);
-};
-var off = function(selector) {
-  // $(selector + ' .for_content_off i').replaceWith('<i class="fi-x"></i>');
-  toggle(selector, false);
-};
-
 var toggleAndSave = function(optionName, state){
   toggle("#"+optionName, state);
-  return saveOption(optionName, state.toString());
+  return saveOption('options', optionName, state);
 };
 
 module.exports = {
-  on: on,
-  off: off,
   toggle: toggle,
   toggleAndSave: toggleAndSave,
-  saveMenuOption: saveMenuOption,
-  getAllOptions: getAllOptions
+  getAllOptions: getAllOptions,
+  saveOption : saveOption
 };
-},{"../lib/settings.js":7}]},{},[1]);
+},{"../lib/settings.js":6}]},{},[1]);

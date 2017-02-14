@@ -1,7 +1,6 @@
 'use strict';
 var options = require('../utils/options.js');
-var modules = require('../modules/index.js');
-var storedSettings = options.getAllOptions();
+var dubPlus_modules = require('../modules/index.js');
 
 var menuObj = {
   'General' : '',
@@ -16,38 +15,32 @@ var menuObj = {
  */
 var loadAllModulesTo = function(globalObject){
     if (typeof window[globalObject] === "undefined") {
-        window[globalObject] = {};
+      window[globalObject] = {};
     }
 
-    modules.forEach(function(mod, i, r){
-        window[globalObject][mod.id] = mod;
-        window[globalObject][mod.id].toggleAndSave = options.toggleAndSave;
-        
-        // add event listener
-        if (typeof mod.go === 'function'){
-          $('body').on('click', '#'+mod.id, mod.go.bind(mod) );
-        }
+    dubPlus_modules.forEach(function(mod){
+      // add each module to the new global object
+      window[globalObject][mod.id] = mod;
+      // add the toggleAndSave function as a member of each module
+      window[globalObject][mod.id].toggleAndSave = options.toggleAndSave;
+      
+      // add event listener
+      if (typeof mod.go === 'function'){
+        $('body').on('click', '#'+mod.id, mod.go.bind(mod) );
+      }
 
-        // if module has a definied init function, run that first
-        if (typeof mod.init === 'function') { 
-          mod.init.bind(mod); 
-        }
+      // This is run only once, when the script is loaded.
+      // this is also where you should check stored settings 
+      // to see if an option should be automatically turned on
+      if (typeof mod.init === 'function') { 
+        mod.init.bind(mod); 
+      }
 
-        // add the menu item to the appropriate category section
-        if (mod.menuHTML && mod.category && typeof menuObj[mod.category] === "string") {
-          menuObj[mod.category] += mod.menuHTML;
-        }
+      // add the menu item to the appropriate category section
+      if (mod.menuHTML && mod.category && typeof menuObj[mod.category] === "string") {
+        menuObj[mod.category] += mod.menuHTML;
+      }
 
-        // check localStorage for saved settings and update modules optionState
-        if (typeof storedSettings.options[mod.id] !== 'undefined') {
-          mod.optionState = storedSettings.options[mod.id];
-
-          // run module's go function if setting was true
-          if ( (storedSettings.options[mod.id] === 'true' || storedSettings.options[mod.id] === true) && typeof mod.go === 'function' ) {
-            mod.go.call(mod, "onLoad");
-          }
-        }
-    
     });
 
   return menuObj;
