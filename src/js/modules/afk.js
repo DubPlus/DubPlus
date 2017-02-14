@@ -30,21 +30,19 @@ var afk_chat_respond = function(e) {
   
   if (content.indexOf('@'+user) > -1 && Dubtrack.session.id !== e.user.userInfo.userid) {
   
-    if (this.optionState) {
-      if (settings.custom.customAfkMessage) {
-          $('#chat-txt-message').val('[AFK] '+ settings.custom.customAfkMessage);
-      } else {
-          $('#chat-txt-message').val("[AFK] I'm not here right now.");
-      }
-      Dubtrack.room.chat.sendMessage();
-      this.optionState = false;
-
-      var self = this;
-      setTimeout(function() {
-          self.optionState = true;
-      }, 180000);
+    if (settings.custom.customAfkMessage) {
+      $('#chat-txt-message').val('[AFK] '+ settings.custom.customAfkMessage);
+    } else {
+      $('#chat-txt-message').val("[AFK] I'm not here right now.");
     }
+    
+    Dubtrack.room.chat.sendMessage();
+    this.optionState = false;
 
+    var self = this;
+    setTimeout(function() {
+    self.optionState = true;
+    }, 180000);
   }
 };
 
@@ -69,18 +67,18 @@ afk_module.go = function(e) {
   this.toggleAndSave(this.id, newOptionState);
 };
 
-var saveAFKmessage =function() {
-    var customAfkMessage = $('.input').val();
+var saveAFKmessage = function() {
+  var customAfkMessage = $('.dp-modal textarea').val();
+  if (customAfkMessage !== '') {
     options.saveOption('custom', 'customAfkMessage', customAfkMessage);
+  }
 };
 
 afk_module.extra = function() {
-  var current = settings.custom.customAfkMessage;
   modal.create({
     title: 'Custom AFK Message',
-    content: current,
-    placeholder: 'I\'m not here right now.',
-    confirmButtonClass: 'confirm-for315',
+    content: settings.custom.customAfkMessage || '',
+    placeholder: 'Be right back!',
     maxlength: '255',
     confirmCallback: saveAFKmessage
   });

@@ -40,183 +40,187 @@ var init = require('./lib/init.js');
 var css = require('./utils/css.js');
 
 /* globals Dubtrack */
-window.dubplusLoaded = false;
-if (!window.dubplusLoaded && Dubtrack.session.id) {
-    window.dubplusLoaded = true;
-
-    init();
+if (!window.dubplus && Dubtrack.session.id) {
+  init();
 
 } else {
-    css.load('/css/asset.css');
-    var errorMsg;
-    if (!Dubtrack.session.id) {
-        errorMsg = 'You\'re not logged in. Please login to use Dub+.';
-    } else {
-        errorMsg = 'Oh noes! We\'ve encountered a runtime error';
-    }
-    modal.create({
-        title: 'Oh noes:',
-        content: errorMsg,
-        confirmButtonClass: 'confirm-err'
-    });
+  var errorMsg;
+  if (!Dubtrack.session.id) {
+    css.load('/css/dubplus.css');
+    errorMsg = 'You\'re not logged in. Please login to use Dub+.';
+  } else {
+      errorMsg = 'Dub+ is already loaded';
+  }
+  modal.create({
+    title: 'Dub+ Error',
+    content: errorMsg
+  });
 }
 },{"./lib/init.js":3,"./utils/css.js":17,"./utils/modal.js":19}],2:[function(require,module,exports){
+'use strict';
 /* global Dubtrack, emojify */
 
-var getJSON = require('../utils/getJSON.js');
+var GetJSON = require('../utils/getJSON.js');
 var settings = require("../lib/settings.js");
 
 var prepEmoji = {};
 
 prepEmoji.emoji = {
-    template: function(id) { return emojify.defaultConfig.img_dir+'/'+encodeURI(id)+'.png'; },
+  template: function(id) { return emojify.defaultConfig.img_dir+'/'+encodeURI(id)+'.png'; },
 };
 prepEmoji.twitch = {
-    template: function(id) { return "//static-cdn.jtvnw.net/emoticons/v1/" + id + "/3.0"; },
-    specialEmotes: [],
-    emotes: {},
-    chatRegex : new RegExp(":([-_a-z0-9]+):", "ig")
+  template: function(id) { return "//static-cdn.jtvnw.net/emoticons/v1/" + id + "/3.0"; },
+  specialEmotes: [],
+  emotes: {},
+  chatRegex : new RegExp(":([-_a-z0-9]+):", "ig")
 };
 prepEmoji.bttv = {
-    template: function(id) { return  "//cdn.betterttv.net/emote/" + id + "/3x";  },
-    emotes: {},
-    chatRegex : new RegExp(":([&!()\\-_a-z0-9]+):", "ig")
+  template: function(id) { return  "//cdn.betterttv.net/emote/" + id + "/3x";  },
+  emotes: {},
+  chatRegex : new RegExp(":([&!()\\-_a-z0-9]+):", "ig")
 };
 prepEmoji.tasty = {
-    template: function(id) { return this.emotes[id].url; },
-    emotes: {}
+  template: function(id) { return this.emotes[id].url; },
+  emotes: {}
 };
 prepEmoji.shouldUpdateAPIs = function(apiName){
-    var day = 86400000; // milliseconds in a day
+  var day = 86400000; // milliseconds in a day
 
-    var today = Date.now();
-    var lastSaved = parseInt(localStorage.getItem(apiName+'_api_timestamp'));
-    // Is the lastsaved not a number for some strange reason, then we should update
-    // are we past 5 days from last update? then we should update
-    // does the data not exist in localStorage, then we should update
-    return isNaN(lastSaved) || today - lastSaved > day * 5 || !localStorage[apiName +'_api'];
+  // if api return an object with an error then we should try again
+  var savedItem = localStorage.getItem(apiName +'_api');
+  if (savedItem) {
+    var parsed = JSON.parse(savedItem);
+    if (typeof parsed.error !== 'undefined') { return true;}
+  }
+
+  var today = Date.now();
+  var lastSaved = parseInt(localStorage.getItem(apiName+'_api_timestamp'));
+  // Is the lastsaved not a number for some strange reason, then we should update
+  // are we past 5 days from last update? then we should update
+  // does the data not exist in localStorage, then we should update
+  return isNaN(lastSaved) || today - lastSaved > day * 5 || !savedItem;
 };
 /**************************************************************************
- * Loads the twitch emotes from the api.
- * http://api.twitch.tv/kraken/chat/emoticon_images
- */
+* Loads the twitch emotes from the api.
+* http://api.twitch.tv/kraken/chat/emoticon_images
+*/
 prepEmoji.loadTwitchEmotes = function(){
-    var self = this;
-    var savedData;
-    // if it doesn't exist in localStorage or it's older than 5 days
-    // grab it from the twitch API
-    if (self.shouldUpdateAPIs('twitch')) {
-        console.log('dub+','twitch','loading from api');
-        var twApi = new getJSON('//api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded');
-        twApi.done(function(data){
-            localStorage.setItem('twitch_api_timestamp', Date.now().toString());
-            localStorage.setItem('twitch_api', data);
-            self.processTwitchEmotes(JSON.parse(data));
-        });
-    } else {
-        console.log('dub+','twitch','loading from localstorage');
-        savedData = JSON.parse(localStorage.getItem('twitch_api'));
-        self.processTwitchEmotes(savedData);
-        savedData = null; // clear the var from memory
-        var twEvent = new Event('twitch:loaded');
-        document.body.dispatchEvent(twEvent);
-    }
+  var self = this;
+  var savedData;
+  // if it doesn't exist in localStorage or it's older than 5 days
+  // grab it from the twitch API
+  if (self.shouldUpdateAPIs('twitch')) {
+    console.log('dub+','twitch','loading from api');
+    var twApi = new GetJSON('//api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded');
+    twApi.done(function(data){
+      localStorage.setItem('twitch_api_timestamp', Date.now().toString());
+      localStorage.setItem('twitch_api', data);
+      self.processTwitchEmotes(JSON.parse(data));
+    });
+  } else {
+    console.log('dub+','twitch','loading from localstorage');
+    savedData = JSON.parse(localStorage.getItem('twitch_api'));
+    self.processTwitchEmotes(savedData);
+    savedData = null; // clear the var from memory
+    var twEvent = new Event('twitch:loaded');
+    document.body.dispatchEvent(twEvent);
+  }
 
 };
 
 prepEmoji.loadBTTVEmotes = function(){
-    var self = this;
-    var savedData;
-    // if it doesn't exist in localStorage or it's older than 5 days
-    // grab it from the bttv API
-    if (self.shouldUpdateAPIs('bttv')) {
-        console.log('dub+','bttv','loading from api');
-        var bttvApi = new getJSON('//api.betterttv.net/2/emotes', 'bttv:loaded');
-        bttvApi.done(function(data){
-            localStorage.setItem('bttv_api_timestamp', Date.now().toString());
-            localStorage.setItem('bttv_api', data);
-            self.processBTTVEmotes(JSON.parse(data));
-        });
-    } else {
-        console.log('dub+','bttv','loading from localstorage');
-        savedData = JSON.parse(localStorage.getItem('bttv_api'));
-        self.processBTTVEmotes(savedData);
-        savedData = null; // clear the var from memory
-        var twEvent = new Event('bttv:loaded');
-        document.body.dispatchEvent(twEvent);
-    }
+  var self = this;
+  var savedData;
+  // if it doesn't exist in localStorage or it's older than 5 days
+  // grab it from the bttv API
+  if (self.shouldUpdateAPIs('bttv')) {
+      console.log('dub+','bttv','loading from api');
+      var bttvApi = new GetJSON('//api.betterttv.net/2/emotes', 'bttv:loaded');
+      bttvApi.done(function(data){
+          localStorage.setItem('bttv_api_timestamp', Date.now().toString());
+          localStorage.setItem('bttv_api', data);
+          self.processBTTVEmotes(JSON.parse(data));
+      });
+  } else {
+      console.log('dub+','bttv','loading from localstorage');
+      savedData = JSON.parse(localStorage.getItem('bttv_api'));
+      self.processBTTVEmotes(savedData);
+      savedData = null; // clear the var from memory
+      var twEvent = new Event('bttv:loaded');
+      document.body.dispatchEvent(twEvent);
+  }
 
 };
 
 prepEmoji.loadTastyEmotes = function(){
-    var self = this;
-    var savedData;
-    console.log('dub+','tasty','loading from api');
-    // since we control this API we should always have it load from remote
-    var tastyApi = new getJSON(settings.srcRoot + '/emotes/tastyemotes.json', 'tasty:loaded');
-    tastyApi.done(function(data){
-        localStorage.setItem('tasty_api', data);
-        self.processTastyEmotes(JSON.parse(data));
-    });
+  var self = this;
+  var savedData;
+  console.log('dub+','tasty','loading from api');
+  // since we control this API we should always have it load from remote
+  var tastyApi = new GetJSON(settings.srcRoot + '/emotes/tastyemotes.json', 'tasty:loaded');
+  tastyApi.done(function(data){
+      localStorage.setItem('tasty_api', data);
+      self.processTastyEmotes(JSON.parse(data));
+  });
 };
 
 prepEmoji.processTwitchEmotes = function(data) {
-    var self = this;
-    data.emoticons.forEach(function(el,i,arr){
-        var _key = el.code.toLowerCase();
+  var self = this;
+  data.emoticons.forEach(function(el,i,arr){
+      var _key = el.code.toLowerCase();
 
-        // move twitch non-named emojis to their own array
-        if (el.code.indexOf('\\') >= 0) {
-            self.twitch.specialEmotes.push([el.code, el.id]);
-            return;
-        }
+      // move twitch non-named emojis to their own array
+      if (el.code.indexOf('\\') >= 0) {
+          self.twitch.specialEmotes.push([el.code, el.id]);
+          return;
+      }
 
-        if (emojify.emojiNames.indexOf(_key) >= 0) {
-            return; // do nothing so we don't override emoji
-        }
+      if (emojify.emojiNames.indexOf(_key) >= 0) {
+          return; // do nothing so we don't override emoji
+      }
 
-        if (!self.twitch.emotes[_key]){
-            // if emote doesn't exist, add it
-            self.twitch.emotes[_key] = el.id;
-        } else if (el.emoticon_set === null) {
-            // override if it's a global emote (null set = global emote)
-            self.twitch.emotes[_key] = el.id;
-        }
+      if (!self.twitch.emotes[_key]){
+          // if emote doesn't exist, add it
+          self.twitch.emotes[_key] = el.id;
+      } else if (el.emoticon_set === null) {
+          // override if it's a global emote (null set = global emote)
+          self.twitch.emotes[_key] = el.id;
+      }
 
-    });
-    self.twitchJSONSLoaded = true;
-    self.emojiEmotes = emojify.emojiNames.concat(Object.keys(self.twitch.emotes));
+  });
+  self.twitchJSONSLoaded = true;
+  self.emojiEmotes = emojify.emojiNames.concat(Object.keys(self.twitch.emotes));
 };
 
 prepEmoji.processBTTVEmotes = function(data){
-    var self = this;
-    data.emotes.forEach(function(el,i,arr){
-        var _key = el.code.toLowerCase();
+  var self = this;
+  data.emotes.forEach(function(el,i,arr){
+    var _key = el.code.toLowerCase();
 
-        if (el.code.indexOf(':') >= 0) {
-            return; // don't want any emotes with smileys and stuff
-        }
+    if (el.code.indexOf(':') >= 0) {
+        return; // don't want any emotes with smileys and stuff
+    }
 
-        if (emojify.emojiNames.indexOf(_key) >= 0) {
-            return; // do nothing so we don't override emoji
-        }
+    if (emojify.emojiNames.indexOf(_key) >= 0) {
+        return; // do nothing so we don't override emoji
+    }
 
-        if (el.code.indexOf('(') >= 0) {
-            _key = _key.replace(/([()])/g, "");
-        }
+    if (el.code.indexOf('(') >= 0) {
+        _key = _key.replace(/([()])/g, "");
+    }
 
-        self.bttv.emotes[_key] = el.id;
+    self.bttv.emotes[_key] = el.id;
 
-    });
-    self.bttvJSONSLoaded = true;
-    self.emojiEmotes = self.emojiEmotes.concat(Object.keys(self.bttv.emotes));
+  });
+  self.bttvJSONSLoaded = true;
+  self.emojiEmotes = self.emojiEmotes.concat(Object.keys(self.bttv.emotes));
 };
 
 prepEmoji.processTastyEmotes = function(data) {
-    var self = this;
-    self.tasty.emotes = data.emotes;
-    self.tastyJSONLoaded = true;
-    self.emojiEmotes = self.emojiEmotes.concat(Object.keys(self.tasty.emotes));
+  var self = this;
+  self.tasty.emotes = data.emotes;
+  self.tastyJSONLoaded = true;
+  self.emojiEmotes = self.emojiEmotes.concat(Object.keys(self.tasty.emotes));
 };
 
 module.exports = prepEmoji;
@@ -364,7 +368,7 @@ module.exports = {
 
     // make the menu
     var dp_menu_html = [
-        '<section class="menu-container dubplus-menu dubplus-open">',
+        '<section class="dubplus-menu dubplus-open">',
           '<p class="dubplus-menu-header">Dub+ Settings</p>'
     ].join('');
 
@@ -533,21 +537,19 @@ var afk_chat_respond = function(e) {
   
   if (content.indexOf('@'+user) > -1 && Dubtrack.session.id !== e.user.userInfo.userid) {
   
-    if (this.optionState) {
-      if (settings.custom.customAfkMessage) {
-          $('#chat-txt-message').val('[AFK] '+ settings.custom.customAfkMessage);
-      } else {
-          $('#chat-txt-message').val("[AFK] I'm not here right now.");
-      }
-      Dubtrack.room.chat.sendMessage();
-      this.optionState = false;
-
-      var self = this;
-      setTimeout(function() {
-          self.optionState = true;
-      }, 180000);
+    if (settings.custom.customAfkMessage) {
+      $('#chat-txt-message').val('[AFK] '+ settings.custom.customAfkMessage);
+    } else {
+      $('#chat-txt-message').val("[AFK] I'm not here right now.");
     }
+    
+    Dubtrack.room.chat.sendMessage();
+    this.optionState = false;
 
+    var self = this;
+    setTimeout(function() {
+    self.optionState = true;
+    }, 180000);
   }
 };
 
@@ -572,18 +574,18 @@ afk_module.go = function(e) {
   this.toggleAndSave(this.id, newOptionState);
 };
 
-var saveAFKmessage =function() {
-    var customAfkMessage = $('.input').val();
+var saveAFKmessage = function() {
+  var customAfkMessage = $('.dp-modal textarea').val();
+  if (customAfkMessage !== '') {
     options.saveOption('custom', 'customAfkMessage', customAfkMessage);
+  }
 };
 
 afk_module.extra = function() {
-  var current = settings.custom.customAfkMessage;
   modal.create({
     title: 'Custom AFK Message',
-    content: current,
-    placeholder: 'I\'m not here right now.',
-    confirmButtonClass: 'confirm-for315',
+    content: settings.custom.customAfkMessage || '',
+    placeholder: 'Be right back!',
     maxlength: '255',
     confirmCallback: saveAFKmessage
   });
@@ -676,19 +678,20 @@ module.exports = autovote;
 var options = require('../utils/options.js');
 var menu = require('../lib/menu.js');
 var dubplus_emoji = require('../emojiUtils/prepEmoji.js');
-
+var settings = require("../lib/settings.js");
 
 var emote_module = {};
 
 emote_module.id = "dubplus-emotes";
 emote_module.moduleName = "Emotes";
-emote_module.description = "Toggle addiontal emotes support. (twitch, bttv, etc)";
-emote_module.optionState = false;
+emote_module.description = "Toggle additionally supported emotes in chat. (twitch, bttv, etc)";
+emote_module.optionState = settings.options[emote_module.id] || false; // initial state from stored settings
 emote_module.category = "General";
 emote_module.menuHTML = menu.makeOptionMenu(emote_module.moduleName, {
-    id : emote_module.id,
-    desc : emote_module.description
-  });
+  id : emote_module.id,
+  desc : emote_module.description,
+  state : emote_module.optionState
+});
 
 function makeImage(type, src, name, w, h){
   return '<img class="emoji '+type+'-emote" '+
@@ -701,7 +704,7 @@ function makeImage(type, src, name, w, h){
  * handles replacing twitch emotes in the chat box with the images
  */
 
-emote_module.replaceTextWithEmote = function(){
+var replaceTextWithEmote = function(){
     var _regex = dubplus_emoji.twitch.chatRegex;
 
     if (!dubplus_emoji.twitchJSONSLoaded) { return; } // can't do anything until jsons are loaded
@@ -735,6 +738,21 @@ emote_module.replaceTextWithEmote = function(){
     $chatTarget.html(emoted);
 };
 
+var startReplacing = function(){
+  if (!dubplus_emoji.twitchJSONSLoaded) {
+    dubplus_emoji.loadTwitchEmotes();
+  } else {
+    replaceTextWithEmote();
+  }
+  Dubtrack.Events.bind("realtime:chat-message", replaceTextWithEmote);
+};
+
+emote_module.init = function(){
+  if (emote_module.optionState) {
+    startReplacing();
+  }
+};
+
 /**************************************************************************
  * Turn on/off the twitch emoji in chat
  */
@@ -746,18 +764,11 @@ emote_module.go = function(){
     var optionName = 'twitch_emotes';
 
     if (!emote_module.optionState) {
-        
-        if (!dubplus_emoji.twitchJSONSLoaded) {
-            dubplus_emoji.loadTwitchEmotes();
-        } else {
-            this.replaceTextWithEmote();
-        }
-
-        Dubtrack.Events.bind("realtime:chat-message", this.replaceTextWithEmote);
-        newOptionState = true;
+      startReplacing();
+      newOptionState = true;
     } else {
-        Dubtrack.Events.unbind("realtime:chat-message", this.replaceTextWithEmote);
-        newOptionState = false;
+      Dubtrack.Events.unbind("realtime:chat-message", replaceTextWithEmote);
+      newOptionState = false;
     }
 
     this.optionState = newOptionState;
@@ -766,7 +777,7 @@ emote_module.go = function(){
 
 
 module.exports = emote_module;
-},{"../emojiUtils/prepEmoji.js":2,"../lib/menu.js":5,"../utils/options.js":20}],10:[function(require,module,exports){
+},{"../emojiUtils/prepEmoji.js":2,"../lib/menu.js":5,"../lib/settings.js":6,"../utils/options.js":20}],10:[function(require,module,exports){
 /**
  * ETA
  *
@@ -1639,26 +1650,26 @@ module.exports = {
 },{"../lib/settings.js":6}],18:[function(require,module,exports){
 // jQuery's getJSON kept returning errors so making my own with promise-like
 // structure and added optional Event to fire when done so can hook in elsewhere
-var getJSON = (function (url, optionalEvent) {
-    var doneEvent;
-    function GetJ(_url, _cb){
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', _url);
-        xhr.send();
-        xhr.onload = function() {
-            var resp = xhr.responseText;
-            if (typeof _cb === 'function') { _cb(resp); }
-            if (optionalEvent) { document.body.dispatchEvent(doneEvent); }
-        };
-    }
-    if (optionalEvent){ doneEvent = new Event(optionalEvent); }
-    var done = function(cb){
-        new GetJ(url, cb);
+var GetJSON = (function (url, optionalEvent) {
+  var doneEvent;
+  function GetJ(_url, _cb){
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', _url);
+    xhr.send();
+    xhr.onload = function() {
+      var resp = xhr.responseText;
+      if (typeof _cb === 'function') { _cb(resp); }
+      if (optionalEvent) { document.body.dispatchEvent(doneEvent); }
     };
-    return { done: done };
+  }
+  if (optionalEvent){ doneEvent = new Event(optionalEvent); }
+  var done = function(cb){
+    new GetJ(url, cb);
+  };
+  return { done: done };
 });
 
-module.exports = getJSON;
+module.exports = GetJSON;
 },{}],19:[function(require,module,exports){
 'use strict';
 
@@ -1682,7 +1693,7 @@ function makeButtons(cb){
  * @param  {String} confirm     a way to customize the text of the confirm button
  * @param  {Number} maxlength   for the textarea maxlength attribute
  */
-var create = function(infoObj) {
+var create = function(options) {
   var defaults = {
       title: 'Dub+',
       content: '',
@@ -1690,7 +1701,7 @@ var create = function(infoObj) {
       maxlength: 999,
       confirmCallback: null
   };
-  var opts = $.extend(true, {}, this.defaults, infoObj);
+  var opts = $.extend({}, defaults, options);
   
   /*****************************************************
    * Create modal html string

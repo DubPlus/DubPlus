@@ -20,7 +20,7 @@ function makeButtons(cb){
  * @param  {String} confirm     a way to customize the text of the confirm button
  * @param  {Number} maxlength   for the textarea maxlength attribute
  */
-var create = function(infoObj) {
+var create = function(options) {
   var defaults = {
       title: 'Dub+',
       content: '',
@@ -28,7 +28,7 @@ var create = function(infoObj) {
       maxlength: 999,
       confirmCallback: null
   };
-  var opts = $.extend(true, {}, this.defaults, infoObj);
+  var opts = $.extend({}, defaults, options);
   
   /*****************************************************
    * Create modal html string

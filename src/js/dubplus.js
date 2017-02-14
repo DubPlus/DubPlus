@@ -39,23 +39,19 @@ var init = require('./lib/init.js');
 var css = require('./utils/css.js');
 
 /* globals Dubtrack */
-window.dubplusLoaded = false;
-if (!window.dubplusLoaded && Dubtrack.session.id) {
-    window.dubplusLoaded = true;
-
-    init();
+if (!window.dubplus && Dubtrack.session.id) {
+  init();
 
 } else {
-    css.load('/css/asset.css');
-    var errorMsg;
-    if (!Dubtrack.session.id) {
-        errorMsg = 'You\'re not logged in. Please login to use Dub+.';
-    } else {
-        errorMsg = 'Oh noes! We\'ve encountered a runtime error';
-    }
-    modal.create({
-        title: 'Oh noes:',
-        content: errorMsg,
-        confirmButtonClass: 'confirm-err'
-    });
+  var errorMsg;
+  if (!Dubtrack.session.id) {
+    css.load('/css/dubplus.css');
+    errorMsg = 'You\'re not logged in. Please login to use Dub+.';
+  } else {
+      errorMsg = 'Dub+ is already loaded';
+  }
+  modal.create({
+    title: 'Dub+ Error',
+    content: errorMsg
+  });
 }

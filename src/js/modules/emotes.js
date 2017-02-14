@@ -7,19 +7,20 @@
 var options = require('../utils/options.js');
 var menu = require('../lib/menu.js');
 var dubplus_emoji = require('../emojiUtils/prepEmoji.js');
-
+var settings = require("../lib/settings.js");
 
 var emote_module = {};
 
 emote_module.id = "dubplus-emotes";
 emote_module.moduleName = "Emotes";
-emote_module.description = "Toggle addiontal emotes support. (twitch, bttv, etc)";
-emote_module.optionState = false;
+emote_module.description = "Toggle additionally supported emotes in chat. (twitch, bttv, etc)";
+emote_module.optionState = settings.options[emote_module.id] || false; // initial state from stored settings
 emote_module.category = "General";
 emote_module.menuHTML = menu.makeOptionMenu(emote_module.moduleName, {
-    id : emote_module.id,
-    desc : emote_module.description
-  });
+  id : emote_module.id,
+  desc : emote_module.description,
+  state : emote_module.optionState
+});
 
 function makeImage(type, src, name, w, h){
   return '<img class="emoji '+type+'-emote" '+
@@ -32,7 +33,7 @@ function makeImage(type, src, name, w, h){
  * handles replacing twitch emotes in the chat box with the images
  */
 
-emote_module.replaceTextWithEmote = function(){
+var replaceTextWithEmote = function(){
     var _regex = dubplus_emoji.twitch.chatRegex;
 
     if (!dubplus_emoji.twitchJSONSLoaded) { return; } // can't do anything until jsons are loaded
@@ -66,6 +67,21 @@ emote_module.replaceTextWithEmote = function(){
     $chatTarget.html(emoted);
 };
 
+var startReplacing = function(){
+  if (!dubplus_emoji.twitchJSONSLoaded) {
+    dubplus_emoji.loadTwitchEmotes();
+  } else {
+    replaceTextWithEmote();
+  }
+  Dubtrack.Events.bind("realtime:chat-message", replaceTextWithEmote);
+};
+
+emote_module.init = function(){
+  if (emote_module.optionState) {
+    startReplacing();
+  }
+};
+
 /**************************************************************************
  * Turn on/off the twitch emoji in chat
  */
@@ -77,18 +93,11 @@ emote_module.go = function(){
     var optionName = 'twitch_emotes';
 
     if (!emote_module.optionState) {
-        
-        if (!dubplus_emoji.twitchJSONSLoaded) {
-            dubplus_emoji.loadTwitchEmotes();
-        } else {
-            this.replaceTextWithEmote();
-        }
-
-        Dubtrack.Events.bind("realtime:chat-message", this.replaceTextWithEmote);
-        newOptionState = true;
+      startReplacing();
+      newOptionState = true;
     } else {
-        Dubtrack.Events.unbind("realtime:chat-message", this.replaceTextWithEmote);
-        newOptionState = false;
+      Dubtrack.Events.unbind("realtime:chat-message", replaceTextWithEmote);
+      newOptionState = false;
     }
 
     this.optionState = newOptionState;
