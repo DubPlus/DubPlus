@@ -24,6 +24,7 @@ var create = function(options) {
   var defaults = {
       title: 'Dub+',
       content: '',
+      value : '',
       placeholder: null,
       maxlength: 999,
       confirmCallback: null
@@ -39,7 +40,7 @@ var create = function(options) {
   var textarea = '';
   if (opts.placeholder) {
     textarea = '<textarea placeholder="'+opts.placeholder+'" maxlength="'+ opts.maxlength +'">';
-    textarea += opts.content;
+    textarea += opts.value;
     textarea += '</textarea>';
   }
 

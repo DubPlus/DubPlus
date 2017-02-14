@@ -26,9 +26,4 @@ dubplus.createCustomMentions = function() {
     var current = localStorage.getItem('custom_mentions');
     dubplus.input('Custom Mention Triggers (separate by comma)',current,'separate, custom triggers, by, comma, :heart:','confirm-for315','255');
     $('.confirm-for315').click(dubplus.saveCustomMentions);
-},
-dubplus.saveCustomMentions = function() {
-    var customMentions = $('.input').val();
-    dubplus.saveOption('custom_mentions', customMentions);
-    $('.onErr').remove();
-};
+}

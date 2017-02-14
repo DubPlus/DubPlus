@@ -56,7 +56,7 @@ if (!window.dubplus && Dubtrack.session.id) {
     content: errorMsg
   });
 }
-},{"./lib/init.js":3,"./utils/css.js":18,"./utils/modal.js":20}],2:[function(require,module,exports){
+},{"./lib/init.js":3,"./utils/css.js":19,"./utils/modal.js":21}],2:[function(require,module,exports){
 'use strict';
 /* global Dubtrack, emojify */
 
@@ -224,7 +224,7 @@ prepEmoji.processTastyEmotes = function(data) {
 };
 
 module.exports = prepEmoji;
-},{"../lib/settings.js":6,"../utils/getJSON.js":19}],3:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/getJSON.js":20}],3:[function(require,module,exports){
 'use strict';
 var modules = require('./loadModules.js');
 var css = require('../utils/css.js');
@@ -257,7 +257,7 @@ module.exports = function(){
   // dubplus.previewListInit();
   // dubplus.userAutoComplete();
 };
-},{"../utils/css.js":18,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
+},{"../utils/css.js":19,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
 'use strict';
 var options = require('../utils/options.js');
 var dubPlus_modules = require('../modules/index.js');
@@ -316,7 +316,7 @@ var loadAllModulesTo = function(globalObject){
 module.exports = {
   loadAllModulesTo : loadAllModulesTo
 };
-},{"../modules/index.js":14,"../utils/options.js":21}],5:[function(require,module,exports){
+},{"../modules/index.js":15,"../utils/options.js":22}],5:[function(require,module,exports){
 'use strict';
 var options = require('../utils/options.js');
 var settings = require('./settings.js');
@@ -472,7 +472,7 @@ module.exports = {
 
 
 
-},{"../utils/css.js":18,"../utils/options.js":21,"./settings.js":6}],6:[function(require,module,exports){
+},{"../utils/css.js":19,"../utils/options.js":22,"./settings.js":6}],6:[function(require,module,exports){
 (function (CURRENT_BRANCH){
 'use strict';
 
@@ -584,7 +584,8 @@ var saveAFKmessage = function() {
 afk_module.extra = function() {
   modal.create({
     title: 'Custom AFK Message',
-    content: settings.custom.customAfkMessage || '',
+    content: 'Enter a custom Away From Keyboard message here',
+    value : settings.custom.customAfkMessage || '',
     placeholder: 'Be right back!',
     maxlength: '255',
     confirmCallback: saveAFKmessage
@@ -592,7 +593,7 @@ afk_module.extra = function() {
 };
 
 module.exports = afk_module;
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/modal.js":20,"../utils/options.js":21}],8:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/modal.js":21,"../utils/options.js":22}],8:[function(require,module,exports){
 'use strict';
 /* global Dubtrack */
 var menu = require('../lib/menu.js');
@@ -669,6 +670,89 @@ autovote.start = function(){
 
 module.exports = autovote;
 },{"../lib/menu.js":5,"../lib/settings.js":6}],9:[function(require,module,exports){
+/**
+ * Autocomplete User @ Mentions in Chat
+ */
+
+/* global Dubtrack */
+var menu = require('../lib/menu.js');
+var settings = require("../lib/settings.js");
+var modal = require('../utils/modal.js');
+var options = require('../utils/options.js');
+
+var myModule = {};
+
+myModule.id = "custom_mentions";
+myModule.moduleName = "Custom Mentions";
+myModule.description = "Toggle using custom mentions to trigger sounds in chat";
+myModule.optionState = settings.options[myModule.id] || false; // initial state from stored settings
+myModule.category = "General";
+myModule.menuHTML = menu.makeOptionMenu(myModule.moduleName, {
+  id : myModule.id,
+  desc : myModule.description,
+  extraIcon : 'pencil',
+  state : myModule.optionState
+});
+
+var saveCustomMentions = function() {
+  var mentionsVal = $('.dp-modal textarea').val();
+  if (mentionsVal !== '') {
+    options.saveOption('custom', 'custom_mentions', mentionsVal);
+  }
+};
+
+myModule.customMentionCheck = function(e) {
+  var content = e.message.toLowerCase();
+  if (settings.custom.custom_mentions) {
+    var customMentions = settings.custom.custom_mentions.toLowerCase().split(',');
+    var inUsers = customMentions.some(function(v) { 
+      return content.indexOf(v.trim(' ')) >= 0; 
+    });
+    if(Dubtrack.session.id !== e.user.userInfo.userid && inUsers){
+      Dubtrack.room.chat.mentionChatSound.play();
+    }
+  }
+};
+
+myModule.start = function() {
+  Dubtrack.Events.bind("realtime:chat-message", this.customMentionCheck);
+};
+
+myModule.init = function(){
+  if (this.optionState === true) {
+    this.start();
+  }
+};
+
+
+myModule.extra = function() {
+  modal.create({
+    title: 'Custom AFK Message',
+    content: 'Custom Mention Triggers (separate by comma)',
+    value : settings.custom.custom_mentions || '',
+    placeholder: 'separate, custom triggers, by, comma, :heart:',
+    maxlength: '255',
+    confirmCallback: saveCustomMentions
+  });
+};
+
+myModule.go = function() {
+  var newOptionState;
+
+  if (!this.optionState) {
+    myModule.start();
+    newOptionState = true;
+  } else {
+    Dubtrack.Events.unbind("realtime:chat-message", this.customMentionCheck);
+    newOptionState = false;
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/modal.js":21,"../utils/options.js":22}],10:[function(require,module,exports){
 /**
  * Autocomplete User @ Mentions in Chat
  */
@@ -780,7 +864,7 @@ myModule.go = function() {
 };
 
 module.exports = myModule;
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/modal.js":20}],10:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/modal.js":21}],11:[function(require,module,exports){
 /**
  * Emotes
  * Adds additional Twitch, BTTV, and Tasty Emotes to the chat window 
@@ -889,7 +973,7 @@ emote_module.go = function(){
 
 
 module.exports = emote_module;
-},{"../emojiUtils/prepEmoji.js":2,"../lib/menu.js":5,"../lib/settings.js":6,"../utils/options.js":21}],11:[function(require,module,exports){
+},{"../emojiUtils/prepEmoji.js":2,"../lib/menu.js":5,"../lib/settings.js":6,"../utils/options.js":22}],12:[function(require,module,exports){
 /**
  * ETA
  *
@@ -930,7 +1014,7 @@ myModule.init = function() {
 };
 
 module.exports = myModule;
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /**
  * Fullscreen video
  * Toggle fullscreen video mode
@@ -964,7 +1048,7 @@ fs_module.go = function(e) {
 };
 
 module.exports = fs_module;
-},{"../lib/menu.js":5}],13:[function(require,module,exports){
+},{"../lib/menu.js":5}],14:[function(require,module,exports){
 /**
  * Grabs in Chat
  */
@@ -1022,7 +1106,7 @@ grabs_chat.go = function() {
 };
 
 module.exports = grabs_chat;
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":18,"../utils/modal.js":20}],14:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":19,"../utils/modal.js":21}],15:[function(require,module,exports){
 // put this in order of appearance in the menu
 module.exports = [
   // General 
@@ -1031,7 +1115,7 @@ module.exports = [
   require('./emotes.js'),
   // autocomplete emoji
   // autocomplete mentions
-  // custom mention triggers
+  require('./customMentions.js'),
   require('./desktopNotifications.js'),
   require('./showDubsOnHover.js'),
   // Downdubs in chat (mod only)
@@ -1064,7 +1148,7 @@ module.exports = [
   require('./snooze.js'),
   require('./eta.js')
 ];
-},{"./afk.js":7,"./autovote.js":8,"./desktopNotifications.js":9,"./emotes.js":10,"./eta.js":11,"./fullscreen.js":12,"./grabsInChat.js":13,"./showDubsOnHover.js":15,"./snooze.js":16,"./snow.js":17}],15:[function(require,module,exports){
+},{"./afk.js":7,"./autovote.js":8,"./customMentions.js":9,"./desktopNotifications.js":10,"./emotes.js":11,"./eta.js":12,"./fullscreen.js":13,"./grabsInChat.js":14,"./showDubsOnHover.js":16,"./snooze.js":17,"./snow.js":18}],16:[function(require,module,exports){
 /**
  * Show Dubs on Hover
  */
@@ -1617,7 +1701,7 @@ dubshover.resetDubs = function(){
         }
     });
 };
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":18,"../utils/modal.js":20}],16:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":19,"../utils/modal.js":21}],17:[function(require,module,exports){
 /**
  * Snooze
  * Mutes audio for one song.
@@ -1685,7 +1769,7 @@ module.exports = myModule;
 
 
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var menu = require('../lib/menu.js');
 
 var snow = {};
@@ -1725,7 +1809,7 @@ snow.go = function(e){
 };
 
 module.exports = snow;
-},{"../lib/menu.js":5}],18:[function(require,module,exports){
+},{"../lib/menu.js":5}],19:[function(require,module,exports){
 'use strict';
 var settings = require("../lib/settings.js");
 
@@ -1759,7 +1843,7 @@ module.exports = {
   load : load,
   loadExternal: loadExternal
 };
-},{"../lib/settings.js":6}],19:[function(require,module,exports){
+},{"../lib/settings.js":6}],20:[function(require,module,exports){
 // jQuery's getJSON kept returning errors so making my own with promise-like
 // structure and added optional Event to fire when done so can hook in elsewhere
 var GetJSON = (function (url, optionalEvent, headers) {
@@ -1789,7 +1873,7 @@ var GetJSON = (function (url, optionalEvent, headers) {
 });
 
 module.exports = GetJSON;
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
 
 function makeButtons(cb){
@@ -1816,6 +1900,7 @@ var create = function(options) {
   var defaults = {
       title: 'Dub+',
       content: '',
+      value : '',
       placeholder: null,
       maxlength: 999,
       confirmCallback: null
@@ -1831,7 +1916,7 @@ var create = function(options) {
   var textarea = '';
   if (opts.placeholder) {
     textarea = '<textarea placeholder="'+opts.placeholder+'" maxlength="'+ opts.maxlength +'">';
-    textarea += opts.content;
+    textarea += opts.value;
     textarea += '</textarea>';
   }
 
@@ -1895,7 +1980,7 @@ module.exports = {
   create: create,
   close : close
 };
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 var settings = require("../lib/settings.js");
 

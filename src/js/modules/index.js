@@ -6,7 +6,7 @@ module.exports = [
   require('./emotes.js'),
   // autocomplete emoji
   // autocomplete mentions
-  // custom mention triggers
+  require('./customMentions.js'),
   require('./desktopNotifications.js'),
   require('./showDubsOnHover.js'),
   // Downdubs in chat (mod only)

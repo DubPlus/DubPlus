@@ -77,7 +77,8 @@ var saveAFKmessage = function() {
 afk_module.extra = function() {
   modal.create({
     title: 'Custom AFK Message',
-    content: settings.custom.customAfkMessage || '',
+    content: 'Enter a custom Away From Keyboard message here',
+    value : settings.custom.customAfkMessage || '',
     placeholder: 'Be right back!',
     maxlength: '255',
     confirmCallback: saveAFKmessage
