@@ -1660,6 +1660,19 @@ var getJSON = (function (url, optionalEvent) {
 
 module.exports = getJSON;
 },{}],19:[function(require,module,exports){
+'use strict';
+
+function makeButtons(cb){
+  var buttons = '';
+  if (cb) {
+    buttons += '<button id="dp-modal-cancel">cancel</button>';
+    buttons += '<button id="dp-modal-confirm">okay</button>';
+  } else {
+    buttons += '<button id="dp-modal-cancel">close</button>';
+  }
+  return buttons;
+}
+
 /**
  * input is a modal used to display messages and also capture data
  * 
@@ -1670,71 +1683,87 @@ module.exports = getJSON;
  * @param  {Number} maxlength   for the textarea maxlength attribute
  */
 var create = function(infoObj) {
-    var defaults = {
-        title: '',
-        content: '',
-        placeholder: null,
-        confirmButtonClass: null,
-        maxlength: null,
-        confirmCallback: null
-    };
-    var opts = $.extend(true, {}, this.defaults, infoObj);
-    
-    var textarea = '';
-    var confirmButton = '';
+  var defaults = {
+      title: 'Dub+',
+      content: '',
+      placeholder: null,
+      maxlength: 999,
+      confirmCallback: null
+  };
+  var opts = $.extend(true, {}, this.defaults, infoObj);
+  
+  /*****************************************************
+   * Create modal html string
+   */
+  
+  // textarea in our modals are optional.  To add one, using the placeholder option will generate
+  // a textarea in the modal
+  var textarea = '';
+  if (opts.placeholder) {
+    textarea = '<textarea placeholder="'+opts.placeholder+'" maxlength="'+ opts.maxlength +'">';
+    textarea += opts.content;
+    textarea += '</textarea>';
+  }
 
-    if (opts.placeholder) {
-        var mx = opts.maxlength || 999;
-        textarea = '<textarea class="input" type="text" placeholder="'+opts.placeholder+'" maxlength="'+ mx +'">'+opts.content+'</textarea>';
-    }
-    if (opts.confirmButtonClass) {
-        confirmButton = '<div class="'+opts.confirmButtonClass+' confirm"><p>Okay</p></div>';
-    }
-    
-    var dubplusModal = [
-        '<div class="onErr">',
-            '<div class="container">',
-                '<div class="title">',
-                    '<h1>'+opts.title+'</h1>',
-                '</div>',
-                '<div class="content">',
-                    '<p>'+opts.content+'</p>',
-                    textarea,
-                '</div>',
-                '<div class="control">',
-                    '<div class="cancel dubplus-js-cancel">',
-                        '<p>Cancel</p>',
-                    '</div>',
-                    confirmButton,
-                '</div>',
-            '</div>',
-        '</div>'
-    ].join('');
-    $('body').append(dubplusModal);
+  var dubplusModal = [
+    '<div class="dp-modal">',
+      '<aside class="container">',
+        '<div class="title">',
+          '<h1>'+opts.title+'</h1>',
+        '</div>',
+        '<div class="content">',
+          '<p>'+opts.content+'</p>',
+          textarea,
+        '</div>',
+        '<div class="dp-modal-buttons">',
+          makeButtons(opts.confirmCallback),
+        '</div>',
+      '</aside>',
+    '</div>',
+  ].join('');
 
-    // add one time cancel click
-    $('.dubplus-js-cancel').one("click",function(){
-        $('.onErr').remove();
+  $('body').append(dubplusModal);
+
+  /*****************************************************
+   * Attach events to your modal
+   */
+
+  // if a confirm cb function was defined then we add a click event to the 
+  // confirm button as well
+  if (typeof opts.confirmCallback === 'function'){
+    $('#dp-modal-confirm').one("click", function(e){
+      opts.confirmCallback();
+      $('.dp-modal').remove();
     });
-    
-    if (opts.confirmButtonClass) {
-      $('.'+opts.confirmButtonClass).one("click", function(e){
-        if (typeof opts.confirmCallback === 'function'){
-            opts.confirmCallback();
-        }
-        $('.onErr').remove();
-      });
+  }
+
+  // add one time cancel click
+  $('#dp-modal-cancel').one("click",function(){
+    $('.dp-modal').remove();
+  });
+
+  // bind one time keyup ENTER and ESC events
+  $(document).one('keyup', function(e) {
+    // enter
+    if (e.keyCode === 13 && typeof opts.confirmCallback === 'function') { 
+      opts.confirmCallback();
+      $('.dp-modal').remove();
     }
-    
+    // esc
+    if (e.keyCode === 27) { 
+      $('.dp-modal').remove();
+    }
+  });
+
 };
 
 var close = function() {
-    $('.onErr').remove();
+  $('.dp-modal').remove();
 };
 
 module.exports = {
-    create: create,
-    close : close
+  create: create,
+  close : close
 };
 },{}],20:[function(require,module,exports){
 'use strict';

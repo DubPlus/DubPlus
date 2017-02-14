@@ -147,16 +147,16 @@
   float: right; }
 
 /*****************************************/
-.onErr {
+.dp-modal {
   display: block;
-  width: 100vw;
-  height: 100vw;
-  background: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
   position: fixed;
-  z-index: 2147483647;
+  z-index: 999999;
   font-weight: 400;
   top: 0; }
-  .onErr .container {
+  .dp-modal .container {
     display: block;
     margin-top: 108px;
     margin-left: auto;
@@ -165,53 +165,55 @@
     box-shadow: 0 0 5px #000;
     background: #111;
     color: #fff;
-    width: 640px; }
-    .onErr .container .title {
-      height: 54px;
-      background: #333; }
-    .onErr .container .title h1 {
-      margin: 0;
-      text-align: center;
-      padding-top: 12px;
-      font-weight: 400; }
-    .onErr .container .content {
-      width: 75%;
-      margin: 0 auto;
-      padding: 27px; }
-    .onErr .container .content p {
-      margin: 0;
-      padding-bottom: 16px;
-      font-size: 14px; }
-    .onErr .container .content .input {
-      width: 100% !important;
-      height: 108px !important;
-      background: #333;
-      padding: 16px;
-      color: white;
-      border-radius: 5px;
-      border: transparent;
-      font-size: 14px; }
-    .onErr .container .control {
-      display: inline-block;
-      width: 100%;
-      font-size: 0; }
-    .onErr .container .control .cancel {
-      display: inline-block;
-      width: 50%;
-      text-align: center;
-      background: #333;
-      font-size: 16px;
-      cursor: pointer; }
-    .onErr .container .control .confirm {
-      display: inline-block;
-      width: 50%;
-      text-align: center;
-      background: #0ff;
-      font-size: 16px;
-      cursor: pointer; }
-    .onErr .container .control .confirm,
-    .onErr .container .control .cancel {
-      padding: 1em 0 0 0; }
+    width: 500px; }
+  .dp-modal .title {
+    height: 54px;
+    background: #333; }
+  .dp-modal .title h1 {
+    margin: 0;
+    text-align: center;
+    padding-top: 12px;
+    font-weight: 400; }
+  .dp-modal .content {
+    width: 100%;
+    margin: 0 auto;
+    padding: 27px 0; }
+  .dp-modal .content p {
+    margin: 0;
+    padding: 0 16px 16px;
+    font-size: 14px; }
+  .dp-modal textarea {
+    width: 100% !important;
+    min-height: 108px !important;
+    background: #333;
+    padding: 16px;
+    color: white;
+    border: transparent;
+    font-size: 14px;
+    resize: vertical; }
+
+.dp-modal-buttons {
+  width: 100%;
+  overflow: hidden; }
+
+#dp-modal-cancel {
+  background: #333; }
+
+#dp-modal-confirm {
+  background: #0ff;
+  color: #555; }
+
+.dp-modal-buttons button {
+  display: block;
+  float: left;
+  width: 50%;
+  text-align: center;
+  padding: 1em 0;
+  border: none;
+  text-transform: uppercase;
+  color: #eee;
+  font-size: 16px;
+  cursor: pointer; }
 
 .duration {
   font-size: 14px !important;
