@@ -111,6 +111,13 @@ $buttonBorderOn : #6fcbdc;
   position: relative;
   height: $height;
   margin: 20px 0;
+  overflow: hidden;
+
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
 }
 .dubplus-menu-icon a {
   text-decoration: none;
@@ -120,7 +127,9 @@ $buttonBorderOn : #6fcbdc;
   color: #eb008b;
 }
 .dubplus-switch-bg {
-  position: absolute;
+  position: relative;
+  float: left;
+  top: 2px;
   z-index: 2;
   padding: $padding+px;
   height: 100%;
@@ -158,16 +167,18 @@ $buttonBorderOn : #6fcbdc;
 
 .dubplus-switch .dubplus-menu-label,
 .dubplus-menu-icon .dubplus-menu-label {
-  padding-left: $width + 15 + px;
+  padding-left: 11px;
   display: block;
-   cursor: pointer;
+  cursor: pointer;
+  float: left;
+  width: 76%;
 }
 
 .dubplus-switch .extra-icon {
-  position: absolute;
-  right: 0;
-  top: 0;
-  display: inline-block;
+  display: block;
   cursor: pointer;
+  height: 100%;
+  width: 9%;
+  float: right;
 }
 /*****************************************/

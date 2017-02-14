@@ -3,10 +3,6 @@ var modules = require('./loadModules.js');
 var css = require('../utils/css.js');
 var menu = require('./menu.js');
 
-/*
-  The following are elements that are always done on load
-*/
-
 module.exports = function(){
   // load our main CSS
   css.load('/css/dubplus.css');
@@ -33,14 +29,4 @@ module.exports = function(){
 
   // dubplus.previewListInit();
   // dubplus.userAutoComplete();
-
-  // I'm not sure we need this anymore now that they added
-  // $('.chat-main').on('DOMNodeInserted', function(e) {
-  //     var itemEl = $(e.target);
-  //     if(itemEl.prop('tagName').toLowerCase() !== 'li' || itemEl.attr('class').substring(0, 'user-'.length) !== 'user-') return;
-  //     var user = Dubtrack.room.users.collection.findWhere({userid: itemEl.attr('class').split(/-| /)[1]});
-  //     var role = !user.get('roleid') ? 'default' : Dubtrack.helpers.isDubtrackAdmin(user.get('userid')) ? 'admin' : user.get('roleid').type;
-  //     itemEl.addClass('is' + (role.charAt(0).toUpperCase() + role.slice(1)));
-  // });
-
 };

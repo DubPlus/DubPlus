@@ -226,10 +226,6 @@ var modules = require('./loadModules.js');
 var css = require('../utils/css.js');
 var menu = require('./menu.js');
 
-/*
-  The following are elements that are always done on load
-*/
-
 module.exports = function(){
   // load our main CSS
   css.load('/css/dubplus.css');
@@ -256,16 +252,6 @@ module.exports = function(){
 
   // dubplus.previewListInit();
   // dubplus.userAutoComplete();
-
-  // I'm not sure we need this anymore now that they added
-  // $('.chat-main').on('DOMNodeInserted', function(e) {
-  //     var itemEl = $(e.target);
-  //     if(itemEl.prop('tagName').toLowerCase() !== 'li' || itemEl.attr('class').substring(0, 'user-'.length) !== 'user-') return;
-  //     var user = Dubtrack.room.users.collection.findWhere({userid: itemEl.attr('class').split(/-| /)[1]});
-  //     var role = !user.get('roleid') ? 'default' : Dubtrack.helpers.isDubtrackAdmin(user.get('userid')) ? 'admin' : user.get('roleid').type;
-  //     itemEl.addClass('is' + (role.charAt(0).toUpperCase() + role.slice(1)));
-  // });
-
 };
 },{"../utils/css.js":17,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
 'use strict';
@@ -284,34 +270,35 @@ var menuObj = {
  * @param  {Object} globalObject The target global object that modules will be added to.  In our case it will be window.dubplus
  */
 var loadAllModulesTo = function(globalObject){
-    if (typeof window[globalObject] === "undefined") {
-      window[globalObject] = {};
+  if (typeof window[globalObject] === "undefined") {
+    window[globalObject] = {};
+  }
+
+  dubPlus_modules.forEach(function(mod){
+    // add each module to the new global object
+    window[globalObject][mod.id] = mod;
+    // add the toggleAndSave function as a member of each module
+    window[globalObject][mod.id].toggleAndSave = options.toggleAndSave;
+    
+    // add event listener
+    if (typeof mod.go === 'function'){
+      var selector = '#'+mod.id+' dp-switch-activator';
+      $('body').on('click', selector, mod.go.bind(mod) );
     }
 
-    dubPlus_modules.forEach(function(mod){
-      // add each module to the new global object
-      window[globalObject][mod.id] = mod;
-      // add the toggleAndSave function as a member of each module
-      window[globalObject][mod.id].toggleAndSave = options.toggleAndSave;
-      
-      // add event listener
-      if (typeof mod.go === 'function'){
-        $('body').on('click', '#'+mod.id, mod.go.bind(mod) );
-      }
+    // This is run only once, when the script is loaded.
+    // this is also where you should check stored settings 
+    // to see if an option should be automatically turned on
+    if (typeof mod.init === 'function') { 
+      mod.init.bind(mod); 
+    }
 
-      // This is run only once, when the script is loaded.
-      // this is also where you should check stored settings 
-      // to see if an option should be automatically turned on
-      if (typeof mod.init === 'function') { 
-        mod.init.bind(mod); 
-      }
+    // add the menu item to the appropriate category section
+    if (mod.menuHTML && mod.category && typeof menuObj[mod.category] === "string") {
+      menuObj[mod.category] += mod.menuHTML;
+    }
 
-      // add the menu item to the appropriate category section
-      if (mod.menuHTML && mod.category && typeof menuObj[mod.category] === "string") {
-        menuObj[mod.category] += mod.menuHTML;
-      }
-
-    });
+  });
 
   return menuObj;
 };
@@ -443,14 +430,15 @@ module.exports = {
     var _extra = '';
     var _state = opts.state ? 'dubplus-switch-on' : '';
     if (opts.extraIcon) {
-      _extra = '<span class="fa fa-'+opts.extraIcon+' extra-icon"></span>';
+      _extra = '<span class="fa fa-'+opts.extraIcon+' extra-icon dp-extra-activator"></span>';
     }
+
     return [
       '<li id="'+opts.id+'" class="dubplus-switch '+_state+' '+opts.cssClass+'" title="'+opts.desc+'">',  
-        '<div class="dubplus-switch-bg">',
+        '<div class="dubplus-switch-bg dp-switch-activator">',
           '<div class="dubplus-switcher"></div>', 
         '</div>',
-        '<span class="dubplus-menu-label">'+menuTitle+'</span>',
+        '<span class="dubplus-menu-label dp-switch-activator">'+menuTitle+'</span>',
         _extra,
       '</li>',
     ].join('');
@@ -525,12 +513,13 @@ var afk_module = {};
 afk_module.id = "dubplus-afk";
 afk_module.moduleName = "AFK Autorespond";
 afk_module.description = "Toggle Away from Keyboard and customize AFK message.";
-afk_module.optionState = false;
+afk_module.optionState = settings.options[afk_module.id] || false;
 afk_module.category = "General";
 afk_module.menuHTML = menu.makeOptionMenu(afk_module.moduleName, {
     id : afk_module.id,
     desc : afk_module.description,
     extraIcon : 'pencil',
+    state : afk_module.optionState
   });
 
 var afk_chat_respond = function(e) {
@@ -539,20 +528,20 @@ var afk_chat_respond = function(e) {
   
   if (content.indexOf('@'+user) > -1 && Dubtrack.session.id !== e.user.userInfo.userid) {
   
-      if (this.optionState) {
-          if (settings.custom.customAfkMessage) {
-              $('#chat-txt-message').val('[AFK] '+ settings.custom.customAfkMessage);
-          } else {
-              $('#chat-txt-message').val("[AFK] I'm not here right now.");
-          }
-          Dubtrack.room.chat.sendMessage();
-          this.optionState = false;
-
-          var self = this;
-          setTimeout(function() {
-              self.optionState = true;
-          }, 180000);
+    if (this.optionState) {
+      if (settings.custom.customAfkMessage) {
+          $('#chat-txt-message').val('[AFK] '+ settings.custom.customAfkMessage);
+      } else {
+          $('#chat-txt-message').val("[AFK] I'm not here right now.");
       }
+      Dubtrack.room.chat.sendMessage();
+      this.optionState = false;
+
+      var self = this;
+      setTimeout(function() {
+          self.optionState = true;
+      }, 180000);
+    }
 
   }
 };
@@ -577,24 +566,25 @@ var editAFKmessage = function() {
 afk_module.init = function(){
   // this opens the dialog modal to add your custom away message
   $('body').on('click', '#'+afk_module.id+' .extra-icon', editAFKmessage);
+
+  if (this.optionState === true) {
+    Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
+  }
 };
 
 afk_module.go = function(e) {
-    if(typeof e === 'object' && (e.target.className === 'for_content_edit' || e.target.className === 'fi-pencil')) {
-        return;
-    }
-    var newOptionState;
+  var newOptionState;
 
-    if (!this.optionState) {
-        newOptionState = true;
-        Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
-    } else {
-        newOptionState = false;
-        Dubtrack.Events.unbind("realtime:chat-message", afk_chat_respond);
-    }
+  if (!this.optionState) {
+    newOptionState = true;
+    Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
+  } else {
+    newOptionState = false;
+    Dubtrack.Events.unbind("realtime:chat-message", afk_chat_respond);
+  }
 
-    this.optionState = newOptionState;
-    this.toggleAndSave(this.id, newOptionState);
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
 };
 
 module.exports = afk_module;
