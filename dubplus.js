@@ -56,7 +56,7 @@ if (!window.dubplus && Dubtrack.session.id) {
     content: errorMsg
   });
 }
-},{"./lib/init.js":3,"./utils/css.js":17,"./utils/modal.js":19}],2:[function(require,module,exports){
+},{"./lib/init.js":3,"./utils/css.js":18,"./utils/modal.js":20}],2:[function(require,module,exports){
 'use strict';
 /* global Dubtrack, emojify */
 
@@ -111,7 +111,7 @@ prepEmoji.loadTwitchEmotes = function(){
   // grab it from the twitch API
   if (self.shouldUpdateAPIs('twitch')) {
     console.log('dub+','twitch','loading from api');
-    var twApi = new GetJSON('//api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded');
+    var twApi = new GetJSON('https://api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded', {'Client-ID': '5vhafslpr2yqal6715puzysmzrntmt8'});
     twApi.done(function(data){
       localStorage.setItem('twitch_api_timestamp', Date.now().toString());
       localStorage.setItem('twitch_api', data);
@@ -224,7 +224,7 @@ prepEmoji.processTastyEmotes = function(data) {
 };
 
 module.exports = prepEmoji;
-},{"../lib/settings.js":6,"../utils/getJSON.js":18}],3:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/getJSON.js":19}],3:[function(require,module,exports){
 'use strict';
 var modules = require('./loadModules.js');
 var css = require('../utils/css.js');
@@ -257,7 +257,7 @@ module.exports = function(){
   // dubplus.previewListInit();
   // dubplus.userAutoComplete();
 };
-},{"../utils/css.js":17,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
+},{"../utils/css.js":18,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
 'use strict';
 var options = require('../utils/options.js');
 var dubPlus_modules = require('../modules/index.js');
@@ -316,7 +316,7 @@ var loadAllModulesTo = function(globalObject){
 module.exports = {
   loadAllModulesTo : loadAllModulesTo
 };
-},{"../modules/index.js":13,"../utils/options.js":20}],5:[function(require,module,exports){
+},{"../modules/index.js":14,"../utils/options.js":21}],5:[function(require,module,exports){
 'use strict';
 var options = require('../utils/options.js');
 var settings = require('./settings.js');
@@ -472,7 +472,7 @@ module.exports = {
 
 
 
-},{"../utils/css.js":17,"../utils/options.js":20,"./settings.js":6}],6:[function(require,module,exports){
+},{"../utils/css.js":18,"../utils/options.js":21,"./settings.js":6}],6:[function(require,module,exports){
 (function (CURRENT_BRANCH){
 'use strict';
 
@@ -592,7 +592,7 @@ afk_module.extra = function() {
 };
 
 module.exports = afk_module;
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/modal.js":19,"../utils/options.js":20}],8:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/modal.js":20,"../utils/options.js":21}],8:[function(require,module,exports){
 'use strict';
 /* global Dubtrack */
 var menu = require('../lib/menu.js');
@@ -669,6 +669,118 @@ autovote.start = function(){
 
 module.exports = autovote;
 },{"../lib/menu.js":5,"../lib/settings.js":6}],9:[function(require,module,exports){
+/**
+ * Autocomplete User @ Mentions in Chat
+ */
+
+/* global Dubtrack */
+var menu = require('../lib/menu.js');
+var settings = require("../lib/settings.js");
+var modal = require('../utils/modal.js');
+
+var myModule = {};
+
+myModule.id = "mention_notifications";
+myModule.moduleName = "Notification on Mentions";
+myModule.description = "Enable desktop notifications when a user mentions you in chat";
+myModule.optionState = settings.options[myModule.id] || false; // initial state from stored settings
+myModule.category = "General";
+myModule.menuHTML = menu.makeOptionMenu(myModule.moduleName, {
+  id : myModule.id,
+  desc : myModule.description,
+  state : myModule.optionState
+});
+
+myModule.notifyOnMention = function(e){
+  var content = e.message;
+  var user = Dubtrack.session.get('username').toLowerCase();
+  var mentionTriggers = ['@'+user];
+
+  if (settings.options.custom_mentions && settings.custom.custom_mentions) {
+    //add custom mention triggers to array
+    mentionTriggers = mentionTriggers.concat(settings.custom.custom_mentions.toLowerCase().split(','));
+  }
+
+  var mentionTriggersTest = mentionTriggers.some(function(v) { 
+    return content.toLowerCase().indexOf(v.trim(' ')) >= 0; 
+  });
+  if ( mentionTriggersTest && !this.isActiveTab && Dubtrack.session.id !== e.user.userInfo.userid) {
+    var notificationOptions = {
+      body: content,
+      icon: "https://res.cloudinary.com/hhberclba/image/upload/c_lpad,h_100,w_100/v1400351432/dubtrack_new_logo_fvpxa6.png"
+    };
+    var n = new Notification("Message from "+e.user.username,notificationOptions);
+
+    n.onclick = function(x) {
+      window.focus();
+      n.close();
+    };
+    setTimeout(n.close.bind(n), 5000);
+  }
+};
+
+myModule.mentionNotifications = function(){
+  var self = this;
+
+  function startNotifications(permission) {
+    if (permission === "granted") {
+      Dubtrack.Events.bind("realtime:chat-message", self.notifyOnMention);
+      self.toggleAndSave(self.id, true);
+    }
+  }
+
+  this.isActiveTab = true;
+
+  window.onfocus = function () {
+    self.isActiveTab = true;
+  };
+
+  window.onblur = function () {
+    self.isActiveTab = false;
+  };
+
+  if (!("Notification" in window)) {
+    modal.create({
+      title: 'Mention Notifications',
+      content: "Sorry this browser does not support desktop notifications.  Please use the latest version of Chrome or FireFox"
+    });
+  } else {
+    if (Notification.permission === "granted") {
+      startNotifications("granted");
+    } else if (Notification.permission !== 'denied') {
+      Notification.requestPermission(startNotifications);
+    } else {
+      modal.create({
+        title: 'Mention Notifications',
+        content: "You have chosen to block notifications. Reset this choice by clearing your cache for the site."
+      });
+    }
+  }
+};
+
+myModule.init = function(){
+  if (this.optionState === true) {
+    myModule.mentionNotifications();
+  }
+};
+
+myModule.go = function() {
+  var newOptionState;
+
+  if (!this.optionState) {
+    myModule.mentionNotifications();
+    newOptionState = true;
+  } else {
+    Dubtrack.Events.unbind("realtime:chat-message", this.notifyOnMention );
+    newOptionState = false;
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/modal.js":20}],10:[function(require,module,exports){
 /**
  * Emotes
  * Adds additional Twitch, BTTV, and Tasty Emotes to the chat window 
@@ -777,7 +889,7 @@ emote_module.go = function(){
 
 
 module.exports = emote_module;
-},{"../emojiUtils/prepEmoji.js":2,"../lib/menu.js":5,"../lib/settings.js":6,"../utils/options.js":20}],10:[function(require,module,exports){
+},{"../emojiUtils/prepEmoji.js":2,"../lib/menu.js":5,"../lib/settings.js":6,"../utils/options.js":21}],11:[function(require,module,exports){
 /**
  * ETA
  *
@@ -818,7 +930,7 @@ myModule.init = function() {
 };
 
 module.exports = myModule;
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /**
  * Fullscreen video
  * Toggle fullscreen video mode
@@ -852,7 +964,7 @@ fs_module.go = function(e) {
 };
 
 module.exports = fs_module;
-},{"../lib/menu.js":5}],12:[function(require,module,exports){
+},{"../lib/menu.js":5}],13:[function(require,module,exports){
 /**
  * Grabs in Chat
  */
@@ -910,7 +1022,7 @@ grabs_chat.go = function() {
 };
 
 module.exports = grabs_chat;
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":17,"../utils/modal.js":19}],13:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":18,"../utils/modal.js":20}],14:[function(require,module,exports){
 // put this in order of appearance in the menu
 module.exports = [
   // General 
@@ -919,8 +1031,8 @@ module.exports = [
   require('./emotes.js'),
   // autocomplete emoji
   // autocomplete mentions
-  // cusomt mention triggers
-  // notifications on mentions
+  // custom mention triggers
+  require('./desktopNotifications.js'),
   require('./showDubsOnHover.js'),
   // Downdubs in chat (mod only)
   // Updubs in chat
@@ -952,7 +1064,7 @@ module.exports = [
   require('./snooze.js'),
   require('./eta.js')
 ];
-},{"./afk.js":7,"./autovote.js":8,"./emotes.js":9,"./eta.js":10,"./fullscreen.js":11,"./grabsInChat.js":12,"./showDubsOnHover.js":14,"./snooze.js":15,"./snow.js":16}],14:[function(require,module,exports){
+},{"./afk.js":7,"./autovote.js":8,"./desktopNotifications.js":9,"./emotes.js":10,"./eta.js":11,"./fullscreen.js":12,"./grabsInChat.js":13,"./showDubsOnHover.js":15,"./snooze.js":16,"./snow.js":17}],15:[function(require,module,exports){
 /**
  * Show Dubs on Hover
  */
@@ -1505,7 +1617,7 @@ dubshover.resetDubs = function(){
         }
     });
 };
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":17,"../utils/modal.js":19}],15:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":18,"../utils/modal.js":20}],16:[function(require,module,exports){
 /**
  * Snooze
  * Mutes audio for one song.
@@ -1573,7 +1685,7 @@ module.exports = myModule;
 
 
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var menu = require('../lib/menu.js');
 
 var snow = {};
@@ -1613,7 +1725,7 @@ snow.go = function(e){
 };
 
 module.exports = snow;
-},{"../lib/menu.js":5}],17:[function(require,module,exports){
+},{"../lib/menu.js":5}],18:[function(require,module,exports){
 'use strict';
 var settings = require("../lib/settings.js");
 
@@ -1647,14 +1759,21 @@ module.exports = {
   load : load,
   loadExternal: loadExternal
 };
-},{"../lib/settings.js":6}],18:[function(require,module,exports){
+},{"../lib/settings.js":6}],19:[function(require,module,exports){
 // jQuery's getJSON kept returning errors so making my own with promise-like
 // structure and added optional Event to fire when done so can hook in elsewhere
-var GetJSON = (function (url, optionalEvent) {
+var GetJSON = (function (url, optionalEvent, headers) {
   var doneEvent;
   function GetJ(_url, _cb){
     var xhr = new XMLHttpRequest();
     xhr.open('GET', _url);
+    if(headers) {
+      for (var property in headers) {
+        if (headers.hasOwnProperty(property)) {
+          xhr.setRequestHeader(property, headers[property]);
+        }
+      }
+    }
     xhr.send();
     xhr.onload = function() {
       var resp = xhr.responseText;
@@ -1670,7 +1789,7 @@ var GetJSON = (function (url, optionalEvent) {
 });
 
 module.exports = GetJSON;
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 function makeButtons(cb){
@@ -1776,7 +1895,7 @@ module.exports = {
   create: create,
   close : close
 };
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
 var settings = require("../lib/settings.js");
 

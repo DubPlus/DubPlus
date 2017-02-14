@@ -52,7 +52,7 @@ prepEmoji.loadTwitchEmotes = function(){
   // grab it from the twitch API
   if (self.shouldUpdateAPIs('twitch')) {
     console.log('dub+','twitch','loading from api');
-    var twApi = new GetJSON('//api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded');
+    var twApi = new GetJSON('https://api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded', {'Client-ID': '5vhafslpr2yqal6715puzysmzrntmt8'});
     twApi.done(function(data){
       localStorage.setItem('twitch_api_timestamp', Date.now().toString());
       localStorage.setItem('twitch_api', data);
