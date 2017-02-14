@@ -121,15 +121,14 @@ module.exports = {
     var _extra = '';
     var _state = opts.state ? 'dubplus-switch-on' : '';
     if (opts.extraIcon) {
-      _extra = '<span class="fa fa-'+opts.extraIcon+' extra-icon dp-extra-activator"></span>';
+      _extra = '<span class="fa fa-'+opts.extraIcon+' extra-icon"></span>';
     }
-
     return [
       '<li id="'+opts.id+'" class="dubplus-switch '+_state+' '+opts.cssClass+'" title="'+opts.desc+'">',  
-        '<div class="dubplus-switch-bg dp-switch-activator">',
+        '<div class="dubplus-switch-bg">',
           '<div class="dubplus-switcher"></div>', 
         '</div>',
-        '<span class="dubplus-menu-label dp-switch-activator">'+menuTitle+'</span>',
+        '<span class="dubplus-menu-label">'+menuTitle+'</span>',
         _extra,
       '</li>',
     ].join('');

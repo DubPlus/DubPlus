@@ -28,13 +28,13 @@ var getAllOptions = function(){
  * @return {undefined}         
  */
 var toggle = function(selector, state){
-  var item = document.querySelector(selector);
-  if (!item) { return; }
+  var $item = $(selector);
+  if (!$item.length) { return; }
 
   if (state === true) {
-    item.classList.add('dubplus-switch-on');
+    $item.addClass('dubplus-switch-on');
   } else {
-    item.classList.remove('dubplus-switch-on');
+    $item.removeClass('dubplus-switch-on');
   }
 };
 

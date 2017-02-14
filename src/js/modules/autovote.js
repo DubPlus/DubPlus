@@ -16,6 +16,22 @@ autovote.menuHTML = menu.makeOptionMenu(autovote.moduleName, {
     state : autovote.optionState
   });
 
+/*******************************************************/
+// add any custom functions to this module
+
+var advance_vote = function() {
+  console.log('advancing the vote');
+  $('.dubup').click();
+};
+
+var voteCheck = function (obj) {
+  if (obj.startTime < 2) {
+    advance_vote();
+  }
+};
+
+/*******************************************************/
+
 autovote.init = function(){
   if (this.optionState === true) {
     this.start();
@@ -25,13 +41,14 @@ autovote.init = function(){
 // this function will be run on each click of the menu
 autovote.go = function(){
   var newOptionState;
-  
+  console.log(this.optionState);
+
   if (!this.optionState) {
     newOptionState = true;
     this.start();
   } else {
     newOptionState = false;
-    Dubtrack.Events.unbind("realtime:room_playlist-update", this.voteCheck);
+    Dubtrack.Events.unbind("realtime:room_playlist-update", voteCheck);
   }
 
   this.optionState = newOptionState;
@@ -48,22 +65,11 @@ autovote.start = function(){
   }
   //Only cast the vote if user hasn't already voted
   if (!$('.dubup, .dubdown').hasClass('voted') && !dubCookie) {
-    this.advance_vote();
+    advance_vote();
   }
 
-  Dubtrack.Events.bind("realtime:room_playlist-update", this.voteCheck);
+  Dubtrack.Events.bind("realtime:room_playlist-update", voteCheck);
 };
 
-
-// add any custom functions to this module
-autovote.advance_vote = function() {
-  $('.dubup').click();
-};
-
-autovote.voteCheck = function (obj) {
-  if (obj.startTime < 2) {
-    this.advance_vote();
-  }
-};
 
 module.exports = autovote;

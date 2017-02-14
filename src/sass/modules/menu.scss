@@ -111,7 +111,6 @@ $buttonBorderOn : #6fcbdc;
   position: relative;
   height: $height;
   margin: 20px 0;
-  overflow: hidden;
 
   &:after {
     content: "";
@@ -123,8 +122,12 @@ $buttonBorderOn : #6fcbdc;
   text-decoration: none;
 }
 .dubplus-menu-icon span {
-  position: absolute;
+  position: relative;
   color: #eb008b;
+  width: $width + px;
+  float: left;
+  display: block;
+  top: 2px;
 }
 .dubplus-switch-bg {
   position: relative;

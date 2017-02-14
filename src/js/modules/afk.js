@@ -48,27 +48,7 @@ var afk_chat_respond = function(e) {
   }
 };
 
-var saveAFKmessage =function() {
-    var customAfkMessage = $('.input').val();
-    options.saveOption('custom', 'customAfkMessage', customAfkMessage);
-};
-
-var editAFKmessage = function() {
-    var current = settings.custom.customAfkMessage;
-    modal.create({
-        title: 'Custom AFK Message',
-        content: current,
-        placeholder: 'I\'m not here right now.',
-        confirmButtonClass: 'confirm-for315',
-        maxlength: '255',
-        confirmCallback: saveAFKmessage
-    });
-};
-
 afk_module.init = function(){
-  // this opens the dialog modal to add your custom away message
-  $('body').on('click', '#'+afk_module.id+' .extra-icon', editAFKmessage);
-
   if (this.optionState === true) {
     Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
   }
@@ -87,6 +67,23 @@ afk_module.go = function(e) {
 
   this.optionState = newOptionState;
   this.toggleAndSave(this.id, newOptionState);
+};
+
+var saveAFKmessage =function() {
+    var customAfkMessage = $('.input').val();
+    options.saveOption('custom', 'customAfkMessage', customAfkMessage);
+};
+
+afk_module.extra = function() {
+  var current = settings.custom.customAfkMessage;
+  modal.create({
+    title: 'Custom AFK Message',
+    content: current,
+    placeholder: 'I\'m not here right now.',
+    confirmButtonClass: 'confirm-for315',
+    maxlength: '255',
+    confirmCallback: saveAFKmessage
+  });
 };
 
 module.exports = afk_module;

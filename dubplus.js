@@ -281,16 +281,22 @@ var loadAllModulesTo = function(globalObject){
     window[globalObject][mod.id].toggleAndSave = options.toggleAndSave;
     
     // add event listener
-    if (typeof mod.go === 'function'){
-      var selector = '#'+mod.id+' dp-switch-activator';
-      $('body').on('click', selector, mod.go.bind(mod) );
+    if (typeof mod.go === 'function' || typeof mod.extra === 'function'){
+      $('body').on('click', '#'+mod.id, function(ev) {
+        // if clicking on the "extra-icon", run module's "extra" function
+        if (ev.target.classList.contains('extra-icon') && mod.extra) {
+          mod.extra.bind(mod)();
+        } else if (mod.go) {
+          mod.go.bind(mod)();
+        }
+      });
     }
 
     // This is run only once, when the script is loaded.
     // this is also where you should check stored settings 
     // to see if an option should be automatically turned on
     if (typeof mod.init === 'function') { 
-      mod.init.bind(mod); 
+      mod.init.bind(mod)(); 
     }
 
     // add the menu item to the appropriate category section
@@ -430,15 +436,14 @@ module.exports = {
     var _extra = '';
     var _state = opts.state ? 'dubplus-switch-on' : '';
     if (opts.extraIcon) {
-      _extra = '<span class="fa fa-'+opts.extraIcon+' extra-icon dp-extra-activator"></span>';
+      _extra = '<span class="fa fa-'+opts.extraIcon+' extra-icon"></span>';
     }
-
     return [
       '<li id="'+opts.id+'" class="dubplus-switch '+_state+' '+opts.cssClass+'" title="'+opts.desc+'">',  
-        '<div class="dubplus-switch-bg dp-switch-activator">',
+        '<div class="dubplus-switch-bg">',
           '<div class="dubplus-switcher"></div>', 
         '</div>',
-        '<span class="dubplus-menu-label dp-switch-activator">'+menuTitle+'</span>',
+        '<span class="dubplus-menu-label">'+menuTitle+'</span>',
         _extra,
       '</li>',
     ].join('');
@@ -546,27 +551,7 @@ var afk_chat_respond = function(e) {
   }
 };
 
-var saveAFKmessage =function() {
-    var customAfkMessage = $('.input').val();
-    options.saveOption('custom', 'customAfkMessage', customAfkMessage);
-};
-
-var editAFKmessage = function() {
-    var current = settings.custom.customAfkMessage;
-    modal.create({
-        title: 'Custom AFK Message',
-        content: current,
-        placeholder: 'I\'m not here right now.',
-        confirmButtonClass: 'confirm-for315',
-        maxlength: '255',
-        confirmCallback: saveAFKmessage
-    });
-};
-
 afk_module.init = function(){
-  // this opens the dialog modal to add your custom away message
-  $('body').on('click', '#'+afk_module.id+' .extra-icon', editAFKmessage);
-
   if (this.optionState === true) {
     Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
   }
@@ -585,6 +570,23 @@ afk_module.go = function(e) {
 
   this.optionState = newOptionState;
   this.toggleAndSave(this.id, newOptionState);
+};
+
+var saveAFKmessage =function() {
+    var customAfkMessage = $('.input').val();
+    options.saveOption('custom', 'customAfkMessage', customAfkMessage);
+};
+
+afk_module.extra = function() {
+  var current = settings.custom.customAfkMessage;
+  modal.create({
+    title: 'Custom AFK Message',
+    content: current,
+    placeholder: 'I\'m not here right now.',
+    confirmButtonClass: 'confirm-for315',
+    maxlength: '255',
+    confirmCallback: saveAFKmessage
+  });
 };
 
 module.exports = afk_module;
@@ -607,6 +609,22 @@ autovote.menuHTML = menu.makeOptionMenu(autovote.moduleName, {
     state : autovote.optionState
   });
 
+/*******************************************************/
+// add any custom functions to this module
+
+var advance_vote = function() {
+  console.log('advancing the vote');
+  $('.dubup').click();
+};
+
+var voteCheck = function (obj) {
+  if (obj.startTime < 2) {
+    advance_vote();
+  }
+};
+
+/*******************************************************/
+
 autovote.init = function(){
   if (this.optionState === true) {
     this.start();
@@ -616,13 +634,14 @@ autovote.init = function(){
 // this function will be run on each click of the menu
 autovote.go = function(){
   var newOptionState;
-  
+  console.log(this.optionState);
+
   if (!this.optionState) {
     newOptionState = true;
     this.start();
   } else {
     newOptionState = false;
-    Dubtrack.Events.unbind("realtime:room_playlist-update", this.voteCheck);
+    Dubtrack.Events.unbind("realtime:room_playlist-update", voteCheck);
   }
 
   this.optionState = newOptionState;
@@ -639,23 +658,12 @@ autovote.start = function(){
   }
   //Only cast the vote if user hasn't already voted
   if (!$('.dubup, .dubdown').hasClass('voted') && !dubCookie) {
-    this.advance_vote();
+    advance_vote();
   }
 
-  Dubtrack.Events.bind("realtime:room_playlist-update", this.voteCheck);
+  Dubtrack.Events.bind("realtime:room_playlist-update", voteCheck);
 };
 
-
-// add any custom functions to this module
-autovote.advance_vote = function() {
-  $('.dubup').click();
-};
-
-autovote.voteCheck = function (obj) {
-  if (obj.startTime < 2) {
-    this.advance_vote();
-  }
-};
 
 module.exports = autovote;
 },{"../lib/menu.js":5,"../lib/settings.js":6}],9:[function(require,module,exports){
@@ -1759,13 +1767,13 @@ var getAllOptions = function(){
  * @return {undefined}         
  */
 var toggle = function(selector, state){
-  var item = document.querySelector(selector);
-  if (!item) { return; }
+  var $item = $(selector);
+  if (!$item.length) { return; }
 
   if (state === true) {
-    item.classList.add('dubplus-switch-on');
+    $item.addClass('dubplus-switch-on');
   } else {
-    item.classList.remove('dubplus-switch-on');
+    $item.removeClass('dubplus-switch-on');
   }
 };
 

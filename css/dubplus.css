@@ -78,8 +78,7 @@
 .dubplus-menu-icon {
   position: relative;
   height: 14px;
-  margin: 20px 0;
-  overflow: hidden; }
+  margin: 20px 0; }
   .dubplus-switch:after,
   .dubplus-menu-icon:after {
     content: "";
@@ -90,8 +89,12 @@
   text-decoration: none; }
 
 .dubplus-menu-icon span {
-  position: absolute;
-  color: #eb008b; }
+  position: relative;
+  color: #eb008b;
+  width: 25px;
+  float: left;
+  display: block;
+  top: 2px; }
 
 .dubplus-switch-bg {
   position: relative;

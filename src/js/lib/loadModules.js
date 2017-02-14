@@ -25,16 +25,22 @@ var loadAllModulesTo = function(globalObject){
     window[globalObject][mod.id].toggleAndSave = options.toggleAndSave;
     
     // add event listener
-    if (typeof mod.go === 'function'){
-      var selector = '#'+mod.id+' dp-switch-activator';
-      $('body').on('click', selector, mod.go.bind(mod) );
+    if (typeof mod.go === 'function' || typeof mod.extra === 'function'){
+      $('body').on('click', '#'+mod.id, function(ev) {
+        // if clicking on the "extra-icon", run module's "extra" function
+        if (ev.target.classList.contains('extra-icon') && mod.extra) {
+          mod.extra.bind(mod)();
+        } else if (mod.go) {
+          mod.go.bind(mod)();
+        }
+      });
     }
 
     // This is run only once, when the script is loaded.
     // this is also where you should check stored settings 
     // to see if an option should be automatically turned on
     if (typeof mod.init === 'function') { 
-      mod.init.bind(mod); 
+      mod.init.bind(mod)(); 
     }
 
     // add the menu item to the appropriate category section
