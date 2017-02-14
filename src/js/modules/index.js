@@ -32,9 +32,6 @@ module.exports = [
   // require('./customCSS.js'),
   // require('./customBackground.js'),
 
-  // // Contact
-  // require('./bugReport.js'),
-
   // non-menu modules
   require('./snooze.js'),
   require('./eta.js')
