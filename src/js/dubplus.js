@@ -41,7 +41,6 @@ var css = require('./utils/css.js');
 /* globals Dubtrack */
 if (!window.dubplus && Dubtrack.session.id) {
   init();
-
 } else {
   var errorMsg;
   if (!Dubtrack.session.id) {

@@ -4,7 +4,7 @@ var sass = require('gulp-sass');
 var preprocess = require('gulp-preprocess');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
-
+var babelify = require("babelify");
 
 /******************************************************************
  * Get the current branch name to be passed as a variable
@@ -34,23 +34,27 @@ gulp.task('sass', function () {
 
 /******************************************************************
  * Browserify to 'compile' JS modules into one file
- * 
+ * using Babel to transpile ES6(ES2015) to ES5
  */
-gulp.task('browserify', function() {
-  return browserify('./src/js/dubplus.js', {
+gulp.task('build', function() {
+  var options = {
+    insertGlobalVars: { 
       // insert the branch name as a module scoped variable
-      insertGlobalVars: { CURRENT_BRANCH: function () { return "'" + CURRENT_BRANCH + "'"; } }
-    })
+      CURRENT_BRANCH: function () { return "'" + CURRENT_BRANCH + "'"; }
+    }
+  };
+  
+  return browserify('./src/js/dubplus.js', options)
+    .transform(babelify, {presets: ["es2015"]})
     .bundle()
-    //Pass desired output filename to vinyl-source-stream
+    .on('error', function(err) { console.error(err); this.emit('end'); })
     .pipe(source('dubplus.js'))
-    // Start piping stream to tasks!
     .pipe(gulp.dest('./'));
 });
  
 gulp.task('watch', function () {
   gulp.watch('src/sass/**/*.scss', ['sass']);
-  gulp.watch('src/js/**/*.js', ['browserify']);
+  gulp.watch('src/js/**/*.js', ['build']);
 });
 
-gulp.task('default',['sass','browserify']);
+gulp.task('default',['sass','build']);
