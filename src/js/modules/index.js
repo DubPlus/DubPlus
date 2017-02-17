@@ -16,9 +16,9 @@ module.exports = [
   
   // User Interface
   require('./fullscreen.js'),
-  // require('./splitchat.js'),
-  // require('./hideChat.js'),
-  // require('./hideVideo.js'),
+  require('./splitchat.js'),
+  require('./hideChat.js'),
+  require('./hideVideo.js'),
   // require('./hideAvatars.js'),
   // require('./hideBackground.js'),
   

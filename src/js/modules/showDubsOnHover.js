@@ -28,11 +28,11 @@ dubshover.showDubsOnHover = function(){
 
   this.resetDubs();
 
-  Dubtrack.Events.bind("realtime:room_playlist-dub", this.dubWatcher);
-  Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabWatcher);
-  Dubtrack.Events.bind("realtime:user-leave", this.dubUserLeaveWatcher);
-  Dubtrack.Events.bind("realtime:room_playlist-update", this.resetDubs);
-  Dubtrack.Events.bind("realtime:room_playlist-update", this.resetGrabs); //TODO: Remove when we can hit the api for all grabs of current playing song
+  Dubtrack.Events.bind("realtime:room_playlist-dub", this.dubWatcher.bind(this));
+  Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabWatcher.bind(this));
+  Dubtrack.Events.bind("realtime:user-leave", this.dubUserLeaveWatcher.bind(this));
+  Dubtrack.Events.bind("realtime:room_playlist-update", this.resetDubs.bind(this));
+  Dubtrack.Events.bind("realtime:room_playlist-update", this.resetGrabs.bind(this)); //TODO: Remove when we can hit the api for all grabs of current playing song
 
   var dubupEl = $('.dubup').first().parent('li');
   var dubdownEl = $('.dubdown').first().parent('li');
@@ -91,7 +91,8 @@ dubshover.showDubsOnHover = function(){
     }
   });
 
-  $(dubupEl).mouseenter(function(){
+  $(dubupEl).mouseenter((e)=>{
+    var self = e.currentTarget;
     if($("#dubplus-updubs-container").length > 0) {return;} //already exists
 
     var infoPaneWidth = $(dubupEl).innerWidth() + $(dubdownEl).innerWidth();
@@ -123,7 +124,7 @@ dubshover.showDubsOnHover = function(){
     newEl.style.visibility = "hidden";
     document.body.appendChild(newEl);
 
-    var elemRect = this.getBoundingClientRect();
+    var elemRect = self.getBoundingClientRect();
     var bodyRect = document.body.getBoundingClientRect();
 
     newEl.style.visibility = "";
@@ -139,11 +140,11 @@ dubshover.showDubsOnHover = function(){
 
     document.body.appendChild(newEl);
 
-    $(this).addClass('dubplus-updubs-hover');
+    $(self).addClass('dubplus-updubs-hover');
 
-    $(document.body).on('click', '.preview-dubinfo-item', function(e){
-      var new_text = $(this).find('.dubinfo-text')[0].innerHTML + ' ' ;
-      self.updateChatInputWithString(new_text);
+    $(document.body).on('click', '.preview-dubinfo-item', (e)=>{
+      var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ' ;
+      this.updateChatInputWithString(new_text);
     });
 
     $('#dubinfo-preview').perfectScrollbar();
@@ -164,7 +165,8 @@ dubshover.showDubsOnHover = function(){
 
   });
 
-  $(dubdownEl).mouseenter(function(){
+  $(dubdownEl).mouseenter((e)=>{
+    var self = e.currentTarget;
     if($("#dubplus-downdubs-container").length > 0) {return;} //already exists
 
     var infoPaneWidth = $(dubupEl).innerWidth() + $(dubdownEl).innerWidth();
@@ -201,7 +203,7 @@ dubshover.showDubsOnHover = function(){
     newEl.style.visibility = "hidden";
     document.body.appendChild(newEl);
 
-    var elemRect = this.getBoundingClientRect();
+    var elemRect = self.getBoundingClientRect();
     var bodyRect = document.body.getBoundingClientRect();
 
     newEl.style.visibility = "";
@@ -217,11 +219,11 @@ dubshover.showDubsOnHover = function(){
 
     document.body.appendChild(newEl);
 
-    $(this).addClass('dubplus-downdubs-hover');
+    $(self).addClass('dubplus-downdubs-hover');
 
     $(document.body).on('click', '.preview-dubinfo-item', function(e){
-      var new_text = $(this).find('.dubinfo-text')[0].innerHTML + ' ' ;
-      self.updateChatInputWithString(new_text);
+      var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ' ;
+      this.updateChatInputWithString(new_text);
     });
 
     $('#dubinfo-preview').perfectScrollbar();
@@ -241,7 +243,8 @@ dubshover.showDubsOnHover = function(){
     });
   });
 
-  $(grabEl).mouseenter(function(){
+  $(grabEl).mouseenter((e)=>{
+    var self = e.currentTarget;
     if($("#dubplus-grabs-container").length > 0) {return;} //already exists
 
     var infoPaneWidth = $(dubupEl).innerWidth() + $(grabEl).innerWidth();
@@ -277,7 +280,7 @@ dubshover.showDubsOnHover = function(){
     newEl.style.visibility = "hidden";
     document.body.appendChild(newEl);
 
-    var elemRect = this.getBoundingClientRect();
+    var elemRect = self.getBoundingClientRect();
     var bodyRect = document.body.getBoundingClientRect();
 
     newEl.style.visibility = "";
@@ -293,11 +296,11 @@ dubshover.showDubsOnHover = function(){
 
     document.body.appendChild(newEl);
 
-    $(this).addClass('dubplus-grabs-hover');
+    $(self).addClass('dubplus-grabs-hover');
 
     $(document.body).on('click', '.preview-dubinfo-item', function(e){
-      var new_text = $(this).find('.dubinfo-text')[0].innerHTML + ' ' ;
-      self.updateChatInputWithString(new_text);
+      var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ' ;
+      this.updateChatInputWithString(new_text);
     });
 
     $('#dubinfo-preview').perfectScrollbar();
@@ -332,7 +335,6 @@ dubshover.stopDubsOnHover = function(){
 
 
 dubshover.dubUserLeaveWatcher = function(e){
-    var self = this;
     //Remove user from dub list
     if($.grep(window.dubplus.dubs.upDubs, function(el){ return el.userid === e.user._id; }).length > 0){
         $.each(window.dubplus.dubs.upDubs, function(i){
@@ -350,7 +352,7 @@ dubshover.dubUserLeaveWatcher = function(e){
             }
         });
     }
-    if($.grep(mydubs.grabs, function(el){ return el.userid === e.user._id; }).length > 0){
+    if($.grep(window.dubplus.dubs.grabs, function(el){ return el.userid === e.user._id; }).length > 0){
         $.each(window.dubplus.dubs.grabs, function(i){
             if(window.dubplus.dubs.grabs[i].userid === e.user._id) {
                 window.dubplus.dubs.grabs.splice(i,1);
@@ -361,7 +363,6 @@ dubshover.dubUserLeaveWatcher = function(e){
 };
 
 dubshover.grabWatcher = function(e){
-  var self = this;
   //If grab already casted
   if($.grep(window.dubplus.dubs.grabs, function(el){ return el.userid === e.user._id; }).length <= 0){
     window.dubplus.dubs.grabs.push({
@@ -451,14 +452,13 @@ dubshover.dubWatcher = function(e){
 };
 
 dubshover.resetDubs = function(){
-  var self = this;
   window.dubplus.dubs.upDubs = [];
   window.dubplus.dubs.downDubs = [];
   // window.dubplus.dubs.grabs: [] //TODO: Uncomment this when we can hit the api for all grabs of current playing song
 
   var dubsURL = "https://api.dubtrack.fm/room/" + Dubtrack.room.model.id + "/playlist/active/dubs";
-  $.getJSON(dubsURL, function(response){
-    response.data.upDubs.forEach(function(e){
+  $.getJSON(dubsURL, (response)=>{
+    response.data.upDubs.forEach((e)=>{
       //Dub already casted (usually from autodub)
       if($.grep(window.dubplus.dubs.upDubs, function(el){ return el.userid === e.userid; }).length > 0){
         return;
@@ -507,7 +507,7 @@ dubshover.resetDubs = function(){
     });*/
 
     //Only let mods or higher access down dubs
-    if(self.userIsAtLeastMod(Dubtrack.session.id)){
+    if(this.userIsAtLeastMod(Dubtrack.session.id)){
       response.data.downDubs.forEach(function(e){
         //Dub already casted
         if($.grep(window.dubplus.dubs.downDubs, function(el){ return el.userid === e.userid; }).length > 0){

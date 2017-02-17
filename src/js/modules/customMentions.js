@@ -3,7 +3,6 @@
  */
 
 /* global Dubtrack */
-var menu = require('../lib/menu.js');
 var settings = require("../lib/settings.js");
 var modal = require('../utils/modal.js');
 var options = require('../utils/options.js');
@@ -13,14 +12,9 @@ var myModule = {};
 myModule.id = "custom_mentions";
 myModule.moduleName = "Custom Mentions";
 myModule.description = "Toggle using custom mentions to trigger sounds in chat";
-myModule.optionState = settings.options[myModule.id] || false; // initial state from stored settings
 myModule.category = "General";
-myModule.menuHTML = menu.makeOptionMenu(myModule.moduleName, {
-  id : myModule.id,
-  desc : myModule.description,
-  extraIcon : 'pencil',
-  state : myModule.optionState
-});
+myModule.extraIcon = 'pencil';
+
 
 var saveCustomMentions = function() {
   var mentionsVal = $('.dp-modal textarea').val();
@@ -68,7 +62,7 @@ myModule.go = function() {
   var newOptionState;
 
   if (!this.optionState) {
-    myModule.start();
+    this.start();
     newOptionState = true;
   } else {
     Dubtrack.Events.unbind("realtime:chat-message", this.customMentionCheck);

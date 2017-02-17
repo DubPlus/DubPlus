@@ -3,22 +3,14 @@
  */
 
 /* global Dubtrack */
-var menu = require('../lib/menu.js');
 var settings = require("../lib/settings.js");
 var modal = require('../utils/modal.js');
 
 var myModule = {};
-
 myModule.id = "mention_notifications";
 myModule.moduleName = "Notification on Mentions";
 myModule.description = "Enable desktop notifications when a user mentions you in chat";
-myModule.optionState = settings.options[myModule.id] || false; // initial state from stored settings
 myModule.category = "General";
-myModule.menuHTML = menu.makeOptionMenu(myModule.moduleName, {
-  id : myModule.id,
-  desc : myModule.description,
-  state : myModule.optionState
-});
 
 myModule.notifyOnMention = function(e){
   var content = e.message;

@@ -58,9 +58,10 @@ if (!window.dubplus && Dubtrack.session.id) {
   });
 }
 
-},{"./lib/init.js":3,"./utils/css.js":19,"./utils/modal.js":21}],2:[function(require,module,exports){
+},{"./lib/init.js":3,"./utils/css.js":22,"./utils/modal.js":24}],2:[function(require,module,exports){
 'use strict';
-/* global Dubtrack, emojify */
+
+/* global  emojify */
 
 var GetJSON = require('../utils/getJSON.js');
 var settings = require("../lib/settings.js");
@@ -93,6 +94,7 @@ prepEmoji.tasty = {
   },
   emotes: {}
 };
+
 prepEmoji.shouldUpdateAPIs = function (apiName) {
   var day = 86400000; // milliseconds in a day
 
@@ -112,76 +114,80 @@ prepEmoji.shouldUpdateAPIs = function (apiName) {
   // does the data not exist in localStorage, then we should update
   return isNaN(lastSaved) || today - lastSaved > day * 5 || !savedItem;
 };
+
 /**************************************************************************
 * Loads the twitch emotes from the api.
 * http://api.twitch.tv/kraken/chat/emoticon_images
 */
 prepEmoji.loadTwitchEmotes = function () {
-  var self = this;
+  var _this = this;
+
   var savedData;
   // if it doesn't exist in localStorage or it's older than 5 days
   // grab it from the twitch API
-  if (self.shouldUpdateAPIs('twitch')) {
+  if (this.shouldUpdateAPIs('twitch')) {
     console.log('dub+', 'twitch', 'loading from api');
     var twApi = new GetJSON('https://api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded', { 'Client-ID': '5vhafslpr2yqal6715puzysmzrntmt8' });
     twApi.done(function (data) {
       localStorage.setItem('twitch_api_timestamp', Date.now().toString());
       localStorage.setItem('twitch_api', data);
-      self.processTwitchEmotes(JSON.parse(data));
+      _this.processTwitchEmotes(JSON.parse(data));
     });
   } else {
     console.log('dub+', 'twitch', 'loading from localstorage');
     savedData = JSON.parse(localStorage.getItem('twitch_api'));
-    self.processTwitchEmotes(savedData);
+    this.processTwitchEmotes(savedData);
     savedData = null; // clear the var from memory
     var twEvent = new Event('twitch:loaded');
-    document.body.dispatchEvent(twEvent);
+    window.dispatchEvent(twEvent);
   }
 };
 
 prepEmoji.loadBTTVEmotes = function () {
-  var self = this;
+  var _this2 = this;
+
   var savedData;
   // if it doesn't exist in localStorage or it's older than 5 days
   // grab it from the bttv API
-  if (self.shouldUpdateAPIs('bttv')) {
+  if (this.shouldUpdateAPIs('bttv')) {
     console.log('dub+', 'bttv', 'loading from api');
     var bttvApi = new GetJSON('//api.betterttv.net/2/emotes', 'bttv:loaded');
     bttvApi.done(function (data) {
       localStorage.setItem('bttv_api_timestamp', Date.now().toString());
       localStorage.setItem('bttv_api', data);
-      self.processBTTVEmotes(JSON.parse(data));
+      _this2.processBTTVEmotes(JSON.parse(data));
     });
   } else {
     console.log('dub+', 'bttv', 'loading from localstorage');
     savedData = JSON.parse(localStorage.getItem('bttv_api'));
-    self.processBTTVEmotes(savedData);
+    this.processBTTVEmotes(savedData);
     savedData = null; // clear the var from memory
     var twEvent = new Event('bttv:loaded');
-    document.body.dispatchEvent(twEvent);
+    window.dispatchEvent(twEvent);
   }
 };
 
 prepEmoji.loadTastyEmotes = function () {
-  var self = this;
-  var savedData;
+  var _this3 = this;
+
   console.log('dub+', 'tasty', 'loading from api');
   // since we control this API we should always have it load from remote
   var tastyApi = new GetJSON(settings.srcRoot + '/emotes/tastyemotes.json', 'tasty:loaded');
   tastyApi.done(function (data) {
     localStorage.setItem('tasty_api', data);
-    self.processTastyEmotes(JSON.parse(data));
+    _this3.processTastyEmotes(JSON.parse(data));
   });
 };
 
 prepEmoji.processTwitchEmotes = function (data) {
-  var self = this;
-  data.emoticons.forEach(function (el, i, arr) {
+  var _this4 = this;
+
+  data.emoticons.forEach(function (el) {
     var _key = el.code.toLowerCase();
 
     // move twitch non-named emojis to their own array
     if (el.code.indexOf('\\') >= 0) {
-      self.twitch.specialEmotes.push([el.code, el.id]);
+      _this4.twitch.specialEmotes.push([el.code, el.id]);
       return;
     }
 
@@ -189,21 +195,22 @@ prepEmoji.processTwitchEmotes = function (data) {
       return; // do nothing so we don't override emoji
     }
 
-    if (!self.twitch.emotes[_key]) {
+    if (!_this4.twitch.emotes[_key]) {
       // if emote doesn't exist, add it
-      self.twitch.emotes[_key] = el.id;
+      _this4.twitch.emotes[_key] = el.id;
     } else if (el.emoticon_set === null) {
       // override if it's a global emote (null set = global emote)
-      self.twitch.emotes[_key] = el.id;
+      _this4.twitch.emotes[_key] = el.id;
     }
   });
-  self.twitchJSONSLoaded = true;
-  self.emojiEmotes = emojify.emojiNames.concat(Object.keys(self.twitch.emotes));
+  this.twitchJSONSLoaded = true;
+  this.emojiEmotes = emojify.emojiNames.concat(Object.keys(this.twitch.emotes));
 };
 
 prepEmoji.processBTTVEmotes = function (data) {
-  var self = this;
-  data.emotes.forEach(function (el, i, arr) {
+  var _this5 = this;
+
+  data.emotes.forEach(function (el) {
     var _key = el.code.toLowerCase();
 
     if (el.code.indexOf(':') >= 0) {
@@ -218,22 +225,21 @@ prepEmoji.processBTTVEmotes = function (data) {
       _key = _key.replace(/([()])/g, "");
     }
 
-    self.bttv.emotes[_key] = el.id;
+    _this5.bttv.emotes[_key] = el.id;
   });
-  self.bttvJSONSLoaded = true;
-  self.emojiEmotes = self.emojiEmotes.concat(Object.keys(self.bttv.emotes));
+  this.bttvJSONSLoaded = true;
+  this.emojiEmotes = this.emojiEmotes.concat(Object.keys(this.bttv.emotes));
 };
 
 prepEmoji.processTastyEmotes = function (data) {
-  var self = this;
-  self.tasty.emotes = data.emotes;
-  self.tastyJSONLoaded = true;
-  self.emojiEmotes = self.emojiEmotes.concat(Object.keys(self.tasty.emotes));
+  this.tasty.emotes = data.emotes;
+  this.tastyJSONLoaded = true;
+  this.emojiEmotes = this.emojiEmotes.concat(Object.keys(this.tasty.emotes));
 };
 
 module.exports = prepEmoji;
 
-},{"../lib/settings.js":6,"../utils/getJSON.js":20}],3:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/getJSON.js":23}],3:[function(require,module,exports){
 'use strict';
 
 var _loadModules = require('./loadModules.js');
@@ -273,7 +279,7 @@ module.exports = function () {
   // dubplus.userAutoComplete();
 };
 
-},{"../utils/css.js":19,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
+},{"../utils/css.js":22,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -325,18 +331,16 @@ var loadAllModules = function loadAllModules() {
       mod.init.bind(mod)();
     }
 
-    // add the menu item to the appropriate category section
-    // if the module doesn't have the menuHTML defined then we can
-    // define it here.  This way we can get rid of boilterplate code
-    if (!mod.menuHTML) {
-      menuObj[mod.category] += menu.makeOptionMenu(mod.moduleName, {
-        id: mod.id,
-        desc: mod.description,
-        state: mod.optionState
-      });
-    } else {
-      menuObj[mod.category] += mod.menuHTML;
-    }
+    // generate the html for the menu option and add it to the
+    // appropriate category
+    menuObj[mod.category] += menu.makeOptionMenu(mod.moduleName, {
+      id: mod.id,
+      desc: mod.description,
+      state: mod.optionState,
+      extraIcon: mod.extraIcon || null,
+      cssClass: mod.menuCssClass || '',
+      altIcon: mod.altIcon || null
+    });
   });
 
   return menuObj;
@@ -344,7 +348,7 @@ var loadAllModules = function loadAllModules() {
 
 exports.default = loadAllModules;
 
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../modules/index.js":15,"../utils/options.js":22}],5:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../modules/index.js":17,"../utils/options.js":25}],5:[function(require,module,exports){
 'use strict';
 
 var options = require('../utils/options.js');
@@ -431,11 +435,12 @@ module.exports = {
 
   makeOptionMenu: function makeOptionMenu(menuTitle, options) {
     var defaults = {
-      id: '',
-      desc: '',
-      state: false,
-      extraIcon: null,
-      cssClass: ''
+      id: '', // will be the ID selector for the menu item
+      desc: '', // will be used for the "title" attribute
+      state: false, // whether the menu item is on/off
+      extraIcon: null, // define the extra icon if an option needs it (like AFK, Custom Mentions)
+      cssClass: '', // adds extra CSS class(es) if desired,
+      altIcon: null
     };
     var opts = $.extend({}, defaults, options);
     var _extra = '';
@@ -443,7 +448,16 @@ module.exports = {
     if (opts.extraIcon) {
       _extra = '<span class="fa fa-' + opts.extraIcon + ' extra-icon"></span>';
     }
-    return '\n      <li id="' + opts.id + '" class="dubplus-switch ' + _state + ' ' + opts.cssClass + ' title="' + opts.desc + '">\n        <div class="dubplus-switch-bg">\n          <div class="dubplus-switcher"></div>\'\n        </div>\n        <span class="dubplus-menu-label">' + menuTitle + '</span>\n        ' + _extra + '\n      </li>';
+
+    // default icon on the left of each menu item is the switch
+    var mainCssClass = "dubplus-switch";
+    var mainIcon = '\n        <div class="dubplus-switch-bg">\n          <div class="dubplus-switcher"></div>\'\n        </div>';
+    // however, if an "altIcon" is provided, then we use that instead
+    if (opts.altIcon) {
+      mainCssClass = "dubplus-menu-icon";
+      mainIcon = '<span class="fa fa-' + opts.altIcon + '"></span>';
+    }
+    return '\n      <li id="' + opts.id + '" class="' + mainCssClass + ' ' + _state + ' ' + opts.cssClass + ' title="' + opts.desc + '">\n        ' + mainIcon + '\n        <span class="dubplus-menu-label">' + menuTitle + '</span>\n        ' + _extra + '\n      </li>';
   },
 
   makeLinkMenu: function makeLinkMenu(menuTitle, icon, link, options) {
@@ -458,7 +472,7 @@ module.exports = {
 
 };
 
-},{"../utils/css.js":19,"../utils/options.js":22,"./settings.js":6}],6:[function(require,module,exports){
+},{"../utils/css.js":22,"../utils/options.js":25,"./settings.js":6}],6:[function(require,module,exports){
 (function (CURRENT_BRANCH){
 "use strict";
 
@@ -490,6 +504,7 @@ module.exports = $.extend({}, defaults, savedSettings);
 }).call(this,'es6')
 },{}],7:[function(require,module,exports){
 'use strict';
+
 /**
  * AFK -  Away from Keyboard
  * Toggles the afk auto response on/off
@@ -497,24 +512,16 @@ module.exports = $.extend({}, defaults, savedSettings);
  */
 
 /* global Dubtrack */
-
 var modal = require('../utils/modal.js');
 var options = require('../utils/options.js');
-var menu = require('../lib/menu.js');
 var settings = require("../lib/settings.js");
 
 var afk_module = {};
 afk_module.id = "dubplus-afk";
 afk_module.moduleName = "AFK Autorespond";
 afk_module.description = "Toggle Away from Keyboard and customize AFK message.";
-afk_module.optionState = settings.options[afk_module.id] || false;
 afk_module.category = "General";
-afk_module.menuHTML = menu.makeOptionMenu(afk_module.moduleName, {
-  id: afk_module.id,
-  desc: afk_module.description,
-  extraIcon: 'pencil',
-  state: afk_module.optionState
-});
+afk_module.extraIcon = 'pencil';
 
 var afk_chat_respond = function afk_chat_respond(e) {
   var content = e.message;
@@ -569,7 +576,7 @@ var saveAFKmessage = function saveAFKmessage() {
 afk_module.extra = function () {
   modal.create({
     title: 'Custom AFK Message',
-    content: 'Enter a custom Away From Keyboard message here',
+    content: 'Enter a custom Away From Keyboard [AFK] message here',
     value: settings.custom.customAfkMessage || '',
     placeholder: 'Be right back!',
     maxlength: '255',
@@ -579,7 +586,7 @@ afk_module.extra = function () {
 
 module.exports = afk_module;
 
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/modal.js":21,"../utils/options.js":22}],8:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/modal.js":24,"../utils/options.js":25}],8:[function(require,module,exports){
 "use strict";
 
 /* global Dubtrack */
@@ -654,7 +661,6 @@ module.exports = autovote;
  */
 
 /* global Dubtrack */
-var menu = require('../lib/menu.js');
 var settings = require("../lib/settings.js");
 var modal = require('../utils/modal.js');
 var options = require('../utils/options.js');
@@ -664,14 +670,8 @@ var myModule = {};
 myModule.id = "custom_mentions";
 myModule.moduleName = "Custom Mentions";
 myModule.description = "Toggle using custom mentions to trigger sounds in chat";
-myModule.optionState = settings.options[myModule.id] || false; // initial state from stored settings
 myModule.category = "General";
-myModule.menuHTML = menu.makeOptionMenu(myModule.moduleName, {
-  id: myModule.id,
-  desc: myModule.description,
-  extraIcon: 'pencil',
-  state: myModule.optionState
-});
+myModule.extraIcon = 'pencil';
 
 var saveCustomMentions = function saveCustomMentions() {
   var mentionsVal = $('.dp-modal textarea').val();
@@ -718,7 +718,7 @@ myModule.go = function () {
   var newOptionState;
 
   if (!this.optionState) {
-    myModule.start();
+    this.start();
     newOptionState = true;
   } else {
     Dubtrack.Events.unbind("realtime:chat-message", this.customMentionCheck);
@@ -731,30 +731,22 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/modal.js":21,"../utils/options.js":22}],10:[function(require,module,exports){
-'use strict';
+},{"../lib/settings.js":6,"../utils/modal.js":24,"../utils/options.js":25}],10:[function(require,module,exports){
+"use strict";
 
 /**
  * Autocomplete User @ Mentions in Chat
  */
 
 /* global Dubtrack */
-var menu = require('../lib/menu.js');
 var settings = require("../lib/settings.js");
 var modal = require('../utils/modal.js');
 
 var myModule = {};
-
 myModule.id = "mention_notifications";
 myModule.moduleName = "Notification on Mentions";
 myModule.description = "Enable desktop notifications when a user mentions you in chat";
-myModule.optionState = settings.options[myModule.id] || false; // initial state from stored settings
 myModule.category = "General";
-myModule.menuHTML = menu.makeOptionMenu(myModule.moduleName, {
-  id: myModule.id,
-  desc: myModule.description,
-  state: myModule.optionState
-});
 
 myModule.notifyOnMention = function (e) {
   var content = e.message;
@@ -846,32 +838,22 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/modal.js":21}],11:[function(require,module,exports){
-'use strict';
+},{"../lib/settings.js":6,"../utils/modal.js":24}],11:[function(require,module,exports){
+"use strict";
 
 /**
  * Emotes
  * Adds additional Twitch, BTTV, and Tasty Emotes to the chat window 
  */
 
-/* global Dubtrack, emojify */
-var options = require('../utils/options.js');
-var menu = require('../lib/menu.js');
+/* global Dubtrack */
 var dubplus_emoji = require('../emojiUtils/prepEmoji.js');
-var settings = require("../lib/settings.js");
 
 var emote_module = {};
-
 emote_module.id = "dubplus-emotes";
 emote_module.moduleName = "Emotes";
-emote_module.description = "Toggle additionally supported emotes in chat. (twitch, bttv, etc)";
-emote_module.optionState = settings.options[emote_module.id] || false; // initial state from stored settings
+emote_module.description = "Adds twitch and bttv emotes in chat.";
 emote_module.category = "General";
-emote_module.menuHTML = menu.makeOptionMenu(emote_module.moduleName, {
-  id: emote_module.id,
-  desc: emote_module.description,
-  state: emote_module.optionState
-});
 
 function makeImage(type, src, name, w, h) {
   return '<img class="emoji ' + type + '-emote" ' + (w ? 'width="' + w + '" ' : '') + (h ? 'height="' + h + '" ' : '') + 'title="' + name + '" alt="' + name + '" src="' + src + '" />';
@@ -901,7 +883,6 @@ var replaceTextWithEmote = function replaceTextWithEmote() {
   var emoted = $chatTarget.html().replace(_regex, function (matched, p1) {
     var _id,
         _src,
-        _desc,
         key = p1.toLowerCase();
 
     if (dubplus_emoji.twitch.emotes[key]) {
@@ -924,6 +905,9 @@ var replaceTextWithEmote = function replaceTextWithEmote() {
 };
 
 var startReplacing = function startReplacing() {
+  window.addEventListener('twitch:loaded', dubplus_emoji.loadBTTVEmotes.bind(dubplus_emoji));
+  // window.addEventListener('bttv:loaded', dubplus_emoji.loadTastyEmotes.bind(dubplus_emoji));
+
   if (!dubplus_emoji.twitchJSONSLoaded) {
     dubplus_emoji.loadTwitchEmotes();
   } else {
@@ -942,12 +926,7 @@ emote_module.init = function () {
  * Turn on/off the twitch emoji in chat
  */
 emote_module.go = function () {
-  document.body.addEventListener('twitch:loaded', dubplus_emoji.loadBTTVEmotes);
-  document.body.addEventListener('bttv:loaded', dubplus_emoji.loadTastyEmotes);
-
   var newOptionState;
-  var optionName = 'twitch_emotes';
-
   if (!emote_module.optionState) {
     startReplacing();
     newOptionState = true;
@@ -962,7 +941,7 @@ emote_module.go = function () {
 
 module.exports = emote_module;
 
-},{"../emojiUtils/prepEmoji.js":2,"../lib/menu.js":5,"../lib/settings.js":6,"../utils/options.js":22}],12:[function(require,module,exports){
+},{"../emojiUtils/prepEmoji.js":2}],12:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1013,20 +992,13 @@ module.exports = myModule;
  * Fullscreen video
  * Toggle fullscreen video mode
  */
-
-var menu = require('../lib/menu.js');
-
 var fs_module = {};
 
 fs_module.id = "dubplus-fullscreen";
 fs_module.moduleName = "Fullscreen Video";
 fs_module.description = "Toggle fullscreen video mode";
-fs_module.optionState = false;
 fs_module.category = "User Interface";
-fs_module.menuHTML = menu.makeOptionMenu(fs_module.moduleName, {
-    id: fs_module.id,
-    desc: fs_module.description
-});
+fs_module.altIcon = "arrows-alt";
 
 fs_module.go = function (e) {
     var elem = document.querySelector('.playerElement iframe');
@@ -1043,7 +1015,7 @@ fs_module.go = function (e) {
 
 module.exports = fs_module;
 
-},{"../lib/menu.js":5}],14:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1096,7 +1068,81 @@ grabs_chat.go = function () {
 
 module.exports = grabs_chat;
 
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":19,"../utils/modal.js":21}],15:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":22,"../utils/modal.js":24}],15:[function(require,module,exports){
+"use strict";
+
+/**
+ * Dubs in Chat
+ * Show down o
+ */
+
+var myModule = {};
+myModule.id = "dubplus-video-only";
+myModule.moduleName = "Hide Chat";
+myModule.description = "Toggles hiding the chat box";
+myModule.category = "User Interface";
+
+myModule.init = function () {
+  if (this.optionState) {
+    $('body').addClass('dubplus-video-only');
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    $('body').addClass('dubplus-video-only');
+  } else {
+    newOptionState = false;
+    $('body').removeClass('dubplus-video-only');
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{}],16:[function(require,module,exports){
+"use strict";
+
+/**
+ * Dubs in Chat
+ * Show down o
+ */
+
+var myModule = {};
+myModule.id = "dubplus-chat-only";
+myModule.moduleName = "Hide Video";
+myModule.description = "Toggles hiding the video box";
+myModule.category = "User Interface";
+
+myModule.init = function () {
+  if (this.optionState) {
+    $('body').addClass('dubplus-chat-only');
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    $('body').addClass('dubplus-chat-only');
+  } else {
+    newOptionState = false;
+    $('body').removeClass('dubplus-chat-only');
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{}],17:[function(require,module,exports){
 'use strict';
 
 // put this in order of appearance in the menu
@@ -1111,10 +1157,7 @@ require('./customMentions.js'), require('./desktopNotifications.js'), require('.
 require('./grabsInChat.js'), require('./snow.js'),
 
 // User Interface
-require('./fullscreen.js'),
-// require('./splitchat.js'),
-// require('./hideChat.js'),
-// require('./hideVideo.js'),
+require('./fullscreen.js'), require('./splitchat.js'), require('./hideChat.js'), require('./hideVideo.js'),
 // require('./hideAvatars.js'),
 // require('./hideBackground.js'),
 
@@ -1131,7 +1174,7 @@ require('./fullscreen.js'),
 // non-menu modules
 require('./snooze.js'), require('./eta.js')];
 
-},{"./afk.js":7,"./autovote.js":8,"./customMentions.js":9,"./desktopNotifications.js":10,"./emotes.js":11,"./eta.js":12,"./fullscreen.js":13,"./grabsInChat.js":14,"./showDubsOnHover.js":16,"./snooze.js":17,"./snow.js":18}],16:[function(require,module,exports){
+},{"./afk.js":7,"./autovote.js":8,"./customMentions.js":9,"./desktopNotifications.js":10,"./emotes.js":11,"./eta.js":12,"./fullscreen.js":13,"./grabsInChat.js":14,"./hideChat.js":15,"./hideVideo.js":16,"./showDubsOnHover.js":18,"./snooze.js":19,"./snow.js":20,"./splitchat.js":21}],18:[function(require,module,exports){
 "use strict";
 
 /* global Dubtrack */
@@ -1162,15 +1205,17 @@ dubshover.grabInfoWarning = function () {
 };
 
 dubshover.showDubsOnHover = function () {
+  var _this = this;
+
   var self = this;
 
   this.resetDubs();
 
-  Dubtrack.Events.bind("realtime:room_playlist-dub", this.dubWatcher);
-  Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabWatcher);
-  Dubtrack.Events.bind("realtime:user-leave", this.dubUserLeaveWatcher);
-  Dubtrack.Events.bind("realtime:room_playlist-update", this.resetDubs);
-  Dubtrack.Events.bind("realtime:room_playlist-update", this.resetGrabs); //TODO: Remove when we can hit the api for all grabs of current playing song
+  Dubtrack.Events.bind("realtime:room_playlist-dub", this.dubWatcher.bind(this));
+  Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabWatcher.bind(this));
+  Dubtrack.Events.bind("realtime:user-leave", this.dubUserLeaveWatcher.bind(this));
+  Dubtrack.Events.bind("realtime:room_playlist-update", this.resetDubs.bind(this));
+  Dubtrack.Events.bind("realtime:room_playlist-update", this.resetGrabs.bind(this)); //TODO: Remove when we can hit the api for all grabs of current playing song
 
   var dubupEl = $('.dubup').first().parent('li');
   var dubdownEl = $('.dubdown').first().parent('li');
@@ -1235,7 +1280,8 @@ dubshover.showDubsOnHover = function () {
     }
   });
 
-  $(dubupEl).mouseenter(function () {
+  $(dubupEl).mouseenter(function (e) {
+    var self = e.currentTarget;
     if ($("#dubplus-updubs-container").length > 0) {
       return;
     } //already exists
@@ -1262,7 +1308,7 @@ dubshover.showDubsOnHover = function () {
     newEl.style.visibility = "hidden";
     document.body.appendChild(newEl);
 
-    var elemRect = this.getBoundingClientRect();
+    var elemRect = self.getBoundingClientRect();
     var bodyRect = document.body.getBoundingClientRect();
 
     newEl.style.visibility = "";
@@ -1278,11 +1324,11 @@ dubshover.showDubsOnHover = function () {
 
     document.body.appendChild(newEl);
 
-    $(this).addClass('dubplus-updubs-hover');
+    $(self).addClass('dubplus-updubs-hover');
 
     $(document.body).on('click', '.preview-dubinfo-item', function (e) {
-      var new_text = $(this).find('.dubinfo-text')[0].innerHTML + ' ';
-      self.updateChatInputWithString(new_text);
+      var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ';
+      _this.updateChatInputWithString(new_text);
     });
 
     $('#dubinfo-preview').perfectScrollbar();
@@ -1303,7 +1349,8 @@ dubshover.showDubsOnHover = function () {
     });
   });
 
-  $(dubdownEl).mouseenter(function () {
+  $(dubdownEl).mouseenter(function (e) {
+    var self = e.currentTarget;
     if ($("#dubplus-downdubs-container").length > 0) {
       return;
     } //already exists
@@ -1312,7 +1359,7 @@ dubshover.showDubsOnHover = function () {
     var dubdownBackground = $('.dubdown').hasClass('voted') ? $('.dubdown').css('background-color') : $('.dubdown').find('.icon-arrow-down').css('color');
     var html;
 
-    if (this.userIsAtLeastMod(Dubtrack.session.id)) {
+    if (_this.userIsAtLeastMod(Dubtrack.session.id)) {
       if (window.dubplus.dubs.downDubs.length > 0) {
         html = '<ul id="dubinfo-preview" class="dubinfo-show dubplus-downdubs-hover" style="border-color: ' + dubdownBackground + '">';
         window.dubplus.dubs.downDubs.forEach(function (val) {
@@ -1333,7 +1380,7 @@ dubshover.showDubsOnHover = function () {
     newEl.style.visibility = "hidden";
     document.body.appendChild(newEl);
 
-    var elemRect = this.getBoundingClientRect();
+    var elemRect = self.getBoundingClientRect();
     var bodyRect = document.body.getBoundingClientRect();
 
     newEl.style.visibility = "";
@@ -1349,11 +1396,11 @@ dubshover.showDubsOnHover = function () {
 
     document.body.appendChild(newEl);
 
-    $(this).addClass('dubplus-downdubs-hover');
+    $(self).addClass('dubplus-downdubs-hover');
 
     $(document.body).on('click', '.preview-dubinfo-item', function (e) {
-      var new_text = $(this).find('.dubinfo-text')[0].innerHTML + ' ';
-      self.updateChatInputWithString(new_text);
+      var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ';
+      this.updateChatInputWithString(new_text);
     });
 
     $('#dubinfo-preview').perfectScrollbar();
@@ -1374,7 +1421,8 @@ dubshover.showDubsOnHover = function () {
     });
   });
 
-  $(grabEl).mouseenter(function () {
+  $(grabEl).mouseenter(function (e) {
+    var self = e.currentTarget;
     if ($("#dubplus-grabs-container").length > 0) {
       return;
     } //already exists
@@ -1404,7 +1452,7 @@ dubshover.showDubsOnHover = function () {
     newEl.style.visibility = "hidden";
     document.body.appendChild(newEl);
 
-    var elemRect = this.getBoundingClientRect();
+    var elemRect = self.getBoundingClientRect();
     var bodyRect = document.body.getBoundingClientRect();
 
     newEl.style.visibility = "";
@@ -1420,11 +1468,11 @@ dubshover.showDubsOnHover = function () {
 
     document.body.appendChild(newEl);
 
-    $(this).addClass('dubplus-grabs-hover');
+    $(self).addClass('dubplus-grabs-hover');
 
     $(document.body).on('click', '.preview-dubinfo-item', function (e) {
-      var new_text = $(this).find('.dubinfo-text')[0].innerHTML + ' ';
-      self.updateChatInputWithString(new_text);
+      var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ';
+      this.updateChatInputWithString(new_text);
     });
 
     $('#dubinfo-preview').perfectScrollbar();
@@ -1455,7 +1503,6 @@ dubshover.stopDubsOnHover = function () {
 };
 
 dubshover.dubUserLeaveWatcher = function (e) {
-  var self = this;
   //Remove user from dub list
   if ($.grep(window.dubplus.dubs.upDubs, function (el) {
     return el.userid === e.user._id;
@@ -1477,7 +1524,7 @@ dubshover.dubUserLeaveWatcher = function (e) {
       }
     });
   }
-  if ($.grep(mydubs.grabs, function (el) {
+  if ($.grep(window.dubplus.dubs.grabs, function (el) {
     return el.userid === e.user._id;
   }).length > 0) {
     $.each(window.dubplus.dubs.grabs, function (i) {
@@ -1490,7 +1537,6 @@ dubshover.dubUserLeaveWatcher = function (e) {
 };
 
 dubshover.grabWatcher = function (e) {
-  var self = this;
   //If grab already casted
   if ($.grep(window.dubplus.dubs.grabs, function (el) {
     return el.userid === e.user._id;
@@ -1586,7 +1632,8 @@ dubshover.dubWatcher = function (e) {
 };
 
 dubshover.resetDubs = function () {
-  var self = this;
+  var _this2 = this;
+
   window.dubplus.dubs.upDubs = [];
   window.dubplus.dubs.downDubs = [];
   // window.dubplus.dubs.grabs: [] //TODO: Uncomment this when we can hit the api for all grabs of current playing song
@@ -1643,7 +1690,7 @@ dubshover.resetDubs = function () {
     });*/
 
     //Only let mods or higher access down dubs
-    if (self.userIsAtLeastMod(Dubtrack.session.id)) {
+    if (_this2.userIsAtLeastMod(Dubtrack.session.id)) {
       response.data.downDubs.forEach(function (e) {
         //Dub already casted
         if ($.grep(window.dubplus.dubs.downDubs, function (el) {
@@ -1707,7 +1754,7 @@ dubshover.go = function (e) {
 
 module.exports = dubshover;
 
-},{"../utils/modal.js":21}],17:[function(require,module,exports){
+},{"../utils/modal.js":24}],19:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1774,7 +1821,7 @@ myModule.init = function () {
 
 module.exports = myModule;
 
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 var menu = require('../lib/menu.js');
@@ -1817,7 +1864,44 @@ snow.go = function (e) {
 
 module.exports = snow;
 
-},{"../lib/menu.js":5}],19:[function(require,module,exports){
+},{"../lib/menu.js":5}],21:[function(require,module,exports){
+"use strict";
+
+/**
+ * Split Chat
+ * Toggle Split chat mode
+ */
+
+var myModule = {};
+myModule.id = "dubplus-split-chat";
+myModule.moduleName = "Split Chat";
+myModule.description = "Toggle Split Chat UI enhancement";
+myModule.category = "User Interface";
+
+myModule.init = function () {
+  if (this.optionState) {
+    $('body').addClass('dubplus-split-chat');
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    $('body').addClass('dubplus-split-chat');
+  } else {
+    newOptionState = false;
+    $('body').removeClass('dubplus-split-chat');
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{}],22:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -1857,13 +1941,14 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-},{"../lib/settings.js":6}],20:[function(require,module,exports){
+},{"../lib/settings.js":6}],23:[function(require,module,exports){
 'use strict';
 
 // jQuery's getJSON kept returning errors so making my own with promise-like
 // structure and added optional Event to fire when done so can hook in elsewhere
 var GetJSON = function GetJSON(url, optionalEvent, headers) {
-  var doneEvent;
+  var doneEvent = optionalEvent ? new Event(optionalEvent) : null;
+
   function GetJ(_url, _cb) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', _url);
@@ -1880,14 +1965,12 @@ var GetJSON = function GetJSON(url, optionalEvent, headers) {
       if (typeof _cb === 'function') {
         _cb(resp);
       }
-      if (optionalEvent) {
-        document.body.dispatchEvent(doneEvent);
+      if (doneEvent) {
+        window.dispatchEvent(doneEvent);
       }
     };
   }
-  if (optionalEvent) {
-    doneEvent = new Event(optionalEvent);
-  }
+
   var done = function done(cb) {
     new GetJ(url, cb);
   };
@@ -1896,7 +1979,7 @@ var GetJSON = function GetJSON(url, optionalEvent, headers) {
 
 module.exports = GetJSON;
 
-},{}],21:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 function makeButtons(cb) {
@@ -1988,7 +2071,7 @@ module.exports = {
   close: close
 };
 
-},{}],22:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");

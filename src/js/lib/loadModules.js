@@ -44,18 +44,16 @@ var loadAllModules = function(){
       mod.init.bind(mod)(); 
     }
 
-    // add the menu item to the appropriate category section
-    // if the module doesn't have the menuHTML defined then we can
-    // define it here.  This way we can get rid of boilterplate code
-    if (!mod.menuHTML) {
-      menuObj[mod.category] += menu.makeOptionMenu(mod.moduleName, {
-        id : mod.id,
-        desc : mod.description,
-        state : mod.optionState
-      });
-    } else {
-      menuObj[mod.category] += mod.menuHTML;
-    }
+    // generate the html for the menu option and add it to the
+    // appropriate category
+    menuObj[mod.category] += menu.makeOptionMenu(mod.moduleName, {
+      id : mod.id,
+      desc : mod.description,
+      state : mod.optionState,
+      extraIcon : mod.extraIcon || null,
+      cssClass : mod.menuCssClass || '',
+      altIcon : mod.altIcon || null
+    });
 
   });
 

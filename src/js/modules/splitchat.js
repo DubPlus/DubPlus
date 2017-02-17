@@ -3,29 +3,28 @@
  * Toggle Split chat mode
  */
 
-var menu = require('../lib/menu.js');
-
 var myModule = {};
-
-myModule.id = "split_chat";
+myModule.id = "dubplus-split-chat";
 myModule.moduleName = "Split Chat";
 myModule.description = "Toggle Split Chat UI enhancement";
-myModule.optionState = false;
-myModule.category = "ui";
-myModule.menuHTML = menu.makeStandardMenuHTML(myModule.id, myModule.description, myModule.id, myModule.moduleName);
+myModule.category = "User Interface";
 
-
+myModule.init = function(){
+  if (this.optionState) {
+    $('body').addClass('dubplus-split-chat');
+  }
+};
 
 myModule.go = function() {
   var newOptionState;
 
   if (!this.optionState) {
     newOptionState = true;
-    $('.chat-main').addClass('splitChat');
+    $('body').addClass('dubplus-split-chat');
 
   } else {
     newOptionState = false;
-    $('.chat-main').removeClass('splitChat');
+    $('body').removeClass('dubplus-split-chat');
   }
 
   this.optionState = newOptionState;

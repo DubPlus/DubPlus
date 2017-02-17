@@ -88,7 +88,7 @@
 .dubplus-menu-icon a {
   text-decoration: none; }
 
-.dubplus-menu-icon span {
+.dubplus-menu-icon .fa {
   position: relative;
   color: #eb008b;
   width: 25px;
@@ -322,12 +322,12 @@
   .dubplus-split-chat .chat-main li:nth-child(2n) .chatDelete {
     right: 1.7em !important; }
 
-.split {
+.dubplus-split-chat .split {
   background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, transparent 100%);
   box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
   width: 100%; }
 
-.splitfix {
+.dubplus-split-chat .splitfix {
   right: 1.7em !important; }
 
 /****************************************************
@@ -372,7 +372,7 @@
   background-image: url(http://i.imgur.com/oTfAI0O.png); }
 
 .tasty-previews {
-  background-image: url(https://raw.githubusercontent.com/DubPlus/DubPlus/master/emotes/tastycat/21.png); }
+  background-image: url(https://raw.githubusercontent.com/DubPlus/DubPlus/es6/emotes/tastycat/21.png); }
 
 #autocomplete-preview span {
   font-size: 0.8em;

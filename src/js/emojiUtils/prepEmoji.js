@@ -1,5 +1,4 @@
-'use strict';
-/* global Dubtrack, emojify */
+/* global  emojify */
 
 var GetJSON = require('../utils/getJSON.js');
 var settings = require("../lib/settings.js");
@@ -24,6 +23,7 @@ prepEmoji.tasty = {
   template: function(id) { return this.emotes[id].url; },
   emotes: {}
 };
+
 prepEmoji.shouldUpdateAPIs = function(apiName){
   var day = 86400000; // milliseconds in a day
 
@@ -41,101 +41,96 @@ prepEmoji.shouldUpdateAPIs = function(apiName){
   // does the data not exist in localStorage, then we should update
   return isNaN(lastSaved) || today - lastSaved > day * 5 || !savedItem;
 };
+
 /**************************************************************************
 * Loads the twitch emotes from the api.
 * http://api.twitch.tv/kraken/chat/emoticon_images
 */
 prepEmoji.loadTwitchEmotes = function(){
-  var self = this;
   var savedData;
   // if it doesn't exist in localStorage or it's older than 5 days
   // grab it from the twitch API
-  if (self.shouldUpdateAPIs('twitch')) {
+  if (this.shouldUpdateAPIs('twitch')) {
     console.log('dub+','twitch','loading from api');
     var twApi = new GetJSON('https://api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded', {'Client-ID': '5vhafslpr2yqal6715puzysmzrntmt8'});
-    twApi.done(function(data){
+    twApi.done((data)=>{
       localStorage.setItem('twitch_api_timestamp', Date.now().toString());
       localStorage.setItem('twitch_api', data);
-      self.processTwitchEmotes(JSON.parse(data));
+      this.processTwitchEmotes(JSON.parse(data));
     });
   } else {
     console.log('dub+','twitch','loading from localstorage');
     savedData = JSON.parse(localStorage.getItem('twitch_api'));
-    self.processTwitchEmotes(savedData);
+    this.processTwitchEmotes(savedData);
     savedData = null; // clear the var from memory
     var twEvent = new Event('twitch:loaded');
-    document.body.dispatchEvent(twEvent);
+    window.dispatchEvent(twEvent);
   }
 
 };
 
 prepEmoji.loadBTTVEmotes = function(){
-  var self = this;
   var savedData;
   // if it doesn't exist in localStorage or it's older than 5 days
   // grab it from the bttv API
-  if (self.shouldUpdateAPIs('bttv')) {
-      console.log('dub+','bttv','loading from api');
-      var bttvApi = new GetJSON('//api.betterttv.net/2/emotes', 'bttv:loaded');
-      bttvApi.done(function(data){
-          localStorage.setItem('bttv_api_timestamp', Date.now().toString());
-          localStorage.setItem('bttv_api', data);
-          self.processBTTVEmotes(JSON.parse(data));
-      });
+  if (this.shouldUpdateAPIs('bttv')) {
+    console.log('dub+','bttv','loading from api');
+    var bttvApi = new GetJSON('//api.betterttv.net/2/emotes', 'bttv:loaded');
+    bttvApi.done((data)=>{
+        localStorage.setItem('bttv_api_timestamp', Date.now().toString());
+        localStorage.setItem('bttv_api', data);
+        this.processBTTVEmotes(JSON.parse(data));
+    });
   } else {
-      console.log('dub+','bttv','loading from localstorage');
-      savedData = JSON.parse(localStorage.getItem('bttv_api'));
-      self.processBTTVEmotes(savedData);
-      savedData = null; // clear the var from memory
-      var twEvent = new Event('bttv:loaded');
-      document.body.dispatchEvent(twEvent);
+    console.log('dub+','bttv','loading from localstorage');
+    savedData = JSON.parse(localStorage.getItem('bttv_api'));
+    this.processBTTVEmotes(savedData);
+    savedData = null; // clear the var from memory
+    var twEvent = new Event('bttv:loaded');
+    window.dispatchEvent(twEvent);
   }
 
 };
 
 prepEmoji.loadTastyEmotes = function(){
-  var self = this;
-  var savedData;
   console.log('dub+','tasty','loading from api');
   // since we control this API we should always have it load from remote
   var tastyApi = new GetJSON(settings.srcRoot + '/emotes/tastyemotes.json', 'tasty:loaded');
-  tastyApi.done(function(data){
-      localStorage.setItem('tasty_api', data);
-      self.processTastyEmotes(JSON.parse(data));
+  tastyApi.done((data)=>{
+    localStorage.setItem('tasty_api', data);
+    this.processTastyEmotes(JSON.parse(data));
   });
 };
 
 prepEmoji.processTwitchEmotes = function(data) {
-  var self = this;
-  data.emoticons.forEach(function(el,i,arr){
-      var _key = el.code.toLowerCase();
+  data.emoticons.forEach((el)=>{
+    var _key = el.code.toLowerCase();
 
-      // move twitch non-named emojis to their own array
-      if (el.code.indexOf('\\') >= 0) {
-          self.twitch.specialEmotes.push([el.code, el.id]);
-          return;
-      }
+    // move twitch non-named emojis to their own array
+    if (el.code.indexOf('\\') >= 0) {
+      this.twitch.specialEmotes.push([el.code, el.id]);
+      return;
+    }
 
-      if (emojify.emojiNames.indexOf(_key) >= 0) {
-          return; // do nothing so we don't override emoji
-      }
+    if (emojify.emojiNames.indexOf(_key) >= 0) {
+      return; // do nothing so we don't override emoji
+    }
 
-      if (!self.twitch.emotes[_key]){
-          // if emote doesn't exist, add it
-          self.twitch.emotes[_key] = el.id;
-      } else if (el.emoticon_set === null) {
-          // override if it's a global emote (null set = global emote)
-          self.twitch.emotes[_key] = el.id;
-      }
+    if (!this.twitch.emotes[_key]){
+      // if emote doesn't exist, add it
+      this.twitch.emotes[_key] = el.id;
+    } else if (el.emoticon_set === null) {
+      // override if it's a global emote (null set = global emote)
+      this.twitch.emotes[_key] = el.id;
+    }
 
   });
-  self.twitchJSONSLoaded = true;
-  self.emojiEmotes = emojify.emojiNames.concat(Object.keys(self.twitch.emotes));
+  this.twitchJSONSLoaded = true;
+  this.emojiEmotes = emojify.emojiNames.concat(Object.keys(this.twitch.emotes));
 };
 
 prepEmoji.processBTTVEmotes = function(data){
-  var self = this;
-  data.emotes.forEach(function(el,i,arr){
+  data.emotes.forEach((el)=>{
     var _key = el.code.toLowerCase();
 
     if (el.code.indexOf(':') >= 0) {
@@ -150,18 +145,17 @@ prepEmoji.processBTTVEmotes = function(data){
         _key = _key.replace(/([()])/g, "");
     }
 
-    self.bttv.emotes[_key] = el.id;
+    this.bttv.emotes[_key] = el.id;
 
   });
-  self.bttvJSONSLoaded = true;
-  self.emojiEmotes = self.emojiEmotes.concat(Object.keys(self.bttv.emotes));
+  this.bttvJSONSLoaded = true;
+  this.emojiEmotes = this.emojiEmotes.concat(Object.keys(this.bttv.emotes));
 };
 
 prepEmoji.processTastyEmotes = function(data) {
-  var self = this;
-  self.tasty.emotes = data.emotes;
-  self.tastyJSONLoaded = true;
-  self.emojiEmotes = self.emojiEmotes.concat(Object.keys(self.tasty.emotes));
+  this.tasty.emotes = data.emotes;
+  this.tastyJSONLoaded = true;
+  this.emojiEmotes = this.emojiEmotes.concat(Object.keys(this.tasty.emotes));
 };
 
 module.exports = prepEmoji;

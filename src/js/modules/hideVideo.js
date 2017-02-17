@@ -1,31 +1,29 @@
 /**
- * Hide Video
- * Toggle hiding of the Video box.
+ * Dubs in Chat
+ * Show down o
  */
 
-/* global Dubtrack */
-var menu = require('../lib/menu.js');
-var css = require('../utils/css.js');
-
 var myModule = {};
-
-myModule.id = "chat_window";
+myModule.id = "dubplus-chat-only";
 myModule.moduleName = "Hide Video";
-myModule.description = "Toggle hiding of the video box.";
-myModule.optionState = false;
-myModule.category = "ui";
-myModule.menuHTML = menu.makeStandardMenuHTML(myModule.id, myModule.description, myModule.id, myModule.moduleName);
+myModule.description = "Toggles hiding the video box";
+myModule.category = "User Interface";
 
+myModule.init = function(){
+  if (this.optionState) {
+    $('body').addClass('dubplus-chat-only');
+  }
+};
 
 myModule.go = function() {
   var newOptionState;
 
-  if(!this.optionState) {
-    newOptionState= true;
-    css.load('/css/options/chat_window.css', "chat_window_link");
+  if (!this.optionState) {
+    newOptionState = true;
+    $('body').addClass('dubplus-chat-only');
   } else {
-    newOptionState= false;
-    $('.chat_window_link').remove();
+    newOptionState = false;
+    $('body').removeClass('dubplus-chat-only');
   }
 
   this.optionState = newOptionState;

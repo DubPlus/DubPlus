@@ -1,4 +1,3 @@
-'use strict';
 /**
  * AFK -  Away from Keyboard
  * Toggles the afk auto response on/off
@@ -8,21 +7,14 @@
 /* global Dubtrack */
 var modal = require('../utils/modal.js');
 var options = require('../utils/options.js');
-var menu = require('../lib/menu.js');
 var settings = require("../lib/settings.js");
 
 var afk_module = {};
 afk_module.id = "dubplus-afk";
 afk_module.moduleName = "AFK Autorespond";
 afk_module.description = "Toggle Away from Keyboard and customize AFK message.";
-afk_module.optionState = settings.options[afk_module.id] || false;
 afk_module.category = "General";
-afk_module.menuHTML = menu.makeOptionMenu(afk_module.moduleName, {
-    id : afk_module.id,
-    desc : afk_module.description,
-    extraIcon : 'pencil',
-    state : afk_module.optionState
-  });
+afk_module.extraIcon = 'pencil';
 
 var afk_chat_respond = function(e) {
   var content = e.message;
@@ -77,7 +69,7 @@ var saveAFKmessage = function() {
 afk_module.extra = function() {
   modal.create({
     title: 'Custom AFK Message',
-    content: 'Enter a custom Away From Keyboard message here',
+    content: 'Enter a custom Away From Keyboard [AFK] message here',
     value : settings.custom.customAfkMessage || '',
     placeholder: 'Be right back!',
     maxlength: '255',

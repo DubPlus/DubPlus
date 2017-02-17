@@ -108,11 +108,12 @@ module.exports = {
 
   makeOptionMenu : function(menuTitle, options){
     var defaults = {
-      id : '',
-      desc : '',
-      state : false, 
-      extraIcon : null,
-      cssClass : ''
+      id : '',  // will be the ID selector for the menu item
+      desc : '', // will be used for the "title" attribute
+      state : false,  // whether the menu item is on/off
+      extraIcon : null, // define the extra icon if an option needs it (like AFK, Custom Mentions)
+      cssClass : '', // adds extra CSS class(es) if desired,
+      altIcon : null
     };
     var opts  = $.extend({}, defaults, options);
     var _extra = '';
@@ -120,11 +121,21 @@ module.exports = {
     if (opts.extraIcon) {
       _extra = `<span class="fa fa-${opts.extraIcon} extra-icon"></span>`;
     }
-    return `
-      <li id="${opts.id}" class="dubplus-switch ${_state} ${opts.cssClass} title="${opts.desc}">
+
+    // default icon on the left of each menu item is the switch
+    var mainCssClass = "dubplus-switch";
+    var mainIcon = `
         <div class="dubplus-switch-bg">
           <div class="dubplus-switcher"></div>'
-        </div>
+        </div>`;
+    // however, if an "altIcon" is provided, then we use that instead
+    if (opts.altIcon) {
+      mainCssClass = "dubplus-menu-icon";
+      mainIcon = `<span class="fa fa-${opts.altIcon}"></span>`;
+    }
+    return `
+      <li id="${opts.id}" class="${mainCssClass} ${_state} ${opts.cssClass} title="${opts.desc}">
+        ${mainIcon}
         <span class="dubplus-menu-label">${menuTitle}</span>
         ${_extra}
       </li>`;
