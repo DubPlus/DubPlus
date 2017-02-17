@@ -552,8 +552,9 @@
 .dubplus-hide-avatars #header-global .header-right-navigation {
   padding-top: 5px !important; }
 
-.dubplus-show-timestamp #chat .chat-container .chat-messages .chat-main li .meta-info .timeinfo {
-  display: block !important; }
+.dubplus-show-timestamp #chat .timeinfo {
+  display: block !important;
+  opacity: 1 !important; }
 
 .dubplus-video-only .right_section {
   display: none !important; }

@@ -2,30 +2,28 @@
  * Hide Avatars
  * Toggle hiding user avatars in the chat box.
  */
-
-/* global Dubtrack */
-var menu = require('../lib/menu.js');
-var css = require('../utils/css.js');
-
 var myModule = {};
 
-myModule.id = "hide_avatars";
+myModule.id = "dubplus-hide-avatars";
 myModule.moduleName = "Hide Avatars";
 myModule.description = "Toggle hiding user avatars in the chat box.";
-myModule.optionState = false;
-myModule.category = "ui";
-myModule.menuHTML = menu.makeStandardMenuHTML(myModule.id, myModule.description, myModule.id, myModule.moduleName);
+myModule.category = "User Interface";
 
+myModule.init = function(){
+  if (this.optionState) {
+    $('body').addClass('dubplus-hide-avatars');
+  }
+};
 
 myModule.go = function() {
   var newOptionState;
 
   if(!this.optionState) {
     newOptionState= true;
-    css.load('/css/options/hide_avatars.css', 'hide_avatars_link');
+    $('body').addClass('dubplus-hide-avatars');
   } else {
     newOptionState= false;
-    $('.hide_avatars_link').remove();
+    $('body').removeClass('dubplus-hide-avatars');
   }
 
   this.optionState = newOptionState;

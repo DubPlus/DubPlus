@@ -3,19 +3,18 @@
  * toggle hiding background image
  */
 
-/* global Dubtrack */
-var menu = require('../lib/menu.js');
-var settings = require("../lib/settings.js");
-
 var myModule = {};
-
-myModule.id = "medium_disable";
+myModule.id = "dubplus-hide-bg";
 myModule.moduleName = "Hide Background";
 myModule.description = "Toggle hiding background image.";
-myModule.optionState = false;
-myModule.category = "ui";
-myModule.menuHTML = menu.makeStandardMenuHTML(myModule.id, myModule.description, myModule.id, myModule.moduleName);
+myModule.category = "User Interface";
 
+myModule.init = function() {
+  if (this.optionState) {
+    $('.backstretch').hide();
+    $('.medium').hide();
+  }
+};
 
 myModule.go = function() {
   var newOptionState;

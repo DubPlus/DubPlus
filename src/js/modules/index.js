@@ -19,12 +19,12 @@ module.exports = [
   require('./splitchat.js'),
   require('./hideChat.js'),
   require('./hideVideo.js'),
-  // require('./hideAvatars.js'),
-  // require('./hideBackground.js'),
+  require('./hideAvatars.js'),
+  require('./hideBackground.js'),
+  require('./showTimestamps.js'),
   
-  // // Settings
+  // Settings
   // require('./spacebarMute.js'),
-  // require('./showTimestamps.js'),
   // require('./warnOnNavigation.js'),
 
   // // Customize

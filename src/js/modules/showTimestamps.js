@@ -3,29 +3,27 @@
  * Toggle always showing chat message timestamps.
  */
 
-/* global Dubtrack */
-var menu = require('../lib/menu.js');
-var css = require('../utils/css.js');
-
 var myModule = {};
-
-myModule.id = "show_timestamps";
+myModule.id = "dubplus-show-timestamp";
 myModule.moduleName = "Show Timestamps";
 myModule.description = "Toggle always showing chat message timestamps.";
-myModule.optionState = false;
-myModule.category = "settings";
-myModule.menuHTML = menu.makeStandardMenuHTML(myModule.id, myModule.description, myModule.id, myModule.moduleName);
+myModule.category = "User Interface";
 
+myModule.init = function() {
+  if (this.optionState) {
+    $('body').addClass('dubplus-show-timestamp');
+  }
+};
 
 myModule.go = function() {
   var newOptionState;
 
   if (!this.optionState) {
     newOptionState = true;
-    css.load( "/css/options/show_timestamps.css", "show_timestamps_link");
+    $('body').addClass('dubplus-show-timestamp');
   } else {
     newOptionState = false;
-    $('.show_timestamps_link').remove();
+    $('body').removeClass('dubplus-show-timestamp');
   }
 
   this.optionState = newOptionState;

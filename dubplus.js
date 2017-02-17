@@ -58,7 +58,7 @@ if (!window.dubplus && Dubtrack.session.id) {
   });
 }
 
-},{"./lib/init.js":3,"./utils/css.js":22,"./utils/modal.js":24}],2:[function(require,module,exports){
+},{"./lib/init.js":3,"./utils/css.js":25,"./utils/modal.js":27}],2:[function(require,module,exports){
 'use strict';
 
 /* global  emojify */
@@ -239,7 +239,7 @@ prepEmoji.processTastyEmotes = function (data) {
 
 module.exports = prepEmoji;
 
-},{"../lib/settings.js":6,"../utils/getJSON.js":23}],3:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/getJSON.js":26}],3:[function(require,module,exports){
 'use strict';
 
 var _loadModules = require('./loadModules.js');
@@ -279,7 +279,7 @@ module.exports = function () {
   // dubplus.userAutoComplete();
 };
 
-},{"../utils/css.js":22,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
+},{"../utils/css.js":25,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -348,7 +348,7 @@ var loadAllModules = function loadAllModules() {
 
 exports.default = loadAllModules;
 
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../modules/index.js":17,"../utils/options.js":25}],5:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../modules/index.js":19,"../utils/options.js":28}],5:[function(require,module,exports){
 'use strict';
 
 var options = require('../utils/options.js');
@@ -472,7 +472,7 @@ module.exports = {
 
 };
 
-},{"../utils/css.js":22,"../utils/options.js":25,"./settings.js":6}],6:[function(require,module,exports){
+},{"../utils/css.js":25,"../utils/options.js":28,"./settings.js":6}],6:[function(require,module,exports){
 (function (CURRENT_BRANCH){
 "use strict";
 
@@ -586,7 +586,7 @@ afk_module.extra = function () {
 
 module.exports = afk_module;
 
-},{"../lib/settings.js":6,"../utils/modal.js":24,"../utils/options.js":25}],8:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/modal.js":27,"../utils/options.js":28}],8:[function(require,module,exports){
 "use strict";
 
 /* global Dubtrack */
@@ -731,7 +731,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":6,"../utils/modal.js":24,"../utils/options.js":25}],10:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/modal.js":27,"../utils/options.js":28}],10:[function(require,module,exports){
 "use strict";
 
 /**
@@ -838,7 +838,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":6,"../utils/modal.js":24}],11:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/modal.js":27}],11:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1068,7 +1068,84 @@ grabs_chat.go = function () {
 
 module.exports = grabs_chat;
 
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":22,"../utils/modal.js":24}],15:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":25,"../utils/modal.js":27}],15:[function(require,module,exports){
+"use strict";
+
+/**
+ * Hide Avatars
+ * Toggle hiding user avatars in the chat box.
+ */
+var myModule = {};
+
+myModule.id = "dubplus-hide-avatars";
+myModule.moduleName = "Hide Avatars";
+myModule.description = "Toggle hiding user avatars in the chat box.";
+myModule.category = "User Interface";
+
+myModule.init = function () {
+  if (this.optionState) {
+    $('body').addClass('dubplus-hide-avatars');
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    $('body').addClass('dubplus-hide-avatars');
+  } else {
+    newOptionState = false;
+    $('body').removeClass('dubplus-hide-avatars');
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{}],16:[function(require,module,exports){
+"use strict";
+
+/**
+ * Hide Background
+ * toggle hiding background image
+ */
+
+var myModule = {};
+myModule.id = "dubplus-hide-bg";
+myModule.moduleName = "Hide Background";
+myModule.description = "Toggle hiding background image.";
+myModule.category = "User Interface";
+
+myModule.init = function () {
+  if (this.optionState) {
+    $('.backstretch').hide();
+    $('.medium').hide();
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    $('.backstretch').hide();
+    $('.medium').hide();
+  } else {
+    newOptionState = false;
+    $('.backstretch').show();
+    $('.medium').show();
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{}],17:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1105,7 +1182,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1142,7 +1219,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 
 // put this in order of appearance in the menu
@@ -1157,13 +1234,10 @@ require('./customMentions.js'), require('./desktopNotifications.js'), require('.
 require('./grabsInChat.js'), require('./snow.js'),
 
 // User Interface
-require('./fullscreen.js'), require('./splitchat.js'), require('./hideChat.js'), require('./hideVideo.js'),
-// require('./hideAvatars.js'),
-// require('./hideBackground.js'),
+require('./fullscreen.js'), require('./splitchat.js'), require('./hideChat.js'), require('./hideVideo.js'), require('./hideAvatars.js'), require('./hideBackground.js'), require('./showTimestamps.js'),
 
-// // Settings
+// Settings
 // require('./spacebarMute.js'),
-// require('./showTimestamps.js'),
 // require('./warnOnNavigation.js'),
 
 // // Customize
@@ -1174,7 +1248,7 @@ require('./fullscreen.js'), require('./splitchat.js'), require('./hideChat.js'),
 // non-menu modules
 require('./snooze.js'), require('./eta.js')];
 
-},{"./afk.js":7,"./autovote.js":8,"./customMentions.js":9,"./desktopNotifications.js":10,"./emotes.js":11,"./eta.js":12,"./fullscreen.js":13,"./grabsInChat.js":14,"./hideChat.js":15,"./hideVideo.js":16,"./showDubsOnHover.js":18,"./snooze.js":19,"./snow.js":20,"./splitchat.js":21}],18:[function(require,module,exports){
+},{"./afk.js":7,"./autovote.js":8,"./customMentions.js":9,"./desktopNotifications.js":10,"./emotes.js":11,"./eta.js":12,"./fullscreen.js":13,"./grabsInChat.js":14,"./hideAvatars.js":15,"./hideBackground.js":16,"./hideChat.js":17,"./hideVideo.js":18,"./showDubsOnHover.js":20,"./showTimestamps.js":21,"./snooze.js":22,"./snow.js":23,"./splitchat.js":24}],20:[function(require,module,exports){
 "use strict";
 
 /* global Dubtrack */
@@ -1754,7 +1828,44 @@ dubshover.go = function (e) {
 
 module.exports = dubshover;
 
-},{"../utils/modal.js":24}],19:[function(require,module,exports){
+},{"../utils/modal.js":27}],21:[function(require,module,exports){
+"use strict";
+
+/**
+ * Show Timestamps
+ * Toggle always showing chat message timestamps.
+ */
+
+var myModule = {};
+myModule.id = "dubplus-show-timestamp";
+myModule.moduleName = "Show Timestamps";
+myModule.description = "Toggle always showing chat message timestamps.";
+myModule.category = "User Interface";
+
+myModule.init = function () {
+  if (this.optionState) {
+    $('body').addClass('dubplus-show-timestamp');
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    $('body').addClass('dubplus-show-timestamp');
+  } else {
+    newOptionState = false;
+    $('body').removeClass('dubplus-show-timestamp');
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{}],22:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1821,7 +1932,7 @@ myModule.init = function () {
 
 module.exports = myModule;
 
-},{}],20:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 var menu = require('../lib/menu.js');
@@ -1864,7 +1975,7 @@ snow.go = function (e) {
 
 module.exports = snow;
 
-},{"../lib/menu.js":5}],21:[function(require,module,exports){
+},{"../lib/menu.js":5}],24:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1901,7 +2012,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],22:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -1941,7 +2052,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-},{"../lib/settings.js":6}],23:[function(require,module,exports){
+},{"../lib/settings.js":6}],26:[function(require,module,exports){
 'use strict';
 
 // jQuery's getJSON kept returning errors so making my own with promise-like
@@ -1979,7 +2090,7 @@ var GetJSON = function GetJSON(url, optionalEvent, headers) {
 
 module.exports = GetJSON;
 
-},{}],24:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 function makeButtons(cb) {
@@ -2071,7 +2182,7 @@ module.exports = {
   close: close
 };
 
-},{}],25:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
