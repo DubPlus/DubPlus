@@ -1,5 +1,4 @@
-'use strict';
-var modules = require('./loadModules.js');
+import loadAllModules from './loadModules.js';
 var css = require('../utils/css.js');
 var menu = require('./menu.js');
 
@@ -16,13 +15,13 @@ module.exports = function(){
   // what is this for?
   // $('.icon-mute.snooze_btn:after').css({"content": "1", "vertical-align": "top", "font-size": "0.75rem", "font-weight": "700"});
 
-  // make menu before loading the modules
+  // Get the opening html for the menu
   var menuString = menu.beginMenu();
 
   // load all our modules into the 'dubplus' global object
   // it also builds the menu dynamically
   // returns an object to be passed to menu.finish
-  var menuObj = modules.loadAllModulesTo('dubplus');
+  var menuObj = loadAllModules();
 
   // finalize the menu and add it to the UI
   menu.finishMenu(menuObj, menuString);

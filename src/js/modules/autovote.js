@@ -1,20 +1,9 @@
-'use strict';
 /* global Dubtrack */
-var menu = require('../lib/menu.js');
-var settings = require("../lib/settings.js");
-
 var autovote = {};
-
 autovote.id = "dubplus-autovote";
 autovote.moduleName = "Autovote";
 autovote.description = "Toggles auto upvoting for every song";
-autovote.optionState = settings.options[autovote.id] || false; // initial state from stored settings
 autovote.category = "General";
-autovote.menuHTML = menu.makeOptionMenu(autovote.moduleName, {
-    id : autovote.id,
-    desc : autovote.description,
-    state : autovote.optionState
-  });
 
 /*******************************************************/
 // add any custom functions to this module

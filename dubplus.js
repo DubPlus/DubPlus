@@ -236,7 +236,12 @@ module.exports = prepEmoji;
 },{"../lib/settings.js":6,"../utils/getJSON.js":20}],3:[function(require,module,exports){
 'use strict';
 
-var modules = require('./loadModules.js');
+var _loadModules = require('./loadModules.js');
+
+var _loadModules2 = _interopRequireDefault(_loadModules);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var css = require('../utils/css.js');
 var menu = require('./menu.js');
 
@@ -253,13 +258,13 @@ module.exports = function () {
   // what is this for?
   // $('.icon-mute.snooze_btn:after').css({"content": "1", "vertical-align": "top", "font-size": "0.75rem", "font-weight": "700"});
 
-  // make menu before loading the modules
+  // Get the opening html for the menu
   var menuString = menu.beginMenu();
 
   // load all our modules into the 'dubplus' global object
   // it also builds the menu dynamically
   // returns an object to be passed to menu.finish
-  var menuObj = modules.loadAllModulesTo('dubplus');
+  var menuObj = (0, _loadModules2.default)();
 
   // finalize the menu and add it to the UI
   menu.finishMenu(menuObj, menuString);
@@ -271,8 +276,13 @@ module.exports = function () {
 },{"../utils/css.js":19,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 var options = require('../utils/options.js');
 var dubPlus_modules = require('../modules/index.js');
+var settings = require("../lib/settings.js");
+var menu = require('../lib/menu.js');
 
 var menuObj = {
   'General': '',
@@ -282,31 +292,31 @@ var menuObj = {
 };
 
 /**
- * Loads all the modules in /modules and initliazes them
- * @param  {Object} globalObject The target global object that modules will be added to.  In our case it will be window.dubplus
+ * Loads all the modules and initliazes them
  */
-var loadAllModulesTo = function loadAllModulesTo(globalObject) {
-  if (typeof window[globalObject] === "undefined") {
-    window[globalObject] = {};
-  }
+var loadAllModules = function loadAllModules() {
+  window.dubplus = {};
 
   dubPlus_modules.forEach(function (mod) {
     // add each module to the new global object
-    window[globalObject][mod.id] = mod;
+    window.dubplus[mod.id] = mod;
     // add the toggleAndSave function as a member of each module
-    window[globalObject][mod.id].toggleAndSave = options.toggleAndSave;
+    window.dubplus[mod.id].toggleAndSave = options.toggleAndSave;
 
     // add event listener
     if (typeof mod.go === 'function' || typeof mod.extra === 'function') {
       $('body').on('click', '#' + mod.id, function (ev) {
         // if clicking on the "extra-icon", run module's "extra" function
-        if (ev.target.classList.contains('extra-icon') && mod.extra) {
-          mod.extra.bind(mod)();
+        if (ev.target.classList.contains('extra-icon') && typeof mod.extra === 'function') {
+          mod.extra.call(mod);
         } else if (mod.go) {
-          mod.go.bind(mod)();
+          mod.go.call(mod);
         }
       });
     }
+
+    // check stored settings for module's initial state
+    mod.optionState = settings.options[mod.id] || false;
 
     // This is run only once, when the script is loaded.
     // this is also where you should check stored settings 
@@ -316,7 +326,15 @@ var loadAllModulesTo = function loadAllModulesTo(globalObject) {
     }
 
     // add the menu item to the appropriate category section
-    if (mod.menuHTML && mod.category && typeof menuObj[mod.category] === "string") {
+    // if the module doesn't have the menuHTML defined then we can
+    // define it here.  This way we can get rid of boilterplate code
+    if (!mod.menuHTML) {
+      menuObj[mod.category] += menu.makeOptionMenu(mod.moduleName, {
+        id: mod.id,
+        desc: mod.description,
+        state: mod.optionState
+      });
+    } else {
       menuObj[mod.category] += mod.menuHTML;
     }
   });
@@ -324,11 +342,9 @@ var loadAllModulesTo = function loadAllModulesTo(globalObject) {
   return menuObj;
 };
 
-module.exports = {
-  loadAllModulesTo: loadAllModulesTo
-};
+exports.default = loadAllModules;
 
-},{"../modules/index.js":15,"../utils/options.js":22}],5:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../modules/index.js":15,"../utils/options.js":22}],5:[function(require,module,exports){
 'use strict';
 
 var options = require('../utils/options.js');
@@ -344,7 +360,7 @@ if (settings.menu.contact === "closed") {
 }
 
 // the contact section is hardcoded and setup up here
-var contactSection = ['<div id="dubplus-contact" class="dubplus-menu-section-header">', '<span class="fa fa-angle-' + arrow + '"></span>', '<p>Contact</p>', '</div>', '<ul class="dubplus-menu-section ' + isClosedClass + '">', '<li class="dubplus-menu-icon">', '<span class="fa fa-bug"></span>', '<a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>', '</li>', '<li class="dubplus-menu-icon">', '<span class="fa fa-facebook"></span>', '<a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>', '</li>', '<li class="dubplus-menu-icon">', '<span class="fa fa-twitter"></span>', '<a href="https://twitter.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Twitter</a>', '</li>', '</ul>'].join('');
+var contactSection = '\n  <div id="dubplus-contact" class="dubplus-menu-section-header">\n      <span class="fa fa-angle-' + arrow + '"></span>\n      <p>Contact</p>\n    </div>\n    <ul class="dubplus-menu-section ' + isClosedClass + '">\n      <li class="dubplus-menu-icon">\n        <span class="fa fa-bug"></span>\n        <a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>\n      </li>\n       <li class="dubplus-menu-icon">\n        <span class="fa fa-facebook"></span>\n        <a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>\n      </li>\n      <li class="dubplus-menu-icon">\n        <span class="fa fa-twitter"></span>\n        <a href="https://twitter.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Twitter</a>\n      </li>\n    </ul>';
 
 module.exports = {
   beginMenu: function beginMenu() {
@@ -361,7 +377,7 @@ module.exports = {
     });
 
     // make the menu
-    var dp_menu_html = ['<section class="dubplus-menu dubplus-open">', '<p class="dubplus-menu-header">Dub+ Settings</p>'].join('');
+    var dp_menu_html = '\n      <section class="dubplus-menu dubplus-open">\n          <p class="dubplus-menu-header">Dub+ Settings</p>';
 
     return dp_menu_html;
   },
@@ -380,7 +396,7 @@ module.exports = {
         arrow = "right";
       }
 
-      menuString += ['<div id="' + id + '" class="dubplus-menu-section-header">', '<span class="fa fa-angle-' + arrow + '"></span>', '<p>' + category + '</p>', '</div>', '<ul class="dubplus-menu-section ' + isClosedClass + '">'].join('');
+      menuString += '\n        <div id="' + id + '" class="dubplus-menu-section-header">\n          <span class="fa fa-angle-' + arrow + '"></span>\n          <p>' + category + '</p>\n        </div>\n        <ul class="dubplus-menu-section ' + isClosedClass + '">';
       menuString += menuObj[category];
       menuString += '</ul>';
     }
@@ -427,7 +443,7 @@ module.exports = {
     if (opts.extraIcon) {
       _extra = '<span class="fa fa-' + opts.extraIcon + ' extra-icon"></span>';
     }
-    return ['<li id="' + opts.id + '" class="dubplus-switch ' + _state + ' ' + opts.cssClass + '" title="' + opts.desc + '">', '<div class="dubplus-switch-bg">', '<div class="dubplus-switcher"></div>', '</div>', '<span class="dubplus-menu-label">' + menuTitle + '</span>', _extra, '</li>'].join('');
+    return '\n      <li id="' + opts.id + '" class="dubplus-switch ' + _state + ' ' + opts.cssClass + ' title="' + opts.desc + '">\n        <div class="dubplus-switch-bg">\n          <div class="dubplus-switcher"></div>\'\n        </div>\n        <span class="dubplus-menu-label">' + menuTitle + '</span>\n        ' + _extra + '\n      </li>';
   },
 
   makeLinkMenu: function makeLinkMenu(menuTitle, icon, link, options) {
@@ -437,18 +453,18 @@ module.exports = {
       cssClass: ''
     };
     var opts = $.extend({}, defaults, options);
-    return ['<li id="' + opts.id + '" class="dubplus-menu-icon ' + opts.cssClass + '" title="' + opts.desc + '">', '<span class="fa fa-' + icon + '"></span>', '<a href="' + link + '" class="dubplus-menu-label" target="_blank">' + menuTitle + '</a>', '</li>'].join('');
+    return '\n      <li id="' + opts.id + '" class="dubplus-menu-icon ' + opts.cssClass + ' title="' + opts.desc + '">\n        <span class="fa fa-' + icon + '"></span>\n        <a href="' + link + '" class="dubplus-menu-label" target="_blank">' + menuTitle + '</a>\n      </li>';
   }
 
 };
 
 },{"../utils/css.js":19,"../utils/options.js":22,"./settings.js":6}],6:[function(require,module,exports){
 (function (CURRENT_BRANCH){
-'use strict';
+"use strict";
 
 var defaults = {
   our_version: '0.1.0',
-  srcRoot: 'https://rawgit.com/FranciscoG/DubPlus/' + CURRENT_BRANCH,
+  srcRoot: "https://rawgit.com/FranciscoG/DubPlus/" + CURRENT_BRANCH,
   // this will store all the on/off states
   options: {},
   // this will store the open/close state of the menu sections
@@ -564,24 +580,14 @@ afk_module.extra = function () {
 module.exports = afk_module;
 
 },{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/modal.js":21,"../utils/options.js":22}],8:[function(require,module,exports){
-'use strict';
+"use strict";
+
 /* global Dubtrack */
-
-var menu = require('../lib/menu.js');
-var settings = require("../lib/settings.js");
-
 var autovote = {};
-
 autovote.id = "dubplus-autovote";
 autovote.moduleName = "Autovote";
 autovote.description = "Toggles auto upvoting for every song";
-autovote.optionState = settings.options[autovote.id] || false; // initial state from stored settings
 autovote.category = "General";
-autovote.menuHTML = menu.makeOptionMenu(autovote.moduleName, {
-  id: autovote.id,
-  desc: autovote.description,
-  state: autovote.optionState
-});
 
 /*******************************************************/
 // add any custom functions to this module
@@ -640,7 +646,7 @@ autovote.start = function () {
 
 module.exports = autovote;
 
-},{"../lib/menu.js":5,"../lib/settings.js":6}],9:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1126,32 +1132,16 @@ require('./fullscreen.js'),
 require('./snooze.js'), require('./eta.js')];
 
 },{"./afk.js":7,"./autovote.js":8,"./customMentions.js":9,"./desktopNotifications.js":10,"./emotes.js":11,"./eta.js":12,"./fullscreen.js":13,"./grabsInChat.js":14,"./showDubsOnHover.js":16,"./snooze.js":17,"./snow.js":18}],16:[function(require,module,exports){
-'use strict';
-/* global Dubtrack, dubplus */
+"use strict";
 
-var menu = require('../lib/menu.js');
+/* global Dubtrack */
 var modal = require('../utils/modal.js');
-var settings = require("../lib/settings.js");
 
 var dubshover = {};
-
 dubshover.id = "dubplus-dubs-hover";
 dubshover.moduleName = "Show Dub info on Hover";
 dubshover.description = "Show Dub info on Hover.";
-dubshover.optionState = settings.options[dubshover.id] || false; // initial state from stored settings
 dubshover.category = "General";
-dubshover.menuHTML = menu.makeOptionMenu(dubshover.moduleName, {
-  id: dubshover.id,
-  desc: dubshover.description
-});
-
-// tracking dub off our global scope which I'm not happy about 
-// but it'll do for now
-window.dubplus.dubs = {
-  upDubs: [],
-  downDubs: [],
-  grabs: []
-};
 
 /*******************************/
 
@@ -1683,6 +1673,13 @@ dubshover.resetDubs = function () {
 /************************************************************/
 
 dubshover.init = function () {
+
+  window.dubplus.dubs = {
+    upDubs: [],
+    downDubs: [],
+    grabs: []
+  };
+
   if (this.optionState === true) {
     this.grabInfoWarning();
     this.showDubsOnHover();
@@ -1710,7 +1707,7 @@ dubshover.go = function (e) {
 
 module.exports = dubshover;
 
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/modal.js":21}],17:[function(require,module,exports){
+},{"../utils/modal.js":21}],17:[function(require,module,exports){
 "use strict";
 
 /**

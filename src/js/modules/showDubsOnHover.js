@@ -1,31 +1,13 @@
-'use strict';
-/* global Dubtrack, dubplus */
-var menu = require('../lib/menu.js');
+/* global Dubtrack */
 var modal = require('../utils/modal.js');
-var settings = require("../lib/settings.js");
 
 var dubshover = {};
-
 dubshover.id = "dubplus-dubs-hover";
 dubshover.moduleName = "Show Dub info on Hover";
 dubshover.description = "Show Dub info on Hover.";
-dubshover.optionState = settings.options[dubshover.id] || false; // initial state from stored settings
 dubshover.category = "General";
-dubshover.menuHTML = menu.makeOptionMenu(dubshover.moduleName, {
-    id : dubshover.id,
-    desc : dubshover.description
-  });
-
-// tracking dub off our global scope which I'm not happy about 
-// but it'll do for now
-window.dubplus.dubs = {
-  upDubs: [],
-  downDubs: [],
-  grabs: [],
-};
 
 /*******************************/
-
 
 dubshover.resetGrabs = function(){
   window.dubplus.dubs.grabs = []; //TODO: Remove when we can hit the api for all grabs of current playing song
@@ -554,6 +536,13 @@ dubshover.resetDubs = function(){
 /************************************************************/
 
 dubshover.init = function(){
+
+  window.dubplus.dubs = {
+    upDubs: [],
+    downDubs: [],
+    grabs: [],
+  };
+
   if (this.optionState === true) {
     this.grabInfoWarning();
     this.showDubsOnHover();
