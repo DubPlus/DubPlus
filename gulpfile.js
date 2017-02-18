@@ -43,7 +43,8 @@ gulp.task('build', function() {
   var options = {
     insertGlobalVars: { 
       // insert the branch name as a module scoped variable
-      CURRENT_BRANCH: function () { return "'" + CURRENT_BRANCH + "'"; }
+      CURRENT_BRANCH: function () { return "'" + CURRENT_BRANCH + "'"; },
+      TIME_STAMP : function() { return  "'" +  Date.now() + "'";}
     }
   };
   

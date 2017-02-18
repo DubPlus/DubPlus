@@ -11,8 +11,8 @@ var settings = require("../lib/settings.js");
 var load = function(cssFile, className){
   if (!cssFile) {return;}
   var src =  settings.srcRoot + cssFile;
-  var cn = 'class="'+className+'"' || '';
-  $('head').append('<link '+cn+' rel="stylesheet" type="text/css" href="'+src+'">');
+  var cn = `class="${className}"` || '';
+  $('head').append(`<link ${cn} rel="stylesheet" type="text/css" href="${src}?${TIME_STAMP}">`);
 };
 
 /**

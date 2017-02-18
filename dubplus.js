@@ -2776,6 +2776,7 @@ myModule.go = function () {
 module.exports = myModule;
 
 },{}],34:[function(require,module,exports){
+(function (TIME_STAMP){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -2793,7 +2794,7 @@ var load = function load(cssFile, className) {
   }
   var src = settings.srcRoot + cssFile;
   var cn = 'class="' + className + '"' || '';
-  $('head').append('<link ' + cn + ' rel="stylesheet" type="text/css" href="' + src + '">');
+  $('head').append('<link ' + cn + ' rel="stylesheet" type="text/css" href="' + src + '?' + TIME_STAMP + '">');
 };
 
 /**
@@ -2815,6 +2816,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
+}).call(this,'1487391288895')
 },{"../lib/settings.js":7}],35:[function(require,module,exports){
 'use strict';
 
