@@ -272,8 +272,6 @@ var updateChatInput = function updateChatInput(str) {
 var doNavigate = function doNavigate(diff) {
     var displayBoxIndex = $('.preview-item.selected').index();
 
-    console.log('initial', displayBoxIndex);
-
     displayBoxIndex += diff;
     var oBoxCollection = $(".ac-show li");
 
@@ -286,7 +284,7 @@ var doNavigate = function doNavigate(diff) {
     if (displayBoxIndex < 0) {
         displayBoxIndex = oBoxCollection.length - 1;
     }
-    console.log('possibly altered', displayBoxIndex);
+
     var cssClass = "selected";
     var enterToSelectSpan = '<span class="ac-list-press-enter">press enter to select</span>';
     oBoxCollection.removeClass(cssClass).eq(displayBoxIndex).addClass(cssClass).append(enterToSelectSpan);
@@ -2816,7 +2814,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487391288895')
+}).call(this,'1487438507937')
 },{"../lib/settings.js":7}],35:[function(require,module,exports){
 'use strict';
 

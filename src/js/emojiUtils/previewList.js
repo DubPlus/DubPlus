@@ -27,8 +27,6 @@ var updateChatInput = function(str){
 
 var doNavigate = function(diff) {
   var displayBoxIndex = $('.preview-item.selected').index();
-
-  console.log('initial', displayBoxIndex);
   
   displayBoxIndex += diff;
   var oBoxCollection = $(".ac-show li");
@@ -37,12 +35,12 @@ var doNavigate = function(diff) {
   $('.ac-list-press-enter').remove();
 
   if (displayBoxIndex >= oBoxCollection.length){
-      displayBoxIndex = 0;
+    displayBoxIndex = 0;
   }
   if (displayBoxIndex < 0){
-      displayBoxIndex = oBoxCollection.length - 1;
-   }
-  console.log('possibly altered', displayBoxIndex);
+    displayBoxIndex = oBoxCollection.length - 1;
+  }
+  
   var cssClass = "selected";
   var enterToSelectSpan = '<span class="ac-list-press-enter">press enter to select</span>';
   oBoxCollection.removeClass(cssClass).eq(displayBoxIndex).addClass(cssClass).append(enterToSelectSpan);
