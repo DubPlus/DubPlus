@@ -22,7 +22,11 @@ var contactSection = `
         <span class="fa fa-bug"></span>
         <a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>
       </li>
-       <li class="dubplus-menu-icon">
+      <li class="dubplus-menu-icon">
+        <span class="fa fa-reddit-alien"></span>
+        <a href="https://www.reddit.com/r/DubPlus/" class="dubplus-menu-label"  target="_blank">Reddit</a>
+      </li>
+      <li class="dubplus-menu-icon">
         <span class="fa fa-facebook"></span>
         <a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>
       </li>

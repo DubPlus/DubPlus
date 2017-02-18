@@ -536,7 +536,7 @@ if (settings.menu.contact === "closed") {
 }
 
 // the contact section is hardcoded and setup up here
-var contactSection = '\n  <div id="dubplus-contact" class="dubplus-menu-section-header">\n      <span class="fa fa-angle-' + arrow + '"></span>\n      <p>Contact</p>\n    </div>\n    <ul class="dubplus-menu-section ' + isClosedClass + '">\n      <li class="dubplus-menu-icon">\n        <span class="fa fa-bug"></span>\n        <a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>\n      </li>\n       <li class="dubplus-menu-icon">\n        <span class="fa fa-facebook"></span>\n        <a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>\n      </li>\n      <li class="dubplus-menu-icon">\n        <span class="fa fa-twitter"></span>\n        <a href="https://twitter.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Twitter</a>\n      </li>\n    </ul>';
+var contactSection = '\n  <div id="dubplus-contact" class="dubplus-menu-section-header">\n      <span class="fa fa-angle-' + arrow + '"></span>\n      <p>Contact</p>\n    </div>\n    <ul class="dubplus-menu-section ' + isClosedClass + '">\n      <li class="dubplus-menu-icon">\n        <span class="fa fa-bug"></span>\n        <a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>\n      </li>\n      <li class="dubplus-menu-icon">\n        <span class="fa fa-reddit-alien"></span>\n        <a href="https://www.reddit.com/r/DubPlus/" class="dubplus-menu-label"  target="_blank">Reddit</a>\n      </li>\n      <li class="dubplus-menu-icon">\n        <span class="fa fa-facebook"></span>\n        <a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>\n      </li>\n      <li class="dubplus-menu-icon">\n        <span class="fa fa-twitter"></span>\n        <a href="https://twitter.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Twitter</a>\n      </li>\n    </ul>';
 
 module.exports = {
   beginMenu: function beginMenu() {
@@ -2814,7 +2814,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487443041459')
+}).call(this,'1487443274243')
 },{"../lib/settings.js":7}],35:[function(require,module,exports){
 'use strict';
 
