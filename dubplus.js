@@ -58,7 +58,7 @@ if (!window.dubplus && Dubtrack.session.id) {
   });
 }
 
-},{"./lib/init.js":3,"./utils/css.js":31,"./utils/modal.js":33}],2:[function(require,module,exports){
+},{"./lib/init.js":3,"./utils/css.js":32,"./utils/modal.js":34}],2:[function(require,module,exports){
 'use strict';
 
 /* global  emojify */
@@ -239,7 +239,7 @@ prepEmoji.processTastyEmotes = function (data) {
 
 module.exports = prepEmoji;
 
-},{"../lib/settings.js":6,"../utils/getJSON.js":32}],3:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/getJSON.js":33}],3:[function(require,module,exports){
 'use strict';
 
 var _loadModules = require('./loadModules.js');
@@ -290,7 +290,7 @@ module.exports = function () {
   // dubplus.userAutoComplete();
 };
 
-},{"../modules/eta.js":16,"../modules/snooze.js":26,"../utils/css.js":31,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
+},{"../modules/eta.js":16,"../modules/snooze.js":26,"../utils/css.js":32,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -359,7 +359,7 @@ var loadAllModules = function loadAllModules() {
 
 exports.default = loadAllModules;
 
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../modules/index.js":23,"../utils/options.js":35}],5:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../modules/index.js":23,"../utils/options.js":36}],5:[function(require,module,exports){
 'use strict';
 
 var options = require('../utils/options.js');
@@ -483,7 +483,7 @@ module.exports = {
 
 };
 
-},{"../utils/css.js":31,"../utils/options.js":35,"./settings.js":6}],6:[function(require,module,exports){
+},{"../utils/css.js":32,"../utils/options.js":36,"./settings.js":6}],6:[function(require,module,exports){
 (function (CURRENT_BRANCH){
 "use strict";
 
@@ -597,7 +597,7 @@ afk_module.extra = function () {
 
 module.exports = afk_module;
 
-},{"../lib/settings.js":6,"../utils/modal.js":33,"../utils/options.js":35}],8:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/modal.js":34,"../utils/options.js":36}],8:[function(require,module,exports){
 "use strict";
 
 /* global Dubtrack */
@@ -727,7 +727,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../utils/css.js":31}],10:[function(require,module,exports){
+},{"../utils/css.js":32}],10:[function(require,module,exports){
 'use strict';
 
 /**
@@ -810,7 +810,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":6,"../utils/modal.js":33,"../utils/options.js":35}],11:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/modal.js":34,"../utils/options.js":36}],11:[function(require,module,exports){
 'use strict';
 
 /**
@@ -879,7 +879,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":6,"../utils/css.js":31,"../utils/modal.js":33,"../utils/options.js":35}],12:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/css.js":32,"../utils/modal.js":34,"../utils/options.js":36}],12:[function(require,module,exports){
 'use strict';
 
 /**
@@ -957,7 +957,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":6,"../utils/modal.js":33,"../utils/options.js":35}],13:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/modal.js":34,"../utils/options.js":36}],13:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1064,7 +1064,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":6,"../utils/modal.js":33}],14:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/modal.js":34}],14:[function(require,module,exports){
 "use strict";
 
 var _modcheck = require("../utils/modcheck.js");
@@ -1081,7 +1081,7 @@ var myModule = {}; /**
 /*global Dubtrack */
 
 myModule.id = "dubplus-downdubs";
-myModule.moduleName = "Show Downdubs in Chat (mods only)";
+myModule.moduleName = "Downdubs in Chat (mods only)";
 myModule.description = "Toggle showing downdubs in the chat box (mods only)";
 myModule.category = "General";
 
@@ -1092,7 +1092,7 @@ myModule.downdubWatcher = function (e) {
   }).attributes._user.username;
 
   if (user === currentDj && e.dubtype === 'downdub') {
-    var newChat = "\n      <li class=\"dubx-chat-system dubx-chat-system-downdub\">\n        <div class=\"chatDelete\" onclick=\"dubplus.deleteChatMessageClientSide(this)\"><span class=\"icon-close\"></span></div>\n        <div class=\"text\">\n          @" + e.user.username + " has downdubbed your song " + Dubtrack.room.player.activeSong.attributes.songInfo.name + "\n        </div>\n      </li>";
+    var newChat = "\n      <li class=\"dubplus-chat-system dubplus-chat-system-downdub\">\n        <div class=\"chatDelete\" onclick=\"dubplus.deleteChatMessageClientSide(this)\">\n          <span class=\"icon-close\"></span>\n        </div>\n        <div class=\"text\">\n          @" + e.user.username + " has downdubbed your song " + Dubtrack.room.player.activeSong.attributes.songInfo.name + "\n        </div>\n      </li>";
 
     $('ul.chat-main').append(newChat);
   }
@@ -1103,7 +1103,7 @@ myModule.start = function () {
     return;
   }
 
-  Dubtrack.Events.bind("realtime:room_playlist-dub", this.downdubWatcher.bind(this));
+  Dubtrack.Events.bind("realtime:room_playlist-dub", this.downdubWatcher);
 
   // add this function to our global dubplus object so that downdubbed chat
   // items can be deleted
@@ -1137,7 +1137,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../utils/modcheck.js":34}],15:[function(require,module,exports){
+},{"../utils/modcheck.js":35}],15:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1306,29 +1306,20 @@ fs_module.go = function (e) {
 module.exports = fs_module;
 
 },{}],18:[function(require,module,exports){
-'use strict';
+"use strict";
 
 /**
  * Grabs in Chat
  */
 
 /* global Dubtrack */
-var menu = require('../lib/menu.js');
-var css = require('../utils/css.js');
-var modal = require('../utils/modal.js');
-var settings = require("../lib/settings.js");
 
 var grabs_chat = {};
 
-grabs_chat.id = "grabChat";
+grabs_chat.id = "dubplus-grab-chat";
 grabs_chat.moduleName = "Grabs in Chat";
 grabs_chat.description = "Puts a message in the chat when another user grabs your song";
-grabs_chat.optionState = false;
 grabs_chat.category = "General";
-grabs_chat.menuHTML = menu.makeOptionMenu(grabs_chat.moduleName, {
-    id: 'dubplus-grabs-chat',
-    desc: grabs_chat.description
-});
 
 grabs_chat.grabChatWatcher = function (e) {
     var user = Dubtrack.session.get('username');
@@ -1358,7 +1349,7 @@ grabs_chat.go = function () {
 
 module.exports = grabs_chat;
 
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":31,"../utils/modal.js":33}],19:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1518,8 +1509,7 @@ require('./autovote.js'), require('./afk.js'), require('./emotes.js'),
 // autocomplete emoji
 // autocomplete mentions
 require('./customMentions.js'), require('./desktopNotifications.js'), require('./showDubsOnHover.js'), require('./downDubInChat.js'), // (mod only)
-// Updubs in chat
-require('./grabsInChat.js'), require('./snow.js'),
+require('./upDubInChat.js'), require('./grabsInChat.js'), require('./snow.js'),
 
 // User Interface
 require('./fullscreen.js'), require('./splitchat.js'), require('./hideChat.js'), require('./hideVideo.js'), require('./hideAvatars.js'), require('./hideBackground.js'), require('./showTimestamps.js'),
@@ -1530,7 +1520,7 @@ require('./spacebarMute.js'), require('./warnOnNavigation.js'),
 // // Customize
 require('./communityTheme.js'), require('./customCSS.js'), require('./customBackground.js')];
 
-},{"./afk.js":7,"./autovote.js":8,"./communityTheme.js":9,"./customBackground.js":10,"./customCSS.js":11,"./customMentions.js":12,"./desktopNotifications.js":13,"./downDubInChat.js":14,"./emotes.js":15,"./fullscreen.js":17,"./grabsInChat.js":18,"./hideAvatars.js":19,"./hideBackground.js":20,"./hideChat.js":21,"./hideVideo.js":22,"./showDubsOnHover.js":24,"./showTimestamps.js":25,"./snow.js":27,"./spacebarMute.js":28,"./splitchat.js":29,"./warnOnNavigation.js":30}],24:[function(require,module,exports){
+},{"./afk.js":7,"./autovote.js":8,"./communityTheme.js":9,"./customBackground.js":10,"./customCSS.js":11,"./customMentions.js":12,"./desktopNotifications.js":13,"./downDubInChat.js":14,"./emotes.js":15,"./fullscreen.js":17,"./grabsInChat.js":18,"./hideAvatars.js":19,"./hideBackground.js":20,"./hideChat.js":21,"./hideVideo.js":22,"./showDubsOnHover.js":24,"./showTimestamps.js":25,"./snow.js":27,"./spacebarMute.js":28,"./splitchat.js":29,"./upDubInChat.js":30,"./warnOnNavigation.js":31}],24:[function(require,module,exports){
 'use strict';
 
 var _modcheck = require('../utils/modcheck.js');
@@ -2109,7 +2099,7 @@ dubshover.go = function (e) {
 
 module.exports = dubshover;
 
-},{"../utils/modal.js":33,"../utils/modcheck.js":34}],25:[function(require,module,exports){
+},{"../utils/modal.js":34,"../utils/modcheck.js":35}],25:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2334,6 +2324,69 @@ module.exports = myModule;
 "use strict";
 
 /**
+ * Show downvotes in chat
+ * only mods can use this
+ */
+
+/*global Dubtrack */
+var myModule = {};
+myModule.id = "dubplus-updubs";
+myModule.moduleName = "Updubs in Chat";
+myModule.description = "Toggle showing updubs in the chat box";
+myModule.category = "General";
+
+myModule.updubWatcher = function (e) {
+  var user = Dubtrack.session.get('username');
+  var currentDj = Dubtrack.room.users.collection.findWhere({
+    userid: Dubtrack.room.player.activeSong.attributes.song.userid
+  }).attributes._user.username;
+
+  if (user === currentDj && e.dubtype === 'downdub') {
+    var newChat = "\n      <li class=\"dubplus-chat-system dubplus-chat-system-updub\">\n        <div class=\"chatDelete\" onclick=\"dubplus.deleteChatMessageClientSide(this)\">\n          <span class=\"icon-close\"></span>\n        </div>\n        <div class=\"text\">\n          @" + e.user.username + " has updubbed your song " + Dubtrack.room.player.activeSong.attributes.songInfo.name + "\n        </div>\n      </li>";
+
+    $('ul.chat-main').append(newChat);
+  }
+};
+
+myModule.start = function () {
+  Dubtrack.Events.bind("realtime:room_playlist-dub", this.updubWatcher);
+
+  // add this function to our global dubplus object so that downdubbed chat
+  // items can be deleted
+  if (typeof window.dubplus.deleteChatMessageClientSide !== 'function') {
+    window.dubplus.deleteChatMessageClientSide = function (el) {
+      $(el).parent('li')[0].remove();
+    };
+  }
+};
+
+myModule.init = function () {
+  if (this.optionState) {
+    this.start();
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    this.start();
+  } else {
+    newOptionState = false;
+    Dubtrack.Events.unbind("realtime:room_playlist-dub", this.updubWatcher);
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{}],31:[function(require,module,exports){
+"use strict";
+
+/**
  * Warn on Navigation
  * Warns you when accidentally clicking on a link that takes you out of dubtrack
  */
@@ -2374,7 +2427,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -2414,7 +2467,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-},{"../lib/settings.js":6}],32:[function(require,module,exports){
+},{"../lib/settings.js":6}],33:[function(require,module,exports){
 'use strict';
 
 // jQuery's getJSON kept returning errors so making my own with promise-like
@@ -2452,7 +2505,7 @@ var GetJSON = function GetJSON(url, optionalEvent, headers) {
 
 module.exports = GetJSON;
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 function makeButtons(cb) {
@@ -2544,7 +2597,7 @@ module.exports = {
   close: close
 };
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2555,7 +2608,7 @@ exports.default = function (userid) {
   return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
 };
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");

@@ -10,7 +10,7 @@ module.exports = [
   require('./desktopNotifications.js'),
   require('./showDubsOnHover.js'),
   require('./downDubInChat.js'), // (mod only)
-  // Updubs in chat
+  require('./upDubInChat.js'),
   require('./grabsInChat.js'),
   require('./snow.js'),
   

@@ -79,10 +79,13 @@
   position: relative;
   height: 14px;
   margin: 20px 0; }
+  .dubplus-switch:before, .dubplus-switch:after,
+  .dubplus-menu-icon:before,
+  .dubplus-menu-icon:after {
+    content: " ";
+    display: table; }
   .dubplus-switch:after,
   .dubplus-menu-icon:after {
-    content: "";
-    display: table;
     clear: both; }
 
 .dubplus-menu-icon a {

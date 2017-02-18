@@ -4,15 +4,13 @@
  */
 
 /*global Dubtrack */
-import userIsAtLeastMod from '../utils/modcheck.js';
-
 var myModule = {};
-myModule.id = "dubplus-downdubs";
-myModule.moduleName = "Downdubs in Chat (mods only)";
-myModule.description = "Toggle showing downdubs in the chat box (mods only)";
+myModule.id = "dubplus-updubs";
+myModule.moduleName = "Updubs in Chat";
+myModule.description = "Toggle showing updubs in the chat box";
 myModule.category = "General";
 
-myModule.downdubWatcher = function(e) {
+myModule.updubWatcher = function(e) {
   var user = Dubtrack.session.get('username');
   var currentDj = Dubtrack.room.users.collection.findWhere({
     userid: Dubtrack.room.player.activeSong.attributes.song.userid
@@ -20,12 +18,12 @@ myModule.downdubWatcher = function(e) {
 
   if(user === currentDj && e.dubtype === 'downdub'){
     let newChat = `
-      <li class="dubplus-chat-system dubplus-chat-system-downdub">
+      <li class="dubplus-chat-system dubplus-chat-system-updub">
         <div class="chatDelete" onclick="dubplus.deleteChatMessageClientSide(this)">
           <span class="icon-close"></span>
         </div>
         <div class="text">
-          @${e.user.username} has downdubbed your song ${Dubtrack.room.player.activeSong.attributes.songInfo.name}
+          @${e.user.username} has updubbed your song ${Dubtrack.room.player.activeSong.attributes.songInfo.name}
         </div>
       </li>`;
 
@@ -34,11 +32,7 @@ myModule.downdubWatcher = function(e) {
 };
 
 myModule.start = function() {
-  if(!userIsAtLeastMod(Dubtrack.session.id)) {
-    return;
-  }
-
-  Dubtrack.Events.bind("realtime:room_playlist-dub", this.downdubWatcher);
+  Dubtrack.Events.bind("realtime:room_playlist-dub", this.updubWatcher);
 
   // add this function to our global dubplus object so that downdubbed chat
   // items can be deleted
@@ -64,7 +58,7 @@ myModule.go = function() {
     this.start();
   } else {
     newOptionState = false;
-    Dubtrack.Events.unbind("realtime:room_playlist-dub", this.downdubWatcher);
+    Dubtrack.Events.unbind("realtime:room_playlist-dub", this.updubWatcher);
   }
 
   this.optionState = newOptionState;

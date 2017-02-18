@@ -112,11 +112,16 @@ $buttonBorderOn : #6fcbdc;
   height: $height;
   margin: 20px 0;
 
+  &:before,
   &:after {
-    content: "";
+    content: " ";
     display: table;
+  }
+
+  &:after {
     clear: both;
   }
+
 }
 .dubplus-menu-icon a {
   text-decoration: none;
