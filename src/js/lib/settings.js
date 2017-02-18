@@ -1,6 +1,6 @@
 var defaults = {
   our_version : '0.1.0',
-  srcRoot: `https://rawgit.com/FranciscoG/DubPlus/${CURRENT_BRANCH}`,
+  srcRoot: `https://rawgit.com/${CURRENT_REPO}/DubPlus/${CURRENT_BRANCH}`,
   // this will store all the on/off states
   options : {},
   // this will store the open/close state of the menu sections

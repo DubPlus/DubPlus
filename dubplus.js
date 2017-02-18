@@ -645,12 +645,12 @@ module.exports = {
 };
 
 },{"../utils/css.js":34,"../utils/options.js":38,"./settings.js":7}],7:[function(require,module,exports){
-(function (CURRENT_BRANCH){
+(function (CURRENT_BRANCH,CURRENT_REPO){
 "use strict";
 
 var defaults = {
   our_version: '0.1.0',
-  srcRoot: "https://rawgit.com/FranciscoG/DubPlus/" + CURRENT_BRANCH,
+  srcRoot: "https://rawgit.com/" + CURRENT_REPO + "/DubPlus/" + CURRENT_BRANCH,
   // this will store all the on/off states
   options: {},
   // this will store the open/close state of the menu sections
@@ -673,7 +673,7 @@ if (_storageRaw) {
 
 module.exports = $.extend({}, defaults, savedSettings);
 
-}).call(this,'dev')
+}).call(this,'dev','FranciscoG')
 },{}],8:[function(require,module,exports){
 'use strict';
 
@@ -2814,7 +2814,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487438507937')
+}).call(this,'1487443041459')
 },{"../lib/settings.js":7}],35:[function(require,module,exports){
 'use strict';
 

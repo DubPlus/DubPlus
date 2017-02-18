@@ -48,7 +48,7 @@
 }
 
 .tasty-previews {
-  background-image: url(https://raw.githubusercontent.com/DubPlus/DubPlus/#{$build_branch}/emotes/tastycat/21.png);
+  background-image: url(https://raw.githubusercontent.com/#{$build_repo}/DubPlus/#{$build_branch}/emotes/tastycat/21.png);
 }
 
 #autocomplete-preview span {

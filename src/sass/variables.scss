@@ -26,8 +26,7 @@ $roleAvatarListText : (
   owner : "Dub+ TEAM  -  "
 );
 
-// use env variavle BRANCH when building sass using gulp
-// example:
-// env BRANCH=master gulp sass
-// if env BRANCH is not set it will default to 'master'
+// just in case we need some branch and repo specific variable
+// you can use these
 $build_branch : '/* @echo BRANCH */';
+$build_repo : '/* @echo REPO */';
