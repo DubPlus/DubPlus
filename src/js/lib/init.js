@@ -32,6 +32,4 @@ module.exports = function(){
   // run non-menu related items here:
   snooze();
   eta();
-  // dubplus.previewListInit();
-  // dubplus.userAutoComplete();
 };

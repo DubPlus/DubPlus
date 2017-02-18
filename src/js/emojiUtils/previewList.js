@@ -1,4 +1,3 @@
-/* global dubplus, Dubtrack, emojify */
 /**
  * previewList
  * 
@@ -9,25 +8,29 @@
  * and also placing selected text into the chat
  */
 
+// var css = require('../utils/css.js');
+
 var updateChatInput = function(str){
-    var inputText = $("#chat-txt-message").val();
-    var updatedText = inputText.split(' ').map(function(c,i,r){
-        var fullStr = str.toLowerCase();
-        var partialStr = c.toLowerCase();
-        if (fullStr.indexOf(partialStr) === 0) { 
-            return str;
-        } else {
-            return c;
-        }
-    });
-    $('#autocomplete-preview').empty().removeClass('ac-show');
-    $("#chat-txt-message").val(updatedText.join(' ') + ' ').focus();
+  var inputText = $("#chat-txt-message").val();
+  var updatedText = inputText.split(' ').map(function(c,i,r){
+      var fullStr = str.toLowerCase();
+      var partialStr = c.toLowerCase();
+      if (fullStr.indexOf(partialStr) === 0) { 
+          return str;
+      } else {
+          return c;
+      }
+  });
+  $('#autocomplete-preview').empty().removeClass('ac-show');
+  $("#chat-txt-message").val(updatedText.join(' ') + ' ').focus();
 };
 
-var displayBoxIndex = -1;
 var doNavigate = function(diff) {
-  var self = this;
-  self.displayBoxIndex += diff;
+  var displayBoxIndex = $('.preview-item.selected').index();
+
+  console.log('initial', displayBoxIndex);
+  
+  displayBoxIndex += diff;
   var oBoxCollection = $(".ac-show li");
   
   // remove "press enter to select" span
@@ -36,12 +39,14 @@ var doNavigate = function(diff) {
   if (displayBoxIndex >= oBoxCollection.length){
       displayBoxIndex = 0;
   }
-  if (self.displayBoxIndex < 0){
+  if (displayBoxIndex < 0){
       displayBoxIndex = oBoxCollection.length - 1;
    }
+  console.log('possibly altered', displayBoxIndex);
   var cssClass = "selected";
   var enterToSelectSpan = '<span class="ac-list-press-enter">press enter to select</span>';
-  oBoxCollection.removeClass(cssClass).eq(self.displayBoxIndex).addClass(cssClass).append(enterToSelectSpan).focus();
+  oBoxCollection.removeClass(cssClass).eq(displayBoxIndex).addClass(cssClass).append(enterToSelectSpan);
+  $('.preview-item.selected').get(0).scrollIntoView(false);
 };
 
 var previewListKeyUp = function(e){
@@ -75,9 +80,7 @@ var previewListKeyUp = function(e){
  *   alt : OPTIONAL, to add to alt and title tag
  * }
  */
-var previewList = function(acArray) {
-    var self = this;
-
+var display = function(acArray) {
     function makePreviewContainer(cn){
         var d = document.createElement('li');
         d.className = cn;
@@ -118,33 +121,41 @@ var previewList = function(acArray) {
 
     var aCp =  document.getElementById('autocomplete-preview');
     aCp.innerHTML = "";
-    self.displayBoxIndex = -1;
     var frag = document.createDocumentFragment();
 
-    acArray.forEach(function(val,i,arr){
-        frag.appendChild(makeLi(val));
+    acArray.forEach(function(val){
+      frag.appendChild(makeLi(val));
     });
 
     aCp.appendChild(frag);
     aCp.classList.add('ac-show');
 };
 
-var previewListInit = function(){
-    $('head').prepend('<link rel="stylesheet" type="text/css" href="'+dubplus.srcRoot+'/css/options/autocomplete.css">');
-    var acUL = document.createElement('ul');
-    acUL.id = "autocomplete-preview";
-    $('.pusher-chat-widget-input').prepend(acUL);
+var updater = function(e) {
+  var new_text = $(this).find('.ac-text')[0].textContent;
+  updateChatInput(new_text);
+};
 
-    $(document.body).on('click', '.preview-item', function(e){
-        var new_text = $(this).find('.ac-text')[0].textContent;
-        updateChatInput(new_text);
-    });
+var init = function(){
+  var acUL = document.createElement('ul');
+  acUL.id = "autocomplete-preview";
+  $('.pusher-chat-widget-input').prepend(acUL);
 
-    $(document.body).on('keyup', '.ac-show', previewListKeyUp);
+  $(document.body).on('click', '.preview-item', updater);
+  $(document.body).on('keyup', '.ac-show', previewListKeyUp);
+};
+
+
+var stop = function(){
+  $(document.body).off('click', '.preview-item', updater);
+  $(document.body).off('keyup', '.ac-show', previewListKeyUp);
+  $('#autocomplete-preview').remove();
 };
 
 module.exports = {
-  previewListInit: previewListInit,
-  previewList: previewList,
-  updateChatInput: updateChatInput
+  init: init,
+  stop : stop,
+  display: display,
+  updateChatInput: updateChatInput,
+  doNavigate : doNavigate
 };

@@ -49,7 +49,7 @@ module.exports = {
     // make the menu
     var dp_menu_html = `
       <section class="dubplus-menu dubplus-open">
-          <p class="dubplus-menu-header">Dub+ Settings</p>`;
+          <p class="dubplus-menu-header">Dub+ Options</p>`;
 
     return dp_menu_html;
   },

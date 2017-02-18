@@ -58,7 +58,7 @@ if (!window.dubplus && Dubtrack.session.id) {
   });
 }
 
-},{"./lib/init.js":3,"./utils/css.js":32,"./utils/modal.js":34}],2:[function(require,module,exports){
+},{"./lib/init.js":4,"./utils/css.js":34,"./utils/modal.js":36}],2:[function(require,module,exports){
 'use strict';
 
 /* global  emojify */
@@ -239,7 +239,171 @@ prepEmoji.processTastyEmotes = function (data) {
 
 module.exports = prepEmoji;
 
-},{"../lib/settings.js":6,"../utils/getJSON.js":33}],3:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/getJSON.js":35}],3:[function(require,module,exports){
+'use strict';
+
+/**
+ * previewList
+ * 
+ * In this JS file should only exist what's necessary to populate the
+ * autocomplete preview list that popups up for emojis and mentions
+ * 
+ * It also binds the events that handle navigating through the list
+ * and also placing selected text into the chat
+ */
+
+// var css = require('../utils/css.js');
+
+var updateChatInput = function updateChatInput(str) {
+    var inputText = $("#chat-txt-message").val();
+    var updatedText = inputText.split(' ').map(function (c, i, r) {
+        var fullStr = str.toLowerCase();
+        var partialStr = c.toLowerCase();
+        if (fullStr.indexOf(partialStr) === 0) {
+            return str;
+        } else {
+            return c;
+        }
+    });
+    $('#autocomplete-preview').empty().removeClass('ac-show');
+    $("#chat-txt-message").val(updatedText.join(' ') + ' ').focus();
+};
+
+var doNavigate = function doNavigate(diff) {
+    var displayBoxIndex = $('.preview-item.selected').index();
+
+    console.log('initial', displayBoxIndex);
+
+    displayBoxIndex += diff;
+    var oBoxCollection = $(".ac-show li");
+
+    // remove "press enter to select" span
+    $('.ac-list-press-enter').remove();
+
+    if (displayBoxIndex >= oBoxCollection.length) {
+        displayBoxIndex = 0;
+    }
+    if (displayBoxIndex < 0) {
+        displayBoxIndex = oBoxCollection.length - 1;
+    }
+    console.log('possibly altered', displayBoxIndex);
+    var cssClass = "selected";
+    var enterToSelectSpan = '<span class="ac-list-press-enter">press enter to select</span>';
+    oBoxCollection.removeClass(cssClass).eq(displayBoxIndex).addClass(cssClass).append(enterToSelectSpan);
+    $('.preview-item.selected').get(0).scrollIntoView(false);
+};
+
+var previewListKeyUp = function previewListKeyUp(e) {
+    e.preventDefault();
+    switch (e.keyCode) {
+        case 38:
+            doNavigate(-1);
+            break;
+        case 40:
+            doNavigate(1);
+            break;
+        case 39:
+        case 13:
+            var new_text = $('#autocomplete-preview li.selected').find('.ac-text')[0].textContent;
+            updateChatInput(new_text);
+            break;
+        default:
+            $("#chat-txt-message").focus();
+            break;
+    }
+};
+
+/**
+ * Populates the popup container with a list of items that you can click/enter
+ * on to autocomplete items in the chat box
+ * @param  {Array} acArray  the array of items to be added.  Each item is an object:
+ * {
+ *   src : full image src,
+ *   text : text for auto completion,
+ *   cn : css class name for to be concat with '-preview',
+ *   alt : OPTIONAL, to add to alt and title tag
+ * }
+ */
+var display = function display(acArray) {
+    function makePreviewContainer(cn) {
+        var d = document.createElement('li');
+        d.className = cn;
+        return d;
+    }
+    function makeImg(src, altText) {
+        var i = document.createElement('img');
+        i.src = src;
+        if (altText) {
+            i.title = altText;
+            i.alt = altText;
+        }
+        var div = document.createElement('div');
+        div.className = "ac-image";
+        div.appendChild(i);
+        return div;
+    }
+    function makeNameSpan(name) {
+        var s = document.createElement('span');
+        s.textContent = name;
+        s.className = "ac-text"; // autocomplete text
+        return s;
+    }
+    function makeLi(info) {
+        var container = makePreviewContainer("preview-item " + info.cn + "-previews");
+        var span = makeNameSpan(info.text);
+        var img;
+        if (info.alt) {
+            img = makeImg(info.src, info.alt);
+        } else {
+            img = makeImg(info.src);
+        }
+        container.appendChild(img);
+        container.appendChild(span);
+        container.tabIndex = -1;
+        return container;
+    }
+
+    var aCp = document.getElementById('autocomplete-preview');
+    aCp.innerHTML = "";
+    var frag = document.createDocumentFragment();
+
+    acArray.forEach(function (val) {
+        frag.appendChild(makeLi(val));
+    });
+
+    aCp.appendChild(frag);
+    aCp.classList.add('ac-show');
+};
+
+var updater = function updater(e) {
+    var new_text = $(this).find('.ac-text')[0].textContent;
+    updateChatInput(new_text);
+};
+
+var init = function init() {
+    var acUL = document.createElement('ul');
+    acUL.id = "autocomplete-preview";
+    $('.pusher-chat-widget-input').prepend(acUL);
+
+    $(document.body).on('click', '.preview-item', updater);
+    $(document.body).on('keyup', '.ac-show', previewListKeyUp);
+};
+
+var stop = function stop() {
+    $(document.body).off('click', '.preview-item', updater);
+    $(document.body).off('keyup', '.ac-show', previewListKeyUp);
+    $('#autocomplete-preview').remove();
+};
+
+module.exports = {
+    init: init,
+    stop: stop,
+    display: display,
+    updateChatInput: updateChatInput,
+    doNavigate: doNavigate
+};
+
+},{}],4:[function(require,module,exports){
 'use strict';
 
 var _loadModules = require('./loadModules.js');
@@ -286,11 +450,9 @@ module.exports = function () {
   // run non-menu related items here:
   (0, _snooze2.default)();
   (0, _eta2.default)();
-  // dubplus.previewListInit();
-  // dubplus.userAutoComplete();
 };
 
-},{"../modules/eta.js":16,"../modules/snooze.js":26,"../utils/css.js":32,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
+},{"../modules/eta.js":18,"../modules/snooze.js":28,"../utils/css.js":34,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -359,7 +521,7 @@ var loadAllModules = function loadAllModules() {
 
 exports.default = loadAllModules;
 
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../modules/index.js":23,"../utils/options.js":36}],5:[function(require,module,exports){
+},{"../lib/menu.js":6,"../lib/settings.js":7,"../modules/index.js":25,"../utils/options.js":38}],6:[function(require,module,exports){
 'use strict';
 
 var options = require('../utils/options.js');
@@ -392,7 +554,7 @@ module.exports = {
     });
 
     // make the menu
-    var dp_menu_html = '\n      <section class="dubplus-menu dubplus-open">\n          <p class="dubplus-menu-header">Dub+ Settings</p>';
+    var dp_menu_html = '\n      <section class="dubplus-menu dubplus-open">\n          <p class="dubplus-menu-header">Dub+ Options</p>';
 
     return dp_menu_html;
   },
@@ -483,7 +645,7 @@ module.exports = {
 
 };
 
-},{"../utils/css.js":32,"../utils/options.js":36,"./settings.js":6}],6:[function(require,module,exports){
+},{"../utils/css.js":34,"../utils/options.js":38,"./settings.js":7}],7:[function(require,module,exports){
 (function (CURRENT_BRANCH){
 "use strict";
 
@@ -513,7 +675,7 @@ if (_storageRaw) {
 module.exports = $.extend({}, defaults, savedSettings);
 
 }).call(this,'es6')
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 /**
@@ -529,7 +691,7 @@ var settings = require("../lib/settings.js");
 
 var afk_module = {};
 afk_module.id = "dubplus-afk";
-afk_module.moduleName = "AFK Autorespond";
+afk_module.moduleName = "AFK Auto-respond";
 afk_module.description = "Toggle Away from Keyboard and customize AFK message.";
 afk_module.category = "General";
 afk_module.extraIcon = 'pencil';
@@ -597,7 +759,176 @@ afk_module.extra = function () {
 
 module.exports = afk_module;
 
-},{"../lib/settings.js":6,"../utils/modal.js":34,"../utils/options.js":36}],8:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/modal.js":36,"../utils/options.js":38}],9:[function(require,module,exports){
+'use strict';
+
+/**
+ * Autocomplete Emojis/Emotes
+ */
+var previewList = require('../emojiUtils/previewList.js');
+var settings = require('../lib/settings.js');
+var prepEmjoji = require('../emojiUtils/prepEmoji.js');
+
+var myModule = {};
+myModule.id = "dubplus-autocomplete";
+myModule.moduleName = "Autocomplete Emoji";
+myModule.description = "Toggle autocompleting emojis and emotes.  Shows a preview box in the chat";
+myModule.category = "General";
+
+var previewSearchStr = "";
+
+/**************************************************************************
+ * A bunch of utility helpers for the emoji preview
+ */
+var emojiUtils = {
+  createPreviewObj: function createPreviewObj(type, id, name) {
+    return {
+      src: prepEmjoji[type].template(id),
+      text: ":" + name + ":",
+      alt: name,
+      cn: type
+    };
+  },
+  addToPreviewList: function addToPreviewList(emojiArray) {
+    var self = this;
+    var listArray = [];
+    var _key;
+
+    emojiArray.forEach(function (val) {
+      _key = val.toLowerCase();
+      if (typeof prepEmjoji.twitch.emotes[_key] !== 'undefined') {
+        listArray.push(self.createPreviewObj("twitch", prepEmjoji.twitch.emotes[_key], val));
+      }
+      if (typeof prepEmjoji.bttv.emotes[_key] !== 'undefined') {
+        listArray.push(self.createPreviewObj("bttv", prepEmjoji.bttv.emotes[_key], val));
+      }
+      if (typeof prepEmjoji.tasty.emotes[_key] !== 'undefined') {
+        listArray.push(self.createPreviewObj("tasty", _key, val));
+      }
+      if (emojify.emojiNames.indexOf(_key) >= 0) {
+        listArray.push(self.createPreviewObj("emoji", val, val));
+      }
+    });
+
+    previewList.display(listArray);
+  },
+  filterEmoji: function filterEmoji(str) {
+    var finalStr = str.replace(/([+()])/, "\\$1");
+    var re = new RegExp('^' + finalStr, "i");
+    var arrayToUse = emojify.emojiNames;
+    if (settings.options['dubplus-emotes']) {
+      arrayToUse = prepEmjoji.emojiEmotes; // merged array
+    }
+    return arrayToUse.filter(function (val) {
+      return re.test(val);
+    });
+  }
+};
+
+/**************************************************************************
+ * handles filtering emoji, twitch, and users preview autocomplete popup on keyup
+ */
+var chatInputKeyupFunc = function chatInputKeyupFunc(e) {
+
+  if (e.keyCode === 38) {
+    previewList.doNavigate(-1);
+    return;
+  }
+  if (e.keyCode === 40) {
+    previewList.doNavigate(1);
+    return;
+  }
+
+  var currentText = this.value;
+  var keyCharMin = 3; // when to start showing previews
+  var cursorPos = $(this).get(0).selectionStart;
+  // console.log("cursorPos", cursorPos);
+  var strStart;
+  var strEnd;
+  var inputRegex = new RegExp('(:|@)([&!()\\+\\-_a-z0-9]+)($|\\s)', 'ig');
+  currentText.replace(inputRegex, function (matched, p1, p2, p3, pos, str) {
+    // console.dir( arguments );
+    strStart = pos;
+    strEnd = pos + matched.length;
+
+    previewSearchStr = p2;
+
+    if (cursorPos >= strStart && cursorPos <= strEnd) {
+      // twitch and emoji
+      if (p2 && p2.length >= keyCharMin && p1 === ":") {
+        emojiUtils.addToPreviewList(emojiUtils.filterEmoji(p2));
+      }
+    }
+  });
+
+  var lastChar = currentText.charAt(currentText.length - 1);
+  if (previewSearchStr.length < keyCharMin || lastChar === ":" || lastChar === " " || currentText === "") {
+    previewSearchStr = "";
+    $('#autocomplete-preview').empty().removeClass('ac-show');
+  }
+
+  // automatically make first item selectable if not already
+  if (!$('.ac-show li:first-child').find(".ac-list-press-enter").length) {
+    var spanToEnter = '<span class="ac-list-press-enter">press enter to select</span>';
+    $('.ac-show li:first-child').append(spanToEnter).addClass('selected');
+  }
+
+  if (e.keyCode === 13 && $('#autocomplete-preview li').length > 0) {
+    var new_text = $('#autocomplete-preview li.selected').find('.ac-text')[0].textContent;
+    previewList.updateChatInput(new_text);
+    return;
+  }
+
+  if (e.keyCode === 13 && currentText.length > 0) {
+    Dubtrack.room.chat.sendMessage();
+  }
+};
+
+var chatInputKeydownFunc = function chatInputKeydownFunc(e) {
+  // Manually send the keycode to chat if it is 
+  // tab (9), enter (13), up arrow (38), or down arrow (40) for their autocomplete
+  if (_.includes([9, 13, 38, 40], e.keyCode) && $('.ac-show').length === 0) {
+    return Dubtrack.room.chat.ncKeyDown({ 'which': e.keyCode });
+  }
+};
+
+/*************************************************/
+
+myModule.start = function () {
+  previewList.init();
+  //Only remove keydown for Dubtrack native autocomplete to work
+  Dubtrack.room.chat.delegateEvents(_(Dubtrack.room.chat.events).omit('keydown #chat-txt-message'));
+
+  $(document.body).on('keydown', "#chat-txt-message", chatInputKeydownFunc);
+  $(document.body).on('keyup', "#chat-txt-message", chatInputKeyupFunc);
+};
+
+myModule.init = function () {
+  if (this.optionState) {
+    this.start();
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    this.start();
+  } else {
+    previewList.stop();
+    newOptionState = false;
+    $(document.body).off('keydown', "#chat-txt-message", chatInputKeydownFunc);
+    $(document.body).off('keyup', "#chat-txt-message", chatInputKeyupFunc);
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{"../emojiUtils/prepEmoji.js":2,"../emojiUtils/previewList.js":3,"../lib/settings.js":7}],10:[function(require,module,exports){
 "use strict";
 
 /* global Dubtrack */
@@ -664,7 +995,7 @@ autovote.start = function () {
 
 module.exports = autovote;
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 /**
@@ -727,7 +1058,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../utils/css.js":32}],10:[function(require,module,exports){
+},{"../utils/css.js":34}],12:[function(require,module,exports){
 'use strict';
 
 /**
@@ -810,7 +1141,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":6,"../utils/modal.js":34,"../utils/options.js":36}],11:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/modal.js":36,"../utils/options.js":38}],13:[function(require,module,exports){
 'use strict';
 
 /**
@@ -879,7 +1210,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":6,"../utils/css.js":32,"../utils/modal.js":34,"../utils/options.js":36}],12:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/css.js":34,"../utils/modal.js":36,"../utils/options.js":38}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -957,7 +1288,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":6,"../utils/modal.js":34,"../utils/options.js":36}],13:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/modal.js":36,"../utils/options.js":38}],15:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1064,7 +1395,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":6,"../utils/modal.js":34}],14:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/modal.js":36}],16:[function(require,module,exports){
 "use strict";
 
 var _modcheck = require("../utils/modcheck.js");
@@ -1137,7 +1468,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../utils/modcheck.js":35}],15:[function(require,module,exports){
+},{"../utils/modcheck.js":37}],17:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1240,7 +1571,7 @@ emote_module.go = function () {
 
 module.exports = emote_module;
 
-},{"../emojiUtils/prepEmoji.js":2}],16:[function(require,module,exports){
+},{"../emojiUtils/prepEmoji.js":2}],18:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1275,7 +1606,7 @@ var hide_eta = function hide_eta() {
   $(this).empty();
 };
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1305,7 +1636,7 @@ fs_module.go = function (e) {
 
 module.exports = fs_module;
 
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1368,7 +1699,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1405,7 +1736,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1445,7 +1776,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1481,7 +1812,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1518,16 +1849,13 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 // put this in order of appearance in the menu
 module.exports = [
 // General 
-require('./autovote.js'), require('./afk.js'), require('./emotes.js'),
-// autocomplete emoji
-// autocomplete mentions
-require('./customMentions.js'), require('./desktopNotifications.js'), require('./showDubsOnHover.js'), require('./downDubInChat.js'), // (mod only)
+require('./autovote.js'), require('./afk.js'), require('./emotes.js'), require('./autocomplete.js'), require('./customMentions.js'), require('./desktopNotifications.js'), require('./showDubsOnHover.js'), require('./downDubInChat.js'), // (mod only)
 require('./upDubInChat.js'), require('./grabsInChat.js'), require('./snow.js'),
 
 // User Interface
@@ -1539,7 +1867,7 @@ require('./spacebarMute.js'), require('./warnOnNavigation.js'),
 // // Customize
 require('./communityTheme.js'), require('./customCSS.js'), require('./customBackground.js')];
 
-},{"./afk.js":7,"./autovote.js":8,"./communityTheme.js":9,"./customBackground.js":10,"./customCSS.js":11,"./customMentions.js":12,"./desktopNotifications.js":13,"./downDubInChat.js":14,"./emotes.js":15,"./fullscreen.js":17,"./grabsInChat.js":18,"./hideAvatars.js":19,"./hideBackground.js":20,"./hideChat.js":21,"./hideVideo.js":22,"./showDubsOnHover.js":24,"./showTimestamps.js":25,"./snow.js":27,"./spacebarMute.js":28,"./splitchat.js":29,"./upDubInChat.js":30,"./warnOnNavigation.js":31}],24:[function(require,module,exports){
+},{"./afk.js":8,"./autocomplete.js":9,"./autovote.js":10,"./communityTheme.js":11,"./customBackground.js":12,"./customCSS.js":13,"./customMentions.js":14,"./desktopNotifications.js":15,"./downDubInChat.js":16,"./emotes.js":17,"./fullscreen.js":19,"./grabsInChat.js":20,"./hideAvatars.js":21,"./hideBackground.js":22,"./hideChat.js":23,"./hideVideo.js":24,"./showDubsOnHover.js":26,"./showTimestamps.js":27,"./snow.js":29,"./spacebarMute.js":30,"./splitchat.js":31,"./upDubInChat.js":32,"./warnOnNavigation.js":33}],26:[function(require,module,exports){
 'use strict';
 
 var _modcheck = require('../utils/modcheck.js');
@@ -2118,7 +2446,7 @@ dubshover.go = function (e) {
 
 module.exports = dubshover;
 
-},{"../utils/modal.js":34,"../utils/modcheck.js":35}],25:[function(require,module,exports){
+},{"../utils/modal.js":36,"../utils/modcheck.js":37}],27:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2155,7 +2483,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2213,7 +2541,7 @@ var snooze = function snooze() {
   }
 };
 
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 "use strict";
 
 var menu = require('../lib/menu.js');
@@ -2256,7 +2584,7 @@ snow.go = function (e) {
 
 module.exports = snow;
 
-},{"../lib/menu.js":5}],28:[function(require,module,exports){
+},{"../lib/menu.js":6}],30:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2302,7 +2630,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],29:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2339,7 +2667,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2402,7 +2730,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2446,7 +2774,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -2486,7 +2814,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-},{"../lib/settings.js":6}],33:[function(require,module,exports){
+},{"../lib/settings.js":7}],35:[function(require,module,exports){
 'use strict';
 
 // jQuery's getJSON kept returning errors so making my own with promise-like
@@ -2524,7 +2852,7 @@ var GetJSON = function GetJSON(url, optionalEvent, headers) {
 
 module.exports = GetJSON;
 
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 function makeButtons(cb) {
@@ -2616,7 +2944,7 @@ module.exports = {
   close: close
 };
 
-},{}],35:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2627,7 +2955,7 @@ exports.default = function (userid) {
   return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
 };
 
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -2683,4 +3011,4 @@ module.exports = {
   saveOption: saveOption
 };
 
-},{"../lib/settings.js":6}]},{},[1]);
+},{"../lib/settings.js":7}]},{},[1]);

@@ -4,8 +4,7 @@ module.exports = [
   require('./autovote.js'),
   require('./afk.js'),
   require('./emotes.js'),
-  // autocomplete emoji
-  // autocomplete mentions
+  require('./autocomplete.js'),
   require('./customMentions.js'),
   require('./desktopNotifications.js'),
   require('./showDubsOnHover.js'),
