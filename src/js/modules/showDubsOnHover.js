@@ -1,5 +1,6 @@
 /* global Dubtrack */
 var modal = require('../utils/modal.js');
+import userIsAtLeastMod from '../utils/modcheck.js';
 
 var dubshover = {};
 dubshover.id = "dubplus-dubs-hover";
@@ -24,8 +25,6 @@ dubshover.grabInfoWarning = function(){
 };
 
 dubshover.showDubsOnHover = function(){
-  var self = this;
-
   this.resetDubs();
 
   Dubtrack.Events.bind("realtime:room_playlist-dub", this.dubWatcher.bind(this));
@@ -173,7 +172,7 @@ dubshover.showDubsOnHover = function(){
     var dubdownBackground = $('.dubdown').hasClass('voted') ? $('.dubdown').css('background-color') : $('.dubdown').find('.icon-arrow-down').css('color');
     var html;
 
-    if(this.userIsAtLeastMod(Dubtrack.session.id)){
+    if(userIsAtLeastMod(Dubtrack.session.id)){
       if(window.dubplus.dubs.downDubs.length > 0){
           html = '<ul id="dubinfo-preview" class="dubinfo-show dubplus-downdubs-hover" style="border-color: '+dubdownBackground+'">';
           window.dubplus.dubs.downDubs.forEach(function(val){
@@ -376,13 +375,6 @@ dubshover.updateChatInputWithString = function(str){
   $("#chat-txt-message").val(str).focus();
 };
 
-dubshover.userIsAtLeastMod = function(userid){
-  return Dubtrack.helpers.isDubtrackAdmin(userid) ||
-    Dubtrack.room.users.getIfOwner(userid) ||
-    Dubtrack.room.users.getIfManager(userid) ||
-    Dubtrack.room.users.getIfMod(userid);
-};
-
 dubshover.deleteChatMessageClientSide = function(el){
   $(el).parent('li')[0].remove();
 };
@@ -412,7 +404,7 @@ dubshover.dubWatcher = function(e){
   } else if (e.dubtype === 'downdub'){
 
     //If dub already casted
-    if($.grep(window.dubplus.dubs.downDubs, function(el){ return el.userid === e.user._id; }).length <= 0 && this.userIsAtLeastMod(Dubtrack.session.id)){
+    if($.grep(window.dubplus.dubs.downDubs, function(el){ return el.userid === e.user._id; }).length <= 0 && userIsAtLeastMod(Dubtrack.session.id)){
         window.dubplus.dubs.downDubs.push({
           userid: e.user._id,
           username: e.user.username
@@ -438,7 +430,7 @@ dubshover.dubWatcher = function(e){
     // console.log("Updubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
     this.resetDubs();
   }
-  else if(this.userIsAtLeastMod(Dubtrack.session.id) && window.dubplus.dubs.downDubs.length !== Dubtrack.room.player.activeSong.attributes.song.downdubs){
+  else if(userIsAtLeastMod(Dubtrack.session.id) && window.dubplus.dubs.downDubs.length !== Dubtrack.room.player.activeSong.attributes.song.downdubs){
     // console.log("Downdubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
     this.resetDubs();
   }
@@ -507,7 +499,7 @@ dubshover.resetDubs = function(){
     });*/
 
     //Only let mods or higher access down dubs
-    if(this.userIsAtLeastMod(Dubtrack.session.id)){
+    if(userIsAtLeastMod(Dubtrack.session.id)){
       response.data.downDubs.forEach(function(e){
         //Dub already casted
         if($.grep(window.dubplus.dubs.downDubs, function(el){ return el.userid === e.userid; }).length > 0){

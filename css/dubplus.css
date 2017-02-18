@@ -134,10 +134,9 @@
 .dubplus-switch .dubplus-menu-label,
 .dubplus-menu-icon .dubplus-menu-label {
   padding-left: 11px;
-  display: block;
   cursor: pointer;
-  float: left;
-  width: 76%; }
+  display: table-cell;
+  width: 10000px; }
 
 .dubplus-switch .extra-icon {
   display: block;

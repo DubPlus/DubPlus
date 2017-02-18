@@ -9,7 +9,7 @@ module.exports = [
   require('./customMentions.js'),
   require('./desktopNotifications.js'),
   require('./showDubsOnHover.js'),
-  // Downdubs in chat (mod only)
+  require('./downDubInChat.js'), // (mod only)
   // Updubs in chat
   require('./grabsInChat.js'),
   require('./snow.js'),

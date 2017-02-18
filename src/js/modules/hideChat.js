@@ -1,6 +1,5 @@
 /**
- * Dubs in Chat
- * Show down o
+ * Hide the Chat box and only show the video
  */
 
 var myModule = {};

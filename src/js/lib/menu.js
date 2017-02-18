@@ -135,9 +135,9 @@ module.exports = {
     }
     return `
       <li id="${opts.id}" class="${mainCssClass} ${_state} ${opts.cssClass} title="${opts.desc}">
+        ${_extra}
         ${mainIcon}
         <span class="dubplus-menu-label">${menuTitle}</span>
-        ${_extra}
       </li>`;
   },
 
