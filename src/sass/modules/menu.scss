@@ -11,7 +11,7 @@ $padding : 1;
 
 // don't really need to touch these,  they are calcutated based off the above variables
 $width : ($switcher * 2) + $labelBorder + 7;
-$height : $switcher + ($labelBorder*2) + ($padding*2) + px;
+$switchHeight : $switcher + ($labelBorder*2) + ($padding*2) + px;
 
 // switch color related variables
 // off state:
@@ -109,8 +109,7 @@ $buttonBorderOn : #6fcbdc;
 .dubplus-switch, 
 .dubplus-menu-icon {
   position: relative;
-  height: $height;
-  margin: 20px 0;
+  margin: 10px 0;
 
   &:before,
   &:after {
@@ -140,7 +139,7 @@ $buttonBorderOn : #6fcbdc;
   top: 2px;
   z-index: 2;
   padding: $padding+px;
-  height: 100%;
+  height: $switchHeight;
   width: $width + px;
   border-radius: 20px;
   background: $labelBgOff;
