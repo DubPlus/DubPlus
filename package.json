@@ -15,11 +15,13 @@
   },
   "homepage": "https://github.com/DubPlus/DubPlus",
   "devDependencies": {
+    "autoprefixer": "^6.7.3",
     "babel-preset-es2015": "^6.22.0",
     "babelify": "^7.3.0",
     "browserify": "^13.0.1",
     "git-branch-name": "^1.1.0",
     "gulp": "^3.9.1",
+    "gulp-postcss": "^6.3.0",
     "gulp-preprocess": "^2.0.0",
     "gulp-sass": "^2.3.2",
     "vinyl-source-stream": "^1.1.0"

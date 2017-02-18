@@ -5,6 +5,8 @@ var preprocess = require('gulp-preprocess');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var babelify = require("babelify");
+var postcss      = require('gulp-postcss');
+var autoprefixer = require('autoprefixer');
 
 /******************************************************************
  * Get the current branch name to be passed as a variable
@@ -29,6 +31,7 @@ gulp.task('sass', function () {
   return gulp.src('src/sass/dubplus.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(preprocess({context: { BRANCH: CURRENT_BRANCH}}))
+    .pipe(postcss([ autoprefixer() ]))
     .pipe(gulp.dest('css'));
 });
 

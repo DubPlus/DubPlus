@@ -16,13 +16,17 @@
   position: fixed;
   z-index: 999;
   background-color: rgba(10, 10, 10, 0.98);
+  -webkit-transition: -webkit-transform 0.3s;
+  transition: -webkit-transform 0.3s;
   transition: transform 0.3s;
+  transition: transform 0.3s, -webkit-transform 0.3s;
   width: 255px;
   height: 100%;
   overflow-y: scroll;
   top: 58px;
   right: 0;
-  transform: translateX(255px);
+  -webkit-transform: translateX(255px);
+          transform: translateX(255px);
   box-sizing: border-box;
   color: #999;
   font-family: 'Trebuchet MS', Helvetica, sans-serif;
@@ -33,7 +37,8 @@
     color: #999; }
 
 .dubplus-menu.dubplus-menu-open {
-  transform: translateX(15px); }
+  -webkit-transform: translateX(15px);
+          transform: translateX(15px); }
 
 .dubplus-menu-header {
   padding: 12px 15px;
@@ -47,6 +52,7 @@
   padding: 0 15px;
   border-bottom: 1px solid #222;
   max-height: 500px;
+  -webkit-transition: max-height 0.3s;
   transition: max-height 0.3s;
   overflow: hidden;
   margin: 0;
@@ -110,7 +116,10 @@
   background: #333;
   border: 2px solid #444;
   cursor: pointer;
-  transition: transform 0.8s cubic-bezier(1, 0, 0.5, 0); }
+  -webkit-transition: -webkit-transform 0.8s cubic-bezier(1, 0, 0.5, 0);
+  transition: -webkit-transform 0.8s cubic-bezier(1, 0, 0.5, 0);
+  transition: transform 0.8s cubic-bezier(1, 0, 0.5, 0);
+  transition: transform 0.8s cubic-bezier(1, 0, 0.5, 0), -webkit-transform 0.8s cubic-bezier(1, 0, 0.5, 0); }
 
 .dubplus-switcher {
   display: inline-block;
@@ -122,7 +131,10 @@
   z-index: 2;
   background: #eb008b;
   border: 2px solid #eb008b;
-  transition: transform 0.2s cubic-bezier(0.8, 0, 0.05, 1); }
+  -webkit-transition: -webkit-transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
+  transition: -webkit-transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
+  transition: transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
+  transition: transform 0.2s cubic-bezier(0.8, 0, 0.05, 1), -webkit-transform 0.2s cubic-bezier(0.8, 0, 0.05, 1); }
 
 .dubplus-switch-on .dubplus-switch-bg {
   background: #666;
@@ -131,7 +143,8 @@
 .dubplus-switch-on .dubplus-switcher {
   background: #6fcbdc;
   border: 2px solid #6fcbdc;
-  transform: translateX(100%); }
+  -webkit-transform: translateX(100%);
+          transform: translateX(100%); }
 
 .dubplus-switch .dubplus-menu-label,
 .dubplus-menu-icon .dubplus-menu-label {
@@ -317,6 +330,7 @@
   color: #89BE6C !important; }
 
 .dubplus-split-chat .chat-main li:nth-child(2n) {
+  background: -webkit-linear-gradient(left, rgba(155, 157, 160, 0.1) 0%, transparent 100%);
   background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, transparent 100%);
   box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
   width: 100%; }
@@ -324,6 +338,7 @@
     right: 1.7em !important; }
 
 .dubplus-split-chat .split {
+  background: -webkit-linear-gradient(left, rgba(155, 157, 160, 0.1) 0%, transparent 100%);
   background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, transparent 100%);
   box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
   width: 100%; }
@@ -373,7 +388,7 @@
   background-image: url(http://i.imgur.com/oTfAI0O.png); }
 
 .tasty-previews {
-  background-image: url(https://raw.githubusercontent.com/DubPlus/DubPlus/es6/emotes/tastycat/21.png); }
+  background-image: url(https://raw.githubusercontent.com/DubPlus/DubPlus/master/emotes/tastycat/21.png); }
 
 #autocomplete-preview span {
   font-size: 0.8em;
@@ -397,9 +412,6 @@
   border: 1px solid #202020;
   border-bottom: 1px solid #878c8e;
   max-height: 164px;
-  -moz-transition: 0.4s;
-  -ms-transition: 0.4s;
-  -o-transition: 0.4s;
   -webkit-transition: 0.4s;
   transition: 0.4s; }
 
@@ -535,9 +547,6 @@
   border: 1px solid #202020;
   border-bottom: 1px solid #878c8e;
   max-height: 164px;
-  -moz-transition: 0.4s;
-  -ms-transition: 0.4s;
-  -o-transition: 0.4s;
   -webkit-transition: 0.4s;
   transition: 0.4s; }
 

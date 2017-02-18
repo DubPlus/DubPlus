@@ -450,6 +450,7 @@ module.exports = function () {
   // run non-menu related items here:
   (0, _snooze2.default)();
   (0, _eta2.default)();
+  $('.dubplus-menu').perfectScrollbar();
 };
 
 },{"../modules/eta.js":18,"../modules/snooze.js":28,"../utils/css.js":34,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
@@ -554,7 +555,7 @@ module.exports = {
     });
 
     // make the menu
-    var dp_menu_html = '\n      <section class="dubplus-menu dubplus-open">\n          <p class="dubplus-menu-header">Dub+ Options</p>';
+    var dp_menu_html = '\n      <section class="dubplus-menu">\n          <p class="dubplus-menu-header">Dub+ Options</p>';
 
     return dp_menu_html;
   },
@@ -674,7 +675,7 @@ if (_storageRaw) {
 
 module.exports = $.extend({}, defaults, savedSettings);
 
-}).call(this,'es6')
+}).call(this,'dev')
 },{}],8:[function(require,module,exports){
 'use strict';
 
