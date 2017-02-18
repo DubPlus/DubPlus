@@ -21,7 +21,7 @@
   transition: transform 0.3s;
   transition: transform 0.3s, -webkit-transform 0.3s;
   width: 255px;
-  overflow-y: scroll;
+  overflow-y: hidden;
   top: 58px;
   right: 0;
   -webkit-transform: translateX(255px);
@@ -31,7 +31,8 @@
   font-family: 'Trebuchet MS', Helvetica, sans-serif;
   font-size: 13px;
   line-height: 1.4;
-  padding-bottom: 100px; }
+  padding-bottom: 100px;
+  height: calc(100% - 114px); }
   .dubplus-menu a {
     color: #999; }
 
