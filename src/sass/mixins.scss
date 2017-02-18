@@ -10,7 +10,7 @@
 }
 
 @function doubleUnicode($icon1, $icon2){
- @return unquote("\"")+unquote(str-insert($icon1, "\\", 1))+" "+unquote(str-insert($icon2, "\\", 1))+unquote("\"")
+ @return unquote("\"")+unquote(str-insert($icon1, "\\", 1))+"  "+unquote(str-insert($icon2, "\\", 1))+unquote("\"")
 }
 
 //******************************************
@@ -88,7 +88,7 @@
     $icon : map-get($icons, $role);
   }
 
-  #chat .chat-container ul.chat-main li.user-#{$USER_ID} .activity-row .text p a.username {
+  #chat .chat-container ul.chat-main li.user-#{$USER_ID} .stream-item-content .activity-row .username {
     &:before {
        @if $role == "admin_dubplus" or $role == "owner"{
           content: doubleUnicode(nth($icon,1), nth($icon,2)) !important;
@@ -101,7 +101,7 @@
     text-shadow: 0px 0px 1px rgba(0,0,0,.5);
 
     &:before {
-        font-family: "foundation-icons";
+        font-family: "FontAwesome";
         font-style: normal;
         font-weight: normal;
         font-variant: normal;
