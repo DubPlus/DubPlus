@@ -650,7 +650,7 @@ module.exports = {
 
 var defaults = {
   our_version: '0.1.0',
-  srcRoot: "https://rawgit.com/FranciscoG/DubPlus/" + CURRENT_BRANCH,
+  srcRoot: "https://rawgit.com/DubPlus/DubPlus/" + CURRENT_BRANCH,
   // this will store all the on/off states
   options: {},
   // this will store the open/close state of the menu sections
@@ -673,7 +673,7 @@ if (_storageRaw) {
 
 module.exports = $.extend({}, defaults, savedSettings);
 
-}).call(this,'dev')
+}).call(this,'master')
 },{}],8:[function(require,module,exports){
 'use strict';
 
@@ -2814,7 +2814,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487438507937')
+}).call(this,'1487439750776')
 },{"../lib/settings.js":7}],35:[function(require,module,exports){
 'use strict';
 
