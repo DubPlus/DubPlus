@@ -1,0 +1,15 @@
+.duration {
+    font-size: 14px !important;
+    margin-top: .5em !important;
+}
+.snooze_btn:after {
+    content: '1';
+    vertical-align: top;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* Make the volume controller visible all the time */
+.dubplus #main_player .player_sharing .player-controller-container .volume-controller-container {
+  display: block;
+}

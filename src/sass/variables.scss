@@ -1,0 +1,33 @@
+// user role colors
+$roles : (
+  team  : #409fff,
+  vip   : #E8C248,
+  owner : #89BE6C
+);
+
+// icons in the chat box
+$icons : (
+  team  : "f1ee", // star
+  vip   : "f1ae", //  Sherriff Badge
+  owner : ("f137", "f1af") // Crown + shield
+);
+
+// what it says when you hover in Chat
+$roleChatHover : (
+  team  : "Dub+",
+  vip   : "Dub+ VIP",
+  owner : "Dub+"
+);
+
+// text added to users in Avatar List
+$roleAvatarListText : (
+  team  : "Dub+ TEAM  -  ",
+  vip   : "Dub+ VIP  -  ",
+  owner : "Dub+ TEAM  -  "
+);
+
+// use env variavle BRANCH when building sass using gulp
+// example:
+// env BRANCH=master gulp sass
+// if env BRANCH is not set it will default to 'master'
+$build_branch : '/* @echo BRANCH */';

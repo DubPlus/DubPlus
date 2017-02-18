@@ -1,0 +1,19 @@
+// turns off the video and only shows the chat
+
+// dubplus-chat-only should be added to the body
+.dubplus-chat-only {
+  .left_section {
+    display: none !important;
+  }
+  .right_section {
+    width: 40rem !important;
+    margin: 0 auto !important;
+    right: initial !important;
+    position: relative !important;
+    float: inherit !important;
+  }
+
+  .activity-row .text img {
+    max-height: 30rem;
+  }
+}
