@@ -21,7 +21,6 @@
   transition: transform 0.3s;
   transition: transform 0.3s, -webkit-transform 0.3s;
   width: 255px;
-  height: 100%;
   overflow-y: scroll;
   top: 58px;
   right: 0;
