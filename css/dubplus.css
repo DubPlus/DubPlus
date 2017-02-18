@@ -566,3 +566,12 @@
   position: relative !important;
   float: inherit !important;
   padding-right: 200px !important; }
+
+.dubplus-custom-bg {
+  width: 100%;
+  height: 100%;
+  z-index: -999998;
+  position: fixed;
+  background-size: cover;
+  top: 0;
+  left: 0; }

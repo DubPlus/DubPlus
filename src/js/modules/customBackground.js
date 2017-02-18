@@ -3,58 +3,78 @@
  * Add your own custom background
  */
 
-/* global Dubtrack */
-var menu = require('../lib/menu.js');
 var settings = require("../lib/settings.js");
 var modal = require('../utils/modal.js');
 var options = require('../utils/options.js');
 
 var myModule = {};
 
-myModule.id = "customBG";
+myModule.id = "dubplus-custom-bg";
 myModule.moduleName = "Custom Background";
 myModule.description = "Add your own custom background.";
-myModule.optionState = false;
-myModule.category = "customize";
-myModule.menuHTML = menu.makeOtherMenuHTML('unlink', myModule.id, myModule.description, '', myModule.moduleName);
+myModule.category = "Customize";
+myModule.extraIcon = 'pencil';
 
-myModule.makeBGdiv = function(url){
-    return '<div class="medium" style="width: 100%; height: 100%; z-index: -999998; position: fixed; background-image: url('+url+'); background-size: cover; top: 0; left: 0;"></div>';
+var makeBGdiv = function(url){
+  return `<div class="dubplus-custom-bg" style="background-image: url(${url});"></div>`;
+};
+
+var saveCustomBG = function() {
+  var content = $('.dp-modal textarea').val();
+  if (content === '' || !content) {
+    $('.dubplus-custom-bg').remove();
+    options.saveOption('custom', 'bg', '');
+    return;
+  }
+
+  if ( !$('.dubplus-custom-bg').length) {
+    $('body').append(makeBGdiv(content));
+  } else {
+    $('.dubplus-custom-bg').css('background-image',`url(${content})`);
+  }
+ options.saveOption('custom', 'bg', content);
 };
 
 
-myModule.saveCustomBG = function() {
-    var content = $('.input').val();
-    if (content === '' || content === null || typeof content === 'undefined') {
-        $('.medium').remove();
-        this.optionState = false;
-        options.saveOption('medium',content);
-        return;
-    }
-
-    if ( !$('.medium').length) {
-        $('body').append(this.makeBGdiv(content));
-    } else {
-        $('.medium').css('background-image',' url('+content+')');
-    }
-   options.saveOption('medium',content);
+myModule.extra = function(){
+  modal.create({
+    title: 'Custom Background Image',
+    content: 'Enter the full URL of an image. We recommend using a .jpg file. Leave blank to remove the current background image',
+    value : settings.custom.bg || '',
+    placeholder: 'https://example.com/big-image.jpg',
+    maxlength: '500',
+    confirmCallback: saveCustomBG
+  });
 };
 
+myModule.addBG = function() {
+  // show modal if no image is in settings
+  if (!settings.custom.bg || settings.custom.bg === '') {
+    this.extra();
+  } else {
+    $('body').append(makeBGdiv(settings.custom.bg));
+  }
+};
 
-myModule.go = function(source) {
-    if (source === "onLoad") {
-        $('body').append(this.makeBGdiv(settings.general.medium));
-    } else {
-        modal.create({
-            title: 'Link an image file:',
-            content: 'We recommend using a .jpg file. Leave blank to remove the current background image',
-            placeholder: 'https://example.com/example.jpg',
-            confirmButtonClass: 'confirm-for314',
-            maxlength: '999',
-            confirmCallback: this.saveCustomBG
-        });
-    }
-    
+myModule.init = function(){
+  if (this.optionState) {
+   this.addBG();
+  }
+};
+
+myModule.go = function() {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    this.addBG();
+  } else {
+    newOptionState = false;
+    $('.dubplus-custom-bg').remove();
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
 };
 
 module.exports = myModule;

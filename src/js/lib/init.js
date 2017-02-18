@@ -2,6 +2,9 @@ import loadAllModules from './loadModules.js';
 var css = require('../utils/css.js');
 var menu = require('./menu.js');
 
+import snooze from '../modules/snooze.js';
+import eta from '../modules/eta.js';
+
 module.exports = function(){
   // load our main CSS
   css.load('/css/dubplus.css');
@@ -26,6 +29,9 @@ module.exports = function(){
   // finalize the menu and add it to the UI
   menu.finishMenu(menuObj, menuString);
 
+  // run non-menu related items here:
+  snooze();
+  eta();
   // dubplus.previewListInit();
   // dubplus.userAutoComplete();
 };

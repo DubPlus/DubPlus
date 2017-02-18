@@ -58,7 +58,7 @@ if (!window.dubplus && Dubtrack.session.id) {
   });
 }
 
-},{"./lib/init.js":3,"./utils/css.js":25,"./utils/modal.js":27}],2:[function(require,module,exports){
+},{"./lib/init.js":3,"./utils/css.js":30,"./utils/modal.js":32}],2:[function(require,module,exports){
 'use strict';
 
 /* global  emojify */
@@ -239,12 +239,20 @@ prepEmoji.processTastyEmotes = function (data) {
 
 module.exports = prepEmoji;
 
-},{"../lib/settings.js":6,"../utils/getJSON.js":26}],3:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/getJSON.js":31}],3:[function(require,module,exports){
 'use strict';
 
 var _loadModules = require('./loadModules.js');
 
 var _loadModules2 = _interopRequireDefault(_loadModules);
+
+var _snooze = require('../modules/snooze.js');
+
+var _snooze2 = _interopRequireDefault(_snooze);
+
+var _eta = require('../modules/eta.js');
+
+var _eta2 = _interopRequireDefault(_eta);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -275,11 +283,14 @@ module.exports = function () {
   // finalize the menu and add it to the UI
   menu.finishMenu(menuObj, menuString);
 
+  // run non-menu related items here:
+  (0, _snooze2.default)();
+  (0, _eta2.default)();
   // dubplus.previewListInit();
   // dubplus.userAutoComplete();
 };
 
-},{"../utils/css.js":25,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
+},{"../modules/eta.js":15,"../modules/snooze.js":25,"../utils/css.js":30,"./loadModules.js":4,"./menu.js":5}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -348,7 +359,7 @@ var loadAllModules = function loadAllModules() {
 
 exports.default = loadAllModules;
 
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../modules/index.js":19,"../utils/options.js":28}],5:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../modules/index.js":22,"../utils/options.js":33}],5:[function(require,module,exports){
 'use strict';
 
 var options = require('../utils/options.js');
@@ -472,7 +483,7 @@ module.exports = {
 
 };
 
-},{"../utils/css.js":25,"../utils/options.js":28,"./settings.js":6}],6:[function(require,module,exports){
+},{"../utils/css.js":30,"../utils/options.js":33,"./settings.js":6}],6:[function(require,module,exports){
 (function (CURRENT_BRANCH){
 "use strict";
 
@@ -586,7 +597,7 @@ afk_module.extra = function () {
 
 module.exports = afk_module;
 
-},{"../lib/settings.js":6,"../utils/modal.js":27,"../utils/options.js":28}],8:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/modal.js":32,"../utils/options.js":33}],8:[function(require,module,exports){
 "use strict";
 
 /* global Dubtrack */
@@ -654,6 +665,221 @@ autovote.start = function () {
 module.exports = autovote;
 
 },{}],9:[function(require,module,exports){
+"use strict";
+
+/**
+ * Community Theme
+ * Toggle Community CSS theme
+ */
+
+/* global Dubtrack */
+var css = require('../utils/css.js');
+
+var myModule = {};
+myModule.id = "dubplus-comm-theme";
+myModule.moduleName = "Community Theme";
+myModule.description = "Toggle Community CSS theme.";
+myModule.category = "Customize";
+
+myModule.start = function () {
+  var location = Dubtrack.room.model.get('roomUrl');
+  $.ajax({
+    type: 'GET',
+    url: 'https://api.dubtrack.fm/room/' + location
+  }).done(function (e) {
+    var content = e.data.description;
+
+    // for backwards compatibility with dubx we're checking for both @dubx and @dubplus
+    var themeCheck = new RegExp(/(@dub[x|plus]=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/, 'i');
+    var communityCSSUrl = null;
+    content.replace(themeCheck, function (match, p1, p2) {
+      console.log('loading community css theme:', p2);
+      communityCSSUrl = p2;
+    });
+
+    if (!communityCSSUrl) {
+      return;
+    }
+    css.loadExternal(communityCSSUrl, 'dubplus-comm-theme');
+  });
+};
+
+myModule.init = function () {
+  if (this.optionState) {
+    this.start();
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    this.start();
+  } else {
+    newOptionState = false;
+    $('.dubplus-comm-theme').remove();
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{"../utils/css.js":30}],10:[function(require,module,exports){
+'use strict';
+
+/**
+ * Custom Background
+ * Add your own custom background
+ */
+
+var settings = require("../lib/settings.js");
+var modal = require('../utils/modal.js');
+var options = require('../utils/options.js');
+
+var myModule = {};
+
+myModule.id = "dubplus-custom-bg";
+myModule.moduleName = "Custom Background";
+myModule.description = "Add your own custom background.";
+myModule.category = "Customize";
+myModule.extraIcon = 'pencil';
+
+var makeBGdiv = function makeBGdiv(url) {
+  return '<div class="dubplus-custom-bg" style="background-image: url(' + url + ');"></div>';
+};
+
+var saveCustomBG = function saveCustomBG() {
+  var content = $('.dp-modal textarea').val();
+  if (content === '' || !content) {
+    $('.dubplus-custom-bg').remove();
+    options.saveOption('custom', 'bg', '');
+    return;
+  }
+
+  if (!$('.dubplus-custom-bg').length) {
+    $('body').append(makeBGdiv(content));
+  } else {
+    $('.dubplus-custom-bg').css('background-image', 'url(' + content + ')');
+  }
+  options.saveOption('custom', 'bg', content);
+};
+
+myModule.extra = function () {
+  modal.create({
+    title: 'Custom Background Image',
+    content: 'Enter the full URL of an image. We recommend using a .jpg file. Leave blank to remove the current background image',
+    value: settings.custom.bg || '',
+    placeholder: 'https://example.com/big-image.jpg',
+    maxlength: '500',
+    confirmCallback: saveCustomBG
+  });
+};
+
+myModule.addBG = function () {
+  // show modal if no image is in settings
+  if (!settings.custom.bg || settings.custom.bg === '') {
+    this.extra();
+  } else {
+    $('body').append(makeBGdiv(settings.custom.bg));
+  }
+};
+
+myModule.init = function () {
+  if (this.optionState) {
+    this.addBG();
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    this.addBG();
+  } else {
+    newOptionState = false;
+    $('.dubplus-custom-bg').remove();
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{"../lib/settings.js":6,"../utils/modal.js":32,"../utils/options.js":33}],11:[function(require,module,exports){
+'use strict';
+
+/**
+ * Custom CSS
+ * Add custom CSS
+ */
+
+var css = require('../utils/css.js');
+var settings = require("../lib/settings.js");
+var modal = require('../utils/modal.js');
+var options = require('../utils/options.js');
+
+var myModule = {};
+
+myModule.id = "dubplus-custom-css";
+myModule.moduleName = "Custom CSS";
+myModule.description = "Add your own custom CSS.";
+myModule.category = "Customize";
+myModule.extraIcon = 'pencil';
+
+myModule.init = function () {
+  if (this.optionState) {
+    css.loadExternal(settings.custom.css, 'dubplus-custom-css');
+  }
+};
+
+var css_import = function css_import() {
+  $('.dubplus-custom-css').remove();
+  var css_to_import = $('.dp-modal textarea').val();
+  options.saveOption('custom', 'css', css_to_import);
+
+  if (css_to_import && css_to_import !== '') {
+    css.loadExternal(css_to_import, 'dubplus-custom-css');
+  }
+};
+
+myModule.extra = function () {
+  modal.create({
+    title: 'Custom CSS',
+    content: 'Enter a url location for your custom css',
+    value: settings.custom.css || '',
+    placeholder: 'https://example.com/example.css',
+    maxlength: '500',
+    confirmCallback: css_import
+  });
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    if (settings.custom.css && settings.custom.css !== "") {
+      css.loadExternal(settings.custom.css, 'dubplus-custom-css');
+    } else {
+      this.extra();
+    }
+  } else {
+    newOptionState = false;
+    $('.dubplus-custom-css').remove();
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{"../lib/settings.js":6,"../utils/css.js":30,"../utils/modal.js":32,"../utils/options.js":33}],12:[function(require,module,exports){
 'use strict';
 
 /**
@@ -731,7 +957,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":6,"../utils/modal.js":27,"../utils/options.js":28}],10:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/modal.js":32,"../utils/options.js":33}],13:[function(require,module,exports){
 "use strict";
 
 /**
@@ -838,7 +1064,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":6,"../utils/modal.js":27}],11:[function(require,module,exports){
+},{"../lib/settings.js":6,"../utils/modal.js":32}],14:[function(require,module,exports){
 "use strict";
 
 /**
@@ -941,8 +1167,17 @@ emote_module.go = function () {
 
 module.exports = emote_module;
 
-},{"../emojiUtils/prepEmoji.js":2}],12:[function(require,module,exports){
-"use strict";
+},{"../emojiUtils/prepEmoji.js":2}],15:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.default = function () {
+  $('.player_sharing').append('<span class="icon-history eta_tooltip_t"></span>');
+  $('.eta_tooltip_t').mouseover(eta).mouseout(hide_eta);
+};
 
 /**
  * ETA
@@ -950,42 +1185,24 @@ module.exports = emote_module;
  * This module is not a menu item, it is run once on load
  */
 
-/* global Dubtrack */
-var myModule = {};
-
-myModule.id = "eta";
-myModule.moduleName = "eta";
-myModule.description = "shows your eta on hover.";
-
-myModule.optionState = false;
-myModule.category = false;
-myModule.menuHTML = false;
-
 var eta = function eta() {
-    var time = 4;
-    var current_time = parseInt($('#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min').text());
-    var booth_duration = parseInt($('.queue-position').text());
-    var booth_time = booth_duration * time - time + current_time;
+  var time = 4;
+  var current_time = parseInt($('#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min').text());
+  var booth_duration = parseInt($('.queue-position').text());
+  var booth_time = booth_duration * time - time + current_time;
 
-    if (booth_time >= 0) {
-        $(this).append('<div class="eta_tooltip" style="position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -33px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9;">ETA: ' + booth_time + ' minutes</div>');
-    } else {
-        $(this).append('<div class="eta_tooltip" style="position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -33px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9;">You\'re not in the queue</div>');
-    }
+  if (booth_time >= 0) {
+    $(this).append('<div class="eta_tooltip" style="position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -33px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9;">ETA: ' + booth_time + ' minutes</div>');
+  } else {
+    $(this).append('<div class="eta_tooltip" style="position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -33px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9;">You\'re not in the queue</div>');
+  }
 };
 
 var hide_eta = function hide_eta() {
-    $(this).empty();
+  $(this).empty();
 };
 
-myModule.init = function () {
-    $('.player_sharing').append('<span class="icon-history eta_tooltip_t"></span>');
-    $('.eta_tooltip_t').mouseover(eta).mouseout(hide_eta);
-};
-
-module.exports = myModule;
-
-},{}],13:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1015,7 +1232,7 @@ fs_module.go = function (e) {
 
 module.exports = fs_module;
 
-},{}],14:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1068,7 +1285,7 @@ grabs_chat.go = function () {
 
 module.exports = grabs_chat;
 
-},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":25,"../utils/modal.js":27}],15:[function(require,module,exports){
+},{"../lib/menu.js":5,"../lib/settings.js":6,"../utils/css.js":30,"../utils/modal.js":32}],18:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1105,7 +1322,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],16:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1145,7 +1362,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],17:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1182,7 +1399,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],18:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1219,7 +1436,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],19:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 // put this in order of appearance in the menu
@@ -1237,18 +1454,12 @@ require('./grabsInChat.js'), require('./snow.js'),
 require('./fullscreen.js'), require('./splitchat.js'), require('./hideChat.js'), require('./hideVideo.js'), require('./hideAvatars.js'), require('./hideBackground.js'), require('./showTimestamps.js'),
 
 // Settings
-// require('./spacebarMute.js'),
-// require('./warnOnNavigation.js'),
+require('./spacebarMute.js'), require('./warnOnNavigation.js'),
 
 // // Customize
-// require('./communityTheme.js'),
-// require('./customCSS.js'),
-// require('./customBackground.js'),
+require('./communityTheme.js'), require('./customCSS.js'), require('./customBackground.js')];
 
-// non-menu modules
-require('./snooze.js'), require('./eta.js')];
-
-},{"./afk.js":7,"./autovote.js":8,"./customMentions.js":9,"./desktopNotifications.js":10,"./emotes.js":11,"./eta.js":12,"./fullscreen.js":13,"./grabsInChat.js":14,"./hideAvatars.js":15,"./hideBackground.js":16,"./hideChat.js":17,"./hideVideo.js":18,"./showDubsOnHover.js":20,"./showTimestamps.js":21,"./snooze.js":22,"./snow.js":23,"./splitchat.js":24}],20:[function(require,module,exports){
+},{"./afk.js":7,"./autovote.js":8,"./communityTheme.js":9,"./customBackground.js":10,"./customCSS.js":11,"./customMentions.js":12,"./desktopNotifications.js":13,"./emotes.js":14,"./fullscreen.js":16,"./grabsInChat.js":17,"./hideAvatars.js":18,"./hideBackground.js":19,"./hideChat.js":20,"./hideVideo.js":21,"./showDubsOnHover.js":23,"./showTimestamps.js":24,"./snow.js":26,"./spacebarMute.js":27,"./splitchat.js":28,"./warnOnNavigation.js":29}],23:[function(require,module,exports){
 "use strict";
 
 /* global Dubtrack */
@@ -1828,7 +2039,7 @@ dubshover.go = function (e) {
 
 module.exports = dubshover;
 
-},{"../utils/modal.js":27}],21:[function(require,module,exports){
+},{"../utils/modal.js":32}],24:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1865,8 +2076,20 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],22:[function(require,module,exports){
-"use strict";
+},{}],25:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.default = function () {
+  $('.player_sharing').append('<span class="icon-mute snooze_btn"></span>');
+
+  $('body').on('mouseover', '.snooze_btn', snooze_tooltip);
+  $('body').on('mouseout', '.snooze_btn', hide_snooze_tooltip);
+  $('body').on('click', '.snooze_btn', snooze);
+};
 
 /**
  * Snooze
@@ -1875,64 +2098,43 @@ module.exports = myModule;
  * This module is not a menu item, it is always automatically run on load
  */
 
-/* global Dubtrack */
-var myModule = {};
-
-myModule.id = "snooze_btn";
-myModule.moduleName = "Snooze";
-myModule.description = "Mutes the current song.";
-
-myModule.optionState = false; // not used in this module
-myModule.category = false; // not used for this module
-myModule.menuHTML = false; // not used for this module
-
-
+/*global Dubtrack*/
 var snooze_tooltip = function snooze_tooltip(e) {
-    $(this).append('<div class="snooze_tooltip" style="position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -33px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9;">Mute current song</div>');
+  $(this).append('<div class="snooze_tooltip" style="position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -33px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9;">Mute current song</div>');
 };
 
 var hide_snooze_tooltip = function hide_snooze_tooltip() {
-    $('.snooze_tooltip').remove();
+  $('.snooze_tooltip').remove();
 };
 
 var eventUtils = {
-    currentVol: 50,
-    snoozed: false
+  currentVol: 50,
+  snoozed: false
 };
 
 var eventSongAdvance = function eventSongAdvance(e) {
-    if (e.startTime < 2) {
-        if (eventUtils.snoozed) {
-            Dubtrack.room.player.setVolume(eventUtils.currentVol);
-            eventUtils.snoozed = false;
-        }
-        return true;
+  if (e.startTime < 2) {
+    if (eventUtils.snoozed) {
+      Dubtrack.room.player.setVolume(eventUtils.currentVol);
+      eventUtils.snoozed = false;
     }
+    return true;
+  }
 };
 
 var snooze = function snooze() {
-    if (!eventUtils.snoozed && Dubtrack.room.player.player_volume_level > 2) {
-        eventUtils.currentVol = Dubtrack.room.player.player_volume_level;
-        Dubtrack.room.player.setVolume(0);
-        eventUtils.snoozed = true;
-        Dubtrack.Events.bind("realtime:room_playlist-update", eventSongAdvance);
-    } else if (eventUtils.snoozed) {
-        Dubtrack.room.player.setVolume(eventUtils.currentVol);
-        eventUtils.snoozed = false;
-    }
+  if (!eventUtils.snoozed && Dubtrack.room.player.player_volume_level > 2) {
+    eventUtils.currentVol = Dubtrack.room.player.player_volume_level;
+    Dubtrack.room.player.setVolume(0);
+    eventUtils.snoozed = true;
+    Dubtrack.Events.bind("realtime:room_playlist-update", eventSongAdvance);
+  } else if (eventUtils.snoozed) {
+    Dubtrack.room.player.setVolume(eventUtils.currentVol);
+    eventUtils.snoozed = false;
+  }
 };
 
-myModule.init = function () {
-    $('.player_sharing').append('<span class="icon-mute snooze_btn"></span>');
-
-    $('body').on('mouseover', '.snooze_btn', snooze_tooltip);
-    $('body').on('mouseout', '.snooze_btn', hide_snooze_tooltip);
-    $('body').on('click', '.snooze_btn', snooze);
-};
-
-module.exports = myModule;
-
-},{}],23:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 var menu = require('../lib/menu.js');
@@ -1975,7 +2177,53 @@ snow.go = function (e) {
 
 module.exports = snow;
 
-},{"../lib/menu.js":5}],24:[function(require,module,exports){
+},{"../lib/menu.js":5}],27:[function(require,module,exports){
+"use strict";
+
+/**
+ * Spacebar Mute
+ * Turn on/off the ability to mute current song with the spacebar
+ */
+
+var myModule = {};
+myModule.id = "dubplus-spacebar-mute";
+myModule.moduleName = "Spacebar Mute";
+myModule.description = "Turn on/off the ability to mute current song with the spacebar.";
+myModule.category = "Settings";
+
+myModule.start = function () {
+  $(document).bind('keypress.key32', function (event) {
+    var tag = event.target.tagName.toLowerCase();
+    if (event.which === 32 && tag !== 'input' && tag !== 'textarea') {
+      $('#main_player .player_sharing .player-controller-container .mute').click();
+    }
+  });
+};
+
+myModule.init = function () {
+  if (this.optionState) {
+    this.start();
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    this.start();
+  } else {
+    newOptionState = false;
+    $(document).unbind("keypress.key32");
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{}],28:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2012,7 +2260,51 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],25:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
+"use strict";
+
+/**
+ * Warn on Navigation
+ * Warns you when accidentally clicking on a link that takes you out of dubtrack
+ */
+
+var myModule = {};
+
+myModule.id = "warn_redirect";
+myModule.moduleName = "Warn On Navigation";
+myModule.description = "Warns you when accidentally clicking on a link that takes you out of dubtrack.";
+myModule.category = "Settings";
+
+myModule.start = function () {
+  window.onbeforeunload = function (e) {
+    return '';
+  };
+};
+
+myModule.init = function () {
+  if (this.optionState) {
+    this.start();
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    this.start();
+  } else {
+    newOptionState = false;
+    window.onbeforeunload = null;
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{}],30:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -2052,7 +2344,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-},{"../lib/settings.js":6}],26:[function(require,module,exports){
+},{"../lib/settings.js":6}],31:[function(require,module,exports){
 'use strict';
 
 // jQuery's getJSON kept returning errors so making my own with promise-like
@@ -2090,7 +2382,7 @@ var GetJSON = function GetJSON(url, optionalEvent, headers) {
 
 module.exports = GetJSON;
 
-},{}],27:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 function makeButtons(cb) {
@@ -2182,7 +2474,7 @@ module.exports = {
   close: close
 };
 
-},{}],28:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");

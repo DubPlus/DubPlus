@@ -24,15 +24,11 @@ module.exports = [
   require('./showTimestamps.js'),
   
   // Settings
-  // require('./spacebarMute.js'),
-  // require('./warnOnNavigation.js'),
+  require('./spacebarMute.js'),
+  require('./warnOnNavigation.js'),
 
   // // Customize
-  // require('./communityTheme.js'),
-  // require('./customCSS.js'),
-  // require('./customBackground.js'),
-
-  // non-menu modules
-  require('./snooze.js'),
-  require('./eta.js')
+  require('./communityTheme.js'),
+  require('./customCSS.js'),
+  require('./customBackground.js')
 ];

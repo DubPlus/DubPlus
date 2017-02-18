@@ -4,42 +4,50 @@
  */
 
 /* global Dubtrack */
-var menu = require('../lib/menu.js');
 var css = require('../utils/css.js');
 
 var myModule = {};
-
-myModule.id = "css_world";
+myModule.id = "dubplus-comm-theme";
 myModule.moduleName = "Community Theme";
 myModule.description = "Toggle Community CSS theme.";
-myModule.optionState = false;
-myModule.category = "customize";
-myModule.menuHTML = menu.makeStandardMenuHTML(myModule.id, myModule.description, 'css', myModule.moduleName);
+myModule.category = "Customize";
 
+myModule.start = function(){
+  var location = Dubtrack.room.model.get('roomUrl');
+  $.ajax({
+    type: 'GET',
+    url: 'https://api.dubtrack.fm/room/'+location,
+  }).done(function(e) {
+    var content = e.data.description;
+    
+    // for backwards compatibility with dubx we're checking for both @dubx and @dubplus
+    var themeCheck = new RegExp(/(@dub[x|plus]=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/,'i');
+    var communityCSSUrl = null;
+    content.replace(themeCheck, function(match, p1, p2){
+      console.log('loading community css theme:',p2);
+      communityCSSUrl = p2;
+    });
+
+    if(!communityCSSUrl) {return;}
+    css.loadExternal(communityCSSUrl, 'dubplus-comm-theme');
+  });
+};
+
+myModule.init = function(){
+  if (this.optionState){
+    this.start();
+  }
+};
 
 myModule.go = function() {
   var newOptionState;
 
   if (!this.optionState) {
     newOptionState = true;
-
-    var location = Dubtrack.room.model.get('roomUrl');
-    $.ajax({
-        type: 'GET',
-        url: 'https://api.dubtrack.fm/room/'+location,
-    }).done(function(e) {
-        var content = e.data.description;
-        var url = content.match(/(@dubplus=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/);
-
-        if(!url) {return;}
-
-        var append = url[0].split('@dubplus=');
-        css.loadExternal(append[1], 'css_world');
-    });
-
+    this.start();
   } else {
     newOptionState = false;
-    $('.css_world').remove();
+    $('.dubplus-comm-theme').remove();
   }
 
   this.optionState = newOptionState;
