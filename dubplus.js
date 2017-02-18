@@ -43,19 +43,19 @@ var css = require('./utils/css.js');
 
 /* globals Dubtrack */
 if (!window.dubplus && Dubtrack.session.id) {
-  init();
+    init();
 } else {
-  var errorMsg;
-  if (!Dubtrack.session.id) {
-    css.load('/css/dubplus.css');
-    errorMsg = 'You\'re not logged in. Please login to use Dub+.';
-  } else {
-    errorMsg = 'Dub+ is already loaded';
-  }
-  modal.create({
-    title: 'Dub+ Error',
-    content: errorMsg
-  });
+    var errorMsg;
+    if (!Dubtrack.session.id) {
+        css.load('/css/dubplus.css');
+        errorMsg = 'You\'re not logged in. Please login to use Dub+.';
+    } else {
+        errorMsg = 'Dub+ is already loaded';
+    }
+    modal.create({
+        title: 'Dub+ Error',
+        content: errorMsg
+    });
 }
 
 },{"./lib/init.js":4,"./utils/css.js":34,"./utils/modal.js":36}],2:[function(require,module,exports){
@@ -536,7 +536,7 @@ if (settings.menu.contact === "closed") {
 }
 
 // the contact section is hardcoded and setup up here
-var contactSection = '\n  <div id="dubplus-contact" class="dubplus-menu-section-header">\n      <span class="fa fa-angle-' + arrow + '"></span>\n      <p>Contact</p>\n    </div>\n    <ul class="dubplus-menu-section ' + isClosedClass + '">\n      <li class="dubplus-menu-icon">\n        <span class="fa fa-bug"></span>\n        <a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>\n      </li>\n       <li class="dubplus-menu-icon">\n        <span class="fa fa-facebook"></span>\n        <a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>\n      </li>\n      <li class="dubplus-menu-icon">\n        <span class="fa fa-twitter"></span>\n        <a href="https://twitter.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Twitter</a>\n      </li>\n    </ul>';
+var contactSection = '\n  <div id="dubplus-contact" class="dubplus-menu-section-header">\n      <span class="fa fa-angle-' + arrow + '"></span>\n      <p>Contact</p>\n    </div>\n    <ul class="dubplus-menu-section ' + isClosedClass + '">\n      <li class="dubplus-menu-icon">\n        <span class="fa fa-bug"></span>\n        <a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>\n      </li>\n      <li class="dubplus-menu-icon">\n        <span class="fa fa-reddit-alien"></span>\n        <a href="https://www.reddit.com/r/DubPlus/" class="dubplus-menu-label"  target="_blank">Reddit</a>\n      </li>\n      <li class="dubplus-menu-icon">\n        <span class="fa fa-facebook"></span>\n        <a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>\n      </li>\n      <li class="dubplus-menu-icon">\n        <span class="fa fa-twitter"></span>\n        <a href="https://twitter.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Twitter</a>\n      </li>\n    </ul>';
 
 module.exports = {
   beginMenu: function beginMenu() {
@@ -1485,7 +1485,7 @@ emote_module.description = "Adds twitch and bttv emotes in chat.";
 emote_module.category = "General";
 
 function makeImage(type, src, name, w, h) {
-  return '<img class="emoji ' + type + '-emote" ' + (w ? 'width="' + w + '" ' : '') + (h ? 'height="' + h + '" ' : '') + 'title="' + name + '" alt="' + name + '" src="' + src + '" />';
+    return '<img class="emoji ' + type + '-emote" ' + (w ? 'width="' + w + '" ' : '') + (h ? 'height="' + h + '" ' : '') + 'title="' + name + '" alt="' + name + '" src="' + src + '" />';
 }
 
 /**********************************************************************
@@ -1493,79 +1493,79 @@ function makeImage(type, src, name, w, h) {
  */
 
 var replaceTextWithEmote = function replaceTextWithEmote() {
-  var _regex = dubplus_emoji.twitch.chatRegex;
+    var _regex = dubplus_emoji.twitch.chatRegex;
 
-  if (!dubplus_emoji.twitchJSONSLoaded) {
-    return;
-  } // can't do anything until jsons are loaded
+    if (!dubplus_emoji.twitchJSONSLoaded) {
+        return;
+    } // can't do anything until jsons are loaded
 
-  var $chatTarget = $('.chat-main .text').last();
+    var $chatTarget = $('.chat-main .text').last();
 
-  if (!$chatTarget.html()) {
-    return;
-  } // nothing to do
+    if (!$chatTarget.html()) {
+        return;
+    } // nothing to do
 
-  if (dubplus_emoji.bttvJSONSLoaded) {
-    _regex = dubplus_emoji.bttv.chatRegex;
-  }
-
-  var emoted = $chatTarget.html().replace(_regex, function (matched, p1) {
-    var _id,
-        _src,
-        key = p1.toLowerCase();
-
-    if (dubplus_emoji.twitch.emotes[key]) {
-      _id = dubplus_emoji.twitch.emotes[key];
-      _src = dubplus_emoji.twitch.template(_id);
-      return makeImage("twitch", _src, key);
-    } else if (dubplus_emoji.bttv.emotes[key]) {
-      _id = dubplus_emoji.bttv.emotes[key];
-      _src = dubplus_emoji.bttv.template(_id);
-      return makeImage("bttv", _src, key);
-    } else if (dubplus_emoji.tasty.emotes[key]) {
-      _src = dubplus_emoji.tasty.template(key);
-      return makeImage("tasty", _src, key, dubplus_emoji.tasty.emotes[key].width, dubplus_emoji.tasty.emotes[key].height);
-    } else {
-      return matched;
+    if (dubplus_emoji.bttvJSONSLoaded) {
+        _regex = dubplus_emoji.bttv.chatRegex;
     }
-  });
 
-  $chatTarget.html(emoted);
+    var emoted = $chatTarget.html().replace(_regex, function (matched, p1) {
+        var _id,
+            _src,
+            key = p1.toLowerCase();
+
+        if (dubplus_emoji.twitch.emotes[key]) {
+            _id = dubplus_emoji.twitch.emotes[key];
+            _src = dubplus_emoji.twitch.template(_id);
+            return makeImage("twitch", _src, key);
+        } else if (dubplus_emoji.bttv.emotes[key]) {
+            _id = dubplus_emoji.bttv.emotes[key];
+            _src = dubplus_emoji.bttv.template(_id);
+            return makeImage("bttv", _src, key);
+        } else if (dubplus_emoji.tasty.emotes[key]) {
+            _src = dubplus_emoji.tasty.template(key);
+            return makeImage("tasty", _src, key, dubplus_emoji.tasty.emotes[key].width, dubplus_emoji.tasty.emotes[key].height);
+        } else {
+            return matched;
+        }
+    });
+
+    $chatTarget.html(emoted);
 };
 
 var startReplacing = function startReplacing() {
-  window.addEventListener('twitch:loaded', dubplus_emoji.loadBTTVEmotes.bind(dubplus_emoji));
-  // window.addEventListener('bttv:loaded', dubplus_emoji.loadTastyEmotes.bind(dubplus_emoji));
+    window.addEventListener('twitch:loaded', dubplus_emoji.loadBTTVEmotes.bind(dubplus_emoji));
+    // window.addEventListener('bttv:loaded', dubplus_emoji.loadTastyEmotes.bind(dubplus_emoji));
 
-  if (!dubplus_emoji.twitchJSONSLoaded) {
-    dubplus_emoji.loadTwitchEmotes();
-  } else {
-    replaceTextWithEmote();
-  }
-  Dubtrack.Events.bind("realtime:chat-message", replaceTextWithEmote);
+    if (!dubplus_emoji.twitchJSONSLoaded) {
+        dubplus_emoji.loadTwitchEmotes();
+    } else {
+        replaceTextWithEmote();
+    }
+    Dubtrack.Events.bind("realtime:chat-message", replaceTextWithEmote);
 };
 
 emote_module.init = function () {
-  if (emote_module.optionState) {
-    startReplacing();
-  }
+    if (emote_module.optionState) {
+        startReplacing();
+    }
 };
 
 /**************************************************************************
  * Turn on/off the twitch emoji in chat
  */
 emote_module.go = function () {
-  var newOptionState;
-  if (!emote_module.optionState) {
-    startReplacing();
-    newOptionState = true;
-  } else {
-    Dubtrack.Events.unbind("realtime:chat-message", replaceTextWithEmote);
-    newOptionState = false;
-  }
+    var newOptionState;
+    if (!emote_module.optionState) {
+        startReplacing();
+        newOptionState = true;
+    } else {
+        Dubtrack.Events.unbind("realtime:chat-message", replaceTextWithEmote);
+        newOptionState = false;
+    }
 
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+    this.optionState = newOptionState;
+    this.toggleAndSave(this.id, newOptionState);
 };
 
 module.exports = emote_module;
@@ -2365,7 +2365,7 @@ dubshover.resetDubs = function () {
         if($.grep(window.dubplus.dubs.grabs, function(el){ return el.userid == e.userid; }).length > 0){
             return;
         }
-         var username;
+          var username;
         if(!Dubtrack.room.users.collection.findWhere({userid: e.userid}) || !Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes) {
             $.getJSON("https://api.dubtrack.fm/user/" + e.userid, function(response){
                 username = response.userinfo.username;
@@ -2374,7 +2374,7 @@ dubshover.resetDubs = function () {
         else{
             username = Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes._user.username;
         }
-         window.dubplus.dubs.grabs.push({
+          window.dubplus.dubs.grabs.push({
             userid: e.userid,
             username: username
         })
@@ -2814,7 +2814,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487439750776')
+}).call(this,'1487442458613')
 },{"../lib/settings.js":7}],35:[function(require,module,exports){
 'use strict';
 
