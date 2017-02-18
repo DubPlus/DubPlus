@@ -1,41 +1,61 @@
 /**
- * Grabs in Chat
+ * Show downvotes in chat
+ * only mods can use this
  */
 
-/* global Dubtrack */
+/*global Dubtrack */
+var myModule = {};
+myModule.id = "dubplus-grabschat";
+myModule.moduleName = "Grabs in Chat";
+myModule.description = "Toggle showing grabs in the chat box";
+myModule.category = "General";
 
-var grabs_chat = {};
+myModule.grabChatWatcher = function(e) {
+  var user = Dubtrack.session.get('username');
+  var currentDj = Dubtrack.room.users.collection.findWhere({
+    userid: Dubtrack.room.player.activeSong.attributes.song.userid
+  }).attributes._user.username;
 
-grabs_chat.id = "dubplus-grab-chat";
-grabs_chat.moduleName = "Grabs in Chat";
-grabs_chat.description = "Puts a message in the chat when another user grabs your song";
-grabs_chat.category = "General";
+  if(user === currentDj && !Dubtrack.room.model.get('displayUserGrab')){
+    let newChat = `
+      <li class="dubplus-chat-system dubplus-chat-system-grab">
+        <div class="chatDelete" onclick="dubplus.deleteChatMessageClientSide(this)">
+          <span class="icon-close"></span>
+        </div>
+        <div class="text">
+          @${e.user.username} has grabbed your song ${Dubtrack.room.player.activeSong.attributes.songInfo.name}
+        </div>
+      </li>`;
 
-grabs_chat.grabChatWatcher = function(e){
-    var user = Dubtrack.session.get('username');
-    var currentDj = Dubtrack.room.users.collection.findWhere({
-        userid: Dubtrack.room.player.activeSong.attributes.song.userid
-    }).attributes._user.username;
-
-
-    if(user === currentDj && !Dubtrack.room.model.get('displayUserGrab')){
-        $('ul.chat-main').append(
-            '<li class="dubplus-chat-system dubplus-chat-system-grab">' +
-                '<div class="chatDelete" onclick="dubplus.deleteChatMessageClientSide(this)"><span class="icon-close"></span></div>' +
-                '<div class="text">' +
-                    '@' + e.user.username + ' has grabbed your song \'' + Dubtrack.room.player.activeSong.attributes.songInfo.name + ' \'' +
-                '</div>' +
-            '</li>');
-    }
+    $('ul.chat-main').append(newChat);
+  }
 };
 
-grabs_chat.go = function() {
+myModule.start = function() {
+  Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
+
+  // add this function to our global dubplus object so that chat
+  // items can be deleted
+  if (typeof window.dubplus.deleteChatMessageClientSide !== 'function') {
+    window.dubplus.deleteChatMessageClientSide = function(el){
+      $(el).parent('li')[0].remove();
+    };
+  }
+  
+};
+
+myModule.init = function(){
+  if (this.optionState) {
+    this.start();
+  }
+};
+
+myModule.go = function() {
   var newOptionState;
+
   if (!this.optionState) {
     newOptionState = true;
-    
-    Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
-
+    this.start();
   } else {
     newOptionState = false;
     Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
@@ -45,4 +65,4 @@ grabs_chat.go = function() {
   this.toggleAndSave(this.id, newOptionState);
 };
 
-module.exports = grabs_chat;
+module.exports = myModule;

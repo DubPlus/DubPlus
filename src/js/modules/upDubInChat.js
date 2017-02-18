@@ -16,7 +16,7 @@ myModule.updubWatcher = function(e) {
     userid: Dubtrack.room.player.activeSong.attributes.song.userid
   }).attributes._user.username;
 
-  if(user === currentDj && e.dubtype === 'downdub'){
+  if(user === currentDj && e.dubtype === 'updub'){
     let newChat = `
       <li class="dubplus-chat-system dubplus-chat-system-updub">
         <div class="chatDelete" onclick="dubplus.deleteChatMessageClientSide(this)">
@@ -34,7 +34,7 @@ myModule.updubWatcher = function(e) {
 myModule.start = function() {
   Dubtrack.Events.bind("realtime:room_playlist-dub", this.updubWatcher);
 
-  // add this function to our global dubplus object so that downdubbed chat
+  // add this function to our global dubplus object so that chat
   // items can be deleted
   if (typeof window.dubplus.deleteChatMessageClientSide !== 'function') {
     window.dubplus.deleteChatMessageClientSide = function(el){
