@@ -42,7 +42,7 @@ function watchingSASS() {
       recursive : true
     },
     function (event, filename) {
-      if (filename && path.extname(filename) === ".scss") {
+      if ( filename && /s[ca]ss/i.test(path.extname(filename)) ) {
         console.log('SASS '+event+' event detected');
         console.log('file: '+ filename);
         compileSASS();
