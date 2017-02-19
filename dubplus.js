@@ -670,7 +670,7 @@ if (_storageRaw) {
 
 module.exports = $.extend({}, defaults, savedSettings);
 
-}).call(this,'dev','FranciscoG')
+}).call(this,'no-gulp','FranciscoG')
 },{}],8:[function(require,module,exports){
 'use strict';
 
@@ -2811,7 +2811,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487460751234')
+}).call(this,'1487531328288')
 },{"../lib/settings.js":7}],35:[function(require,module,exports){
 'use strict';
 

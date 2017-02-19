@@ -3,7 +3,12 @@
   "version": "0.1.0",
   "description": "Dub+ - A simple script/extension for Dubtrack.fm",
   "main": "dubplus.js",
-  "scripts": {},
+  "scripts": {
+    "build": "node tasks.js build",
+    "start": "node tasks.js watch",
+    "bundle" : "node tasks.js bundle",
+    "sass" : "node tasks.js sass"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DubPlus/DubPlus.git"
@@ -20,10 +25,9 @@
     "babelify": "^7.3.0",
     "browserify": "^13.0.1",
     "git-repo-info": "^1.4.1",
-    "gulp": "^3.9.1",
-    "gulp-postcss": "^6.3.0",
-    "gulp-preprocess": "^2.0.0",
-    "gulp-sass": "^2.3.2",
-    "vinyl-source-stream": "^1.1.0"
+    "node-sass": "^4.5.0",
+    "postcss": "^5.2.14",
+    "preprocess": "^3.1.0",
+    "watchify": "^3.9.0"
   }
 }
