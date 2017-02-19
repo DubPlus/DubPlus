@@ -14,7 +14,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    MIT License
+    MIT License 
 
     Copyright (c) 2017 DubPlus
 
@@ -2811,7 +2811,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487531328288')
+}).call(this,'1487537115371')
 },{"../lib/settings.js":7}],35:[function(require,module,exports){
 'use strict';
 
