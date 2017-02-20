@@ -1211,6 +1211,57 @@ module.exports = myModule;
 
 },{"../lib/settings.js":7,"../utils/css.js":34,"../utils/modal.js":36,"../utils/options.js":38}],14:[function(require,module,exports){
 'use strict';
+  
+  /**
+ * Json Theme List
+ * Change Your Theme
+ */
+
+var settings = require("../lib/settings.js");
+var modal = require('../utils/modal.js');
+var options = require('../utils/options.js');
+
+var myModule = {};
+
+myModule.id = "dubplus-custom-theme-select";
+myModule.moduleName = "Custom Themes Select";
+myModule.description = "Change Your Theme.";
+myModule.category = "Customize";
+
+var saveCustomBG = function saveCustomBG() {
+  var content = $('.dp-modal textarea').val();
+  if (content === '' || !content) {
+    $('.dubplus-custom-theme-select').remove();
+    options.saveOption('custom', 'theme', '');
+    return;
+  }
+  options.saveOption('custom', 'theme', content);
+};
+
+myModule.init = function () {
+  if (this.optionState) {
+    
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+  } else {
+    newOptionState = false;
+    $('.dubplus-custom-theme-select').remove();
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{"../lib/settings.js":7,"../utils/modal.js":36,"../utils/options.js":38}],13:[function(require,module,exports){
+'use strict';
 
 /**
  * Autocomplete User @ Mentions in Chat
