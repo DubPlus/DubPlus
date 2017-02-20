@@ -4,10 +4,10 @@
   "description": "Dub+ - A simple script/extension for Dubtrack.fm",
   "main": "dubplus.js",
   "scripts": {
-    "build": "node tasks.js build",
-    "start": "node tasks.js watch",
-    "bundle" : "node tasks.js bundle",
-    "sass" : "node tasks.js sass"
+    "build": "node ./tasks/index.js",
+    "start": "node ./tasks/index.js watch",
+    "bundle" : "node ./tasks/index.js bundle",
+    "sass" : "node ./tasks/index.js sass"
   },
   "repository": {
     "type": "git",

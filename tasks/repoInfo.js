@@ -14,7 +14,7 @@ var CURRENT_BRANCH = info.branch;
  * github.com/DubPlus/DubPlus/branch
  *            ^^^^^^^ I want to get this 
  */
-var CURRENT_REPO = 'DubPlus';  // default to our main repo
+var CURRENT_REPO = 'DubPlus';  // default to our main repo's user
 
 var gitURL = sync('git', ['config', '--get', 'remote.origin.url'], {encoding : "UTF-8"});
 var whichRepo = gitURL.stdout.split(":")[1].split("/")[0];

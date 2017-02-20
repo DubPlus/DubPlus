@@ -2,8 +2,8 @@
  * custom tasks
  */
 
-var bundjeJS = require('./tasks/jsbundle.js');
-var compileSASS = require('./tasks/sassbundle.js');
+var bundjeJS = require(process.cwd() + '/tasks/jsbundle.js');
+var compileSASS = require(process.cwd() + '/tasks/sassbundle.js');
 
 var tasks = {
 
@@ -19,7 +19,7 @@ var tasks = {
   "default" : function(){
     bundjeJS();
     compileSASS();
-  },
+  }
 };
 
 // find out which task we're running

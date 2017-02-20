@@ -10,7 +10,6 @@ var gitInfo = require(process.cwd() + '/tasks/repoInfo.js');
 
 /******************************************************************
  * Build SASS
- * After build BRANCH is replaced with current branch name
  */
 
 // in order to pass variables to SASS we use the "data" options in node-sass
