@@ -1215,7 +1215,7 @@ module.exports = myModule;
   /**
  * Json Theme List
  * Change Your Theme
- *
+ */
 
 var settings = require("../lib/settings.js");
 var modal = require('../utils/modal.js');
@@ -1260,8 +1260,8 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/modal.js":36,"../utils/options.js":38}],15:[function(require,module,exports){
-'use strict';*/
+},{"../lib/settings.js":7,"../utils/modal.js":36,"../utils/options.js":38}],39:[function(require,module,exports){
+'use strict';
 
 /**
  * Autocomplete User @ Mentions in Chat
