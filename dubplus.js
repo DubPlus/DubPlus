@@ -1,6 +1,16 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
+var _waitFor = require('./utils/waitFor.js');
+
+var _waitFor2 = _interopRequireDefault(_waitFor);
+
+var _preload = require('./utils/preload.js');
+
+var _preload2 = _interopRequireDefault(_preload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 /*
      /$$$$$$$            /$$                
     | $$__  $$          | $$          /$$   
@@ -43,22 +53,38 @@ var css = require('./utils/css.js');
 
 /* globals Dubtrack */
 if (!window.dubplus && Dubtrack.session.id) {
-  init();
+
+  (0, _preload2.default)();
+
+  // checking to see if these items exist before initializing the script
+  // instead of just picking an arbitrary setTimeout and hoping for the best
+  var checkList = ['Dubtrack.room.chat', 'Dubtrack.Events', 'Dubtrack.room.player', 'Dubtrack.helpers.cookie', 'Dubtrack.room.model', 'Dubtrack.room.users'];
+
+  var _dubplusWaiting = new _waitFor2.default(checkList, { seconds: 10 }); // 10sec should be more than enough
+
+  _dubplusWaiting.then(function () {
+    init();
+    $('.dubplus-waiting').remove();
+  }).fail(function () {
+    $('.dubplus-waiting span').text('Something happed, refresh and try again');
+  });
 } else {
   var errorMsg;
+
   if (!Dubtrack.session.id) {
     css.load('/css/dubplus.css');
     errorMsg = 'You\'re not logged in. Please login to use Dub+.';
   } else {
     errorMsg = 'Dub+ is already loaded';
   }
+
   modal.create({
     title: 'Dub+ Error',
     content: errorMsg
   });
 }
 
-},{"./lib/init.js":4,"./utils/css.js":34,"./utils/modal.js":36}],2:[function(require,module,exports){
+},{"./lib/init.js":4,"./utils/css.js":34,"./utils/modal.js":36,"./utils/preload.js":39,"./utils/waitFor.js":40}],2:[function(require,module,exports){
 'use strict';
 
 /* global  emojify */
@@ -500,13 +526,19 @@ var loadAllModules = function loadAllModules() {
       mod.init.bind(mod)();
     }
 
+    var _extraIcon = null;
+    // setting a default extraIcon to 'pencil' if .extra is defined not extraIcon
+    if (typeof mod.extra === 'function' && !mod.extraIcon) {
+      _extraIcon = 'pencil';
+    }
+
     // generate the html for the menu option and add it to the
     // appropriate category
     menuObj[mod.category] += menu.makeOptionMenu(mod.moduleName, {
       id: mod.id,
       desc: mod.description,
       state: mod.optionState,
-      extraIcon: mod.extraIcon || null,
+      extraIcon: mod.extraIcon || _extraIcon,
       cssClass: mod.menuCssClass || '',
       altIcon: mod.altIcon || null
     });
@@ -647,7 +679,6 @@ module.exports = {
 
 var defaults = {
   our_version: '0.1.0',
-  srcRoot: "https://rawgit.com/" + CURRENT_REPO + "/DubPlus/" + CURRENT_BRANCH,
   // this will store all the on/off states
   options: {},
   // this will store the open/close state of the menu sections
@@ -668,7 +699,12 @@ if (_storageRaw) {
   savedSettings = JSON.parse(_storageRaw);
 }
 
-module.exports = $.extend({}, defaults, savedSettings);
+var exportSettings = $.extend({}, defaults, savedSettings);
+
+// this is stored in localStorage but we don't want that, we always want it fresh
+exportSettings.srcRoot = "https://rawgit.com/" + CURRENT_REPO + "/DubPlus/" + CURRENT_BRANCH;
+
+module.exports = exportSettings;
 
 }).call(this,'master','DubPlus')
 },{}],8:[function(require,module,exports){
@@ -690,7 +726,6 @@ afk_module.id = "dubplus-afk";
 afk_module.moduleName = "AFK Auto-respond";
 afk_module.description = "Toggle Away from Keyboard and customize AFK message.";
 afk_module.category = "General";
-afk_module.extraIcon = 'pencil';
 
 var afk_chat_respond = function afk_chat_respond(e) {
   var content = e.message;
@@ -2811,7 +2846,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487576343857')
+}).call(this,'1487633208944')
 },{"../lib/settings.js":7}],35:[function(require,module,exports){
 'use strict';
 
@@ -3009,4 +3044,133 @@ module.exports = {
   saveOption: saveOption
 };
 
-},{"../lib/settings.js":7}]},{},[1]);
+},{"../lib/settings.js":7}],39:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = preload;
+var settings = require('../lib/settings.js');
+
+function preload() {
+
+  var waitingStyles = ['font-family: \'Trebuchet MS\', Helvetica, sans-serif', 'z-index: 2147483647', 'color: white', 'position: fixed', 'top: 69px', 'right: 13px', 'background: #222', 'padding: 10px', 'line-height: 1', '-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75)', '-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75)', 'box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75)', 'border-radius: 5px', 'overflow: hidden', 'width: 230px'].join(';');
+
+  var dpIcon = ['float:left', 'width: 26px', 'margin-right:5px'].join(";");
+
+  var dpText = ['display: table-cell', 'width: 10000px', 'padding-top:5px'].join(";");
+
+  var preloadHTML = '\n    <div class="dubplus-waiting" style="' + waitingStyles + '">\n      <div style="' + dpIcon + '">\n        <img src="' + settings.srcRoot + '/images/dubplus.svg" alt="DubPlus icon">\n      </div>\n      <span style="' + dpText + '">\n        Waiting for Dubtrack...\n      </span>\n    </div>\n  ';
+
+  $('body').prepend(preloadHTML);
+}
+
+},{"../lib/settings.js":7}],40:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Takes a string  representation of a variable or object and checks if it's
+ * definied starting at provided scope or default to global window scope.
+ * @param  {string} dottedString  the item you are looking for
+ * @param  {var}    startingScope where to start lookined
+ * @return {boolean}              if it is defined or noe
+ */
+function deepCheck(dottedString, startingScope) {
+  var _vars = dottedString.split('.');
+  var len = _vars.length;
+
+  var depth = startingScope || window;
+  for (var i = 0; i < len; i++) {
+    if (typeof depth[_vars[i]] === 'undefined') {
+      return false;
+    }
+    depth = depth[_vars[i]];
+  }
+  return true;
+}
+
+function arrayDeepCheck(arr, startingScope) {
+  var len = arr.length;
+  var scope = startingScope || window;
+
+  for (var i = 0; i < len; i++) {
+    if (!deepCheck(arr[i], scope)) {
+      console.log(arr[i], 'is not found yet');
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * pings for the existence of var/function for # seconds until it's defined
+ * runs callback once found and stops pinging
+ * @param {string|array} waitingFor          what you are waiting for
+ * @param {object}       options             optional options to pass
+ *                       options.interval    how often to ping
+ *                       options.seconds     how long to ping for
+ *                       
+ * @return {object}                    2 functions:
+ *                  .then(fn)          will run fn only when item successfully found.  This also starts the ping process
+ *                  .fail(fn)          will run fn only when is never found in the time given
+ */
+function WaitFor(waitingFor, options) {
+  if (typeof waitingFor !== "string" && !Array.isArray(waitingFor)) {
+    console.warn('WaitFor: invalid first argument');
+    return;
+  }
+  var defaults = {
+    interval: 500, // every XX ms we check to see if waitingFor is defined
+    seconds: 5 };
+
+  var _cb = function _cb() {};
+  var _failCB = function _failCB() {};
+  var checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
+
+  var opts = $.extend({}, defaults, options);
+
+  var tryCount = 0;
+  var tryLimit = opts.seconds * 1000 / opts.interval; // how many intervals
+
+  var check = function check() {
+    tryCount++;
+    var _test = checkFunc(waitingFor);
+
+    if (_test) {
+      return _cb();
+    }if (tryCount < tryLimit) {
+      window.setTimeout(check, opts.interval);
+    } else {
+      return _failCB();
+    }
+  };
+
+  var then = function then(cb) {
+    if (typeof cb === 'function') {
+      _cb = cb;
+    }
+    // start the first one
+    window.setTimeout(check, opts.interval);
+    return this;
+  };
+
+  var fail = function fail(cb) {
+    if (typeof cb === 'function') {
+      _failCB = cb;
+    }
+    return this;
+  };
+
+  return {
+    then: then,
+    fail: fail
+  };
+}
+
+exports.default = WaitFor;
+
+},{}]},{},[1]);

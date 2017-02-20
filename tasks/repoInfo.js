@@ -25,8 +25,8 @@ if (CURRENT_BRANCH === 'master') {
   CURRENT_REPO = gitURL.stdout.split(":")[1].split("/")[0];
 }
 
-// console.log('Current Github User is:', CURRENT_REPO);
-// console.log('Current branch is:', CURRENT_BRANCH);
+console.log('Current Github User is:', CURRENT_REPO);
+console.log('Current branch is:', CURRENT_BRANCH);
 
 module.exports = {
   branch : CURRENT_BRANCH,

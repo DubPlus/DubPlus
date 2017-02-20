@@ -14,7 +14,6 @@ afk_module.id = "dubplus-afk";
 afk_module.moduleName = "AFK Auto-respond";
 afk_module.description = "Toggle Away from Keyboard and customize AFK message.";
 afk_module.category = "General";
-afk_module.extraIcon = 'pencil';
 
 var afk_chat_respond = function(e) {
   var content = e.message;
