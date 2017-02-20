@@ -1148,7 +1148,7 @@ module.exports = myModule;
  * Add custom CSS
  */
 
-var css = require('../utils/css.js');
+/*var css = require('../utils/css.js');
 var settings = require("../lib/settings.js");
 var modal = require('../utils/modal.js');
 var options = require('../utils/options.js');
@@ -1210,7 +1210,7 @@ myModule.go = function () {
 module.exports = myModule;
 
 },{"../lib/settings.js":7,"../utils/css.js":34,"../utils/modal.js":36,"../utils/options.js":38}],14:[function(require,module,exports){
-'use strict';
+'use strict';*/
   
   /**
  * Json Theme List
