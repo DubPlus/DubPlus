@@ -1,6 +1,5 @@
 var defaults = {
   our_version : '0.1.0',
-  srcRoot: `https://rawgit.com/${CURRENT_REPO}/DubPlus/${CURRENT_BRANCH}`,
   // this will store all the on/off states
   options : {},
   // this will store the open/close state of the menu sections
@@ -12,9 +11,7 @@ var defaults = {
     "contact" : "open"
   },
   // this will store custom strings for options like custom css, afk message, etc
-  custom: {
-
-  }
+  custom: {}
 };
 
 var savedSettings = {};
@@ -23,4 +20,9 @@ if (_storageRaw) {
   savedSettings = JSON.parse(_storageRaw);
 }
 
-module.exports = $.extend({}, defaults, savedSettings);
+var exportSettings = $.extend({}, defaults, savedSettings);
+
+// this is stored in localStorage but we don't want that, we always want it fresh
+exportSettings.srcRoot = `https://rawgit.com/${CURRENT_REPO}/DubPlus/${CURRENT_BRANCH}`;
+
+module.exports = exportSettings;
