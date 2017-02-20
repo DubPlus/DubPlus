@@ -14,21 +14,21 @@ var CURRENT_BRANCH = info.branch;
  * github.com/DubPlus/DubPlus/branch
  *            ^^^^^^^ I want to get this 
  */
-var CURRENT_REPO = 'DubPlus';  // default to our main repo's user
 
-var gitURL = sync('git', ['config', '--get', 'remote.origin.url'], {encoding : "UTF-8"});
-var whichRepo = gitURL.stdout.split(":")[1].split("/")[0];
-if (CURRENT_BRANCH !== 'master') {
-  // github.com/CURRENT_DEVS_FORK/DubPlus/branch
-  //            ^^^^^^^^^^^^^^^^^ switching it to your local
-  CURRENT_REPO = whichRepo;
+var CURRENT_REPO;
+if (CURRENT_BRANCH === 'master') {
+  // if we're in master that means we're ready to send a PR to the
+  // main repo and we should always be set to DubPlus/DubPlus
+  CURRENT_REPO = 'DubPlus';
+} else {
+  var gitURL = sync('git', ['config', '--get', 'remote.origin.url'], {encoding : "UTF-8"});
+  CURRENT_REPO = gitURL.stdout.split(":")[1].split("/")[0];
 }
 
-
-// console.log('Current Github User is:', whichRepo);
+// console.log('Current Github User is:', CURRENT_REPO);
 // console.log('Current branch is:', CURRENT_BRANCH);
 
 module.exports = {
   branch : CURRENT_BRANCH,
-  user : whichRepo
+  user : CURRENT_REPO
 };

@@ -17,7 +17,7 @@ var gitInfo = require(process.cwd() + '/tasks/repoInfo.js');
 // our main SASS file right after
 
 // first we define our variables
-var dataString =  "$build_branch : " + gitInfo.banch + "; ";
+var dataString =  "$build_branch : " + gitInfo.branch + "; ";
     dataString += "$build_repo : " + gitInfo.user + "; ";
 
 // then we @import our main sass file
