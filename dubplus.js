@@ -5,6 +5,10 @@ var _waitFor = require('./utils/waitFor.js');
 
 var _waitFor2 = _interopRequireDefault(_waitFor);
 
+var _preload = require('./utils/preload.js');
+
+var _preload2 = _interopRequireDefault(_preload);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /*
@@ -50,33 +54,37 @@ var css = require('./utils/css.js');
 /* globals Dubtrack */
 if (!window.dubplus && Dubtrack.session.id) {
 
-  $('body').prepend('<div class="dubplus-waiting" style="font-family: \'Trebuchet MS\', Helvetica, sans-serif; z-index: 2147483647; color: white; position: fixed; top: 69px; right: 13px; background: #222; padding: 13px; -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); border-radius: 5px;">Waiting for Dubtrack...</div>');
+  (0, _preload2.default)();
 
   // checking to see if these items exist before initializing the script
   // instead of just picking an arbitrary setTimeout and hoping for the best
   var checkList = ['Dubtrack.room.chat', 'Dubtrack.Events', 'Dubtrack.room.player', 'Dubtrack.helpers.cookie', 'Dubtrack.room.model', 'Dubtrack.room.users'];
-  var _dubplusWaiting = new _waitFor2.default(checkList, { seconds: 10 }); // 10 sec might be too long
+
+  var _dubplusWaiting = new _waitFor2.default(checkList, { seconds: 10 }); // 10sec should be more than enough
+
   _dubplusWaiting.then(function () {
     init();
     $('.dubplus-waiting').remove();
   }).fail(function () {
-    $('.dubplus-waiting').text('Something happed, refresh and try again').delay(3000).remove();
+    $('.dubplus-waiting span').text('Something happed, refresh and try again');
   });
 } else {
   var errorMsg;
+
   if (!Dubtrack.session.id) {
     css.load('/css/dubplus.css');
     errorMsg = 'You\'re not logged in. Please login to use Dub+.';
   } else {
     errorMsg = 'Dub+ is already loaded';
   }
+
   modal.create({
     title: 'Dub+ Error',
     content: errorMsg
   });
 }
 
-},{"./lib/init.js":4,"./utils/css.js":34,"./utils/modal.js":36,"./utils/waitFor.js":39}],2:[function(require,module,exports){
+},{"./lib/init.js":4,"./utils/css.js":34,"./utils/modal.js":36,"./utils/preload.js":39,"./utils/waitFor.js":40}],2:[function(require,module,exports){
 'use strict';
 
 /* global  emojify */
@@ -671,7 +679,6 @@ module.exports = {
 
 var defaults = {
   our_version: '0.1.0',
-  srcRoot: "https://rawgit.com/" + CURRENT_REPO + "/DubPlus/" + CURRENT_BRANCH,
   // this will store all the on/off states
   options: {},
   // this will store the open/close state of the menu sections
@@ -692,7 +699,12 @@ if (_storageRaw) {
   savedSettings = JSON.parse(_storageRaw);
 }
 
-module.exports = $.extend({}, defaults, savedSettings);
+var exportSettings = $.extend({}, defaults, savedSettings);
+
+// this is stored in localStorage but we don't want that, we always want it fresh
+exportSettings.srcRoot = "https://rawgit.com/" + CURRENT_REPO + "/DubPlus/" + CURRENT_BRANCH;
+
+module.exports = exportSettings;
 
 }).call(this,'dev','FranciscoG')
 },{}],8:[function(require,module,exports){
@@ -2834,7 +2846,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487626356619')
+}).call(this,'1487632952346')
 },{"../lib/settings.js":7}],35:[function(require,module,exports){
 'use strict';
 
@@ -3038,6 +3050,28 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = preload;
+var settings = require('../lib/settings.js');
+
+function preload() {
+
+  var waitingStyles = ['font-family: \'Trebuchet MS\', Helvetica, sans-serif', 'z-index: 2147483647', 'color: white', 'position: fixed', 'top: 69px', 'right: 13px', 'background: #222', 'padding: 10px', 'line-height: 1', '-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75)', '-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75)', 'box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75)', 'border-radius: 5px', 'overflow: hidden', 'width: 230px'].join(';');
+
+  var dpIcon = ['float:left', 'width: 26px', 'margin-right:5px'].join(";");
+
+  var dpText = ['display: table-cell', 'width: 10000px', 'padding-top:5px'].join(";");
+
+  var preloadHTML = '\n    <div class="dubplus-waiting" style="' + waitingStyles + '">\n      <div style="' + dpIcon + '">\n        <img src="' + settings.srcRoot + '/images/dubplus.svg" alt="DubPlus icon">\n      </div>\n      <span style="' + dpText + '">\n        Waiting for Dubtrack...\n      </span>\n    </div>\n  ';
+
+  $('body').prepend(preloadHTML);
+}
+
+},{"../lib/settings.js":7}],40:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 /**
  * Takes a string  representation of a variable or object and checks if it's
  * definied starting at provided scope or default to global window scope.
@@ -3081,7 +3115,7 @@ function arrayDeepCheck(arr, startingScope) {
  *                       options.seconds     how long to ping for
  *                       
  * @return {object}                    2 functions:
- *                  .then(fn)          will run fn only when item successfully found
+ *                  .then(fn)          will run fn only when item successfully found.  This also starts the ping process
  *                  .fail(fn)          will run fn only when is never found in the time given
  */
 function WaitFor(waitingFor, options) {
@@ -3115,12 +3149,12 @@ function WaitFor(waitingFor, options) {
     }
   };
 
-  window.setTimeout(check, opts.interval);
-
   var then = function then(cb) {
     if (typeof cb === 'function') {
       _cb = cb;
     }
+    // start the first one
+    window.setTimeout(check, opts.interval);
     return this;
   };
 

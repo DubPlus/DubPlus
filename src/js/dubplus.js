@@ -34,17 +34,18 @@
     SOFTWARE.
 */
 
-var modal = require('./utils/modal.js');
-var init = require('./lib/init.js');
-var css = require('./utils/css.js');
+const modal = require('./utils/modal.js');
+const init = require('./lib/init.js');
+const css = require('./utils/css.js');
 
 import WaitFor from './utils/waitFor.js';
+import preload from './utils/preload.js';
 
 /* globals Dubtrack */
 if (!window.dubplus && Dubtrack.session.id) {
 
-  $('body').prepend('<div class="dubplus-waiting" style="font-family: \'Trebuchet MS\', Helvetica, sans-serif; z-index: 2147483647; color: white; position: fixed; top: 69px; right: 13px; background: #222; padding: 13px; -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); border-radius: 5px;">Waiting for Dubtrack...</div>');
-  
+  preload();
+
   // checking to see if these items exist before initializing the script
   // instead of just picking an arbitrary setTimeout and hoping for the best
   var checkList = [
@@ -55,26 +56,31 @@ if (!window.dubplus && Dubtrack.session.id) {
     'Dubtrack.room.model',
     'Dubtrack.room.users',
   ];
-  var _dubplusWaiting = new WaitFor(checkList, { seconds : 10}); // 10 sec might be too long
+  
+  var _dubplusWaiting = new WaitFor(checkList, { seconds : 10}); // 10sec should be more than enough
+  
   _dubplusWaiting
     .then(function(){
       init();
       $('.dubplus-waiting').remove();
     })
     .fail(function(){
-       $('.dubplus-waiting').text('Something happed, refresh and try again').delay(3000).remove();
+       $('.dubplus-waiting span').text('Something happed, refresh and try again');
     });
 
 } else {
   var errorMsg;
+
   if (!Dubtrack.session.id) {
     css.load('/css/dubplus.css');
     errorMsg = 'You\'re not logged in. Please login to use Dub+.';
   } else {
-      errorMsg = 'Dub+ is already loaded';
+    errorMsg = 'Dub+ is already loaded';
   }
+  
   modal.create({
     title: 'Dub+ Error',
     content: errorMsg
   });
+
 }
