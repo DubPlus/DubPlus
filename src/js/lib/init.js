@@ -15,9 +15,6 @@ module.exports = function(){
   // load third party snowfall feature
   $.getScript('https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js');
 
-  // what is this for?
-  // $('.icon-mute.snooze_btn:after').css({"content": "1", "vertical-align": "top", "font-size": "0.75rem", "font-weight": "700"});
-
   // Get the opening html for the menu
   var menuString = menu.beginMenu();
 
