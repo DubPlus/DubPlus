@@ -130,7 +130,7 @@ module.exports = {
     var mainCssClass = "dubplus-switch";
     var mainIcon = `
         <div class="dubplus-switch-bg">
-          <div class="dubplus-switcher"></div>'
+          <div class="dubplus-switcher"></div>
         </div>`;
     // however, if an "altIcon" is provided, then we use that instead
     if (opts.altIcon) {
