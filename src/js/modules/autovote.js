@@ -9,7 +9,6 @@ autovote.category = "General";
 // add any custom functions to this module
 
 var advance_vote = function() {
-  console.log('advancing the vote');
   $('.dubup').click();
 };
 
@@ -30,7 +29,6 @@ autovote.init = function(){
 // this function will be run on each click of the menu
 autovote.go = function(){
   var newOptionState;
-  console.log(this.optionState);
 
   if (!this.optionState) {
     newOptionState = true;

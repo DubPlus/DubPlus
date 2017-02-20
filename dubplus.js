@@ -973,7 +973,6 @@ autovote.category = "General";
 // add any custom functions to this module
 
 var advance_vote = function advance_vote() {
-  console.log('advancing the vote');
   $('.dubup').click();
 };
 
@@ -994,7 +993,6 @@ autovote.init = function () {
 // this function will be run on each click of the menu
 autovote.go = function () {
   var newOptionState;
-  console.log(this.optionState);
 
   if (!this.optionState) {
     newOptionState = true;
@@ -2846,7 +2844,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487632952346')
+}).call(this,'1487635065784')
 },{"../lib/settings.js":7}],35:[function(require,module,exports){
 'use strict';
 
