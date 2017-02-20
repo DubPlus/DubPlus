@@ -1,4 +1,4 @@
-My theme: https://rawgit.com/jkljkl1197/DubPlus/MyVersion/themes/BetterDubtrack.css
+My theme Made by Shiny and edit/update by me: https://rawgit.com/jkljkl1197/DubPlus/MyVersion/themes/BetterDubtrack.css
 
 # DubPlus
 Dub+ - A Dubtrack.fm script/extension for added features and customizations
