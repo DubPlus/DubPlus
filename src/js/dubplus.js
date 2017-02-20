@@ -38,9 +38,33 @@ var modal = require('./utils/modal.js');
 var init = require('./lib/init.js');
 var css = require('./utils/css.js');
 
+import WaitFor from './utils/waitFor.js';
+
 /* globals Dubtrack */
 if (!window.dubplus && Dubtrack.session.id) {
-  init();
+
+  $('body').prepend('<div class="dubplus-waiting" style="font-family: \'Trebuchet MS\', Helvetica, sans-serif; z-index: 2147483647; color: white; position: fixed; top: 69px; right: 13px; background: #222; padding: 13px; -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); border-radius: 5px;">Waiting for Dubtrack...</div>');
+  
+  // checking to see if these items exist before initializing the script
+  // instead of just picking an arbitrary setTimeout and hoping for the best
+  var checkList = [
+    'Dubtrack.room.chat',
+    'Dubtrack.Events',
+    'Dubtrack.room.player',
+    'Dubtrack.helpers.cookie',
+    'Dubtrack.room.model',
+    'Dubtrack.room.users',
+  ];
+  var _dubplusWaiting = new WaitFor(checkList, { seconds : 10}); // 10 sec might be too long
+  _dubplusWaiting
+    .then(function(){
+      init();
+      $('.dubplus-waiting').remove();
+    })
+    .fail(function(){
+       $('.dubplus-waiting').text('Something happed, refresh and try again').delay(3000).remove();
+    });
+
 } else {
   var errorMsg;
   if (!Dubtrack.session.id) {

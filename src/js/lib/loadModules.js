@@ -44,13 +44,19 @@ var loadAllModules = function(){
       mod.init.bind(mod)(); 
     }
 
+    var _extraIcon = null;
+    // setting a default extraIcon to 'pencil' if .extra is defined not extraIcon
+    if (typeof mod.extra === 'function' && !mod.extraIcon) {
+      _extraIcon = 'pencil';
+    }
+
     // generate the html for the menu option and add it to the
     // appropriate category
     menuObj[mod.category] += menu.makeOptionMenu(mod.moduleName, {
       id : mod.id,
       desc : mod.description,
       state : mod.optionState,
-      extraIcon : mod.extraIcon || null,
+      extraIcon : mod.extraIcon || _extraIcon,
       cssClass : mod.menuCssClass || '',
       altIcon : mod.altIcon || null
     });

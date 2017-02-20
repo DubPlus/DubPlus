@@ -6,8 +6,8 @@
   "scripts": {
     "build": "node ./tasks/index.js",
     "start": "node ./tasks/index.js watch",
-    "bundle" : "node ./tasks/index.js bundle",
-    "sass" : "node ./tasks/index.js sass"
+    "bundle": "node ./tasks/index.js bundle",
+    "sass": "node ./tasks/index.js sass"
   },
   "repository": {
     "type": "git",
