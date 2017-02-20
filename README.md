@@ -14,7 +14,7 @@ Main
 - Notify on Mentions
 - SpaceBar Mute
 - Warn on navigation
-- {Updubs, Grabs} in Chat
+- {Updubs, Downdubs(OnlyMods), Grabs} in Chat
 
 User Interface
 - FullScreen
