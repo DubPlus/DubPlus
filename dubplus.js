@@ -679,6 +679,9 @@ module.exports = {
 
 var defaults = {
   our_version: '0.1.0',
+
+  srcRoot: "https://rawgit.com/jkljkl1197/DubPlus/MyVersion",
+
   // this will store all the on/off states
   options: {},
   // this will store the open/close state of the menu sections
@@ -1242,6 +1245,49 @@ myModule.go = function () {
 module.exports = myModule;
 
 },{"../lib/settings.js":7,"../utils/css.js":34,"../utils/modal.js":36,"../utils/options.js":38}],14:[function(require,module,exports){
+'use strict';
+  
+  /**
+ * Json Theme List
+ * Change Your Theme
+ * https://userstyles.org/styles/chrome/119173.json?
+ */
+
+var settings = require("../lib/settings.js");
+var css = require('../utils/css.js');
+var options = require('../utils/options.js');
+
+var myModule = {};
+
+myModule.id = "dubplus-custom-theme-select";
+myModule.moduleName = "Custom Themes Select";
+myModule.description = "Change Your Theme.";
+myModule.category = "Customize";
+
+myModule.init = function () {
+  if (this.optionState) {
+    var css_to_import = '';
+    css.loadExternal(css_to_import, 'dubplus-custom-css');
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+  } else {
+    newOptionState = false;
+    $('.dubplus-custom-theme-select').remove();
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{}],39:[function(require,module,exports){
 'use strict';
 
 /**
