@@ -706,7 +706,7 @@ exportSettings.srcRoot = "https://rawgit.com/" + CURRENT_REPO + "/DubPlus/" + CU
 
 module.exports = exportSettings;
 
-}).call(this,'dev','FranciscoG')
+}).call(this,'webext','FranciscoG')
 },{}],8:[function(require,module,exports){
 'use strict';
 
@@ -2844,7 +2844,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487635065784')
+}).call(this,'1487657623032')
 },{"../lib/settings.js":7}],35:[function(require,module,exports){
 'use strict';
 
