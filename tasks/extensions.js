@@ -11,29 +11,23 @@ const extPath = process.cwd() + "/extensions";
  * Create our Chrome and Firefox folders if they
  * don't exist already
  */
-[ 'Chrome',
-  'Chrome/icons',
-  'Chrome/scripts',
-  'Firefox',
-  'Firefox/icons',
-  'Firefox/scripts'
-].forEach(function(dir){
-  fs.ensureDir(`${extPath}/${dir}`, function (err) {
-    console.log(err); // => null
+[ 'Chrome','Firefox'].forEach(function(dir){
+  fs.ensureDirSync(`${extPath}/${dir}`, function (err) {
+    if (err) { return console.error(err); }
   });
 });
 
 
 function copyCommonStatic(what) {
   ['Chrome','Firefox'].forEach(function(dir){
-    fs.copySync(
-        `${extPath}/common/${what}`,
-        `${extPath}/${dir}/`,
-        function (err) {
-          if (err) { return console.error(err); }
-          console.log(`Success copying ${what} to ${dir} folder`);
-        }
-      );
+    fs.copy(
+      `${extPath}/common/${what}`,
+      `${extPath}/${dir}/${what}`,
+      function (err) {
+        if (err) { return console.error(err); }
+        console.log(`Success copying ${what} to ${dir} folder`);
+      }
+    );
   });
 }
 
