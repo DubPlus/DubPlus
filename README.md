@@ -26,10 +26,8 @@ Features
 - Custom Background
 - Snow Animation
 
------------------
-
-### Contributing
-
+Contributing
+---
 - Fork us    
 - Run `npm install` to install packages    
 - Create separate branch(es) to develop in.
