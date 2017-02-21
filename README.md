@@ -1,5 +1,3 @@
-My theme Made by Shiny and edit/update by me, just add the link in custom css: https://rawgit.com/jkljkl1197/DubPlus/MyVersion/themes/BetterDubtrack.css
-
 # DubPlus
 Dub+ - A Dubtrack.fm script/extension for added features and customizations
 
