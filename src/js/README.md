@@ -47,7 +47,7 @@ Which menu section this should be added to. (case sensitive!)
 ```javascript
 myModule.extraIcon = 'pencil' // {string} Default: 'pencil'
 ```
-set the font-awesome icon to be used to trigger the .extra method.    It will automatically be prepended with "fa-"
+set the font-awesome icon to be used to trigger the .extra method. It will automatically be prepended with "fa-"
 
 ### available properties
 ```javascript
