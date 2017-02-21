@@ -7,15 +7,19 @@ const fs = require('fs-extra');
 var pkg = require(process.cwd() + '/package.json');
 const extPath = process.cwd() + "/extensions";
 
-function copyCommonStatic(what) {
+function rmCommonManifests() {
   ['Chrome','Firefox'].forEach(function(dir){
-    fs.copy(
-      `${extPath}/common/${what}`,
-      `${extPath}/${dir}/${what}`,
-      function (err) {
-        if (err) { return console.error(err); }
-        console.log(`Success copying ${what} to ${dir} folder`);
-      }
+    fs.removeSync(`${extPath}/${dir}/manifest.core.json`);
+    fs.removeSync(`${extPath}/${dir}/manifest.chrome.json`);
+    fs.removeSync(`${extPath}/${dir}/manifest.firefox.json`);
+  });
+}
+
+function copyCommonStatic(){
+  ['Chrome','Firefox'].forEach(function(dir){
+    fs.copySync(
+      `${extPath}/common`,
+      `${extPath}/${dir}`
     );
   });
 }
@@ -35,7 +39,7 @@ function parseJSONfile(filename) {
 }
 
 function combine(obj1, obj2, dest) {
-  var finalObj = Object.assign(obj1, obj2);
+  var finalObj = Object.assign({}, obj1, obj2);
   var fileContents = JSON.stringify(finalObj, null, 2);
   fs.writeFileSync(extPath + "/"+ dest + "/manifest.json", fileContents);
 }
@@ -47,9 +51,7 @@ module.exports = function() {
    * don't exist already
    */
   [ 'Chrome','Firefox'].forEach(function(dir){
-    fs.ensureDirSync(`${extPath}/${dir}`, function (err) {
-      if (err) { return console.error(err); }
-    });
+    fs.ensureDirSync(`${extPath}/${dir}`);
   });
 
   /**********************************************
@@ -57,9 +59,8 @@ module.exports = function() {
    * both the Chrome and Firefox folder
    */
 
-  console.log('Copying subfolders to each build destination (/Chrome and /Firefox)');
-  copyCommonStatic('icons');
-  copyCommonStatic('scripts');
+  console.log('Copying /common to /Chrome and /Firefox)');
+  copyCommonStatic();
 
   /**********************************************
    * Make Manifest.json for each browser
@@ -76,4 +77,7 @@ module.exports = function() {
   // combine and export manifest files
   combine(mCore, mChrome, "Chrome");
   combine(mCore, mFF, "Firefox");
+
+  // remove the common manifests from each folder
+  rmCommonManifests();
 };

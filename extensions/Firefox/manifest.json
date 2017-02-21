@@ -28,16 +28,6 @@
     "128": "icons/128.png"
   },
   "version": "0.1.0",
-  "update_url": "https://clients2.google.com/service/update2/crx",
-  "permissions": [
-    "http://dubtrack.fm/*",
-    "https://dubtrack.fm/*",
-    "http://*.dubtrack.fm/*",
-    "https://*.dubtrack.fm/*"
-  ],
-  "web_accessible_resources": [
-    "scripts/dubplus.js"
-  ],
   "applications": {
     "gecko": {
       "id": "****"

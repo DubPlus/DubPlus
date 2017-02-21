@@ -20,9 +20,10 @@ var tasks = {
 
   "ext" : extensionBuild,
 
-  // run "ext" explicity first, it has an async method so I don't want to
-  // include it as part of the deploy script
-  "ext-deploy" : deployExt,
+  "ext-deploy" : function(){
+    extensionBuild();
+    deployExt();
+  },
 
   "default" : function(){
     bundjeJS();
