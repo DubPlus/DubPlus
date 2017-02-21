@@ -680,7 +680,7 @@ module.exports = {
 var defaults = {
   our_version: '0.1.0',
 
-  srcRoot: "https://rawgit.com/jkljkl1197/DubPlus/MyVersion",
+  srcRoot: "https://rawgit.com/DubPlus/DubPlus/MyVersion",
 
   // this will store all the on/off states
   options: {},
