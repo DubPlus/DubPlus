@@ -4,6 +4,14 @@ var fs = require('fs');
 
 // our own custom module
 var gitInfo = require(process.cwd() + '/tasks/repoInfo.js');
+var pkg = require(process.cwd() + '/package.json');
+
+// only want to pass a few things from package
+delete pkg.main;
+delete pkg.scripts;
+delete pkg.repository;
+delete pkg.bugs;
+delete pkg.devDependencies;
 
 /******************************************************************
  * Setup browserify with options
@@ -18,7 +26,9 @@ var options = {
     // so that we can point to the proper repo during testing or production
     CURRENT_REPO: function () { return "'" + gitInfo.user + "'"; },
     // so that we can insert it as a cache busting query string for CSS
-    TIME_STAMP : function() { return  "'" +  Date.now() + "'";}
+    TIME_STAMP : function() { return  "'" +  Date.now() + "'";},
+    // pass our pkg info
+    PKGINFO : function() { return  "'" +  JSON.stringify(pkg) + "'"; }
   }
 };
 

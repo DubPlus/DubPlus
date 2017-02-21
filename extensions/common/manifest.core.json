@@ -5,14 +5,13 @@
   "author": "------",
   "description": "Dub+ - A Dubtrack.fm script/extension for added features and customizations",
   "homepage_url": "https://dub.plus/",
-  "version": "1.0",
   "browser_action": {
     "default_icon": "icons/48.png"
   },
   "content_scripts": [
     {
       "matches": [
-        "*://www.dubtrack.fm/*"
+        "*://*.dubtrack.fm/*"
       ],
       "js": [
         "scripts/jquery.js",

@@ -475,6 +475,7 @@ module.exports = function () {
 };
 
 },{"../modules/eta.js":18,"../modules/snooze.js":28,"../utils/css.js":34,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
+(function (PKGINFO){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -496,7 +497,7 @@ var menuObj = {
  * Loads all the modules and initliazes them
  */
 var loadAllModules = function loadAllModules() {
-  window.dubplus = {};
+  window.dubplus = JSON.parse(PKGINFO);
 
   dubPlus_modules.forEach(function (mod) {
     // add each module to the new global object
@@ -549,6 +550,7 @@ var loadAllModules = function loadAllModules() {
 
 exports.default = loadAllModules;
 
+}).call(this,'{"name":"DubPlus","version":"0.1.0","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
 },{"../lib/menu.js":6,"../lib/settings.js":7,"../modules/index.js":25,"../utils/options.js":38}],6:[function(require,module,exports){
 'use strict';
 
@@ -2844,7 +2846,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487657623032')
+}).call(this,'1487689839838')
 },{"../lib/settings.js":7}],35:[function(require,module,exports){
 'use strict';
 

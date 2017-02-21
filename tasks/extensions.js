@@ -4,19 +4,8 @@
  */
 
 const fs = require('fs-extra');
-
+var pkg = require(process.cwd() + '/package.json');
 const extPath = process.cwd() + "/extensions";
-
-/***********************************************
- * Create our Chrome and Firefox folders if they
- * don't exist already
- */
-[ 'Chrome','Firefox'].forEach(function(dir){
-  fs.ensureDirSync(`${extPath}/${dir}`, function (err) {
-    if (err) { return console.error(err); }
-  });
-});
-
 
 function copyCommonStatic(what) {
   ['Chrome','Firefox'].forEach(function(dir){
@@ -30,19 +19,6 @@ function copyCommonStatic(what) {
     );
   });
 }
-
-/**********************************************
- * First, copy static files from common into
- * both the Chrome and Firefox folder
- */
-
-console.log('Copying subfolders to each build destination (/Chrome and /Firefox)');
-copyCommonStatic('icons');
-copyCommonStatic('scripts');
-
-/**********************************************
- * Make Manifest.json for each browser
- */
 
 function parseJSONfile(filename) {
   var jsonfile = extPath + "/common/"+ filename;
@@ -64,9 +40,40 @@ function combine(obj1, obj2, dest) {
   fs.writeFileSync(extPath + "/"+ dest + "/manifest.json", fileContents);
 }
 
-console.log("Parsing manifest files and building to appropriate folder");
-var mCore = parseJSONfile("manifest.core.json");
-var mChrome = parseJSONfile("manifest.chrome.json");
-var mFF = parseJSONfile("manifest.firefox.json");
-combine(mCore, mChrome, "Chrome");
-combine(mCore, mFF, "Firefox");
+
+module.exports = function() {
+  /***********************************************
+   * Create our Chrome and Firefox folders if they
+   * don't exist already
+   */
+  [ 'Chrome','Firefox'].forEach(function(dir){
+    fs.ensureDirSync(`${extPath}/${dir}`, function (err) {
+      if (err) { return console.error(err); }
+    });
+  });
+
+  /**********************************************
+   * First, copy static files from common into
+   * both the Chrome and Firefox folder
+   */
+
+  console.log('Copying subfolders to each build destination (/Chrome and /Firefox)');
+  copyCommonStatic('icons');
+  copyCommonStatic('scripts');
+
+  /**********************************************
+   * Make Manifest.json for each browser
+   */
+
+  console.log("Parsing manifest files and building to appropriate folder");
+  var mCore = parseJSONfile("manifest.core.json");
+  var mChrome = parseJSONfile("manifest.chrome.json");
+  var mFF = parseJSONfile("manifest.firefox.json");
+
+  // set version number from package.json
+  mCore.version = pkg.version;
+
+  // combine and export manifest files
+  combine(mCore, mChrome, "Chrome");
+  combine(mCore, mFF, "Firefox");
+};
