@@ -2,7 +2,7 @@
  * custom tasks
  */
 
-var bundjeJS = require(process.cwd() + '/tasks/jsbundle.js');
+var jsTasks = require(process.cwd() + '/tasks/jsbundle.js');
 var compileSASS = require(process.cwd() + '/tasks/sassbundle.js');
 var extensionBuild = require(process.cwd() + '/tasks/extensions.js');
 var deployExt = require(process.cwd() + '/tasks/deploy-ext.js');
@@ -10,11 +10,16 @@ var deployExt = require(process.cwd() + '/tasks/deploy-ext.js');
 var tasks = {
 
   "watch" : function(){
-    bundjeJS(true);
+    jsTasks.watch();
     compileSASS(true);
   },
 
-  "bundle" : bundjeJS,
+  "bundle" : jsTasks.bundle,
+
+  "minify" : function(){
+    jsTasks.minify();
+    // minify css output
+  },
 
   "sass" : compileSASS,
 
@@ -26,7 +31,7 @@ var tasks = {
   },
 
   "default" : function(){
-    bundjeJS();
+    jsTasks.bundle();
     compileSASS();
     extensionBuild();
   }

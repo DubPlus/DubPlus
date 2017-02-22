@@ -45,6 +45,12 @@ function bundle() {
     .pipe(fs.createWriteStream('./dubplus.js', 'utf8'));
 }
 
+function makeMin() {
+  b.transform(babelify, {presets: ["es2015", "babili"]})
+    .bundle()
+    .pipe(fs.createWriteStream('./dubplus.min.js', 'utf8'));
+}
+
 function watching(){
   var watchify    = require('watchify');
 
@@ -62,11 +68,8 @@ function watching(){
   bundle();
 }
 
-module.exports = function(shouldWatch) {
-  if (shouldWatch) {
-    watching();
-  } else {
-    bundle();
-  }
-
+module.exports = {
+  watch : watching,
+  bundle : bundle,
+  minify : makeMin
 };
