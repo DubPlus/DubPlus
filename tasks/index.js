@@ -3,7 +3,7 @@
  */
 
 var jsTasks = require(process.cwd() + '/tasks/jsbundle.js');
-var compileSASS = require(process.cwd() + '/tasks/sassbundle.js');
+var sassTasks = require(process.cwd() + '/tasks/sassbundle.js');
 var extensionBuild = require(process.cwd() + '/tasks/extensions.js');
 var deployExt = require(process.cwd() + '/tasks/deploy-ext.js');
 
@@ -11,17 +11,17 @@ var tasks = {
 
   "watch" : function(){
     jsTasks.watch();
-    compileSASS(true);
+    sassTasks.watch();
   },
 
   "bundle" : jsTasks.bundle,
 
   "minify" : function(){
     jsTasks.minify();
-    // minify css output
+    sassTasks.minify();
   },
 
-  "sass" : compileSASS,
+  "sass" : sassTasks.compile,
 
   "ext" : extensionBuild,
 
@@ -31,8 +31,8 @@ var tasks = {
   },
 
   "default" : function(){
-    jsTasks.bundle();
-    compileSASS();
+    this.bundle();
+    this.sass();
     extensionBuild();
   }
 };
