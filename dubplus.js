@@ -1748,8 +1748,7 @@ myModule.category = "User Interface";
 
 myModule.init = function () {
   if (this.optionState) {
-    $('.backstretch').hide();
-    $('.medium').hide();
+    $('body').addClass('dubplus-hide-bg');
   }
 };
 
@@ -1758,12 +1757,10 @@ myModule.go = function () {
 
   if (!this.optionState) {
     newOptionState = true;
-    $('.backstretch').hide();
-    $('.medium').hide();
+    $('body').addClass('dubplus-hide-bg');
   } else {
     newOptionState = false;
-    $('.backstretch').show();
-    $('.medium').show();
+    $('body').removeClass('dubplus-hide-bg');
   }
 
   this.optionState = newOptionState;
@@ -2873,7 +2870,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487828329797')
+}).call(this,'1487829380718')
 },{"../lib/settings.js":7}],36:[function(require,module,exports){
 'use strict';
 

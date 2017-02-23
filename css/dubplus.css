@@ -578,6 +578,9 @@
   float: inherit !important;
   padding-right: 200px !important; }
 
+.dubplus-hide-bg .backstretch {
+  display: none !important; }
+
 .dubplus-custom-bg {
   width: 100%;
   height: 100%;
