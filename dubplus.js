@@ -1873,6 +1873,10 @@ myModule.description = "Enable desktop notifications when a user receives a priv
 myModule.category = "General";
 
 myModule.pmNotify = function (e) {
+  var userid = Dubtrack.session.get('_id');
+  if (userid === e.userid) {
+    return;
+  }
   (0, _notify.showNotification)({
     title: 'You have a new PM',
     ignoreActiveTab: true,
@@ -2870,7 +2874,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487830092591')
+}).call(this,'1487869243744')
 },{"../lib/settings.js":7}],36:[function(require,module,exports){
 'use strict';
 
