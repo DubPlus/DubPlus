@@ -1,7 +1,7 @@
 
 ### SASS info
 
-Icon fonts are from:  http://zurb.com/playground/foundation-icon-fonts-3
+Icon fonts are from:  http://fontawesome.io/icons/
 
 ####Roles
 

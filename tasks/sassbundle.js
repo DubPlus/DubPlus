@@ -34,6 +34,16 @@ function compileSASS() {
   });
 }
 
+function minifySASS() {
+  sass.render({
+    data : dataString,
+    outputStyle : "compressed"
+  }, function(err, result) { 
+    if (err) {return console.error(err); }
+    fs.writeFileSync('./css/dubplus.min.css', prefixer.process(result.css));
+  });
+}
+
 function watchingSASS() {
   // create our own sass file watch with node
   fs.watch('./src/sass',
@@ -52,10 +62,8 @@ function watchingSASS() {
   );
 }
 
-module.exports = function(shouldWatch) {
-  if (shouldWatch) {
-    watchingSASS();
-  } else {
-    compileSASS();
-  }
+module.exports = {
+  compile : compileSASS,
+  watch : watchingSASS,
+  minify : minifySASS
 };
