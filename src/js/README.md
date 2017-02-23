@@ -25,6 +25,7 @@ var myModule = {}; // `myModule` can be renamed to whatever you want. This is ju
 ### Add the following REQUIRED properties
 ```javascript
 myModule.id = "myID"; // {string} 
+
 ```
 MUST BE UNIQUE. This will be used to bind events to and the #id selector of the menu item, also id of the module in the window.dubplus namespace
 
@@ -47,7 +48,6 @@ Which menu section this should be added to. (case sensitive!)
 ```javascript
 myModule.extraIcon = 'pencil' // {string} Default: 'pencil'
 ```
-
 set the font-awesome icon to be used to trigger the .extra method. It will automatically be prepended with "fa-"
 
 ### available properties
