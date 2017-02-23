@@ -1,0 +1,4 @@
+# tell git not to include minified files in diff
+# http://blog.andrewray.me/dealing-with-compiled-files-in-git/
+dubplus.min.js  -diff
+css/dubplus.min.css  -diff
