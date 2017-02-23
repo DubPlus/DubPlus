@@ -6,7 +6,8 @@ module.exports = [
   require('./emotes.js'),
   require('./autocomplete.js'),
   require('./customMentions.js'),
-  require('./desktopNotifications.js'),
+  require('./chatNotifications.js'),
+  require('./pmNotifications.js'),
   require('./showDubsOnHover.js'),
   require('./downDubInChat.js'), // (mod only)
   require('./upDubInChat.js'),

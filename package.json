@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node ./tasks/index.js",
     "start": "node ./tasks/index.js watch",
+    "watch": "node ./tasks/index.js watch",
     "bundle": "node ./tasks/index.js bundle",
     "minify": "node ./tasks/index.js minify",
     "sass": "node ./tasks/index.js sass",
