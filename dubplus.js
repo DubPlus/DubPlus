@@ -84,7 +84,7 @@ if (!window.dubplus && Dubtrack.session.id) {
   });
 }
 
-},{"./lib/init.js":4,"./utils/css.js":34,"./utils/modal.js":36,"./utils/preload.js":39,"./utils/waitFor.js":40}],2:[function(require,module,exports){
+},{"./lib/init.js":4,"./utils/css.js":35,"./utils/modal.js":37,"./utils/preload.js":41,"./utils/waitFor.js":42}],2:[function(require,module,exports){
 'use strict';
 
 /* global  emojify */
@@ -265,7 +265,7 @@ prepEmoji.processTastyEmotes = function (data) {
 
 module.exports = prepEmoji;
 
-},{"../lib/settings.js":7,"../utils/getJSON.js":35}],3:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/getJSON.js":36}],3:[function(require,module,exports){
 'use strict';
 
 /**
@@ -474,7 +474,8 @@ module.exports = function () {
   $('.dubplus-menu').perfectScrollbar();
 };
 
-},{"../modules/eta.js":18,"../modules/snooze.js":28,"../utils/css.js":34,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
+},{"../modules/eta.js":18,"../modules/snooze.js":29,"../utils/css.js":35,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
+(function (PKGINFO){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -496,7 +497,7 @@ var menuObj = {
  * Loads all the modules and initliazes them
  */
 var loadAllModules = function loadAllModules() {
-  window.dubplus = {};
+  window.dubplus = JSON.parse(PKGINFO);
 
   dubPlus_modules.forEach(function (mod) {
     // add each module to the new global object
@@ -549,7 +550,8 @@ var loadAllModules = function loadAllModules() {
 
 exports.default = loadAllModules;
 
-},{"../lib/menu.js":6,"../lib/settings.js":7,"../modules/index.js":25,"../utils/options.js":38}],6:[function(require,module,exports){
+}).call(this,'{"name":"DubPlus","version":"0.1.0","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+},{"../lib/menu.js":6,"../lib/settings.js":7,"../modules/index.js":25,"../utils/options.js":40}],6:[function(require,module,exports){
 'use strict';
 
 var options = require('../utils/options.js');
@@ -673,7 +675,7 @@ module.exports = {
 
 };
 
-},{"../utils/css.js":34,"../utils/options.js":38,"./settings.js":7}],7:[function(require,module,exports){
+},{"../utils/css.js":35,"../utils/options.js":40,"./settings.js":7}],7:[function(require,module,exports){
 (function (CURRENT_BRANCH,CURRENT_REPO){
 "use strict";
 
@@ -790,7 +792,7 @@ afk_module.extra = function () {
 
 module.exports = afk_module;
 
-},{"../lib/settings.js":7,"../utils/modal.js":36,"../utils/options.js":38}],9:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/modal.js":37,"../utils/options.js":40}],9:[function(require,module,exports){
 'use strict';
 
 /**
@@ -973,7 +975,6 @@ autovote.category = "General";
 // add any custom functions to this module
 
 var advance_vote = function advance_vote() {
-  console.log('advancing the vote');
   $('.dubup').click();
 };
 
@@ -994,7 +995,6 @@ autovote.init = function () {
 // this function will be run on each click of the menu
 autovote.go = function () {
   var newOptionState;
-  console.log(this.optionState);
 
   if (!this.optionState) {
     newOptionState = true;
@@ -1027,6 +1027,78 @@ autovote.start = function () {
 module.exports = autovote;
 
 },{}],11:[function(require,module,exports){
+"use strict";
+
+var _notify = require("../utils/notify.js");
+
+/* global Dubtrack */
+var settings = require("../lib/settings.js");
+
+var myModule = {};
+myModule.id = "mention_notifications";
+myModule.moduleName = "Notification on Mentions";
+myModule.description = "Enable desktop notifications when a user mentions you in chat";
+myModule.category = "General";
+
+myModule.notifyOnMention = function (e) {
+  var content = e.message;
+  var user = Dubtrack.session.get('username').toLowerCase();
+  var mentionTriggers = ['@' + user];
+
+  if (settings.options.custom_mentions && settings.custom.custom_mentions) {
+    //add custom mention triggers to array
+    mentionTriggers = mentionTriggers.concat(settings.custom.custom_mentions.toLowerCase().split(','));
+  }
+
+  var mentionTriggersTest = mentionTriggers.some(function (v) {
+    return content.toLowerCase().indexOf(v.trim(' ')) >= 0;
+  });
+
+  if (mentionTriggersTest && !this.isActiveTab && Dubtrack.session.id !== e.user.userInfo.userid) {
+    (0, _notify.showNotification)({
+      title: "Message from " + e.user.username,
+      content: content
+    });
+  }
+};
+
+myModule.mentionNotifications = function () {
+  var _this = this;
+
+  (0, _notify.notifyCheckPermission)(function (granted) {
+    if (granted === true) {
+      Dubtrack.Events.bind("realtime:chat-message", _this.notifyOnMention);
+    } else {
+      // turn back off until it's granted
+      _this.toggleAndSave(_this.id, false);
+    }
+  });
+};
+
+myModule.init = function () {
+  if (this.optionState === true) {
+    this.mentionNotifications();
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    this.mentionNotifications();
+    newOptionState = true;
+  } else {
+    Dubtrack.Events.unbind("realtime:chat-message", this.notifyOnMention);
+    newOptionState = false;
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{"../lib/settings.js":7,"../utils/notify.js":39}],12:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1089,7 +1161,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../utils/css.js":34}],12:[function(require,module,exports){
+},{"../utils/css.js":35}],13:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1172,7 +1244,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/modal.js":36,"../utils/options.js":38}],13:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/modal.js":37,"../utils/options.js":40}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1241,7 +1313,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/css.js":34,"../utils/modal.js":36,"../utils/options.js":38}],14:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/css.js":35,"../utils/modal.js":37,"../utils/options.js":40}],15:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1319,114 +1391,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/modal.js":36,"../utils/options.js":38}],15:[function(require,module,exports){
-"use strict";
-
-/**
- * Autocomplete User @ Mentions in Chat
- */
-
-/* global Dubtrack */
-var settings = require("../lib/settings.js");
-var modal = require('../utils/modal.js');
-
-var myModule = {};
-myModule.id = "mention_notifications";
-myModule.moduleName = "Notification on Mentions";
-myModule.description = "Enable desktop notifications when a user mentions you in chat";
-myModule.category = "General";
-
-myModule.notifyOnMention = function (e) {
-  var content = e.message;
-  var user = Dubtrack.session.get('username').toLowerCase();
-  var mentionTriggers = ['@' + user];
-
-  if (settings.options.custom_mentions && settings.custom.custom_mentions) {
-    //add custom mention triggers to array
-    mentionTriggers = mentionTriggers.concat(settings.custom.custom_mentions.toLowerCase().split(','));
-  }
-
-  var mentionTriggersTest = mentionTriggers.some(function (v) {
-    return content.toLowerCase().indexOf(v.trim(' ')) >= 0;
-  });
-  if (mentionTriggersTest && !this.isActiveTab && Dubtrack.session.id !== e.user.userInfo.userid) {
-    var notificationOptions = {
-      body: content,
-      icon: "https://res.cloudinary.com/hhberclba/image/upload/c_lpad,h_100,w_100/v1400351432/dubtrack_new_logo_fvpxa6.png"
-    };
-    var n = new Notification("Message from " + e.user.username, notificationOptions);
-
-    n.onclick = function (x) {
-      window.focus();
-      n.close();
-    };
-    setTimeout(n.close.bind(n), 5000);
-  }
-};
-
-myModule.mentionNotifications = function () {
-  var self = this;
-
-  function startNotifications(permission) {
-    if (permission === "granted") {
-      Dubtrack.Events.bind("realtime:chat-message", self.notifyOnMention);
-      self.toggleAndSave(self.id, true);
-    }
-  }
-
-  this.isActiveTab = true;
-
-  window.onfocus = function () {
-    self.isActiveTab = true;
-  };
-
-  window.onblur = function () {
-    self.isActiveTab = false;
-  };
-
-  if (!("Notification" in window)) {
-    modal.create({
-      title: 'Mention Notifications',
-      content: "Sorry this browser does not support desktop notifications.  Please use the latest version of Chrome or FireFox"
-    });
-  } else {
-    if (Notification.permission === "granted") {
-      startNotifications("granted");
-    } else if (Notification.permission !== 'denied') {
-      Notification.requestPermission(startNotifications);
-    } else {
-      modal.create({
-        title: 'Mention Notifications',
-        content: "You have chosen to block notifications. Reset this choice by clearing your cache for the site."
-      });
-    }
-  }
-};
-
-myModule.init = function () {
-  if (this.optionState === true) {
-    myModule.mentionNotifications();
-  }
-};
-
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    myModule.mentionNotifications();
-    newOptionState = true;
-  } else {
-    Dubtrack.Events.unbind("realtime:chat-message", this.notifyOnMention);
-    newOptionState = false;
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
-};
-
-module.exports = myModule;
-
-},{"../lib/settings.js":7,"../utils/modal.js":36}],16:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/modal.js":37,"../utils/options.js":40}],16:[function(require,module,exports){
 "use strict";
 
 var _modcheck = require("../utils/modcheck.js");
@@ -1499,7 +1464,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../utils/modcheck.js":37}],17:[function(require,module,exports){
+},{"../utils/modcheck.js":38}],17:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1783,8 +1748,7 @@ myModule.category = "User Interface";
 
 myModule.init = function () {
   if (this.optionState) {
-    $('.backstretch').hide();
-    $('.medium').hide();
+    $('body').addClass('dubplus-hide-bg');
   }
 };
 
@@ -1793,12 +1757,10 @@ myModule.go = function () {
 
   if (!this.optionState) {
     newOptionState = true;
-    $('.backstretch').hide();
-    $('.medium').hide();
+    $('body').addClass('dubplus-hide-bg');
   } else {
     newOptionState = false;
-    $('.backstretch').show();
-    $('.medium').show();
+    $('body').removeClass('dubplus-hide-bg');
   }
 
   this.optionState = newOptionState;
@@ -1886,7 +1848,7 @@ module.exports = myModule;
 // put this in order of appearance in the menu
 module.exports = [
 // General 
-require('./autovote.js'), require('./afk.js'), require('./emotes.js'), require('./autocomplete.js'), require('./customMentions.js'), require('./desktopNotifications.js'), require('./showDubsOnHover.js'), require('./downDubInChat.js'), // (mod only)
+require('./autovote.js'), require('./afk.js'), require('./emotes.js'), require('./autocomplete.js'), require('./customMentions.js'), require('./chatNotifications.js'), require('./pmNotifications.js'), require('./showDubsOnHover.js'), require('./downDubInChat.js'), // (mod only)
 require('./upDubInChat.js'), require('./grabsInChat.js'), require('./snow.js'),
 
 // User Interface
@@ -1898,7 +1860,69 @@ require('./spacebarMute.js'), require('./warnOnNavigation.js'),
 // // Customize
 require('./communityTheme.js'), require('./customCSS.js'), require('./customBackground.js')];
 
-},{"./afk.js":8,"./autocomplete.js":9,"./autovote.js":10,"./communityTheme.js":11,"./customBackground.js":12,"./customCSS.js":13,"./customMentions.js":14,"./desktopNotifications.js":15,"./downDubInChat.js":16,"./emotes.js":17,"./fullscreen.js":19,"./grabsInChat.js":20,"./hideAvatars.js":21,"./hideBackground.js":22,"./hideChat.js":23,"./hideVideo.js":24,"./showDubsOnHover.js":26,"./showTimestamps.js":27,"./snow.js":29,"./spacebarMute.js":30,"./splitchat.js":31,"./upDubInChat.js":32,"./warnOnNavigation.js":33}],26:[function(require,module,exports){
+},{"./afk.js":8,"./autocomplete.js":9,"./autovote.js":10,"./chatNotifications.js":11,"./communityTheme.js":12,"./customBackground.js":13,"./customCSS.js":14,"./customMentions.js":15,"./downDubInChat.js":16,"./emotes.js":17,"./fullscreen.js":19,"./grabsInChat.js":20,"./hideAvatars.js":21,"./hideBackground.js":22,"./hideChat.js":23,"./hideVideo.js":24,"./pmNotifications.js":26,"./showDubsOnHover.js":27,"./showTimestamps.js":28,"./snow.js":30,"./spacebarMute.js":31,"./splitchat.js":32,"./upDubInChat.js":33,"./warnOnNavigation.js":34}],26:[function(require,module,exports){
+"use strict";
+
+var _notify = require("../utils/notify.js");
+
+var myModule = {}; /* global Dubtrack */
+
+myModule.id = "dubplus_pm_notifications";
+myModule.moduleName = "Notification on PM";
+myModule.description = "Enable desktop notifications when a user receives a private message";
+myModule.category = "General";
+
+myModule.pmNotify = function (e) {
+  (0, _notify.showNotification)({
+    title: 'You have a new PM',
+    ignoreActiveTab: true,
+    callback: function callback() {
+      $('.user-messages').click();
+      setTimeout(function () {
+        $(".message-item[data-messageid=\"" + e.messageid + "\"]").click();
+      }, 500);
+    },
+    wait: 10000
+  });
+};
+
+myModule.start = function () {
+  var _this = this;
+
+  (0, _notify.notifyCheckPermission)(function (granted) {
+    if (granted === true) {
+      Dubtrack.Events.bind("realtime:new-message", _this.pmNotify);
+    } else {
+      // turn back off until it's granted
+      _this.toggleAndSave(_this.id, false);
+    }
+  });
+};
+
+myModule.init = function () {
+  if (this.optionState === true) {
+    this.start();
+  }
+};
+
+myModule.go = function () {
+  var newOptionState;
+
+  if (!this.optionState) {
+    this.start();
+    newOptionState = true;
+  } else {
+    Dubtrack.Events.unbind("realtime:new-message", this.pmNotify);
+    newOptionState = false;
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+module.exports = myModule;
+
+},{"../utils/notify.js":39}],27:[function(require,module,exports){
 'use strict';
 
 var _modcheck = require('../utils/modcheck.js');
@@ -2477,7 +2501,7 @@ dubshover.go = function (e) {
 
 module.exports = dubshover;
 
-},{"../utils/modal.js":36,"../utils/modcheck.js":37}],27:[function(require,module,exports){
+},{"../utils/modal.js":37,"../utils/modcheck.js":38}],28:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2514,7 +2538,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2572,7 +2596,7 @@ var snooze = function snooze() {
   }
 };
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 "use strict";
 
 var menu = require('../lib/menu.js');
@@ -2615,7 +2639,7 @@ snow.go = function (e) {
 
 module.exports = snow;
 
-},{"../lib/menu.js":6}],30:[function(require,module,exports){
+},{"../lib/menu.js":6}],31:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2661,7 +2685,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2698,7 +2722,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2761,7 +2785,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2805,7 +2829,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 (function (TIME_STAMP){
 'use strict';
 
@@ -2846,8 +2870,8 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487633208944')
-},{"../lib/settings.js":7}],35:[function(require,module,exports){
+}).call(this,'1487829989938')
+},{"../lib/settings.js":7}],36:[function(require,module,exports){
 'use strict';
 
 // jQuery's getJSON kept returning errors so making my own with promise-like
@@ -2885,7 +2909,7 @@ var GetJSON = function GetJSON(url, optionalEvent, headers) {
 
 module.exports = GetJSON;
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 function makeButtons(cb) {
@@ -2977,7 +3001,7 @@ module.exports = {
   close: close
 };
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2988,7 +3012,102 @@ exports.default = function (userid) {
   return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
 };
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.notifyCheckPermission = notifyCheckPermission;
+exports.showNotification = showNotification;
+/* global Dubtrack */
+var modal = require('../utils/modal.js');
+
+var isActiveTab = true;
+
+window.onfocus = function () {
+  isActiveTab = true;
+};
+
+window.onblur = function () {
+  isActiveTab = false;
+};
+
+var onDenyDismiss = function onDenyDismiss() {
+  modal.create({
+    title: 'Desktop Notifications',
+    content: "You have dismissed or chosen to deny the request to allow desktop notifications. Reset this choice by clearing your cache for the site."
+  });
+};
+
+function notifyCheckPermission(cb) {
+  var _cb = typeof cb === 'function' ? cb : function () {};
+
+  // first check if browser supports it
+  if (!("Notification" in window)) {
+
+    modal.create({
+      title: 'Desktop Notifications',
+      content: "Sorry this browser does not support desktop notifications.  Please use the latest version of Chrome or FireFox"
+    });
+    return _cb(false);
+  }
+
+  // no request needed, good to go
+  if (Notification.permission === "granted") {
+    return _cb(true);
+  }
+
+  if (Notification.permission !== 'denied') {
+
+    Notification.requestPermission().then(function (result) {
+      if (result === 'denied' || result === 'default') {
+        onDenyDismiss();
+        _cb(false);
+        return;
+      }
+
+      _cb(true);
+    });
+  } else {
+    onDenyDismiss();
+    return _cb(false);
+  }
+}
+
+function showNotification(opts) {
+  var defaults = {
+    title: 'New Message',
+    content: '',
+    ignoreActiveTab: false,
+    callback: null,
+    wait: 5000
+  };
+  var options = $.extend({}, defaults, opts);
+
+  // don't show a notification if tab is active
+  if (isActiveTab === true && !options.ignoreActiveTab) {
+    return;
+  }
+
+  var notificationOptions = {
+    body: options.content,
+    icon: "https://res.cloudinary.com/hhberclba/image/upload/c_lpad,h_100,w_100/v1400351432/dubtrack_new_logo_fvpxa6.png"
+  };
+
+  var n = new Notification(options.title, notificationOptions);
+
+  n.onclick = function () {
+    window.focus();
+    if (typeof options.callback === "function") {
+      options.callback();
+    }
+    n.close();
+  };
+  setTimeout(n.close.bind(n), options.wait);
+}
+
+},{"../utils/modal.js":37}],40:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -3044,7 +3163,7 @@ module.exports = {
   saveOption: saveOption
 };
 
-},{"../lib/settings.js":7}],39:[function(require,module,exports){
+},{"../lib/settings.js":7}],41:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3066,7 +3185,7 @@ function preload() {
   $('body').prepend(preloadHTML);
 }
 
-},{"../lib/settings.js":7}],40:[function(require,module,exports){
+},{"../lib/settings.js":7}],42:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

@@ -11,8 +11,7 @@ myModule.category = "User Interface";
 
 myModule.init = function() {
   if (this.optionState) {
-    $('.backstretch').hide();
-    $('.medium').hide();
+    $('body').addClass('dubplus-hide-bg');
   }
 };
 
@@ -21,12 +20,10 @@ myModule.go = function() {
 
   if(!this.optionState) {
     newOptionState= true;
-    $('.backstretch').hide();
-    $('.medium').hide();
+    $('body').addClass('dubplus-hide-bg');
   } else {
     newOptionState= false;
-    $('.backstretch').show();
-    $('.medium').show();
+    $('body').removeClass('dubplus-hide-bg');
   }
 
   this.optionState = newOptionState;
