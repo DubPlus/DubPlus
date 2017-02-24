@@ -10,19 +10,22 @@
 
 // var css = require('../utils/css.js');
 
-var updateChatInput = function(str){
+var textChoice = "";
+var currentData;
+
+var setData = function(data) {
+  currentData = data;
+};
+
+function repl(str, start, end, newtext) {
+  return str.substring(0, start-1) + newtext + str.substring(end);
+}
+
+var updateChatInput = function(start, end, newText){
   var inputText = $("#chat-txt-message").val();
-  var updatedText = inputText.split(' ').map(function(c,i,r){
-      var fullStr = str.toLowerCase();
-      var partialStr = c.toLowerCase();
-      if (fullStr.indexOf(partialStr) === 0) { 
-          return str;
-      } else {
-          return c;
-      }
-  });
+  var updatedText = repl(inputText, start, end, newText || textChoice) + " ";
   $('#autocomplete-preview').empty().removeClass('ac-show');
-  $("#chat-txt-message").val(updatedText.join(' ') + ' ').focus();
+  $("#chat-txt-message").val(updatedText).focus();
 };
 
 var doNavigate = function(diff) {
@@ -44,27 +47,9 @@ var doNavigate = function(diff) {
   var cssClass = "selected";
   var enterToSelectSpan = '<span class="ac-list-press-enter">press enter to select</span>';
   oBoxCollection.removeClass(cssClass).eq(displayBoxIndex).addClass(cssClass).append(enterToSelectSpan);
-  $('.preview-item.selected').get(0).scrollIntoView(false);
-};
-
-var previewListKeyUp = function(e){
-  e.preventDefault();
-  switch(e.keyCode) {
-      case 38:
-          doNavigate(-1);
-          break;
-      case 40:
-          doNavigate(1);
-          break;
-      case 39:
-      case 13:
-          var new_text = $('#autocomplete-preview li.selected').find('.ac-text')[0].textContent;
-          updateChatInput(new_text);
-          break;
-      default:
-          $("#chat-txt-message").focus();
-          break;
-  }
+  var $pvItem = $('.preview-item.selected');
+  $pvItem.get(0).scrollIntoView(false);
+  textChoice = $pvItem.find('.ac-text').text();
 };
 
 /**
@@ -102,7 +87,14 @@ var display = function(acArray) {
         s.className = "ac-text"; // autocomplete text
         return s;
     }
-    function makeLi (info){
+    function makeEnterSpan() {
+      var s = document.createElement('span');
+      s.textContent = 'press enter to select';
+      s.className = "ac-list-press-enter"; // autocomplete text
+      return s;
+    }
+
+    function makeLi (info, i){
         var container = makePreviewContainer("preview-item "+info.cn+"-previews");
         var span = makeNameSpan(info.text);
         var img;
@@ -111,8 +103,14 @@ var display = function(acArray) {
         } else {
             img = makeImg(info.src);
         }
+
         container.appendChild(img);
         container.appendChild(span);
+        
+        if (i === 0) {
+          container.appendChild(makeEnterSpan());
+          container.classList.add('selected');
+        }
         container.tabIndex = -1;
         return container;
     }
@@ -121,32 +119,29 @@ var display = function(acArray) {
     aCp.innerHTML = "";
     var frag = document.createDocumentFragment();
 
-    acArray.forEach(function(val){
-      frag.appendChild(makeLi(val));
+    acArray.forEach(function(val, i){
+      frag.appendChild(makeLi(val, i));
     });
 
     aCp.appendChild(frag);
     aCp.classList.add('ac-show');
 };
 
-var updater = function(e) {
-  var new_text = $(this).find('.ac-text')[0].textContent;
-  updateChatInput(new_text);
+var updater = function(){
+  var newText = $(this).find('.ac-text').text();
+  updateChatInput(currentData.strStart, currentData.strEnd, newText);
 };
 
 var init = function(){
   var acUL = document.createElement('ul');
   acUL.id = "autocomplete-preview";
   $('.pusher-chat-widget-input').prepend(acUL);
-
   $(document.body).on('click', '.preview-item', updater);
-  $(document.body).on('keyup', '.ac-show', previewListKeyUp);
 };
 
 
 var stop = function(){
   $(document.body).off('click', '.preview-item', updater);
-  $(document.body).off('keyup', '.ac-show', previewListKeyUp);
   $('#autocomplete-preview').remove();
 };
 
@@ -155,5 +150,6 @@ module.exports = {
   stop : stop,
   display: display,
   updateChatInput: updateChatInput,
-  doNavigate : doNavigate
+  doNavigate : doNavigate,
+  setData : setData
 };

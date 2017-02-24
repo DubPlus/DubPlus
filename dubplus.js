@@ -84,7 +84,7 @@ if (!window.dubplus && Dubtrack.session.id) {
   });
 }
 
-},{"./lib/init.js":4,"./utils/css.js":35,"./utils/modal.js":37,"./utils/preload.js":41,"./utils/waitFor.js":42}],2:[function(require,module,exports){
+},{"./lib/init.js":4,"./utils/css.js":36,"./utils/modal.js":38,"./utils/preload.js":42,"./utils/waitFor.js":43}],2:[function(require,module,exports){
 'use strict';
 
 /* global  emojify */
@@ -265,8 +265,8 @@ prepEmoji.processTastyEmotes = function (data) {
 
 module.exports = prepEmoji;
 
-},{"../lib/settings.js":7,"../utils/getJSON.js":36}],3:[function(require,module,exports){
-'use strict';
+},{"../lib/settings.js":7,"../utils/getJSON.js":37}],3:[function(require,module,exports){
+"use strict";
 
 /**
  * previewList
@@ -280,61 +280,46 @@ module.exports = prepEmoji;
 
 // var css = require('../utils/css.js');
 
-var updateChatInput = function updateChatInput(str) {
-    var inputText = $("#chat-txt-message").val();
-    var updatedText = inputText.split(' ').map(function (c, i, r) {
-        var fullStr = str.toLowerCase();
-        var partialStr = c.toLowerCase();
-        if (fullStr.indexOf(partialStr) === 0) {
-            return str;
-        } else {
-            return c;
-        }
-    });
-    $('#autocomplete-preview').empty().removeClass('ac-show');
-    $("#chat-txt-message").val(updatedText.join(' ') + ' ').focus();
+var textChoice = "";
+var currentData;
+
+var setData = function setData(data) {
+  currentData = data;
+};
+
+function repl(str, start, end, newtext) {
+  return str.substring(0, start - 1) + newtext + str.substring(end);
+}
+
+var updateChatInput = function updateChatInput(start, end, newText) {
+  var inputText = $("#chat-txt-message").val();
+  var updatedText = repl(inputText, start, end, newText || textChoice) + " ";
+  $('#autocomplete-preview').empty().removeClass('ac-show');
+  $("#chat-txt-message").val(updatedText).focus();
 };
 
 var doNavigate = function doNavigate(diff) {
-    var displayBoxIndex = $('.preview-item.selected').index();
+  var displayBoxIndex = $('.preview-item.selected').index();
 
-    displayBoxIndex += diff;
-    var oBoxCollection = $(".ac-show li");
+  displayBoxIndex += diff;
+  var oBoxCollection = $(".ac-show li");
 
-    // remove "press enter to select" span
-    $('.ac-list-press-enter').remove();
+  // remove "press enter to select" span
+  $('.ac-list-press-enter').remove();
 
-    if (displayBoxIndex >= oBoxCollection.length) {
-        displayBoxIndex = 0;
-    }
-    if (displayBoxIndex < 0) {
-        displayBoxIndex = oBoxCollection.length - 1;
-    }
+  if (displayBoxIndex >= oBoxCollection.length) {
+    displayBoxIndex = 0;
+  }
+  if (displayBoxIndex < 0) {
+    displayBoxIndex = oBoxCollection.length - 1;
+  }
 
-    var cssClass = "selected";
-    var enterToSelectSpan = '<span class="ac-list-press-enter">press enter to select</span>';
-    oBoxCollection.removeClass(cssClass).eq(displayBoxIndex).addClass(cssClass).append(enterToSelectSpan);
-    $('.preview-item.selected').get(0).scrollIntoView(false);
-};
-
-var previewListKeyUp = function previewListKeyUp(e) {
-    e.preventDefault();
-    switch (e.keyCode) {
-        case 38:
-            doNavigate(-1);
-            break;
-        case 40:
-            doNavigate(1);
-            break;
-        case 39:
-        case 13:
-            var new_text = $('#autocomplete-preview li.selected').find('.ac-text')[0].textContent;
-            updateChatInput(new_text);
-            break;
-        default:
-            $("#chat-txt-message").focus();
-            break;
-    }
+  var cssClass = "selected";
+  var enterToSelectSpan = '<span class="ac-list-press-enter">press enter to select</span>';
+  oBoxCollection.removeClass(cssClass).eq(displayBoxIndex).addClass(cssClass).append(enterToSelectSpan);
+  var $pvItem = $('.preview-item.selected');
+  $pvItem.get(0).scrollIntoView(false);
+  textChoice = $pvItem.find('.ac-text').text();
 };
 
 /**
@@ -349,85 +334,97 @@ var previewListKeyUp = function previewListKeyUp(e) {
  * }
  */
 var display = function display(acArray) {
-    function makePreviewContainer(cn) {
-        var d = document.createElement('li');
-        d.className = cn;
-        return d;
+  function makePreviewContainer(cn) {
+    var d = document.createElement('li');
+    d.className = cn;
+    return d;
+  }
+  function makeImg(src, altText) {
+    var i = document.createElement('img');
+    i.src = src;
+    if (altText) {
+      i.title = altText;
+      i.alt = altText;
     }
-    function makeImg(src, altText) {
-        var i = document.createElement('img');
-        i.src = src;
-        if (altText) {
-            i.title = altText;
-            i.alt = altText;
-        }
-        var div = document.createElement('div');
-        div.className = "ac-image";
-        div.appendChild(i);
-        return div;
-    }
-    function makeNameSpan(name) {
-        var s = document.createElement('span');
-        s.textContent = name;
-        s.className = "ac-text"; // autocomplete text
-        return s;
-    }
-    function makeLi(info) {
-        var container = makePreviewContainer("preview-item " + info.cn + "-previews");
-        var span = makeNameSpan(info.text);
-        var img;
-        if (info.alt) {
-            img = makeImg(info.src, info.alt);
-        } else {
-            img = makeImg(info.src);
-        }
-        container.appendChild(img);
-        container.appendChild(span);
-        container.tabIndex = -1;
-        return container;
+    var div = document.createElement('div');
+    div.className = "ac-image";
+    div.appendChild(i);
+    return div;
+  }
+  function makeNameSpan(name) {
+    var s = document.createElement('span');
+    s.textContent = name;
+    s.className = "ac-text"; // autocomplete text
+    return s;
+  }
+  function makeEnterSpan() {
+    var s = document.createElement('span');
+    s.textContent = 'press enter to select';
+    s.className = "ac-list-press-enter"; // autocomplete text
+    return s;
+  }
+
+  function makeLi(info, i) {
+    var container = makePreviewContainer("preview-item " + info.cn + "-previews");
+    var span = makeNameSpan(info.text);
+    var img;
+    if (info.alt) {
+      img = makeImg(info.src, info.alt);
+    } else {
+      img = makeImg(info.src);
     }
 
-    var aCp = document.getElementById('autocomplete-preview');
-    aCp.innerHTML = "";
-    var frag = document.createDocumentFragment();
+    container.appendChild(img);
+    container.appendChild(span);
 
-    acArray.forEach(function (val) {
-        frag.appendChild(makeLi(val));
-    });
+    if (i === 0) {
+      container.appendChild(makeEnterSpan());
+      container.classList.add('selected');
+    }
+    container.tabIndex = -1;
+    return container;
+  }
 
-    aCp.appendChild(frag);
-    aCp.classList.add('ac-show');
+  var aCp = document.getElementById('autocomplete-preview');
+  aCp.innerHTML = "";
+  var frag = document.createDocumentFragment();
+
+  acArray.forEach(function (val, i) {
+    frag.appendChild(makeLi(val, i));
+  });
+
+  aCp.appendChild(frag);
+  aCp.classList.add('ac-show');
 };
 
-var updater = function updater(e) {
-    var new_text = $(this).find('.ac-text')[0].textContent;
-    updateChatInput(new_text);
+var updater = function updater() {
+  var newText = $(this).find('.ac-text').text();
+  updateChatInput(currentData.strStart, currentData.strEnd, newText);
 };
 
 var init = function init() {
-    var acUL = document.createElement('ul');
-    acUL.id = "autocomplete-preview";
-    $('.pusher-chat-widget-input').prepend(acUL);
-
-    $(document.body).on('click', '.preview-item', updater);
-    $(document.body).on('keyup', '.ac-show', previewListKeyUp);
+  var acUL = document.createElement('ul');
+  acUL.id = "autocomplete-preview";
+  $('.pusher-chat-widget-input').prepend(acUL);
+  $(document.body).on('click', '.preview-item', updater);
 };
 
 var stop = function stop() {
-    $(document.body).off('click', '.preview-item', updater);
-    $(document.body).off('keyup', '.ac-show', previewListKeyUp);
-    $('#autocomplete-preview').remove();
+  $(document.body).off('click', '.preview-item', updater);
+  $('#autocomplete-preview').remove();
 };
 
 module.exports = {
-    init: init,
-    stop: stop,
-    display: display,
-    updateChatInput: updateChatInput,
-    doNavigate: doNavigate
+  init: init,
+  stop: stop,
+  display: display,
+  updateChatInput: updateChatInput,
+  doNavigate: doNavigate,
+  setData: setData
 };
 
 },{}],4:[function(require,module,exports){
+(function (PKGINFO){
 'use strict';
 
 var _loadModules = require('./loadModules.js');
@@ -448,14 +445,13 @@ var css = require('../utils/css.js');
 var menu = require('./menu.js');
 
 module.exports = function () {
+  window.dubplus = JSON.parse(PKGINFO);
+
   // load our main CSS
   css.load('/css/dubplus.css');
 
   // add a 'global' css class just in case we need more specificity in our css
   $('html').addClass('dubplus');
-
-  // load third party snowfall feature
-  $.getScript('https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js');
 
   // Get the opening html for the menu
   var menuString = menu.beginMenu();
@@ -474,8 +470,8 @@ module.exports = function () {
   $('.dubplus-menu').perfectScrollbar();
 };
 
-},{"../modules/eta.js":18,"../modules/snooze.js":29,"../utils/css.js":35,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
-(function (PKGINFO){
+}).call(this,'{"name":"DubPlus","version":"0.1.0","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+},{"../modules/eta.js":18,"../modules/snooze.js":30,"../utils/css.js":36,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -497,7 +493,7 @@ var menuObj = {
  * Loads all the modules and initliazes them
  */
 var loadAllModules = function loadAllModules() {
-  window.dubplus = JSON.parse(PKGINFO);
+  // window.dubplus was created in the init module
 
   dubPlus_modules.forEach(function (mod) {
     // add each module to the new global object
@@ -550,8 +546,7 @@ var loadAllModules = function loadAllModules() {
 
 exports.default = loadAllModules;
 
-}).call(this,'{"name":"DubPlus","version":"0.1.0","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
-},{"../lib/menu.js":6,"../lib/settings.js":7,"../modules/index.js":25,"../utils/options.js":40}],6:[function(require,module,exports){
+},{"../lib/menu.js":6,"../lib/settings.js":7,"../modules/index.js":25,"../utils/options.js":41}],6:[function(require,module,exports){
 'use strict';
 
 var options = require('../utils/options.js');
@@ -675,7 +670,7 @@ module.exports = {
 
 };
 
-},{"../utils/css.js":35,"../utils/options.js":40,"./settings.js":7}],7:[function(require,module,exports){
+},{"../utils/css.js":36,"../utils/options.js":41,"./settings.js":7}],7:[function(require,module,exports){
 (function (CURRENT_BRANCH,CURRENT_REPO){
 "use strict";
 
@@ -792,12 +787,13 @@ afk_module.extra = function () {
 
 module.exports = afk_module;
 
-},{"../lib/settings.js":7,"../utils/modal.js":37,"../utils/options.js":40}],9:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/modal.js":38,"../utils/options.js":41}],9:[function(require,module,exports){
 'use strict';
 
 /**
  * Autocomplete Emojis/Emotes
  */
+/*global _, Dubtrack, emojify*/
 var previewList = require('../emojiUtils/previewList.js');
 var settings = require('../lib/settings.js');
 var prepEmjoji = require('../emojiUtils/prepEmoji.js');
@@ -808,7 +804,27 @@ myModule.moduleName = "Autocomplete Emoji";
 myModule.description = "Toggle autocompleting emojis and emotes.  Shows a preview box in the chat";
 myModule.category = "General";
 
+var KEYS = {
+  up: 38,
+  down: 40,
+  left: 37,
+  right: 39,
+  enter: 13,
+  esc: 27,
+  tab: 9,
+  shiftKey: 16,
+  backspace: 8,
+  del: 46,
+  space: 32,
+  ctrl: 17
+};
+
+var keyCharMin = 3; // when to start showing previews
+var inputRegex = new RegExp('(:|@)([&!()\\+\\-_a-z0-9]+)($|\\s)', 'ig');
+
 var previewSearchStr = "";
+var strStart = 0;
+var strEnd = 0;
 
 /**************************************************************************
  * A bunch of utility helpers for the emoji preview
@@ -861,66 +877,83 @@ var emojiUtils = {
 /**************************************************************************
  * handles filtering emoji, twitch, and users preview autocomplete popup on keyup
  */
-var chatInputKeyupFunc = function chatInputKeyupFunc(e) {
 
-  if (e.keyCode === 38) {
+var shouldClearPreview = function shouldClearPreview($ac, pvStr, current, kMin) {
+  var lastChar = current.charAt(current.length - 1);
+  if (pvStr.length < kMin || lastChar === ":" || lastChar === " " || current === "") {
+    pvStr = "";
+    $ac.empty().removeClass('ac-show');
+  }
+  return pvStr;
+};
+
+var handleMatch = function handleMatch(triggerMatch, currentText, cursorPos, keyCharMin) {
+  var pos = triggerMatch.length - 1; // only want to use the last one in the array
+  var currentMatch = triggerMatch[pos].trim();
+  var emoteChar = currentMatch.charAt(0); // get the ":" trigger and store it separately
+  currentMatch = currentMatch.substring(1); // and then remove it from the matched string
+
+  var strStart = currentText.lastIndexOf(currentMatch);
+  var strEnd = strStart + currentMatch.length;
+
+  // console.log("cursorPos", cursorPos);
+  if (cursorPos >= strStart && cursorPos <= strEnd) {
+    // twitch and other emoji
+    if (currentMatch && currentMatch.length >= keyCharMin && emoteChar === ":") {
+      emojiUtils.addToPreviewList(emojiUtils.filterEmoji(currentMatch));
+    }
+  }
+  // console.log('match',triggerMatch,strStart,strEnd);
+
+  return {
+    strStart: strStart,
+    strEnd: strEnd,
+    currentMatch: currentMatch
+  };
+};
+
+var chatInputKeyupFunc = function chatInputKeyupFunc(e) {
+  var $acPreview = $('#autocomplete-preview');
+  var hasItems = $acPreview.find('li').length > 0;
+
+  if (e.keyCode === KEYS.enter && !hasItems) {
+    return; // do nothing
+  }
+
+  if (e.keyCode === KEYS.up && hasItems) {
     previewList.doNavigate(-1);
     return;
   }
-  if (e.keyCode === 40) {
+  if (e.keyCode === KEYS.down && hasItems) {
     previewList.doNavigate(1);
     return;
   }
 
   var currentText = this.value;
-  var keyCharMin = 3; // when to start showing previews
   var cursorPos = $(this).get(0).selectionStart;
-  // console.log("cursorPos", cursorPos);
-  var strStart;
-  var strEnd;
-  var inputRegex = new RegExp('(:|@)([&!()\\+\\-_a-z0-9]+)($|\\s)', 'ig');
-  currentText.replace(inputRegex, function (matched, p1, p2, p3, pos, str) {
-    // console.dir( arguments );
-    strStart = pos;
-    strEnd = pos + matched.length;
 
-    previewSearchStr = p2;
-
-    if (cursorPos >= strStart && cursorPos <= strEnd) {
-      // twitch and emoji
-      if (p2 && p2.length >= keyCharMin && p1 === ":") {
-        emojiUtils.addToPreviewList(emojiUtils.filterEmoji(p2));
-      }
-    }
-  });
-
-  var lastChar = currentText.charAt(currentText.length - 1);
-  if (previewSearchStr.length < keyCharMin || lastChar === ":" || lastChar === " " || currentText === "") {
-    previewSearchStr = "";
-    $('#autocomplete-preview').empty().removeClass('ac-show');
+  var triggerMatch = currentText.match(inputRegex);
+  if (triggerMatch && triggerMatch.length > 0) {
+    var matchData = handleMatch(triggerMatch, currentText, cursorPos, keyCharMin);
+    previewSearchStr = matchData.currentMatch;
+    strStart = matchData.strStart;
+    strEnd = matchData.strEnd;
+    previewList.setData(matchData);
   }
 
-  // automatically make first item selectable if not already
-  if (!$('.ac-show li:first-child').find(".ac-list-press-enter").length) {
-    var spanToEnter = '<span class="ac-list-press-enter">press enter to select</span>';
-    $('.ac-show li:first-child').append(spanToEnter).addClass('selected');
-  }
+  previewSearchStr = shouldClearPreview($acPreview, previewSearchStr, currentText, keyCharMin);
 
-  if (e.keyCode === 13 && $('#autocomplete-preview li').length > 0) {
-    var new_text = $('#autocomplete-preview li.selected').find('.ac-text')[0].textContent;
-    previewList.updateChatInput(new_text);
-    return;
-  }
-
-  if (e.keyCode === 13 && currentText.length > 0) {
-    Dubtrack.room.chat.sendMessage();
+  if ((e.keyCode === KEYS.enter || e.keyCode === KEYS.tab) && hasItems) {
+    e.preventDefault();
+    previewList.updateChatInput(strStart, strEnd);
+    return false;
   }
 };
 
 var chatInputKeydownFunc = function chatInputKeydownFunc(e) {
   // Manually send the keycode to chat if it is 
   // tab (9), enter (13), up arrow (38), or down arrow (40) for their autocomplete
-  if (_.includes([9, 13, 38, 40], e.keyCode) && $('.ac-show').length === 0) {
+  if (_.includes([KEYS.tab, KEYS.enter, KEYS.up, KEYS.down], e.keyCode) && $('.ac-show').length === 0) {
     return Dubtrack.room.chat.ncKeyDown({ 'which': e.keyCode });
   }
 };
@@ -1098,7 +1131,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/notify.js":39}],12:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/notify.js":40}],12:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1161,7 +1194,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../utils/css.js":35}],13:[function(require,module,exports){
+},{"../utils/css.js":36}],13:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1244,7 +1277,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/modal.js":37,"../utils/options.js":40}],14:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/modal.js":38,"../utils/options.js":41}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1313,7 +1346,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/css.js":35,"../utils/modal.js":37,"../utils/options.js":40}],15:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/css.js":36,"../utils/modal.js":38,"../utils/options.js":41}],15:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1391,7 +1424,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/modal.js":37,"../utils/options.js":40}],16:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/modal.js":38,"../utils/options.js":41}],16:[function(require,module,exports){
 "use strict";
 
 var _modcheck = require("../utils/modcheck.js");
@@ -1464,7 +1497,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../utils/modcheck.js":38}],17:[function(require,module,exports){
+},{"../utils/modcheck.js":39}],17:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1849,7 +1882,7 @@ module.exports = myModule;
 module.exports = [
 // General 
 require('./autovote.js'), require('./afk.js'), require('./emotes.js'), require('./autocomplete.js'), require('./customMentions.js'), require('./chatNotifications.js'), require('./pmNotifications.js'), require('./showDubsOnHover.js'), require('./downDubInChat.js'), // (mod only)
-require('./upDubInChat.js'), require('./grabsInChat.js'), require('./snow.js'),
+require('./upDubInChat.js'), require('./grabsInChat.js'), require('./snow.js'), require('./rain.js'),
 
 // User Interface
 require('./fullscreen.js'), require('./splitchat.js'), require('./hideChat.js'), require('./hideVideo.js'), require('./hideAvatars.js'), require('./hideBackground.js'), require('./showTimestamps.js'),
@@ -1860,7 +1893,7 @@ require('./spacebarMute.js'), require('./warnOnNavigation.js'),
 // // Customize
 require('./communityTheme.js'), require('./customCSS.js'), require('./customBackground.js')];
 
-},{"./afk.js":8,"./autocomplete.js":9,"./autovote.js":10,"./chatNotifications.js":11,"./communityTheme.js":12,"./customBackground.js":13,"./customCSS.js":14,"./customMentions.js":15,"./downDubInChat.js":16,"./emotes.js":17,"./fullscreen.js":19,"./grabsInChat.js":20,"./hideAvatars.js":21,"./hideBackground.js":22,"./hideChat.js":23,"./hideVideo.js":24,"./pmNotifications.js":26,"./showDubsOnHover.js":27,"./showTimestamps.js":28,"./snow.js":30,"./spacebarMute.js":31,"./splitchat.js":32,"./upDubInChat.js":33,"./warnOnNavigation.js":34}],26:[function(require,module,exports){
+},{"./afk.js":8,"./autocomplete.js":9,"./autovote.js":10,"./chatNotifications.js":11,"./communityTheme.js":12,"./customBackground.js":13,"./customCSS.js":14,"./customMentions.js":15,"./downDubInChat.js":16,"./emotes.js":17,"./fullscreen.js":19,"./grabsInChat.js":20,"./hideAvatars.js":21,"./hideBackground.js":22,"./hideChat.js":23,"./hideVideo.js":24,"./pmNotifications.js":26,"./rain.js":27,"./showDubsOnHover.js":28,"./showTimestamps.js":29,"./snow.js":31,"./spacebarMute.js":32,"./splitchat.js":33,"./upDubInChat.js":34,"./warnOnNavigation.js":35}],26:[function(require,module,exports){
 "use strict";
 
 var _notify = require("../utils/notify.js");
@@ -1926,7 +1959,214 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../utils/notify.js":39}],27:[function(require,module,exports){
+},{"../utils/notify.js":40}],27:[function(require,module,exports){
+"use strict";
+
+var menu = require('../lib/menu.js');
+
+var rain = {};
+
+rain.id = "dubplus-rain";
+rain.moduleName = "Rain";
+rain.description = "Make it rain!";
+rain.optionState = false;
+rain.category = "General";
+rain.menuHTML = menu.makeOptionMenu(rain.moduleName, {
+  id: rain.id,
+  desc: rain.description
+});
+
+// Rain settings
+rain.particles = [];
+rain.drops = [];
+rain.numbase = 5;
+rain.numb = 2;
+rain.width, rain.height = 0;
+
+// We can update these realtime
+rain.controls = {
+  rain: 2,
+  alpha: 1,
+  color: 200,
+  opacity: 1,
+  saturation: 100,
+  lightness: 50,
+  back: 0,
+  multi: false,
+  speed: 1
+};
+
+rain.init = function () {
+  if (this.optionState) {
+    $('body').prepend('<canvas id="dubPlusRainCanvas" style="position : fixed; top : 0px; left : 0px; z-index: 100; pointer-events:none;"></canvas>');
+    this.bindCanvas();
+  }
+};
+
+// this function will be run on each click of the menu
+rain.go = function (e) {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    $('body').prepend('<canvas id="dubPlusRainCanvas" style="position : fixed; top : 0px; left : 0px; z-index: 100; pointer-events:none;"></canvas>');
+    this.bindCanvas();
+  } else {
+    newOptionState = false;
+    $('#dubPlusRainCanvas').remove();
+    this.unbindCanvas();
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+rain.bindCanvas = function () {
+  this.requestAnimFrame = function () {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
+      window.setTimeout(callback, 1000 / 60);
+    };
+  }();
+
+  var canvas = document.getElementById('dubPlusRainCanvas');
+
+  if (!canvas) return;
+
+  var ctx = canvas.getContext('2d');
+
+  this.width, this.height = 0;
+
+  window.onresize = function onresize() {
+    this.width = canvas.width = window.innerWidth;
+    this.height = canvas.height = window.innerHeight;
+  };
+
+  window.onresize();
+
+  this.particles, this.drops = [];
+  this.numbase = 5;
+  this.numb = 2;
+
+  function Screenshot() {
+    window.open(canvas.toDataURL());
+  }
+
+  var that = this;
+
+  (function boucle() {
+    that.requestAnimFrame(boucle);
+    that.update();
+    that.rendu(ctx);
+  })();
+};
+
+rain.buildRainParticle = function (X, Y, num) {
+  if (!num) {
+    num = this.numb;
+  }
+  while (num--) {
+    this.particles.push({
+      speedX: Math.random() * 0.25,
+      speedY: Math.random() * 9 + 1,
+      X: X,
+      Y: Y,
+      alpha: 1,
+      color: "hsla(" + this.controls.color + "," + this.controls.saturation + "%, " + this.controls.lightness + "%," + this.controls.opacity + ")"
+    });
+  }
+};
+
+rain.explosion = function (X, Y, color, num) {
+  if (!num) {
+    num = this.numbase;
+  }
+  while (num--) {
+    this.drops.push({
+      speedX: Math.random() * 4 - 2,
+      speedY: Math.random() * -4,
+      X: X,
+      Y: Y,
+      radius: 0.65 + Math.floor(Math.random() * 1.6),
+      alpha: 1,
+      color: color
+    });
+  }
+};
+
+rain.rendu = function (ctx) {
+  if (this.controls.multi == true) {
+    this.controls.color = Math.random() * 360;
+  }
+
+  ctx.save();
+  ctx.clearRect(0, 0, width, height);
+
+  var particleslocales = this.particles;
+  var dropslocales = this.drops;
+  var tau = Math.PI * 2;
+
+  for (var i = 0, particlesactives; particlesactives = particleslocales[i]; i++) {
+
+    ctx.globalAlpha = particlesactives.alpha;
+    ctx.fillStyle = particlesactives.color;
+    ctx.fillRect(particlesactives.X, particlesactives.Y, particlesactives.speedY / 4, particlesactives.speedY);
+  }
+
+  for (var i = 0, dropsactives; dropsactives = dropslocales[i]; i++) {
+
+    ctx.globalAlpha = dropsactives.alpha;
+    ctx.fillStyle = dropsactives.color;
+
+    ctx.beginPath();
+    ctx.arc(dropsactives.X, dropsactives.Y, dropsactives.radius, 0, tau);
+    ctx.fill();
+  }
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 2;
+
+  ctx.restore();
+};
+
+rain.update = function () {
+  var particleslocales = this.particles;
+  var dropslocales = this.drops;
+
+  for (var i = 0, particlesactives; particlesactives = particleslocales[i]; i++) {
+    particlesactives.X += particlesactives.speedX;
+    particlesactives.Y += particlesactives.speedY + 5;
+    if (particlesactives.Y > height - 15) {
+      particleslocales.splice(i--, 1);
+      this.explosion(particlesactives.X, particlesactives.Y, particlesactives.color);
+    }
+  }
+
+  for (var i = 0, dropsactives; dropsactives = dropslocales[i]; i++) {
+    dropsactives.X += dropsactives.speedX;
+    dropsactives.Y += dropsactives.speedY;
+    dropsactives.radius -= 0.075;
+    if (dropsactives.alpha > 0) {
+      dropsactives.alpha -= 0.005;
+    } else {
+      dropsactives.alpha = 0;
+    }
+    if (dropsactives.radius < 0) {
+      dropslocales.splice(i--, 1);
+    }
+  }
+
+  var i = this.controls.rain;
+  while (i--) {
+    this.buildRainParticle(Math.floor(Math.random() * width), -15);
+  }
+};
+
+rain.unbindCanvas = function () {
+  this.requestAnimFrame = function () {};
+};
+
+module.exports = rain;
+
+},{"../lib/menu.js":6}],28:[function(require,module,exports){
 'use strict';
 
 var _modcheck = require('../utils/modcheck.js');
@@ -2505,7 +2745,7 @@ dubshover.go = function (e) {
 
 module.exports = dubshover;
 
-},{"../utils/modal.js":37,"../utils/modcheck.js":38}],28:[function(require,module,exports){
+},{"../utils/modal.js":38,"../utils/modcheck.js":39}],29:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2542,7 +2782,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2600,29 +2840,18 @@ var snooze = function snooze() {
   }
 };
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
 var menu = require('../lib/menu.js');
 
-var snow = {};
+module.exports = {
+  id: "dubplus-snow",
+  moduleName: "Snow",
+  description: "Make it snow!",
+  category: "General",
 
-snow.id = "dubplus-snow";
-snow.moduleName = "Snow";
-snow.description = "Make it snow!";
-snow.optionState = false;
-snow.category = "General";
-snow.menuHTML = menu.makeOptionMenu(snow.moduleName, {
-  id: snow.id,
-  desc: snow.description
-});
-
-// this function will be run on each click of the menu
-snow.go = function (e) {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
+  doSnow: function doSnow() {
     $(document).snowfall({
       round: true,
       shadow: true,
@@ -2632,18 +2861,47 @@ snow.go = function (e) {
       minSpeed: 5,
       maxSpeed: 5
     });
-  } else {
-    newOptionState = false;
-    $(document).snowfall('clear');
+  },
+  start: function start() {
+    var _this = this;
+
+    if (!$.snowfall) {
+      // only pull in the script once if it doesn't exist
+      $.getScript("https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js").done(function () {
+        _this.doSnow();
+      }).fail(function (jqxhr, settings, exception) {
+        console.error('Could not load snowfall jquery plugin', exception);
+      });
+    } else {
+      this.doSnow();
+    }
+  },
+
+  init: function init() {
+    if (this.optionState) {
+      this.start();
+    }
+  },
+
+  // this function will be run on each click of the menu
+  go: function go(e) {
+    var newOptionState;
+
+    if (!this.optionState) {
+      newOptionState = true;
+      this.start();
+    } else {
+      newOptionState = false;
+      $(document).snowfall('clear');
+    }
+
+    this.optionState = newOptionState;
+    this.toggleAndSave(this.id, newOptionState);
   }
 
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
 };
 
-module.exports = snow;
-
-},{"../lib/menu.js":6}],31:[function(require,module,exports){
+},{"../lib/menu.js":6}],32:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2689,7 +2947,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2726,7 +2984,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2789,7 +3047,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2833,7 +3091,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 (function (TIME_STAMP){
 'use strict';
 
@@ -2874,8 +3132,8 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487870330033')
-},{"../lib/settings.js":7}],36:[function(require,module,exports){
+}).call(this,'1487961796573')
+},{"../lib/settings.js":7}],37:[function(require,module,exports){
 'use strict';
 
 // jQuery's getJSON kept returning errors so making my own with promise-like
@@ -2913,7 +3171,7 @@ var GetJSON = function GetJSON(url, optionalEvent, headers) {
 
 module.exports = GetJSON;
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 function makeButtons(cb) {
@@ -3005,7 +3263,7 @@ module.exports = {
   close: close
 };
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3016,7 +3274,7 @@ exports.default = function (userid) {
   return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
 };
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3111,7 +3369,7 @@ function showNotification(opts) {
   setTimeout(n.close.bind(n), options.wait);
 }
 
-},{"../utils/modal.js":37}],40:[function(require,module,exports){
+},{"../utils/modal.js":38}],41:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -3167,7 +3425,7 @@ module.exports = {
   saveOption: saveOption
 };
 
-},{"../lib/settings.js":7}],41:[function(require,module,exports){
+},{"../lib/settings.js":7}],42:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3189,7 +3447,7 @@ function preload() {
   $('body').prepend(preloadHTML);
 }
 
-},{"../lib/settings.js":7}],42:[function(require,module,exports){
+},{"../lib/settings.js":7}],43:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
