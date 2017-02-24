@@ -10,6 +10,7 @@ Features
 - AutoComplete Emoji
 - Custom Mentions
 - Notify on Mentions
+- Notify on PM
 - SpaceBar Mute
 - Warn on navigation
 - {Updubs, Downdubs(OnlyMods), Grabs} in Chat
