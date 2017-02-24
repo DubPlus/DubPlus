@@ -32,6 +32,13 @@ rain.controls = {
   speed: 1
 };
 
+rain.init = function(){
+  if (this.optionState) {
+    $('body').prepend('<canvas id="dubPlusRainCanvas" style="position : fixed; top : 0px; left : 0px; z-index: 100; pointer-events:none;"></canvas>');
+    this.bindCanvas();
+  }
+};
+
 // this function will be run on each click of the menu
 rain.go = function (e) {
   var newOptionState;
