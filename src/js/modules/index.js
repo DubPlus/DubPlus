@@ -13,6 +13,7 @@ module.exports = [
   require('./upDubInChat.js'),
   require('./grabsInChat.js'),
   require('./snow.js'),
+  require('./rain.js'),
   
   // User Interface
   require('./fullscreen.js'),

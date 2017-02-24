@@ -84,7 +84,7 @@ if (!window.dubplus && Dubtrack.session.id) {
   });
 }
 
-},{"./lib/init.js":4,"./utils/css.js":35,"./utils/modal.js":37,"./utils/preload.js":41,"./utils/waitFor.js":42}],2:[function(require,module,exports){
+},{"./lib/init.js":4,"./utils/css.js":36,"./utils/modal.js":38,"./utils/preload.js":42,"./utils/waitFor.js":43}],2:[function(require,module,exports){
 'use strict';
 
 /* global  emojify */
@@ -265,7 +265,7 @@ prepEmoji.processTastyEmotes = function (data) {
 
 module.exports = prepEmoji;
 
-},{"../lib/settings.js":7,"../utils/getJSON.js":36}],3:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/getJSON.js":37}],3:[function(require,module,exports){
 'use strict';
 
 /**
@@ -474,7 +474,7 @@ module.exports = function () {
   $('.dubplus-menu').perfectScrollbar();
 };
 
-},{"../modules/eta.js":18,"../modules/snooze.js":29,"../utils/css.js":35,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
+},{"../modules/eta.js":18,"../modules/snooze.js":30,"../utils/css.js":36,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
 (function (PKGINFO){
 'use strict';
 
@@ -551,7 +551,7 @@ var loadAllModules = function loadAllModules() {
 exports.default = loadAllModules;
 
 }).call(this,'{"name":"DubPlus","version":"0.1.0","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
-},{"../lib/menu.js":6,"../lib/settings.js":7,"../modules/index.js":25,"../utils/options.js":40}],6:[function(require,module,exports){
+},{"../lib/menu.js":6,"../lib/settings.js":7,"../modules/index.js":25,"../utils/options.js":41}],6:[function(require,module,exports){
 'use strict';
 
 var options = require('../utils/options.js');
@@ -675,7 +675,7 @@ module.exports = {
 
 };
 
-},{"../utils/css.js":35,"../utils/options.js":40,"./settings.js":7}],7:[function(require,module,exports){
+},{"../utils/css.js":36,"../utils/options.js":41,"./settings.js":7}],7:[function(require,module,exports){
 (function (CURRENT_BRANCH,CURRENT_REPO){
 "use strict";
 
@@ -792,7 +792,7 @@ afk_module.extra = function () {
 
 module.exports = afk_module;
 
-},{"../lib/settings.js":7,"../utils/modal.js":37,"../utils/options.js":40}],9:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/modal.js":38,"../utils/options.js":41}],9:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1098,7 +1098,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/notify.js":39}],12:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/notify.js":40}],12:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1161,7 +1161,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../utils/css.js":35}],13:[function(require,module,exports){
+},{"../utils/css.js":36}],13:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1244,7 +1244,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/modal.js":37,"../utils/options.js":40}],14:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/modal.js":38,"../utils/options.js":41}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1313,7 +1313,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/css.js":35,"../utils/modal.js":37,"../utils/options.js":40}],15:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/css.js":36,"../utils/modal.js":38,"../utils/options.js":41}],15:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1391,7 +1391,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/modal.js":37,"../utils/options.js":40}],16:[function(require,module,exports){
+},{"../lib/settings.js":7,"../utils/modal.js":38,"../utils/options.js":41}],16:[function(require,module,exports){
 "use strict";
 
 var _modcheck = require("../utils/modcheck.js");
@@ -1464,7 +1464,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../utils/modcheck.js":38}],17:[function(require,module,exports){
+},{"../utils/modcheck.js":39}],17:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1849,7 +1849,7 @@ module.exports = myModule;
 module.exports = [
 // General 
 require('./autovote.js'), require('./afk.js'), require('./emotes.js'), require('./autocomplete.js'), require('./customMentions.js'), require('./chatNotifications.js'), require('./pmNotifications.js'), require('./showDubsOnHover.js'), require('./downDubInChat.js'), // (mod only)
-require('./upDubInChat.js'), require('./grabsInChat.js'), require('./snow.js'),
+require('./upDubInChat.js'), require('./grabsInChat.js'), require('./snow.js'), require('./rain.js'),
 
 // User Interface
 require('./fullscreen.js'), require('./splitchat.js'), require('./hideChat.js'), require('./hideVideo.js'), require('./hideAvatars.js'), require('./hideBackground.js'), require('./showTimestamps.js'),
@@ -1860,7 +1860,7 @@ require('./spacebarMute.js'), require('./warnOnNavigation.js'),
 // // Customize
 require('./communityTheme.js'), require('./customCSS.js'), require('./customBackground.js')];
 
-},{"./afk.js":8,"./autocomplete.js":9,"./autovote.js":10,"./chatNotifications.js":11,"./communityTheme.js":12,"./customBackground.js":13,"./customCSS.js":14,"./customMentions.js":15,"./downDubInChat.js":16,"./emotes.js":17,"./fullscreen.js":19,"./grabsInChat.js":20,"./hideAvatars.js":21,"./hideBackground.js":22,"./hideChat.js":23,"./hideVideo.js":24,"./pmNotifications.js":26,"./showDubsOnHover.js":27,"./showTimestamps.js":28,"./snow.js":30,"./spacebarMute.js":31,"./splitchat.js":32,"./upDubInChat.js":33,"./warnOnNavigation.js":34}],26:[function(require,module,exports){
+},{"./afk.js":8,"./autocomplete.js":9,"./autovote.js":10,"./chatNotifications.js":11,"./communityTheme.js":12,"./customBackground.js":13,"./customCSS.js":14,"./customMentions.js":15,"./downDubInChat.js":16,"./emotes.js":17,"./fullscreen.js":19,"./grabsInChat.js":20,"./hideAvatars.js":21,"./hideBackground.js":22,"./hideChat.js":23,"./hideVideo.js":24,"./pmNotifications.js":26,"./rain.js":27,"./showDubsOnHover.js":28,"./showTimestamps.js":29,"./snow.js":31,"./spacebarMute.js":32,"./splitchat.js":33,"./upDubInChat.js":34,"./warnOnNavigation.js":35}],26:[function(require,module,exports){
 "use strict";
 
 var _notify = require("../utils/notify.js");
@@ -1926,7 +1926,207 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{"../utils/notify.js":39}],27:[function(require,module,exports){
+},{"../utils/notify.js":40}],27:[function(require,module,exports){
+"use strict";
+
+var menu = require('../lib/menu.js');
+
+var rain = {};
+
+rain.id = "dubplus-rain";
+rain.moduleName = "Rain";
+rain.description = "Make it rain!";
+rain.optionState = false;
+rain.category = "General";
+rain.menuHTML = menu.makeOptionMenu(rain.moduleName, {
+  id: rain.id,
+  desc: rain.description
+});
+
+// Rain settings
+rain.particles = [];
+rain.drops = [];
+rain.numbase = 5;
+rain.numb = 2;
+rain.width, rain.height = 0;
+
+// We can update these realtime
+rain.controls = {
+  rain: 2,
+  alpha: 1,
+  color: 200,
+  opacity: 1,
+  saturation: 100,
+  lightness: 50,
+  back: 0,
+  multi: false,
+  speed: 1
+};
+
+// this function will be run on each click of the menu
+rain.go = function (e) {
+  var newOptionState;
+
+  if (!this.optionState) {
+    newOptionState = true;
+    $('body').prepend('<canvas id="dubPlusRainCanvas" style="position : fixed; top : 0px; left : 0px; z-index: 100; pointer-events:none;"></canvas>');
+    this.bindCanvas();
+  } else {
+    newOptionState = false;
+    $('#dubPlusRainCanvas').remove();
+    this.unbindCanvas();
+  }
+
+  this.optionState = newOptionState;
+  this.toggleAndSave(this.id, newOptionState);
+};
+
+rain.bindCanvas = function () {
+  this.requestAnimFrame = function () {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
+      window.setTimeout(callback, 1000 / 60);
+    };
+  }();
+
+  var canvas = document.getElementById('dubPlusRainCanvas');
+
+  if (!canvas) return;
+
+  var ctx = canvas.getContext('2d');
+
+  this.width, this.height = 0;
+
+  window.onresize = function onresize() {
+    this.width = canvas.width = window.innerWidth;
+    this.height = canvas.height = window.innerHeight;
+  };
+
+  window.onresize();
+
+  this.particles, this.drops = [];
+  this.numbase = 5;
+  this.numb = 2;
+
+  function Screenshot() {
+    window.open(canvas.toDataURL());
+  }
+
+  var that = this;
+
+  (function boucle() {
+    that.requestAnimFrame(boucle);
+    that.update();
+    that.rendu(ctx);
+  })();
+};
+
+rain.buildRainParticle = function (X, Y, num) {
+  if (!num) {
+    num = this.numb;
+  }
+  while (num--) {
+    this.particles.push({
+      speedX: Math.random() * 0.25,
+      speedY: Math.random() * 9 + 1,
+      X: X,
+      Y: Y,
+      alpha: 1,
+      color: "hsla(" + this.controls.color + "," + this.controls.saturation + "%, " + this.controls.lightness + "%," + this.controls.opacity + ")"
+    });
+  }
+};
+
+rain.explosion = function (X, Y, color, num) {
+  if (!num) {
+    num = this.numbase;
+  }
+  while (num--) {
+    this.drops.push({
+      speedX: Math.random() * 4 - 2,
+      speedY: Math.random() * -4,
+      X: X,
+      Y: Y,
+      radius: 0.65 + Math.floor(Math.random() * 1.6),
+      alpha: 1,
+      color: color
+    });
+  }
+};
+
+rain.rendu = function (ctx) {
+  if (this.controls.multi == true) {
+    this.controls.color = Math.random() * 360;
+  }
+
+  ctx.save();
+  ctx.clearRect(0, 0, width, height);
+
+  var particleslocales = this.particles;
+  var dropslocales = this.drops;
+  var tau = Math.PI * 2;
+
+  for (var i = 0, particlesactives; particlesactives = particleslocales[i]; i++) {
+
+    ctx.globalAlpha = particlesactives.alpha;
+    ctx.fillStyle = particlesactives.color;
+    ctx.fillRect(particlesactives.X, particlesactives.Y, particlesactives.speedY / 4, particlesactives.speedY);
+  }
+
+  for (var i = 0, dropsactives; dropsactives = dropslocales[i]; i++) {
+
+    ctx.globalAlpha = dropsactives.alpha;
+    ctx.fillStyle = dropsactives.color;
+
+    ctx.beginPath();
+    ctx.arc(dropsactives.X, dropsactives.Y, dropsactives.radius, 0, tau);
+    ctx.fill();
+  }
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 2;
+
+  ctx.restore();
+};
+
+rain.update = function () {
+  var particleslocales = this.particles;
+  var dropslocales = this.drops;
+
+  for (var i = 0, particlesactives; particlesactives = particleslocales[i]; i++) {
+    particlesactives.X += particlesactives.speedX;
+    particlesactives.Y += particlesactives.speedY + 5;
+    if (particlesactives.Y > height - 15) {
+      particleslocales.splice(i--, 1);
+      this.explosion(particlesactives.X, particlesactives.Y, particlesactives.color);
+    }
+  }
+
+  for (var i = 0, dropsactives; dropsactives = dropslocales[i]; i++) {
+    dropsactives.X += dropsactives.speedX;
+    dropsactives.Y += dropsactives.speedY;
+    dropsactives.radius -= 0.075;
+    if (dropsactives.alpha > 0) {
+      dropsactives.alpha -= 0.005;
+    } else {
+      dropsactives.alpha = 0;
+    }
+    if (dropsactives.radius < 0) {
+      dropslocales.splice(i--, 1);
+    }
+  }
+
+  var i = this.controls.rain;
+  while (i--) {
+    this.buildRainParticle(Math.floor(Math.random() * width), -15);
+  }
+};
+
+rain.unbindCanvas = function () {
+  this.requestAnimFrame = function () {};
+};
+
+module.exports = rain;
+
+},{"../lib/menu.js":6}],28:[function(require,module,exports){
 'use strict';
 
 var _modcheck = require('../utils/modcheck.js');
@@ -2505,7 +2705,7 @@ dubshover.go = function (e) {
 
 module.exports = dubshover;
 
-},{"../utils/modal.js":37,"../utils/modcheck.js":38}],28:[function(require,module,exports){
+},{"../utils/modal.js":38,"../utils/modcheck.js":39}],29:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2542,7 +2742,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2600,7 +2800,7 @@ var snooze = function snooze() {
   }
 };
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
 var menu = require('../lib/menu.js');
@@ -2643,7 +2843,7 @@ snow.go = function (e) {
 
 module.exports = snow;
 
-},{"../lib/menu.js":6}],31:[function(require,module,exports){
+},{"../lib/menu.js":6}],32:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2689,7 +2889,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2726,7 +2926,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2789,7 +2989,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2833,7 +3033,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 (function (TIME_STAMP){
 'use strict';
 
@@ -2874,8 +3074,8 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487870330033')
-},{"../lib/settings.js":7}],36:[function(require,module,exports){
+}).call(this,'1487958697625')
+},{"../lib/settings.js":7}],37:[function(require,module,exports){
 'use strict';
 
 // jQuery's getJSON kept returning errors so making my own with promise-like
@@ -2913,7 +3113,7 @@ var GetJSON = function GetJSON(url, optionalEvent, headers) {
 
 module.exports = GetJSON;
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 function makeButtons(cb) {
@@ -3005,7 +3205,7 @@ module.exports = {
   close: close
 };
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3016,7 +3216,7 @@ exports.default = function (userid) {
   return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
 };
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3111,7 +3311,7 @@ function showNotification(opts) {
   setTimeout(n.close.bind(n), options.wait);
 }
 
-},{"../utils/modal.js":37}],40:[function(require,module,exports){
+},{"../utils/modal.js":38}],41:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -3167,7 +3367,7 @@ module.exports = {
   saveOption: saveOption
 };
 
-},{"../lib/settings.js":7}],41:[function(require,module,exports){
+},{"../lib/settings.js":7}],42:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3189,7 +3389,7 @@ function preload() {
   $('body').prepend(preloadHTML);
 }
 
-},{"../lib/settings.js":7}],42:[function(require,module,exports){
+},{"../lib/settings.js":7}],43:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
