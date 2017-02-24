@@ -349,8 +349,8 @@
 
 /****************************************************
  * Emoji and emote section
- * twitch logo white: http://i.imgur.com/FhzONPQ.png
- * bttv logo white: http://i.imgur.com/oTfAI0O.png
+ * twitch logo white: https://i.imgur.com/FhzONPQ.png
+ * bttv logo white: https://i.imgur.com/oTfAI0O.png
  */
 #autocomplete-preview {
   overflow: auto;
@@ -383,13 +383,13 @@
   background-position: 98% center; }
 
 .twitch-previews {
-  background-image: url(http://i.imgur.com/FhzONPQ.png); }
+  background-image: url(https://i.imgur.com/FhzONPQ.png); }
 
 .bttv-previews {
-  background-image: url(http://i.imgur.com/oTfAI0O.png); }
+  background-image: url(https://i.imgur.com/oTfAI0O.png); }
 
 .tasty-previews {
-  background-image: url(https://raw.githubusercontent.com/FranciscoG/DubPlus//emotes/tastycat/21.png); }
+  background-image: url(https://raw.githubusercontent.com/FranciscoG/DubPlus/dev/emotes/tastycat/21.png); }
 
 #autocomplete-preview span {
   font-size: 0.8em;
