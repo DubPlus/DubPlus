@@ -14,7 +14,7 @@ var menuObj = {
  * Loads all the modules and initliazes them
  */
 var loadAllModules = function(){
-  window.dubplus = JSON.parse(PKGINFO);
+  // window.dubplus was created in the init module
 
   dubPlus_modules.forEach(function(mod){
     // add each module to the new global object

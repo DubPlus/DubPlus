@@ -5,15 +5,15 @@ var menu = require('./menu.js');
 import snooze from '../modules/snooze.js';
 import eta from '../modules/eta.js';
 
+
 module.exports = function(){
+  window.dubplus = JSON.parse(PKGINFO);
+
   // load our main CSS
   css.load('/css/dubplus.css');
 
   // add a 'global' css class just in case we need more specificity in our css
   $('html').addClass('dubplus');
-
-  // load third party snowfall feature
-  $.getScript('https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js');
 
   // Get the opening html for the menu
   var menuString = menu.beginMenu();

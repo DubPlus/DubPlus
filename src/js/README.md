@@ -15,8 +15,6 @@ My TODO:
 
 Each module is an object that you export with specific properties and methods. if you look at `src/js/lib/loadModules.js` you can see how each module is loaded and what's required in each.
 
-
-
 ### Start by defining your module as an object:
 ```javascript
 var myModule = {}; // `myModule` can be renamed to whatever you want. This is just for show.
@@ -51,10 +49,22 @@ myModule.extraIcon = 'pencil' // {string} Default: 'pencil'
 set the font-awesome icon to be used to trigger the .extra method. It will automatically be prepended with "fa-"
 
 ### available properties
+
+the following properties will be added to your modules dynamically when loaded
+
 ```javascript
 myModule.optionState // {boolean}
 ```
-on/off state of your menu item.  This is also set on load by checking a user's saved settings in localStorage
+on/off state of your menu item.  This is also set on load by checking a user's saved settings in localStorage.  You should set this state in your .go function
+
+```javascript
+/**
+ * @param {string} id - your module id
+ * @param {boolean} state - the on/off state of the curent module that you would like to set and save
+ */
+myModule.toggleAndSave(id, state) // {function}
+```
+this function should always be called at the end of your .go function to update the switch ui state in the menu and also store your setting in localStorage
 
 ### REQUIRED methods
 ```javascript

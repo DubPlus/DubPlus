@@ -1,23 +1,12 @@
 var menu = require('../lib/menu.js');
 
-var snow = {};
+module.exports = {
+  id : "dubplus-snow",
+  moduleName : "Snow",
+  description : "Make it snow!",
+  category : "General",
 
-snow.id = "dubplus-snow";
-snow.moduleName = "Snow";
-snow.description = "Make it snow!";
-snow.optionState = false;
-snow.category = "General";
-snow.menuHTML = menu.makeOptionMenu(snow.moduleName, {
-    id : snow.id,
-    desc : snow.description
-  });
-
-// this function will be run on each click of the menu
-snow.go = function(e){
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
+  doSnow : function(){
     $(document).snowfall({
       round: true,
       shadow: true,
@@ -27,13 +16,42 @@ snow.go = function(e){
       minSpeed: 5,
       maxSpeed: 5
     });
-  } else {
-    newOptionState= false;
-    $(document).snowfall('clear');
+  },
+  start : function() {
+    if (!$.snowfall) {
+      // only pull in the script once if it doesn't exist
+      $.getScript( "https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js" )
+        .done(()=> {
+          this.doSnow();
+        })
+        .fail(function( jqxhr, settings, exception ) {
+          console.error('Could not load snowfall jquery plugin', exception);
+        });
+    } else {
+      this.doSnow();
+    }
+  },
+
+  init : function() {
+    if (this.optionState) {
+      this.start() ;
+    }
+  },
+
+  // this function will be run on each click of the menu
+  go : function(e){
+    var newOptionState;
+
+    if (!this.optionState) {
+      newOptionState = true;
+      this.start();
+    } else {
+      newOptionState= false;
+      $(document).snowfall('clear');
+    }
+
+    this.optionState = newOptionState;
+    this.toggleAndSave(this.id, newOptionState);
   }
 
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
 };
-
-module.exports = snow;
