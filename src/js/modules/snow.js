@@ -1,5 +1,3 @@
-var menu = require('../lib/menu.js');
-
 module.exports = {
   id : "dubplus-snow",
   moduleName : "Snow",
@@ -17,7 +15,8 @@ module.exports = {
       maxSpeed: 5
     });
   },
-  start : function() {
+
+  turnOn : function() {
     if (!$.snowfall) {
       // only pull in the script once if it doesn't exist
       $.getScript( "https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js" )
@@ -32,26 +31,9 @@ module.exports = {
     }
   },
 
-  init : function() {
-    if (this.optionState) {
-      this.start() ;
-    }
-  },
-
   // this function will be run on each click of the menu
-  go : function(e){
-    var newOptionState;
-
-    if (!this.optionState) {
-      newOptionState = true;
-      this.start();
-    } else {
-      newOptionState= false;
-      $(document).snowfall('clear');
-    }
-
-    this.optionState = newOptionState;
-    this.toggleAndSave(this.id, newOptionState);
+  turnOff : function(){
+    $(document).snowfall('clear');
   }
 
 };

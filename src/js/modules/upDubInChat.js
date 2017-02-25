@@ -31,7 +31,7 @@ myModule.updubWatcher = function(e) {
   }
 };
 
-myModule.start = function() {
+myModule.turnOn = function() {
   Dubtrack.Events.bind("realtime:room_playlist-dub", this.updubWatcher);
 
   // add this function to our global dubplus object so that chat
@@ -44,25 +44,8 @@ myModule.start = function() {
   
 };
 
-myModule.init = function(){
-  if (this.optionState) {
-    this.start();
-  }
-};
-
-myModule.go = function() {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.start();
-  } else {
-    newOptionState = false;
-    Dubtrack.Events.unbind("realtime:room_playlist-dub", this.updubWatcher);
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function() {
+  Dubtrack.Events.unbind("realtime:room_playlist-dub", this.updubWatcher);
 };
 
 module.exports = myModule;

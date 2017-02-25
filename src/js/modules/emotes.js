@@ -57,7 +57,7 @@ var replaceTextWithEmote = function(){
     $chatTarget.html(emoted);
 };
 
-var startReplacing = function(){
+emote_module.turnOn = function(){
   window.addEventListener('twitch:loaded', dubplus_emoji.loadBTTVEmotes.bind(dubplus_emoji));
   // window.addEventListener('bttv:loaded', dubplus_emoji.loadTastyEmotes.bind(dubplus_emoji));
 
@@ -69,27 +69,8 @@ var startReplacing = function(){
   Dubtrack.Events.bind("realtime:chat-message", replaceTextWithEmote);
 };
 
-emote_module.init = function(){
-  if (emote_module.optionState) {
-    startReplacing();
-  }
-};
-
-/**************************************************************************
- * Turn on/off the twitch emoji in chat
- */
-emote_module.go = function(){
-    var newOptionState;
-    if (!emote_module.optionState) {
-      startReplacing();
-      newOptionState = true;
-    } else {
-      Dubtrack.Events.unbind("realtime:chat-message", replaceTextWithEmote);
-      newOptionState = false;
-    }
-
-    this.optionState = newOptionState;
-    this.toggleAndSave(this.id, newOptionState);
+emote_module.turnOff = function(){
+  Dubtrack.Events.unbind("realtime:chat-message", replaceTextWithEmote);
 };
 
 

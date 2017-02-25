@@ -33,7 +33,7 @@ myModule.downdubWatcher = function(e) {
   }
 };
 
-myModule.start = function() {
+myModule.turnOn = function() {
   if(!userIsAtLeastMod(Dubtrack.session.id)) {
     return;
   }
@@ -50,25 +50,8 @@ myModule.start = function() {
   
 };
 
-myModule.init = function(){
-  if (this.optionState) {
-    this.start();
-  }
-};
-
-myModule.go = function() {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.start();
-  } else {
-    newOptionState = false;
-    Dubtrack.Events.unbind("realtime:room_playlist-dub", this.downdubWatcher);
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function() {
+  Dubtrack.Events.unbind("realtime:room_playlist-dub", this.downdubWatcher);
 };
 
 module.exports = myModule;
