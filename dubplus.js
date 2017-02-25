@@ -500,31 +500,52 @@ var loadAllModules = function loadAllModules() {
     window.dubplus[mod.id] = mod;
     // add the toggleAndSave function as a member of each module
     window.dubplus[mod.id].toggleAndSave = options.toggleAndSave;
-
-    // add event listener
-    if (typeof mod.go === 'function' || typeof mod.extra === 'function') {
-      $('body').on('click', '#' + mod.id, function (ev) {
-        // if clicking on the "extra-icon", run module's "extra" function
-        if (ev.target.classList.contains('extra-icon') && typeof mod.extra === 'function') {
-          mod.extra.call(mod);
-        } else if (mod.go) {
-          mod.go.call(mod);
-        }
-      });
-    }
-
     // check stored settings for module's initial state
     mod.optionState = settings.options[mod.id] || false;
 
+    // add event listener
+    $('body').on('click', '#' + mod.id, function (ev) {
+      // if clicking on the "extra-icon", run module's "extra" function
+      if (ev.target.classList.contains('extra-icon') && mod.extra) {
+        mod.extra.call(mod);
+        return;
+      }
+
+      if (mod.turnOn && mod.turnOff) {
+        var newOptionState;
+        if (!mod.optionState) {
+          newOptionState = true;
+          mod.turnOn.call(mod);
+        } else {
+          newOptionState = false;
+          mod.turnOff.call(mod);
+        }
+
+        mod.optionState = newOptionState;
+        options.toggleAndSave(mod.id, newOptionState);
+        return;
+      }
+
+      if (mod.go) {
+        // .go is used for modules that never save state, like fullscreen
+        mod.go.call(mod);
+      }
+    });
+
     // This is run only once, when the script is loaded.
-    // this is also where you should check stored settings 
-    // to see if an option should be automatically turned on
+    // put anything you want ALWAYS run on Dub+ script load here 
     if (typeof mod.init === 'function') {
-      mod.init.bind(mod)();
+      mod.init.call(mod);
+    }
+
+    // if module's localStorage option state is ON, we turn it on!
+    if (mod.optionState && typeof mod.turnOn === 'function') {
+      mod.turnOn.call(mod);
     }
 
     var _extraIcon = null;
-    // setting a default extraIcon to 'pencil' if .extra is defined not extraIcon
+    // if module has a defined .extra {function} but does not define the .extraIcon {string} 
+    // then we use 'pencil' as the default icon
     if (typeof mod.extra === 'function' && !mod.extraIcon) {
       _extraIcon = 'pencil';
     }
@@ -746,25 +767,12 @@ var afk_chat_respond = function afk_chat_respond(e) {
   }
 };
 
-afk_module.init = function () {
-  if (this.optionState === true) {
-    Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
-  }
+afk_module.turnOn = function () {
+  Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
 };
 
-afk_module.go = function (e) {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
-  } else {
-    newOptionState = false;
-    Dubtrack.Events.unbind("realtime:chat-message", afk_chat_respond);
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+afk_module.turnOff = function () {
+  Dubtrack.Events.unbind("realtime:chat-message", afk_chat_respond);
 };
 
 var saveAFKmessage = function saveAFKmessage() {
@@ -958,9 +966,7 @@ var chatInputKeydownFunc = function chatInputKeydownFunc(e) {
   }
 };
 
-/*************************************************/
-
-myModule.start = function () {
+myModule.turnOn = function () {
   previewList.init();
   //Only remove keydown for Dubtrack native autocomplete to work
   Dubtrack.room.chat.delegateEvents(_(Dubtrack.room.chat.events).omit('keydown #chat-txt-message'));
@@ -969,27 +975,10 @@ myModule.start = function () {
   $(document.body).on('keyup', "#chat-txt-message", chatInputKeyupFunc);
 };
 
-myModule.init = function () {
-  if (this.optionState) {
-    this.start();
-  }
-};
-
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.start();
-  } else {
-    previewList.stop();
-    newOptionState = false;
-    $(document.body).off('keydown', "#chat-txt-message", chatInputKeydownFunc);
-    $(document.body).off('keyup', "#chat-txt-message", chatInputKeyupFunc);
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  previewList.stop();
+  $(document.body).off('keydown', "#chat-txt-message", chatInputKeydownFunc);
+  $(document.body).off('keyup', "#chat-txt-message", chatInputKeyupFunc);
 };
 
 module.exports = myModule;
@@ -1019,29 +1008,11 @@ var voteCheck = function voteCheck(obj) {
 
 /*******************************************************/
 
-autovote.init = function () {
-  if (this.optionState === true) {
-    this.start();
-  }
+autovote.turnOff = function () {
+  Dubtrack.Events.unbind("realtime:room_playlist-update", voteCheck);
 };
 
-// this function will be run on each click of the menu
-autovote.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.start();
-  } else {
-    newOptionState = false;
-    Dubtrack.Events.unbind("realtime:room_playlist-update", voteCheck);
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
-};
-
-autovote.start = function () {
+autovote.turnOn = function () {
   var song = Dubtrack.room.player.activeSong.get('song');
   var dubCookie = Dubtrack.helpers.cookie.get('dub-' + Dubtrack.room.model.get("_id"));
   var dubsong = Dubtrack.helpers.cookie.get('dub-song');
@@ -1095,7 +1066,7 @@ myModule.notifyOnMention = function (e) {
   }
 };
 
-myModule.mentionNotifications = function () {
+myModule.turnOn = function () {
   var _this = this;
 
   (0, _notify.notifyCheckPermission)(function (granted) {
@@ -1108,25 +1079,8 @@ myModule.mentionNotifications = function () {
   });
 };
 
-myModule.init = function () {
-  if (this.optionState === true) {
-    this.mentionNotifications();
-  }
-};
-
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    this.mentionNotifications();
-    newOptionState = true;
-  } else {
-    Dubtrack.Events.unbind("realtime:chat-message", this.notifyOnMention);
-    newOptionState = false;
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  Dubtrack.Events.unbind("realtime:chat-message", this.notifyOnMention);
 };
 
 module.exports = myModule;
@@ -1148,7 +1102,7 @@ myModule.moduleName = "Community Theme";
 myModule.description = "Toggle Community CSS theme.";
 myModule.category = "Customize";
 
-myModule.start = function () {
+myModule.turnOn = function () {
   var location = Dubtrack.room.model.get('roomUrl');
   $.ajax({
     type: 'GET',
@@ -1171,25 +1125,8 @@ myModule.start = function () {
   });
 };
 
-myModule.init = function () {
-  if (this.optionState) {
-    this.start();
-  }
-};
-
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.start();
-  } else {
-    newOptionState = false;
-    $('.dubplus-comm-theme').remove();
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  $('.dubplus-comm-theme').remove();
 };
 
 module.exports = myModule;
@@ -1245,7 +1182,7 @@ myModule.extra = function () {
   });
 };
 
-myModule.addBG = function () {
+myModule.turnOn = function () {
   // show modal if no image is in settings
   if (!settings.custom.bg || settings.custom.bg === '') {
     this.extra();
@@ -1254,25 +1191,8 @@ myModule.addBG = function () {
   }
 };
 
-myModule.init = function () {
-  if (this.optionState) {
-    this.addBG();
-  }
-};
-
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.addBG();
-  } else {
-    newOptionState = false;
-    $('.dubplus-custom-bg').remove();
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  $('.dubplus-custom-bg').remove();
 };
 
 module.exports = myModule;
@@ -1298,12 +1218,6 @@ myModule.description = "Add your own custom CSS.";
 myModule.category = "Customize";
 myModule.extraIcon = 'pencil';
 
-myModule.init = function () {
-  if (this.optionState) {
-    css.loadExternal(settings.custom.css, 'dubplus-custom-css');
-  }
-};
-
 var css_import = function css_import() {
   $('.dubplus-custom-css').remove();
   var css_to_import = $('.dp-modal textarea').val();
@@ -1325,23 +1239,16 @@ myModule.extra = function () {
   });
 };
 
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    if (settings.custom.css && settings.custom.css !== "") {
-      css.loadExternal(settings.custom.css, 'dubplus-custom-css');
-    } else {
-      this.extra();
-    }
+myModule.turnOn = function () {
+  if (settings.custom.css && settings.custom.css !== "") {
+    css.loadExternal(settings.custom.css, 'dubplus-custom-css');
   } else {
-    newOptionState = false;
-    $('.dubplus-custom-css').remove();
+    this.extra();
   }
+};
 
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  $('.dubplus-custom-css').remove();
 };
 
 module.exports = myModule;
@@ -1386,14 +1293,8 @@ myModule.customMentionCheck = function (e) {
   }
 };
 
-myModule.start = function () {
+myModule.turnOn = function () {
   Dubtrack.Events.bind("realtime:chat-message", this.customMentionCheck);
-};
-
-myModule.init = function () {
-  if (this.optionState === true) {
-    this.start();
-  }
 };
 
 myModule.extra = function () {
@@ -1407,19 +1308,8 @@ myModule.extra = function () {
   });
 };
 
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    this.start();
-    newOptionState = true;
-  } else {
-    Dubtrack.Events.unbind("realtime:chat-message", this.customMentionCheck);
-    newOptionState = false;
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  Dubtrack.Events.unbind("realtime:chat-message", this.customMentionCheck);
 };
 
 module.exports = myModule;
@@ -1458,7 +1348,7 @@ myModule.downdubWatcher = function (e) {
   }
 };
 
-myModule.start = function () {
+myModule.turnOn = function () {
   if (!(0, _modcheck2.default)(Dubtrack.session.id)) {
     return;
   }
@@ -1474,25 +1364,8 @@ myModule.start = function () {
   }
 };
 
-myModule.init = function () {
-  if (this.optionState) {
-    this.start();
-  }
-};
-
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.start();
-  } else {
-    newOptionState = false;
-    Dubtrack.Events.unbind("realtime:room_playlist-dub", this.downdubWatcher);
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  Dubtrack.Events.unbind("realtime:room_playlist-dub", this.downdubWatcher);
 };
 
 module.exports = myModule;
@@ -1515,7 +1388,7 @@ emote_module.description = "Adds twitch and bttv emotes in chat.";
 emote_module.category = "General";
 
 function makeImage(type, src, name, w, h) {
-  return '<img class="emoji ' + type + '-emote" ' + (w ? 'width="' + w + '" ' : '') + (h ? 'height="' + h + '" ' : '') + 'title="' + name + '" alt="' + name + '" src="' + src + '" />';
+    return '<img class="emoji ' + type + '-emote" ' + (w ? 'width="' + w + '" ' : '') + (h ? 'height="' + h + '" ' : '') + 'title="' + name + '" alt="' + name + '" src="' + src + '" />';
 }
 
 /**********************************************************************
@@ -1523,79 +1396,60 @@ function makeImage(type, src, name, w, h) {
  */
 
 var replaceTextWithEmote = function replaceTextWithEmote() {
-  var _regex = dubplus_emoji.twitch.chatRegex;
+    var _regex = dubplus_emoji.twitch.chatRegex;
 
-  if (!dubplus_emoji.twitchJSONSLoaded) {
-    return;
-  } // can't do anything until jsons are loaded
+    if (!dubplus_emoji.twitchJSONSLoaded) {
+        return;
+    } // can't do anything until jsons are loaded
 
-  var $chatTarget = $('.chat-main .text').last();
+    var $chatTarget = $('.chat-main .text').last();
 
-  if (!$chatTarget.html()) {
-    return;
-  } // nothing to do
+    if (!$chatTarget.html()) {
+        return;
+    } // nothing to do
 
-  if (dubplus_emoji.bttvJSONSLoaded) {
-    _regex = dubplus_emoji.bttv.chatRegex;
-  }
-
-  var emoted = $chatTarget.html().replace(_regex, function (matched, p1) {
-    var _id,
-        _src,
-        key = p1.toLowerCase();
-
-    if (dubplus_emoji.twitch.emotes[key]) {
-      _id = dubplus_emoji.twitch.emotes[key];
-      _src = dubplus_emoji.twitch.template(_id);
-      return makeImage("twitch", _src, key);
-    } else if (dubplus_emoji.bttv.emotes[key]) {
-      _id = dubplus_emoji.bttv.emotes[key];
-      _src = dubplus_emoji.bttv.template(_id);
-      return makeImage("bttv", _src, key);
-    } else if (dubplus_emoji.tasty.emotes[key]) {
-      _src = dubplus_emoji.tasty.template(key);
-      return makeImage("tasty", _src, key, dubplus_emoji.tasty.emotes[key].width, dubplus_emoji.tasty.emotes[key].height);
-    } else {
-      return matched;
+    if (dubplus_emoji.bttvJSONSLoaded) {
+        _regex = dubplus_emoji.bttv.chatRegex;
     }
-  });
 
-  $chatTarget.html(emoted);
+    var emoted = $chatTarget.html().replace(_regex, function (matched, p1) {
+        var _id,
+            _src,
+            key = p1.toLowerCase();
+
+        if (dubplus_emoji.twitch.emotes[key]) {
+            _id = dubplus_emoji.twitch.emotes[key];
+            _src = dubplus_emoji.twitch.template(_id);
+            return makeImage("twitch", _src, key);
+        } else if (dubplus_emoji.bttv.emotes[key]) {
+            _id = dubplus_emoji.bttv.emotes[key];
+            _src = dubplus_emoji.bttv.template(_id);
+            return makeImage("bttv", _src, key);
+        } else if (dubplus_emoji.tasty.emotes[key]) {
+            _src = dubplus_emoji.tasty.template(key);
+            return makeImage("tasty", _src, key, dubplus_emoji.tasty.emotes[key].width, dubplus_emoji.tasty.emotes[key].height);
+        } else {
+            return matched;
+        }
+    });
+
+    $chatTarget.html(emoted);
 };
 
-var startReplacing = function startReplacing() {
-  window.addEventListener('twitch:loaded', dubplus_emoji.loadBTTVEmotes.bind(dubplus_emoji));
-  // window.addEventListener('bttv:loaded', dubplus_emoji.loadTastyEmotes.bind(dubplus_emoji));
+emote_module.turnOn = function () {
+    window.addEventListener('twitch:loaded', dubplus_emoji.loadBTTVEmotes.bind(dubplus_emoji));
+    // window.addEventListener('bttv:loaded', dubplus_emoji.loadTastyEmotes.bind(dubplus_emoji));
 
-  if (!dubplus_emoji.twitchJSONSLoaded) {
-    dubplus_emoji.loadTwitchEmotes();
-  } else {
-    replaceTextWithEmote();
-  }
-  Dubtrack.Events.bind("realtime:chat-message", replaceTextWithEmote);
+    if (!dubplus_emoji.twitchJSONSLoaded) {
+        dubplus_emoji.loadTwitchEmotes();
+    } else {
+        replaceTextWithEmote();
+    }
+    Dubtrack.Events.bind("realtime:chat-message", replaceTextWithEmote);
 };
 
-emote_module.init = function () {
-  if (emote_module.optionState) {
-    startReplacing();
-  }
-};
-
-/**************************************************************************
- * Turn on/off the twitch emoji in chat
- */
-emote_module.go = function () {
-  var newOptionState;
-  if (!emote_module.optionState) {
-    startReplacing();
-    newOptionState = true;
-  } else {
+emote_module.turnOff = function () {
     Dubtrack.Events.unbind("realtime:chat-message", replaceTextWithEmote);
-    newOptionState = false;
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
 };
 
 module.exports = emote_module;
@@ -1650,7 +1504,7 @@ fs_module.description = "Toggle fullscreen video mode";
 fs_module.category = "User Interface";
 fs_module.altIcon = "arrows-alt";
 
-fs_module.go = function (e) {
+fs_module.go = function () {
     var elem = document.querySelector('.playerElement iframe');
     if (elem.requestFullscreen) {
         elem.requestFullscreen();
@@ -1693,7 +1547,7 @@ myModule.grabChatWatcher = function (e) {
   }
 };
 
-myModule.start = function () {
+myModule.turnOn = function () {
   Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
 
   // add this function to our global dubplus object so that chat
@@ -1705,25 +1559,8 @@ myModule.start = function () {
   }
 };
 
-myModule.init = function () {
-  if (this.optionState) {
-    this.start();
-  }
-};
-
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.start();
-  } else {
-    newOptionState = false;
-    Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
 };
 
 module.exports = myModule;
@@ -1742,25 +1579,12 @@ myModule.moduleName = "Hide Avatars";
 myModule.description = "Toggle hiding user avatars in the chat box.";
 myModule.category = "User Interface";
 
-myModule.init = function () {
-  if (this.optionState) {
-    $('body').addClass('dubplus-hide-avatars');
-  }
+myModule.turnOn = function () {
+  $('body').addClass('dubplus-hide-avatars');
 };
 
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    $('body').addClass('dubplus-hide-avatars');
-  } else {
-    newOptionState = false;
-    $('body').removeClass('dubplus-hide-avatars');
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  $('body').removeClass('dubplus-hide-avatars');
 };
 
 module.exports = myModule;
@@ -1779,25 +1603,12 @@ myModule.moduleName = "Hide Background";
 myModule.description = "Toggle hiding background image.";
 myModule.category = "User Interface";
 
-myModule.init = function () {
-  if (this.optionState) {
-    $('body').addClass('dubplus-hide-bg');
-  }
+myModule.turnOn = function () {
+  $('body').addClass('dubplus-hide-bg');
 };
 
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    $('body').addClass('dubplus-hide-bg');
-  } else {
-    newOptionState = false;
-    $('body').removeClass('dubplus-hide-bg');
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  $('body').removeClass('dubplus-hide-bg');
 };
 
 module.exports = myModule;
@@ -1815,25 +1626,12 @@ myModule.moduleName = "Hide Chat";
 myModule.description = "Toggles hiding the chat box";
 myModule.category = "User Interface";
 
-myModule.init = function () {
-  if (this.optionState) {
-    $('body').addClass('dubplus-video-only');
-  }
+myModule.turnOn = function () {
+  $('body').addClass('dubplus-video-only');
 };
 
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    $('body').addClass('dubplus-video-only');
-  } else {
-    newOptionState = false;
-    $('body').removeClass('dubplus-video-only');
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  $('body').removeClass('dubplus-video-only');
 };
 
 module.exports = myModule;
@@ -1852,25 +1650,12 @@ myModule.moduleName = "Hide Video";
 myModule.description = "Toggles hiding the video box";
 myModule.category = "User Interface";
 
-myModule.init = function () {
-  if (this.optionState) {
-    $('body').addClass('dubplus-chat-only');
-  }
+myModule.turnOn = function () {
+  $('body').addClass('dubplus-chat-only');
 };
 
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    $('body').addClass('dubplus-chat-only');
-  } else {
-    newOptionState = false;
-    $('body').removeClass('dubplus-chat-only');
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  $('body').removeClass('dubplus-chat-only');
 };
 
 module.exports = myModule;
@@ -1923,7 +1708,7 @@ myModule.pmNotify = function (e) {
   });
 };
 
-myModule.start = function () {
+myModule.turnOn = function () {
   var _this = this;
 
   (0, _notify.notifyCheckPermission)(function (granted) {
@@ -1936,25 +1721,8 @@ myModule.start = function () {
   });
 };
 
-myModule.init = function () {
-  if (this.optionState === true) {
-    this.start();
-  }
-};
-
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    this.start();
-    newOptionState = true;
-  } else {
-    Dubtrack.Events.unbind("realtime:new-message", this.pmNotify);
-    newOptionState = false;
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  Dubtrack.Events.unbind("realtime:new-message", this.pmNotify);
 };
 
 module.exports = myModule;
@@ -1962,19 +1730,11 @@ module.exports = myModule;
 },{"../utils/notify.js":40}],27:[function(require,module,exports){
 "use strict";
 
-var menu = require('../lib/menu.js');
-
 var rain = {};
-
 rain.id = "dubplus-rain";
 rain.moduleName = "Rain";
 rain.description = "Make it rain!";
-rain.optionState = false;
 rain.category = "General";
-rain.menuHTML = menu.makeOptionMenu(rain.moduleName, {
-  id: rain.id,
-  desc: rain.description
-});
 
 // Rain settings
 rain.particles = [];
@@ -1996,29 +1756,15 @@ rain.controls = {
   speed: 1
 };
 
-rain.init = function () {
-  if (this.optionState) {
-    $('body').prepend('<canvas id="dubPlusRainCanvas" style="position : fixed; top : 0px; left : 0px; z-index: 100; pointer-events:none;"></canvas>');
-    this.bindCanvas();
-  }
+rain.turnOn = function () {
+  $('body').prepend('<canvas id="dubPlusRainCanvas" style="position : fixed; top : 0px; left : 0px; z-index: 100; pointer-events:none;"></canvas>');
+  this.bindCanvas();
 };
 
 // this function will be run on each click of the menu
-rain.go = function (e) {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    $('body').prepend('<canvas id="dubPlusRainCanvas" style="position : fixed; top : 0px; left : 0px; z-index: 100; pointer-events:none;"></canvas>');
-    this.bindCanvas();
-  } else {
-    newOptionState = false;
-    $('#dubPlusRainCanvas').remove();
-    this.unbindCanvas();
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+rain.turnOff = function () {
+  $('#dubPlusRainCanvas').remove();
+  this.unbindCanvas();
 };
 
 rain.bindCanvas = function () {
@@ -2166,7 +1912,7 @@ rain.unbindCanvas = function () {
 
 module.exports = rain;
 
-},{"../lib/menu.js":6}],28:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 var _modcheck = require('../utils/modcheck.js');
@@ -2711,36 +2457,20 @@ dubshover.resetDubs = function () {
 /************************************************************/
 
 dubshover.init = function () {
-
   window.dubplus.dubs = {
     upDubs: [],
     downDubs: [],
     grabs: []
   };
-
-  if (this.optionState === true) {
-    this.grabInfoWarning();
-    this.showDubsOnHover();
-  }
 };
 
-dubshover.go = function (e) {
+dubshover.turnOn = function () {
+  this.grabInfoWarning();
+  this.showDubsOnHover();
+};
 
-  var newOptionState;
-  if (!this.optionState) {
-    newOptionState = true;
-
-    this.showDubsOnHover();
-    this.grabInfoWarning();
-  } else {
-    newOptionState = false;
-    this.stopDubsOnHover();
-  }
-
-  // these following lines are standard, need to remove them and make
-  // them part of loadModules
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+dubshover.turnOff = function () {
+  this.stopDubsOnHover();
 };
 
 module.exports = dubshover;
@@ -2759,25 +2489,12 @@ myModule.moduleName = "Show Timestamps";
 myModule.description = "Toggle always showing chat message timestamps.";
 myModule.category = "User Interface";
 
-myModule.init = function () {
-  if (this.optionState) {
-    $('body').addClass('dubplus-show-timestamp');
-  }
+myModule.turnOn = function () {
+  $('body').addClass('dubplus-show-timestamp');
 };
 
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    $('body').addClass('dubplus-show-timestamp');
-  } else {
-    newOptionState = false;
-    $('body').removeClass('dubplus-show-timestamp');
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  $('body').removeClass('dubplus-show-timestamp');
 };
 
 module.exports = myModule;
@@ -2843,8 +2560,6 @@ var snooze = function snooze() {
 },{}],31:[function(require,module,exports){
 "use strict";
 
-var menu = require('../lib/menu.js');
-
 module.exports = {
   id: "dubplus-snow",
   moduleName: "Snow",
@@ -2862,7 +2577,8 @@ module.exports = {
       maxSpeed: 5
     });
   },
-  start: function start() {
+
+  turnOn: function turnOn() {
     var _this = this;
 
     if (!$.snowfall) {
@@ -2877,31 +2593,14 @@ module.exports = {
     }
   },
 
-  init: function init() {
-    if (this.optionState) {
-      this.start();
-    }
-  },
-
   // this function will be run on each click of the menu
-  go: function go(e) {
-    var newOptionState;
-
-    if (!this.optionState) {
-      newOptionState = true;
-      this.start();
-    } else {
-      newOptionState = false;
-      $(document).snowfall('clear');
-    }
-
-    this.optionState = newOptionState;
-    this.toggleAndSave(this.id, newOptionState);
+  turnOff: function turnOff() {
+    $(document).snowfall('clear');
   }
 
 };
 
-},{"../lib/menu.js":6}],32:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2915,7 +2614,7 @@ myModule.moduleName = "Spacebar Mute";
 myModule.description = "Turn on/off the ability to mute current song with the spacebar.";
 myModule.category = "Settings";
 
-myModule.start = function () {
+myModule.turnOn = function () {
   $(document).bind('keypress.key32', function (event) {
     var tag = event.target.tagName.toLowerCase();
     if (event.which === 32 && tag !== 'input' && tag !== 'textarea') {
@@ -2924,25 +2623,8 @@ myModule.start = function () {
   });
 };
 
-myModule.init = function () {
-  if (this.optionState) {
-    this.start();
-  }
-};
-
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.start();
-  } else {
-    newOptionState = false;
-    $(document).unbind("keypress.key32");
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  $(document).unbind("keypress.key32");
 };
 
 module.exports = myModule;
@@ -2961,25 +2643,12 @@ myModule.moduleName = "Split Chat";
 myModule.description = "Toggle Split Chat UI enhancement";
 myModule.category = "User Interface";
 
-myModule.init = function () {
-  if (this.optionState) {
-    $('body').addClass('dubplus-split-chat');
-  }
+myModule.turnOn = function () {
+  $('body').addClass('dubplus-split-chat');
 };
 
 myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    $('body').addClass('dubplus-split-chat');
-  } else {
-    newOptionState = false;
-    $('body').removeClass('dubplus-split-chat');
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+  $('body').removeClass('dubplus-split-chat');
 };
 
 module.exports = myModule;
@@ -3012,7 +2681,7 @@ myModule.updubWatcher = function (e) {
   }
 };
 
-myModule.start = function () {
+myModule.turnOn = function () {
   Dubtrack.Events.bind("realtime:room_playlist-dub", this.updubWatcher);
 
   // add this function to our global dubplus object so that chat
@@ -3024,25 +2693,8 @@ myModule.start = function () {
   }
 };
 
-myModule.init = function () {
-  if (this.optionState) {
-    this.start();
-  }
-};
-
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.start();
-  } else {
-    newOptionState = false;
-    Dubtrack.Events.unbind("realtime:room_playlist-dub", this.updubWatcher);
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  Dubtrack.Events.unbind("realtime:room_playlist-dub", this.updubWatcher);
 };
 
 module.exports = myModule;
@@ -3062,31 +2714,18 @@ myModule.moduleName = "Warn On Navigation";
 myModule.description = "Warns you when accidentally clicking on a link that takes you out of dubtrack.";
 myModule.category = "Settings";
 
-myModule.start = function () {
-  window.onbeforeunload = function (e) {
-    return '';
-  };
+function unloader(e) {
+  var confirmationMessage = "";
+  e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
+  return confirmationMessage; // Gecko, WebKit, Chrome <34
+}
+
+myModule.turnOn = function () {
+  window.addEventListener("beforeunload", unloader);
 };
 
-myModule.init = function () {
-  if (this.optionState) {
-    this.start();
-  }
-};
-
-myModule.go = function () {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.start();
-  } else {
-    newOptionState = false;
-    window.onbeforeunload = null;
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function () {
+  window.removeEventListener("beforeunload", unloader);
 };
 
 module.exports = myModule;
@@ -3132,7 +2771,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1487963610536')
+}).call(this,'1488045656568')
 },{"../lib/settings.js":7}],37:[function(require,module,exports){
 'use strict';
 

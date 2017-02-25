@@ -1,16 +1,8 @@
-var menu = require('../lib/menu.js');
-
 var rain = {};
-
 rain.id = "dubplus-rain";
 rain.moduleName = "Rain";
 rain.description = "Make it rain!";
-rain.optionState = false;
 rain.category = "General";
-rain.menuHTML = menu.makeOptionMenu(rain.moduleName, {
-  id: rain.id,
-  desc: rain.description
-});
 
 // Rain settings
 rain.particles = [];
@@ -32,29 +24,15 @@ rain.controls = {
   speed: 1
 };
 
-rain.init = function(){
-  if (this.optionState) {
-    $('body').prepend('<canvas id="dubPlusRainCanvas" style="position : fixed; top : 0px; left : 0px; z-index: 100; pointer-events:none;"></canvas>');
-    this.bindCanvas();
-  }
+rain.turnOn = function(){
+  $('body').prepend('<canvas id="dubPlusRainCanvas" style="position : fixed; top : 0px; left : 0px; z-index: 100; pointer-events:none;"></canvas>');
+  this.bindCanvas();
 };
 
 // this function will be run on each click of the menu
-rain.go = function (e) {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    $('body').prepend('<canvas id="dubPlusRainCanvas" style="position : fixed; top : 0px; left : 0px; z-index: 100; pointer-events:none;"></canvas>');
-    this.bindCanvas();
-  } else {
-    newOptionState = false;
-    $('#dubPlusRainCanvas').remove();
-    this.unbindCanvas();
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+rain.turnOff = function () {
+  $('#dubPlusRainCanvas').remove();
+  this.unbindCanvas();
 };
 
 rain.bindCanvas = function () {
@@ -80,7 +58,7 @@ rain.bindCanvas = function () {
   window.onresize = function onresize() {
     this.width = canvas.width = window.innerWidth;
     this.height = canvas.height = window.innerHeight;
-  }
+  };
 
   window.onresize();
 

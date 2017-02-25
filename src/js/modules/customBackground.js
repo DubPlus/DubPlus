@@ -47,7 +47,7 @@ myModule.extra = function(){
   });
 };
 
-myModule.addBG = function() {
+myModule.turnOn = function() {
   // show modal if no image is in settings
   if (!settings.custom.bg || settings.custom.bg === '') {
     this.extra();
@@ -56,25 +56,8 @@ myModule.addBG = function() {
   }
 };
 
-myModule.init = function(){
-  if (this.optionState) {
-   this.addBG();
-  }
-};
-
-myModule.go = function() {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.addBG();
-  } else {
-    newOptionState = false;
-    $('.dubplus-custom-bg').remove();
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function() {
+  $('.dubplus-custom-bg').remove();
 };
 
 module.exports = myModule;

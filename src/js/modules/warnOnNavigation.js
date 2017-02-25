@@ -10,31 +10,19 @@ myModule.moduleName = "Warn On Navigation";
 myModule.description = "Warns you when accidentally clicking on a link that takes you out of dubtrack.";
 myModule.category = "Settings";
 
-myModule.start = function() {
-  window.onbeforeunload = function(e) {
-      return '';
-    };
+function unloader(e) {
+  var confirmationMessage = "";
+  e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
+  return confirmationMessage;              // Gecko, WebKit, Chrome <34
+}
+
+myModule.turnOn = function() {
+  window.addEventListener("beforeunload", unloader);
+
 };
 
-myModule.init = function(){
-  if (this.optionState) {
-    this.start();
-  }
-};
-
-myModule.go = function() {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.start();
-  } else {
-    newOptionState = false;
-    window.onbeforeunload = null;
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function() {
+  window.removeEventListener("beforeunload", unloader);
 };
 
 module.exports = myModule;
