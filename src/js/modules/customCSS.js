@@ -16,12 +16,6 @@ myModule.description = "Add your own custom CSS.";
 myModule.category = "Customize";
 myModule.extraIcon = 'pencil';
 
-myModule.init = function(){
-  if (this.optionState) {
-    css.loadExternal(settings.custom.css, 'dubplus-custom-css');
-  }
-};
-
 var css_import = function() {
   $('.dubplus-custom-css').remove();
   var css_to_import = $('.dp-modal textarea').val();
@@ -43,26 +37,16 @@ myModule.extra = function(){
   });
 };
 
-
-
-myModule.go = function() {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    if (settings.custom.css && settings.custom.css !== "") {
-      css.loadExternal(settings.custom.css, 'dubplus-custom-css');
-    } else {
-      this.extra();
-    }
-    
+myModule.turnOn = function() {
+  if (settings.custom.css && settings.custom.css !== "") {
+    css.loadExternal(settings.custom.css, 'dubplus-custom-css');
   } else {
-    newOptionState = false;
-    $('.dubplus-custom-css').remove();
+    this.extra();
   }
+};
 
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function() {
+  $('.dubplus-custom-css').remove();
 };
 
 module.exports = myModule;

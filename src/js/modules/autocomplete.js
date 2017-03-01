@@ -170,10 +170,7 @@ var chatInputKeydownFunc = function(e){
   }
 };
 
-/*************************************************/
-
-
-myModule.start = function() {
+myModule.turnOn = function() {
   previewList.init();
   //Only remove keydown for Dubtrack native autocomplete to work
   Dubtrack.room.chat.delegateEvents(_(Dubtrack.room.chat.events).omit('keydown #chat-txt-message'));
@@ -182,28 +179,10 @@ myModule.start = function() {
   $(document.body).on('keyup', "#chat-txt-message", chatInputKeyupFunc);
 };
 
-myModule.init = function(){
-  if (this.optionState) {
-    this.start();
-  }
-};
-
-
-myModule.go = function() {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.start();
-  } else {
-    previewList.stop();
-    newOptionState = false;
-    $(document.body).off('keydown', "#chat-txt-message", chatInputKeydownFunc);
-    $(document.body).off('keyup', "#chat-txt-message", chatInputKeyupFunc);
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function() {
+  previewList.stop();
+  $(document.body).off('keydown', "#chat-txt-message", chatInputKeydownFunc);
+  $(document.body).off('keyup', "#chat-txt-message", chatInputKeyupFunc);
 };
 
 module.exports = myModule;

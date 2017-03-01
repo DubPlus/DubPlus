@@ -528,37 +528,20 @@ dubshover.resetDubs = function(){
 /************************************************************/
 
 dubshover.init = function(){
-
   window.dubplus.dubs = {
     upDubs: [],
     downDubs: [],
     grabs: [],
   };
-
-  if (this.optionState === true) {
-    this.grabInfoWarning();
-    this.showDubsOnHover();
-  }
 };
 
-dubshover.go = function(e) {
-  
-  var newOptionState;
-  if (!this.optionState) {
-    newOptionState = true;
-    
-    this.showDubsOnHover();
-    this.grabInfoWarning();
+dubshover.turnOn = function() {
+  this.grabInfoWarning();
+  this.showDubsOnHover();
+};
 
-  } else {
-    newOptionState = false;
-    this.stopDubsOnHover();
-  }
-
-  // these following lines are standard, need to remove them and make
-  // them part of loadModules
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+dubshover.turnOff = function() {
+  this.stopDubsOnHover();
 };
 
 module.exports = dubshover;

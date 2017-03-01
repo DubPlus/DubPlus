@@ -12,7 +12,7 @@ myModule.moduleName = "Community Theme";
 myModule.description = "Toggle Community CSS theme.";
 myModule.category = "Customize";
 
-myModule.start = function(){
+myModule.turnOn = function(){
   var location = Dubtrack.room.model.get('roomUrl');
   $.ajax({
     type: 'GET',
@@ -33,25 +33,8 @@ myModule.start = function(){
   });
 };
 
-myModule.init = function(){
-  if (this.optionState){
-    this.start();
-  }
-};
-
-myModule.go = function() {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.start();
-  } else {
-    newOptionState = false;
-    $('.dubplus-comm-theme').remove();
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function() {
+  $('.dubplus-comm-theme').remove();
 };
 
 module.exports = myModule;

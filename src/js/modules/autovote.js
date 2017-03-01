@@ -20,29 +20,11 @@ var voteCheck = function (obj) {
 
 /*******************************************************/
 
-autovote.init = function(){
-  if (this.optionState === true) {
-    this.start();
-  }
+autovote.turnOff = function() {
+  Dubtrack.Events.unbind("realtime:room_playlist-update", voteCheck);
 };
 
-// this function will be run on each click of the menu
-autovote.go = function(){
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.start();
-  } else {
-    newOptionState = false;
-    Dubtrack.Events.unbind("realtime:room_playlist-update", voteCheck);
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
-};
-
-autovote.start = function(){
+autovote.turnOn = function(){
   var song = Dubtrack.room.player.activeSong.get('song');
   var dubCookie = Dubtrack.helpers.cookie.get('dub-' + Dubtrack.room.model.get("_id"));
   var dubsong = Dubtrack.helpers.cookie.get('dub-song');
