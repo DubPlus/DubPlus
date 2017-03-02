@@ -8,6 +8,7 @@ module.exports = [
   require('./customMentions.js'),
   require('./chatNotifications.js'),
   require('./pmNotifications.js'),
+  require('./queueNotification.js'),
   require('./showDubsOnHover.js'),
   require('./downDubInChat.js'), // (mod only)
   require('./upDubInChat.js'),
@@ -28,7 +29,7 @@ module.exports = [
   require('./spacebarMute.js'),
   require('./warnOnNavigation.js'),
 
-  // // Customize
+  // Customize
   require('./communityTheme.js'),
   require('./customCSS.js'),
   require('./customBackground.js'),
