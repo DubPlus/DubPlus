@@ -14,7 +14,7 @@ myModule.turnOn = function() {
   $(document).bind('keypress.key32', function(event) {
     var tag = event.target.tagName.toLowerCase();
     if (event.which === 32 && tag !== 'input' && tag !== 'textarea') {
-      $('#main_player .player_sharing .player-controller-container .mute').click();
+      Dubtrack.room.player.mutePlayer();
     }
   });
 };

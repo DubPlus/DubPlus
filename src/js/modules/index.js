@@ -31,5 +31,6 @@ module.exports = [
   // // Customize
   require('./communityTheme.js'),
   require('./customCSS.js'),
-  require('./customBackground.js')
+  require('./customBackground.js'),
+  require('./customNotificationSound.js')
 ];
