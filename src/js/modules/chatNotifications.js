@@ -31,7 +31,7 @@ myModule.notifyOnMention = function(e){
   }
 };
 
-myModule.mentionNotifications = function(){
+myModule.turnOn = function(){
 
   notifyCheckPermission((granted)=>{
     if (granted === true) {
@@ -44,25 +44,8 @@ myModule.mentionNotifications = function(){
 
 };
 
-myModule.init = function(){
-  if (this.optionState === true) {
-    this.mentionNotifications();
-  }
-};
-
-myModule.go = function() {
-  var newOptionState;
-
-  if (!this.optionState) {
-    this.mentionNotifications();
-    newOptionState = true;
-  } else {
-    Dubtrack.Events.unbind("realtime:chat-message", this.notifyOnMention );
-    newOptionState = false;
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function() {
+  Dubtrack.Events.unbind("realtime:chat-message", this.notifyOnMention );
 };
 
 module.exports = myModule;

@@ -23,7 +23,7 @@ myModule.pmNotify = function(e){
   });
 };
 
-myModule.start = function(){
+myModule.turnOn = function(){
 
   notifyCheckPermission((granted)=>{
     if (granted === true) {
@@ -36,25 +36,8 @@ myModule.start = function(){
 
 };
 
-myModule.init = function(){
-  if (this.optionState === true) {
-    this.start();
-  }
-};
-
-myModule.go = function() {
-  var newOptionState;
-
-  if (!this.optionState) {
-    this.start();
-    newOptionState = true;
-  } else {
-    Dubtrack.Events.unbind("realtime:new-message", this.pmNotify );
-    newOptionState = false;
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function() {
+  Dubtrack.Events.unbind("realtime:new-message", this.pmNotify );
 };
 
 module.exports = myModule;

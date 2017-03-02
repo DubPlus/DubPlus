@@ -10,7 +10,7 @@ fs_module.description = "Toggle fullscreen video mode";
 fs_module.category = "User Interface";
 fs_module.altIcon = "arrows-alt";
 
-fs_module.go = function(e) {
+fs_module.go = function() {
     var elem = document.querySelector('.playerElement iframe');
     if (elem.requestFullscreen) {
         elem.requestFullscreen();

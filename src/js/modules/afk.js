@@ -37,25 +37,12 @@ var afk_chat_respond = function(e) {
   }
 };
 
-afk_module.init = function(){
-  if (this.optionState === true) {
-    Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
-  }
+afk_module.turnOn = function(){
+  Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
 };
 
-afk_module.go = function(e) {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
-  } else {
-    newOptionState = false;
-    Dubtrack.Events.unbind("realtime:chat-message", afk_chat_respond);
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+afk_module.turnOff = function() {
+  Dubtrack.Events.unbind("realtime:chat-message", afk_chat_respond);
 };
 
 var saveAFKmessage = function() {

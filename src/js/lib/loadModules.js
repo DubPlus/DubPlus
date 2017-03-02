@@ -21,31 +21,52 @@ var loadAllModules = function(){
     window.dubplus[mod.id] = mod;
     // add the toggleAndSave function as a member of each module
     window.dubplus[mod.id].toggleAndSave = options.toggleAndSave;
-    
-    // add event listener
-    if (typeof mod.go === 'function' || typeof mod.extra === 'function'){
-      $('body').on('click', '#'+mod.id, function(ev) {
-        // if clicking on the "extra-icon", run module's "extra" function
-        if (ev.target.classList.contains('extra-icon') && typeof mod.extra === 'function') {
-          mod.extra.call(mod);
-        } else if (mod.go) {
-          mod.go.call(mod);
-        }
-      });
-    }
-
     // check stored settings for module's initial state
     mod.optionState = settings.options[mod.id] || false;
+    
+    // add event listener
+    $('body').on('click', '#'+mod.id, function(ev) {
+      // if clicking on the "extra-icon", run module's "extra" function
+      if (ev.target.classList.contains('extra-icon') && mod.extra) {
+        mod.extra.call(mod);
+        return;
+      }
+
+      if (mod.turnOn && mod.turnOff) {
+        var newOptionState;
+        if (!mod.optionState) {
+          newOptionState = true;
+          mod.turnOn.call(mod);
+        } else {
+          newOptionState = false;
+          mod.turnOff.call(mod);
+        }
+
+        mod.optionState = newOptionState;
+        options.toggleAndSave(mod.id, newOptionState);
+        return;
+      }
+
+      if (mod.go) {
+        // .go is used for modules that never save state, like fullscreen
+        mod.go.call(mod);
+      }
+    });
 
     // This is run only once, when the script is loaded.
-    // this is also where you should check stored settings 
-    // to see if an option should be automatically turned on
+    // put anything you want ALWAYS run on Dub+ script load here 
     if (typeof mod.init === 'function') { 
-      mod.init.bind(mod)(); 
+      mod.init.call(mod); 
+    }
+
+    // if module's localStorage option state is ON, we turn it on!
+    if (mod.optionState && typeof mod.turnOn === 'function') {
+      mod.turnOn.call(mod);
     }
 
     var _extraIcon = null;
-    // setting a default extraIcon to 'pencil' if .extra is defined not extraIcon
+    // if module has a defined .extra {function} but does not define the .extraIcon {string} 
+    // then we use 'pencil' as the default icon
     if (typeof mod.extra === 'function' && !mod.extraIcon) {
       _extraIcon = 'pencil';
     }
