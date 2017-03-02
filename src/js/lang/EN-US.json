@@ -1,0 +1,47 @@
+{
+  "menu_title" : "Dub+ Options",
+
+  "menu_sections" : [
+    "General",
+    "User Interface",
+    "Settings",
+    "Customize"
+  ],
+
+  "menu_contact" : {
+    "report_bugs" : "Report bugs on Discord"
+  },
+
+  "modules" : {
+    
+    "afk" : {
+      "moduleName" : "",
+      "description" : "",
+      "category" : "",
+      "default_AFK_message" : "",
+      "modal_title" : "",
+      "modal_content" : "",
+      "modal_placeholder" : ""
+    },
+
+    "autocomplete" : {
+      "moduleName" : "",
+      "description" : "",
+      "category" : ""
+    },
+
+    "autovote" : {
+      "moduleName" : "",
+      "description" : "",
+      "category" : ""
+    },
+
+    "chat_notifications" : {
+      "moduleName" : "Notification on Mentions",
+      "description" : "Enable desktop notifications when a user mentions you in chat",
+      "category" : "General",
+      "notification_content" : "Message from ${e.user.username}"
+    }
+
+  }
+}
