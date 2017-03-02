@@ -50,7 +50,13 @@ myModule.extra = function(){
   });
 };
 
-myModule.addNotficationSound = function() {
+myModule.init = function(){
+  if (this.optionState && settings.custom.notificationSound) {
+   this.turnOn();
+  }
+};
+
+myModule.turnOn = function() {
   // show modal if no image is in settings
   if (!settings.custom.notificationSound || settings.custom.notificationSound === '') {
     this.extra();
@@ -59,25 +65,8 @@ myModule.addNotficationSound = function() {
   }
 };
 
-myModule.init = function(){
-  if (this.optionState && settings.custom.notificationSound) {
-   this.addNotficationSound();
-  }
-};
-
-myModule.go = function() {
-  var newOptionState;
-
-  if (!this.optionState) {
-    newOptionState = true;
-    this.addNotficationSound();
-  } else {
-    newOptionState = false;
-    Dubtrack.room.chat.mentionChatSound.url = DubtrackDefaultSound;
-  }
-
-  this.optionState = newOptionState;
-  this.toggleAndSave(this.id, newOptionState);
+myModule.turnOff = function() {
+  Dubtrack.room.chat.mentionChatSound.url = DubtrackDefaultSound;
 };
 
 module.exports = myModule;
