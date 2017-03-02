@@ -30,13 +30,14 @@ var eventSongAdvance = function(e) {
 };
 
 var snooze = function() {
-  if (!eventUtils.snoozed && Dubtrack.room.player.player_volume_level > 2) {
-    eventUtils.currentVol = Dubtrack.room.player.player_volume_level;
-    Dubtrack.room.player.setVolume(0);
+  if (!eventUtils.snoozed && !Dubtrack.room.player.muted_player && Dubtrack.playerController.volume > 2) {
+    eventUtils.currentVol = Dubtrack.playerController.volume;
+    Dubtrack.room.player.mutePlayer();
     eventUtils.snoozed = true;
     Dubtrack.Events.bind("realtime:room_playlist-update", eventSongAdvance);
   } else if (eventUtils.snoozed) {
     Dubtrack.room.player.setVolume(eventUtils.currentVol);
+    Dubtrack.room.player.updateVolumeBar();
     eventUtils.snoozed = false;
   }
 };
