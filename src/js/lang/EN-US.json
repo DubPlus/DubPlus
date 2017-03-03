@@ -67,6 +67,13 @@
       "modal_placeholder" : "separate, custom triggers, by, comma, :heart:"
     },
 
+    "dj_notification" : {
+      "module_name" : "DJ Notification",
+      "description" : "Notification when you are coming up to be the DJ",
+      "notification_title" : "DJ Alert!",
+      "notification_content" : "You will be DJing shortly! Make sure your song is set!"
+    },
+
     "downdub_in_chat" : {
       "module_name" : "Downdubs in Chat (mods only)",
       "description" : "Toggle showing downdubs in the chat box (mods only)",

@@ -266,61 +266,22 @@ prepEmoji.processTastyEmotes = function (data) {
 module.exports = prepEmoji;
 
 },{"../lib/settings.js":8,"../utils/getJSON.js":40}],3:[function(require,module,exports){
-"use strict";
+'use strict';
 
-/**
- * previewList
- * 
- * In this JS file should only exist what's necessary to populate the
- * autocomplete preview list that popups up for emojis and mentions
- * 
- * It also binds the events that handle navigating through the list
- * and also placing selected text into the chat
- */
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
-// var css = require('../utils/css.js');
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var textChoice = "";
-var currentData;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var setData = function setData(data) {
-  currentData = data;
-};
-
-function repl(str, start, end, newtext) {
-  return str.substring(0, start - 1) + newtext + str.substring(end);
+var debugAC = false;
+function log() {
+  if (debugAC) {
+    console.log.apply(console, arguments);
+  }
 }
-
-var updateChatInput = function updateChatInput(start, end, newText) {
-  var inputText = $("#chat-txt-message").val();
-  var updatedText = repl(inputText, start, end, newText || textChoice) + " ";
-  $('#autocomplete-preview').empty().removeClass('ac-show');
-  $("#chat-txt-message").val(updatedText).focus();
-};
-
-var doNavigate = function doNavigate(diff) {
-  var displayBoxIndex = $('.preview-item.selected').index();
-
-  displayBoxIndex += diff;
-  var oBoxCollection = $(".ac-show li");
-
-  // remove "press enter to select" span
-  $('.ac-list-press-enter').remove();
-
-  if (displayBoxIndex >= oBoxCollection.length) {
-    displayBoxIndex = 0;
-  }
-  if (displayBoxIndex < 0) {
-    displayBoxIndex = oBoxCollection.length - 1;
-  }
-
-  var cssClass = "selected";
-  var enterToSelectSpan = '<span class="ac-list-press-enter">press enter to select</span>';
-  oBoxCollection.removeClass(cssClass).eq(displayBoxIndex).addClass(cssClass).append(enterToSelectSpan);
-  var $pvItem = $('.preview-item.selected');
-  $pvItem.get(0).scrollIntoView(false);
-  textChoice = $pvItem.find('.ac-text').text();
-};
 
 /**
  * Populates the popup container with a list of items that you can click/enter
@@ -333,7 +294,7 @@ var doNavigate = function doNavigate(diff) {
  *   alt : OPTIONAL, to add to alt and title tag
  * }
  */
-var display = function display(acArray) {
+var makeList = function makeList(acArray) {
   function makePreviewContainer(cn) {
     var d = document.createElement('li');
     d.className = cn;
@@ -397,31 +358,132 @@ var display = function display(acArray) {
   aCp.classList.add('ac-show');
 };
 
-var updater = function updater() {
-  var newText = $(this).find('.ac-text').text();
-  updateChatInput(currentData.strStart, currentData.strEnd, newText);
-};
+function isElementInView(el, container) {
+  var rect = el.getBoundingClientRect();
+  var outerRect = container.getBoundingClientRect();
+  return rect.top >= outerRect.top && rect.bottom <= outerRect.bottom;
+}
 
-var init = function init() {
-  var acUL = document.createElement('ul');
-  acUL.id = "autocomplete-preview";
-  $('.pusher-chat-widget-input').prepend(acUL);
-  $(document.body).on('click', '.preview-item', updater);
-};
+/**
+ * previewList
+ * 
+ * In this JS file should only exist what's necessary to populate the
+ * autocomplete preview list that popups up for emojis and mentions
+ * 
+ * It also binds the events that handle navigating through the list
+ * and also placing selected text into the chat
+ */
 
-var stop = function stop() {
-  $(document.body).off('click', '.preview-item', updater);
-  $('#autocomplete-preview').remove();
-};
+var PreviewListManager = function () {
+  function PreviewListManager(data) {
+    _classCallCheck(this, PreviewListManager);
 
-module.exports = {
-  init: init,
-  stop: stop,
-  display: display,
-  updateChatInput: updateChatInput,
-  doNavigate: doNavigate,
-  setData: setData
-};
+    this._data = data || {
+      start: 0,
+      end: 0,
+      selected: ""
+    };
+  }
+
+  _createClass(PreviewListManager, [{
+    key: 'repl',
+    value: function repl(str, start, end, newtext) {
+      return str.substring(0, start - 1) + newtext + str.substring(end);
+    }
+  }, {
+    key: 'updateChatInput',
+    value: function updateChatInput() {
+      log("inUpdate", this._data);
+      var inputText = $("#chat-txt-message").val();
+      var updatedText = this.repl(inputText, this._data.start, this._data.end, this._data.selected) + " ";
+      $('#autocomplete-preview').empty().removeClass('ac-show');
+      $("#chat-txt-message").val(updatedText).focus();
+    }
+  }, {
+    key: 'doNavigate',
+    value: function doNavigate(diff) {
+      // get the current index of selected element within the nodelist collection of previews
+      var displayBoxIndex = $('.preview-item.selected').index();
+
+      // calculate new index position with given argument
+      displayBoxIndex += diff;
+
+      var oBoxCollection = $(".ac-show li");
+
+      // remove "press enter to select" span
+      $('.ac-list-press-enter').remove();
+
+      // if new index is greater than total length then we reset back to the top
+      if (displayBoxIndex >= oBoxCollection.length) {
+        displayBoxIndex = 0;
+      }
+      // if at the top and index becomes negative, we wrap down to end of array
+      if (displayBoxIndex < 0) {
+        displayBoxIndex = oBoxCollection.length - 1;
+      }
+
+      var cssClass = "selected";
+      var enterToSelectSpan = '<span class="ac-list-press-enter">press enter or tab to select</span>';
+      oBoxCollection.removeClass(cssClass).eq(displayBoxIndex).addClass(cssClass).append(enterToSelectSpan);
+
+      var pvItem = document.querySelector('.preview-item.selected');
+      var acPreview = document.querySelector('#autocomplete-preview');
+      var isInView = isElementInView(pvItem, acPreview);
+      log("isInView", isInView);
+      var align = diff === 1 ? false : true;
+      if (!isInView) {
+        pvItem.scrollIntoView(align);
+      }
+    }
+  }, {
+    key: 'updater',
+    value: function updater(e) {
+      log(e.target, e);
+      this._data.selected = $(e.target).find('.ac-text').text();
+      this.updateChatInput();
+    }
+  }, {
+    key: 'init',
+    value: function init() {
+      var _this = this;
+
+      var acUL = document.createElement('ul');
+      acUL.id = "autocomplete-preview";
+      $('.pusher-chat-widget-input').prepend(acUL);
+      $(document.body).on('click', '.preview-item', function (e) {
+        return _this.updater(e);
+      });
+    }
+  }, {
+    key: 'stop',
+    value: function stop() {
+      // the garbade collector should clean up the event listener added in init
+      $('#autocomplete-preview').remove();
+    }
+  }, {
+    key: 'data',
+    get: function get() {
+      return this._data;
+    },
+    set: function set(newData) {
+      if (newData) {
+        this._data = newData;
+      }
+    }
+  }, {
+    key: 'selected',
+    set: function set(text) {
+      if (text) {
+        this._data.selected = text;
+      }
+    }
+  }]);
+
+  return PreviewListManager;
+}();
+
+exports.PreviewListManager = PreviewListManager;
+exports.makeList = makeList;
 
 },{}],4:[function(require,module,exports){
 (function (PKGINFO){
@@ -855,13 +917,23 @@ module.exports = afk_module;
 },{"../lib/settings.js":8,"../utils/modal.js":41,"../utils/options.js":44}],10:[function(require,module,exports){
 'use strict';
 
+var _previewList = require('../emojiUtils/previewList.js');
+
 /**
  * Autocomplete Emojis/Emotes
  */
 /*global _, Dubtrack, emojify*/
-var previewList = require('../emojiUtils/previewList.js');
 var settings = require('../lib/settings.js');
 var prepEmjoji = require('../emojiUtils/prepEmoji.js');
+
+
+// because I have a lot of logging on each keypress I made this
+var debugAC = false;
+function log() {
+  if (debugAC) {
+    console.log.apply(console, arguments);
+  }
+}
 
 var myModule = {};
 myModule.id = "dubplus-autocomplete";
@@ -885,11 +957,7 @@ var KEYS = {
 };
 
 var keyCharMin = 3; // when to start showing previews
-var inputRegex = new RegExp('(:|@)([&!()\\+\\-_a-z0-9]+)($|\\s)', 'ig');
-
-var previewSearchStr = "";
-var strStart = 0;
-var strEnd = 0;
+var inputRegex = new RegExp('(:)([&!()\\+\\-_a-z0-9]+)($|\\s)', 'ig');
 
 /**************************************************************************
  * A bunch of utility helpers for the emoji preview
@@ -903,6 +971,7 @@ var emojiUtils = {
       cn: type
     };
   },
+
   addToPreviewList: function addToPreviewList(emojiArray) {
     var self = this;
     var listArray = [];
@@ -924,8 +993,9 @@ var emojiUtils = {
       }
     });
 
-    previewList.display(listArray);
+    (0, _previewList.makeList)(listArray);
   },
+
   filterEmoji: function filterEmoji(str) {
     var finalStr = str.replace(/([+()])/, "\\$1");
     var re = new RegExp('^' + finalStr, "i");
@@ -943,11 +1013,14 @@ var emojiUtils = {
  * handles filtering emoji, twitch, and users preview autocomplete popup on keyup
  */
 
-var shouldClearPreview = function shouldClearPreview($ac, pvStr, current, kMin) {
+var previewList = new _previewList.PreviewListManager();
+
+var shouldClearPreview = function shouldClearPreview(ac, pvStr, current, kMin) {
   var lastChar = current.charAt(current.length - 1);
   if (pvStr.length < kMin || lastChar === ":" || lastChar === " " || current === "") {
     pvStr = "";
-    $ac.empty().removeClass('ac-show');
+    ac.innerHTML = "";
+    ac.className = "";
   }
   return pvStr;
 };
@@ -961,65 +1034,79 @@ var handleMatch = function handleMatch(triggerMatch, currentText, cursorPos, key
   var strStart = currentText.lastIndexOf(currentMatch);
   var strEnd = strStart + currentMatch.length;
 
-  // console.log("cursorPos", cursorPos);
+  log("cursorPos", cursorPos);
   if (cursorPos >= strStart && cursorPos <= strEnd) {
     // twitch and other emoji
     if (currentMatch && currentMatch.length >= keyCharMin && emoteChar === ":") {
       emojiUtils.addToPreviewList(emojiUtils.filterEmoji(currentMatch));
     }
   }
-  // console.log('match',triggerMatch,strStart,strEnd);
+  log('match', triggerMatch, strStart, strEnd);
 
   return {
-    strStart: strStart,
-    strEnd: strEnd,
+    start: strStart,
+    end: strEnd,
     currentMatch: currentMatch
   };
 };
 
 var chatInputKeyupFunc = function chatInputKeyupFunc(e) {
-  var $acPreview = $('#autocomplete-preview');
-  var hasItems = $acPreview.find('li').length > 0;
+  var acPreview = document.querySelector('#autocomplete-preview');
+  var hasItems = acPreview.children.length > 0;
 
   if (e.keyCode === KEYS.enter && !hasItems) {
     return; // do nothing
   }
 
   if (e.keyCode === KEYS.up && hasItems) {
+    e.preventDefault();
     previewList.doNavigate(-1);
     return;
   }
+
   if (e.keyCode === KEYS.down && hasItems) {
+    e.preventDefault();
     previewList.doNavigate(1);
     return;
+  }
+
+  if ((e.keyCode === KEYS.enter || e.keyCode === KEYS.tab) && hasItems) {
+    e.preventDefault();
+    previewList.selected = $('.preview-item.selected').find('.ac-text').text();
+    previewList.updateChatInput();
+    return false;
   }
 
   var currentText = this.value;
   var cursorPos = $(this).get(0).selectionStart;
 
   var triggerMatch = currentText.match(inputRegex);
+
+  var previewSearchStr = "";
+
   if (triggerMatch && triggerMatch.length > 0) {
     var matchData = handleMatch(triggerMatch, currentText, cursorPos, keyCharMin);
     previewSearchStr = matchData.currentMatch;
-    strStart = matchData.strStart;
-    strEnd = matchData.strEnd;
-    previewList.setData(matchData);
+    previewList.data = matchData;
   }
 
-  previewSearchStr = shouldClearPreview($acPreview, previewSearchStr, currentText, keyCharMin);
+  log("inKeyup", previewList.data);
 
-  if ((e.keyCode === KEYS.enter || e.keyCode === KEYS.tab) && hasItems) {
-    e.preventDefault();
-    previewList.updateChatInput(strStart, strEnd);
-    return false;
-  }
+  shouldClearPreview(acPreview, previewSearchStr, currentText, keyCharMin);
 };
 
 var chatInputKeydownFunc = function chatInputKeydownFunc(e) {
-  // Manually send the keycode to chat if it is 
-  // tab (9), enter (13), up arrow (38), or down arrow (40) for their autocomplete
-  if (_.includes([KEYS.tab, KEYS.enter, KEYS.up, KEYS.down], e.keyCode) && $('.ac-show').length === 0) {
+  var emptyPreview = document.querySelector('#autocomplete-preview').children.length <= 0;
+  var isValidKey = _.includes([KEYS.tab, KEYS.enter, KEYS.up, KEYS.down, KEYS.left, KEYS.right], e.keyCode);
+
+  // Manually send the keycodes if the preview popup isn't visible
+  if (isValidKey && emptyPreview) {
     return Dubtrack.room.chat.ncKeyDown({ 'which': e.keyCode });
+  }
+
+  // stop default behaviors of special keys so we can use them in preview
+  if (isValidKey && !emptyPreview) {
+    e.preventDefault();
   }
 };
 
@@ -1034,6 +1121,7 @@ myModule.turnOn = function () {
 
 myModule.turnOff = function () {
   previewList.stop();
+  Dubtrack.room.chat.delegateEvents(Dubtrack.room.chat.events);
   $(document.body).off('keydown', "#chat-txt-message", chatInputKeydownFunc);
   $(document.body).off('keyup', "#chat-txt-message", chatInputKeyupFunc);
 };
@@ -2850,7 +2938,7 @@ myModule.turnOn = function () {
   $('body').addClass('dubplus-split-chat');
 };
 
-myModule.go = function () {
+myModule.turnOff = function () {
   $('body').removeClass('dubplus-split-chat');
 };
 
@@ -2981,7 +3069,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1488564137680')
+}).call(this,'1488580321696')
 },{"../lib/settings.js":8}],40:[function(require,module,exports){
 'use strict';
 
