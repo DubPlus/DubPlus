@@ -11,13 +11,15 @@ var menuObj = {
 };
 
 var getModule = function(target) {
-  if (!target || target.classList.contains('dubplus-menu-section')) {
+  if (!target || 
+    target.classList.contains('dubplus-menu-section') ||
+    target.classList.contains('dubplus-menu')) {
     return null;
   }
 
   var module = window.dubplus[target.id];
   if (!module) { 
-    // recursively try until we hit 'dubplus-menu-section' or no more parentElements
+    // recursively try until we get a hit or reach our menu container
     return getModule(target.parentElement);
   } else {
     return module;

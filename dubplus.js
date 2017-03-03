@@ -490,13 +490,13 @@ var menuObj = {
 };
 
 var getModule = function getModule(target) {
-  if (!target || target.classList.contains('dubplus-menu-section')) {
+  if (!target || target.classList.contains('dubplus-menu-section') || target.classList.contains('dubplus-menu')) {
     return null;
   }
 
   var module = window.dubplus[target.id];
   if (!module) {
-    // recursively try until we hit 'dubplus-menu-section' or no more parentElements
+    // recursively try until we get a hit or reach our menu container
     return getModule(target.parentElement);
   } else {
     return module;
@@ -2658,6 +2658,8 @@ var snooze = function snooze() {
 },{}],32:[function(require,module,exports){
 "use strict";
 
+var options = require('../utils/options.js');
+
 module.exports = {
   id: "dubplus-snow",
   moduleName: "Snow",
@@ -2684,6 +2686,7 @@ module.exports = {
       $.getScript("https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js").done(function () {
         _this.doSnow();
       }).fail(function (jqxhr, settings, exception) {
+        options.toggleAndSave(_this.id, false);
         console.error('Could not load snowfall jquery plugin', exception);
       });
     } else {
@@ -2691,14 +2694,16 @@ module.exports = {
     }
   },
 
-  // this function will be run on each click of the menu
   turnOff: function turnOff() {
-    $(document).snowfall('clear');
+    if ($.snowfall) {
+      // checking to avoid errors if you quickly switch it on/off
+      $(document).snowfall('clear');
+    }
   }
 
 };
 
-},{}],33:[function(require,module,exports){
+},{"../utils/options.js":42}],33:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2869,7 +2874,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1488503761151')
+}).call(this,'1488506993721')
 },{"../lib/settings.js":7}],38:[function(require,module,exports){
 'use strict';
 

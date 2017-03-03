@@ -1,3 +1,5 @@
+const options = require('../utils/options.js');
+
 module.exports = {
   id : "dubplus-snow",
   moduleName : "Snow",
@@ -23,7 +25,8 @@ module.exports = {
         .done(()=> {
           this.doSnow();
         })
-        .fail(function( jqxhr, settings, exception ) {
+        .fail(( jqxhr, settings, exception )=> {
+          options.toggleAndSave(this.id, false);
           console.error('Could not load snowfall jquery plugin', exception);
         });
     } else {
@@ -31,9 +34,10 @@ module.exports = {
     }
   },
 
-  // this function will be run on each click of the menu
   turnOff : function(){
-    $(document).snowfall('clear');
+    if ($.snowfall) { // checking to avoid errors if you quickly switch it on/off
+      $(document).snowfall('clear');
+    }
   }
 
 };
