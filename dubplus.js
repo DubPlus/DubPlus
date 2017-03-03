@@ -471,7 +471,7 @@ module.exports = function () {
 };
 
 }).call(this,'{"name":"DubPlus","version":"0.1.0","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
-},{"../modules/eta.js":19,"../modules/snooze.js":32,"../utils/css.js":38,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
+},{"../modules/eta.js":20,"../modules/snooze.js":32,"../utils/css.js":38,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -567,7 +567,7 @@ var loadAllModules = function loadAllModules() {
 
 exports.default = loadAllModules;
 
-},{"../lib/menu.js":6,"../lib/settings.js":7,"../modules/index.js":26,"../utils/options.js":43}],6:[function(require,module,exports){
+},{"../lib/menu.js":6,"../lib/settings.js":7,"../modules/index.js":27,"../utils/options.js":43}],6:[function(require,module,exports){
 'use strict';
 
 var options = require('../utils/options.js');
@@ -1390,6 +1390,70 @@ myModule.turnOff = function () {
 module.exports = myModule;
 
 },{"../lib/settings.js":7,"../utils/modal.js":40,"../utils/options.js":43}],17:[function(require,module,exports){
+'use strict';
+
+var _notify = require('../utils/notify.js');
+
+/* global Dubtrack */
+var settings = require("../lib/settings.js");
+var modal = require('../utils/modal.js');
+var options = require('../utils/options.js');
+
+
+var myModule = {};
+
+myModule.id = "dj-notification";
+myModule.moduleName = "DJ Notification";
+myModule.description = "Notification when you are coming up to be the DJ";
+myModule.category = "General";
+myModule.extraIcon = 'pencil';
+
+var savePosition = function savePosition() {
+  var position = parseInt($('.dp-modal textarea').val());
+  if (!isNaN(position)) {
+    options.saveOption('custom', 'dj_notification', position);
+  } else {
+    options.saveOption('custom', 'dj_notification', 2); // default to 2
+  }
+};
+
+myModule.djNotificationCheck = function (e) {
+  if (e.startTime > 2) return;
+
+  var position = parseInt($('.dj-position').text());
+  if (isNaN(position) || position !== settings.custom.dj_notification) return;
+
+  (0, _notify.showNotification)({
+    title: 'DJ Alert!',
+    content: 'You will be DJing shortly! Make sure your song is set!',
+    ignoreActiveTab: true,
+    wait: 10000
+  });
+  Dubtrack.room.chat.mentionChatSound.play();
+};
+
+myModule.turnOn = function () {
+  Dubtrack.Events.bind("realtime:room_playlist-update", this.djNotificationCheck);
+};
+
+myModule.extra = function () {
+  modal.create({
+    title: 'DJ Notification',
+    content: 'Position in queue to notify at',
+    value: settings.custom.dj_notification || '',
+    placeholder: '2',
+    maxlength: '2',
+    confirmCallback: savePosition
+  });
+};
+
+myModule.turnOff = function () {
+  Dubtrack.Events.unbind("realtime:room_playlist-update", this.djNotificationCheck);
+};
+
+module.exports = myModule;
+
+},{"../lib/settings.js":7,"../utils/modal.js":40,"../utils/notify.js":42,"../utils/options.js":43}],18:[function(require,module,exports){
 "use strict";
 
 var _modcheck = require("../utils/modcheck.js");
@@ -1445,7 +1509,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../utils/modcheck.js":41}],18:[function(require,module,exports){
+},{"../utils/modcheck.js":41}],19:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1529,7 +1593,7 @@ emote_module.turnOff = function () {
 
 module.exports = emote_module;
 
-},{"../emojiUtils/prepEmoji.js":2}],19:[function(require,module,exports){
+},{"../emojiUtils/prepEmoji.js":2}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1564,7 +1628,7 @@ var hide_eta = function hide_eta() {
   $(this).empty();
 };
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1594,7 +1658,7 @@ fs_module.go = function () {
 
 module.exports = fs_module;
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1640,7 +1704,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1664,7 +1728,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1688,7 +1752,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1711,7 +1775,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1735,13 +1799,13 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 // put this in order of appearance in the menu
 module.exports = [
 // General 
-require('./autovote.js'), require('./afk.js'), require('./emotes.js'), require('./autocomplete.js'), require('./customMentions.js'), require('./chatNotifications.js'), require('./pmNotifications.js'), require('./queueNotification.js'), require('./showDubsOnHover.js'), require('./downDubInChat.js'), // (mod only)
+require('./autovote.js'), require('./afk.js'), require('./emotes.js'), require('./autocomplete.js'), require('./customMentions.js'), require('./chatNotifications.js'), require('./pmNotifications.js'), require('./djNotification.js'), require('./showDubsOnHover.js'), require('./downDubInChat.js'), // (mod only)
 require('./upDubInChat.js'), require('./grabsInChat.js'), require('./snow.js'), require('./rain.js'),
 
 // User Interface
@@ -1753,7 +1817,7 @@ require('./spacebarMute.js'), require('./warnOnNavigation.js'),
 // Customize
 require('./communityTheme.js'), require('./customCSS.js'), require('./customBackground.js'), require('./customNotificationSound.js')];
 
-},{"./afk.js":8,"./autocomplete.js":9,"./autovote.js":10,"./chatNotifications.js":11,"./communityTheme.js":12,"./customBackground.js":13,"./customCSS.js":14,"./customMentions.js":15,"./customNotificationSound.js":16,"./downDubInChat.js":17,"./emotes.js":18,"./fullscreen.js":20,"./grabsInChat.js":21,"./hideAvatars.js":22,"./hideBackground.js":23,"./hideChat.js":24,"./hideVideo.js":25,"./pmNotifications.js":27,"./queueNotification.js":28,"./rain.js":29,"./showDubsOnHover.js":30,"./showTimestamps.js":31,"./snow.js":33,"./spacebarMute.js":34,"./splitchat.js":35,"./upDubInChat.js":36,"./warnOnNavigation.js":37}],27:[function(require,module,exports){
+},{"./afk.js":8,"./autocomplete.js":9,"./autovote.js":10,"./chatNotifications.js":11,"./communityTheme.js":12,"./customBackground.js":13,"./customCSS.js":14,"./customMentions.js":15,"./customNotificationSound.js":16,"./djNotification.js":17,"./downDubInChat.js":18,"./emotes.js":19,"./fullscreen.js":21,"./grabsInChat.js":22,"./hideAvatars.js":23,"./hideBackground.js":24,"./hideChat.js":25,"./hideVideo.js":26,"./pmNotifications.js":28,"./rain.js":29,"./showDubsOnHover.js":30,"./showTimestamps.js":31,"./snow.js":33,"./spacebarMute.js":34,"./splitchat.js":35,"./upDubInChat.js":36,"./warnOnNavigation.js":37}],28:[function(require,module,exports){
 "use strict";
 
 var _notify = require("../utils/notify.js");
@@ -1802,75 +1866,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../utils/notify.js":42}],28:[function(require,module,exports){
-'use strict';
-
-var _notify = require('../utils/notify.js');
-
-/**
- * Autocomplete User @ Mentions in Chat
- */
-
-/* global Dubtrack */
-var settings = require("../lib/settings.js");
-var modal = require('../utils/modal.js');
-var options = require('../utils/options.js');
-
-
-var myModule = {};
-
-myModule.id = "queue-notification";
-myModule.moduleName = "Queue Notification";
-myModule.description = "Notification when you are coming up to be the DJ";
-myModule.category = "General";
-myModule.extraIcon = 'pencil';
-
-var saveCustomMentions = function saveCustomMentions() {
-  var position = parseInt($('.dp-modal textarea').val());
-  if (!isNaN(position)) {
-    options.saveOption('custom', 'queue_notification', position);
-  } else {
-    options.saveOption('custom', 'queue_notification', 2); // default to 2
-  }
-};
-
-myModule.queueNotificationCheck = function (e) {
-  if (e.startTime > 2) return;
-
-  var position = parseInt($('.queue-position').text());
-  if (isNaN(position) || position !== settings.custom.queue_notification) return;
-
-  (0, _notify.showNotification)({
-    title: 'DJ Alert!',
-    content: 'You will be DJing shortly! Make sure your song is set!',
-    ignoreActiveTab: true,
-    wait: 10000
-  });
-  Dubtrack.room.chat.mentionChatSound.play();
-};
-
-myModule.turnOn = function () {
-  Dubtrack.Events.bind("realtime:room_playlist-update", this.queueNotificationCheck);
-};
-
-myModule.extra = function () {
-  modal.create({
-    title: 'Queue Notification',
-    content: 'Position in queue to notify at',
-    value: settings.custom.queue_notification || '',
-    placeholder: '2',
-    maxlength: '2',
-    confirmCallback: saveCustomMentions
-  });
-};
-
-myModule.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:room_playlist-update", this.queueNotificationCheck);
-};
-
-module.exports = myModule;
-
-},{"../lib/settings.js":7,"../utils/modal.js":40,"../utils/notify.js":42,"../utils/options.js":43}],29:[function(require,module,exports){
+},{"../utils/notify.js":42}],29:[function(require,module,exports){
 "use strict";
 
 var rain = {};
@@ -2915,7 +2911,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1488422114601')
+}).call(this,'1488505216837')
 },{"../lib/settings.js":7}],39:[function(require,module,exports){
 'use strict';
 

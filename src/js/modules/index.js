@@ -8,7 +8,7 @@ module.exports = [
   require('./customMentions.js'),
   require('./chatNotifications.js'),
   require('./pmNotifications.js'),
-  require('./queueNotification.js'),
+  require('./djNotification.js'),
   require('./showDubsOnHover.js'),
   require('./downDubInChat.js'), // (mod only)
   require('./upDubInChat.js'),
