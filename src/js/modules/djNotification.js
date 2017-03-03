@@ -43,7 +43,7 @@ myModule.turnOn = function () {
 myModule.extra = function () {
   modal.create({
     title: 'DJ Notification',
-    content: 'Position in queue to notify at',
+    content: 'Please specify the position in queue you want to be notified at',
     value: settings.custom.dj_notification || '',
     placeholder: '2',
     maxlength: '2',

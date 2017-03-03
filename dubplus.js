@@ -1439,7 +1439,7 @@ myModule.turnOn = function () {
 myModule.extra = function () {
   modal.create({
     title: 'DJ Notification',
-    content: 'Position in queue to notify at',
+    content: 'Please specify the position in queue you want to be notified at',
     value: settings.custom.dj_notification || '',
     placeholder: '2',
     maxlength: '2',
@@ -2911,7 +2911,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1488505216837')
+}).call(this,'1488505713899')
 },{"../lib/settings.js":7}],39:[function(require,module,exports){
 'use strict';
 
