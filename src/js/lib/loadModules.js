@@ -24,35 +24,6 @@ var loadAllModules = function(){
     // check stored settings for module's initial state
     mod.optionState = settings.options[mod.id] || false;
     
-    // add event listener
-    $('body').on('click', '#'+mod.id, function(ev) {
-      // if clicking on the "extra-icon", run module's "extra" function
-      if (ev.target.classList.contains('extra-icon') && mod.extra) {
-        mod.extra.call(mod);
-        return;
-      }
-
-      if (mod.turnOn && mod.turnOff) {
-        var newOptionState;
-        if (!mod.optionState) {
-          newOptionState = true;
-          mod.turnOn.call(mod);
-        } else {
-          newOptionState = false;
-          mod.turnOff.call(mod);
-        }
-
-        mod.optionState = newOptionState;
-        options.toggleAndSave(mod.id, newOptionState);
-        return;
-      }
-
-      if (mod.go) {
-        // .go is used for modules that never save state, like fullscreen
-        mod.go.call(mod);
-      }
-    });
-
     // This is run only once, when the script is loaded.
     // put anything you want ALWAYS run on Dub+ script load here 
     if (typeof mod.init === 'function') { 

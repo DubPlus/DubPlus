@@ -67,7 +67,7 @@ export function showNotification (opts){
     callback : null,
     wait : 5000
   };
-  var options = $.extend({}, defaults, opts);
+  var options = Object.assign({}, defaults, opts);
 
   // don't show a notification if tab is active
   if (isActiveTab === true && !options.ignoreActiveTab) { return; }

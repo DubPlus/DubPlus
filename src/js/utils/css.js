@@ -1,6 +1,14 @@
 'use strict';
 var settings = require("../lib/settings.js");
 
+var makeLink = function(className, FileName){
+  var link = document.createElement('link');
+  link.rel = "stylesheet"; link.type = "text/css";
+  link.className = className || '';
+  link.href = FileName;
+  return link;
+};
+
 /**
  * Loads a CSS file into <head>.  It concats settings.srcRoot with the first argument (cssFile)
  * @param {string} cssFile    the css file location
@@ -10,9 +18,8 @@ var settings = require("../lib/settings.js");
  */
 var load = function(cssFile, className){
   if (!cssFile) {return;}
-  var src =  settings.srcRoot + cssFile;
-  var cn = `class="${className}"` || '';
-  $('head').append(`<link ${cn} rel="stylesheet" type="text/css" href="${src}?${TIME_STAMP}">`);
+  var link = makeLink(className, settings.srcRoot + cssFile + "?" + TIME_STAMP);
+  document.head.insertAdjacentElement('beforeend', link);
 };
 
 /**
@@ -23,8 +30,8 @@ var load = function(cssFile, className){
  */
 var loadExternal = function(cssFile, className){
   if (!cssFile) {return;}
-  var cn = 'class="'+className+'"' || '';
-  $('head').append('<link '+cn+' rel="stylesheet" type="text/css" href="'+cssFile+'">');
+  var link = makeLink(className, cssFile);
+  document.head.insertAdjacentElement('beforeend', link);
 };
 
 module.exports = {
