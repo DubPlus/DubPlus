@@ -84,7 +84,7 @@ if (!window.dubplus && Dubtrack.session.id) {
   });
 }
 
-},{"./lib/init.js":4,"./utils/css.js":37,"./utils/modal.js":39,"./utils/preload.js":43,"./utils/waitFor.js":44}],2:[function(require,module,exports){
+},{"./lib/init.js":4,"./utils/css.js":38,"./utils/modal.js":40,"./utils/preload.js":44,"./utils/waitFor.js":45}],2:[function(require,module,exports){
 'use strict';
 
 /* global  emojify */
@@ -265,7 +265,7 @@ prepEmoji.processTastyEmotes = function (data) {
 
 module.exports = prepEmoji;
 
-},{"../lib/settings.js":7,"../utils/getJSON.js":38}],3:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/getJSON.js":39}],3:[function(require,module,exports){
 "use strict";
 
 /**
@@ -471,7 +471,7 @@ module.exports = function () {
 };
 
 }).call(this,'{"name":"DubPlus","version":"0.1.0","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
-},{"../modules/eta.js":19,"../modules/snooze.js":31,"../utils/css.js":37,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
+},{"../modules/eta.js":20,"../modules/snooze.js":32,"../utils/css.js":38,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -487,54 +487,6 @@ var menuObj = {
   'User Interface': '',
   'Settings': '',
   'Customize': ''
-};
-
-var getModule = function getModule(target) {
-  if (!target || target.classList.contains('dubplus-menu-section') || target.classList.contains('dubplus-menu')) {
-    return null;
-  }
-
-  var module = window.dubplus[target.id];
-  if (!module) {
-    // recursively try until we get a hit or reach our menu container
-    return getModule(target.parentElement);
-  } else {
-    return module;
-  }
-};
-
-var menuDelegator = function menuDelegator(ev) {
-
-  var mod = getModule(ev.target);
-  if (!mod) {
-    return;
-  }
-
-  // if clicking on the "extra-icon", run module's "extra" function
-  if (ev.target.classList.contains('extra-icon') && mod.extra) {
-    mod.extra.call(mod);
-    return;
-  }
-
-  if (mod.turnOn && mod.turnOff) {
-    var newOptionState;
-    if (!mod.optionState) {
-      newOptionState = true;
-      mod.turnOn.call(mod);
-    } else {
-      newOptionState = false;
-      mod.turnOff.call(mod);
-    }
-
-    mod.optionState = newOptionState;
-    options.toggleAndSave(mod.id, newOptionState);
-    return;
-  }
-
-  if (mod.go) {
-    // .go is used for modules that never save state, like fullscreen
-    mod.go.call(mod);
-  }
 };
 
 /**
@@ -581,18 +533,131 @@ var loadAllModules = function loadAllModules() {
     });
   });
 
-  // add event listener to the main menu and delegate
-  $('body').on('click', '.dubplus-menu', menuDelegator);
-
   return menuObj;
 };
 
 exports.default = loadAllModules;
 
-},{"../lib/menu.js":6,"../lib/settings.js":7,"../modules/index.js":26,"../utils/options.js":42}],6:[function(require,module,exports){
+},{"../lib/menu.js":7,"../lib/settings.js":8,"../modules/index.js":27,"../utils/options.js":43}],6:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var options = require('../utils/options.js');
+
+/**
+ * Handles the toggling of the menu sections
+ * @param  {Element} currentSection The pure DOM element of menu header
+ * @return {undefined}
+ */
+var toggleMenuSection = function toggleMenuSection(currentSection) {
+  var $menuSec = currentSection.nextElementSibling;
+  var $icon = currentSection.children[0];
+  var menuName = currentSection.textContent.trim().replace(" ", "-").toLowerCase();
+  var isClosed = $menuSec.classList.toggle('dubplus-menu-section-closed');
+
+  if (isClosed) {
+    // menu is closed
+    $icon.classList.remove('fa-angle-down');
+    $icon.classList.add('fa-angle-right');
+    options.saveOption('menu', menuName, 'closed');
+  } else {
+    // menu is open
+    $icon.classList.remove('fa-angle-right');
+    $icon.classList.add('fa-angle-down');
+    options.saveOption('menu', menuName, 'open');
+  }
+};
+
+/**
+ * Traverses up the dubplus menu DOM tree until it finds a match to a corresponding function
+ * @param  {Element} target DOM Element
+ * @return {Object}         our module or null
+ */
+var traverseMenuDOM = function traverseMenuDOM(target) {
+  // if we've reached the dubplus-menu container then we've gone too far
+  if (!target || target.classList.contains('dubplus-menu')) {
+    return null;
+  }
+
+  // to handle the opening/closings of our sections
+  if (target.classList.contains('dubplus-menu-section-header')) {
+    toggleMenuSection(target);
+    return null;
+  }
+
+  // check if a module exists matching current ID
+  var module = window.dubplus[target.id];
+
+  if (!module) {
+    // recursively try until we get a hit or reach our menu container
+    return traverseMenuDOM(target.parentElement);
+  } else {
+    return module;
+  }
+};
+
+/**
+ * Click event handler for the whole menu, delegating events to their proper function
+ * @param  {object} ev the click event object
+ * @return {undefined}
+ */
+var menuDelegator = function menuDelegator(ev) {
+
+  var mod = traverseMenuDOM(ev.target);
+  if (!mod) {
+    return;
+  }
+
+  // if clicking on the "extra-icon", run module's "extra" function
+  if (ev.target.classList.contains('extra-icon') && mod.extra) {
+    mod.extra.call(mod);
+    return;
+  }
+
+  if (mod.turnOn && mod.turnOff) {
+    var newOptionState;
+    if (!mod.optionState) {
+      newOptionState = true;
+      mod.turnOn.call(mod);
+    } else {
+      newOptionState = false;
+      mod.turnOff.call(mod);
+    }
+
+    mod.optionState = newOptionState;
+    options.toggleAndSave(mod.id, newOptionState);
+    return;
+  }
+
+  if (mod.go) {
+    // .go is used for modules that never save state, like fullscreen
+    mod.go.call(mod);
+  }
+};
+
+exports.default = function () {
+  var dpMenu = document.querySelector('.dubplus-menu');
+
+  // add event listener to the main menu and delegate
+  dpMenu.addEventListener('click', menuDelegator);
+
+  // hide/show the  menu when you click on the icon in the top right
+  document.querySelector('.dubplus-icon').addEventListener('click', function () {
+    dpMenu.classList.toggle('dubplus-menu-open');
+  });
+};
+
+},{"../utils/options.js":43}],7:[function(require,module,exports){
 'use strict';
 
-var options = require('../utils/options.js');
+var _menuEvents = require('./menu-events.js');
+
+var _menuEvents2 = _interopRequireDefault(_menuEvents);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var settings = require('./settings.js');
 var css = require('../utils/css.js');
 
@@ -614,12 +679,8 @@ module.exports = {
 
     // add icon to the upper right corner
     var menuIcon = '<div class="dubplus-icon"><img src="' + settings.srcRoot + '/images/dubplus.svg" alt=""></div>';
-    $('.header-right-navigation').append(menuIcon);
 
-    // hide/show the  menu when you click on the icon in the top right
-    $('body').on('click', '.dubplus-icon', function (e) {
-      $('.dubplus-menu').toggleClass('dubplus-menu-open');
-    });
+    document.querySelector('.header-right-navigation').insertAdjacentHTML('beforeend', menuIcon);
 
     // make the menu
     var dp_menu_html = '\n      <section class="dubplus-menu">\n          <p class="dubplus-menu-header">Dub+ Options</p>';
@@ -652,26 +713,12 @@ module.exports = {
     menuString += '</section>';
 
     // add it to the DOM
-    $('body').append(menuString);
+    document.body.insertAdjacentHTML('beforeend', menuString);
     // use the perfectScrollBar plugin to make it look nice
     // $('.dubplus-menu').perfectScrollbar();
 
-    // add event handler for menu sections
-    $('body').on('click', '.dubplus-menu-section-header', function (e) {
-      var $menuSec = $(this).next('.dubplus-menu-section');
-      var $icon = $(this).find('span');
-      var menuName = $(this).text().trim().replace(" ", "-").toLowerCase();
-      $menuSec.toggleClass('dubplus-menu-section-closed');
-      if ($menuSec.hasClass('dubplus-menu-section-closed')) {
-        // menu is closed
-        $icon.removeClass('fa-angle-down').addClass('fa-angle-right');
-        options.saveOption('menu', menuName, 'closed');
-      } else {
-        // menu is open
-        $icon.removeClass('fa-angle-right').addClass('fa-angle-down');
-        options.saveOption('menu', menuName, 'open');
-      }
-    });
+    // initialize our click event delegator
+    (0, _menuEvents2.default)();
   },
 
   makeOptionMenu: function makeOptionMenu(menuTitle, options) {
@@ -681,9 +728,9 @@ module.exports = {
       state: false, // whether the menu item is on/off
       extraIcon: null, // define the extra icon if an option needs it (like AFK, Custom Mentions)
       cssClass: '', // adds extra CSS class(es) if desired,
-      altIcon: null
+      altIcon: null // use a font-awesome icon instead of the switch
     };
-    var opts = $.extend({}, defaults, options);
+    var opts = Object.assign({}, defaults, options);
     var _extra = '';
     var _state = opts.state ? 'dubplus-switch-on' : '';
     if (opts.extraIcon) {
@@ -699,26 +746,15 @@ module.exports = {
       mainIcon = '<span class="fa fa-' + opts.altIcon + '"></span>';
     }
     return '\n      <li id="' + opts.id + '" class="' + mainCssClass + ' ' + _state + ' ' + opts.cssClass + ' title="' + opts.desc + '">\n        ' + _extra + '\n        ' + mainIcon + '\n        <span class="dubplus-menu-label">' + menuTitle + '</span>\n      </li>';
-  },
-
-  makeLinkMenu: function makeLinkMenu(menuTitle, icon, link, options) {
-    var defaults = {
-      id: '',
-      desc: '',
-      cssClass: ''
-    };
-    var opts = $.extend({}, defaults, options);
-    return '\n      <li id="' + opts.id + '" class="dubplus-menu-icon ' + opts.cssClass + ' title="' + opts.desc + '">\n        <span class="fa fa-' + icon + '"></span>\n        <a href="' + link + '" class="dubplus-menu-label" target="_blank">' + menuTitle + '</a>\n      </li>';
   }
 
 };
 
-},{"../utils/css.js":37,"../utils/options.js":42,"./settings.js":7}],7:[function(require,module,exports){
+},{"../utils/css.js":38,"./menu-events.js":6,"./settings.js":8}],8:[function(require,module,exports){
 (function (CURRENT_BRANCH,CURRENT_REPO){
 "use strict";
 
 var defaults = {
-  our_version: '0.1.0',
   // this will store all the on/off states
   options: {},
   // this will store the open/close state of the menu sections
@@ -747,7 +783,7 @@ exportSettings.srcRoot = "https://rawgit.com/" + CURRENT_REPO + "/DubPlus/" + CU
 module.exports = exportSettings;
 
 }).call(this,'redesign-prep','FranciscoG')
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 /**
@@ -817,7 +853,7 @@ afk_module.extra = function () {
 
 module.exports = afk_module;
 
-},{"../lib/settings.js":7,"../utils/modal.js":39,"../utils/options.js":42}],9:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":40,"../utils/options.js":43}],10:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1005,7 +1041,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../emojiUtils/prepEmoji.js":2,"../emojiUtils/previewList.js":3,"../lib/settings.js":7}],10:[function(require,module,exports){
+},{"../emojiUtils/prepEmoji.js":2,"../emojiUtils/previewList.js":3,"../lib/settings.js":8}],11:[function(require,module,exports){
 "use strict";
 
 /* global Dubtrack */
@@ -1052,7 +1088,7 @@ autovote.turnOn = function () {
 
 module.exports = autovote;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 var _notify = require("../utils/notify.js");
@@ -1107,7 +1143,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/notify.js":41}],12:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/notify.js":42}],13:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1153,7 +1189,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../utils/css.js":37}],13:[function(require,module,exports){
+},{"../utils/css.js":38}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1219,7 +1255,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/modal.js":39,"../utils/options.js":42}],14:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":40,"../utils/options.js":43}],15:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1275,7 +1311,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/css.js":37,"../utils/modal.js":39,"../utils/options.js":42}],15:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/css.js":38,"../utils/modal.js":40,"../utils/options.js":43}],16:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1336,7 +1372,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/modal.js":39,"../utils/options.js":42}],16:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":40,"../utils/options.js":43}],17:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -1411,7 +1447,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/modal.js":39,"../utils/options.js":42}],17:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":40,"../utils/options.js":43}],18:[function(require,module,exports){
 "use strict";
 
 var _modcheck = require("../utils/modcheck.js");
@@ -1467,7 +1503,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../utils/modcheck.js":40}],18:[function(require,module,exports){
+},{"../utils/modcheck.js":41}],19:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1551,7 +1587,7 @@ emote_module.turnOff = function () {
 
 module.exports = emote_module;
 
-},{"../emojiUtils/prepEmoji.js":2}],19:[function(require,module,exports){
+},{"../emojiUtils/prepEmoji.js":2}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1586,7 +1622,7 @@ var hide_eta = function hide_eta() {
   $(this).empty();
 };
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1616,7 +1652,7 @@ fs_module.go = function () {
 
 module.exports = fs_module;
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1662,7 +1698,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1686,7 +1722,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1710,7 +1746,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1733,7 +1769,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1757,7 +1793,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 // put this in order of appearance in the menu
@@ -1775,7 +1811,7 @@ require('./spacebarMute.js'), require('./warnOnNavigation.js'),
 // // Customize
 require('./communityTheme.js'), require('./customCSS.js'), require('./customBackground.js'), require('./customNotificationSound.js')];
 
-},{"./afk.js":8,"./autocomplete.js":9,"./autovote.js":10,"./chatNotifications.js":11,"./communityTheme.js":12,"./customBackground.js":13,"./customCSS.js":14,"./customMentions.js":15,"./customNotificationSound.js":16,"./downDubInChat.js":17,"./emotes.js":18,"./fullscreen.js":20,"./grabsInChat.js":21,"./hideAvatars.js":22,"./hideBackground.js":23,"./hideChat.js":24,"./hideVideo.js":25,"./pmNotifications.js":27,"./rain.js":28,"./showDubsOnHover.js":29,"./showTimestamps.js":30,"./snow.js":32,"./spacebarMute.js":33,"./splitchat.js":34,"./upDubInChat.js":35,"./warnOnNavigation.js":36}],27:[function(require,module,exports){
+},{"./afk.js":9,"./autocomplete.js":10,"./autovote.js":11,"./chatNotifications.js":12,"./communityTheme.js":13,"./customBackground.js":14,"./customCSS.js":15,"./customMentions.js":16,"./customNotificationSound.js":17,"./downDubInChat.js":18,"./emotes.js":19,"./fullscreen.js":21,"./grabsInChat.js":22,"./hideAvatars.js":23,"./hideBackground.js":24,"./hideChat.js":25,"./hideVideo.js":26,"./pmNotifications.js":28,"./rain.js":29,"./showDubsOnHover.js":30,"./showTimestamps.js":31,"./snow.js":33,"./spacebarMute.js":34,"./splitchat.js":35,"./upDubInChat.js":36,"./warnOnNavigation.js":37}],28:[function(require,module,exports){
 "use strict";
 
 var _notify = require("../utils/notify.js");
@@ -1824,7 +1860,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../utils/notify.js":41}],28:[function(require,module,exports){
+},{"../utils/notify.js":42}],29:[function(require,module,exports){
 "use strict";
 
 var rain = {};
@@ -2009,7 +2045,7 @@ rain.unbindCanvas = function () {
 
 module.exports = rain;
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 var _modcheck = require('../utils/modcheck.js');
@@ -2572,7 +2608,7 @@ dubshover.turnOff = function () {
 
 module.exports = dubshover;
 
-},{"../utils/modal.js":39,"../utils/modcheck.js":40}],30:[function(require,module,exports){
+},{"../utils/modal.js":40,"../utils/modcheck.js":41}],31:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2596,7 +2632,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2655,7 +2691,7 @@ var snooze = function snooze() {
   }
 };
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 var options = require('../utils/options.js');
@@ -2703,7 +2739,7 @@ module.exports = {
 
 };
 
-},{"../utils/options.js":42}],33:[function(require,module,exports){
+},{"../utils/options.js":43}],34:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2732,7 +2768,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2756,7 +2792,7 @@ myModule.go = function () {
 
 module.exports = myModule;
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2802,7 +2838,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2833,7 +2869,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 (function (TIME_STAMP){
 'use strict';
 
@@ -2874,8 +2910,8 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1488506993721')
-},{"../lib/settings.js":7}],38:[function(require,module,exports){
+}).call(this,'1488519650122')
+},{"../lib/settings.js":8}],39:[function(require,module,exports){
 'use strict';
 
 // jQuery's getJSON kept returning errors so making my own with promise-like
@@ -2913,7 +2949,7 @@ var GetJSON = function GetJSON(url, optionalEvent, headers) {
 
 module.exports = GetJSON;
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 function makeButtons(cb) {
@@ -2945,7 +2981,7 @@ var create = function create(options) {
     maxlength: 999,
     confirmCallback: null
   };
-  var opts = $.extend({}, defaults, options);
+  var opts = Object.assign({}, defaults, options);
 
   /*****************************************************
    * Create modal html string
@@ -3005,7 +3041,7 @@ module.exports = {
   close: close
 };
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3016,7 +3052,7 @@ exports.default = function (userid) {
   return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
 };
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3087,7 +3123,7 @@ function showNotification(opts) {
     callback: null,
     wait: 5000
   };
-  var options = $.extend({}, defaults, opts);
+  var options = Object.assign({}, defaults, opts);
 
   // don't show a notification if tab is active
   if (isActiveTab === true && !options.ignoreActiveTab) {
@@ -3111,7 +3147,7 @@ function showNotification(opts) {
   setTimeout(n.close.bind(n), options.wait);
 }
 
-},{"../utils/modal.js":39}],42:[function(require,module,exports){
+},{"../utils/modal.js":40}],43:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -3167,7 +3203,7 @@ module.exports = {
   saveOption: saveOption
 };
 
-},{"../lib/settings.js":7}],43:[function(require,module,exports){
+},{"../lib/settings.js":8}],44:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3189,7 +3225,7 @@ function preload() {
   $('body').prepend(preloadHTML);
 }
 
-},{"../lib/settings.js":7}],44:[function(require,module,exports){
+},{"../lib/settings.js":8}],45:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3254,7 +3290,7 @@ function WaitFor(waitingFor, options) {
   var _failCB = function _failCB() {};
   var checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
 
-  var opts = $.extend({}, defaults, options);
+  var opts = Object.assign({}, defaults, options);
 
   var tryCount = 0;
   var tryLimit = opts.seconds * 1000 / opts.interval; // how many intervals

@@ -31,9 +31,9 @@
     },
 
     "autovote" : {
-      "moduleName" : "",
-      "description" : "",
-      "category" : ""
+      "moduleName" : "Autovote",
+      "description" : "Toggles auto upvoting for every song",
+      "category" : "General"
     },
 
     "chat_notifications" : {
@@ -41,7 +41,13 @@
       "description" : "Enable desktop notifications when a user mentions you in chat",
       "category" : "General",
       "notification_content" : "Message from ${e.user.username}"
-    }
+    },
+
+    "community_theme" : {
+      "moduleName" : "Community Theme",
+      "description" : "Toggle Community CSS theme.",
+      "category" : "Customize"
+    },
 
   }
 }

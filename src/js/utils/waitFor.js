@@ -58,7 +58,7 @@ function WaitFor(waitingFor, options) {
   var _failCB = ()=>{};
   var checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
 
-  var opts = $.extend({}, defaults, options);
+  var opts = Object.assign({}, defaults, options);
 
   var tryCount = 0;
   var tryLimit = (opts.seconds * 1000) / opts.interval; // how many intervals

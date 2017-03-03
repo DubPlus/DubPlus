@@ -10,54 +10,6 @@ var menuObj = {
   'Customize' : ''
 };
 
-var getModule = function(target) {
-  if (!target || 
-    target.classList.contains('dubplus-menu-section') ||
-    target.classList.contains('dubplus-menu')) {
-    return null;
-  }
-
-  var module = window.dubplus[target.id];
-  if (!module) { 
-    // recursively try until we get a hit or reach our menu container
-    return getModule(target.parentElement);
-  } else {
-    return module;
-  }
-};
-
-var menuDelegator = function(ev) {
-
-  var mod = getModule(ev.target);
-  if (!mod) { return; }
-
-  // if clicking on the "extra-icon", run module's "extra" function
-  if (ev.target.classList.contains('extra-icon') && mod.extra) {
-    mod.extra.call(mod);
-    return;
-  }
-
-  if (mod.turnOn && mod.turnOff) {
-    var newOptionState;
-    if (!mod.optionState) {
-      newOptionState = true;
-      mod.turnOn.call(mod);
-    } else {
-      newOptionState = false;
-      mod.turnOff.call(mod);
-    }
-
-    mod.optionState = newOptionState;
-    options.toggleAndSave(mod.id, newOptionState);
-    return;
-  }
-
-  if (mod.go) {
-    // .go is used for modules that never save state, like fullscreen
-    mod.go.call(mod);
-  }
-};
-
 /**
  * Loads all the modules and initliazes them
  */
@@ -102,9 +54,6 @@ var loadAllModules = function(){
     });
 
   });
-
-  // add event listener to the main menu and delegate
-  $('body').on('click', '.dubplus-menu', menuDelegator);
 
   return menuObj;
 };
