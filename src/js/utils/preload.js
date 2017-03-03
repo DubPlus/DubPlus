@@ -43,5 +43,5 @@ export default function preload() {
     </div>
   `;
 
-  $('body').prepend(preloadHTML);
+  document.body.insertAdjacentHTML('afterbegin', preloadHTML);
 }

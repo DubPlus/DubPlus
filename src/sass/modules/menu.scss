@@ -1,4 +1,4 @@
-/****************************************************************
+/***************************************************************
  * Dub+ menu styles
  */
 
@@ -6,12 +6,12 @@ $menuWidth : 255px;
 
 /* css switch layout related variables */
 $labelBorder : 2;
-$switcher : 8;
+$switcher : 12;
 $padding : 1;
 
 // don't really need to touch these,  they are calcutated based off the above variables
-$width : ($switcher * 2) + $labelBorder + 7;
-$switchHeight : $switcher + ($labelBorder*2) + ($padding*2) + px;
+$width : ($switcher * 2) + $labelBorder + 3;
+$switchHeight : $switcher + ($labelBorder*2) + px;
 
 // switch color related variables
 // off state:
@@ -133,6 +133,7 @@ $buttonBorderOn : #6fcbdc;
   display: block;
   top: 2px;
   cursor:pointer;
+  text-align: center;
 }
 .dubplus-switch-bg {
   position: relative;
@@ -157,8 +158,8 @@ $buttonBorderOn : #6fcbdc;
   vertical-align: middle;
   position: absolute;
   z-index: 2;
+  top: 0;
   background: $buttonBgOff;
-  border: $labelBorder + px solid $buttonBorderOff;
   transition: transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
 }
 
@@ -170,7 +171,7 @@ $buttonBorderOn : #6fcbdc;
 .dubplus-switch-on .dubplus-switcher {
   background: $buttonBgOn;
   border: $labelBorder + px solid $buttonBorderOn;
-  transform: translateX(100%);
+  transform: translateX(10px);
 }
 
 .dubplus-switch .dubplus-menu-label,
@@ -188,4 +189,3 @@ $buttonBorderOn : #6fcbdc;
   width: 9%;
   float: right;
 }
-/*****************************************/

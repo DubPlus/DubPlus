@@ -13,7 +13,7 @@ myModule.turnOn = function(){
   $('body').addClass('dubplus-split-chat');
 };
 
-myModule.go = function() {
+myModule.turnOff = function() {
   $('body').removeClass('dubplus-split-chat');
 };
 

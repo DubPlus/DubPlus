@@ -43,8 +43,8 @@ myModule.turnOn = function() {
 
 myModule.extra = function() {
   modal.create({
-    title: 'Custom AFK Message',
-    content: 'Custom Mention Triggers (separate by comma)',
+    title: 'Custom Mentions',
+    content: 'Add your custom mention triggers here (separate by comma)',
     value : settings.custom.custom_mentions || '',
     placeholder: 'separate, custom triggers, by, comma, :heart:',
     maxlength: '255',

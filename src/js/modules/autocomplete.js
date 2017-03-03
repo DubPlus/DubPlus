@@ -2,9 +2,15 @@
  * Autocomplete Emojis/Emotes
  */
 /*global _, Dubtrack, emojify*/
-var previewList = require('../emojiUtils/previewList.js');
 var settings = require('../lib/settings.js');
 var prepEmjoji = require('../emojiUtils/prepEmoji.js');
+import {PreviewListManager, makeList} from '../emojiUtils/previewList.js';
+
+// because I have a lot of logging on each keypress I made this
+var debugAC = false;
+function log(){
+  if (debugAC) { console.log.apply(console, arguments); }
+}
 
 var myModule = {};
 myModule.id = "dubplus-autocomplete";
@@ -28,11 +34,7 @@ const KEYS = {
 };
 
 const keyCharMin = 3; // when to start showing previews
-const inputRegex = new RegExp('(:|@)([&!()\\+\\-_a-z0-9]+)($|\\s)', 'ig');
-
-var previewSearchStr = "";
-var strStart = 0;
-var strEnd = 0;
+const inputRegex = new RegExp('(:)([&!()\\+\\-_a-z0-9]+)($|\\s)', 'ig');
 
 /**************************************************************************
  * A bunch of utility helpers for the emoji preview
@@ -46,6 +48,7 @@ var emojiUtils = {
       cn : type
     };
   },
+
   addToPreviewList : function(emojiArray) {
     var self = this;
     var listArray = [];
@@ -67,26 +70,29 @@ var emojiUtils = {
         }
     });
 
-      previewList.display(listArray);
+    makeList(listArray);
   },
-    filterEmoji : function(str){
-      var finalStr = str.replace(/([+()])/,"\\$1");
-      var re = new RegExp('^' + finalStr, "i");
-      var arrayToUse = emojify.emojiNames;
-      if (settings.options['dubplus-emotes']) {
-          arrayToUse = prepEmjoji.emojiEmotes; // merged array
-      }
-      return arrayToUse.filter(function(val){
-          return re.test(val);
-      });
+
+  filterEmoji : function(str){
+    var finalStr = str.replace(/([+()])/,"\\$1");
+    var re = new RegExp('^' + finalStr, "i");
+    var arrayToUse = emojify.emojiNames;
+    if (settings.options['dubplus-emotes']) {
+        arrayToUse = prepEmjoji.emojiEmotes; // merged array
     }
+    return arrayToUse.filter(function(val){
+        return re.test(val);
+    });
+  }
 };
 
 /**************************************************************************
  * handles filtering emoji, twitch, and users preview autocomplete popup on keyup
  */
 
-var shouldClearPreview = function($ac, pvStr, current, kMin){
+var previewList = new PreviewListManager();
+
+var shouldClearPreview = function(ac, pvStr, current, kMin){
   var lastChar = current.charAt(current.length - 1);
   if (pvStr.length < kMin ||
       lastChar === ":" ||
@@ -94,7 +100,8 @@ var shouldClearPreview = function($ac, pvStr, current, kMin){
       current === "")
   {
     pvStr = "";
-    $ac.empty().removeClass('ac-show');
+    ac.innerHTML = "";
+    ac.className = "";
   }
   return pvStr;
 };
@@ -108,65 +115,89 @@ var handleMatch = function(triggerMatch, currentText, cursorPos, keyCharMin) {
   var strStart = currentText.lastIndexOf( currentMatch );
   var strEnd = strStart + currentMatch.length;
   
-  // console.log("cursorPos", cursorPos);
+  log("cursorPos", cursorPos);
   if (cursorPos >= strStart && cursorPos <= strEnd) {
     // twitch and other emoji
     if (currentMatch && currentMatch.length >= keyCharMin && emoteChar === ":") {
       emojiUtils.addToPreviewList( emojiUtils.filterEmoji(currentMatch) );
     }
   }
-  // console.log('match',triggerMatch,strStart,strEnd);
+  log('match',triggerMatch,strStart,strEnd);
 
   return {
-    strStart : strStart,
-    strEnd : strEnd,
+    start : strStart,
+    end : strEnd,
     currentMatch : currentMatch
   };
 };
 
 var chatInputKeyupFunc = function(e){
-  var $acPreview = $('#autocomplete-preview');
-  var hasItems = $acPreview.find('li').length > 0;
+  var acPreview = document.querySelector('#autocomplete-preview');
+  var hasItems = acPreview.children.length > 0;
   
   if (e.keyCode === KEYS.enter && !hasItems) {
     return; // do nothing
   }
 
   if (e.keyCode === KEYS.up && hasItems) {
+    e.preventDefault();
     previewList.doNavigate(-1);
     return;
   }
+
   if (e.keyCode === KEYS.down && hasItems) {
+    e.preventDefault();
     previewList.doNavigate(1);
     return;
+  }
+
+  if ((e.keyCode === KEYS.enter || e.keyCode === KEYS.tab) && hasItems) {
+    e.preventDefault();
+    previewList.selected = $('.preview-item.selected').find('.ac-text').text();
+    previewList.updateChatInput();
+    return false;
   }
 
   var currentText = this.value;
   var cursorPos = $(this).get(0).selectionStart;
   
   var triggerMatch = currentText.match(inputRegex);
+  
+  var previewSearchStr = "";
+
   if (triggerMatch && triggerMatch.length > 0) {
     var matchData = handleMatch(triggerMatch, currentText, cursorPos, keyCharMin);
     previewSearchStr = matchData.currentMatch;
-    strStart = matchData.strStart;
-    strEnd = matchData.strEnd;
-    previewList.setData(matchData);
+    previewList.data = matchData;
   }
 
-  previewSearchStr = shouldClearPreview($acPreview, previewSearchStr, currentText, keyCharMin);
+  log("inKeyup",previewList.data);
 
-  if ((e.keyCode === KEYS.enter || e.keyCode === KEYS.tab) && hasItems) {
-    e.preventDefault();
-    previewList.updateChatInput(strStart, strEnd);
-    return false;
-  }
+  shouldClearPreview(acPreview, previewSearchStr, currentText, keyCharMin);
+
 };
 
 var chatInputKeydownFunc = function(e){
-  // Manually send the keycode to chat if it is 
-  // tab (9), enter (13), up arrow (38), or down arrow (40) for their autocomplete
-  if (_.includes([KEYS.tab, KEYS.enter, KEYS.up, KEYS.down], e.keyCode) && $('.ac-show').length === 0) {
+  var emptyPreview = document.querySelector('#autocomplete-preview').children.length <= 0;
+  var isValidKey = _.includes([
+    KEYS.tab, 
+    KEYS.enter, 
+    KEYS.up, 
+    KEYS.down,
+    KEYS.left,
+    KEYS.right
+  ], 
+    e.keyCode
+  );
+
+  // Manually send the keycodes if the preview popup isn't visible
+  if ( isValidKey && emptyPreview) {
     return Dubtrack.room.chat.ncKeyDown({'which': e.keyCode});
+  }
+
+  // stop default behaviors of special keys so we can use them in preview
+  if ( isValidKey && !emptyPreview) {
+    e.preventDefault();
   }
 };
 
@@ -181,6 +212,7 @@ myModule.turnOn = function() {
 
 myModule.turnOff = function() {
   previewList.stop();
+  Dubtrack.room.chat.delegateEvents(Dubtrack.room.chat.events);
   $(document.body).off('keydown', "#chat-txt-message", chatInputKeydownFunc);
   $(document.body).off('keyup', "#chat-txt-message", chatInputKeyupFunc);
 };

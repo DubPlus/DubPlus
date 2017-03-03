@@ -29,7 +29,7 @@ var create = function(options) {
       maxlength: 999,
       confirmCallback: null
   };
-  var opts = $.extend({}, defaults, options);
+  var opts = Object.assign({}, defaults, options);
   
   /*****************************************************
    * Create modal html string
@@ -61,7 +61,7 @@ var create = function(options) {
     '</div>',
   ].join('');
 
-  $('body').append(dubplusModal);
+  document.body.insertAdjacentHTML('beforeend', dubplusModal);
 
   /*****************************************************
    * Attach events to your modal

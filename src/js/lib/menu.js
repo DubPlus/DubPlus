@@ -1,7 +1,8 @@
 'use strict';
-const options = require('../utils/options.js');
 const settings = require('./settings.js');
 const css = require('../utils/css.js');
+
+import menuEvents from './menu-events.js';
 
 // this is used to set the state of the contact menu section
 var arrow = "down";
@@ -36,6 +37,7 @@ var contactSection = `
       </li>
     </ul>`;
 
+
 module.exports = {
   beginMenu : function(){
     // load font-awesome icons from CDN to be used in the menu
@@ -43,12 +45,8 @@ module.exports = {
     
     // add icon to the upper right corner
     var menuIcon = `<div class="dubplus-icon"><img src="${settings.srcRoot}/images/dubplus.svg" alt=""></div>`;
-    $('.header-right-navigation').append(menuIcon);
-
-    // hide/show the  menu when you click on the icon in the top right
-    $('body').on('click', '.dubplus-icon', function(e){
-      $('.dubplus-menu').toggleClass('dubplus-menu-open');
-    });
+    
+    document.querySelector('.header-right-navigation').insertAdjacentHTML('beforeend',menuIcon);
 
     // make the menu
     var dp_menu_html = `
@@ -88,26 +86,10 @@ module.exports = {
     menuString += '</section>';
 
     // add it to the DOM
-    $('body').append(menuString);
-    // use the perfectScrollBar plugin to make it look nice
-    // $('.dubplus-menu').perfectScrollbar();
+    document.body.insertAdjacentHTML('beforeend', menuString);
     
-    // add event handler for menu sections
-    $('body').on('click', '.dubplus-menu-section-header', function(e){
-      var $menuSec = $(this).next('.dubplus-menu-section');
-      var $icon = $(this).find('span');
-      var menuName = $(this).text().trim().replace(" ", "-").toLowerCase();
-      $menuSec.toggleClass('dubplus-menu-section-closed');
-      if ($menuSec.hasClass('dubplus-menu-section-closed')) {
-        // menu is closed
-        $icon.removeClass('fa-angle-down').addClass('fa-angle-right');
-        options.saveOption( 'menu', menuName , 'closed');
-      } else {
-        // menu is open
-        $icon.removeClass('fa-angle-right').addClass('fa-angle-down');
-        options.saveOption( 'menu', menuName , 'open');
-      }
-    });
+    // initialize our click event delegator
+    menuEvents();
   },
 
   makeOptionMenu : function(menuTitle, options){
@@ -117,9 +99,9 @@ module.exports = {
       state : false,  // whether the menu item is on/off
       extraIcon : null, // define the extra icon if an option needs it (like AFK, Custom Mentions)
       cssClass : '', // adds extra CSS class(es) if desired,
-      altIcon : null
+      altIcon : null // use a font-awesome icon instead of the switch
     };
-    var opts  = $.extend({}, defaults, options);
+    var opts  = Object.assign({}, defaults, options);
     var _extra = '';
     var _state = opts.state ? 'dubplus-switch-on' : '';
     if (opts.extraIcon) {
@@ -142,20 +124,6 @@ module.exports = {
         ${_extra}
         ${mainIcon}
         <span class="dubplus-menu-label">${menuTitle}</span>
-      </li>`;
-  },
-
-  makeLinkMenu : function(menuTitle, icon, link, options){
-    var defaults = {
-      id : '',
-      desc : '',
-      cssClass : ''
-    };
-    var opts  = $.extend({}, defaults, options);
-    return `
-      <li id="${opts.id}" class="dubplus-menu-icon ${opts.cssClass} title="${opts.desc}">
-        <span class="fa fa-${icon}"></span>
-        <a href="${link}" class="dubplus-menu-label" target="_blank">${menuTitle}</a>
       </li>`;
   }
 

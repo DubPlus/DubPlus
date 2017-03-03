@@ -84,7 +84,7 @@ if (!window.dubplus && Dubtrack.session.id) {
   });
 }
 
-},{"./lib/init.js":4,"./utils/css.js":38,"./utils/modal.js":40,"./utils/preload.js":44,"./utils/waitFor.js":45}],2:[function(require,module,exports){
+},{"./lib/init.js":4,"./utils/css.js":39,"./utils/modal.js":41,"./utils/preload.js":45,"./utils/waitFor.js":46}],2:[function(require,module,exports){
 'use strict';
 
 /* global  emojify */
@@ -265,62 +265,23 @@ prepEmoji.processTastyEmotes = function (data) {
 
 module.exports = prepEmoji;
 
-},{"../lib/settings.js":7,"../utils/getJSON.js":39}],3:[function(require,module,exports){
-"use strict";
+},{"../lib/settings.js":8,"../utils/getJSON.js":40}],3:[function(require,module,exports){
+'use strict';
 
-/**
- * previewList
- * 
- * In this JS file should only exist what's necessary to populate the
- * autocomplete preview list that popups up for emojis and mentions
- * 
- * It also binds the events that handle navigating through the list
- * and also placing selected text into the chat
- */
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
-// var css = require('../utils/css.js');
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var textChoice = "";
-var currentData;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var setData = function setData(data) {
-  currentData = data;
-};
-
-function repl(str, start, end, newtext) {
-  return str.substring(0, start - 1) + newtext + str.substring(end);
+var debugAC = false;
+function log() {
+  if (debugAC) {
+    console.log.apply(console, arguments);
+  }
 }
-
-var updateChatInput = function updateChatInput(start, end, newText) {
-  var inputText = $("#chat-txt-message").val();
-  var updatedText = repl(inputText, start, end, newText || textChoice) + " ";
-  $('#autocomplete-preview').empty().removeClass('ac-show');
-  $("#chat-txt-message").val(updatedText).focus();
-};
-
-var doNavigate = function doNavigate(diff) {
-  var displayBoxIndex = $('.preview-item.selected').index();
-
-  displayBoxIndex += diff;
-  var oBoxCollection = $(".ac-show li");
-
-  // remove "press enter to select" span
-  $('.ac-list-press-enter').remove();
-
-  if (displayBoxIndex >= oBoxCollection.length) {
-    displayBoxIndex = 0;
-  }
-  if (displayBoxIndex < 0) {
-    displayBoxIndex = oBoxCollection.length - 1;
-  }
-
-  var cssClass = "selected";
-  var enterToSelectSpan = '<span class="ac-list-press-enter">press enter to select</span>';
-  oBoxCollection.removeClass(cssClass).eq(displayBoxIndex).addClass(cssClass).append(enterToSelectSpan);
-  var $pvItem = $('.preview-item.selected');
-  $pvItem.get(0).scrollIntoView(false);
-  textChoice = $pvItem.find('.ac-text').text();
-};
 
 /**
  * Populates the popup container with a list of items that you can click/enter
@@ -333,7 +294,7 @@ var doNavigate = function doNavigate(diff) {
  *   alt : OPTIONAL, to add to alt and title tag
  * }
  */
-var display = function display(acArray) {
+var makeList = function makeList(acArray) {
   function makePreviewContainer(cn) {
     var d = document.createElement('li');
     d.className = cn;
@@ -397,31 +358,132 @@ var display = function display(acArray) {
   aCp.classList.add('ac-show');
 };
 
-var updater = function updater() {
-  var newText = $(this).find('.ac-text').text();
-  updateChatInput(currentData.strStart, currentData.strEnd, newText);
-};
+function isElementInView(el, container) {
+  var rect = el.getBoundingClientRect();
+  var outerRect = container.getBoundingClientRect();
+  return rect.top >= outerRect.top && rect.bottom <= outerRect.bottom;
+}
 
-var init = function init() {
-  var acUL = document.createElement('ul');
-  acUL.id = "autocomplete-preview";
-  $('.pusher-chat-widget-input').prepend(acUL);
-  $(document.body).on('click', '.preview-item', updater);
-};
+/**
+ * previewList
+ * 
+ * In this JS file should only exist what's necessary to populate the
+ * autocomplete preview list that popups up for emojis and mentions
+ * 
+ * It also binds the events that handle navigating through the list
+ * and also placing selected text into the chat
+ */
 
-var stop = function stop() {
-  $(document.body).off('click', '.preview-item', updater);
-  $('#autocomplete-preview').remove();
-};
+var PreviewListManager = function () {
+  function PreviewListManager(data) {
+    _classCallCheck(this, PreviewListManager);
 
-module.exports = {
-  init: init,
-  stop: stop,
-  display: display,
-  updateChatInput: updateChatInput,
-  doNavigate: doNavigate,
-  setData: setData
-};
+    this._data = data || {
+      start: 0,
+      end: 0,
+      selected: ""
+    };
+  }
+
+  _createClass(PreviewListManager, [{
+    key: 'repl',
+    value: function repl(str, start, end, newtext) {
+      return str.substring(0, start - 1) + newtext + str.substring(end);
+    }
+  }, {
+    key: 'updateChatInput',
+    value: function updateChatInput() {
+      log("inUpdate", this._data);
+      var inputText = $("#chat-txt-message").val();
+      var updatedText = this.repl(inputText, this._data.start, this._data.end, this._data.selected) + " ";
+      $('#autocomplete-preview').empty().removeClass('ac-show');
+      $("#chat-txt-message").val(updatedText).focus();
+    }
+  }, {
+    key: 'doNavigate',
+    value: function doNavigate(diff) {
+      // get the current index of selected element within the nodelist collection of previews
+      var displayBoxIndex = $('.preview-item.selected').index();
+
+      // calculate new index position with given argument
+      displayBoxIndex += diff;
+
+      var oBoxCollection = $(".ac-show li");
+
+      // remove "press enter to select" span
+      $('.ac-list-press-enter').remove();
+
+      // if new index is greater than total length then we reset back to the top
+      if (displayBoxIndex >= oBoxCollection.length) {
+        displayBoxIndex = 0;
+      }
+      // if at the top and index becomes negative, we wrap down to end of array
+      if (displayBoxIndex < 0) {
+        displayBoxIndex = oBoxCollection.length - 1;
+      }
+
+      var cssClass = "selected";
+      var enterToSelectSpan = '<span class="ac-list-press-enter">press enter or tab to select</span>';
+      oBoxCollection.removeClass(cssClass).eq(displayBoxIndex).addClass(cssClass).append(enterToSelectSpan);
+
+      var pvItem = document.querySelector('.preview-item.selected');
+      var acPreview = document.querySelector('#autocomplete-preview');
+      var isInView = isElementInView(pvItem, acPreview);
+      log("isInView", isInView);
+      var align = diff === 1 ? false : true;
+      if (!isInView) {
+        pvItem.scrollIntoView(align);
+      }
+    }
+  }, {
+    key: 'updater',
+    value: function updater(e) {
+      log(e.target, e);
+      this._data.selected = $(e.target).find('.ac-text').text();
+      this.updateChatInput();
+    }
+  }, {
+    key: 'init',
+    value: function init() {
+      var _this = this;
+
+      var acUL = document.createElement('ul');
+      acUL.id = "autocomplete-preview";
+      $('.pusher-chat-widget-input').prepend(acUL);
+      $(document.body).on('click', '.preview-item', function (e) {
+        return _this.updater(e);
+      });
+    }
+  }, {
+    key: 'stop',
+    value: function stop() {
+      // the garbade collector should clean up the event listener added in init
+      $('#autocomplete-preview').remove();
+    }
+  }, {
+    key: 'data',
+    get: function get() {
+      return this._data;
+    },
+    set: function set(newData) {
+      if (newData) {
+        this._data = newData;
+      }
+    }
+  }, {
+    key: 'selected',
+    set: function set(text) {
+      if (text) {
+        this._data.selected = text;
+      }
+    }
+  }]);
+
+  return PreviewListManager;
+}();
+
+exports.PreviewListManager = PreviewListManager;
+exports.makeList = makeList;
 
 },{}],4:[function(require,module,exports){
 (function (PKGINFO){
@@ -471,7 +533,7 @@ module.exports = function () {
 };
 
 }).call(this,'{"name":"DubPlus","version":"0.1.0","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
-},{"../modules/eta.js":20,"../modules/snooze.js":32,"../utils/css.js":38,"./loadModules.js":5,"./menu.js":6}],5:[function(require,module,exports){
+},{"../modules/eta.js":21,"../modules/snooze.js":33,"../utils/css.js":39,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -502,35 +564,6 @@ var loadAllModules = function loadAllModules() {
     window.dubplus[mod.id].toggleAndSave = options.toggleAndSave;
     // check stored settings for module's initial state
     mod.optionState = settings.options[mod.id] || false;
-
-    // add event listener
-    $('body').on('click', '#' + mod.id, function (ev) {
-      // if clicking on the "extra-icon", run module's "extra" function
-      if (ev.target.classList.contains('extra-icon') && mod.extra) {
-        mod.extra.call(mod);
-        return;
-      }
-
-      if (mod.turnOn && mod.turnOff) {
-        var newOptionState;
-        if (!mod.optionState) {
-          newOptionState = true;
-          mod.turnOn.call(mod);
-        } else {
-          newOptionState = false;
-          mod.turnOff.call(mod);
-        }
-
-        mod.optionState = newOptionState;
-        options.toggleAndSave(mod.id, newOptionState);
-        return;
-      }
-
-      if (mod.go) {
-        // .go is used for modules that never save state, like fullscreen
-        mod.go.call(mod);
-      }
-    });
 
     // This is run only once, when the script is loaded.
     // put anything you want ALWAYS run on Dub+ script load here 
@@ -567,10 +600,127 @@ var loadAllModules = function loadAllModules() {
 
 exports.default = loadAllModules;
 
-},{"../lib/menu.js":6,"../lib/settings.js":7,"../modules/index.js":27,"../utils/options.js":43}],6:[function(require,module,exports){
+},{"../lib/menu.js":7,"../lib/settings.js":8,"../modules/index.js":28,"../utils/options.js":44}],6:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var options = require('../utils/options.js');
+
+/**
+ * Handles the toggling of the menu sections
+ * @param  {Element} currentSection The pure DOM element of menu header
+ * @return {undefined}
+ */
+var toggleMenuSection = function toggleMenuSection(currentSection) {
+  var menuSec = currentSection.nextElementSibling;
+  var icon = currentSection.children[0];
+  var menuName = currentSection.textContent.trim().replace(" ", "-").toLowerCase();
+  var closedClass = 'dubplus-menu-section-closed';
+  var isClosed = $(menuSec).toggleClass(closedClass).hasClass(closedClass);
+
+  if (isClosed) {
+    // menu is closed
+    $(icon).removeClass('fa-angle-down');
+    $(icon).addClass('fa-angle-right');
+    options.saveOption('menu', menuName, 'closed');
+  } else {
+    // menu is open
+    $(icon).removeClass('fa-angle-right');
+    $(icon).addClass('fa-angle-down');
+    options.saveOption('menu', menuName, 'open');
+  }
+};
+
+/**
+ * Traverses up the dubplus menu DOM tree until it finds a match to a corresponding function
+ * @param  {Element} target DOM Element
+ * @return {Object}         our module or null
+ */
+var traverseMenuDOM = function traverseMenuDOM(target) {
+  // if we've reached the dubplus-menu container then we've gone too far
+  if (!target || $(target).hasClass('dubplus-menu')) {
+    return null;
+  }
+
+  // to handle the opening/closings of our sections
+  if ($(target).hasClass('dubplus-menu-section-header')) {
+    toggleMenuSection(target);
+    return null;
+  }
+
+  // check if a module exists matching current ID
+  var module = window.dubplus[target.id];
+
+  if (!module) {
+    // recursively try until we get a hit or reach our menu container
+    return traverseMenuDOM(target.parentElement);
+  } else {
+    return module;
+  }
+};
+
+/**
+ * Click event handler for the whole menu, delegating events to their proper function
+ * @param  {object} ev the click event object
+ * @return {undefined}
+ */
+var menuDelegator = function menuDelegator(ev) {
+
+  var mod = traverseMenuDOM(ev.target);
+  if (!mod) {
+    return;
+  }
+
+  // if clicking on the "extra-icon", run module's "extra" function
+  if ($(ev.target).hasClass('extra-icon') && mod.extra) {
+    mod.extra.call(mod);
+    return;
+  }
+
+  if (mod.turnOn && mod.turnOff) {
+    var newOptionState;
+    if (!mod.optionState) {
+      newOptionState = true;
+      mod.turnOn.call(mod);
+    } else {
+      newOptionState = false;
+      mod.turnOff.call(mod);
+    }
+
+    mod.optionState = newOptionState;
+    options.toggleAndSave(mod.id, newOptionState);
+    return;
+  }
+
+  if (mod.go) {
+    // .go is used for modules that never save state, like fullscreen
+    mod.go.call(mod);
+  }
+};
+
+exports.default = function () {
+  var dpMenu = document.querySelector('.dubplus-menu');
+
+  // add event listener to the main menu and delegate
+  dpMenu.addEventListener('click', menuDelegator);
+
+  // hide/show the  menu when you click on the icon in the top right
+  document.querySelector('.dubplus-icon').addEventListener('click', function () {
+    $(dpMenu).toggleClass('dubplus-menu-open');
+  });
+};
+
+},{"../utils/options.js":44}],7:[function(require,module,exports){
 'use strict';
 
-var options = require('../utils/options.js');
+var _menuEvents = require('./menu-events.js');
+
+var _menuEvents2 = _interopRequireDefault(_menuEvents);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var settings = require('./settings.js');
 var css = require('../utils/css.js');
 
@@ -592,12 +742,8 @@ module.exports = {
 
     // add icon to the upper right corner
     var menuIcon = '<div class="dubplus-icon"><img src="' + settings.srcRoot + '/images/dubplus.svg" alt=""></div>';
-    $('.header-right-navigation').append(menuIcon);
 
-    // hide/show the  menu when you click on the icon in the top right
-    $('body').on('click', '.dubplus-icon', function (e) {
-      $('.dubplus-menu').toggleClass('dubplus-menu-open');
-    });
+    document.querySelector('.header-right-navigation').insertAdjacentHTML('beforeend', menuIcon);
 
     // make the menu
     var dp_menu_html = '\n      <section class="dubplus-menu">\n          <p class="dubplus-menu-header">Dub+ Options</p>';
@@ -630,26 +776,10 @@ module.exports = {
     menuString += '</section>';
 
     // add it to the DOM
-    $('body').append(menuString);
-    // use the perfectScrollBar plugin to make it look nice
-    // $('.dubplus-menu').perfectScrollbar();
+    document.body.insertAdjacentHTML('beforeend', menuString);
 
-    // add event handler for menu sections
-    $('body').on('click', '.dubplus-menu-section-header', function (e) {
-      var $menuSec = $(this).next('.dubplus-menu-section');
-      var $icon = $(this).find('span');
-      var menuName = $(this).text().trim().replace(" ", "-").toLowerCase();
-      $menuSec.toggleClass('dubplus-menu-section-closed');
-      if ($menuSec.hasClass('dubplus-menu-section-closed')) {
-        // menu is closed
-        $icon.removeClass('fa-angle-down').addClass('fa-angle-right');
-        options.saveOption('menu', menuName, 'closed');
-      } else {
-        // menu is open
-        $icon.removeClass('fa-angle-right').addClass('fa-angle-down');
-        options.saveOption('menu', menuName, 'open');
-      }
-    });
+    // initialize our click event delegator
+    (0, _menuEvents2.default)();
   },
 
   makeOptionMenu: function makeOptionMenu(menuTitle, options) {
@@ -659,9 +789,9 @@ module.exports = {
       state: false, // whether the menu item is on/off
       extraIcon: null, // define the extra icon if an option needs it (like AFK, Custom Mentions)
       cssClass: '', // adds extra CSS class(es) if desired,
-      altIcon: null
+      altIcon: null // use a font-awesome icon instead of the switch
     };
-    var opts = $.extend({}, defaults, options);
+    var opts = Object.assign({}, defaults, options);
     var _extra = '';
     var _state = opts.state ? 'dubplus-switch-on' : '';
     if (opts.extraIcon) {
@@ -677,26 +807,15 @@ module.exports = {
       mainIcon = '<span class="fa fa-' + opts.altIcon + '"></span>';
     }
     return '\n      <li id="' + opts.id + '" class="' + mainCssClass + ' ' + _state + ' ' + opts.cssClass + ' title="' + opts.desc + '">\n        ' + _extra + '\n        ' + mainIcon + '\n        <span class="dubplus-menu-label">' + menuTitle + '</span>\n      </li>';
-  },
-
-  makeLinkMenu: function makeLinkMenu(menuTitle, icon, link, options) {
-    var defaults = {
-      id: '',
-      desc: '',
-      cssClass: ''
-    };
-    var opts = $.extend({}, defaults, options);
-    return '\n      <li id="' + opts.id + '" class="dubplus-menu-icon ' + opts.cssClass + ' title="' + opts.desc + '">\n        <span class="fa fa-' + icon + '"></span>\n        <a href="' + link + '" class="dubplus-menu-label" target="_blank">' + menuTitle + '</a>\n      </li>';
   }
 
 };
 
-},{"../utils/css.js":38,"../utils/options.js":43,"./settings.js":7}],7:[function(require,module,exports){
+},{"../utils/css.js":39,"./menu-events.js":6,"./settings.js":8}],8:[function(require,module,exports){
 (function (CURRENT_BRANCH,CURRENT_REPO){
 "use strict";
 
 var defaults = {
-  our_version: '0.1.0',
   // this will store all the on/off states
   options: {},
   // this will store the open/close state of the menu sections
@@ -725,7 +844,7 @@ exportSettings.srcRoot = "https://rawgit.com/" + CURRENT_REPO + "/DubPlus/" + CU
 module.exports = exportSettings;
 
 }).call(this,'master','DubPlus')
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 /**
@@ -787,7 +906,7 @@ afk_module.extra = function () {
     title: 'Custom AFK Message',
     content: 'Enter a custom Away From Keyboard [AFK] message here',
     value: settings.custom.customAfkMessage || '',
-    placeholder: 'Be right back!',
+    placeholder: "Be right back!",
     maxlength: '255',
     confirmCallback: saveAFKmessage
   });
@@ -795,16 +914,26 @@ afk_module.extra = function () {
 
 module.exports = afk_module;
 
-},{"../lib/settings.js":7,"../utils/modal.js":40,"../utils/options.js":43}],9:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":41,"../utils/options.js":44}],10:[function(require,module,exports){
 'use strict';
+
+var _previewList = require('../emojiUtils/previewList.js');
 
 /**
  * Autocomplete Emojis/Emotes
  */
 /*global _, Dubtrack, emojify*/
-var previewList = require('../emojiUtils/previewList.js');
 var settings = require('../lib/settings.js');
 var prepEmjoji = require('../emojiUtils/prepEmoji.js');
+
+
+// because I have a lot of logging on each keypress I made this
+var debugAC = false;
+function log() {
+  if (debugAC) {
+    console.log.apply(console, arguments);
+  }
+}
 
 var myModule = {};
 myModule.id = "dubplus-autocomplete";
@@ -828,11 +957,7 @@ var KEYS = {
 };
 
 var keyCharMin = 3; // when to start showing previews
-var inputRegex = new RegExp('(:|@)([&!()\\+\\-_a-z0-9]+)($|\\s)', 'ig');
-
-var previewSearchStr = "";
-var strStart = 0;
-var strEnd = 0;
+var inputRegex = new RegExp('(:)([&!()\\+\\-_a-z0-9]+)($|\\s)', 'ig');
 
 /**************************************************************************
  * A bunch of utility helpers for the emoji preview
@@ -846,6 +971,7 @@ var emojiUtils = {
       cn: type
     };
   },
+
   addToPreviewList: function addToPreviewList(emojiArray) {
     var self = this;
     var listArray = [];
@@ -867,8 +993,9 @@ var emojiUtils = {
       }
     });
 
-    previewList.display(listArray);
+    (0, _previewList.makeList)(listArray);
   },
+
   filterEmoji: function filterEmoji(str) {
     var finalStr = str.replace(/([+()])/, "\\$1");
     var re = new RegExp('^' + finalStr, "i");
@@ -886,11 +1013,14 @@ var emojiUtils = {
  * handles filtering emoji, twitch, and users preview autocomplete popup on keyup
  */
 
-var shouldClearPreview = function shouldClearPreview($ac, pvStr, current, kMin) {
+var previewList = new _previewList.PreviewListManager();
+
+var shouldClearPreview = function shouldClearPreview(ac, pvStr, current, kMin) {
   var lastChar = current.charAt(current.length - 1);
   if (pvStr.length < kMin || lastChar === ":" || lastChar === " " || current === "") {
     pvStr = "";
-    $ac.empty().removeClass('ac-show');
+    ac.innerHTML = "";
+    ac.className = "";
   }
   return pvStr;
 };
@@ -904,65 +1034,79 @@ var handleMatch = function handleMatch(triggerMatch, currentText, cursorPos, key
   var strStart = currentText.lastIndexOf(currentMatch);
   var strEnd = strStart + currentMatch.length;
 
-  // console.log("cursorPos", cursorPos);
+  log("cursorPos", cursorPos);
   if (cursorPos >= strStart && cursorPos <= strEnd) {
     // twitch and other emoji
     if (currentMatch && currentMatch.length >= keyCharMin && emoteChar === ":") {
       emojiUtils.addToPreviewList(emojiUtils.filterEmoji(currentMatch));
     }
   }
-  // console.log('match',triggerMatch,strStart,strEnd);
+  log('match', triggerMatch, strStart, strEnd);
 
   return {
-    strStart: strStart,
-    strEnd: strEnd,
+    start: strStart,
+    end: strEnd,
     currentMatch: currentMatch
   };
 };
 
 var chatInputKeyupFunc = function chatInputKeyupFunc(e) {
-  var $acPreview = $('#autocomplete-preview');
-  var hasItems = $acPreview.find('li').length > 0;
+  var acPreview = document.querySelector('#autocomplete-preview');
+  var hasItems = acPreview.children.length > 0;
 
   if (e.keyCode === KEYS.enter && !hasItems) {
     return; // do nothing
   }
 
   if (e.keyCode === KEYS.up && hasItems) {
+    e.preventDefault();
     previewList.doNavigate(-1);
     return;
   }
+
   if (e.keyCode === KEYS.down && hasItems) {
+    e.preventDefault();
     previewList.doNavigate(1);
     return;
+  }
+
+  if ((e.keyCode === KEYS.enter || e.keyCode === KEYS.tab) && hasItems) {
+    e.preventDefault();
+    previewList.selected = $('.preview-item.selected').find('.ac-text').text();
+    previewList.updateChatInput();
+    return false;
   }
 
   var currentText = this.value;
   var cursorPos = $(this).get(0).selectionStart;
 
   var triggerMatch = currentText.match(inputRegex);
+
+  var previewSearchStr = "";
+
   if (triggerMatch && triggerMatch.length > 0) {
     var matchData = handleMatch(triggerMatch, currentText, cursorPos, keyCharMin);
     previewSearchStr = matchData.currentMatch;
-    strStart = matchData.strStart;
-    strEnd = matchData.strEnd;
-    previewList.setData(matchData);
+    previewList.data = matchData;
   }
 
-  previewSearchStr = shouldClearPreview($acPreview, previewSearchStr, currentText, keyCharMin);
+  log("inKeyup", previewList.data);
 
-  if ((e.keyCode === KEYS.enter || e.keyCode === KEYS.tab) && hasItems) {
-    e.preventDefault();
-    previewList.updateChatInput(strStart, strEnd);
-    return false;
-  }
+  shouldClearPreview(acPreview, previewSearchStr, currentText, keyCharMin);
 };
 
 var chatInputKeydownFunc = function chatInputKeydownFunc(e) {
-  // Manually send the keycode to chat if it is 
-  // tab (9), enter (13), up arrow (38), or down arrow (40) for their autocomplete
-  if (_.includes([KEYS.tab, KEYS.enter, KEYS.up, KEYS.down], e.keyCode) && $('.ac-show').length === 0) {
+  var emptyPreview = document.querySelector('#autocomplete-preview').children.length <= 0;
+  var isValidKey = _.includes([KEYS.tab, KEYS.enter, KEYS.up, KEYS.down, KEYS.left, KEYS.right], e.keyCode);
+
+  // Manually send the keycodes if the preview popup isn't visible
+  if (isValidKey && emptyPreview) {
     return Dubtrack.room.chat.ncKeyDown({ 'which': e.keyCode });
+  }
+
+  // stop default behaviors of special keys so we can use them in preview
+  if (isValidKey && !emptyPreview) {
+    e.preventDefault();
   }
 };
 
@@ -977,13 +1121,14 @@ myModule.turnOn = function () {
 
 myModule.turnOff = function () {
   previewList.stop();
+  Dubtrack.room.chat.delegateEvents(Dubtrack.room.chat.events);
   $(document.body).off('keydown', "#chat-txt-message", chatInputKeydownFunc);
   $(document.body).off('keyup', "#chat-txt-message", chatInputKeyupFunc);
 };
 
 module.exports = myModule;
 
-},{"../emojiUtils/prepEmoji.js":2,"../emojiUtils/previewList.js":3,"../lib/settings.js":7}],10:[function(require,module,exports){
+},{"../emojiUtils/prepEmoji.js":2,"../emojiUtils/previewList.js":3,"../lib/settings.js":8}],11:[function(require,module,exports){
 "use strict";
 
 /* global Dubtrack */
@@ -1030,7 +1175,7 @@ autovote.turnOn = function () {
 
 module.exports = autovote;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 var _notify = require("../utils/notify.js");
@@ -1085,7 +1230,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/notify.js":42}],12:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/notify.js":43}],13:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1131,7 +1276,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../utils/css.js":38}],13:[function(require,module,exports){
+},{"../utils/css.js":39}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1197,7 +1342,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/modal.js":40,"../utils/options.js":43}],14:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":41,"../utils/options.js":44}],15:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1253,7 +1398,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/css.js":38,"../utils/modal.js":40,"../utils/options.js":43}],15:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/css.js":39,"../utils/modal.js":41,"../utils/options.js":44}],16:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1299,8 +1444,8 @@ myModule.turnOn = function () {
 
 myModule.extra = function () {
   modal.create({
-    title: 'Custom AFK Message',
-    content: 'Custom Mention Triggers (separate by comma)',
+    title: 'Custom Mentions',
+    content: 'Add your custom mention triggers here (separate by comma)',
     value: settings.custom.custom_mentions || '',
     placeholder: 'separate, custom triggers, by, comma, :heart:',
     maxlength: '255',
@@ -1314,7 +1459,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/modal.js":40,"../utils/options.js":43}],16:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":41,"../utils/options.js":44}],17:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -1389,7 +1534,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/modal.js":40,"../utils/options.js":43}],17:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":41,"../utils/options.js":44}],18:[function(require,module,exports){
 'use strict';
 
 var _notify = require('../utils/notify.js');
@@ -1453,7 +1598,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":7,"../utils/modal.js":40,"../utils/notify.js":42,"../utils/options.js":43}],18:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":41,"../utils/notify.js":43,"../utils/options.js":44}],19:[function(require,module,exports){
 "use strict";
 
 var _modcheck = require("../utils/modcheck.js");
@@ -1509,7 +1654,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../utils/modcheck.js":41}],19:[function(require,module,exports){
+},{"../utils/modcheck.js":42}],20:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1593,7 +1738,7 @@ emote_module.turnOff = function () {
 
 module.exports = emote_module;
 
-},{"../emojiUtils/prepEmoji.js":2}],20:[function(require,module,exports){
+},{"../emojiUtils/prepEmoji.js":2}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1628,7 +1773,7 @@ var hide_eta = function hide_eta() {
   $(this).empty();
 };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1658,7 +1803,7 @@ fs_module.go = function () {
 
 module.exports = fs_module;
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1704,7 +1849,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1728,7 +1873,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1752,7 +1897,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1775,7 +1920,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1799,7 +1944,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 // put this in order of appearance in the menu
@@ -1817,7 +1962,7 @@ require('./spacebarMute.js'), require('./warnOnNavigation.js'),
 // Customize
 require('./communityTheme.js'), require('./customCSS.js'), require('./customBackground.js'), require('./customNotificationSound.js')];
 
-},{"./afk.js":8,"./autocomplete.js":9,"./autovote.js":10,"./chatNotifications.js":11,"./communityTheme.js":12,"./customBackground.js":13,"./customCSS.js":14,"./customMentions.js":15,"./customNotificationSound.js":16,"./djNotification.js":17,"./downDubInChat.js":18,"./emotes.js":19,"./fullscreen.js":21,"./grabsInChat.js":22,"./hideAvatars.js":23,"./hideBackground.js":24,"./hideChat.js":25,"./hideVideo.js":26,"./pmNotifications.js":28,"./rain.js":29,"./showDubsOnHover.js":30,"./showTimestamps.js":31,"./snow.js":33,"./spacebarMute.js":34,"./splitchat.js":35,"./upDubInChat.js":36,"./warnOnNavigation.js":37}],28:[function(require,module,exports){
+},{"./afk.js":9,"./autocomplete.js":10,"./autovote.js":11,"./chatNotifications.js":12,"./communityTheme.js":13,"./customBackground.js":14,"./customCSS.js":15,"./customMentions.js":16,"./customNotificationSound.js":17,"./djNotification.js":18,"./downDubInChat.js":19,"./emotes.js":20,"./fullscreen.js":22,"./grabsInChat.js":23,"./hideAvatars.js":24,"./hideBackground.js":25,"./hideChat.js":26,"./hideVideo.js":27,"./pmNotifications.js":29,"./rain.js":30,"./showDubsOnHover.js":31,"./showTimestamps.js":32,"./snow.js":34,"./spacebarMute.js":35,"./splitchat.js":36,"./upDubInChat.js":37,"./warnOnNavigation.js":38}],29:[function(require,module,exports){
 "use strict";
 
 var _notify = require("../utils/notify.js");
@@ -1866,7 +2011,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../utils/notify.js":42}],29:[function(require,module,exports){
+},{"../utils/notify.js":43}],30:[function(require,module,exports){
 "use strict";
 
 var rain = {};
@@ -2051,7 +2196,7 @@ rain.unbindCanvas = function () {
 
 module.exports = rain;
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 var _modcheck = require('../utils/modcheck.js');
@@ -2614,7 +2759,7 @@ dubshover.turnOff = function () {
 
 module.exports = dubshover;
 
-},{"../utils/modal.js":40,"../utils/modcheck.js":41}],31:[function(require,module,exports){
+},{"../utils/modal.js":41,"../utils/modcheck.js":42}],32:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2638,7 +2783,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2697,8 +2842,10 @@ var snooze = function snooze() {
   }
 };
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
+
+var options = require('../utils/options.js');
 
 module.exports = {
   id: "dubplus-snow",
@@ -2726,6 +2873,7 @@ module.exports = {
       $.getScript("https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js").done(function () {
         _this.doSnow();
       }).fail(function (jqxhr, settings, exception) {
+        options.toggleAndSave(_this.id, false);
         console.error('Could not load snowfall jquery plugin', exception);
       });
     } else {
@@ -2733,14 +2881,17 @@ module.exports = {
     }
   },
 
-  // this function will be run on each click of the menu
   turnOff: function turnOff() {
-    $(document).snowfall('clear');
+    if ($.snowfall) {
+      // checking to avoid errors if you quickly switch it on/off before plugin
+      // is loaded in the turnOn function
+      $(document).snowfall('clear');
+    }
   }
 
 };
 
-},{}],34:[function(require,module,exports){
+},{"../utils/options.js":44}],35:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2769,7 +2920,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2787,13 +2938,13 @@ myModule.turnOn = function () {
   $('body').addClass('dubplus-split-chat');
 };
 
-myModule.go = function () {
+myModule.turnOff = function () {
   $('body').removeClass('dubplus-split-chat');
 };
 
 module.exports = myModule;
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2839,7 +2990,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2870,11 +3021,19 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 (function (TIME_STAMP){
 'use strict';
 
 var settings = require("../lib/settings.js");
+
+var makeLink = function makeLink(className, FileName) {
+  var link = document.createElement('link');
+  link.rel = "stylesheet";link.type = "text/css";
+  link.className = className || '';
+  link.href = FileName;
+  return link;
+};
 
 /**
  * Loads a CSS file into <head>.  It concats settings.srcRoot with the first argument (cssFile)
@@ -2887,9 +3046,8 @@ var load = function load(cssFile, className) {
   if (!cssFile) {
     return;
   }
-  var src = settings.srcRoot + cssFile;
-  var cn = 'class="' + className + '"' || '';
-  $('head').append('<link ' + cn + ' rel="stylesheet" type="text/css" href="' + src + '?' + TIME_STAMP + '">');
+  var link = makeLink(className, settings.srcRoot + cssFile + "?" + TIME_STAMP);
+  document.head.insertAdjacentElement('beforeend', link);
 };
 
 /**
@@ -2902,8 +3060,8 @@ var loadExternal = function loadExternal(cssFile, className) {
   if (!cssFile) {
     return;
   }
-  var cn = 'class="' + className + '"' || '';
-  $('head').append('<link ' + cn + ' rel="stylesheet" type="text/css" href="' + cssFile + '">');
+  var link = makeLink(className, cssFile);
+  document.head.insertAdjacentElement('beforeend', link);
 };
 
 module.exports = {
@@ -2911,8 +3069,8 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1488505713899')
-},{"../lib/settings.js":7}],39:[function(require,module,exports){
+}).call(this,'1488582363692')
+},{"../lib/settings.js":8}],40:[function(require,module,exports){
 'use strict';
 
 // jQuery's getJSON kept returning errors so making my own with promise-like
@@ -2950,7 +3108,7 @@ var GetJSON = function GetJSON(url, optionalEvent, headers) {
 
 module.exports = GetJSON;
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 function makeButtons(cb) {
@@ -2982,7 +3140,7 @@ var create = function create(options) {
     maxlength: 999,
     confirmCallback: null
   };
-  var opts = $.extend({}, defaults, options);
+  var opts = Object.assign({}, defaults, options);
 
   /*****************************************************
    * Create modal html string
@@ -2999,7 +3157,7 @@ var create = function create(options) {
 
   var dubplusModal = ['<div class="dp-modal">', '<aside class="container">', '<div class="title">', '<h1>' + opts.title + '</h1>', '</div>', '<div class="content">', '<p>' + opts.content + '</p>', textarea, '</div>', '<div class="dp-modal-buttons">', makeButtons(opts.confirmCallback), '</div>', '</aside>', '</div>'].join('');
 
-  $('body').append(dubplusModal);
+  document.body.insertAdjacentHTML('beforeend', dubplusModal);
 
   /*****************************************************
    * Attach events to your modal
@@ -3042,7 +3200,7 @@ module.exports = {
   close: close
 };
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3053,7 +3211,7 @@ exports.default = function (userid) {
   return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
 };
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3124,7 +3282,7 @@ function showNotification(opts) {
     callback: null,
     wait: 5000
   };
-  var options = $.extend({}, defaults, opts);
+  var options = Object.assign({}, defaults, opts);
 
   // don't show a notification if tab is active
   if (isActiveTab === true && !options.ignoreActiveTab) {
@@ -3148,7 +3306,7 @@ function showNotification(opts) {
   setTimeout(n.close.bind(n), options.wait);
 }
 
-},{"../utils/modal.js":40}],43:[function(require,module,exports){
+},{"../utils/modal.js":41}],44:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -3204,7 +3362,7 @@ module.exports = {
   saveOption: saveOption
 };
 
-},{"../lib/settings.js":7}],44:[function(require,module,exports){
+},{"../lib/settings.js":8}],45:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3223,10 +3381,10 @@ function preload() {
 
   var preloadHTML = '\n    <div class="dubplus-waiting" style="' + waitingStyles + '">\n      <div style="' + dpIcon + '">\n        <img src="' + settings.srcRoot + '/images/dubplus.svg" alt="DubPlus icon">\n      </div>\n      <span style="' + dpText + '">\n        Waiting for Dubtrack...\n      </span>\n    </div>\n  ';
 
-  $('body').prepend(preloadHTML);
+  document.body.insertAdjacentHTML('afterbegin', preloadHTML);
 }
 
-},{"../lib/settings.js":7}],45:[function(require,module,exports){
+},{"../lib/settings.js":8}],46:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3291,7 +3449,7 @@ function WaitFor(waitingFor, options) {
   var _failCB = function _failCB() {};
   var checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
 
-  var opts = $.extend({}, defaults, options);
+  var opts = Object.assign({}, defaults, options);
 
   var tryCount = 0;
   var tryLimit = opts.seconds * 1000 / opts.interval; // how many intervals

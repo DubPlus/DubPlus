@@ -57,7 +57,7 @@ afk_module.extra = function() {
     title: 'Custom AFK Message',
     content: 'Enter a custom Away From Keyboard [AFK] message here',
     value : settings.custom.customAfkMessage || '',
-    placeholder: 'Be right back!',
+    placeholder: "Be right back!",
     maxlength: '255',
     confirmCallback: saveAFKmessage
   });
