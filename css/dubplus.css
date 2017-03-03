@@ -103,7 +103,8 @@
   float: left;
   display: block;
   top: 2px;
-  cursor: pointer; }
+  cursor: pointer;
+  text-align: center; }
 
 .dubplus-switch-bg {
   position: relative;
@@ -124,12 +125,13 @@
 
 .dubplus-switcher {
   display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 12px;
   vertical-align: middle;
   position: absolute;
   z-index: 2;
+  top: 0;
   background: #eb008b;
   -webkit-transition: -webkit-transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
   transition: -webkit-transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
