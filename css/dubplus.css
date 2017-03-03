@@ -129,7 +129,6 @@
   border-radius: 10px;
   vertical-align: middle;
   position: absolute;
-  top: 0;
   z-index: 2;
   background: #eb008b;
   -webkit-transition: -webkit-transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
@@ -144,8 +143,8 @@
 .dubplus-switch-on .dubplus-switcher {
   background: #6fcbdc;
   border: 2px solid #6fcbdc;
-  -webkit-transform: translateX(98%);
-          transform: translateX(98%); }
+  -webkit-transform: translateX(120%);
+          transform: translateX(120%); }
 
 .dubplus-switch .dubplus-menu-label,
 .dubplus-menu-icon .dubplus-menu-label {

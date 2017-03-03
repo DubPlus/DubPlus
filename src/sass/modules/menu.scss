@@ -156,7 +156,6 @@ $buttonBorderOn : #6fcbdc;
   border-radius: $switcher + px;
   vertical-align: middle;
   position: absolute;
-  top: 0;
   z-index: 2;
   background: $buttonBgOff;
   transition: transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
@@ -170,7 +169,7 @@ $buttonBorderOn : #6fcbdc;
 .dubplus-switch-on .dubplus-switcher {
   background: $buttonBgOn;
   border: $labelBorder + px solid $buttonBorderOn;
-  transform: translateX(98%);
+  transform: translateX(120%);
 }
 
 .dubplus-switch .dubplus-menu-label,
