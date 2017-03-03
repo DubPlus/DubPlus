@@ -35,7 +35,9 @@ module.exports = {
   },
 
   turnOff : function(){
-    if ($.snowfall) { // checking to avoid errors if you quickly switch it on/off
+    if ($.snowfall) { 
+      // checking to avoid errors if you quickly switch it on/off before plugin
+      // is loaded in the turnOn function
       $(document).snowfall('clear');
     }
   }

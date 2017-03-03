@@ -61,7 +61,7 @@ var create = function(options) {
     '</div>',
   ].join('');
 
-  $('body').append(dubplusModal);
+  document.body.insertAdjacentHTML('beforeend', dubplusModal);
 
   /*****************************************************
    * Attach events to your modal

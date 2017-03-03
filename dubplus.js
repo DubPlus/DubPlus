@@ -552,20 +552,21 @@ var options = require('../utils/options.js');
  * @return {undefined}
  */
 var toggleMenuSection = function toggleMenuSection(currentSection) {
-  var $menuSec = currentSection.nextElementSibling;
-  var $icon = currentSection.children[0];
+  var menuSec = currentSection.nextElementSibling;
+  var icon = currentSection.children[0];
   var menuName = currentSection.textContent.trim().replace(" ", "-").toLowerCase();
-  var isClosed = $menuSec.classList.toggle('dubplus-menu-section-closed');
+  var closedClass = 'dubplus-menu-section-closed';
+  var isClosed = $(menuSec).toggleClass(closedClass).hasClass(closedClass);
 
   if (isClosed) {
     // menu is closed
-    $icon.classList.remove('fa-angle-down');
-    $icon.classList.add('fa-angle-right');
+    $(icon).removeClass('fa-angle-down');
+    $(icon).addClass('fa-angle-right');
     options.saveOption('menu', menuName, 'closed');
   } else {
     // menu is open
-    $icon.classList.remove('fa-angle-right');
-    $icon.classList.add('fa-angle-down');
+    $(icon).removeClass('fa-angle-right');
+    $(icon).addClass('fa-angle-down');
     options.saveOption('menu', menuName, 'open');
   }
 };
@@ -577,12 +578,12 @@ var toggleMenuSection = function toggleMenuSection(currentSection) {
  */
 var traverseMenuDOM = function traverseMenuDOM(target) {
   // if we've reached the dubplus-menu container then we've gone too far
-  if (!target || target.classList.contains('dubplus-menu')) {
+  if (!target || $(target).hasClass('dubplus-menu')) {
     return null;
   }
 
   // to handle the opening/closings of our sections
-  if (target.classList.contains('dubplus-menu-section-header')) {
+  if ($(target).hasClass('dubplus-menu-section-header')) {
     toggleMenuSection(target);
     return null;
   }
@@ -611,7 +612,7 @@ var menuDelegator = function menuDelegator(ev) {
   }
 
   // if clicking on the "extra-icon", run module's "extra" function
-  if (ev.target.classList.contains('extra-icon') && mod.extra) {
+  if ($(ev.target).hasClass('extra-icon') && mod.extra) {
     mod.extra.call(mod);
     return;
   }
@@ -645,7 +646,7 @@ exports.default = function () {
 
   // hide/show the  menu when you click on the icon in the top right
   document.querySelector('.dubplus-icon').addEventListener('click', function () {
-    dpMenu.classList.toggle('dubplus-menu-open');
+    $(dpMenu).toggleClass('dubplus-menu-open');
   });
 };
 
@@ -714,8 +715,6 @@ module.exports = {
 
     // add it to the DOM
     document.body.insertAdjacentHTML('beforeend', menuString);
-    // use the perfectScrollBar plugin to make it look nice
-    // $('.dubplus-menu').perfectScrollbar();
 
     // initialize our click event delegator
     (0, _menuEvents2.default)();
@@ -1357,8 +1356,8 @@ myModule.turnOn = function () {
 
 myModule.extra = function () {
   modal.create({
-    title: 'Custom AFK Message',
-    content: 'Custom Mention Triggers (separate by comma)',
+    title: 'Custom Mentions',
+    content: 'Add your custom mention triggers here (separate by comma)',
     value: settings.custom.custom_mentions || '',
     placeholder: 'separate, custom triggers, by, comma, :heart:',
     maxlength: '255',
@@ -2732,7 +2731,8 @@ module.exports = {
 
   turnOff: function turnOff() {
     if ($.snowfall) {
-      // checking to avoid errors if you quickly switch it on/off
+      // checking to avoid errors if you quickly switch it on/off before plugin
+      // is loaded in the turnOn function
       $(document).snowfall('clear');
     }
   }
@@ -2875,6 +2875,14 @@ module.exports = myModule;
 
 var settings = require("../lib/settings.js");
 
+var makeLink = function makeLink(className, FileName) {
+  var link = document.createElement('link');
+  link.rel = "stylesheet";link.type = "text/css";
+  link.className = className || '';
+  link.href = FileName;
+  return link;
+};
+
 /**
  * Loads a CSS file into <head>.  It concats settings.srcRoot with the first argument (cssFile)
  * @param {string} cssFile    the css file location
@@ -2886,9 +2894,8 @@ var load = function load(cssFile, className) {
   if (!cssFile) {
     return;
   }
-  var src = settings.srcRoot + cssFile;
-  var cn = 'class="' + className + '"' || '';
-  $('head').append('<link ' + cn + ' rel="stylesheet" type="text/css" href="' + src + '?' + TIME_STAMP + '">');
+  var link = makeLink(className, settings.srcRoot + cssFile + "?" + TIME_STAMP);
+  document.head.insertAdjacentElement('beforeend', link);
 };
 
 /**
@@ -2901,8 +2908,8 @@ var loadExternal = function loadExternal(cssFile, className) {
   if (!cssFile) {
     return;
   }
-  var cn = 'class="' + className + '"' || '';
-  $('head').append('<link ' + cn + ' rel="stylesheet" type="text/css" href="' + cssFile + '">');
+  var link = makeLink(className, cssFile);
+  document.head.insertAdjacentElement('beforeend', link);
 };
 
 module.exports = {
@@ -2910,7 +2917,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1488519650122')
+}).call(this,'1488564003142')
 },{"../lib/settings.js":8}],39:[function(require,module,exports){
 'use strict';
 
@@ -2998,7 +3005,7 @@ var create = function create(options) {
 
   var dubplusModal = ['<div class="dp-modal">', '<aside class="container">', '<div class="title">', '<h1>' + opts.title + '</h1>', '</div>', '<div class="content">', '<p>' + opts.content + '</p>', textarea, '</div>', '<div class="dp-modal-buttons">', makeButtons(opts.confirmCallback), '</div>', '</aside>', '</div>'].join('');
 
-  $('body').append(dubplusModal);
+  document.body.insertAdjacentHTML('beforeend', dubplusModal);
 
   /*****************************************************
    * Attach events to your modal
@@ -3222,7 +3229,7 @@ function preload() {
 
   var preloadHTML = '\n    <div class="dubplus-waiting" style="' + waitingStyles + '">\n      <div style="' + dpIcon + '">\n        <img src="' + settings.srcRoot + '/images/dubplus.svg" alt="DubPlus icon">\n      </div>\n      <span style="' + dpText + '">\n        Waiting for Dubtrack...\n      </span>\n    </div>\n  ';
 
-  $('body').prepend(preloadHTML);
+  document.body.insertAdjacentHTML('afterbegin', preloadHTML);
 }
 
 },{"../lib/settings.js":8}],45:[function(require,module,exports){

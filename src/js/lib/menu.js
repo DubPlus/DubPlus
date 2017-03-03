@@ -87,8 +87,6 @@ module.exports = {
 
     // add it to the DOM
     document.body.insertAdjacentHTML('beforeend', menuString);
-    // use the perfectScrollBar plugin to make it look nice
-    // $('.dubplus-menu').perfectScrollbar();
     
     // initialize our click event delegator
     menuEvents();

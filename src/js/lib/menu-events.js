@@ -6,20 +6,21 @@ const options = require('../utils/options.js');
  * @return {undefined}
  */
 var toggleMenuSection = function(currentSection) {
-  var $menuSec = currentSection.nextElementSibling;
-  var $icon = currentSection.children[0];
+  var menuSec = currentSection.nextElementSibling;
+  var icon = currentSection.children[0];
   var menuName = currentSection.textContent.trim().replace(" ", "-").toLowerCase();
-  var isClosed = $menuSec.classList.toggle('dubplus-menu-section-closed');
+  var closedClass = 'dubplus-menu-section-closed';
+  var isClosed = $(menuSec).toggleClass(closedClass).hasClass(closedClass);
   
   if (isClosed) {
     // menu is closed
-    $icon.classList.remove('fa-angle-down');
-    $icon.classList.add('fa-angle-right');
+    $(icon).removeClass('fa-angle-down');
+    $(icon).addClass('fa-angle-right');
     options.saveOption( 'menu', menuName , 'closed');
   } else {
     // menu is open
-    $icon.classList.remove('fa-angle-right');
-    $icon.classList.add('fa-angle-down');
+    $(icon).removeClass('fa-angle-right');
+    $(icon).addClass('fa-angle-down');
     options.saveOption( 'menu', menuName , 'open');
   }
 };
@@ -31,12 +32,12 @@ var toggleMenuSection = function(currentSection) {
  */
 var traverseMenuDOM = function(target) {
   // if we've reached the dubplus-menu container then we've gone too far
-  if (!target || target.classList.contains('dubplus-menu')) {
+  if (!target || $(target).hasClass('dubplus-menu')) {
     return null;
   }
 
   // to handle the opening/closings of our sections
-  if (target.classList.contains('dubplus-menu-section-header')) {
+  if ($(target).hasClass('dubplus-menu-section-header')) {
     toggleMenuSection(target);
     return null;
   }
@@ -63,7 +64,7 @@ var menuDelegator = function(ev) {
   if (!mod) { return; }
 
   // if clicking on the "extra-icon", run module's "extra" function
-  if (ev.target.classList.contains('extra-icon') && mod.extra) {
+  if ($(ev.target).hasClass('extra-icon') && mod.extra) {
     mod.extra.call(mod);
     return;
   }
@@ -98,6 +99,6 @@ export default ()=> {
 
   // hide/show the  menu when you click on the icon in the top right
   document.querySelector('.dubplus-icon').addEventListener('click', function(){
-    dpMenu.classList.toggle('dubplus-menu-open');
+    $(dpMenu).toggleClass('dubplus-menu-open');
   });
 };
