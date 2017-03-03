@@ -1,4 +1,4 @@
-/****************************************************************
+/***************************************************************
  * Dub+ menu styles
  */
 
@@ -6,7 +6,7 @@ $menuWidth : 255px;
 
 /* css switch layout related variables */
 $labelBorder : 2;
-$switcher : 8;
+$switcher : 10;
 $padding : 1;
 
 // don't really need to touch these,  they are calcutated based off the above variables
@@ -156,21 +156,20 @@ $buttonBorderOn : #6fcbdc;
   border-radius: $switcher + px;
   vertical-align: middle;
   position: absolute;
+  top: 0;
   z-index: 2;
   background: $buttonBgOff;
-  border: $labelBorder + px solid $buttonBorderOff;
   transition: transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
 }
 
 .dubplus-switch-on .dubplus-switch-bg {
   background: $labelBgOn;
-  border: $labelBorder + px solid $labelBorderOn;
 }
 
 .dubplus-switch-on .dubplus-switcher {
   background: $buttonBgOn;
   border: $labelBorder + px solid $buttonBorderOn;
-  transform: translateX(100%);
+  transform: translateX(98%);
 }
 
 .dubplus-switch .dubplus-menu-label,
@@ -188,4 +187,3 @@ $buttonBorderOn : #6fcbdc;
   width: 9%;
   float: right;
 }
-/*****************************************/

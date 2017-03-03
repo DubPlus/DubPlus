@@ -489,6 +489,54 @@ var menuObj = {
   'Customize': ''
 };
 
+var getModule = function getModule(target) {
+  if (!target || target.classList.contains('dubplus-menu-section')) {
+    return null;
+  }
+
+  var module = window.dubplus[target.id];
+  if (!module) {
+    // recursively try until we hit 'dubplus-menu-section' or no more parentElements
+    return getModule(target.parentElement);
+  } else {
+    return module;
+  }
+};
+
+var menuDelegator = function menuDelegator(ev) {
+
+  var mod = getModule(ev.target);
+  if (!mod) {
+    return;
+  }
+
+  // if clicking on the "extra-icon", run module's "extra" function
+  if (ev.target.classList.contains('extra-icon') && mod.extra) {
+    mod.extra.call(mod);
+    return;
+  }
+
+  if (mod.turnOn && mod.turnOff) {
+    var newOptionState;
+    if (!mod.optionState) {
+      newOptionState = true;
+      mod.turnOn.call(mod);
+    } else {
+      newOptionState = false;
+      mod.turnOff.call(mod);
+    }
+
+    mod.optionState = newOptionState;
+    options.toggleAndSave(mod.id, newOptionState);
+    return;
+  }
+
+  if (mod.go) {
+    // .go is used for modules that never save state, like fullscreen
+    mod.go.call(mod);
+  }
+};
+
 /**
  * Loads all the modules and initliazes them
  */
@@ -502,35 +550,6 @@ var loadAllModules = function loadAllModules() {
     window.dubplus[mod.id].toggleAndSave = options.toggleAndSave;
     // check stored settings for module's initial state
     mod.optionState = settings.options[mod.id] || false;
-
-    // add event listener
-    $('body').on('click', '#' + mod.id, function (ev) {
-      // if clicking on the "extra-icon", run module's "extra" function
-      if (ev.target.classList.contains('extra-icon') && mod.extra) {
-        mod.extra.call(mod);
-        return;
-      }
-
-      if (mod.turnOn && mod.turnOff) {
-        var newOptionState;
-        if (!mod.optionState) {
-          newOptionState = true;
-          mod.turnOn.call(mod);
-        } else {
-          newOptionState = false;
-          mod.turnOff.call(mod);
-        }
-
-        mod.optionState = newOptionState;
-        options.toggleAndSave(mod.id, newOptionState);
-        return;
-      }
-
-      if (mod.go) {
-        // .go is used for modules that never save state, like fullscreen
-        mod.go.call(mod);
-      }
-    });
 
     // This is run only once, when the script is loaded.
     // put anything you want ALWAYS run on Dub+ script load here 
@@ -561,6 +580,9 @@ var loadAllModules = function loadAllModules() {
       altIcon: mod.altIcon || null
     });
   });
+
+  // add event listener to the main menu and delegate
+  $('body').on('click', '.dubplus-menu', menuDelegator);
 
   return menuObj;
 };
@@ -724,7 +746,7 @@ exportSettings.srcRoot = "https://rawgit.com/" + CURRENT_REPO + "/DubPlus/" + CU
 
 module.exports = exportSettings;
 
-}).call(this,'dev','FranciscoG')
+}).call(this,'redesign-prep','FranciscoG')
 },{}],8:[function(require,module,exports){
 'use strict';
 
@@ -787,7 +809,7 @@ afk_module.extra = function () {
     title: 'Custom AFK Message',
     content: 'Enter a custom Away From Keyboard [AFK] message here',
     value: settings.custom.customAfkMessage || '',
-    placeholder: 'Be right back!',
+    placeholder: "Be right back!",
     maxlength: '255',
     confirmCallback: saveAFKmessage
   });
@@ -2847,7 +2869,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1488468372717')
+}).call(this,'1488503073435')
 },{"../lib/settings.js":7}],38:[function(require,module,exports){
 'use strict';
 

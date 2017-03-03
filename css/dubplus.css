@@ -1,4 +1,4 @@
-/****************************************************************
+/***************************************************************
  * Dub+ menu styles
  */
 /* css switch layout related variables */
@@ -99,7 +99,7 @@
 .dubplus-menu-icon .fa {
   position: relative;
   color: #eb008b;
-  width: 25px;
+  width: 29px;
   float: left;
   display: block;
   top: 2px;
@@ -111,8 +111,8 @@
   top: 2px;
   z-index: 2;
   padding: 1px;
-  height: 14px;
-  width: 25px;
+  height: 16px;
+  width: 29px;
   border-radius: 20px;
   background: #333;
   border: 2px solid #444;
@@ -124,28 +124,27 @@
 
 .dubplus-switcher {
   display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 8px;
+  width: 10px;
+  height: 10px;
+  border-radius: 10px;
   vertical-align: middle;
   position: absolute;
+  top: 0;
   z-index: 2;
   background: #eb008b;
-  border: 2px solid #eb008b;
   -webkit-transition: -webkit-transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
   transition: -webkit-transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
   transition: transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
   transition: transform 0.2s cubic-bezier(0.8, 0, 0.05, 1), -webkit-transform 0.2s cubic-bezier(0.8, 0, 0.05, 1); }
 
 .dubplus-switch-on .dubplus-switch-bg {
-  background: #666;
-  border: 2px solid #666; }
+  background: #666; }
 
 .dubplus-switch-on .dubplus-switcher {
   background: #6fcbdc;
   border: 2px solid #6fcbdc;
-  -webkit-transform: translateX(100%);
-          transform: translateX(100%); }
+  -webkit-transform: translateX(98%);
+          transform: translateX(98%); }
 
 .dubplus-switch .dubplus-menu-label,
 .dubplus-menu-icon .dubplus-menu-label {
@@ -161,7 +160,6 @@
   width: 9%;
   float: right; }
 
-/*****************************************/
 .dp-modal {
   display: block;
   width: 100%;
@@ -389,7 +387,7 @@
   background-image: url(https://i.imgur.com/oTfAI0O.png); }
 
 .tasty-previews {
-  background-image: url(https://raw.githubusercontent.com/FranciscoG/DubPlus/dev/emotes/tastycat/21.png); }
+  background-image: url(https://raw.githubusercontent.com/FranciscoG/DubPlus/redesign-prep/emotes/tastycat/21.png); }
 
 #autocomplete-preview span {
   font-size: 0.8em;

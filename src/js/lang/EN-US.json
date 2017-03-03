@@ -15,19 +15,19 @@
   "modules" : {
     
     "afk" : {
-      "moduleName" : "",
-      "description" : "",
-      "category" : "",
-      "default_AFK_message" : "",
-      "modal_title" : "",
-      "modal_content" : "",
-      "modal_placeholder" : ""
+      "moduleName" : "AFK Auto-respond",
+      "description" : "Toggle Away from Keyboard and customize AFK message.",
+      "category" : "General",
+      "default_AFK_message" : "[AFK] I'm not here right now.",
+      "modal_title" : "Custom AFK Message",
+      "modal_content" : "Enter a custom Away From Keyboard [AFK] message here",
+      "modal_placeholder" : "Be right back!"
     },
 
     "autocomplete" : {
-      "moduleName" : "",
-      "description" : "",
-      "category" : ""
+      "moduleName" : "Autocomplete Emoji",
+      "description" : "Toggle autocompleting emojis and emotes.  Shows a preview box in the chat",
+      "category" : "General"
     },
 
     "autovote" : {
