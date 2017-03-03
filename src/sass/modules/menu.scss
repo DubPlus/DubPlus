@@ -164,6 +164,7 @@ $buttonBorderOn : #6fcbdc;
 
 .dubplus-switch-on .dubplus-switch-bg {
   background: $labelBgOn;
+  border: $labelBorder + px solid $labelBorderOn;
 }
 
 .dubplus-switch-on .dubplus-switcher {

@@ -138,7 +138,8 @@
   transition: transform 0.2s cubic-bezier(0.8, 0, 0.05, 1), -webkit-transform 0.2s cubic-bezier(0.8, 0, 0.05, 1); }
 
 .dubplus-switch-on .dubplus-switch-bg {
-  background: #666; }
+  background: #666;
+  border: 2px solid #666; }
 
 .dubplus-switch-on .dubplus-switcher {
   background: #6fcbdc;
