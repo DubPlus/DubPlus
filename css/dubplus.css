@@ -144,9 +144,8 @@
 
 .dubplus-switch-on .dubplus-switcher {
   background: #6fcbdc;
-  border: 2px solid #6fcbdc;
-  -webkit-transform: translateX(10px);
-          transform: translateX(10px); }
+  -webkit-transform: translateX(11px);
+          transform: translateX(11px); }
 
 .dubplus-switch .dubplus-menu-label,
 .dubplus-menu-icon .dubplus-menu-label {
