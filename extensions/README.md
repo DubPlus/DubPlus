@@ -26,3 +26,9 @@ helpful links:
 https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Porting_a_Google_Chrome_extension
 
 https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Chrome_incompatibilities
+
+Deploying via API
+
+FF: https://www.npmjs.com/package/firefox-extension-deploy
+
+Chrome: https://developer.chrome.com/webstore/using_webstore_api
