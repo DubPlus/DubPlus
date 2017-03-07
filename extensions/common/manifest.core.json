@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "DubPlus",
   "short_name": "Dub+",
-  "author": "------",
+  "author": "Dub+ Devs",
   "description": "Dub+ - A Dubtrack.fm script/extension for added features and customizations",
   "homepage_url": "https://dub.plus/",
   "browser_action": {
@@ -21,10 +21,11 @@
     }
   ],
   "icons": {
-    "16": "icons/16.png",
+    "16": "icons/18.png",
     "19": "icons/19.png",
     "38": "icons/38.png",
     "48": "icons/48.png",
+    "96": "icons/96.png",
     "128": "icons/128.png"
   }
 }

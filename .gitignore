@@ -4,3 +4,5 @@ node_modules
 README.html
 .vscode
 npm-debug.log
+*.zip
+private.json
