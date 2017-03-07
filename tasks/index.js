@@ -33,7 +33,6 @@ var tasks = {
   "default" : function(){
     this.bundle();
     this.sass();
-    extensionBuild();
   }
 };
 

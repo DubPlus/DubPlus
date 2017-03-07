@@ -34,6 +34,7 @@
     "node-sass": "^4.5.0",
     "postcss": "^5.2.14",
     "preprocess": "^3.1.0",
+    "request": "^2.80.0",
     "watchify": "^3.9.0"
   }
 }

@@ -51,14 +51,25 @@ var modal = require('./utils/modal.js');
 var init = require('./lib/init.js');
 var css = require('./utils/css.js');
 
+function errorModal(errorMsg) {
+  // probably should make a modal with inline styles
+  // or a smaller css file with just modal styles so 
+  // we're not loading the whole css for just a modal
+  css.load('/css/dubplus.css');
+  modal.create({
+    title: 'Dub+ Error',
+    content: errorMsg
+  });
+}
+
 /* globals Dubtrack */
-if (!window.dubplus && Dubtrack.session.id) {
+if (!window.dubplus) {
 
   (0, _preload2.default)();
 
   // checking to see if these items exist before initializing the script
   // instead of just picking an arbitrary setTimeout and hoping for the best
-  var checkList = ['Dubtrack.room.chat', 'Dubtrack.Events', 'Dubtrack.room.player', 'Dubtrack.helpers.cookie', 'Dubtrack.room.model', 'Dubtrack.room.users'];
+  var checkList = ['Dubtrack.session.id', 'Dubtrack.room.chat', 'Dubtrack.Events', 'Dubtrack.room.player', 'Dubtrack.helpers.cookie', 'Dubtrack.room.model', 'Dubtrack.room.users'];
 
   var _dubplusWaiting = new _waitFor2.default(checkList, { seconds: 10 }); // 10sec should be more than enough
 
@@ -66,22 +77,19 @@ if (!window.dubplus && Dubtrack.session.id) {
     init();
     $('.dubplus-waiting').remove();
   }).fail(function () {
-    $('.dubplus-waiting span').text('Something happed, refresh and try again');
+    if (!Dubtrack.session.id) {
+      errorModal('You\'re not logged in. Please login to use Dub+.');
+    } else {
+      $('.dubplus-waiting span').text('Something happed, refresh and try again');
+    }
   });
 } else {
-  var errorMsg;
 
   if (!Dubtrack.session.id) {
-    css.load('/css/dubplus.css');
-    errorMsg = 'You\'re not logged in. Please login to use Dub+.';
+    errorModal('You\'re not logged in. Please login to use Dub+.');
   } else {
-    errorMsg = 'Dub+ is already loaded';
+    errorModal('Dub+ is already loaded');
   }
-
-  modal.create({
-    title: 'Dub+ Error',
-    content: errorMsg
-  });
 }
 
 },{"./lib/init.js":4,"./utils/css.js":39,"./utils/modal.js":41,"./utils/preload.js":45,"./utils/waitFor.js":46}],2:[function(require,module,exports){
@@ -3069,7 +3077,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1488854254377')
+}).call(this,'1488921116263')
 },{"../lib/settings.js":8}],40:[function(require,module,exports){
 'use strict';
 
