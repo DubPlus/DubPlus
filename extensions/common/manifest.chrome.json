@@ -5,7 +5,9 @@
     "http://dubtrack.fm/*",
     "https://dubtrack.fm/*",
     "http://*.dubtrack.fm/*",
-    "https://*.dubtrack.fm/*"
+    "https://*.dubtrack.fm/*",
+    "https://www.google-analytics.com/",
+    "storage"
   ],
   
   "web_accessible_resources": [

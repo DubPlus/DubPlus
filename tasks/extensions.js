@@ -44,6 +44,12 @@ function combine(obj1, obj2, dest) {
   fs.writeFileSync(extPath + "/"+ dest + "/manifest.json", fileContents);
 }
 
+function copyScript() {
+  ['Chrome','Firefox'].forEach(function(dir){
+    fs.copySync('./dubplus.js', `${extPath}/${dir}/scripts/dubplus.js`);
+    fs.copySync('./dubplus.min.js', `${extPath}/${dir}/scripts/dubplus.min.js`);
+  });
+}
 
 module.exports = function() {
   /***********************************************
@@ -80,4 +86,7 @@ module.exports = function() {
 
   // remove the common manifests from each folder
   rmCommonManifests();
+
+  // just in case, copy the Dubplus script to each extension folder
+  copyScript();
 };

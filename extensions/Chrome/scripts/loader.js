@@ -1,1 +1,0 @@
-$.getScript('https://rawgit.com/DubPlus/DubPlus/master/dubplus.js');
