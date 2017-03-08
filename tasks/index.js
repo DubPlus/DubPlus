@@ -27,7 +27,7 @@ var tasks = {
 
   "ext-deploy" : function(){
     extensionBuild();
-    deployExt();
+    deployExt("Both");
   },
 
   "default" : function(){
@@ -38,5 +38,7 @@ var tasks = {
 
 // find out which task we're running
 var currentTask = process.argv[2] || "default";
+
 // run task
-tasks[currentTask]();
+// pass it a possible 3rd argument
+tasks[currentTask](process.argv[3]);

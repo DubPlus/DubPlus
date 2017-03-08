@@ -1,80 +1,115 @@
 var request = require('request');
+var googleToken = require('./google-token.js');
 var fs = require('fs');
 
-// you need to pass all 4 of these variables via ENV vars or in a private.json file in the
-// root of the repo or this whole.  .gitignore is setup to ignore private.json
+/*******************************************************************
+ * setup vars from env or json file
+ */
+var CHROME_EXT_ITEM_ID,
+    CLIENT_ID,
+    CLIENT_SECRET,
+    REFRESH_TOKEN;
+
 try {
   var private = require('../private.json');
-  const CHROME_EXT_ITEM_ID =  process.env.CHROME_EXT_ITEM_ID || private.CHROME_EXT_ITEM_ID;
-  const CLIENT_ID = process.env.CLIENT_ID || private.CLIENT_ID;
-  const CLIENT_SECRET = process.env.CLIENT_SECRET || private.CLIENT_SECRET;
-  const CODE = process.env.CODE || private.CODE;
+  CHROME_EXT_ITEM_ID =  process.env.CHROME_EXT_ITEM_ID || private.CHROME_EXT_ITEM_ID;
+  CLIENT_ID = process.env.CLIENT_ID || private.CLIENT_ID;
+  CLIENT_SECRET = process.env.CLIENT_SECRET || private.CLIENT_SECRET;
+  REFRESH_TOKEN = process.env.REFRESH_TOKEN || private.REFRESH_TOKEN;
 } catch(ex) {
-  console.log("missing environment variables");
+  console.log("missing environment variable or couldn't load private.json");
   console.error(ex);
   process.exit(1);
 }
 
-/*
-  Note: 
-  Currently, there is no API for setting an item’s metadata, such as description. This has to be done manually in the Chrome Web Store Developer Dashboard.
+/*******************************************************************
+ * Upload extension package
+ * docs:
+ * https://developer.chrome.com/webstore/webstore_api/items/update
  */
-
-function getChromeOauthToken(cb){
-  var options = {
-    url: 'https://accounts.google.com/o/oauth2/token',
-    formData: {
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      code: CODE,
-      grant_type: 'authorization_code',
-      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob'
-    }
-  };
-
-  request.post(options, 
-    function(err,httpResponse,body){
-      if (err) { 
-        console.log(err);
-        process.exit(1);
-      }
-      cb(body);
-    }
-  );
-
-}
-
-// Uploading a package to update an existing store item
-function updateExtension(TOKEN, cb) {
-  
+function uploadExtension(tokenResp) {
+  var resp = JSON.parse(tokenResp.body);
+  var TOKEN = resp.access_token;
   var options = {
     url: `https://www.googleapis.com/upload/chromewebstore/v1.1/items/${CHROME_EXT_ITEM_ID}`,
     headers: {
       'x-goog-api-version': '2',
-      'Authorization': 'Bearer ${TOKEN}'
+      'Authorization': `Bearer ${TOKEN}`
+    }
+  };
+  var filePath = process.cwd() + '/extensions/Chrome.zip';
+
+  return new Promise(function (resolve, reject){
+    fs.createReadStream(filePath)
+      .pipe(request.put(options, 
+        function(err, itemResponse) {
+          if (err) { reject(err); }
+          itemResponse.TOKEN = TOKEN; // pass through of the token
+          resolve(itemResponse);
+        }
+      ));
+  });
+}
+
+/*******************************************************************
+ * after upload, you need to publish it to testers or public
+ * docs:
+ * https://developer.chrome.com/webstore/webstore_api/items/publish
+ */
+function publishExt(itemResponse){
+  var resp = JSON.parse(itemResponse.body);
+  
+  if (resp.uploadState !== 'SUCCESS') {
+    console.error("Error uploading extension");
+    console.log(resp.itemError); // should exist if there was an error right?
+    process.exit(1);
+    return;
+  }
+
+  var options = {
+    url: `https://www.googleapis.com/chromewebstore/v1.1/items/${CHROME_EXT_ITEM_ID}/publish`,
+    headers: {
+      'x-goog-api-version': '2',
+      'Content-Length': 0,
+      'Authorization': `Bearer ${itemResponse.TOKEN}`
     }
   };
 
-  fs.createReadStream(process.cwd() + '/extensions/Chrome.zip')
-    .pipe(request.put(options, 
-      function(err, httpResponse, body) {
-        if (err) {
-          console.error('upload failed:', err);
-          process.exit(1);
-        }
-        cb(body);
+  return new Promise(function (resolve, reject){
+    request.post(options, 
+      function(err,response){
+        if (err) {reject(err);}
+        else {resolve(response);}
       }
-    ));
+    );
+  });
 
+}
+
+/*******************************************************************
+ * get publish response and see if everything went ok
+ */
+function checkPublish(pubResponse){
+  var resp = JSON.parse(pubResponse.body);
+  
+  if (resp.error) {
+    console.log(resp);
+    process.exit(1);
+  }
+
+  console.log('success publishing I think');
+  console.log(resp);
 }
 
 module.exports = function(){
 
-  // step 1 get access token
-  // step 2 send update to the api
-  getChromeOauthToken(function(result){
-    console.log(result.access_token, function(result){
-      console.log(result);
+  googleToken(CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN)
+    .then(uploadExtension)
+    .then(publishExt)
+    .then(checkPublish)
+    .catch(function(err){
+      console.error(err);
+      process.exit(1);
     });
-  });
-}; 
+
+};

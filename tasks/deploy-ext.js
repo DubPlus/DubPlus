@@ -1,5 +1,6 @@
 var execSync = require('child_process').execSync;
 var chrome_ext = require('./deploy-chrome.js');
+var ff_ext = require('./deploy-ff.js');
 
 /**
  * zips up folders for deployment to chrome/FF extentions stores
@@ -9,21 +10,43 @@ var chrome_ext = require('./deploy-chrome.js');
 function doZip(dir){
   var options = {
     cwd: process.cwd() + `/extensions`,
-    stdio:[0,1,2]
+    stdio:'inherit'
   };
-  //zip [options] zipfile.zip files-to-zip
+  //  zip [options] zipfile files-to-zip
+  // file extension '.zip' assumed, leave it out
   execSync(`zip -vr ${dir} ${dir} -x "*.DS_Store"`,options);
 }
 
+function capFirst(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
 
 module.exports = function(platform){
+  // format our platform string just in case
+  var target = capFirst(platform);
 
-  // step 1, zip up both folders:
-  ['Chrome','Firefox'].forEach(function(dir){
-    doZip(dir);
-  });
+  if (target === "Both") {
+    doZip("Chrome");
+    doZip("Firefox");
+    chrome_ext();
+    ff_ext();
+    return;
+  }
 
-  // step 2
+  // do individual extension stuff
   
+  doZip(target);
+  
+  if (target === "Chrome") {
+    chrome_ext();
+    return;
+  }
+
+  if (target === "Firefox") {
+    ff_ext();
+    return;
+  }
+
+
 };
 
