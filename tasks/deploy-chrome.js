@@ -67,12 +67,35 @@ function updateExtension(TOKEN, cb) {
     ));
 }
 
+/**
+ * Zips up the folders inside /slides 
+ * Requires the command line "zip" program.  
+ * Mac OSX should already come with that
+ */
+function doZip(filename, dir){
+  var exec = require('child_process').exec;
+  var zip = exec(`zip -vr ${name} ${name} -x "*.DS_Store"`,
+    {cwd: dir},
+    function(error, stdout, stderr){
+      //console.log('stdout: ' + stdout);
+      if (stderr !== "") {
+        console.log('stderr: ' + stderr);
+      }
+      if (error !== null) {
+        console.log('exec error: ' + error);
+      }
+  });
+}
+
+
 module.exports = function(){
 
   // step 1 zip the folder
   // step 2 get access token
   // step 3 send update to the api
   getChromeOauthToken(function(result){
-    console.log(result);
+    console.log(result.access_token, function(result){
+      console.log(result);
+    });
   });
 }; 
