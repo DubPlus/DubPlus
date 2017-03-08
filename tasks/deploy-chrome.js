@@ -65,6 +65,7 @@ function updateExtension(TOKEN, cb) {
         cb(body);
       }
     ));
+
 }
 
 module.exports = function(){

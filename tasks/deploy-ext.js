@@ -1,4 +1,4 @@
-var exec = require('child_process').exec;
+var execSync = require('child_process').execSync;
 var chrome_ext = require('./deploy-chrome.js');
 
 /**
@@ -7,23 +7,17 @@ var chrome_ext = require('./deploy-chrome.js');
  * @return {undefined}
  */
 function doZip(dir){
-  console.log(process.cwd() + `/extensions/${dir}`);
+  var options = {
+    cwd: process.cwd() + `/extensions`,
+    stdio:[0,1,2]
+  };
   //zip [options] zipfile.zip files-to-zip
-  exec(`zip -vr ${dir} ${dir} -x "*.DS_Store"`,
-    {cwd: process.cwd() + `/extensions`},
-    function(error, stdout, stderr){
-      //console.log('stdout: ' + stdout);
-      if (stderr !== "") {
-        console.log('stderr: ' + stderr);
-      }
-      if (error !== null) {
-        console.log('exec error: ' + error);
-      }
-  });
+  execSync(`zip -vr ${dir} ${dir} -x "*.DS_Store"`,options);
 }
 
-module.exports = function(){
-  
+
+module.exports = function(platform){
+
   // step 1, zip up both folders:
   ['Chrome','Firefox'].forEach(function(dir){
     doZip(dir);
