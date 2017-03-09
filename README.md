@@ -28,4 +28,4 @@ The build script automatically is grabbing your Github Username and your current
 
 `npm run ext` - takes the `extensions/common` folder and builds the `extensions/Chrome` and `extensions/Firefox` folders
 
-`npm run ext-deploy` : (eventually) will deploy both extensions to their respective online web stores
+`npm run ext-deploy` : first builds each extension, then zips them, then deploys each extensions to their respective online web stores
