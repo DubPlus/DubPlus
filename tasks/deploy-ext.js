@@ -12,9 +12,9 @@ function doZip(dir){
     cwd: process.cwd() + `/extensions`,
     stdio:'inherit'
   };
-  //  zip [options] zipfile files-to-zip
+  // zip [options] zipfile files-to-zip
   // file extension '.zip' assumed, leave it out
-  execSync(`zip -vr ${dir} ${dir} -x "*.DS_Store"`,options);
+  execSync(`cd ${dir}; zip -vr ../DubPlus-${dir}-Extension * -x "*.DS_Store"`,options);
 }
 
 function capFirst(str) {
@@ -34,9 +34,9 @@ module.exports = function(platform){
   }
 
   // do individual extension stuff
-  
   doZip(target);
   
+  // no deploy!
   if (target === "Chrome") {
     chrome_ext();
     return;

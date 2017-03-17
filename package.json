@@ -11,6 +11,7 @@
     "minify": "node ./tasks/index.js minify",
     "sass": "node ./tasks/index.js sass",
     "ext": "node ./tasks/index.js ext",
+    "ext-zip": "node ./tasks/index.js ext-zip",
     "ext-deploy": "node ./tasks/index.js ext-deploy"
   },
   "repository": {

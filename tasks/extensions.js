@@ -4,6 +4,7 @@
  */
 
 const fs = require('fs-extra');
+const execSync = require('child_process').execSync;
 var pkg = require(process.cwd() + '/package.json');
 const extPath = process.cwd() + "/extensions";
 
@@ -51,7 +52,22 @@ function copyScript() {
   });
 }
 
-module.exports = function() {
+/**
+ * zips up folders for deployment to chrome/FF extentions stores
+ * @param  {String} dir directory to zip up
+ * @return {undefined}
+ */
+function doZip(dir){
+  var options = {
+    cwd: process.cwd() + `/extensions`,
+    stdio:'inherit'
+  };
+  //  zip [options] zipfile files-to-zip
+  // file extension '.zip' assumed, leave it out
+  execSync(`cd ${dir}; zip -vr ../DubPlus-${dir}-Extension * -x "*.DS_Store"`,options);
+}
+
+module.exports = function(shouldZip) {
   /***********************************************
    * Create our Chrome and Firefox folders if they
    * don't exist already
@@ -89,4 +105,9 @@ module.exports = function() {
 
   // just in case, copy the Dubplus script to each extension folder
   copyScript();
+
+  if (shouldZip) {
+    doZip("Chrome");
+    doZip("Firefox");
+  }
 };

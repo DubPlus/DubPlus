@@ -24,6 +24,10 @@ var tasks = {
   "sass" : sassTasks.compile,
 
   "ext" : extensionBuild,
+  
+  "ext-zip" : function(){
+    extensionBuild('zip');
+  },
 
   "ext-deploy" : function(){
     extensionBuild();
