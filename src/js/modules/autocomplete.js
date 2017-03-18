@@ -204,7 +204,7 @@ var chatInputKeydownFunc = function(e){
 myModule.turnOn = function() {
   previewList.init();
   //Only remove keydown for Dubtrack native autocomplete to work
-  Dubtrack.room.chat.delegateEvents(_(Dubtrack.room.chat.events).omit('keydown #chat-txt-message'));
+  Dubtrack.room.chat.delegateEvents(_.omit(Dubtrack.room.chat.events, ['keydown #chat-txt-message']));
 
   $(document.body).on('keydown', "#chat-txt-message", chatInputKeydownFunc);
   $(document.body).on('keyup', "#chat-txt-message", chatInputKeyupFunc);
