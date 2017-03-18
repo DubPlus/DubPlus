@@ -7,6 +7,8 @@ var sassTasks = require(process.cwd() + '/tasks/sassbundle.js');
 var extensionBuild = require(process.cwd() + '/tasks/extensions.js');
 var deployExt = require(process.cwd() + '/tasks/deploy-ext.js');
 
+var arg = process.argv[3];
+
 var tasks = {
 
   "watch" : function(){
@@ -31,7 +33,7 @@ var tasks = {
 
   "ext-deploy" : function(){
     extensionBuild();
-    deployExt("Both");
+    deployExt(arg);
   },
 
   "default" : function(){

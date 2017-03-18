@@ -18,7 +18,7 @@ var CLIENT_ID,
     CODE = process.env.CODE;
 
 try {
-  var private = require('../private.json');
+  var private = require(process.cwd() + '/private.json');
   CLIENT_ID = process.env.CLIENT_ID || private.CLIENT_ID;
   CLIENT_SECRET = process.env.CLIENT_SECRET || private.CLIENT_SECRET;
 } catch(ex) {

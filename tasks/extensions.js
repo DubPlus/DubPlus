@@ -4,7 +4,7 @@
  */
 
 const fs = require('fs-extra');
-const execSync = require('child_process').execSync;
+const doZip = require('./zip.js');
 var pkg = require(process.cwd() + '/package.json');
 const extPath = process.cwd() + "/extensions";
 
@@ -50,21 +50,6 @@ function copyScript() {
     fs.copySync('./dubplus.js', `${extPath}/${dir}/scripts/dubplus.js`);
     fs.copySync('./dubplus.min.js', `${extPath}/${dir}/scripts/dubplus.min.js`);
   });
-}
-
-/**
- * zips up folders for deployment to chrome/FF extentions stores
- * @param  {String} dir directory to zip up
- * @return {undefined}
- */
-function doZip(dir){
-  var options = {
-    cwd: process.cwd() + `/extensions`,
-    stdio:'inherit'
-  };
-  //  zip [options] zipfile files-to-zip
-  // file extension '.zip' assumed, leave it out
-  execSync(`cd ${dir}; zip -vr ../DubPlus-${dir}-Extension * -x "*.DS_Store"`,options);
 }
 
 module.exports = function(shouldZip) {

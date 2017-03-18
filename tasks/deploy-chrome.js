@@ -37,15 +37,18 @@ function uploadExtension(tokenResp) {
       'Authorization': `Bearer ${TOKEN}`
     }
   };
-  var filePath = process.cwd() + '/extensions/Chrome.zip';
+  var filePath = process.cwd() + '/extensions/DubPlus-Chrome-Extension.zip';
 
   return new Promise(function (resolve, reject){
     fs.createReadStream(filePath)
       .pipe(request.put(options, 
         function(err, itemResponse) {
           if (err) { reject(err); }
-          itemResponse.TOKEN = TOKEN; // pass through of the token
-          resolve(itemResponse);
+          else {
+            console.log('got new token');
+            itemResponse.TOKEN = TOKEN; // pass through of the token
+            resolve(itemResponse);
+          }
         }
       ));
   });
@@ -79,7 +82,10 @@ function publishExt(itemResponse){
     request.post(options, 
       function(err,response){
         if (err) {reject(err);}
-        else {resolve(response);}
+        else {
+          console.log('published extension');
+          resolve(response);
+        }
       }
     );
   });
@@ -97,7 +103,7 @@ function checkPublish(pubResponse){
     process.exit(1);
   }
 
-  console.log('success publishing I think');
+  console.log('success!');
   console.log(resp);
 }
 
