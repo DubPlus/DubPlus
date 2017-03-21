@@ -55,7 +55,7 @@ switch (currentTask) {
 
   case 'ext-deploy':
     var deployExt = require(process.cwd() + '/tasks/deploy-ext.js');
-    extensionBuild();
+    extensionBuild('zip');
     deployExt(arg);
     break;
 
