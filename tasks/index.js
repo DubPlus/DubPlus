@@ -7,44 +7,43 @@ var sassTasks = require(process.cwd() + '/tasks/sassbundle.js');
 var extensionBuild = require(process.cwd() + '/tasks/extensions.js');
 var deployExt = require(process.cwd() + '/tasks/deploy-ext.js');
 
+// find out which task we're running
+var currentTask = process.argv[2]; 
 var arg = process.argv[3];
 
-var tasks = {
-
-  "watch" : function(){
+switch (currentTask) {
+  case 'watch':
     jsTasks.watch();
     sassTasks.watch();
-  },
+    break;
 
-  "bundle" : jsTasks.bundle,
+  case 'bundle':
+    jsTasks.bundle();
+    break;
 
-  "minify" : function(){
+  case 'minify':
     jsTasks.minify();
     sassTasks.minify();
-  },
+    break;
 
-  "sass" : sassTasks.compile,
+  case 'sass':
+    sassTasks.compile();
+    break;
 
-  "ext" : extensionBuild,
-  
-  "ext-zip" : function(){
+  case 'ext':
+    extensionBuild();
+    break;
+
+  case 'ext-zip':
     extensionBuild('zip');
-  },
+    break;
 
-  "ext-deploy" : function(){
+  case 'ext-deploy':
     extensionBuild();
     deployExt(arg);
-  },
+    break;
 
-  "default" : function(){
-    this.bundle();
-    this.sass();
-  }
-};
-
-// find out which task we're running
-var currentTask = process.argv[2] || "default";
-
-// run task
-// pass it a possible 3rd argument
-tasks[currentTask](process.argv[3]);
+  default:
+    jsTasks.bundle();
+    sassTasks.compile();
+}

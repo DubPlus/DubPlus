@@ -8,6 +8,9 @@ var prefixer = postcss([ autoprefixer ]);
 // our own custom module
 var gitInfo = require(process.cwd() + '/tasks/repoInfo.js');
 
+var localFlag = typeof process.argv[3] !== "undefined" && (process.argv[3] === '-l' || process.argv[3] === '--local');
+var host = process.argv[4];
+
 /******************************************************************
  * Build SASS
  */
@@ -16,14 +19,19 @@ var gitInfo = require(process.cwd() + '/tasks/repoInfo.js');
 // and pass that a SASS string with our variables first and an @import of
 // our main SASS file right after
 
+var resourceSrc = `https://raw.githubusercontent.com/${gitInfo.user}/DubPlus/${gitInfo.branch}`;
+if (localFlag && host) {
+  var resourceSrc = host;
+}
+console.log('* SASS $resourceSrc set to', resourceSrc);
+console.log('***************************************');
+
 // first we define our variables
-var dataString =  "$build_branch : " + gitInfo.branch + "; ";
-    dataString += "$build_repo : " + gitInfo.user + "; ";
+var dataString =  `$resourceSrc : "${resourceSrc}"; `;
 
+var sassEntryFile = "./src/sass/dubplus";
 // then we @import our main sass file
-    dataString += "@import '" + './src/sass/dubplus.scss' + "';";
-
-
+dataString += `@import '${sassEntryFile}';`;
 
 function compileSASS() {
   sass.render({

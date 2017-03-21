@@ -540,7 +540,7 @@ module.exports = function () {
   $('.dubplus-menu').perfectScrollbar();
 };
 
-}).call(this,'{"name":"DubPlus","version":"0.1.2","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+}).call(this,'{"name":"DubPlus","version":"0.1.3","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
 },{"../modules/eta.js":21,"../modules/snooze.js":33,"../utils/css.js":39,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
@@ -820,7 +820,7 @@ module.exports = {
 };
 
 },{"../utils/css.js":39,"./menu-events.js":6,"./settings.js":8}],8:[function(require,module,exports){
-(function (CURRENT_BRANCH,CURRENT_REPO){
+(function (_RESOURCE_SRC_){
 "use strict";
 
 var defaults = {
@@ -847,11 +847,11 @@ if (_storageRaw) {
 var exportSettings = $.extend({}, defaults, savedSettings);
 
 // this is stored in localStorage but we don't want that, we always want it fresh
-exportSettings.srcRoot = "https://rawgit.com/" + CURRENT_REPO + "/DubPlus/" + CURRENT_BRANCH;
+exportSettings.srcRoot = _RESOURCE_SRC_;
 
 module.exports = exportSettings;
 
-}).call(this,'master','DubPlus')
+}).call(this,'https://raw.githubusercontent.com/FranciscoG/DubPlus/dev')
 },{}],9:[function(require,module,exports){
 'use strict';
 
@@ -3077,7 +3077,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1489855049932')
+}).call(this,'1490069666166')
 },{"../lib/settings.js":8}],40:[function(require,module,exports){
 'use strict';
 
