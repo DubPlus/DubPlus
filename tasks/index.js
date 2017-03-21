@@ -2,10 +2,12 @@
  * custom tasks
  */
 
+const chalk = require('chalk');
+const errorColor = chalk.bold.red;
+
 var jsTasks = require(process.cwd() + '/tasks/jsbundle.js');
 var sassTasks = require(process.cwd() + '/tasks/sassbundle.js');
 var extensionBuild = require(process.cwd() + '/tasks/extensions.js');
-var deployExt = require(process.cwd() + '/tasks/deploy-ext.js');
 
 // find out which task we're running
 var currentTask = process.argv[2]; 
@@ -17,17 +19,30 @@ switch (currentTask) {
     sassTasks.watch();
     break;
 
+  // runs both bundling and minifying
   case 'bundle':
-    jsTasks.bundle();
+    jsTasks.bundle()
+      .then(jsTasks.minify)
+      .then(function(){ console.log('js bundling and minifying complete'); })
+      .catch(function(err){ console.log(errorColor(err));});
     break;
 
+  // separated out minifying just in case
+  case 'min':
   case 'minify':
-    jsTasks.minify();
-    sassTasks.minify();
+    jsTasks.minify()
+      .then(function(){ console.log('js minifying finished'); })
+      .catch(function(err){ console.log(errorColor(err));});
+    sassTasks.minify()
+      .then(function(){ console.log('sass finished minifying');})
+      .catch(function(err){ console.log(errorColor(err));});
     break;
 
   case 'sass':
-    sassTasks.compile();
+    sassTasks.compile()
+      .then(sassTasks.minify)
+      .then(function(){ console.log('sass finished compiling & minifying');})
+      .catch(function(err){ console.log(errorColor(err));});
     break;
 
   case 'ext':
@@ -39,11 +54,19 @@ switch (currentTask) {
     break;
 
   case 'ext-deploy':
+    var deployExt = require(process.cwd() + '/tasks/deploy-ext.js');
     extensionBuild();
     deployExt(arg);
     break;
 
+  // default 'npm run default' task should be both bundle and minify JS and Sass files
   default:
-    jsTasks.bundle();
-    sassTasks.compile();
+    jsTasks.bundle()
+      .then(jsTasks.minify)
+      .then(function(){ console.log('js bundling and minifying complete'); })
+      .catch(function(err){ console.log(errorColor(err));});
+    sassTasks.compile()
+      .then(sassTasks.minify)
+      .then(function(){ console.log('sass finished compiling & minifying');})
+      .catch(function(err){ console.log(errorColor(err));});
 }

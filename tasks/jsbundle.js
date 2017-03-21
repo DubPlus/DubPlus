@@ -42,22 +42,44 @@ var options = {
 
 var b = browserify(options);
 b.on('log', function (msg) { console.log(msg); });
-b.on('error', function(err) { console.error(err); });
-b.on('bundle', function () { 
-  console.log("Browserify: bundling JS files");
-});
 
 function bundle() {
+  console.log('Bundling all JS files');
+
+  var mainFile = fs.createWriteStream('./dubplus.js', 'utf8');
+
   b.transform(babelify, {presets: ["es2015"]})
     .bundle()
-    .pipe(fs.createWriteStream('./dubplus.js', 'utf8'));
+    .pipe(mainFile);
+
+  return new Promise(function (resolve, reject){
+    mainFile.on('finish', function(){
+      resolve();
+    });
+    b.on('error', function(err) { reject(err); });
+    mainFile.on('error', function(err){
+      reject(err);
+    });
+  }); 
 }
 
 function makeMin() {
-  console.log('running js minify task');
+  console.log('Minifying all JS files');
+  var minFile = fs.createWriteStream('./dubplus.min.js', 'utf8');
+
   b.transform(babelify, {presets: ["es2015", "babili"]})
     .bundle()
-    .pipe(fs.createWriteStream('./dubplus.min.js', 'utf8'));
+    .pipe(minFile);
+
+  return new Promise(function (resolve, reject){
+    minFile.on('finish', function(){
+      resolve();
+    });
+    b.on('error', function(err) { reject(err); });
+    minFile.on('error', function(err){
+      reject(err);
+    });
+  }); 
 }
 
 function watching(){

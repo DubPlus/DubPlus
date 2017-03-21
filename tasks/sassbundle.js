@@ -34,21 +34,27 @@ var sassEntryFile = "./src/sass/dubplus";
 dataString += `@import '${sassEntryFile}';`;
 
 function compileSASS() {
-  sass.render({
-    data : dataString,
-  }, function(err, result) { 
-    if (err) {return console.error(err); }
-    fs.writeFileSync('./css/dubplus.css', prefixer.process(result.css));
+  return new Promise(function (resolve, reject){
+    sass.render({
+      data : dataString,
+    }, function(err, result) { 
+      if (err) { reject(err); }
+      fs.writeFileSync('./css/dubplus.css', prefixer.process(result.css));
+      resolve();
+    });
   });
 }
 
 function minifySASS() {
-  sass.render({
-    data : dataString,
-    outputStyle : "compressed"
-  }, function(err, result) { 
-    if (err) {return console.error(err); }
-    fs.writeFileSync('./css/dubplus.min.css', prefixer.process(result.css));
+  return new Promise(function (resolve, reject){
+    sass.render({
+      data : dataString,
+      outputStyle : "compressed"
+    }, function(err, result) { 
+      if (err) { reject(err); }
+      fs.writeFileSync('./css/dubplus.min.css', prefixer.process(result.css));
+      resolve();
+    });
   });
 }
 
