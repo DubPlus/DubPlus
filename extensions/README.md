@@ -22,6 +22,8 @@ https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Chrome_incompatibiliti
 
 **Deploying via API**
 
-FF: https://www.npmjs.com/package/firefox-extension-deploy
+FF:    
+Web Extension Command line tool: https://github.com/mozilla/web-ext    
+https://developer.mozilla.org/en-US/Add-ons/WebExtensions/web-ext_command_reference
 
 Chrome: https://developer.chrome.com/webstore/using_webstore_api

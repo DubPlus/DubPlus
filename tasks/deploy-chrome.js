@@ -1,62 +1,121 @@
 var request = require('request');
+var googleToken = require('./google-token.js');
 var fs = require('fs');
 
-/*
-  Note: 
-  Currently, there is no API for setting an item’s metadata, such as description. This has to be done manually in the Chrome Web Store Developer Dashboard.
+/*******************************************************************
+ * setup vars from env or json file
  */
+var CHROME_EXT_ITEM_ID,
+    CLIENT_ID,
+    CLIENT_SECRET,
+    REFRESH_TOKEN;
 
-function getChromeOauthToken(CLIENT_ID, CLIENT_SECRET, CODE, cb){
+try {
+  var private = require('../private.json');
+  CHROME_EXT_ITEM_ID =  process.env.CHROME_EXT_ITEM_ID || private.CHROME_EXT_ITEM_ID;
+  CLIENT_ID = process.env.CLIENT_ID || private.CLIENT_ID;
+  CLIENT_SECRET = process.env.CLIENT_SECRET || private.CLIENT_SECRET;
+  REFRESH_TOKEN = process.env.REFRESH_TOKEN || private.REFRESH_TOKEN;
+} catch(ex) {
+  console.log("missing environment variable or couldn't load private.json");
+  console.error(ex);
+  process.exit(1);
+}
+
+/*******************************************************************
+ * Upload extension package
+ * docs:
+ * https://developer.chrome.com/webstore/webstore_api/items/update
+ */
+function uploadExtension(tokenResp) {
+  var resp = JSON.parse(tokenResp.body);
+  var TOKEN = resp.access_token;
   var options = {
-    url: 'https://accounts.google.com/o/oauth2/token',
+    url: `https://www.googleapis.com/upload/chromewebstore/v1.1/items/${CHROME_EXT_ITEM_ID}`,
     headers: {
-      'x-goog-api-version': '2'
-    },
-    form: {
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      code: CODE,
-      grant_type: 'authorization_code',
-      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob'
+      'x-goog-api-version': '2',
+      'Authorization': `Bearer ${TOKEN}`
+    }
+  };
+  var filePath = process.cwd() + '/extensions/DubPlus-Chrome-Extension.zip';
+
+  return new Promise(function (resolve, reject){
+    fs.createReadStream(filePath)
+      .pipe(request.put(options, 
+        function(err, itemResponse) {
+          if (err) { reject(err); }
+          else {
+            console.log('got new token');
+            itemResponse.TOKEN = TOKEN; // pass through of the token
+            resolve(itemResponse);
+          }
+        }
+      ));
+  });
+}
+
+/*******************************************************************
+ * after upload, you need to publish it to testers or public
+ * docs:
+ * https://developer.chrome.com/webstore/webstore_api/items/publish
+ */
+function publishExt(itemResponse){
+  var resp = JSON.parse(itemResponse.body);
+  
+  if (resp.uploadState !== 'SUCCESS') {
+    console.error("Error uploading extension");
+    console.log(resp.itemError); // should exist if there was an error right?
+    process.exit(1);
+    return;
+  }
+
+  var options = {
+    url: `https://www.googleapis.com/chromewebstore/v1.1/items/${CHROME_EXT_ITEM_ID}/publish`,
+    headers: {
+      'x-goog-api-version': '2',
+      'Content-Length': 0,
+      'Authorization': `Bearer ${itemResponse.TOKEN}`
     }
   };
 
-  request.post(options, 
-    function(err,httpResponse,body){
-      if (err) { 
-        console.log(err);
-        process.exit(1);
+  return new Promise(function (resolve, reject){
+    request.post(options, 
+      function(err,response){
+        if (err) {reject(err);}
+        else {
+          console.log('published extension');
+          resolve(response);
+        }
       }
-      cb(body);
-    }
-  );
+    );
+  });
 
 }
 
-function updateExtension(TOKEN, cb) {
+/*******************************************************************
+ * get publish response and see if everything went ok
+ */
+function checkPublish(pubResponse){
+  var resp = JSON.parse(pubResponse.body);
   
-  var options = {
-    url: 'https://developer.chrome.com/webstore/webstore_api/items/update',
-    headers: {
-      'x-goog-api-version': '2'
-    },
-    formData : {
-        Authorization: 'Bearer ${TOKEN}',
-        my_file: fs.createReadStream(__dirname + '/unicycle.jpg'),
-    }
-  };
+  if (resp.error) {
+    console.log(resp);
+    process.exit(1);
+  }
 
-  request.put(options, 
-    function optionalCallback(err, httpResponse, body) {
-      if (err) {
-        console.error('upload failed:', err);
-        process.exit(1);
-      }
-      cb(body);
-    }
-  );
+  console.log('success!');
+  console.log(resp);
 }
 
 module.exports = function(){
+
+  googleToken(CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN)
+    .then(uploadExtension)
+    .then(publishExt)
+    .then(checkPublish)
+    .catch(function(err){
+      console.error(err);
+      process.exit(1);
+    });
 
 };

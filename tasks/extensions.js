@@ -4,6 +4,7 @@
  */
 
 const fs = require('fs-extra');
+const doZip = require('./zip.js');
 var pkg = require(process.cwd() + '/package.json');
 const extPath = process.cwd() + "/extensions";
 
@@ -51,7 +52,7 @@ function copyScript() {
   });
 }
 
-module.exports = function() {
+module.exports = function(shouldZip) {
   /***********************************************
    * Create our Chrome and Firefox folders if they
    * don't exist already
@@ -89,4 +90,9 @@ module.exports = function() {
 
   // just in case, copy the Dubplus script to each extension folder
   copyScript();
+
+  if (shouldZip) {
+    doZip("Chrome");
+    doZip("Firefox");
+  }
 };

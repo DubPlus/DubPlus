@@ -7,6 +7,8 @@ var sassTasks = require(process.cwd() + '/tasks/sassbundle.js');
 var extensionBuild = require(process.cwd() + '/tasks/extensions.js');
 var deployExt = require(process.cwd() + '/tasks/deploy-ext.js');
 
+var arg = process.argv[3];
+
 var tasks = {
 
   "watch" : function(){
@@ -24,10 +26,14 @@ var tasks = {
   "sass" : sassTasks.compile,
 
   "ext" : extensionBuild,
+  
+  "ext-zip" : function(){
+    extensionBuild('zip');
+  },
 
   "ext-deploy" : function(){
     extensionBuild();
-    deployExt();
+    deployExt(arg);
   },
 
   "default" : function(){
@@ -38,5 +44,7 @@ var tasks = {
 
 // find out which task we're running
 var currentTask = process.argv[2] || "default";
+
 // run task
-tasks[currentTask]();
+// pass it a possible 3rd argument
+tasks[currentTask](process.argv[3]);

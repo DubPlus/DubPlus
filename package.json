@@ -1,6 +1,6 @@
 {
   "name": "DubPlus",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "Dub+ - A simple script/extension for Dubtrack.fm",
   "main": "dubplus.js",
   "scripts": {
@@ -11,6 +11,7 @@
     "minify": "node ./tasks/index.js minify",
     "sass": "node ./tasks/index.js sass",
     "ext": "node ./tasks/index.js ext",
+    "ext-zip": "node ./tasks/index.js ext-zip",
     "ext-deploy": "node ./tasks/index.js ext-deploy"
   },
   "repository": {
