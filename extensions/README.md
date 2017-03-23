@@ -13,8 +13,6 @@ The extensions share the same codebase, it only has slight differences in the ma
 
 Definitely read this link for more information on porting a Chrome Extension to the WebExtensions Standard:
 
-https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Chrome_incompatibilities
-
 
 **more helpful links:**
 
