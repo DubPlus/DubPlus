@@ -6,6 +6,7 @@ module.exports = [
   require('./emotes.js'),
   require('./autocomplete.js'),
   require('./customMentions.js'),
+  require('./chatCleaner.js'),
   require('./chatNotifications.js'),
   require('./pmNotifications.js'),
   require('./djNotification.js'),
