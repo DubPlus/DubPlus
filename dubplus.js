@@ -1573,8 +1573,9 @@ var savePosition = function savePosition() {
 myModule.djNotificationCheck = function (e) {
   if (e.startTime > 2) return;
 
-  var position = parseInt($('.queue-position').text());
-  if (isNaN(position) || position !== settings.custom.dj_notification) return;
+  var positionParse = parseInt($('.queue-position').text());
+  var position = e.startTime < 0 && !isNaN(positionParse) ? positionParse - 1 : positionParse;
+  if (isNaN(positionParse) || position !== settings.custom.dj_notification) return;
 
   (0, _notify.showNotification)({
     title: 'DJ Alert!',
@@ -3077,7 +3078,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1490361984380')
+}).call(this,'1490363629107')
 },{"../lib/settings.js":8}],40:[function(require,module,exports){
 'use strict';
 
