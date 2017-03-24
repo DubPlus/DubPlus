@@ -540,7 +540,7 @@ module.exports = function () {
   $('.dubplus-menu').perfectScrollbar();
 };
 
-}).call(this,'{"name":"DubPlus","version":"0.1.2","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+}).call(this,'{"name":"DubPlus","version":"0.1.3","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
 },{"../modules/eta.js":21,"../modules/snooze.js":33,"../utils/css.js":39,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
@@ -1573,7 +1573,7 @@ var savePosition = function savePosition() {
 myModule.djNotificationCheck = function (e) {
   if (e.startTime > 2) return;
 
-  var position = parseInt($('.dj-position').text());
+  var position = parseInt($('.queue-position').text());
   if (isNaN(position) || position !== settings.custom.dj_notification) return;
 
   (0, _notify.showNotification)({
@@ -3077,7 +3077,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1489855049932')
+}).call(this,'1490361984380')
 },{"../lib/settings.js":8}],40:[function(require,module,exports){
 'use strict';
 

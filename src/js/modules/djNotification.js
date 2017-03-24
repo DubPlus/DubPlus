@@ -24,7 +24,7 @@ var savePosition = function () {
 myModule.djNotificationCheck = function (e) {
   if (e.startTime > 2) return;
 
-  var position = parseInt($('.dj-position').text());
+  var position = parseInt($('.queue-position').text());
   if (isNaN(position) || position !== settings.custom.dj_notification) return;
 
   showNotification({
