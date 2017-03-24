@@ -37,8 +37,8 @@
     color: #999; }
 
 .dubplus-menu.dubplus-menu-open {
-  -webkit-transform: translateX(15px);
-          transform: translateX(15px); }
+  -webkit-transform: translate3d(15px, 0, 0);
+          transform: translate3d(15px, 0, 0); }
 
 .dubplus-menu-header {
   padding: 12px 15px;

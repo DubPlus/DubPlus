@@ -92,7 +92,7 @@ if (!window.dubplus) {
   }
 }
 
-},{"./lib/init.js":4,"./utils/css.js":39,"./utils/modal.js":41,"./utils/preload.js":45,"./utils/waitFor.js":46}],2:[function(require,module,exports){
+},{"./lib/init.js":4,"./utils/css.js":40,"./utils/modal.js":42,"./utils/preload.js":46,"./utils/waitFor.js":47}],2:[function(require,module,exports){
 'use strict';
 
 /* global  emojify */
@@ -273,7 +273,7 @@ prepEmoji.processTastyEmotes = function (data) {
 
 module.exports = prepEmoji;
 
-},{"../lib/settings.js":8,"../utils/getJSON.js":40}],3:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/getJSON.js":41}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -541,7 +541,7 @@ module.exports = function () {
 };
 
 }).call(this,'{"name":"DubPlus","version":"0.1.3","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
-},{"../modules/eta.js":21,"../modules/snooze.js":33,"../utils/css.js":39,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
+},{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -608,7 +608,7 @@ var loadAllModules = function loadAllModules() {
 
 exports.default = loadAllModules;
 
-},{"../lib/menu.js":7,"../lib/settings.js":8,"../modules/index.js":28,"../utils/options.js":44}],6:[function(require,module,exports){
+},{"../lib/menu.js":7,"../lib/settings.js":8,"../modules/index.js":29,"../utils/options.js":45}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -720,7 +720,7 @@ exports.default = function () {
   });
 };
 
-},{"../utils/options.js":44}],7:[function(require,module,exports){
+},{"../utils/options.js":45}],7:[function(require,module,exports){
 'use strict';
 
 var _menuEvents = require('./menu-events.js');
@@ -819,7 +819,7 @@ module.exports = {
 
 };
 
-},{"../utils/css.js":39,"./menu-events.js":6,"./settings.js":8}],8:[function(require,module,exports){
+},{"../utils/css.js":40,"./menu-events.js":6,"./settings.js":8}],8:[function(require,module,exports){
 (function (_RESOURCE_SRC_){
 "use strict";
 
@@ -922,7 +922,7 @@ afk_module.extra = function () {
 
 module.exports = afk_module;
 
-},{"../lib/settings.js":8,"../utils/modal.js":41,"../utils/options.js":44}],10:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":42,"../utils/options.js":45}],10:[function(require,module,exports){
 'use strict';
 
 var _previewList = require('../emojiUtils/previewList.js');
@@ -1184,6 +1184,63 @@ autovote.turnOn = function () {
 module.exports = autovote;
 
 },{}],12:[function(require,module,exports){
+'use strict';
+
+/* global Dubtrack */
+var settings = require("../lib/settings.js");
+var modal = require('../utils/modal.js');
+var options = require('../utils/options.js');
+
+var myModule = {};
+
+myModule.id = "chat-cleaner";
+myModule.moduleName = "Chat Cleaner";
+myModule.description = "Automatically only keep a designated chatItems of chat items while clearing older ones, keeping CPU stress down";
+myModule.category = "General";
+myModule.extraIcon = 'pencil';
+
+var saveAmount = function saveAmount() {
+  var chatItems = parseInt($('.dp-modal textarea').val());
+  if (!isNaN(chatItems)) {
+    options.saveOption('custom', 'chat_cleaner', chatItems);
+  } else {
+    options.saveOption('custom', 'chat_cleaner', 500); // default to 500
+  }
+};
+
+myModule.chatCleanerCheck = function (e) {
+  var totalChats = $('ul.chat-main > li').length;
+
+  if (isNaN(totalChats) || isNaN(settings.custom.chat_cleaner) || totalChats < settings.custom.chat_cleaner) return;
+
+  $('ul.chat-main > li:lt(' + ($('ul.chat-main > li').length - settings.custom.chat_cleaner) + ')').remove();
+
+  //Fix scroll bar
+  $('.chat-messages').perfectScrollbar('update');
+};
+
+myModule.turnOn = function () {
+  Dubtrack.Events.bind("realtime:chat-message", this.chatCleanerCheck);
+};
+
+myModule.extra = function () {
+  modal.create({
+    title: 'Chat Cleaner',
+    content: 'Please specify the number of most recent chat items that will remain in your chat history',
+    value: settings.custom.chat_cleaner || '',
+    placeholder: '500',
+    maxlength: '5',
+    confirmCallback: saveAmount
+  });
+};
+
+myModule.turnOff = function () {
+  Dubtrack.Events.unbind("realtime:chat-message", this.chatCleanerCheck);
+};
+
+module.exports = myModule;
+
+},{"../lib/settings.js":8,"../utils/modal.js":42,"../utils/options.js":45}],13:[function(require,module,exports){
 "use strict";
 
 var _notify = require("../utils/notify.js");
@@ -1238,7 +1295,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":8,"../utils/notify.js":43}],13:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/notify.js":44}],14:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1284,7 +1341,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../utils/css.js":39}],14:[function(require,module,exports){
+},{"../utils/css.js":40}],15:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1350,7 +1407,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":8,"../utils/modal.js":41,"../utils/options.js":44}],15:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":42,"../utils/options.js":45}],16:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1406,7 +1463,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":8,"../utils/css.js":39,"../utils/modal.js":41,"../utils/options.js":44}],16:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/css.js":40,"../utils/modal.js":42,"../utils/options.js":45}],17:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1467,7 +1524,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":8,"../utils/modal.js":41,"../utils/options.js":44}],17:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":42,"../utils/options.js":45}],18:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -1542,7 +1599,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":8,"../utils/modal.js":41,"../utils/options.js":44}],18:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":42,"../utils/options.js":45}],19:[function(require,module,exports){
 'use strict';
 
 var _notify = require('../utils/notify.js');
@@ -1573,8 +1630,9 @@ var savePosition = function savePosition() {
 myModule.djNotificationCheck = function (e) {
   if (e.startTime > 2) return;
 
-  var position = parseInt($('.dj-position').text());
-  if (isNaN(position) || position !== settings.custom.dj_notification) return;
+  var positionParse = parseInt($('.queue-position').text());
+  var position = e.startTime < 0 && !isNaN(positionParse) ? positionParse - 1 : positionParse;
+  if (isNaN(positionParse) || position !== settings.custom.dj_notification) return;
 
   (0, _notify.showNotification)({
     title: 'DJ Alert!',
@@ -1606,7 +1664,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../lib/settings.js":8,"../utils/modal.js":41,"../utils/notify.js":43,"../utils/options.js":44}],19:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":42,"../utils/notify.js":44,"../utils/options.js":45}],20:[function(require,module,exports){
 "use strict";
 
 var _modcheck = require("../utils/modcheck.js");
@@ -1662,7 +1720,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../utils/modcheck.js":42}],20:[function(require,module,exports){
+},{"../utils/modcheck.js":43}],21:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1746,7 +1804,7 @@ emote_module.turnOff = function () {
 
 module.exports = emote_module;
 
-},{"../emojiUtils/prepEmoji.js":2}],21:[function(require,module,exports){
+},{"../emojiUtils/prepEmoji.js":2}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1781,7 +1839,7 @@ var hide_eta = function hide_eta() {
   $(this).empty();
 };
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1811,7 +1869,7 @@ fs_module.go = function () {
 
 module.exports = fs_module;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1857,7 +1915,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1881,7 +1939,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1905,7 +1963,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1928,7 +1986,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1952,13 +2010,13 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 'use strict';
 
 // put this in order of appearance in the menu
 module.exports = [
 // General 
-require('./autovote.js'), require('./afk.js'), require('./emotes.js'), require('./autocomplete.js'), require('./customMentions.js'), require('./chatNotifications.js'), require('./pmNotifications.js'), require('./djNotification.js'), require('./showDubsOnHover.js'), require('./downDubInChat.js'), // (mod only)
+require('./autovote.js'), require('./afk.js'), require('./emotes.js'), require('./autocomplete.js'), require('./customMentions.js'), require('./chatCleaner.js'), require('./chatNotifications.js'), require('./pmNotifications.js'), require('./djNotification.js'), require('./showDubsOnHover.js'), require('./downDubInChat.js'), // (mod only)
 require('./upDubInChat.js'), require('./grabsInChat.js'), require('./snow.js'), require('./rain.js'),
 
 // User Interface
@@ -1970,7 +2028,7 @@ require('./spacebarMute.js'), require('./warnOnNavigation.js'),
 // Customize
 require('./communityTheme.js'), require('./customCSS.js'), require('./customBackground.js'), require('./customNotificationSound.js')];
 
-},{"./afk.js":9,"./autocomplete.js":10,"./autovote.js":11,"./chatNotifications.js":12,"./communityTheme.js":13,"./customBackground.js":14,"./customCSS.js":15,"./customMentions.js":16,"./customNotificationSound.js":17,"./djNotification.js":18,"./downDubInChat.js":19,"./emotes.js":20,"./fullscreen.js":22,"./grabsInChat.js":23,"./hideAvatars.js":24,"./hideBackground.js":25,"./hideChat.js":26,"./hideVideo.js":27,"./pmNotifications.js":29,"./rain.js":30,"./showDubsOnHover.js":31,"./showTimestamps.js":32,"./snow.js":34,"./spacebarMute.js":35,"./splitchat.js":36,"./upDubInChat.js":37,"./warnOnNavigation.js":38}],29:[function(require,module,exports){
+},{"./afk.js":9,"./autocomplete.js":10,"./autovote.js":11,"./chatCleaner.js":12,"./chatNotifications.js":13,"./communityTheme.js":14,"./customBackground.js":15,"./customCSS.js":16,"./customMentions.js":17,"./customNotificationSound.js":18,"./djNotification.js":19,"./downDubInChat.js":20,"./emotes.js":21,"./fullscreen.js":23,"./grabsInChat.js":24,"./hideAvatars.js":25,"./hideBackground.js":26,"./hideChat.js":27,"./hideVideo.js":28,"./pmNotifications.js":30,"./rain.js":31,"./showDubsOnHover.js":32,"./showTimestamps.js":33,"./snow.js":35,"./spacebarMute.js":36,"./splitchat.js":37,"./upDubInChat.js":38,"./warnOnNavigation.js":39}],30:[function(require,module,exports){
 "use strict";
 
 var _notify = require("../utils/notify.js");
@@ -2019,7 +2077,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{"../utils/notify.js":43}],30:[function(require,module,exports){
+},{"../utils/notify.js":44}],31:[function(require,module,exports){
 "use strict";
 
 var rain = {};
@@ -2204,7 +2262,7 @@ rain.unbindCanvas = function () {
 
 module.exports = rain;
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 var _modcheck = require('../utils/modcheck.js');
@@ -2767,7 +2825,7 @@ dubshover.turnOff = function () {
 
 module.exports = dubshover;
 
-},{"../utils/modal.js":41,"../utils/modcheck.js":42}],32:[function(require,module,exports){
+},{"../utils/modal.js":42,"../utils/modcheck.js":43}],33:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2791,7 +2849,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2850,7 +2908,7 @@ var snooze = function snooze() {
   }
 };
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 var options = require('../utils/options.js');
@@ -2899,7 +2957,7 @@ module.exports = {
 
 };
 
-},{"../utils/options.js":44}],35:[function(require,module,exports){
+},{"../utils/options.js":45}],36:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2928,7 +2986,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2952,7 +3010,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2998,7 +3056,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 "use strict";
 
 /**
@@ -3029,7 +3087,7 @@ myModule.turnOff = function () {
 
 module.exports = myModule;
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 (function (TIME_STAMP){
 'use strict';
 
@@ -3077,8 +3135,8 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1490109850949')
-},{"../lib/settings.js":8}],40:[function(require,module,exports){
+}).call(this,'1490388032426')
+},{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
 // jQuery's getJSON kept returning errors so making my own with promise-like
@@ -3116,7 +3174,7 @@ var GetJSON = function GetJSON(url, optionalEvent, headers) {
 
 module.exports = GetJSON;
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 function makeButtons(cb) {
@@ -3208,7 +3266,7 @@ module.exports = {
   close: close
 };
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3219,7 +3277,7 @@ exports.default = function (userid) {
   return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
 };
 
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3314,7 +3372,7 @@ function showNotification(opts) {
   setTimeout(n.close.bind(n), options.wait);
 }
 
-},{"../utils/modal.js":41}],44:[function(require,module,exports){
+},{"../utils/modal.js":42}],45:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -3370,7 +3428,7 @@ module.exports = {
   saveOption: saveOption
 };
 
-},{"../lib/settings.js":8}],45:[function(require,module,exports){
+},{"../lib/settings.js":8}],46:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3392,7 +3450,7 @@ function preload() {
   document.body.insertAdjacentHTML('afterbegin', preloadHTML);
 }
 
-},{"../lib/settings.js":8}],46:[function(require,module,exports){
+},{"../lib/settings.js":8}],47:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
