@@ -1,5 +1,6 @@
-var getRepoInfo = require('git-repo-info');
-var sync = require('child_process').spawnSync;
+const getRepoInfo = require('git-repo-info');
+const sync = require('child_process').spawnSync;
+const log = require('./colored-console.js');
 
 /******************************************************************
  * Get the current branch name to be passed as a variable
@@ -25,10 +26,10 @@ if (CURRENT_BRANCH === 'master') {
   CURRENT_REPO = gitURL.stdout.split(":")[1].split("/")[0];
 }
 
-console.log('***************************************');
-console.log('* Current Github User is:', CURRENT_REPO);
-console.log('* Current branch is:', CURRENT_BRANCH);
-console.log('***************************************');
+log.info('***************************************');
+log.info(`* Current Github User is: ${CURRENT_REPO}`);
+log.info(`* Current branch is: ${CURRENT_BRANCH}`);
+log.info('***************************************');
 
 module.exports = {
   branch : CURRENT_BRANCH,

@@ -1,6 +1,7 @@
-var babelify    = require("babelify");
-var browserify  = require('browserify');
-var fs = require('fs');
+const babelify    = require("babelify");
+const browserify  = require('browserify');
+const fs = require('fs');
+const log = require('./colored-console.js');
 
 // our own custom module
 var gitInfo = require(process.cwd() + '/tasks/repoInfo.js');
@@ -20,8 +21,8 @@ var resourceSrc = `https://raw.githubusercontent.com/${gitInfo.user}/DubPlus/${g
 if (localFlag) {
   var resourceSrc = host;
 }
-console.log('* JS:  _RESOURCE_SRC_ set to', resourceSrc);
-console.log('***************************************');
+log.info(`* JS:  _RESOURCE_SRC_ set to ${resourceSrc}`);
+log.info('***************************************');
 
 /******************************************************************
  * Setup browserify with options

@@ -1,13 +1,16 @@
-var fs = require('fs');
-var path = require('path');
-var sass = require('node-sass');
-var postcss = require('postcss');
-var autoprefixer = require('autoprefixer');
-var prefixer = postcss([ autoprefixer ]);
+const fs = require('fs');
+const path = require('path');
+const sass = require('node-sass');
+const postcss = require('postcss');
+const autoprefixer = require('autoprefixer');
+const prefixer = postcss([ autoprefixer ]);
+const log = require('./colored-console.js');
 
 // our own custom module
 var gitInfo = require(process.cwd() + '/tasks/repoInfo.js');
 
+// I added a way to override host so I can test locally
+// but it means I need to run this task with node and not npm
 var localFlag = typeof process.argv[3] !== "undefined" && (process.argv[3] === '-l' || process.argv[3] === '--local');
 var host = process.argv[4];
 
@@ -21,10 +24,10 @@ var host = process.argv[4];
 
 var resourceSrc = `https://raw.githubusercontent.com/${gitInfo.user}/DubPlus/${gitInfo.branch}`;
 if (localFlag && host) {
-  var resourceSrc = host;
+  resourceSrc = host;
 }
-console.log('* SASS $resourceSrc set to', resourceSrc);
-console.log('***************************************');
+log.info(`* SASS $resourceSrc set to ${resourceSrc}`);
+log.info('***************************************');
 
 // first we define our variables
 var dataString =  `$resourceSrc : "${resourceSrc}"; `;
@@ -66,11 +69,11 @@ function watchingSASS() {
     },
     function (event, filename) {
       if ( filename && /s[ca]ss/i.test(path.extname(filename)) ) {
-        console.log('SASS '+event+' event detected');
-        console.log('file: '+ filename);
+        console.log(`SASS ${event} event detected`);
+        console.log(`file: ${filename}`);
         compileSASS();
       } else {
-        console.log('Filename missing. NOT compiling. Try again');
+        log.error('Filename missing. NOT compiling. Try again');
       }
     }
   );

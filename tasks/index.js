@@ -2,9 +2,7 @@
  * custom tasks
  */
 
-const chalk = require('chalk');
-const errorColor = chalk.bold.red;
-
+const log = require('./colored-console.js');
 var jsTasks = require(process.cwd() + '/tasks/jsbundle.js');
 var sassTasks = require(process.cwd() + '/tasks/sassbundle.js');
 var extensionBuild = require(process.cwd() + '/tasks/extensions.js');
@@ -12,6 +10,10 @@ var extensionBuild = require(process.cwd() + '/tasks/extensions.js');
 // find out which task we're running
 var currentTask = process.argv[2]; 
 var arg = process.argv[3];
+
+function onError(err){
+  log.error(err);
+}
 
 switch (currentTask) {
   case 'watch':
@@ -24,7 +26,7 @@ switch (currentTask) {
     jsTasks.bundle()
       .then(jsTasks.minify)
       .then(function(){ console.log('js bundling and minifying complete'); })
-      .catch(function(err){ console.log(errorColor(err));});
+      .catch(onError);
     break;
 
   // separated out minifying just in case
@@ -32,17 +34,17 @@ switch (currentTask) {
   case 'minify':
     jsTasks.minify()
       .then(function(){ console.log('js minifying finished'); })
-      .catch(function(err){ console.log(errorColor(err));});
+      .catch(onError);
     sassTasks.minify()
       .then(function(){ console.log('sass finished minifying');})
-      .catch(function(err){ console.log(errorColor(err));});
+      .catch(onError);
     break;
 
   case 'sass':
     sassTasks.compile()
       .then(sassTasks.minify)
       .then(function(){ console.log('sass finished compiling & minifying');})
-      .catch(function(err){ console.log(errorColor(err));});
+      .catch(onError);
     break;
 
   case 'ext':
@@ -64,9 +66,9 @@ switch (currentTask) {
     jsTasks.bundle()
       .then(jsTasks.minify)
       .then(function(){ console.log('js bundling and minifying complete'); })
-      .catch(function(err){ console.log(errorColor(err));});
+      .catch(onError);
     sassTasks.compile()
       .then(sassTasks.minify)
       .then(function(){ console.log('sass finished compiling & minifying');})
-      .catch(function(err){ console.log(errorColor(err));});
+      .catch(onError);
 }

@@ -5,6 +5,7 @@
 
 const fs = require('fs-extra');
 const doZip = require('./zip.js');
+const log = require('./colored-console.js');
 var pkg = require(process.cwd() + '/package.json');
 const extPath = process.cwd() + "/extensions";
 
@@ -32,8 +33,8 @@ function parseJSONfile(filename) {
   try {
     obj = JSON.parse(fs.readFileSync(jsonfile, 'utf8'));
   } catch (e) {
-    console.log ("Error in file: " + jsonfile);
-    console.log(e + "\n");
+    log.error("Error in file: " + jsonfile);
+    log.dir(e + "\n");
   }
 
   return obj;
