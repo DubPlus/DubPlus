@@ -7,9 +7,6 @@ const log = require('./colored-console.js');
 var gitInfo = require(process.cwd() + '/tasks/repoInfo.js');
 var pkg = require(process.cwd() + '/package.json');
 
-var localFlag = typeof process.argv[3] !== "undefined" && (process.argv[3] === '-l' || process.argv[3] === '--local');
-var host = process.argv[4];
-
 // only want to pass a few things from package
 delete pkg.main;
 delete pkg.scripts;
@@ -17,12 +14,7 @@ delete pkg.repository;
 delete pkg.bugs;
 delete pkg.devDependencies;
 
-var resourceSrc = `https://raw.githubusercontent.com/${gitInfo.user}/DubPlus/${gitInfo.branch}`;
-if (localFlag) {
-  var resourceSrc = host;
-}
-log.info(`* JS:  _RESOURCE_SRC_ set to ${resourceSrc}`);
-log.info('***************************************');
+console.log(`JS:  _RESOURCE_SRC_ set to ${gitInfo.resourceSrc}`);
 
 /******************************************************************
  * Setup browserify with options
@@ -33,7 +25,7 @@ var options = {
   packageCache : {},
   insertGlobalVars: { 
     // so that we can point to the proper branch during testing or production
-    _RESOURCE_SRC_: function () { return "'" + resourceSrc + "'"; },
+    _RESOURCE_SRC_: function () { return "'" + gitInfo.resourceSrc + "'"; },
     // so that we can insert it as a cache busting query string for CSS
     TIME_STAMP : function() { return  "'" +  Date.now() + "'";},
     // pass our modified pkg info

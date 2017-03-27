@@ -8,32 +8,17 @@ const log = require('./colored-console.js');
 
 // our own custom module
 var gitInfo = require(process.cwd() + '/tasks/repoInfo.js');
+console.log(`SASS $resourceSrc set to ${gitInfo.resourceSrc}`);
 
-// I added a way to override host so I can test locally
-// but it means I need to run this task with node and not npm
-var localFlag = typeof process.argv[3] !== "undefined" && (process.argv[3] === '-l' || process.argv[3] === '--local');
-var host = process.argv[4];
-
-/******************************************************************
+/*************************************************************************
  * Build SASS
+ * in order to pass variables to SASS we use the "data" options in node-sass
+ * and pass that a SASS string with our variables first and an @import of
+ * our main SASS file right after
  */
 
-// in order to pass variables to SASS we use the "data" options in node-sass
-// and pass that a SASS string with our variables first and an @import of
-// our main SASS file right after
-
-var resourceSrc = `https://raw.githubusercontent.com/${gitInfo.user}/DubPlus/${gitInfo.branch}`;
-if (localFlag && host) {
-  resourceSrc = host;
-}
-log.info(`* SASS $resourceSrc set to ${resourceSrc}`);
-log.info('***************************************');
-
-// first we define our variables
-var dataString =  `$resourceSrc : "${resourceSrc}"; `;
-
+var dataString =  `$resourceSrc : "${gitInfo.resourceSrc}"; `;
 var sassEntryFile = "./src/sass/dubplus";
-// then we @import our main sass file
 dataString += `@import '${sassEntryFile}';`;
 
 function compileSASS() {

@@ -32,6 +32,7 @@ switch (currentTask) {
   // separated out minifying just in case
   case 'min':
   case 'minify':
+  case 'min-release':
     jsTasks.minify()
       .then(function(){ console.log('js minifying finished'); })
       .catch(onError);
@@ -62,10 +63,12 @@ switch (currentTask) {
     break;
 
   // default 'npm run default' task should be both bundle and minify JS and Sass files
+  case 'build':
+  case 'build-release':
   default:
     jsTasks.bundle()
       .then(jsTasks.minify)
-      .then(function(){ console.log('js bundling and minifying complete'); })
+      .then(function(){ console.log('js finished bundling and minifying'); })
       .catch(onError);
     sassTasks.compile()
       .then(sassTasks.minify)

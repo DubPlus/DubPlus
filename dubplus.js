@@ -540,7 +540,7 @@ module.exports = function () {
   $('.dubplus-menu').perfectScrollbar();
 };
 
-}).call(this,'{"name":"DubPlus","version":"0.1.3","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+}).call(this,'{"name":"DubPlus","version":"0.2.0","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
@@ -851,7 +851,7 @@ exportSettings.srcRoot = _RESOURCE_SRC_;
 
 module.exports = exportSettings;
 
-}).call(this,'https://raw.githubusercontent.com/FranciscoG/DubPlus/dev')
+}).call(this,'https://raw.githubusercontent.com/DubPlus/DubPlus/master')
 },{}],9:[function(require,module,exports){
 'use strict';
 
@@ -3135,7 +3135,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1490628667033')
+}).call(this,'1490643368474')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 

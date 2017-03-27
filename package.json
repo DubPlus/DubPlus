@@ -5,9 +5,11 @@
   "main": "dubplus.js",
   "scripts": {
     "build": "node ./tasks",
+    "build-release": "node ./tasks --release",
     "watch": "node ./tasks watch",
     "bundle": "node ./tasks bundle",
     "minify": "node ./tasks minify",
+    "min-release": "node ./tasks min --release",
     "sass": "node ./tasks sass",
     "ext": "node ./tasks ext",
     "ext-zip": "node ./tasks ext-zip",
