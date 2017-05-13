@@ -540,7 +540,7 @@ module.exports = function () {
   $('.dubplus-menu').perfectScrollbar();
 };
 
-}).call(this,'{"name":"DubPlus","version":"0.1.3","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+}).call(this,'{"name":"DubPlus","version":"0.1.4","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
@@ -1320,8 +1320,8 @@ myModule.turnOn = function () {
   }).done(function (e) {
     var content = e.data.description;
 
-    // for backwards compatibility with dubx we're checking for both @dubx and @dubplus
-    var themeCheck = new RegExp(/(@dub[x|plus]=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/, 'i');
+    // for backwards compatibility with dubx we're checking for both @dubx and @dubplus and @dub+
+    var themeCheck = new RegExp(/(@dub(x|plus|\+)=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/, 'i');
     var communityCSSUrl = null;
     content.replace(themeCheck, function (match, p1, p2) {
       console.log('loading community css theme:', p2);
