@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.4] - 2017-05-13
+### Changed
+- Add community theme support for `@dub+=...`
+- Fix community theme support for `@dubplus=...`
+
 ## [0.1.3] - 2017-03-18
 ### Changed
 - Hotfix for lodash v4 upgrade breaking change
