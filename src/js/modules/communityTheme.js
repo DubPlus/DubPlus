@@ -23,9 +23,9 @@ myModule.turnOn = function(){
     // for backwards compatibility with dubx we're checking for both @dubx and @dubplus and @dub+
     var themeCheck = new RegExp(/(@dub(x|plus|\+)=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/,'i');
     var communityCSSUrl = null;
-    content.replace(themeCheck, function(match, p1, p2){
-      console.log('loading community css theme:',p2);
-      communityCSSUrl = p2;
+    content.replace(themeCheck, function(match, p1, p2, p3){
+      console.log('loading community css theme:',p3);
+      communityCSSUrl = p3;
     });
 
     if(!communityCSSUrl) {return;}
