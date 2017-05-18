@@ -1,7 +1,6 @@
 const babelify    = require("babelify");
 const browserify  = require('browserify');
 const fs = require('fs');
-const log = require('./colored-console.js');
 
 // our own custom module
 var gitInfo = require(process.cwd() + '/tasks/repoInfo.js');
@@ -33,18 +32,25 @@ var options = {
   }
 };
 
-var b = browserify(options);
-b.on('log', function (msg) { console.log(msg); });
+function setupB(shouldMin){
+  var b = browserify(options);
+  b.on('log', function (msg) { console.log(msg); });
 
-function bundle() {
-  console.log('Bundling all JS files');
+  if (shouldMin) {
+    b.transform(babelify, {presets: ["es2015", "babili"]});
+  } else {
+    b.transform(babelify, {presets: ["es2015"]});
+  }
 
-  var mainFile = fs.createWriteStream('./dubplus.js', 'utf8');
+  return b;
+}
 
-  b.transform(babelify, {presets: ["es2015"]})
-    .bundle()
-    .pipe(mainFile);
-
+function finalize(b, fileOut){
+  var out = `./${fileOut}`;
+  var mainFile = fs.createWriteStream(out, 'utf8');
+  
+  b.bundle().pipe(mainFile);
+  
   return new Promise(function (resolve, reject){
     mainFile.on('finish', function(){
       resolve();
@@ -56,40 +62,29 @@ function bundle() {
   }); 
 }
 
+function bundle() {
+  console.log('Bundling all JS files');
+  var b = setupB(false);
+  return finalize(b, 'dubplus.js');
+}
+
 function makeMin() {
   console.log('Minifying all JS files');
-  var minFile = fs.createWriteStream('./dubplus.min.js', 'utf8');
-
-  b.transform(babelify, {presets: ["es2015", "babili"]})
-    .bundle()
-    .pipe(minFile);
-
-  return new Promise(function (resolve, reject){
-    minFile.on('finish', function(){
-      resolve();
-    });
-    b.on('error', function(err) { reject(err); });
-    minFile.on('error', function(err){
-      reject(err);
-    });
-  }); 
+  var b = setupB(true);
+  return finalize(b, 'dubplus.min.js');
 }
 
 function watching(){
-  var watchify    = require('watchify');
-
+  var watchify = require('watchify');
+  var b = setupB(false);
   // watch our JS with watchify plugin for browserify  
-  b.plugin(watchify, {
-    // no options to pass as this time
-  });
-
+  b.plugin(watchify, {});
   b.on('update', function(ids){
     console.log(ids);
-    bundle();
+    finalize(b, 'dubplus.js');
   });
-
   // start browserify in order for watchify plugin to begin watching
-  bundle();
+  finalize(b, 'dubplus.js');
 }
 
 module.exports = {
