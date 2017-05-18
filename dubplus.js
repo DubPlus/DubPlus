@@ -540,7 +540,11 @@ module.exports = function () {
   $('.dubplus-menu').perfectScrollbar();
 };
 
+<<<<<<< HEAD
 }).call(this,'{"name":"DubPlus","version":"0.2.0","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+=======
+}).call(this,'{"name":"DubPlus","version":"0.1.4","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+>>>>>>> upstream/master
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
@@ -1320,12 +1324,12 @@ myModule.turnOn = function () {
   }).done(function (e) {
     var content = e.data.description;
 
-    // for backwards compatibility with dubx we're checking for both @dubx and @dubplus
-    var themeCheck = new RegExp(/(@dub[x|plus]=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/, 'i');
+    // for backwards compatibility with dubx we're checking for both @dubx and @dubplus and @dub+
+    var themeCheck = new RegExp(/(@dub(x|plus|\+)=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/, 'i');
     var communityCSSUrl = null;
-    content.replace(themeCheck, function (match, p1, p2) {
-      console.log('loading community css theme:', p2);
-      communityCSSUrl = p2;
+    content.replace(themeCheck, function (match, p1, p2, p3) {
+      console.log('loading community css theme:', p3);
+      communityCSSUrl = p3;
     });
 
     if (!communityCSSUrl) {
@@ -3135,7 +3139,11 @@ module.exports = {
   loadExternal: loadExternal
 };
 
+<<<<<<< HEAD
 }).call(this,'1490643368474')
+=======
+}).call(this,'1494719026677')
+>>>>>>> upstream/master
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 

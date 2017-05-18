@@ -2,11 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.2.0] - 2017-03-24
-### Added
-- new feature:  Chat Cleaner - Add ability to automatically clear older chat history based on a user defined amount of chat items
+## [0.1.4] - 2017-05-13
 ### Changed
-- fix DJ Notification issues
+- Add community theme support for `@dub+=...`
+- Fix community theme support for `@dubplus=...`
 
 ## [0.1.3] - 2017-03-18
 ### Changed

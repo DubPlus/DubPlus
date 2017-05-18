@@ -1,6 +1,6 @@
 {
   "name": "DubPlus",
-  "version": "0.2.0",
+  "version": "0.1.4",
   "description": "Dub+ - A simple script/extension for Dubtrack.fm",
   "main": "dubplus.js",
   "scripts": {
