@@ -873,6 +873,9 @@ afk_module.description = "Toggle Away from Keyboard and customize AFK message.";
 afk_module.category = "General";
 
 var afk_chat_respond = function afk_chat_respond(e) {
+  if (!this.optionState) {
+    return; // do nothing until it's back to true
+  }
   var content = e.message;
   var user = Dubtrack.session.get('username');
 
@@ -895,7 +898,7 @@ var afk_chat_respond = function afk_chat_respond(e) {
 };
 
 afk_module.turnOn = function () {
-  Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
+  Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond.bind(this));
 };
 
 afk_module.turnOff = function () {
@@ -3135,7 +3138,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1495083831827')
+}).call(this,'1495462135278')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
