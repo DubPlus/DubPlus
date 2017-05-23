@@ -17,7 +17,7 @@ afk_module.category = "General";
 
 afk_module.canSend = true;
 afk_module.afk_chat_respond = function(e) {
-  if (!this.canSpam) {
+  if (!this.canSend) {
     return; // do nothing until it's back to true
   }
   var content = e.message;

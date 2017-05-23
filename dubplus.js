@@ -876,7 +876,7 @@ afk_module.canSend = true;
 afk_module.afk_chat_respond = function (e) {
   var _this = this;
 
-  if (!this.canSpam) {
+  if (!this.canSend) {
     return; // do nothing until it's back to true
   }
   var content = e.message;
@@ -3140,7 +3140,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1495506645347')
+}).call(this,'1495506914268')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
