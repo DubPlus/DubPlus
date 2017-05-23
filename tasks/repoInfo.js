@@ -43,7 +43,7 @@ if (CURRENT_BRANCH === 'master' || releaseFlag) {
 }
 
 
-var resourceSrc = `https://raw.githubusercontent.com/${CURRENT_REPO}/DubPlus/${CURRENT_BRANCH}`;
+var resourceSrc = `https://rawgit.com/${CURRENT_REPO}/DubPlus/${CURRENT_BRANCH}`;
 if (localFlag) {
   resourceSrc = args[args.length - 1];
 }

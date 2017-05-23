@@ -851,7 +851,7 @@ exportSettings.srcRoot = _RESOURCE_SRC_;
 
 module.exports = exportSettings;
 
-}).call(this,'https://raw.githubusercontent.com/FranciscoG/DubPlus/dev')
+}).call(this,'https://rawgit.com/FranciscoG/DubPlus/dev')
 },{}],9:[function(require,module,exports){
 'use strict';
 
@@ -3138,7 +3138,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1495462135278')
+}).call(this,'1495503823359')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
@@ -3464,7 +3464,7 @@ Object.defineProperty(exports, "__esModule", {
  * definied starting at provided scope or default to global window scope.
  * @param  {string} dottedString  the item you are looking for
  * @param  {var}    startingScope where to start lookined
- * @return {boolean}              if it is defined or noe
+ * @return {boolean}              if it is defined or not
  */
 function deepCheck(dottedString, startingScope) {
   var _vars = dottedString.split('.');
