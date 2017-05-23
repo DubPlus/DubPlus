@@ -872,8 +872,11 @@ afk_module.moduleName = "AFK Auto-respond";
 afk_module.description = "Toggle Away from Keyboard and customize AFK message.";
 afk_module.category = "General";
 
+afk_module.canSend = true;
 afk_module.afk_chat_respond = function (e) {
-  if (!this.optionState) {
+  var _this = this;
+
+  if (!this.canSpam) {
     return; // do nothing until it's back to true
   }
   var content = e.message;
@@ -888,11 +891,10 @@ afk_module.afk_chat_respond = function (e) {
     }
 
     Dubtrack.room.chat.sendMessage();
-    this.optionState = false;
+    this.canSend = false;
 
-    var self = this;
     setTimeout(function () {
-      self.optionState = true;
+      _this.canSend = true;
     }, 180000);
   }
 };
@@ -3138,7 +3140,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1495504721028')
+}).call(this,'1495506645347')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
