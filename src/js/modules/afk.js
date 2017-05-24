@@ -15,7 +15,11 @@ afk_module.moduleName = "AFK Auto-respond";
 afk_module.description = "Toggle Away from Keyboard and customize AFK message.";
 afk_module.category = "General";
 
-var afk_chat_respond = function(e) {
+afk_module.canSend = true;
+afk_module.afk_chat_respond = function(e) {
+  if (!this.canSend) {
+    return; // do nothing until it's back to true
+  }
   var content = e.message;
   var user = Dubtrack.session.get('username');
   
@@ -28,21 +32,20 @@ var afk_chat_respond = function(e) {
     }
     
     Dubtrack.room.chat.sendMessage();
-    this.optionState = false;
+    this.canSend = false;
 
-    var self = this;
-    setTimeout(function() {
-    self.optionState = true;
-    }, 180000);
+    setTimeout(()=> {
+      this.canSend = true;
+    }, 3000);
   }
 };
 
 afk_module.turnOn = function(){
-  Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
+  Dubtrack.Events.bind("realtime:chat-message", this.afk_chat_respond.bind(this));
 };
 
 afk_module.turnOff = function() {
-  Dubtrack.Events.unbind("realtime:chat-message", afk_chat_respond);
+  Dubtrack.Events.unbind("realtime:chat-message", this.afk_chat_respond);
 };
 
 var saveAFKmessage = function() {

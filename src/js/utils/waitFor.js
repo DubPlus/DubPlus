@@ -3,7 +3,7 @@
  * definied starting at provided scope or default to global window scope.
  * @param  {string} dottedString  the item you are looking for
  * @param  {var}    startingScope where to start lookined
- * @return {boolean}              if it is defined or noe
+ * @return {boolean}              if it is defined or not
  */
 function deepCheck(dottedString, startingScope) {
   var _vars = dottedString.split('.');

@@ -4,15 +4,16 @@
   "description": "Dub+ - A simple script/extension for Dubtrack.fm",
   "main": "dubplus.js",
   "scripts": {
-    "build": "node ./tasks/index.js",
-    "start": "node ./tasks/index.js watch",
-    "watch": "node ./tasks/index.js watch",
-    "bundle": "node ./tasks/index.js bundle",
-    "minify": "node ./tasks/index.js minify",
-    "sass": "node ./tasks/index.js sass",
-    "ext": "node ./tasks/index.js ext",
-    "ext-zip": "node ./tasks/index.js ext-zip",
-    "ext-deploy": "node ./tasks/index.js ext-deploy"
+    "build": "node ./tasks",
+    "build-release": "node ./tasks --release",
+    "watch": "node ./tasks watch",
+    "bundle": "node ./tasks bundle",
+    "minify": "node ./tasks minify",
+    "min-release": "node ./tasks min --release",
+    "sass": "node ./tasks sass",
+    "ext": "node ./tasks ext",
+    "ext-zip": "node ./tasks ext-zip",
+    "ext-deploy": "node ./tasks ext-deploy"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "babel-preset-es2015": "^6.22.0",
     "babelify": "^7.3.0",
     "browserify": "^13.0.1",
+    "chalk": "^1.1.3",
     "fs-extra": "^2.0.0",
     "git-repo-info": "^1.4.1",
     "node-sass": "^4.5.0",
