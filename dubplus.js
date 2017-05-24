@@ -851,7 +851,7 @@ exportSettings.srcRoot = _RESOURCE_SRC_;
 
 module.exports = exportSettings;
 
-}).call(this,'https://rawgit.com/FranciscoG/DubPlus/dev')
+}).call(this,'https://rawgit.com/DubPlus/DubPlus/master')
 },{}],9:[function(require,module,exports){
 'use strict';
 
@@ -894,7 +894,6 @@ afk_module.afk_chat_respond = function (e) {
     this.canSend = false;
 
     setTimeout(function () {
-      console.log(_this.canSend);
       _this.canSend = true;
     }, 3000);
   }
@@ -3141,7 +3140,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1495507635755')
+}).call(this,'1495637579059')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
