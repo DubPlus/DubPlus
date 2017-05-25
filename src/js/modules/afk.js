@@ -36,7 +36,7 @@ afk_module.afk_chat_respond = function(e) {
 
     setTimeout(()=> {
       this.canSend = true;
-    }, 3000);
+    }, 30000);
   }
 };
 

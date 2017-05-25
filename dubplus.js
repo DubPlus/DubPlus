@@ -895,7 +895,7 @@ afk_module.afk_chat_respond = function (e) {
 
     setTimeout(function () {
       _this.canSend = true;
-    }, 3000);
+    }, 30000);
   }
 };
 
@@ -3140,7 +3140,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1495637579059')
+}).call(this,'1495676363710')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
