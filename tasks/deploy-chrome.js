@@ -1,25 +1,38 @@
-var request = require('request');
-var googleToken = require('./google-token.js');
-var fs = require('fs');
-
+const request = require('request');
+const googleToken = require('./google-token.js');
+const fs = require('fs');
+const log = require('./colored-console.js');
 /*******************************************************************
  * setup vars from env or json file
  */
-var CHROME_EXT_ITEM_ID,
-    CLIENT_ID,
-    CLIENT_SECRET,
-    REFRESH_TOKEN;
 
+// default to env
+var private = {
+  CHROME_EXT_ITEM_ID : process.env.CHROME_EXT_ITEM_ID,
+  CLIENT_ID : process.env.CLIENT_ID,
+  CLIENT_SECRET : process.env.CLIENT_SECRET,
+  REFRESH_TOKEN : process.env.REFRESH_TOKEN
+};
+
+// cause I'm lazy and dont want to type out a bunch of large env vars on the command line, 
+// I also put them in a git-ignored json file that overrides env vars
 try {
-  var private = require('../private.json');
-  CHROME_EXT_ITEM_ID =  process.env.CHROME_EXT_ITEM_ID || private.CHROME_EXT_ITEM_ID;
-  CLIENT_ID = process.env.CLIENT_ID || private.CLIENT_ID;
-  CLIENT_SECRET = process.env.CLIENT_SECRET || private.CLIENT_SECRET;
-  REFRESH_TOKEN = process.env.REFRESH_TOKEN || private.REFRESH_TOKEN;
+  private = require(process.cwd() + '/private.json');
 } catch(ex) {
-  console.log("missing environment variable or couldn't load private.json");
-  console.error(ex);
-  process.exit(1);
+  // if json didnt work, we need to check if env vars were set at least
+  let failure = false;
+  
+  for(let key in private) {
+    let p = private[key];
+    if (typeof p === 'undefined' || p === null || p === '') {
+      log.error(`missing env variable: ${key}`);
+      failure = true;
+    }
+  }
+
+  if (failure) {
+    process.exit(1);
+  }
 }
 
 /*******************************************************************
@@ -31,7 +44,7 @@ function uploadExtension(tokenResp) {
   var resp = JSON.parse(tokenResp.body);
   var TOKEN = resp.access_token;
   var options = {
-    url: `https://www.googleapis.com/upload/chromewebstore/v1.1/items/${CHROME_EXT_ITEM_ID}`,
+    url: `https://www.googleapis.com/upload/chromewebstore/v1.1/items/${private.CHROME_EXT_ITEM_ID}`,
     headers: {
       'x-goog-api-version': '2',
       'Authorization': `Bearer ${TOKEN}`
@@ -45,7 +58,7 @@ function uploadExtension(tokenResp) {
         function(err, itemResponse) {
           if (err) { reject(err); }
           else {
-            console.log('got new token');
+            log.info('got new token');
             itemResponse.TOKEN = TOKEN; // pass through of the token
             resolve(itemResponse);
           }
@@ -63,14 +76,14 @@ function publishExt(itemResponse){
   var resp = JSON.parse(itemResponse.body);
   
   if (resp.uploadState !== 'SUCCESS') {
-    console.error("Error uploading extension");
-    console.log(resp.itemError); // should exist if there was an error right?
+    log.error("Error uploading extension");
+    log.error(resp.itemError); // should exist if there was an error right?
     process.exit(1);
     return;
   }
 
   var options = {
-    url: `https://www.googleapis.com/chromewebstore/v1.1/items/${CHROME_EXT_ITEM_ID}/publish`,
+    url: `https://www.googleapis.com/chromewebstore/v1.1/items/${private.CHROME_EXT_ITEM_ID}/publish`,
     headers: {
       'x-goog-api-version': '2',
       'Content-Length': 0,
@@ -83,7 +96,7 @@ function publishExt(itemResponse){
       function(err,response){
         if (err) {reject(err);}
         else {
-          console.log('published extension');
+          log.info('published extension');
           resolve(response);
         }
       }
@@ -99,22 +112,22 @@ function checkPublish(pubResponse){
   var resp = JSON.parse(pubResponse.body);
   
   if (resp.error) {
-    console.log(resp);
+    log.error(`error occured during publishing: ${resp.error}`);
     process.exit(1);
   }
 
-  console.log('success!');
-  console.log(resp);
+  log.info('success!');
+  log.dir(resp);
 }
 
 module.exports = function(){
 
-  googleToken(CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN)
+  googleToken(private.CLIENT_ID, private.CLIENT_SECRET, private.REFRESH_TOKEN)
     .then(uploadExtension)
     .then(publishExt)
     .then(checkPublish)
     .catch(function(err){
-      console.error(err);
+      log.error(err);
       process.exit(1);
     });
 

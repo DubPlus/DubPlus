@@ -820,7 +820,7 @@ module.exports = {
 };
 
 },{"../utils/css.js":40,"./menu-events.js":6,"./settings.js":8}],8:[function(require,module,exports){
-(function (CURRENT_BRANCH,CURRENT_REPO){
+(function (_RESOURCE_SRC_){
 "use strict";
 
 var defaults = {
@@ -847,11 +847,11 @@ if (_storageRaw) {
 var exportSettings = $.extend({}, defaults, savedSettings);
 
 // this is stored in localStorage but we don't want that, we always want it fresh
-exportSettings.srcRoot = "https://rawgit.com/" + CURRENT_REPO + "/DubPlus/" + CURRENT_BRANCH;
+exportSettings.srcRoot = _RESOURCE_SRC_;
 
 module.exports = exportSettings;
 
-}).call(this,'master','DubPlus')
+}).call(this,'https://rawgit.com/DubPlus/DubPlus/master')
 },{}],9:[function(require,module,exports){
 'use strict';
 
@@ -872,7 +872,13 @@ afk_module.moduleName = "AFK Auto-respond";
 afk_module.description = "Toggle Away from Keyboard and customize AFK message.";
 afk_module.category = "General";
 
-var afk_chat_respond = function afk_chat_respond(e) {
+afk_module.canSend = true;
+afk_module.afk_chat_respond = function (e) {
+  var _this = this;
+
+  if (!this.canSend) {
+    return; // do nothing until it's back to true
+  }
   var content = e.message;
   var user = Dubtrack.session.get('username');
 
@@ -885,21 +891,20 @@ var afk_chat_respond = function afk_chat_respond(e) {
     }
 
     Dubtrack.room.chat.sendMessage();
-    this.optionState = false;
+    this.canSend = false;
 
-    var self = this;
     setTimeout(function () {
-      self.optionState = true;
-    }, 180000);
+      _this.canSend = true;
+    }, 30000);
   }
 };
 
 afk_module.turnOn = function () {
-  Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
+  Dubtrack.Events.bind("realtime:chat-message", this.afk_chat_respond.bind(this));
 };
 
 afk_module.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:chat-message", afk_chat_respond);
+  Dubtrack.Events.unbind("realtime:chat-message", this.afk_chat_respond);
 };
 
 var saveAFKmessage = function saveAFKmessage() {
@@ -3135,7 +3140,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1494719026677')
+}).call(this,'1495676363710')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
@@ -3461,7 +3466,7 @@ Object.defineProperty(exports, "__esModule", {
  * definied starting at provided scope or default to global window scope.
  * @param  {string} dottedString  the item you are looking for
  * @param  {var}    startingScope where to start lookined
- * @return {boolean}              if it is defined or noe
+ * @return {boolean}              if it is defined or not
  */
 function deepCheck(dottedString, startingScope) {
   var _vars = dottedString.split('.');

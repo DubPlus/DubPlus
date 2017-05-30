@@ -1,4 +1,5 @@
-var spawnSync = require('child_process').spawnSync;
+const spawnSync = require('child_process').spawnSync;
+const log = require('./colored-console.js');
 
 /****************************************************
  * Important note
@@ -24,7 +25,7 @@ function signFFext(){
   var successResponse = "Your add-on has been submitted for review. It passed validation but could not be automatically signed because this is a listed add-on";
 
   if (output.indexOf(successResponse) > 0) {
-    console.log('success');
+    log.info('success');
   }
 }
 

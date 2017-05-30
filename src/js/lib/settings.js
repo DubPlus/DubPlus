@@ -22,6 +22,6 @@ if (_storageRaw) {
 var exportSettings = $.extend({}, defaults, savedSettings);
 
 // this is stored in localStorage but we don't want that, we always want it fresh
-exportSettings.srcRoot = `https://rawgit.com/${CURRENT_REPO}/DubPlus/${CURRENT_BRANCH}`;
+exportSettings.srcRoot = _RESOURCE_SRC_;
 
 module.exports = exportSettings;
