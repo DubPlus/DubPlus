@@ -54,9 +54,20 @@ prepEmoji.loadTwitchEmotes = function(){
     console.log('dub+','twitch','loading from api');
     var twApi = new GetJSON('https://api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded', {'Client-ID': '5vhafslpr2yqal6715puzysmzrntmt8'});
     twApi.done((data)=>{
+      var json = JSON.parse(data);
+      var twitchEmotes = {};
+      json.emoticons.forEach(e => {
+        if (!twitchEmotes[e.code]){
+          // if emote doesn't exist, add it
+          twitchEmotes[e.code] = e.id;
+        } else if (e.emoticon_set === null) {
+          // override if it's a global emote (null set = global emote)
+          twitchEmotes[e.code] = e.id;
+        }
+      });
       localStorage.setItem('twitch_api_timestamp', Date.now().toString());
-      localStorage.setItem('twitch_api', data);
-      this.processTwitchEmotes(JSON.parse(data));
+      localStorage.setItem('twitch_api', JSON.stringify(twitchEmotes));
+      this.processTwitchEmotes(twitchEmotes);
     });
   } else {
     console.log('dub+','twitch','loading from localstorage');
@@ -77,9 +88,17 @@ prepEmoji.loadBTTVEmotes = function(){
     console.log('dub+','bttv','loading from api');
     var bttvApi = new GetJSON('//api.betterttv.net/2/emotes', 'bttv:loaded');
     bttvApi.done((data)=>{
+        var json = JSON.parse(data);
+        var bttvEmotes = {};
+        json.emotes.forEach(e => {
+          if (!bttvEmotes[e.code]){
+            // if emote doesn't exist, add it
+            bttvEmotes[e.code] = e.id;
+          }
+        });
         localStorage.setItem('bttv_api_timestamp', Date.now().toString());
-        localStorage.setItem('bttv_api', data);
-        this.processBTTVEmotes(JSON.parse(data));
+        localStorage.setItem('bttv_api', JSON.stringify(bttvEmotes));
+        this.processBTTVEmotes(bttvEmotes);
     });
   } else {
     console.log('dub+','bttv','loading from localstorage');
@@ -103,51 +122,50 @@ prepEmoji.loadTastyEmotes = function(){
 };
 
 prepEmoji.processTwitchEmotes = function(data) {
-  data.emoticons.forEach((el)=>{
-    var _key = el.code.toLowerCase();
+  for (var code in data) {
+    if (data.hasOwnProperty(code)) {
+      var _key = code.toLowerCase();
 
-    // move twitch non-named emojis to their own array
-    if (el.code.indexOf('\\') >= 0) {
-      this.twitch.specialEmotes.push([el.code, el.id]);
-      return;
+      // move twitch non-named emojis to their own array
+      if (code.indexOf('\\') >= 0) {
+        this.twitch.specialEmotes.push([code, data[code]]);
+        continue;
+      }
+
+      if (emojify.emojiNames.indexOf(_key) >= 0) {
+        continue; // do nothing so we don't override emoji
+      }
+
+      if (!this.twitch.emotes[_key]){
+        // if emote doesn't exist, add it
+        this.twitch.emotes[_key] = data[code];
+      } 
     }
-
-    if (emojify.emojiNames.indexOf(_key) >= 0) {
-      return; // do nothing so we don't override emoji
-    }
-
-    if (!this.twitch.emotes[_key]){
-      // if emote doesn't exist, add it
-      this.twitch.emotes[_key] = el.id;
-    } else if (el.emoticon_set === null) {
-      // override if it's a global emote (null set = global emote)
-      this.twitch.emotes[_key] = el.id;
-    }
-
-  });
+  }
   this.twitchJSONSLoaded = true;
   this.emojiEmotes = emojify.emojiNames.concat(Object.keys(this.twitch.emotes));
 };
 
 prepEmoji.processBTTVEmotes = function(data){
-  data.emotes.forEach((el)=>{
-    var _key = el.code.toLowerCase();
+  for (var code in data) {
+    if (data.hasOwnProperty(code)) {
+      var _key = code.toLowerCase();
 
-    if (el.code.indexOf(':') >= 0) {
-        return; // don't want any emotes with smileys and stuff
-    }
+      if (code.indexOf(':') >= 0) {
+        continue; // don't want any emotes with smileys and stuff
+      }
 
-    if (emojify.emojiNames.indexOf(_key) >= 0) {
-        return; // do nothing so we don't override emoji
-    }
+      if (emojify.emojiNames.indexOf(_key) >= 0) {
+        continue; // do nothing so we don't override emoji
+      }
 
-    if (el.code.indexOf('(') >= 0) {
+      if (code.indexOf('(') >= 0) {
         _key = _key.replace(/([()])/g, "");
+      }
+
+      this.bttv.emotes[_key] = data[code];
     }
-
-    this.bttv.emotes[_key] = el.id;
-
-  });
+  }
   this.bttvJSONSLoaded = true;
   this.emojiEmotes = this.emojiEmotes.concat(Object.keys(this.bttv.emotes));
 };
