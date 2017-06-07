@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.5] - 2017-06-02
+### Changed
+- Fix storing for Twitch and BetterTwitchTV emotes, fixes exceeded quota error for local storage
+- Fix AFK not unbinding to chat event when turned off
+
 ## [0.1.4] - 2017-05-13
 ### Changed
 - Add community theme support for `@dub+=...`

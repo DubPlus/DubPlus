@@ -163,9 +163,20 @@ prepEmoji.loadTwitchEmotes = function () {
     console.log('dub+', 'twitch', 'loading from api');
     var twApi = new GetJSON('https://api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded', { 'Client-ID': '5vhafslpr2yqal6715puzysmzrntmt8' });
     twApi.done(function (data) {
+      var json = JSON.parse(data);
+      var twitchEmotes = {};
+      json.emoticons.forEach(function (e) {
+        if (!twitchEmotes[e.code]) {
+          // if emote doesn't exist, add it
+          twitchEmotes[e.code] = e.id;
+        } else if (e.emoticon_set === null) {
+          // override if it's a global emote (null set = global emote)
+          twitchEmotes[e.code] = e.id;
+        }
+      });
       localStorage.setItem('twitch_api_timestamp', Date.now().toString());
-      localStorage.setItem('twitch_api', data);
-      _this.processTwitchEmotes(JSON.parse(data));
+      localStorage.setItem('twitch_api', JSON.stringify(twitchEmotes));
+      _this.processTwitchEmotes(twitchEmotes);
     });
   } else {
     console.log('dub+', 'twitch', 'loading from localstorage');
@@ -187,9 +198,17 @@ prepEmoji.loadBTTVEmotes = function () {
     console.log('dub+', 'bttv', 'loading from api');
     var bttvApi = new GetJSON('//api.betterttv.net/2/emotes', 'bttv:loaded');
     bttvApi.done(function (data) {
+      var json = JSON.parse(data);
+      var bttvEmotes = {};
+      json.emotes.forEach(function (e) {
+        if (!bttvEmotes[e.code]) {
+          // if emote doesn't exist, add it
+          bttvEmotes[e.code] = e.id;
+        }
+      });
       localStorage.setItem('bttv_api_timestamp', Date.now().toString());
-      localStorage.setItem('bttv_api', data);
-      _this2.processBTTVEmotes(JSON.parse(data));
+      localStorage.setItem('bttv_api', JSON.stringify(bttvEmotes));
+      _this2.processBTTVEmotes(bttvEmotes);
     });
   } else {
     console.log('dub+', 'bttv', 'loading from localstorage');
@@ -214,53 +233,50 @@ prepEmoji.loadTastyEmotes = function () {
 };
 
 prepEmoji.processTwitchEmotes = function (data) {
-  var _this4 = this;
+  for (var code in data) {
+    if (data.hasOwnProperty(code)) {
+      var _key = code.toLowerCase();
 
-  data.emoticons.forEach(function (el) {
-    var _key = el.code.toLowerCase();
+      // move twitch non-named emojis to their own array
+      if (code.indexOf('\\') >= 0) {
+        this.twitch.specialEmotes.push([code, data[code]]);
+        continue;
+      }
 
-    // move twitch non-named emojis to their own array
-    if (el.code.indexOf('\\') >= 0) {
-      _this4.twitch.specialEmotes.push([el.code, el.id]);
-      return;
+      if (emojify.emojiNames.indexOf(_key) >= 0) {
+        continue; // do nothing so we don't override emoji
+      }
+
+      if (!this.twitch.emotes[_key]) {
+        // if emote doesn't exist, add it
+        this.twitch.emotes[_key] = data[code];
+      }
     }
-
-    if (emojify.emojiNames.indexOf(_key) >= 0) {
-      return; // do nothing so we don't override emoji
-    }
-
-    if (!_this4.twitch.emotes[_key]) {
-      // if emote doesn't exist, add it
-      _this4.twitch.emotes[_key] = el.id;
-    } else if (el.emoticon_set === null) {
-      // override if it's a global emote (null set = global emote)
-      _this4.twitch.emotes[_key] = el.id;
-    }
-  });
+  }
   this.twitchJSONSLoaded = true;
   this.emojiEmotes = emojify.emojiNames.concat(Object.keys(this.twitch.emotes));
 };
 
 prepEmoji.processBTTVEmotes = function (data) {
-  var _this5 = this;
+  for (var code in data) {
+    if (data.hasOwnProperty(code)) {
+      var _key = code.toLowerCase();
 
-  data.emotes.forEach(function (el) {
-    var _key = el.code.toLowerCase();
+      if (code.indexOf(':') >= 0) {
+        continue; // don't want any emotes with smileys and stuff
+      }
 
-    if (el.code.indexOf(':') >= 0) {
-      return; // don't want any emotes with smileys and stuff
+      if (emojify.emojiNames.indexOf(_key) >= 0) {
+        continue; // do nothing so we don't override emoji
+      }
+
+      if (code.indexOf('(') >= 0) {
+        _key = _key.replace(/([()])/g, "");
+      }
+
+      this.bttv.emotes[_key] = data[code];
     }
-
-    if (emojify.emojiNames.indexOf(_key) >= 0) {
-      return; // do nothing so we don't override emoji
-    }
-
-    if (el.code.indexOf('(') >= 0) {
-      _key = _key.replace(/([()])/g, "");
-    }
-
-    _this5.bttv.emotes[_key] = el.id;
-  });
+  }
   this.bttvJSONSLoaded = true;
   this.emojiEmotes = this.emojiEmotes.concat(Object.keys(this.bttv.emotes));
 };
@@ -540,7 +556,7 @@ module.exports = function () {
   $('.dubplus-menu').perfectScrollbar();
 };
 
-}).call(this,'{"name":"DubPlus","version":"0.1.4","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+}).call(this,'{"name":"DubPlus","version":"0.1.5","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
@@ -851,7 +867,7 @@ exportSettings.srcRoot = _RESOURCE_SRC_;
 
 module.exports = exportSettings;
 
-}).call(this,'https://rawgit.com/DubPlus/DubPlus/master')
+}).call(this,'https://rawgit.com/FranciscoG/DubPlus/dev')
 },{}],9:[function(require,module,exports){
 'use strict';
 
@@ -873,10 +889,8 @@ afk_module.description = "Toggle Away from Keyboard and customize AFK message.";
 afk_module.category = "General";
 
 afk_module.canSend = true;
-afk_module.afk_chat_respond = function (e) {
-  var _this = this;
-
-  if (!this.canSend) {
+var afk_chat_respond = function afk_chat_respond(e) {
+  if (!afk_module.canSend) {
     return; // do nothing until it's back to true
   }
   var content = e.message;
@@ -891,11 +905,12 @@ afk_module.afk_chat_respond = function (e) {
     }
 
     Dubtrack.room.chat.sendMessage();
-    this.canSend = false;
+
+    afk_module.canSend = false;
 
     setTimeout(function () {
-      _this.canSend = true;
-    }, 3000);
+      afk_module.canSend = true;
+    }, 30000);
   }
 };
 
@@ -3140,7 +3155,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1495637579059')
+}).call(this,'1496859623877')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
@@ -3514,7 +3529,8 @@ function WaitFor(waitingFor, options) {
   }
   var defaults = {
     interval: 500, // every XX ms we check to see if waitingFor is defined
-    seconds: 5 };
+    seconds: 5 // how many total seconds we wish to continue pinging
+  };
 
   var _cb = function _cb() {};
   var _failCB = function _failCB() {};
