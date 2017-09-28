@@ -556,7 +556,7 @@ module.exports = function () {
   $('.dubplus-menu').perfectScrollbar();
 };
 
-}).call(this,'{"name":"DubPlus","version":"0.1.5","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+}).call(this,'{"name":"DubPlus","version":"0.1.6","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
@@ -867,7 +867,7 @@ exportSettings.srcRoot = _RESOURCE_SRC_;
 
 module.exports = exportSettings;
 
-}).call(this,'https://rawgit.com/DubPlus/DubPlus/master')
+}).call(this,'https://rawgit.com/FranciscoG/DubPlus/dev')
 },{}],9:[function(require,module,exports){
 'use strict';
 
@@ -905,6 +905,7 @@ var afk_chat_respond = function afk_chat_respond(e) {
     }
 
     Dubtrack.room.chat.sendMessage();
+
     afk_module.canSend = false;
 
     setTimeout(function () {
@@ -914,11 +915,11 @@ var afk_chat_respond = function afk_chat_respond(e) {
 };
 
 afk_module.turnOn = function () {
-  Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
+  Dubtrack.Events.bind("realtime:chat-message", this.afk_chat_respond.bind(this));
 };
 
 afk_module.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:chat-message", afk_chat_respond);
+  Dubtrack.Events.unbind("realtime:chat-message", this.afk_chat_respond);
 };
 
 var saveAFKmessage = function saveAFKmessage() {
@@ -3154,7 +3155,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1498831896839')
+}).call(this,'1506563330806')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
@@ -3528,7 +3529,8 @@ function WaitFor(waitingFor, options) {
   }
   var defaults = {
     interval: 500, // every XX ms we check to see if waitingFor is defined
-    seconds: 5 };
+    seconds: 5 // how many total seconds we wish to continue pinging
+  };
 
   var _cb = function _cb() {};
   var _failCB = function _failCB() {};

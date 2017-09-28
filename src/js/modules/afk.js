@@ -32,20 +32,22 @@ var afk_chat_respond = function(e) {
     }
     
     Dubtrack.room.chat.sendMessage();
+
     afk_module.canSend = false;
 
     setTimeout(()=> {
       afk_module.canSend = true;
     }, 30000);
+
   }
 };
 
 afk_module.turnOn = function(){
-  Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
+  Dubtrack.Events.bind("realtime:chat-message", this.afk_chat_respond.bind(this));
 };
 
 afk_module.turnOff = function() {
-  Dubtrack.Events.unbind("realtime:chat-message", afk_chat_respond);
+  Dubtrack.Events.unbind("realtime:chat-message", this.afk_chat_respond);
 };
 
 var saveAFKmessage = function() {
