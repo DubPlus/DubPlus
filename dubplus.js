@@ -161,7 +161,7 @@ prepEmoji.loadTwitchEmotes = function () {
   // grab it from the twitch API
   if (this.shouldUpdateAPIs('twitch')) {
     console.log('dub+', 'twitch', 'loading from api');
-    var twApi = new GetJSON('https://api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded', { 'Client-ID': '5vhafslpr2yqal6715puzysmzrntmt8' });
+    var twApi = new GetJSON('https://api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded', { 'Accept': 'application/vnd.twitchtv.v5+json', 'Client-ID': 'z5bpa7x6y717dsw28qnmcooolzm2js' });
     twApi.done(function (data) {
       var json = JSON.parse(data);
       var twitchEmotes = {};
@@ -556,7 +556,7 @@ module.exports = function () {
   $('.dubplus-menu').perfectScrollbar();
 };
 
-}).call(this,'{"name":"DubPlus","version":"0.1.5","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+}).call(this,'{"name":"DubPlus","version":"0.1.6","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
@@ -3155,7 +3155,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1496859623877')
+}).call(this,'1506563330806')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
