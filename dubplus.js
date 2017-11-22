@@ -236,7 +236,7 @@ prepEmoji.loadBTTVEmotes = function () {
         prepEmoji.processBTTVEmotes(bttvEmotes);
       });
     } else {
-      ldb.get('twitch_api', function (data) {
+      ldb.get('bttv_api', function (data) {
         console.log('dub+', 'bttv', 'loading from IndexedDB');
         savedData = JSON.parse(data);
         prepEmoji.processBTTVEmotes(savedData);
@@ -3182,7 +3182,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1511366514542')
+}).call(this,'1511367125433')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
