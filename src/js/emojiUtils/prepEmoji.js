@@ -110,7 +110,7 @@ prepEmoji.loadBTTVEmotes = function(){
           prepEmoji.processBTTVEmotes(bttvEmotes);
       });
     } else {
-      ldb.get('twitch_api', function(data) {
+      ldb.get('bttv_api', function(data) {
         console.log('dub+','bttv','loading from IndexedDB');
         savedData = JSON.parse(data);
         prepEmoji.processBTTVEmotes(savedData);

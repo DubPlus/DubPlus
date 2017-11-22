@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.7] - 2017-11-22
+### Changed
+- Update Twitch emojis to save to IndexedDB instead of localStorage. We were hitting the 5mb storage limit on localStorage, and using IndexedDB increases the limit to 50mb.
+
 ## [0.1.6] - 2017-06-30
 ### Changed
 - Update Twitch API to v5
