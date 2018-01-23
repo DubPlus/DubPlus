@@ -943,11 +943,11 @@ var afk_chat_respond = function afk_chat_respond(e) {
 };
 
 afk_module.turnOn = function () {
-  Dubtrack.Events.bind("realtime:chat-message", this.afk_chat_respond.bind(this));
+  Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
 };
 
 afk_module.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:chat-message", this.afk_chat_respond);
+  Dubtrack.Events.unbind("realtime:chat-message", afk_chat_respond);
 };
 
 var saveAFKmessage = function saveAFKmessage() {
@@ -3183,7 +3183,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1516730832351')
+}).call(this,'1516731296263')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 

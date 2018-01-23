@@ -43,11 +43,11 @@ var afk_chat_respond = function(e) {
 };
 
 afk_module.turnOn = function(){
-  Dubtrack.Events.bind("realtime:chat-message", this.afk_chat_respond.bind(this));
+  Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
 };
 
 afk_module.turnOff = function() {
-  Dubtrack.Events.unbind("realtime:chat-message", this.afk_chat_respond);
+  Dubtrack.Events.unbind("realtime:chat-message", afk_chat_respond);
 };
 
 var saveAFKmessage = function() {
