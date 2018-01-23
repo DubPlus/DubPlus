@@ -858,7 +858,7 @@ module.exports = {
       mainCssClass = "dubplus-menu-icon";
       mainIcon = '<span class="fa fa-' + opts.altIcon + '"></span>';
     }
-    return '\n      <li id="' + opts.id + '" class="' + mainCssClass + ' ' + _state + ' ' + opts.cssClass + ' title="' + opts.desc + '">\n        ' + _extra + '\n        ' + mainIcon + '\n        <span class="dubplus-menu-label">' + menuTitle + '</span>\n      </li>';
+    return '\n      <li id="' + opts.id + '" class="' + mainCssClass + ' ' + _state + ' ' + opts.cssClass + '" title="' + opts.desc + '">\n        ' + _extra + '\n        ' + mainIcon + '\n        <span class="dubplus-menu-label">' + menuTitle + '</span>\n      </li>';
   }
 
 };
@@ -895,7 +895,7 @@ exportSettings.srcRoot = _RESOURCE_SRC_;
 
 module.exports = exportSettings;
 
-}).call(this,'https://rawgit.com/FranciscoG/DubPlus/dev')
+}).call(this,'https://rawgit.com/DubPlus/DubPlus/master')
 },{}],9:[function(require,module,exports){
 'use strict';
 
@@ -3183,7 +3183,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1512762835054')
+}).call(this,'1516730832351')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
