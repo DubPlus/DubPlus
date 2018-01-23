@@ -32,11 +32,13 @@ var afk_chat_respond = function(e) {
     }
     
     Dubtrack.room.chat.sendMessage();
+
     afk_module.canSend = false;
 
     setTimeout(()=> {
       afk_module.canSend = true;
     }, 30000);
+
   }
 };
 

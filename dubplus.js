@@ -858,7 +858,7 @@ module.exports = {
       mainCssClass = "dubplus-menu-icon";
       mainIcon = '<span class="fa fa-' + opts.altIcon + '"></span>';
     }
-    return '\n      <li id="' + opts.id + '" class="' + mainCssClass + ' ' + _state + ' ' + opts.cssClass + ' title="' + opts.desc + '">\n        ' + _extra + '\n        ' + mainIcon + '\n        <span class="dubplus-menu-label">' + menuTitle + '</span>\n      </li>';
+    return '\n      <li id="' + opts.id + '" class="' + mainCssClass + ' ' + _state + ' ' + opts.cssClass + '" title="' + opts.desc + '">\n        ' + _extra + '\n        ' + mainIcon + '\n        <span class="dubplus-menu-label">' + menuTitle + '</span>\n      </li>';
   }
 
 };
@@ -933,6 +933,7 @@ var afk_chat_respond = function afk_chat_respond(e) {
     }
 
     Dubtrack.room.chat.sendMessage();
+
     afk_module.canSend = false;
 
     setTimeout(function () {
@@ -3182,7 +3183,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1511367125433')
+}).call(this,'1516731296263')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
@@ -3556,7 +3557,8 @@ function WaitFor(waitingFor, options) {
   }
   var defaults = {
     interval: 500, // every XX ms we check to see if waitingFor is defined
-    seconds: 5 };
+    seconds: 5 // how many total seconds we wish to continue pinging
+  };
 
   var _cb = function _cb() {};
   var _failCB = function _failCB() {};
