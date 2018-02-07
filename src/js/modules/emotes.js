@@ -48,6 +48,10 @@ var replaceTextWithEmote = function(){
         } else if ( dubplus_emoji.tasty.emotes[key] ) {
             _src = dubplus_emoji.tasty.template(key);
             return makeImage("tasty", _src, key, dubplus_emoji.tasty.emotes[key].width, dubplus_emoji.tasty.emotes[key].height);
+        } else if ( dubplus_emoji.frankerFacez.emotes[key] ) {
+            _id = dubplus_emoji.frankerFacez.emotes[key];
+            _src = dubplus_emoji.frankerFacez.template(_id);
+            return makeImage("frankerFacez", _src, key);
         } else {
             return matched;
         }
@@ -59,6 +63,7 @@ var replaceTextWithEmote = function(){
 
 emote_module.turnOn = function(){
   window.addEventListener('twitch:loaded', dubplus_emoji.loadBTTVEmotes.bind(dubplus_emoji));
+  window.addEventListener('bttv:loaded', dubplus_emoji.loadFrankerFacez.bind(dubplus_emoji));
   // window.addEventListener('bttv:loaded', dubplus_emoji.loadTastyEmotes.bind(dubplus_emoji));
 
   if (!dubplus_emoji.twitchJSONSLoaded) {
