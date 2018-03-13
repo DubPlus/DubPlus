@@ -8,8 +8,8 @@ import { writeFileSync } from 'fs'
 const prefixer = postcss([ autoprefixer ]);
 
 const jsInput = process.cwd() + '/src/js2/index.js';
-const jsOutput = process.cwd() + '/build/dubplus.js';
-const sassOutput = process.cwd() + '/build/dubplus.css';
+const jsOutput = process.cwd() + '/dist/dubplus.js';
+const sassOutput = process.cwd() + '/dist/dubplus.css';
 
 export default {
   input: jsInput,
