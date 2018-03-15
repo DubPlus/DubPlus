@@ -1,22 +1,17 @@
 import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
 import uglify from 'rollup-plugin-uglify';
-import scss from 'rollup-plugin-scss'
-import autoprefixer from 'autoprefixer'
-import postcss from 'postcss'
-import { writeFileSync } from 'fs'
-const prefixer = postcss([ autoprefixer ]);
+import { writeFileSync } from 'fs';
 
 const jsInput = process.cwd() + '/src/js2/index.js';
 const jsOutput = process.cwd() + '/dist/dubplus.js';
-const sassOutput = process.cwd() + '/dist/dubplus.css';
 
 export default {
   input: jsInput,
   output: {
     file : jsOutput,
     format: 'iife',
-    name: 'DubPlus',
+    name: 'dubplus',
     sourcemap : true,
     treeshake : true
   },
@@ -25,12 +20,6 @@ export default {
   },
   plugins: [
     resolve(),
-    scss({
-      output : function(css,styles){
-        // console.log(styles);
-        writeFileSync(sassOutput, prefixer.process(css))
-      }
-    }),
     babel({
       exclude: 'node_modules/**' // only transpile our source code
     }),

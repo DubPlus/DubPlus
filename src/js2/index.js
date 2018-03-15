@@ -34,9 +34,6 @@
     SOFTWARE.
 */
 
-// load the SCSS file so Rollup can process and output it
-import '../sass/dubplus.scss';
-
 import { h, render, Component } from 'preact';
 import DubPlusMenu from './menu/index.js';
 import Modal from './components/modal.js';
@@ -110,15 +107,11 @@ class DubPlusContainer extends Component {
     }
 
     if (state.error && !state.loading) {
-      return (
-        <Modal title="Dub+ Error" content={state.errorMsg}/>
-      )
+      return <Modal title="Dub+ Error" content={state.errorMsg}/>
     }
 
     if (!state.error && !state.loading) {
-      return (
-        <DubPlusMenu />
-      )
+      return <DubPlusMenu />
     }
 
   }
