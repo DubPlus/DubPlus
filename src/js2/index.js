@@ -58,7 +58,7 @@ class DubPlusContainer extends Component {
   
   componentDidMount(){
     /* globals Dubtrack */
-    if (!window.dubplus) {
+    if (!window.DubPlus) {
 
       // checking to see if these items exist before initializing the script
       // instead of just picking an arbitrary setTimeout and hoping for the best
@@ -124,3 +124,6 @@ class DubPlusContainer extends Component {
 }
 
 render(<DubPlusContainer />, document.body);
+
+// _PKGINFO_ is inserted by rollup JS
+export default _PKGINFO_;

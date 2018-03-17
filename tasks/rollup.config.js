@@ -41,7 +41,7 @@ export default {
       // so that we can insert it as a cache busting query string for CSS
       _TIME_STAMP_ : JSON.stringify(Date.now()),
       // pass our selected pkg info
-      PKGINFO : JSON.stringify(pkgInfo)
+      _PKGINFO_ : JSON.stringify(pkgInfo)
     }),
     babel({
       exclude: 'node_modules/**' // only transpile our source code

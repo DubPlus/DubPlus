@@ -43,7 +43,7 @@
     "postcss": "^5.2.14",
     "preprocess": "^3.1.0",
     "request": "^2.80.0",
-    "rollup": "^0.56.5",
+    "rollup": "^0.57.0",
     "rollup-plugin-babel": "^3.0.3",
     "rollup-plugin-commonjs": "^9.1.0",
     "rollup-plugin-node-resolve": "^3.2.0",
