@@ -27,4 +27,4 @@ var GetJSON = (function (url, optionalEvent, headers) {
   return { done: done };
 });
 
-module.exports = GetJSON;
+export default GetJSON;

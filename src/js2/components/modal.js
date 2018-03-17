@@ -12,11 +12,11 @@ import { h, Component } from 'preact';
  * @prop  {boolean} show  whether to show the modal or not
  */
 export default class Modal extends Component {
-  constructor(){
-    super();
+  constructor(props){
+    super(props);
     this.state = {
       show : this.props.show || false
-    }
+    };
     this.confirmClick = this.confirmClick.bind(this);
     this.removeSelf = this.removeSelf.bind(this);
     this.keyUpHandler = this.keyUpHandler.bind(this);
@@ -60,8 +60,12 @@ export default class Modal extends Component {
   }
 
   render(props,state) {
+    if (!state.show) {
+      return null;
+    }
+    
     return (
-      <div className={'dp-modal' + (this.state.show ? ' dp-modal-show' : '' )}>
+      <div className='dp-modal'>
         <aside className="container">
           <div className="title">
             <h1> { props.title || 'Dub+' }</h1>

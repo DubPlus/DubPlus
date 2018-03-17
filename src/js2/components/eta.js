@@ -56,7 +56,7 @@ class ETA extends Component {
     this.setState({show:false});
   }
 
-  render() {
+  render(props,state) {
     return (
       <span className="icon-history eta_tooltip_t">
         {this.state.show &&

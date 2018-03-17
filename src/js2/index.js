@@ -39,6 +39,12 @@ import DubPlusMenu from './menu/index.js';
 import Modal from './components/modal.js';
 import WaitFor from './utils/waitFor.js';
 import Loading from './components/loading.js';
+import cssHelper from './utils/css.js';
+
+setTimeout(function(){
+  // start the loading of the CSS asynchronously
+  cssHelper.load('/css/dubplus.css');
+},1);
 
 class DubPlusContainer extends Component {
   constructor() {
@@ -49,7 +55,7 @@ class DubPlusContainer extends Component {
       errorMsg : ''
     }
   }
-
+  
   componentDidMount(){
     /* globals Dubtrack */
     if (!window.dubplus) {
@@ -107,7 +113,7 @@ class DubPlusContainer extends Component {
     }
 
     if (state.error && !state.loading) {
-      return <Modal title="Dub+ Error" content={state.errorMsg}/>
+      return <Modal title="Dub+ Error" show={true} content={state.errorMsg}/>
     }
 
     if (!state.error && !state.loading) {

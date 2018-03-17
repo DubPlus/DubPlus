@@ -1,5 +1,4 @@
-'use strict';
-var settings = require("../lib/settings.js");
+import settings from './settings.js';
 
 var makeLink = function(className, FileName){
   var link = document.createElement('link');
@@ -16,11 +15,11 @@ var makeLink = function(className, FileName){
  *
  * example:  css.load("/options/show_timestamps.css", "show_timestamps_link");
  */
-var load = function(cssFile, className){
+function load(cssFile, className){
   if (!cssFile) {return;}
-  var link = makeLink(className, settings.srcRoot + cssFile + "?" + TIME_STAMP);
+  var link = makeLink(className, settings.srcRoot + cssFile + "?" + _TIME_STAMP_);
   document.head.insertAdjacentElement('beforeend', link);
-};
+}
 
 /**
  * Loads a css file from a full URL in the <head>
@@ -28,13 +27,13 @@ var load = function(cssFile, className){
  * @param  {String} className a class name to give to the <link> element
  * @return {undefined}           
  */
-var loadExternal = function(cssFile, className){
+function loadExternal(cssFile, className){
   if (!cssFile) {return;}
   var link = makeLink(className, cssFile);
   document.head.insertAdjacentElement('beforeend', link);
-};
+}
 
-module.exports = {
+export default {
   load : load,
-  loadExternal: loadExternal
-};
+  loadExternal : loadExternal
+}

@@ -1,5 +1,4 @@
-'use strict';
-var settings = require("../lib/settings.js");
+import settings from './settings.js';
 
 /**
  * Update settings and save all options to localStorage

@@ -32,8 +32,8 @@ var dpText = {
 };
 
 export default class LoadingNotice extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       mainStyles : waitingStyles
     }
@@ -47,9 +47,15 @@ export default class LoadingNotice extends Component {
     },200);
   }
 
-  render() {
+  componentWillUnmount() {
+    this.setState((prevState, props) => ({
+      mainStyles: Object.assign({}, prevState.mainStyles, {right:'-250px'})
+    }))
+  }
+
+  render(props,state) {
     return (
-      <div style={this.state.waitingStyles}>
+      <div style={state.mainStyles}>
         <div style={dpIcon}>
           <img src={settings.srcRoot+'/images/dubplus.svg'} alt="DubPlus icon" />
         </div>

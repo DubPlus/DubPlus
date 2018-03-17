@@ -10,14 +10,14 @@ export default class DubPlusMenu extends Component {
 
   componentDidMount() {
     // load this async so it doesn't block the rest of the menu render
-    // since this snooze button is completely independent from the menu
+    // since these buttons are completely independent from the menu
     setTimeout(()=>{
       snooze();
       eta();
     }, 1);
   }
 
-  render() {
+  render(props,state) {
     return (
       <section className="dubplus-menu">
         <p className="dubplus-menu-header">Dub+ Options</p>
