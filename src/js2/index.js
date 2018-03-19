@@ -113,7 +113,7 @@ class DubPlusContainer extends Component {
     }
 
     if (state.error && !state.loading) {
-      return <Modal title="Dub+ Error" show={true} content={state.errorMsg}/>
+      return <Modal title="Dub+ Error" content={state.errorMsg}/>
     }
 
     if (!state.error && !state.loading) {
