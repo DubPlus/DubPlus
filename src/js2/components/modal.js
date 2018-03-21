@@ -15,7 +15,6 @@ export default class Modal extends Component {
   constructor(props){
     super(props);
     this.confirmClick = this.confirmClick.bind(this);
-    this.removeSelf = this.removeSelf.bind(this);
     this.keyUpHandler = this.keyUpHandler.bind(this);
   }
 
@@ -24,11 +23,11 @@ export default class Modal extends Component {
     // considering removing this though
     if (e.keyCode === 13 && typeof this.props.onConfirm === 'function') { 
       this.props.onConfirm();
-      this.removeSelf();
+      this.props.onClose();
     }
     // close modal when user hits the esc key
     if (e.keyCode === 27) { 
-      this.removeSelf();
+      this.props.onClose();
     }
   }
 
@@ -37,19 +36,12 @@ export default class Modal extends Component {
   }
 
   componentWillUnmount() {
-    // unbind, even though I doubt we'll ever need to
     document.removeEventListener('keyup', this.keyUpHandler);
   }
-
-  removeSelf(){
-    
-  }
-
+  
   confirmClick(){
-    if (typeof this.props.onConfirm === 'function') {
-      this.props.onConfirm();
-    }
-    this.removeSelf();
+    this.props.onConfirm();
+    this.props.onClose();
   }
 
   render(props,state) {
@@ -70,7 +62,7 @@ export default class Modal extends Component {
             }
           </div>
           <div className="dp-modal-buttons">
-            <button id="dp-modal-cancel" onClick={this.removeSelf}>{closeButtonText}</button>
+            <button id="dp-modal-cancel" onClick={props.onClose}>{closeButtonText}</button>
             {props.onConfirm &&
               <button id="dp-modal-confirm" onClick={this.confirmClick}>okay</button>
             }

@@ -19,9 +19,32 @@ var pkgInfo = {
 const jsInput = process.cwd() + '/src/js2/index.js';
 const jsOutput = process.cwd() + '/dist/dubplus.js';
 
+const introBanner = `
+/*
+     /$$$$$$$            /$$                
+    | $$__  $$          | $$          /$$   
+    | $$  | $$ /$$   /$$| $$$$$$$    | $$   
+    | $$  | $$| $$  | $$| $$__  $$ /$$$$$$$$
+    | $$  | $$| $$  | $$| $$  | $$|__  $$__/
+    | $$  | $$| $$  | $$| $$  | $$   | $$   
+    | $$$$$$$/|  $$$$$$/| $$$$$$$/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    This source code is licensed under the MIT license 
+    found here: https://github.com/DubPlus/DubPlus/blob/master/LICENSE
+
+    Copyright (c) 2017-present DubPlus
+
+    more info at https://dub.plus
+*/`;
+
 export default {
   input: jsInput,
   output: {
+    banner : introBanner,
     file : jsOutput,
     format: 'iife',
     name: 'DubPlus',
@@ -46,6 +69,10 @@ export default {
     babel({
       exclude: 'node_modules/**' // only transpile our source code
     }),
-    uglify()
+    uglify({
+      output: {
+        preamble: introBanner
+      }
+    })
   ]
 };
