@@ -1,5 +1,8 @@
 'use strict';
 import {h, Component} from 'preact';
+import Portal from './Portal.js';
+import settings from '../utils/UserSettings.js';
+import Modal from './modal.js';
 
 /**
  * Component to render a simple row like the links
@@ -9,7 +12,7 @@ import {h, Component} from 'preact';
 export function MenuSimple (props) {
   return (
     <li id={props.id} 
-        title={prop.desc}
+        title={props.desc}
         className={`dubplus-menu-icon ${props.extraClassNames||''}`}>
       <span className={`fa fa-${props.icon}`} />
       <span className="dubplus-menu-label">
@@ -20,18 +23,32 @@ export function MenuSimple (props) {
 }
 
 export class MenuPencil extends Component {
-  constructor(){
-    super();
+  constructor(props){
+    super(props);
+    this.state = {
+      open : false
+    }
     this.loadModal = this.loadModal.bind(this);
   }
 
   loadModal(){
-    // maybe use context to access modal from main app container
+    this.setState({open: true})
   }
 
-  render(props) {
+  render(props, state) {
     return (
-      <span onClick={this.loadModal} class="fa fa-pencil extra-icon" />
+      <span onClick={this.loadModal} class="fa fa-pencil extra-icon">
+        { state.open ? (
+          <Portal into="body">
+            <Modal title="Dub+ Error"
+                title={props.title || 'Dub+ option'}
+                content={props.content || 'Please enter a value'}
+                placeholder={props.placeholder || 'in here'}
+                onConfirm={props.onConfirm}
+                onClose={()=>{ this.setState({open:false}) }} />
+          </Portal>
+        ) : null }
+      </span>
     )
   }
 }
@@ -50,13 +67,13 @@ export class MenuSwitch extends Component {
 
   switchOn() {
     this.props.turnOn();
-    // TODO: save to global state
+    settings.save('options', this.props.id, true);
     this.setState({on: true});
   }
 
   switchOff() {
     this.props.turnOff();
-    // TODO: save to global state
+    settings.save('options', this.props.id, false);
     this.setState({on: false});
   }
 
@@ -72,7 +89,7 @@ export class MenuSwitch extends Component {
 
     return (
       <li id={props.id} 
-        title={prop.desc}
+        title={props.desc}
         className={`dubplus-switch ${state.on?'dubplus-switch-on':''} ${props.extraClassNames||''}`}>
         
         {/* 

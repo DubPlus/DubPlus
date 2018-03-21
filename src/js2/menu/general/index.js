@@ -1,7 +1,6 @@
 /**
   // General 
   require('./autovote.js'),
-  require('./afk.js'),
   require('./emotes.js'),
   require('./autocomplete.js'),
   require('./customMentions.js'),
@@ -19,6 +18,7 @@
 
 import { h, Component } from 'preact';
 import SectionHeader from '../../components/section-header.js';
+import AFK from './afk.js'
 
 export default class GeneralSection extends Component {
   constructor(){
@@ -47,6 +47,7 @@ export default class GeneralSection extends Component {
           arrow={this.state.closed ? 'right' : 'down'} 
           category="General" />
         <ul className={`dubplus-menu-section ${this.state.closed ? 'dubplus-menu-section-closed' : ''}`}>
+          <AFK />
         </ul>
       </span>
     );

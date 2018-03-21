@@ -5,6 +5,7 @@ import Modal from './components/modal.js';
 import WaitFor from './utils/waitFor.js';
 import Loading from './components/loading.js';
 import cssHelper from './utils/css.js';
+import MenuIcon from './components/MenuIcon.js';
 
 setTimeout(function(){
   // start the loading of the CSS asynchronously
@@ -96,6 +97,7 @@ class DubPlusContainer extends Component {
 }
 
 render(<DubPlusContainer />, document.body);
+render(<MenuIcon />, document.querySelector('.header-right-navigation'));
 
 // _PKGINFO_ is inserted by the rollup build process
 export default _PKGINFO_;

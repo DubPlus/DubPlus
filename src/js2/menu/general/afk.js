@@ -1,8 +1,10 @@
 'use strict';
 import {h, Component} from 'preact';
 import {MenuSwitch, MenuPencil} from '../../components/menuItems.js';
+import settings from '../../utils/UserSettings.js';
 
 /**
+ * 
  * Away From Keyboard autoresponder
  * 
  * TODO: setup global state manager
@@ -53,11 +55,10 @@ export default class AFK extends Component {
     Dubtrack.Events.unbind("realtime:chat-message", this.afk_chat_respond);
   }
 
-  saveAFKmessage () {
-    var customAfkMessage = $('.dp-modal textarea').val();
-    if (customAfkMessage !== '') {
+  saveAFKmessage (val) {
+    if (val !== '') {
       // TODO: save to global state
-      options.saveOption('custom', 'customAfkMessage', customAfkMessage);
+      settings.save('custom', 'customAfkMessage', val);
     }
   };
 
@@ -69,7 +70,13 @@ export default class AFK extends Component {
         desc="Toggle Away from Keyboard and customize AFK message."
         turnOn={this.turnOn}
         turnOff={this.turnOff}>
-        <MenuPencil />
+        <MenuPencil 
+          title='Custom AFK Message'
+          content='Enter a custom Away From Keyboard [AFK] message here'
+          value={settings.settings.custom.customAfkMessage || ''}
+          placeholder="Be right back!"
+          maxlength='255'
+          onConfirm={this.saveAFKmessage} />
       </MenuSwitch>
     )
   }

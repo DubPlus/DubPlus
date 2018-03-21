@@ -21,8 +21,8 @@ export default class Modal extends Component {
   keyUpHandler(e) {
     // save and close when user presses enter
     // considering removing this though
-    if (e.keyCode === 13 && typeof this.props.onConfirm === 'function') { 
-      this.props.onConfirm();
+    if (e.keyCode === 13) { 
+      this.props.onConfirm(this.textarea.value);
       this.props.onClose();
     }
     // close modal when user hits the esc key
@@ -40,7 +40,7 @@ export default class Modal extends Component {
   }
   
   confirmClick(){
-    this.props.onConfirm();
+    this.props.onConfirm(this.textarea.value);
     this.props.onClose();
   }
 
@@ -56,7 +56,9 @@ export default class Modal extends Component {
           <div className="content">
             <p>{props.content || ''}</p>
             {props.placeholder &&
-              <textarea placeholder={props.placeholder} maxlength={props.maxlength || 999}>
+              <textarea
+                ref={ c => this.textarea=c } 
+                placeholder={props.placeholder} maxlength={props.maxlength || 999}>
                 {props.value || ''}
               </textarea>
             }

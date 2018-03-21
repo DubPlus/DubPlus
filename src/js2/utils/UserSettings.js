@@ -30,7 +30,7 @@ class UserSettings {
   }
 
   save(type, optionName, value) {
-    settings[type][optionName] = value;
+    this.settings[type][optionName] = value;
     try {
       localStorage.setItem('dubplusUserSettings', JSON.stringify(this.settings));
     } catch(err) {
