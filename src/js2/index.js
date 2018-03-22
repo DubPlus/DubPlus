@@ -10,17 +10,16 @@ import MenuIcon from './components/MenuIcon.js';
 setTimeout(function(){
   // start the loading of the CSS asynchronously
   cssHelper.load('/css/dubplus.css');
+  cssHelper.loadExternal('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 },1);
 
 class DubPlusContainer extends Component {
-  constructor() {
-    super();
-    this.state = {
-      loading: true,
-      error: false,
-      errorMsg : '',
-      failed : false
-    }
+
+  state = {
+    loading: true,
+    error: false,
+    errorMsg : '',
+    failed : false
   }
   
   componentDidMount(){

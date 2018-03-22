@@ -12,13 +12,8 @@ import { h, Component } from 'preact';
  * @prop  {number} maxlength   for the textarea maxlength attribute
  */
 export default class Modal extends Component {
-  constructor(props){
-    super(props);
-    this.confirmClick = this.confirmClick.bind(this);
-    this.keyUpHandler = this.keyUpHandler.bind(this);
-  }
 
-  keyUpHandler(e) {
+  keyUpHandler = (e) => {
     // save and close when user presses enter
     // considering removing this though
     if (e.keyCode === 13) { 
@@ -39,7 +34,7 @@ export default class Modal extends Component {
     document.removeEventListener('keyup', this.keyUpHandler);
   }
   
-  confirmClick(){
+  confirmClick = () => {
     this.props.onConfirm(this.textarea.value);
     this.props.onClose();
   }

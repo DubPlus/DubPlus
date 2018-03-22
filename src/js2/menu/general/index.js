@@ -21,15 +21,11 @@ import SectionHeader from '../../components/section-header.js';
 import AFK from './afk.js'
 
 export default class GeneralSection extends Component {
-  constructor(){
-    super();
-    this.state = {
-      closed : false
-    }
-    this.toggleSection = this.toggleSection.bind(this); 
+  state = {
+    closed : false
   }
 
-  toggleSection() {
+  toggleSection = () => {
     // TODO: store state to global state manager
     this.setState((prevState)=>({
       closed : !prevState.closed
@@ -46,7 +42,7 @@ export default class GeneralSection extends Component {
           id="dubplus-general" 
           arrow={this.state.closed ? 'right' : 'down'} 
           category="General" />
-        <ul className={`dubplus-menu-section ${this.state.closed ? 'dubplus-menu-section-closed' : ''}`}>
+        <ul className={`dubplus-menu-section${this.state.closed ? ' dubplus-menu-section-closed' : ''}`}>
           <AFK />
         </ul>
       </span>

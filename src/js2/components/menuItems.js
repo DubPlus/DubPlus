@@ -23,15 +23,11 @@ export function MenuSimple (props) {
 }
 
 export class MenuPencil extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      open : false
-    }
-    this.loadModal = this.loadModal.bind(this);
+  state = {
+    open : false
   }
 
-  loadModal(){
+  loadModal = () => {
     this.setState({open: true})
   }
 
@@ -54,30 +50,23 @@ export class MenuPencil extends Component {
 }
 
 export class MenuSwitch extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      on : false
-    }
-
-    this.switchOn = this.switchOn.bind(this);
-    this.switchOff = this.switchOff.bind(this);
-    this.toggleSwitch = this.toggleSwitch.bind(this);
+  state = {
+    on : false
   }
 
-  switchOn() {
+  switchOn = () => {
     this.props.turnOn();
     settings.save('options', this.props.id, true);
     this.setState({on: true});
   }
 
-  switchOff() {
+  switchOff = () => {
     this.props.turnOff();
     settings.save('options', this.props.id, false);
     this.setState({on: false});
   }
 
-  toggleSwitch(){
+  toggleSwitch = () => {
     if (this.state.on) {
       this.switchOff();
     } else {
@@ -90,7 +79,7 @@ export class MenuSwitch extends Component {
     return (
       <li id={props.id} 
         title={props.desc}
-        className={`dubplus-switch ${state.on?'dubplus-switch-on':''} ${props.extraClassNames||''}`}>
+        className={`dubplus-switch${state.on?' dubplus-switch-on':''} ${props.extraClassNames||''}`}>
         
         {/* 
           used for the optional MenuPencil at the moment
@@ -98,7 +87,7 @@ export class MenuSwitch extends Component {
          */}
         {props.children}
 
-        <div onClick={this.toggleSwitch}>
+        <div onClick={this.toggleSwitch} className="dubplus-form-control">
           <div class="dubplus-switch-bg">
             <div class="dubplus-switcher"></div>
           </div>

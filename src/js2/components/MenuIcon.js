@@ -2,15 +2,11 @@ import {h, Component} from 'preact';
 import settings from '../utils/UserSettings.js';
 
 class MenuIcon extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      open : false
-    }
-    this.toggle = this.toggle.bind(this);
+  state = {
+    open : false
   }
 
-  toggle() {
+  toggle = () => {
     let menu = document.querySelector('.dubplus-menu');
     if (this.state.open) {
       menu.classList.add('dubplus-menu-open');

@@ -32,11 +32,8 @@ var dpText = {
 };
 
 export default class LoadingNotice extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      mainStyles : waitingStyles
-    }
+  state = {
+    mainStyles : waitingStyles
   }
 
   componentDidMount() {

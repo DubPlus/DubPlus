@@ -25,16 +25,10 @@ var css = {
 };
 
 class ETA extends Component {
-
-  constructor(props){
-    super(props);
-    this.state = {
-      show : false,
-      booth_time : ''
-    };
-    this.showTooltip = this.showTooltip.bind(this);
-    this.hideTooltip = this.hideTooltip.bind(this);
-  }
+  state = {
+    show : false,
+    booth_time : ''
+  };
 
   getEta() {
     var time = 4;
@@ -44,7 +38,7 @@ class ETA extends Component {
     return booth_time >= 0 ? booth_time : 'You\'re not in the queue'; 
   }
 
-  showTooltip(){
+  showTooltip = () => {
     var tooltipText = this.getEta();
     this.setState({
       show: true,
@@ -52,13 +46,15 @@ class ETA extends Component {
     });
   }
 
-  hideTooltip() {
+  hideTooltip = () => {
     this.setState({show:false});
   }
 
   render(props,state) {
     return (
-      <span className="icon-history eta_tooltip_t">
+      <span className="icon-history eta_tooltip_t" 
+        onMouseOver={this.showTooltip}
+        onMouseOut={this.hideTooltip}>
         {this.state.show &&
           <span className="eta_tooltip" style={css}>{this.state.booth_time}</span>
         }

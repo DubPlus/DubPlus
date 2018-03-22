@@ -10,16 +10,11 @@ import settings from '../../utils/UserSettings.js';
  * TODO: setup global state manager
  */
 export default class AFK extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      canSend : true
-    }
-
-    this.afk_chat_respond = this.afk_chat_respond.bind(this);
+  state = {
+    canSend : true
   }
   
-  afk_chat_respond(e) {
+  afk_chat_respond = (e) => {
     if (!this.state.canSend) {
       return; // do nothing until it's back to true
     }

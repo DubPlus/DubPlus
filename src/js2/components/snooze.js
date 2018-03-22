@@ -60,20 +60,15 @@ var css = {
 };
 
 class Snooze extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      show : false
-    };
-    this.showTooltip = this.showTooltip.bind(this);
-    this.hideTooltip = this.hideTooltip.bind(this);
+  state = {
+    show : false
   }
-
-  showTooltip(){
+  
+  showTooltip = () => {
     this.setState({show:true});
   }
 
-  hideTooltip() {
+  hideTooltip = () => {
     this.setState({show:false});
   }
 
