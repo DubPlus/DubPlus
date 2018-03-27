@@ -1,12 +1,16 @@
 {
   "presets": [
     ["env", {
-      "modules": false
+      "debug": true,
+      "include" :["transform-es2015-spread"],
+      "targets": {
+				"node": "current"
+			}
     }]
   ],
   "plugins": [
-    "external-helpers",
     "transform-class-properties",
-    ["transform-react-jsx", { "pragma":"h" }]
+    "transform-object-rest-spread",
+    "transform-react-jsx"
   ]
 }

@@ -67,7 +67,18 @@ export default {
       _PKGINFO_ : JSON.stringify(pkgInfo)
     }),
     babel({
-      exclude: 'node_modules/**' // only transpile our source code
+      babelrc: false,
+      exclude: ['node_modules/**'], // only transpile our source code. Assuming npm modules already transpiled
+      plugins : [
+        "external-helpers",
+        "transform-class-properties",
+        ["transform-react-jsx", { "pragma":"h" }]
+      ],
+      "presets": [
+        ["env", {
+          "modules": false
+        }]
+      ]
     }),
     uglify({
       output: {

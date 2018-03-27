@@ -1,9 +1,11 @@
 import React from 'preact-compat-enzyme';
 import { expect } from 'chai';
 
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-preact';
-Enzyme.configure({ adapter: new Adapter() });
+import Enzyme from 'enzyme';
+import PreactAdapter from './PreactAdapter';
+Enzyme.configure({ adapter: new PreactAdapter() });
+
+const {shallow} = Enzyme
 
 import sinon from 'sinon';
 import MenuIcon from '../src/js2/components/MenuIcon';
