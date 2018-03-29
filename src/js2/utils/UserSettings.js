@@ -17,9 +17,10 @@ var defaults = {
 
 class UserSettings {
   constructor() {
-    if (localStorage.dubplusUserSettings) {
+    var _savedSettings = localStorage.getItem('dubplusUserSettings');
+    if (_savedSettings) {
       try {
-        let storedOpts = JSON.parse(localStorage.dubplusUserSettings);
+        let storedOpts = JSON.parse(_savedSettings);
         this.settings = Object.assign({}, defaults, storedOpts);
       } catch (err) {
         this.settings = defaults
