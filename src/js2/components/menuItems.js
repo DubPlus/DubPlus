@@ -33,7 +33,7 @@ export class MenuPencil extends Component {
 
   render(props, state) {
     return (
-      <span onClick={this.loadModal} class="fa fa-pencil extra-icon">
+      <span onClick={this.loadModal} className="fa fa-pencil extra-icon">
         { state.open ? (
           <Portal into="body">
             <Modal title="Dub+ Error"
@@ -75,11 +75,14 @@ export class MenuSwitch extends Component {
   }
 
   render(props, state) {
-
+    let _cn = "dubplus-switch";
+    if (state.on) {_cn += ' dubplus-switch-on';}
+    if (props.extraClassNames) {_cn += ' ' + props.extraClassNames;}
+    
     return (
       <li id={props.id} 
         title={props.desc}
-        className={`dubplus-switch${state.on?' dubplus-switch-on':''} ${props.extraClassNames||''}`}>
+        className={_cn}>
         
         {/* 
           used for the optional MenuPencil at the moment

@@ -2,7 +2,7 @@
 import { h, Component } from 'preact';
 
 /**
- * input is a modal used to display messages and also capture data
+ * Modal used to display messages and also capture data
  * 
  * @prop  {string} title       title that shows at the top of the modal
  * @prop  {string} content     A descriptive message on what the modal is for
