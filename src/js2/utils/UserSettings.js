@@ -21,19 +21,19 @@ class UserSettings {
     if (_savedSettings) {
       try {
         let storedOpts = JSON.parse(_savedSettings);
-        this.settings = Object.assign({}, defaults, storedOpts);
+        this.stored = Object.assign({}, defaults, storedOpts);
       } catch (err) {
-        this.settings = defaults
+        this.stored = defaults
       }
     } else {
-      this.settings = defaults
+      this.stored = defaults
     }
   }
 
   save(type, optionName, value) {
-    this.settings[type][optionName] = value;
+    this.stored[type][optionName] = value;
     try {
-      localStorage.setItem('dubplusUserSettings', JSON.stringify(this.settings));
+      localStorage.setItem('dubplusUserSettings', JSON.stringify(this.stored));
     } catch(err) {
       console.error(`an error occured saving dubplus to localStorage`, err);
     }

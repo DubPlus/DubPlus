@@ -17,7 +17,7 @@ var makeLink = function(className, FileName){
  */
 function load(cssFile, className){
   if (!cssFile) {return;}
-  var link = makeLink(className, settings.settings.srcRoot + cssFile + "?" + _TIME_STAMP_);
+  var link = makeLink(className, settings.stored.srcRoot + cssFile + "?" + _TIME_STAMP_);
   document.head.insertAdjacentElement('beforeend', link);
 }
 

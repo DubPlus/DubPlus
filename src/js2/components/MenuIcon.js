@@ -20,7 +20,7 @@ class MenuIcon extends Component {
   render(props, state) {
     return (
       <div className="dubplus-icon" onClick={this.toggle}>
-        <img src={`${settings.settings.srcRoot}/images/dubplus.svg`} alt="DubPlus Icon" />
+        <img src={`${settings.stored.srcRoot}/images/dubplus.svg`} alt="DubPlus Icon" />
       </div>
     )
   }

@@ -3,11 +3,17 @@ import {h, Component} from 'preact';
 import Portal from './Portal.js';
 import settings from '../utils/UserSettings.js';
 import Modal from './modal.js';
+import track from '../utils/analytics.js';
 
 /**
  * Component to render a simple row like the links
  * in the contact section or the fullscreen
  * @param {object} props 
+ * @param {object} props.id the dom ID name, usually dubplus-*
+ * @param {object} props.desc description of the menu item used in the title attr
+ * @param {object} props.icon icon to be used
+ * @param {object} props.menuTitle text to display in the menu
+ * @param {object} props.extraClassNames optional - extra css classes to add to menu item if
  */
 export function MenuSimple (props) {
   return (
@@ -22,13 +28,21 @@ export function MenuSimple (props) {
   );
 }
 
+/**
+ * Component which brings up a modal box to allow user to
+ * input and store a text value which will be used by the
+ * parent menu item.
+ *
+ * MenuPencil must always by a child of MenuSwitch.
+ */
 export class MenuPencil extends Component {
   state = {
     open : false
   }
 
   loadModal = () => {
-    this.setState({open: true})
+    this.setState({open: true});
+    track.menuClick(this.props.section, this.props.id + ' edit');
   }
 
   render(props, state) {
@@ -58,12 +72,14 @@ export class MenuSwitch extends Component {
     this.props.turnOn();
     settings.save('options', this.props.id, true);
     this.setState({on: true});
+    track.menuClick(this.props.section + ' section', this.props.id, 1);
   }
 
   switchOff = () => {
     this.props.turnOff();
     settings.save('options', this.props.id, false);
     this.setState({on: false});
+    track.menuClick(this.props.section + ' section', this.props.id, 0);
   }
 
   toggleSwitch = () => {

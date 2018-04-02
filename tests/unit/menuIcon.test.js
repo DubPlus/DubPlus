@@ -1,5 +1,5 @@
 import {h, Component} from 'preact';
-import MenuIcon from '../src/js2/components/MenuIcon';
+import MenuIcon from '../../src/js2/components/MenuIcon';
 import {shallow, deep} from 'preact-render-spy';
 
 describe('MenuIcon test', () => {

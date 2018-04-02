@@ -60,14 +60,16 @@ export default class AFK extends Component {
     return (
       <MenuSwitch
         id="dubplus-afk"
+        section="General"
         menuTitle="AFK Auto-respond"
         desc="Toggle Away from Keyboard and customize AFK message."
         turnOn={this.turnOn}
         turnOff={this.turnOff}>
         <MenuPencil 
           title='Custom AFK Message'
+          section="General"
           content='Enter a custom Away From Keyboard [AFK] message here'
-          value={settings.settings.custom.customAfkMessage || ''}
+          value={settings.stored.custom.customAfkMessage || ''}
           placeholder="Be right back!"
           maxlength='255'
           onConfirm={this.saveAFKmessage} />
