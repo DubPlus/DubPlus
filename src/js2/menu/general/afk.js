@@ -21,9 +21,9 @@ export default class AFK extends Component {
     var user = Dubtrack.session.get('username');
     
     if (content.indexOf('@'+user) > -1 && Dubtrack.session.id !== e.user.userInfo.userid) {
-      var chatInput = document.querySelector('#chat-txt-message');
-      if (settings.custom.customAfkMessage) {
-        chatInput.value = '[AFK] '+ settings.custom.customAfkMessage;
+      var chatInput = document.getElementById('chat-txt-message');
+      if (settings.stored.custom.customAfkMessage) {
+        chatInput.value = '[AFK] '+ settings.stored.custom.customAfkMessage;
       } else {
         chatInput.value = "[AFK] I'm not here right now.";
       }

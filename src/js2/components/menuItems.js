@@ -1,4 +1,3 @@
-'use strict';
 import {h, Component} from 'preact';
 import Portal from './Portal.js';
 import settings from '../utils/UserSettings.js';
@@ -13,13 +12,16 @@ import track from '../utils/analytics.js';
  * @param {object} props.desc description of the menu item used in the title attr
  * @param {object} props.icon icon to be used
  * @param {object} props.menuTitle text to display in the menu
- * @param {object} props.extraClassNames optional - extra css classes to add to menu item if
  */
 export function MenuSimple (props) {
+  let _cn = ['dubplus-menu-icon'];
+  // combine with ones that were passed through
+  if (props.className) { _cn.push(props.className); }
+  
   return (
     <li id={props.id} 
         title={props.desc}
-        className={`dubplus-menu-icon ${props.extraClassNames||''}`}>
+        className={_cn.join(' ')}>
       <span className={`fa fa-${props.icon}`} />
       <span className="dubplus-menu-label">
         {props.menuTitle}
@@ -42,7 +44,7 @@ export class MenuPencil extends Component {
 
   loadModal = () => {
     this.setState({open: true});
-    track.menuClick(this.props.section, this.props.id + ' edit');
+    track.menuClick(this.props.section + ' section', this.props.id + ' edit');
   }
 
   render(props, state) {
@@ -50,8 +52,7 @@ export class MenuPencil extends Component {
       <span onClick={this.loadModal} className="fa fa-pencil extra-icon">
         { state.open ? (
           <Portal into="body">
-            <Modal title="Dub+ Error"
-                title={props.title || 'Dub+ option'}
+            <Modal title={props.title || 'Dub+ option'}
                 content={props.content || 'Please enter a value'}
                 placeholder={props.placeholder || 'in here'}
                 onConfirm={props.onConfirm}
@@ -65,21 +66,21 @@ export class MenuPencil extends Component {
 
 export class MenuSwitch extends Component {
   state = {
-    on : false
+    on : settings.stored[this.props.id] || false
   }
 
   switchOn = () => {
     this.props.turnOn();
     settings.save('options', this.props.id, true);
     this.setState({on: true});
-    track.menuClick(this.props.section + ' section', this.props.id, 1);
+    track.menuClick(this.props.section + ' section', this.props.id + ' on');
   }
 
   switchOff = () => {
     this.props.turnOff();
     settings.save('options', this.props.id, false);
     this.setState({on: false});
-    track.menuClick(this.props.section + ' section', this.props.id, 0);
+    track.menuClick(this.props.section + ' section', this.props.id + ' off');
   }
 
   toggleSwitch = () => {
@@ -91,20 +92,21 @@ export class MenuSwitch extends Component {
   }
 
   render(props, state) {
-    let _cn = "dubplus-switch";
-    if (state.on) {_cn += ' dubplus-switch-on';}
-    if (props.extraClassNames) {_cn += ' ' + props.extraClassNames;}
+    let _cn = ["dubplus-switch"];
+    if (state.on) { _cn.push('dubplus-switch-on'); }
+    // combine with ones that were passed through
+    if (props.className) { _cn.push(props.className); }
     
     return (
       <li id={props.id} 
         title={props.desc}
-        className={_cn}>
+        className={_cn.join(' ')}>
         
         {/* 
           used for the optional MenuPencil at the moment
           but leaving it open ended for now. Can be any component
          */}
-        {props.children}
+        {props.children||[]}
 
         <div onClick={this.toggleSwitch} className="dubplus-form-control">
           <div class="dubplus-switch-bg">

@@ -19,30 +19,35 @@ import { h, Component } from 'preact';
 import SectionHeader from '../../components/section-header.js';
 import AFK from './afk.js'
 import Autovote from './autovote.js'
+import settings from '../../utils/UserSettings.js';
 
 export default class GeneralSection extends Component {
   state = {
-    closed : false
+    css : settings.stored.general || "open"
   }
 
   toggleSection = () => {
-    // TODO: store state to global state manager
-    this.setState((prevState)=>({
-      closed : !prevState.closed
-    }));
+    this.setState((prevState)=>{
+      let newState = prevState.css === "open" ? "closed" : "open";
+      settings.save('menu', 'general', newState);
+      return {css : newState}
+    });
   }
 
   render(props,state) {
-
+    let _cn = ['dubplus-menu-section'];
+    if (state.css === "closed") {
+      _cn.push('dubplus-menu-section-closed');
+    }
     return (
-      // until Preact incorporates React.Fragment we have to wrap adjacent elements in one parent element
+      // until Preact incorporates something like React.Fragment (which is in the works) 
+      // we have to wrap adjacent elements in one parent element
       <span>
         <SectionHeader 
           onClick={this.toggleSection}
           id="dubplus-general" 
-          arrow={this.state.closed ? 'right' : 'down'} 
           category="General" />
-        <ul className={`dubplus-menu-section${this.state.closed ? ' dubplus-menu-section-closed' : ''}`}>
+        <ul className={_cn.join(' ')}>
           <Autovote />
           <AFK />
         </ul>

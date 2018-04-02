@@ -1,4 +1,3 @@
-'use strict';
 import { h, Component } from 'preact';
 import settings from '../utils/UserSettings.js';
 

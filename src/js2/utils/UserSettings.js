@@ -10,8 +10,36 @@ var defaults = {
     "customize": "open",
     "contact": "open"
   },
-  "options": {},
-  "custom": {},
+
+  "options": {
+    "dubplus-autovote": false,
+    "dubplus-emotes": false,
+    "dubplus-autocomplete": false,
+    "mention_notifications": false,
+    "dubplus_pm_notifications": false,
+    "dj-notification": false,
+    "dubplus-dubs-hover": false,
+    "dubplus-downdubs": false,
+    "dubplus-grabschat": false,
+    "dubplus-split-chat": false,
+    "dubplus-show-timestamp": false,
+    "dubplus-hide-bg": false,
+    "dubplus-hide-avatars": false,
+    "dubplus-chat-only": false,
+    "dubplus-video-only": false,
+    "warn_redirect": false,
+    "dubplus-comm-theme": false,
+    "dubplus-afk": false,
+    "dubplus-snow": false,
+    "dubplus-custom-css": false
+  },
+
+  "custom": {
+    "customAfkMessage": "",
+    "dj_notification": 1,
+    "css": ""
+  },
+
   "srcRoot": _RESOURCE_SRC_
 };
 
@@ -30,6 +58,12 @@ class UserSettings {
     }
   }
 
+  /**
+   * Save your settings value to memory and localStorage
+   * @param {String} type The section of the stored values. i.e. "menu", "options", "custom"
+   * @param {String} optionName the key name of the option to store
+   * @param {String|Boolean} value the new setting value to store
+   */
   save(type, optionName, value) {
     this.stored[type][optionName] = value;
     try {
