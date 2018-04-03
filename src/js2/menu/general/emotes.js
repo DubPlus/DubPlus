@@ -5,10 +5,30 @@ import settings from '../../utils/UserSettings.js';
 // var dubplus_emoji = require('../emojiUtils/prepEmoji.js');
 
 function makeImage(type, src, name, w, h){
-  return '<img class="emoji '+type+'-emote" '+
-    (w ? 'width="'+w+'" ' : '') +
-    (h ? 'height="'+h+'" ' : '') +
-     'title="'+name+'" alt="'+name+'" src="'+src+'" />';
+  let img = document.createElement('img');
+  if (w) { img.width = w;}
+  if (h) { img.height = h;}
+  img.className = `emoji ${type}-emote`;
+  img.title = name;
+  img.alt = name;
+  img.src = src;
+  return img;
+}
+
+function getLatestChatNode(){
+  var list = document.querySelectorAll('.chat-main .text');
+  list = Array.prototype.slice.call(list);
+  return list[list.length - 1];
+}
+
+/**
+ * I didn't want to use innerHTML anymore because that's dangerous so I'm 
+ * iterating through all childnodes, finding text nodes only, and replacing
+ * text in there
+ * @param {Node} parentNode 
+ */
+function replaceOnlyTextNodes(parentNode){
+  // search thr
 }
 
 /**********************************************************************
@@ -20,13 +40,13 @@ var replaceTextWithEmote = function(){
 
   if (!dubplus_emoji.twitchJSONSLoaded) { return; } // can't do anything until jsons are loaded
 
-  var $chatTarget = $('.chat-main .text').last();
+  var chatTarget = getLatestChatNode();
   
-  if (!$chatTarget.html()) { return; } // nothing to do
+  if (!chatTarget.hasChildNodes()) { return; } // nothing to do
 
   if (dubplus_emoji.bttvJSONSLoaded) { _regex = dubplus_emoji.bttv.chatRegex; }
 
-  var emoted = $chatTarget.html().replace(_regex, function(matched, p1){
+  var emoted = chatTarget.innerHTML.replace(_regex, function(matched, p1){
       var _id, _src, key = p1.toLowerCase();
 
       if ( dubplus_emoji.twitch.emotes[key] ){
@@ -46,7 +66,7 @@ var replaceTextWithEmote = function(){
 
   });
 
-  $chatTarget.html(emoted);
+  chatTarget.innerHTML(emoted);
 };
 
 export default class Emotes extends Component {
