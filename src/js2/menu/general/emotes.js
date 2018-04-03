@@ -1,35 +1,10 @@
 import {h, Component} from 'preact';
 import {MenuSwitch} from '../../components/menuItems.js';
 import settings from '../../utils/UserSettings.js';
+import domUtils from '../../utils/dom-utils.js'
 
 // var dubplus_emoji = require('../emojiUtils/prepEmoji.js');
 
-function makeImage(type, src, name, w, h){
-  let img = document.createElement('img');
-  if (w) { img.width = w;}
-  if (h) { img.height = h;}
-  img.className = `emoji ${type}-emote`;
-  img.title = name;
-  img.alt = name;
-  img.src = src;
-  return img;
-}
-
-function getLatestChatNode(){
-  var list = document.querySelectorAll('.chat-main .text');
-  list = Array.prototype.slice.call(list);
-  return list[list.length - 1];
-}
-
-/**
- * I didn't want to use innerHTML anymore because that's dangerous so I'm 
- * iterating through all childnodes, finding text nodes only, and replacing
- * text in there
- * @param {Node} parentNode 
- */
-function replaceOnlyTextNodes(parentNode){
-  // search thr
-}
 
 /**********************************************************************
  * handles replacing twitch emotes in the chat box with the images

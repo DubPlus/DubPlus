@@ -8,7 +8,6 @@ describe('AFK test', () => {
   it('Proptypes checking', () => {
     const context = shallow(<AFK />);
     
-    
     expect(context.contains(<MenuSwitch />)).toBe(true);
   });
 
