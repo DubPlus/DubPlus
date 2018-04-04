@@ -48,21 +48,21 @@ test('convertDOMtoObj creates dom obj tree', () => {
   
 });
 
-test('emoteEmbed replaces emote with an img tag', () => {
-  document.body.innerHTML = `
-    <div class="chat-main">
-      <div class="text">
-        <p>
-          Who is this :kappa: guy anyways?
-        </p>
-      </div>
-    </div>
-  `;
-  // <img src="//static-cdn.jtvnw.net/emoticons/v1/25/3.0" title="kappa" alt="kappa">
-  var emotesObj = { kappa : '//static-cdn.jtvnw.net/emoticons/v1/25/3.0' };
+// test('emoteEmbed replaces emote with an img tag', () => {
+//   document.body.innerHTML = `
+//     <div class="chat-main">
+//       <div class="text">
+//         <p>
+//           Who is this :kappa: guy anyways?
+//         </p>
+//       </div>
+//     </div>
+//   `;
+//   // <img src="//static-cdn.jtvnw.net/emoticons/v1/25/3.0" title="kappa" alt="kappa">
+//   var emotesObj = { kappa : '//static-cdn.jtvnw.net/emoticons/v1/25/3.0' };
   
-  let chatNode = getLatestChatNode();
-  let virtDom = emoteEmbed(chatNode, regex, allEmotes);
-  let newNode = createElement(virtDom);
+//   let chatNode = getLatestChatNode();
+//   let virtDom = emoteEmbed(chatNode, regex, allEmotes);
+//   let newNode = createElement(virtDom);
   
-});
+// });
