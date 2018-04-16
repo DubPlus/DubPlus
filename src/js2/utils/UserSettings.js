@@ -38,12 +38,12 @@ var defaults = {
     "customAfkMessage": "",
     "dj_notification": 1,
     "css": ""
-  },
-
-  "srcRoot": _RESOURCE_SRC_
+  }
 };
 
 class UserSettings {
+  srcRoot = _RESOURCE_SRC_
+
   constructor() {
     var _savedSettings = localStorage.getItem('dubplusUserSettings');
     if (_savedSettings) {
