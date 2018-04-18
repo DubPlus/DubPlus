@@ -2,7 +2,7 @@
  * Loads the twitch emotes from the api.
  * http://api.twitch.tv/kraken/chat/emoticon_images
  */
-import getJSON from "../getJSON/.js";
+import getJSON from "../getJSON.js";
 import ldb from "./indexedDB.js";
 import {
   shouldUpdateAPIs

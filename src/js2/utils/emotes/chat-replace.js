@@ -10,6 +10,7 @@
 import twitch from './twitch.js';
 import bttv from './bttv.js';
 import tasty from './tasty.js';
+import parser from './parser.js';
 
 /**
  * return the most last chat item in the chat area
@@ -46,9 +47,14 @@ export function makeEmoteImg({type, src, name, w, h}) {
   return img;
 }
 
-// TODO: finish this
+/**
+ * Search our stored emote data for matching emotes. Grab first match and return
+ * it. It checks in this specific order:  twitch, bttv, tasty
+ * @param {String} emote the emote to look for
+ * @returns {Object} the emote data {type: String, src: String, name: String}
+ */
 export function getImageDataForEmote(emote) {
-  // search emotes in order of preferences
+  // search emotes in order of preference
   let key = emote.replace(/^:|:$/g, '');
 
   if (twitch.emotes[key]) {
@@ -115,12 +121,6 @@ export function processTextNode(textNode, emoteMatches ) {
   });
 
   parent.replaceChild(fragment, textNode);
-  // console.log(parent.innerHTML);
-}
-
-export function checkForEmotes(val) {
-  let matches = val.match(/:[^:\s]*(?:::[^:\s]*)*:/ig);
-  return matches;
 }
 
 export default function beginReplace(nodeStart) {
@@ -130,8 +130,8 @@ export default function beginReplace(nodeStart) {
   texts.forEach(t => {
     let val = t.nodeValue.replace(/^\s+|\s+$/g, '');
     if (val === '') { return; }
-    let found = checkForEmotes(val);
-    if (!found) { return; }
+    let found = parser(val);
+    if (found.length === 0) { return; }
     processTextNode(t, found);
   });
 }

@@ -1,6 +1,5 @@
 'use strict';
 import beginReplace, {
-  checkForEmotes,
   processTextNode,
   getTextNodesUnder,
   getLatestChatNode
@@ -9,9 +8,13 @@ import beginReplace, {
 test('getLatestChatNode gets last chat node', () => {
   document.body.innerHTML = `
     <div class="chat-main">
-      <div class="text"><p>1</p><p>2</p><p>3</p><p>test</p></div>
-      <div class="text"><p>nothing is happpening</p></div>
-      <div class="text"><p>chat chat</p></div>
+      <li class="chat-welcome-message">Hi! Welcome to Chillout Mixer. We love instrumental trip-hop, downtempo, psychill, ambient, and some future chill
+      sounds. We don't dig EDM, lyrics, or acoustic. Ask any mod for guidance on what to play. Have fun!</li>
+      <li>
+        <div class="text"><p>1</p><p>2</p><p>3</p><p>test</p></div>
+        <div class="text"><p>nothing is happpening</p></div>
+        <div class="text"><p>chat chat</p></div>
+      </li>
     </div>
   `;
 

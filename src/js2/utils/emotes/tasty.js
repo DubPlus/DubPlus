@@ -1,4 +1,4 @@
-import getJSON from "../getJSON/.js";
+import getJSON from "../getJSON.js";
 import ldb from "./indexedDB.js";
 import settings from '../UserSettings.js';
 

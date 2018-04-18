@@ -1,4 +1,4 @@
-import getJSON from "../getJSON/.js";
+import getJSON from "../getJSON.js";
 import ldb from "./indexedDB.js";
 import {
   shouldUpdateAPIs
@@ -12,7 +12,7 @@ class BTTVemotes {
   constructor() {
     // if it doesn't exist in localStorage or it's older than 5 days
     // grab it from the bttv API
-    shouldUpdateAPIs("bttv").then(function(update) {
+    shouldUpdateAPIs("bttv").then(update => {
       if (update) {
         console.log("dub+", "bttv", "loading from api");
 
@@ -34,6 +34,7 @@ class BTTVemotes {
           ldb.set("bttv_api", JSON.stringify(bttvEmotes));
           this.processEmotes(bttvEmotes);
         });
+        
         return;
       }
 
