@@ -28,7 +28,9 @@ function parser(str){
   }
 
   function save() {
-    result.push(group);
+    if (group !== "::") {
+      result.push(group);
+    }
   }
 
   while (at < str.length) {

@@ -57,6 +57,9 @@ class TwitchEmotes {
         let twEvent = new Event("twitch:loaded");
         window.dispatchEvent(twEvent);
       });
+    })
+    .catch(function(err){
+      console.log(err);
     });
   }
 

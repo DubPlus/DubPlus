@@ -1,7 +1,7 @@
 'use strict';
 import parser from '../../src/js2/utils/emotes/parser.js'
 
-test('should find a single emote in a string', () => {
+test('should match a single emote in a string', () => {
   let str = "yo :kappa: gabba";
   const expected = [':kappa:'];
   let matches = parser(str);
@@ -23,7 +23,7 @@ test('should ignore unmatched colons', () => {
   
 });
 
-test('should group any character not a whitespace or colon', () => {
+test('should match any character not a whitespace or colon', () => {
   let str = ":@(1@#$@SD: :s:";
   const expected = [':@(1@#$@SD:',':s:'];
   let matches = parser(str);
@@ -31,7 +31,7 @@ test('should group any character not a whitespace or colon', () => {
   expect(matches).toEqual(expect.arrayContaining(expected));  
 });
 
-test('should group emotes with not space between them', () => {
+test('should match emotes with no space between them', () => {
   let str = ":nospace::inbetween: because there are 2 colons in the middle";
   const expected = [':nospace:',':inbetween:'];
   let matches = parser(str);
@@ -53,5 +53,20 @@ test('should read the entire string properly', () => {
   const expected = [':emote:'];
   let matches = parser(str);
   expect(matches.length).toEqual(1);
+  expect(matches).toEqual(expect.arrayContaining(expected));
+});
+
+test("Now I'm just trying to break things", () => {
+  let str = "::::::::::::::::::::::::::::::::::";
+  let matches = parser(str);
+  expect(matches.length).toEqual(0);
+  expect(matches).toEqual([]);
+});
+
+test("Now I'm just trying to break things again", () => {
+  let str = ":::s::::::::-:::::: ::::::):::::::::::";
+  const expected = [':s:', ':-:'];
+  let matches = parser(str);
+  expect(matches.length).toEqual(2);
   expect(matches).toEqual(expect.arrayContaining(expected));
 });
