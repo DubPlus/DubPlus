@@ -9,7 +9,7 @@ class BTTVemotes {
   emotes = {};
   loaded = false;
 
-  constructor() {
+  download() {
     // if it doesn't exist in localStorage or it's older than 5 days
     // grab it from the bttv API
     shouldUpdateAPIs("bttv").then(update => {

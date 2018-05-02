@@ -6,7 +6,7 @@ class TastyEmotes {
   emotes = {};
   loaded = false;
 
-  constructor() {
+  download() {
     console.log("dub+", "tasty", "loading from api");
     // since we control this API we should always have it load from remote
     var tastyApi = getJSON(

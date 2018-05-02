@@ -9,12 +9,17 @@ import {
 } from './prepEmoji.js';
 /* global  emojify */
 
+/**
+ * Handles loading emotes from api and storing them locally
+ * 
+ * @class TwitchEmotes
+ */
 class TwitchEmotes {
   specialEmotes  = []
   emotes = {}
   loaded = false
 
-  constructor() {
+  download () {
     // if it doesn't exist in localStorage or it's older than 5 days
     // grab it from the twitch API
     shouldUpdateAPIs("twitch").then(update => {
@@ -34,10 +39,8 @@ class TwitchEmotes {
           let json = JSON.parse(data);
           let twitchEmotes = {};
           json.emoticons.forEach(e => {
-            if (!twitchEmotes[e.code]) {
-              // if emote doesn't exist, add it
-              twitchEmotes[e.code] = e.id;
-            } else if (e.emoticon_set === null) {
+            if (!twitchEmotes[e.code] || e.emoticon_set === null) {
+              // if emote doesn't exist OR
               // override if it's a global emote (null set = global emote)
               twitchEmotes[e.code] = e.id;
             }
