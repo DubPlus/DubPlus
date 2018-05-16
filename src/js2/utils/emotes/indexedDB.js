@@ -11,48 +11,70 @@ function IndexDBWrapper() {
   };
 
   var db;
-  var dbRequest;
-  
+  var timeout = 50; // 50 * 100 = 5000ms = 5s
+
+  /**
+   * Get item from indexedDB
+   * @param {string} item the db key name of what you want to retrieve
+   * @param {function} [cb] optional callback because it also returns a promise
+   * @returns {Promise}
+   */
   function getItem(item, cb) {
-    // keep trying until db open equest is established
-    if (!db) {
+    // keep trying until db open request is established
+    if (!db && timeout >= 0) {
       setTimeout(function() {
         getItem(item, cb);
       }, 100)
+      timeout--;
       return;
     }
     
+    timeout = 30; // reset the dbrequest timeout counter
     return db
       .transaction("s")
       .objectStore("s")
-      .get(t).onsuccess = function(e) {
+      .get(item).onsuccess = function(e) {
         let t = (e.target.result && e.target.result.v) || null;
         cb(t);
       }
   }
 
+  /**
+   * Store a value in indexedDB
+   * @param {string} item key name for the value that will be stored
+   * @param {string} val value to be stored
+   */
   function setItem(item, val){
+    // keep trying until db open request is established
+    if (!db && timeout >= 0) {
+      setTimeout(function() {
+        setItem(item, val);
+      }, 100)
+      timeout--;
+      return;
+    }
+
+    timeout = 30; // reset the dbrequest timeout counter
     let obj = { k: item, v: val };
     db.transaction("s", "readwrite")
       .objectStore("s")
       .put(obj);
   }
 
-  dbRequest = indexedDB.open("d2", 1);
+  var dbRequest = indexedDB.open("d2", 1);
 
   dbRequest.onsuccess = function(e) {
     db = this.result;
   }
   
   dbRequest.onerror = function(e) {
-    console.error("indexedDB request error");
-    console.log(e);
+    console.error("indexedDB request error", e);
   }
   
   dbRequest.onupgradeneeded = function(e) {
-      db = null;
-      let t = e.target.result.createObjectStore("s", { keyPath: "k" });
-      indexedDB.transaction.oncomplete = function(e) {
+      db = this.result;
+      let t = db.createObjectStore("s", { keyPath: "k" });
+      db.transaction.oncomplete = function(e) {
         db = e.target.db;
       };
   }

@@ -38,7 +38,7 @@ class BTTVemotes {
         return;
       }
 
-      ldb.get("bttv_api").then(data => {
+      ldb.get("bttv_api", (data) => {
         console.log("dub+", "bttv", "loading from IndexedDB");
         let savedData = JSON.parse(data);
         this.processEmotes(savedData);

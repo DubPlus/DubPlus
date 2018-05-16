@@ -14,6 +14,11 @@ Object.defineProperty(window, 'localStorage', {
 	value: localStorageMock
 }); 
 
+const indexedDB = require("fake-indexeddb");
+Object.defineProperty(window, 'indexedDB', {
+	value: indexedDB
+}); 
+
 // var gitInfo = require('../../tasks/repoInfo.js');
 Object.defineProperty(window, '_RESOURCE_SRC_', {
 	// value: gitInfo.resourceSrc

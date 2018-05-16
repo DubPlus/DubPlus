@@ -52,7 +52,7 @@ class TwitchEmotes {
         return;
       }
 
-      ldb.get("twitch_api").then(data => {
+      ldb.get("twitch_api", (data) => {
         console.log("dub+", "twitch", "loading from IndexedDB");
         let savedData = JSON.parse(data);
         this.processEmotes(savedData);
