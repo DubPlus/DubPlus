@@ -1,5 +1,5 @@
 import getJSON from "../getJSON.js";
-import ldb from "./indexedDB.js";
+import ldb from "../indexedDB.js";
 import {
   shouldUpdateAPIs
 } from './prepEmoji.js';
@@ -8,45 +8,60 @@ import {
 class BTTVemotes {
   emotes = {};
   loaded = false;
+  headers = {};
 
-  download() {
+  optionalSetHeaders(obj) {
+    this.headers = obj;
+  }
+
+  load() {
     // if it doesn't exist in localStorage or it's older than 5 days
     // grab it from the bttv API
-    shouldUpdateAPIs("bttv").then(update => {
-      if (update) {
-        console.log("dub+", "bttv", "loading from api");
+    return shouldUpdateAPIs("bttv")
+      .then(update => {
+        if (update) {
+          return this.updateFromAPI();
+        }
 
-        var bttvApi = getJSON(
-          "//api.betterttv.net/2/emotes",
-          "bttv:loaded"
-        );
-
-        bttvApi.then(data => {
-          var json = JSON.parse(data);
-          var bttvEmotes = {};
-          json.emotes.forEach(e => {
-            if (!bttvEmotes[e.code]) {
-              // if emote doesn't exist, add it
-              bttvEmotes[e.code] = e.id;
-            }
-          });
-          localStorage.setItem("bttv_api_timestamp", Date.now().toString());
-          ldb.set("bttv_api", JSON.stringify(bttvEmotes));
-          this.processEmotes(bttvEmotes);
-        });
-        
-        return;
-      }
-
-      ldb.get("bttv_api", (data) => {
-        console.log("dub+", "bttv", "loading from IndexedDB");
-        let savedData = JSON.parse(data);
-        this.processEmotes(savedData);
-        savedData = null; // clear the var from memory
-        var twEvent = new Event("bttv:loaded");
-        window.dispatchEvent(twEvent);
+        return this.loadFromDB();
       });
+  }
 
+  loadFromDB() {
+    return new Promise((resolve, reject) => {
+      try {
+        ldb.get("bttv_api", (data) => {
+          console.log("dub+", "bttv", "loading from IndexedDB");
+          let savedData = JSON.parse(data);
+          this.processEmotes(savedData);
+          savedData = null; // clear the var from memory
+          resolve();
+        });
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  updateFromAPI() {
+    console.log("dub+", "bttv", "loading from api");
+
+    var bttvApi = getJSON(
+      "https://api.betterttv.net/2/emotes",
+      this.headers
+    );
+
+    return bttvApi.then(data => {
+      var json = JSON.parse(data);
+      var bttvEmotes = {};
+      json.emotes.forEach(e => {
+        if (!bttvEmotes[e.code]) {
+          bttvEmotes[e.code] = e.id;
+        }
+      });
+      localStorage.setItem("bttv_api_timestamp", Date.now().toString());
+      ldb.set("bttv_api", JSON.stringify(bttvEmotes));
+      this.processEmotes(bttvEmotes);
     });
   }
 

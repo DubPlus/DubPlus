@@ -13,7 +13,7 @@ import tasty from './tasty.js';
 import parser from './parser.js';
 
 /**
- * return the most last chat item in the chat area
+ * return the last chat item in the chat area
  * this item could have a collection of <p> tags or just one
  */
 export function getLatestChatNode(){
@@ -72,14 +72,6 @@ export function getImageDataForEmote(emote) {
       name: key
     }
   }
-
-  if (tasty.emotes[key]) {
-    return {
-      type:'tasty',
-      src: tasty.template(key), 
-      name: key
-    }
-  }
 }
 
 /**
@@ -89,7 +81,7 @@ export function getImageDataForEmote(emote) {
  */
 export function processTextNode(textNode, emoteMatches ) {
   let parent = textNode.parentNode;
-  let textNodeVal = textNode.nodeValue.replace(/^\s+|\s+$/g, '');
+  let textNodeVal = textNode.nodeValue.trim();
   let fragment = document.createDocumentFragment();
   
   // wrap emotes within text node value with a random & unique string that will 
@@ -101,7 +93,7 @@ export function processTextNode(textNode, emoteMatches ) {
   let realMatches = emoteMatches.filter(m => {
     let imgData = getImageDataForEmote(m);
     if (imgData) {
-      let d = JSON.stringify(d);
+      let d = JSON.stringify(imgData);
       textNodeVal = textNodeVal.replace(m, `${splitter}${d}${splitter}`);
       return true;
     } else {
@@ -112,12 +104,15 @@ export function processTextNode(textNode, emoteMatches ) {
   // split the new string, create either text nodes or new img nodes
   let nodeArr = textNodeVal.split(splitter);
   nodeArr.forEach(t => {
-    if (realMatches.indexOf(t) < 0) {
+    try {
+      // if it is a json object then we convert to image
+      var imgdata = JSON.parse(t);
+      let img = makeEmoteImg(imgdata);
+      fragment.appendChild(img);
+    } catch (e) {
+      // otherwise it's just a normal text node
       fragment.appendChild(document.createTextNode(t)); 
-      return;
     }
-    let img = makeEmoteImg(JSON.parse(t));
-    fragment.appendChild(img);
   });
 
   parent.replaceChild(fragment, textNode);
@@ -128,7 +123,7 @@ export default function beginReplace(nodeStart) {
   let texts = getTextNodesUnder(root);
 
   texts.forEach(t => {
-    let val = t.nodeValue.replace(/^\s+|\s+$/g, '');
+    let val = t.nodeValue.trim();
     if (val === '') { return; }
     let found = parser(val);
     if (found.length === 0) { return; }

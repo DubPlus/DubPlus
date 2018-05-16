@@ -3,7 +3,7 @@
  * http://api.twitch.tv/kraken/chat/emoticon_images
  */
 import getJSON from "../getJSON.js";
-import ldb from "./indexedDB.js";
+import ldb from "../indexedDB.js";
 import {
   shouldUpdateAPIs
 } from './prepEmoji.js';
@@ -19,50 +19,60 @@ class TwitchEmotes {
   emotes = {}
   loaded = false
 
-  download () {
-    // if it doesn't exist in localStorage or it's older than 5 days
+  load() {
+    // if it doesn't exist in indexedDB or it's older than 5 days
     // grab it from the twitch API
-    shouldUpdateAPIs("twitch").then(update => {
-      if (update) {
-        console.log("dub+", "twitch", "loading from api");
-
-        let twApi = getJSON(
-          "https://api.twitch.tv/kraken/chat/emoticon_images",
-          "twitch:loaded",
-          {
-            Accept: "application/vnd.twitchtv.v5+json",
-            "Client-ID": "z5bpa7x6y717dsw28qnmcooolzm2js"
-          }
-        );
-
-        twApi.then(data => {
-          let json = JSON.parse(data);
-          let twitchEmotes = {};
-          json.emoticons.forEach(e => {
-            if (!twitchEmotes[e.code] || e.emoticon_set === null) {
-              // if emote doesn't exist OR
-              // override if it's a global emote (null set = global emote)
-              twitchEmotes[e.code] = e.id;
-            }
-          });
-          localStorage.setItem("twitch_api_timestamp", Date.now().toString());
-          ldb.set("twitch_api", JSON.stringify(twitchEmotes));
-          this.processEmotes(twitchEmotes);
-        });
-        return;
-      }
-
-      ldb.get("twitch_api", (data) => {
-        console.log("dub+", "twitch", "loading from IndexedDB");
-        let savedData = JSON.parse(data);
-        this.processEmotes(savedData);
-        savedData = null; // clear the var from memory
-        let twEvent = new Event("twitch:loaded");
-        window.dispatchEvent(twEvent);
+    return shouldUpdateAPIs("twitch")
+      .then(update => {
+        if (update) {
+          return this.updateFromApi();
+        }
+        return this.grabFromDb();
       });
+  }
+
+  grabFromDb(){
+    return new Promise((resolve, reject) => {
+      try {
+        ldb.get("twitch_api", (data) => {
+          console.log("dub+", "twitch", "loading from IndexedDB");
+          let savedData = JSON.parse(data);
+          this.processEmotes(savedData);
+          this.loaded = 'from db';
+          savedData = null; // clear the var from memory
+          resolve();
+        }); 
+      } catch (e) {
+        reject(e);
+      }
     })
-    .catch(function(err){
-      console.log(err);
+  }
+
+  updateFromApi() {
+    console.log("dub+", "twitch", "loading from api");
+
+    let twApi = getJSON(
+      "https://api.twitch.tv/kraken/chat/emoticon_images",
+      {
+        Accept: "application/vnd.twitchtv.v5+json",
+        "Client-ID": "z5bpa7x6y717dsw28qnmcooolzm2js"
+      }
+    );
+
+    return twApi.then(data => {
+      let json = JSON.parse(data);
+      let twitchEmotes = {};
+      json.emoticons.forEach(e => {
+        if (!twitchEmotes[e.code] || e.emoticon_set === null) {
+          // if emote doesn't exist OR
+          // override if it's a global emote (null set = global emote)
+          twitchEmotes[e.code] = e.id;
+        }
+      });
+      localStorage.setItem("twitch_api_timestamp", Date.now().toString());
+      ldb.set("twitch_api", JSON.stringify(twitchEmotes));
+      this.processEmotes(twitchEmotes);
+      this.loaded = 'from api';
     });
   }
 
@@ -92,7 +102,6 @@ class TwitchEmotes {
         }
       }
     }
-    this.loaded = true;
   }
 
 }

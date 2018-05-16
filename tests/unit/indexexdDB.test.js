@@ -1,5 +1,5 @@
 'use strict';
-import ldb from '../../src/js2/utils/emotes/indexedDB.js';
+import ldb from '../../src/js2/utils/indexedDB.js';
 
 test('Indexed DB sets a value successfully', (done) => {
   var err = null;

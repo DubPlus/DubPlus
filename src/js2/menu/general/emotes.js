@@ -15,21 +15,23 @@ export default class Emotes extends Component {
   turnOn = (e) => {
     if (!twitchEmotes.loaded) {
 
-      twitchEmotes.download();
-      window.addEventListener("twitch:loaded", bttvEmotes.download);
-      window.addEventListener("bttv:loaded", tastyEmotes.download);
-      window.addEventListener("tasty:loaded", function tastyLoaded() {
-        // when first turning it on, it replaces ALL of the emotes in chat history
-        chatReplace(document.querySelectorAll('.chat-main'));
-        window.removeEventListener("twitch:loaded", bttvEmotes.download);
-        window.removeEventListener("bttv:loaded", tastyEmotes.download);
-        window.removeEventListener("tasty:loaded", tastyLoaded);
+      Promise.all([
+        twitchEmotes.load(),
+        bttvEmotes.load()
+      ]).then(()=>{
+        this.begin();
+      }).catch((err)=>{
+        console.error(err);
       });
-
-    } else {
-      // when first turning it on, it replaces ALL of the emotes in chat history
-      chatReplace(document.querySelectorAll('.chat-main'));
+      return;
     }
+
+    this.begin();
+  }
+
+  begin() {
+    // when first turning it on, it replaces ALL of the emotes in chat history
+    chatReplace(document.querySelectorAll('.chat-main'));
     // then it sets up replacing emotes on new chat messages
     Dubtrack.Events.bind("realtime:chat-message", chatReplace);
   }

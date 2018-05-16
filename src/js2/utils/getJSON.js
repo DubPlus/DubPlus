@@ -4,13 +4,10 @@
  * object. It returns a promise.
  * 
  * @param {String} url 
- * @param {String} optionalEvent the name of the event to create and trigger upon success of ajax
  * @param {Object} headers object of xhr headers to add to the request
  * @returns {Promise}
  */
-function getJSON(url, optionalEvent, headers={}) {
-  let doneEvent = optionalEvent ? new Event(optionalEvent) : null;
-
+function getJSON(url, headers={}) {
   return new Promise(function(resolve, reject){
     let xhr = new XMLHttpRequest();
 
@@ -22,7 +19,6 @@ function getJSON(url, optionalEvent, headers={}) {
     
     xhr.onload = function() {
       let resp = xhr.responseText;
-      if (doneEvent) { window.dispatchEvent(doneEvent); }
       resolve(resp);
     };
 

@@ -1,24 +1,54 @@
 import getJSON from "../getJSON.js";
-import ldb from "./indexedDB.js";
+import ldb from "../indexedDB.js";
 import settings from '../UserSettings.js';
+import {
+  shouldUpdateAPIs
+} from './prepEmoji.js';
 
 class TastyEmotes {
   emotes = {};
   loaded = false;
 
-  download() {
+  load() {
+    return shouldUpdateAPIs("tasty")
+      .then(update => {
+        if (update) {
+          return this.updateFromAPI();
+        }
+
+        return this.loadFromDB();
+      });
+
+  }
+
+  loadFromDB() {
+    return new Promise((resolve, reject) => {
+      try {
+        ldb.get("tasty_api", (data) => {
+          console.log("dub+", "tasty", "loading from IndexedDB");
+          let savedData = JSON.parse(data);
+          this.processEmotes(savedData);
+          savedData = null; // clear the var from memory
+          resolve();
+        });
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  updateFromAPI() {
     console.log("dub+", "tasty", "loading from api");
-    // since we control this API we should always have it load from remote
+
     var tastyApi = getJSON(
-      settings.srcRoot + "/emotes/tastyemotes.json",
-      "tasty:loaded"
+      settings.srcRoot + "/emotes/tastyemotes.json"
     );
 
-    tastyApi.then(data => {
+    return tastyApi.then(data => {
       ldb.set("tasty_api", JSON.stringify(data));
       this.processEmotes(JSON.parse(data));
+      localStorage.setItem("tasty_api_timestamp", Date.now().toString());
     });
-
   }
 
   template(id) {
