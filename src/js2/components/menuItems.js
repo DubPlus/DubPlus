@@ -5,13 +5,13 @@ import Modal from './modal.js';
 import track from '../utils/analytics.js';
 
 /**
- * Component to render a simple row like the links
- * in the contact section or the fullscreen
+ * Component to render a simple row like the links in the contact section 
+ * or the fullscreen menu option
  * @param {object} props 
- * @param {object} props.id the dom ID name, usually dubplus-*
- * @param {object} props.desc description of the menu item used in the title attr
- * @param {object} props.icon icon to be used
- * @param {object} props.menuTitle text to display in the menu
+ * @param {string} props.id the dom ID name, usually dubplus-*
+ * @param {string} props.desc description of the menu item used in the title attr
+ * @param {string} props.icon icon to be used
+ * @param {string} props.menuTitle text to display in the menu
  */
 export function MenuSimple (props) {
   let _cn = ['dubplus-menu-icon'];
