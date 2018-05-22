@@ -331,16 +331,16 @@
   color: #89BE6C !important; }
 
 .dubplus-split-chat .chat-main li:nth-child(2n) {
-  background: -webkit-linear-gradient(left, rgba(155, 157, 160, 0.1) 0%, transparent 100%);
-  background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, transparent 100%);
+  background: -webkit-linear-gradient(left, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
   box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
   width: 100%; }
   .dubplus-split-chat .chat-main li:nth-child(2n) .chatDelete {
     right: 1.7em !important; }
 
 .dubplus-split-chat .split {
-  background: -webkit-linear-gradient(left, rgba(155, 157, 160, 0.1) 0%, transparent 100%);
-  background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, transparent 100%);
+  background: -webkit-linear-gradient(left, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
   box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
   width: 100%; }
 
@@ -392,7 +392,7 @@
   background-image: url(https://rawgit.com/DubPlus/DubPlus/master/emotes/tastycat/21.png); }
 
 .frankerFacez-previews {
-  background-image: url(https://i.imgur.com/B3ZzXwp.png); }
+  background-image: url(https://i.imgur.com/DuJfI4T.png); }
 
 #autocomplete-preview span {
   font-size: 0.8em;
