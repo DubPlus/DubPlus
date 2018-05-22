@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.1.8] - 2018-05-22
+### Added
+- Add support for FrankerFaceZ emotes
+
 ### Changed
 - Update custom mentions to only trigger when a whole word is matched rather than a partial word
 
