@@ -24,11 +24,12 @@ var saveCustomMentions = function() {
 };
 
 myModule.customMentionCheck = function(e) {
-  var content = e.message.toLowerCase();
+  var content = e.message;
   if (settings.custom.custom_mentions) {
-    var customMentions = settings.custom.custom_mentions.toLowerCase().split(',');
-    var inUsers = customMentions.some(function(v) { 
-      return content.indexOf(v.trim(' ')) >= 0; 
+    var customMentions = settings.custom.custom_mentions.split(',');
+    var inUsers = customMentions.some(function(v) {
+      var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
+      return reg.test(content); 
     });
     if(Dubtrack.session.id !== e.user.userInfo.userid && inUsers){
       Dubtrack.room.chat.mentionChatSound.play();
