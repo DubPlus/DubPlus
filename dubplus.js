@@ -1599,11 +1599,12 @@ var saveCustomMentions = function saveCustomMentions() {
 };
 
 myModule.customMentionCheck = function (e) {
-  var content = e.message.toLowerCase();
+  var content = e.message;
   if (settings.custom.custom_mentions) {
-    var customMentions = settings.custom.custom_mentions.toLowerCase().split(',');
+    var customMentions = settings.custom.custom_mentions.split(',');
     var inUsers = customMentions.some(function (v) {
-      return content.indexOf(v.trim(' ')) >= 0;
+      var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
+      return reg.test(content);
     });
     if (Dubtrack.session.id !== e.user.userInfo.userid && inUsers) {
       Dubtrack.room.chat.mentionChatSound.play();
@@ -3248,7 +3249,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1518043299251')
+}).call(this,'1526999544574')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
