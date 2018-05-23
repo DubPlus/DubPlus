@@ -1,3 +1,37 @@
+TODO: to finish the new preact version
+
+~~Loading script~~    
+- ~~eta~~
+- ~~snooze~~
+- ~~loading indicator~~
+- ~~modal~~
+- ~~Section headers~~
+
+General    
+- ~~autovote~~
+- ~~AFK~~
+- ~~Emotes~~
+- AutoComplete Emoji
+- Custom Mentions
+- Chat Cleaner
+- Notifications on Mention
+- Notifications on PM
+- DJ Notifications
+- Show Dub on Hover
+- Downdubs in Chat (mods only)
+- Updubs in Chat
+- Grabs in Chat
+- Snow
+- Rain
+UI    
+- Fullscreen video
+- Spit Chat
+- Hide Chat
+- Hide Video
+- 
+
+-----
+
 # Javascript info Guidelines
 :warning: *this doc is a work in progress* :warning:
 
@@ -14,7 +48,7 @@ We're using Preact, because of its smaller size to React, so that we can bundle 
 ## Write tests for everything
 
 ### Unit Testing
-Eveything in the UTILS folder should be unit tested. Everything in the components folder should also be unit tested
+At least everything in the utils folder should be unit tested. 
 
 ### Integration Testing
 We're using Puppetteer and Jest to login into Dubtrack.fm, load the script, and perform integration testing in the actual environment

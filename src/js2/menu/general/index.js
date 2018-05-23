@@ -1,6 +1,5 @@
 /**
   // General 
-  require('./emotes.js'),
   require('./autocomplete.js'),
   require('./customMentions.js'),
   require('./chatCleaner.js'),
@@ -20,6 +19,7 @@ import SectionHeader from '../../components/section-header.js';
 import AFK from './afk.js'
 import Autovote from './autovote.js'
 import settings from '../../utils/UserSettings.js';
+import AutocompleteEmoji from './autocomplete-emoji.js';
 
 export default class GeneralSection extends Component {
   state = {
@@ -50,6 +50,7 @@ export default class GeneralSection extends Component {
         <ul className={_cn.join(' ')}>
           <Autovote />
           <AFK />
+          <AutocompleteEmoji />
         </ul>
       </span>
     );
