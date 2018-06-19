@@ -1,7 +1,5 @@
 /**
   // General 
-  require('./autocomplete.js'),
-  require('./customMentions.js'),
   require('./chatCleaner.js'),
   require('./chatNotifications.js'),
   require('./pmNotifications.js'),
@@ -20,6 +18,7 @@ import AFK from './afk.js'
 import Autovote from './autovote.js'
 import settings from '../../utils/UserSettings.js';
 import AutocompleteEmoji from './autocomplete-emoji.js';
+import CustomMentions from './custom-mentions.js';
 
 export default class GeneralSection extends Component {
   state = {
@@ -51,6 +50,7 @@ export default class GeneralSection extends Component {
           <Autovote />
           <AFK />
           <AutocompleteEmoji />
+          <CustomMentions />
         </ul>
       </span>
     );

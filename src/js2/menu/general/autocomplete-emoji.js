@@ -4,7 +4,7 @@ import Portal from '../../components/Portal.js';
 
 /**********************************************************************
  * Autocomplete Emoji / Emotes
- * Brings up a small window about the chat input to help the user
+ * Brings up a small window above the chat input to help the user
  * pick emoji/emotes
  */
 
@@ -21,6 +21,14 @@ TODO:
 
 export default class AutocompleteEmoji extends Component {
 
+  state = {
+    open : false
+  }
+
+  componentWillMount() {
+    this.renderTo =  document.querySelector('.pusher-chat-widget-input');
+  }
+
   turnOn = (e) => {
     
   }
@@ -31,7 +39,7 @@ export default class AutocompleteEmoji extends Component {
   }
 
 
-  render(props,state){
+  render(props,{open}){
     return (
       <MenuSwitch
         id="dubplus-emotes"
@@ -40,6 +48,13 @@ export default class AutocompleteEmoji extends Component {
         desc="Quick find and insert emojis and emotes while typing in the chat input"
         turnOn={this.turnOn}
         turnOff={this.turnOff}>
+
+        { open ? (
+          <Portal into={this.renderTo}>
+            
+          </Portal>
+        ) : null }
+
       </MenuSwitch>
     )
   }
