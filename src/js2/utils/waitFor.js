@@ -51,7 +51,7 @@ function WaitFor(waitingFor, options) {
   }
   var defaults = {
     interval : 500, // every XX ms we check to see if waitingFor is defined
-    seconds : 5,  // how many total seconds we wish to continue pinging
+    seconds : 15,  // how many total seconds we wish to continue pinging
   };
 
   var _cb = ()=>{};

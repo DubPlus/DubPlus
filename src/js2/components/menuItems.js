@@ -38,25 +38,26 @@ export function MenuSimple (props) {
  * MenuPencil must always by a child of MenuSwitch.
  */
 export class MenuPencil extends Component {
-  state = {
-    open : false
-  }
-
   loadModal = () => {
     this.setState({open: true});
     track.menuClick(this.props.section + ' section', this.props.id + ' edit');
   }
 
-  render(props, state) {
+  closeModal = () => {
+    this.setState({open:false});
+  }
+
+  render(props, { open }) {
     return (
       <span onClick={this.loadModal} className="fa fa-pencil extra-icon">
-        { state.open ? (
+        { open ? (
           <Portal into="body">
             <Modal title={props.title || 'Dub+ option'}
                 content={props.content || 'Please enter a value'}
                 placeholder={props.placeholder || 'in here'}
+                value={props.value}
                 onConfirm={props.onConfirm}
-                onClose={()=>{ this.setState({open:false}) }} />
+                onClose={this.closeModal} />
           </Portal>
         ) : null }
       </span>
@@ -66,7 +67,13 @@ export class MenuPencil extends Component {
 
 export class MenuSwitch extends Component {
   state = {
-    on : settings.stored[this.props.id] || false
+    on : settings.stored.options[this.props.id] || false
+  }
+
+  componentDidMount() {
+    if (this.state.on) {
+      this.props.turnOn();
+    }
   }
 
   switchOn = () => {

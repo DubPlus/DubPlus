@@ -18,7 +18,7 @@ var makeLink = function(className, FileName){
 function load(cssFile, className){
   if (!cssFile) {return;}
   var link = makeLink(className, settings.srcRoot + cssFile + "?" + _TIME_STAMP_);
-  document.head.insertAdjacentElement('beforeend', link);
+  document.head.appendChild(link);
 }
 
 /**
@@ -30,7 +30,7 @@ function load(cssFile, className){
 function loadExternal(cssFile, className){
   if (!cssFile) {return;}
   var link = makeLink(className, cssFile);
-  document.head.insertAdjacentElement('beforeend', link);
+  document.head.appendChild(link);
 }
 
 export default {

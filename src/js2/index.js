@@ -7,6 +7,7 @@ import Loading from './components/loading.js';
 import cssHelper from './utils/css.js';
 import MenuIcon from './components/MenuIcon.js';
 import getScript from './utils/getScript.js';
+import track from './utils/analytics.js';
 
 setTimeout(function(){
   // start the loading of the CSS asynchronously
@@ -44,20 +45,22 @@ class DubPlusContainer extends Component {
         'Dubtrack.room.users',
       ];
       
-      var _dubplusWaiting = new WaitFor(checkList, { seconds : 10}); // 10sec should be more than enough
+      
+      var _dubplusWaiting = new WaitFor(checkList, { seconds : 120}); 
       
       _dubplusWaiting
         .then(()=>{
           this.setState({
             loading: false, 
             error: false
-          })
+          });
         })
         .fail(()=>{
           if (!Dubtrack.session.id) {
             this.showError('You\'re not logged in. Please login to use Dub+.');
           } else {
             this.showError('Something happed, refresh and try again');
+            track.event('Dub+ lib', 'load', 'failed');
           }
         });
 

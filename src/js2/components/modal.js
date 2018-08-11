@@ -25,7 +25,7 @@ export default class Modal extends Component {
     }
   }
 
-  componentWillMount(){
+  componentDidMount(){
     document.addEventListener('keyup', this.keyUpHandler);
   }
 
