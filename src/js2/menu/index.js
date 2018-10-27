@@ -14,7 +14,7 @@ export default class DubPlusMenu extends Component {
     setTimeout(()=>{
       snooze();
       eta();
-    }, 1);
+    }, 10);
   }
 
   render(props,state) {

@@ -19,4 +19,2239 @@
 
     more info at https://dub.plus
 */
-var DubPlus=function(){"use strict";var e={},t=[],n=[];function o(o,r){var i,s,a,u,l=n;for(u=arguments.length;u-- >2;)t.push(arguments[u]);for(r&&null!=r.children&&(t.length||t.push(r.children),delete r.children);t.length;)if((s=t.pop())&&void 0!==s.pop)for(u=s.length;u--;)t.push(s[u]);else"boolean"==typeof s&&(s=null),(a="function"!=typeof o)&&(null==s?s="":"number"==typeof s?s=String(s):"string"!=typeof s&&(a=!1)),a&&i?l[l.length-1]+=s:l===n?l=[s]:l.push(s),i=a;var c=new function(){};return c.nodeName=o,c.children=l,c.attributes=null==r?void 0:r,c.key=null==r?void 0:r.key,void 0!==e.vnode&&e.vnode(c),c}function r(e,t){for(var n in t)e[n]=t[n];return e}var i="function"==typeof Promise?Promise.resolve().then.bind(Promise.resolve()):setTimeout,s=/acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i,a=[];function u(t){!t._dirty&&(t._dirty=!0)&&1==a.push(t)&&(e.debounceRendering||i)(l)}function l(){var e,t=a;for(a=[];e=t.pop();)e._dirty&&N(e)}function c(e,t){return e.normalizedNodeName===t||e.nodeName.toLowerCase()===t.toLowerCase()}function p(e){var t=r({},e.attributes);t.children=e.children;var n=e.nodeName.defaultProps;if(void 0!==n)for(var o in n)void 0===t[o]&&(t[o]=n[o]);return t}function d(e){var t=e.parentNode;t&&t.removeChild(e)}function f(e,t,n,o,r){if("className"===t&&(t="class"),"key"===t);else if("ref"===t)n&&n(null),o&&o(e);else if("class"!==t||r)if("style"===t){if(o&&"string"!=typeof o&&"string"!=typeof n||(e.style.cssText=o||""),o&&"object"==typeof o){if("string"!=typeof n)for(var i in n)i in o||(e.style[i]="");for(var i in o)e.style[i]="number"==typeof o[i]&&!1===s.test(i)?o[i]+"px":o[i]}}else if("dangerouslySetInnerHTML"===t)o&&(e.innerHTML=o.__html||"");else if("o"==t[0]&&"n"==t[1]){var a=t!==(t=t.replace(/Capture$/,""));t=t.toLowerCase().substring(2),o?n||e.addEventListener(t,h,a):e.removeEventListener(t,h,a),(e._listeners||(e._listeners={}))[t]=o}else if("list"!==t&&"type"!==t&&!r&&t in e)!function(e,t,n){try{e[t]=n}catch(e){}}(e,t,null==o?"":o),null!=o&&!1!==o||e.removeAttribute(t);else{var u=r&&t!==(t=t.replace(/^xlink:?/,""));null==o||!1===o?u?e.removeAttributeNS("http://www.w3.org/1999/xlink",t.toLowerCase()):e.removeAttribute(t):"function"!=typeof o&&(u?e.setAttributeNS("http://www.w3.org/1999/xlink",t.toLowerCase(),o):e.setAttribute(t,o))}else e.className=o||""}function h(t){return this._listeners[t.type](e.event&&e.event(t)||t)}var m=[],v=0,y=!1,b=!1;function g(){for(var t;t=m.pop();)e.afterMount&&e.afterMount(t),t.componentDidMount&&t.componentDidMount()}function _(e,t,n,o,r,i){v++||(y=null!=r&&void 0!==r.ownerSVGElement,b=null!=e&&!("__preactattr_"in e));var s=k(e,t,n,o,i);return r&&s.parentNode!==r&&r.appendChild(s),--v||(b=!1,i||g()),s}function k(e,t,n,o,r){var i=e,s=y;if(null!=t&&"boolean"!=typeof t||(t=""),"string"==typeof t||"number"==typeof t)return e&&void 0!==e.splitText&&e.parentNode&&(!e._component||r)?e.nodeValue!=t&&(e.nodeValue=t):(i=document.createTextNode(t),e&&(e.parentNode&&e.parentNode.replaceChild(i,e),w(e,!0))),i.__preactattr_=!0,i;var a,u,l=t.nodeName;if("function"==typeof l)return function(e,t,n,o){var r=e&&e._component,i=r,s=e,a=r&&e._componentConstructor===t.nodeName,u=a,l=p(t);for(;r&&!u&&(r=r._parentComponent);)u=r.constructor===t.nodeName;r&&u&&(!o||r._component)?(D(r,l,3,n,o),e=r.base):(i&&!a&&(T(i),e=s=null),r=O(t.nodeName,l,n),e&&!r.nextBase&&(r.nextBase=e,s=null),D(r,l,1,n,o),e=r.base,s&&e!==s&&(s._component=null,w(s,!1)));return e}(e,t,n,o);if(y="svg"===l||"foreignObject"!==l&&y,l=String(l),(!e||!c(e,l))&&(a=l,(u=y?document.createElementNS("http://www.w3.org/2000/svg",a):document.createElement(a)).normalizedNodeName=a,i=u,e)){for(;e.firstChild;)i.appendChild(e.firstChild);e.parentNode&&e.parentNode.replaceChild(i,e),w(e,!0)}var h=i.firstChild,m=i.__preactattr_,v=t.children;if(null==m){m=i.__preactattr_={};for(var g=i.attributes,_=g.length;_--;)m[g[_].name]=g[_].value}return!b&&v&&1===v.length&&"string"==typeof v[0]&&null!=h&&void 0!==h.splitText&&null==h.nextSibling?h.nodeValue!=v[0]&&(h.nodeValue=v[0]):(v&&v.length||null!=h)&&function(e,t,n,o,r){var i,s,a,u,l,p=e.childNodes,f=[],h={},m=0,v=0,y=p.length,b=0,g=t?t.length:0;if(0!==y)for(var _=0;_<y;_++){var x=p[_],C=x.__preactattr_,O=g&&C?x._component?x._component.__key:C.key:null;null!=O?(m++,h[O]=x):(C||(void 0!==x.splitText?!r||x.nodeValue.trim():r))&&(f[b++]=x)}if(0!==g)for(var _=0;_<g;_++){u=t[_],l=null;var O=u.key;if(null!=O)m&&void 0!==h[O]&&(l=h[O],h[O]=void 0,m--);else if(!l&&v<b)for(i=v;i<b;i++)if(void 0!==f[i]&&(S=s=f[i],N=r,"string"==typeof(D=u)||"number"==typeof D?void 0!==S.splitText:"string"==typeof D.nodeName?!S._componentConstructor&&c(S,D.nodeName):N||S._componentConstructor===D.nodeName)){l=s,f[i]=void 0,i===b-1&&b--,i===v&&v++;break}l=k(l,u,n,o),a=p[_],l&&l!==e&&l!==a&&(null==a?e.appendChild(l):l===a.nextSibling?d(a):e.insertBefore(l,a))}var S,D,N;if(m)for(var _ in h)void 0!==h[_]&&w(h[_],!1);for(;v<=b;)void 0!==(l=f[b--])&&w(l,!1)}(i,v,n,o,b||null!=m.dangerouslySetInnerHTML),function(e,t,n){var o;for(o in n)t&&null!=t[o]||null==n[o]||f(e,o,n[o],n[o]=void 0,y);for(o in t)"children"===o||"innerHTML"===o||o in n&&t[o]===("value"===o||"checked"===o?e[o]:n[o])||f(e,o,n[o],n[o]=t[o],y)}(i,t.attributes,m),y=s,i}function w(e,t){var n=e._component;n?T(n):(null!=e.__preactattr_&&e.__preactattr_.ref&&e.__preactattr_.ref(null),!1!==t&&null!=e.__preactattr_||d(e),x(e))}function x(e){for(e=e.lastChild;e;){var t=e.previousSibling;w(e,!0),e=t}}var C={};function O(e,t,n){var o,r=C[e.name];if(e.prototype&&e.prototype.render?(o=new e(t,n),M.call(o,t,n)):((o=new M(t,n)).constructor=e,o.render=S),r)for(var i=r.length;i--;)if(r[i].constructor===e){o.nextBase=r[i].nextBase,r.splice(i,1);break}return o}function S(e,t,n){return this.constructor(e,n)}function D(t,n,o,r,i){t._disable||(t._disable=!0,(t.__ref=n.ref)&&delete n.ref,(t.__key=n.key)&&delete n.key,!t.base||i?t.componentWillMount&&t.componentWillMount():t.componentWillReceiveProps&&t.componentWillReceiveProps(n,r),r&&r!==t.context&&(t.prevContext||(t.prevContext=t.context),t.context=r),t.prevProps||(t.prevProps=t.props),t.props=n,t._disable=!1,0!==o&&(1!==o&&!1===e.syncComponentUpdates&&t.base?u(t):N(t,1,i)),t.__ref&&t.__ref(t))}function N(t,n,o,i){if(!t._disable){var s,a,u,l=t.props,c=t.state,d=t.context,f=t.prevProps||l,h=t.prevState||c,y=t.prevContext||d,b=t.base,k=t.nextBase,x=b||k,C=t._component,S=!1;if(b&&(t.props=f,t.state=h,t.context=y,2!==n&&t.shouldComponentUpdate&&!1===t.shouldComponentUpdate(l,c,d)?S=!0:t.componentWillUpdate&&t.componentWillUpdate(l,c,d),t.props=l,t.state=c,t.context=d),t.prevProps=t.prevState=t.prevContext=t.nextBase=null,t._dirty=!1,!S){s=t.render(l,c,d),t.getChildContext&&(d=r(r({},d),t.getChildContext()));var M,A,P=s&&s.nodeName;if("function"==typeof P){var E=p(s);(a=C)&&a.constructor===P&&E.key==a.__key?D(a,E,1,d,!1):(M=a,t._component=a=O(P,E,d),a.nextBase=a.nextBase||k,a._parentComponent=t,D(a,E,0,d,!1),N(a,1,o,!0)),A=a.base}else u=x,(M=C)&&(u=t._component=null),(x||1===n)&&(u&&(u._component=null),A=_(u,s,d,o||!b,x&&x.parentNode,!0));if(x&&A!==x&&a!==C){var j=x.parentNode;j&&A!==j&&(j.replaceChild(A,x),M||(x._component=null,w(x,!1)))}if(M&&T(M),t.base=A,A&&!i){for(var L=t,U=t;U=U._parentComponent;)(L=U).base=A;A._component=L,A._componentConstructor=L.constructor}}if(!b||o?m.unshift(t):S||(t.componentDidUpdate&&t.componentDidUpdate(f,h,y),e.afterUpdate&&e.afterUpdate(t)),null!=t._renderCallbacks)for(;t._renderCallbacks.length;)t._renderCallbacks.pop().call(t);v||i||g()}}function T(t){e.beforeUnmount&&e.beforeUnmount(t);var n=t.base;t._disable=!0,t.componentWillUnmount&&t.componentWillUnmount(),t.base=null;var o=t._component;o?T(o):n&&(n.__preactattr_&&n.__preactattr_.ref&&n.__preactattr_.ref(null),t.nextBase=n,d(n),function(e){var t=e.constructor.name;(C[t]||(C[t]=[])).push(e)}(t),x(n)),t.__ref&&t.__ref(null)}function M(e,t){this._dirty=!0,this.context=t,this.props=e,this.state=this.state||{}}function A(e,t,n){return _(n,e,{},!1,t,!1)}r(M.prototype,{setState:function(e,t){var n=this.state;this.prevState||(this.prevState=r({},n)),r(n,"function"==typeof e?e(n,this.props):e),t&&(this._renderCallbacks=this._renderCallbacks||[]).push(t),u(this)},forceUpdate:function(e){e&&(this._renderCallbacks=this._renderCallbacks||[]).push(e),N(this,2)},render:function(){}});var P=function(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")},E=function(){function e(e,t){for(var n=0;n<t.length;n++){var o=t[n];o.enumerable=o.enumerable||!1,o.configurable=!0,"value"in o&&(o.writable=!0),Object.defineProperty(e,o.key,o)}}return function(t,n,o){return n&&e(t.prototype,n),o&&e(t,o),t}}(),j=function(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)},L=function(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t},U={currentVol:50,snoozed:!1},z=function(e){if(e.startTime<2)return U.snoozed&&(Dubtrack.room.player.setVolume(U.currentVol),U.snoozed=!1),!0},W=function(){!U.snoozed&&!Dubtrack.room.player.muted_player&&Dubtrack.playerController.volume>2?(U.currentVol=Dubtrack.playerController.volume,Dubtrack.room.player.mutePlayer(),U.snoozed=!0,Dubtrack.Events.bind("realtime:room_playlist-update",z)):U.snoozed&&(Dubtrack.room.player.setVolume(U.currentVol),Dubtrack.room.player.updateVolumeBar(),U.snoozed=!1)},B={position:"absolute",font:"1rem/1.5 proxima-nova,sans-serif",display:"block",left:"-33px",cursor:"pointer",borderRadius:"1.5rem",padding:"8px 16px",background:"#fff",fontWeight:"700",fontSize:"13.6px",textTransform:"uppercase",color:"#000",opacity:"0.8",textAlign:"center",zIndex:"9"},I=function(e){function t(){var e,n,o;P(this,t);for(var r=arguments.length,i=Array(r),s=0;s<r;s++)i[s]=arguments[s];return n=o=L(this,(e=t.__proto__||Object.getPrototypeOf(t)).call.apply(e,[this].concat(i))),o.state={show:!1},o.showTooltip=function(){o.setState({show:!0})},o.hideTooltip=function(){o.setState({show:!1})},L(o,n)}return j(t,M),E(t,[{key:"render",value:function(e,t){return o("span",{className:"icon-mute snooze_btn",onClick:W,onMouseOver:this.showTooltip,onMouseOut:this.hideTooltip},t.show&&o("div",{className:"snooze_tooltip",style:B},"Mute current song"))}}]),t}();var F={position:"absolute",font:"1rem/1.5 proxima-nova,sans-serif",display:"block",left:"-33px",cursor:"pointer",borderRadius:"1.5rem",padding:"8px 16px",background:"#fff",fontWeight:"700",fontSize:"13.6px",textTransform:"uppercase",color:"#000",opacity:"0.8",textAlign:"center",zIndex:"9"},R=function(e){function t(){var e,n,o;P(this,t);for(var r=arguments.length,i=Array(r),s=0;s<r;s++)i[s]=arguments[s];return n=o=L(this,(e=t.__proto__||Object.getPrototypeOf(t)).call.apply(e,[this].concat(i))),o.state={show:!1,booth_time:""},o.showTooltip=function(){var e=o.getEta();o.setState({show:!0,booth_time:e})},o.hideTooltip=function(){o.setState({show:!1})},L(o,n)}return j(t,M),E(t,[{key:"getEta",value:function(){var e=parseInt(document.querySelector("#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min").textContent),t=4*parseInt(document.querySelector(".queue-position").textContent)-4+e;return t>=0?t:"You're not in the queue"}},{key:"render",value:function(e,t){return o("span",{className:"icon-history eta_tooltip_t",onMouseOver:this.showTooltip,onMouseOut:this.hideTooltip},this.state.show&&o("span",{className:"eta_tooltip",style:F},this.state.booth_time))}}]),t}();function V(e){return o("div",{id:e.id,className:"dubplus-menu-section-header"},o("span",{className:"fa fa-angle-"+e.arrow}),o("p",null,e.category))}var q=function(e){function t(){return P(this,t),L(this,(t.__proto__||Object.getPrototypeOf(t)).apply(this,arguments))}return j(t,M),E(t,[{key:"componentDidUpdate",value:function(e){for(var t in e)if(e[t]!==this.props[t])return setTimeout(this.renderLayer)}},{key:"componentDidMount",value:function(){this.isMounted=!0,this.renderLayer=this.renderLayer.bind(this),this.renderLayer()}},{key:"componentWillUnmount",value:function(){this.renderLayer(!1),this.isMounted=!1,this.remote&&this.remote.parentNode.removeChild(this.remote)}},{key:"findNode",value:function(e){return"string"==typeof e?document.querySelector(e):e}},{key:"renderLayer",value:function(){var e=!(arguments.length>0&&void 0!==arguments[0])||arguments[0];this.isMounted&&(this.props.into!==this.intoPointer&&(this.intoPointer=this.props.into,this.into&&this.remote&&(this.remote=A(o(K,null),this.into,this.remote)),this.into=this.findNode(this.props.into)),this.remote=A(o(K,{context:this.context},e&&this.props.children||null),this.into,this.remote))}},{key:"render",value:function(){return null}}]),t}(),K=function(e){function t(){return P(this,t),L(this,(t.__proto__||Object.getPrototypeOf(t)).apply(this,arguments))}return j(t,M),E(t,[{key:"getChildContext",value:function(){return this.props.context}},{key:"render",value:function(e){var t=e.children;return t&&t[0]||null}}]),t}(),H={menu:{general:"open","user-interface":"open",settings:"open",customize:"open",contact:"open"},options:{"dubplus-autovote":!1,"dubplus-emotes":!1,"dubplus-autocomplete":!1,mention_notifications:!1,dubplus_pm_notifications:!1,"dj-notification":!1,"dubplus-dubs-hover":!1,"dubplus-downdubs":!1,"dubplus-grabschat":!1,"dubplus-split-chat":!1,"dubplus-show-timestamp":!1,"dubplus-hide-bg":!1,"dubplus-hide-avatars":!1,"dubplus-chat-only":!1,"dubplus-video-only":!1,warn_redirect:!1,"dubplus-comm-theme":!1,"dubplus-afk":!1,"dubplus-snow":!1,"dubplus-custom-css":!1},custom:{customAfkMessage:"",dj_notification:1,css:""}},G=new(function(){function e(){P(this,e),this.srcRoot="https://rawgit.com/FranciscoG/DubPlus/preact-version";var t=localStorage.getItem("dubplusUserSettings");if(t)try{var n=JSON.parse(t);this.stored=Object.assign({},H,n)}catch(e){this.stored=H}else this.stored=H}return E(e,[{key:"save",value:function(e,t,n){this.stored[e][t]=n;try{localStorage.setItem("dubplusUserSettings",JSON.stringify(this.stored))}catch(e){console.error("an error occured saving dubplus to localStorage",e)}}}]),e}()),Y=function(e){function t(){var e,n,o;P(this,t);for(var r=arguments.length,i=Array(r),s=0;s<r;s++)i[s]=arguments[s];return n=o=L(this,(e=t.__proto__||Object.getPrototypeOf(t)).call.apply(e,[this].concat(i))),o.keyUpHandler=function(e){13===e.keyCode&&(o.props.onConfirm(o.textarea.value),o.props.onClose()),27===e.keyCode&&o.props.onClose()},o.confirmClick=function(){o.props.onConfirm(o.textarea.value),o.props.onClose()},L(o,n)}return j(t,M),E(t,[{key:"componentDidMount",value:function(){document.addEventListener("keyup",this.keyUpHandler)}},{key:"componentWillUnmount",value:function(){document.removeEventListener("keyup",this.keyUpHandler)}},{key:"render",value:function(e,t){var n=this,r=e.onConfirm?"cancel":"close";return o("div",{className:"dp-modal"},o("aside",{className:"container"},o("div",{className:"title"},o("h1",null," ",e.title||"Dub+")),o("div",{className:"content"},o("p",null,e.content||""),e.placeholder&&o("textarea",{ref:function(e){return n.textarea=e},placeholder:e.placeholder,maxlength:e.maxlength||999},e.value||"")),o("div",{className:"dp-modal-buttons"},o("button",{id:"dp-modal-cancel",onClick:e.onClose},r),e.onConfirm&&o("button",{id:"dp-modal-confirm",onClick:this.confirmClick},"okay"))))}}]),t}(),J=window.ga||function(){},$=new(function(){function e(t){P(this,e),J("create",t,"auto","dubplusTracker")}return E(e,[{key:"event",value:function(e,t,n,o){J("dubplusTracker.send","event",e,t,n,o)}},{key:"menuClick",value:function(e,t,n){this.event(e,"click",t,n)}}]),e}())("UA-116652541-1"),Q=function(e){function t(){var e,n,o;P(this,t);for(var r=arguments.length,i=Array(r),s=0;s<r;s++)i[s]=arguments[s];return n=o=L(this,(e=t.__proto__||Object.getPrototypeOf(t)).call.apply(e,[this].concat(i))),o.loadModal=function(){o.setState({open:!0}),$.menuClick(o.props.section+" section",o.props.id+" edit")},o.closeModal=function(){o.setState({open:!1})},L(o,n)}return j(t,M),E(t,[{key:"render",value:function(e,t){var n=t.open;return o("span",{onClick:this.loadModal,className:"fa fa-pencil extra-icon"},n?o(q,{into:"body"},o(Y,{title:e.title||"Dub+ option",content:e.content||"Please enter a value",placeholder:e.placeholder||"in here",value:e.value,onConfirm:e.onConfirm,onClose:this.closeModal})):null)}}]),t}(),X=function(e){function t(){var e,n,o;P(this,t);for(var r=arguments.length,i=Array(r),s=0;s<r;s++)i[s]=arguments[s];return n=o=L(this,(e=t.__proto__||Object.getPrototypeOf(t)).call.apply(e,[this].concat(i))),o.state={on:G.stored.options[o.props.id]||!1},o.switchOn=function(){o.props.turnOn(),G.save("options",o.props.id,!0),o.setState({on:!0}),$.menuClick(o.props.section+" section",o.props.id+" on")},o.switchOff=function(){o.props.turnOff(),G.save("options",o.props.id,!1),o.setState({on:!1}),$.menuClick(o.props.section+" section",o.props.id+" off")},o.toggleSwitch=function(){o.state.on?o.switchOff():o.switchOn()},L(o,n)}return j(t,M),E(t,[{key:"componentDidMount",value:function(){this.state.on&&this.props.turnOn()}},{key:"render",value:function(e,t){var n=["dubplus-switch"];return t.on&&n.push("dubplus-switch-on"),e.className&&n.push(e.className),o("li",{id:e.id,title:e.desc,className:n.join(" ")},e.children||[],o("div",{onClick:this.toggleSwitch,className:"dubplus-form-control"},o("div",{class:"dubplus-switch-bg"},o("div",{class:"dubplus-switcher"})),o("span",{className:"dubplus-menu-label"},e.menuTitle)))}}]),t}(),Z=function(e){function t(){var e,n,o;P(this,t);for(var r=arguments.length,i=Array(r),s=0;s<r;s++)i[s]=arguments[s];return n=o=L(this,(e=t.__proto__||Object.getPrototypeOf(t)).call.apply(e,[this].concat(i))),o.state={canSend:!0},o.afk_chat_respond=function(e){if(o.state.canSend){var t=e.message,n=Dubtrack.session.get("username");if(t.indexOf("@"+n)>-1&&Dubtrack.session.id!==e.user.userInfo.userid){var r=document.getElementById("chat-txt-message");G.stored.custom.customAfkMessage?r.value="[AFK] "+G.stored.custom.customAfkMessage:r.value="[AFK] I'm not here right now.",Dubtrack.room.chat.sendMessage(),o.setState({canSend:!1}),setTimeout(function(){o.setState({canSend:!0})},3e4)}}},L(o,n)}return j(t,M),E(t,[{key:"turnOn",value:function(){Dubtrack.Events.bind("realtime:chat-message",this.afk_chat_respond)}},{key:"turnOff",value:function(){Dubtrack.Events.unbind("realtime:chat-message",this.afk_chat_respond)}},{key:"saveAFKmessage",value:function(e){""!==e&&G.save("custom","customAfkMessage",e)}},{key:"render",value:function(e,t){return o(X,{id:"dubplus-afk",section:"General",menuTitle:"AFK Auto-respond",desc:"Toggle Away from Keyboard and customize AFK message.",turnOn:this.turnOn,turnOff:this.turnOff},o(Q,{title:"Custom AFK Message",section:"General",content:"Enter a custom Away From Keyboard [AFK] message here",value:G.stored.custom.customAfkMessage||"",placeholder:"Be right back!",maxlength:"255",onConfirm:this.saveAFKmessage}))}}]),t}(),ee=function(e){function t(){P(this,t);var e=L(this,(t.__proto__||Object.getPrototypeOf(t)).call(this));return e.advance_vote=function(){var t=document.createEvent("HTMLEvents");t.initEvent("click",!0,!1),e.dubup.dispatchEvent(t)},e.voteCheck=function(t){t.startTime<2&&e.advance_vote()},e.turnOn=function(t){var n=Dubtrack.room.player.activeSong.get("song"),o=Dubtrack.helpers.cookie.get("dub-"+Dubtrack.room.model.get("_id")),r=Dubtrack.helpers.cookie.get("dub-song");Dubtrack.room&&n&&n.songid===r||(o=!1),e.dubup.classList.contains("voted")||e.dubdown.classList.contains("voted")||o||e.advance_vote(),Dubtrack.Events.bind("realtime:room_playlist-update",e.voteCheck)},e.turnOff=function(t){Dubtrack.Events.unbind("realtime:room_playlist-update",e.voteCheck)},e.dubup=document.querySelector(".dubup"),e.dubdown=document.querySelector(".dubdown"),e}return j(t,M),E(t,[{key:"render",value:function(e,t){return o(X,{id:"dubplus-autovote",section:"General",menuTitle:"Autovote",desc:"Toggles auto upvoting for every song",turnOn:this.turnOn,turnOff:this.turnOff})}}]),t}(),te=function(e){function t(){var e,n,o;P(this,t);for(var r=arguments.length,i=Array(r),s=0;s<r;s++)i[s]=arguments[s];return n=o=L(this,(e=t.__proto__||Object.getPrototypeOf(t)).call.apply(e,[this].concat(i))),o.state={open:!1},o.turnOn=function(e){},o.turnOff=function(e){},L(o,n)}return j(t,M),E(t,[{key:"componentWillMount",value:function(){this.renderTo=document.querySelector(".pusher-chat-widget-input")}},{key:"render",value:function(e,t){var n=t.open;return o(X,{id:"dubplus-emotes",section:"General",menuTitle:"Autocomplete Emoji",desc:"Quick find and insert emojis and emotes while typing in the chat input",turnOn:this.turnOn,turnOff:this.turnOff},n?o(q,{into:this.renderTo}):null)}}]),t}(),ne=function(e){function t(){var e,n,o;P(this,t);for(var r=arguments.length,i=Array(r),s=0;s<r;s++)i[s]=arguments[s];return n=o=L(this,(e=t.__proto__||Object.getPrototypeOf(t)).call.apply(e,[this].concat(i))),o.customMentionCheck=function(e){var t=e.message;if(G.custom.custom_mentions){var n=G.custom.custom_mentions.split(",").some(function(e){return new RegExp("\\b"+e.trim()+"\\b","i").test(t)});Dubtrack.session.id!==e.user.userInfo.userid&&n&&Dubtrack.room.chat.mentionChatSound.play()}},o.saveCustomMentions=function(e){""!==e&&G.save("custom","custom_mentions",e)},L(o,n)}return j(t,M),E(t,[{key:"turnOn",value:function(){Dubtrack.Events.bind("realtime:chat-message",this.customMentionCheck)}},{key:"turnOff",value:function(){Dubtrack.Events.unbind("realtime:chat-message",this.customMentionCheck)}},{key:"render",value:function(e,t){return o(X,{id:"custom_mentions",section:"General",menuTitle:"Custom Mentions",desc:"Toggle using custom mentions to trigger sounds in chat",turnOn:this.turnOn,turnOff:this.turnOff},o(Q,{title:"Custom AFK Message",section:"General",content:"Add your custom mention triggers here (separate by comma)",value:G.stored.custom.custom_mentions||"",placeholder:"separate, custom triggers, by, comma, :heart:",maxlength:"255",onConfirm:this.saveCustomMentions}))}}]),t}(),oe=function(e){function t(){var e,n,o;P(this,t);for(var r=arguments.length,i=Array(r),s=0;s<r;s++)i[s]=arguments[s];return n=o=L(this,(e=t.__proto__||Object.getPrototypeOf(t)).call.apply(e,[this].concat(i))),o.state={css:G.stored.general||"open"},o.toggleSection=function(){o.setState(function(e){var t="open"===e.css?"closed":"open";return G.save("menu","general",t),{css:t}})},L(o,n)}return j(t,M),E(t,[{key:"render",value:function(e,t){var n=["dubplus-menu-section"];return"closed"===t.css&&n.push("dubplus-menu-section-closed"),o("span",null,o(V,{onClick:this.toggleSection,id:"dubplus-general",category:"General"}),o("ul",{className:n.join(" ")},o(ee,null),o(Z,null),o(te,null),o(ne,null)))}}]),t}(),re=function(e){function t(){return P(this,t),L(this,(t.__proto__||Object.getPrototypeOf(t)).apply(this,arguments))}return j(t,M),E(t,[{key:"componentDidMount",value:function(){setTimeout(function(){A(o(I,null),document.querySelector(".player_sharing")),A(o(R,null),document.querySelector(".player_sharing"))},1)}},{key:"render",value:function(e,t){return o("section",{className:"dubplus-menu"},o("p",{className:"dubplus-menu-header"},"Dub+ Options"),o(oe,null))}}]),t}();function ie(e,t){for(var n=e.split("."),o=n.length,r=t||window,i=0;i<o;i++){if(void 0===r[n[i]])return!1;r=r[n[i]]}return!0}function se(e,t){for(var n=e.length,o=t||window,r=0;r<n;r++)if(!ie(e[r],o))return console.log(e[r],"is not found yet"),!1;return!0}var ae={fontFamily:"'Trebuchet MS', Helvetica, sans-serif",zIndex:"2147483647",color:"white",position:"fixed",top:"69px",right:"-250px",background:"#222",padding:"10px",lineHeight:1,boxShadow:"0px 0px 5px 0px rgba(0,0,0,0.75)",borderRadius:"5px",overflow:"hidden",width:"230px",transition:"right 200ms"},ue={float:"left",width:"26px",marginRight:"5px"},le={display:"table-cell",width:"10000px",paddingTop:"5px"},ce=function(e){function t(){var e,n,o;P(this,t);for(var r=arguments.length,i=Array(r),s=0;s<r;s++)i[s]=arguments[s];return n=o=L(this,(e=t.__proto__||Object.getPrototypeOf(t)).call.apply(e,[this].concat(i))),o.state={mainStyles:ae},L(o,n)}return j(t,M),E(t,[{key:"componentDidMount",value:function(){var e=this;setTimeout(function(){e.setState(function(e,t){return{mainStyles:Object.assign({},e.mainStyles,{right:"13px"})}})},200)}},{key:"componentWillUnmount",value:function(){this.setState(function(e,t){return{mainStyles:Object.assign({},e.mainStyles,{right:"-250px"})}})}},{key:"render",value:function(e,t){return o("div",{style:t.mainStyles},o("div",{style:ue},o("img",{src:G.srcRoot+"/images/dubplus.svg",alt:"DubPlus icon"})),o("span",{style:le},e.text||"Waiting for Dubtrack..."))}}]),t}(),pe=function(e,t){var n=document.createElement("link");return n.rel="stylesheet",n.type="text/css",n.className=e||"",n.href=t,n};var de={load:function(e,t){if(e){var n=pe(t,G.srcRoot+e+"?1534022392363");document.head.appendChild(n)}},loadExternal:function(e,t){if(e){var n=pe(t,e);document.head.appendChild(n)}}},fe=function(e){function t(){var e,n,o;P(this,t);for(var r=arguments.length,i=Array(r),s=0;s<r;s++)i[s]=arguments[s];return n=o=L(this,(e=t.__proto__||Object.getPrototypeOf(t)).call.apply(e,[this].concat(i))),o.state={open:!1},o.toggle=function(){var e=document.querySelector(".dubplus-menu");o.state.open?(e.classList.add("dubplus-menu-open"),o.setState({open:!1})):(e.classList.remove("dubplus-menu-open"),o.setState({open:!0}))},L(o,n)}return j(t,M),E(t,[{key:"render",value:function(e,t){return o("div",{className:"dubplus-icon",onClick:this.toggle},o("img",{src:G.srcRoot+"/images/dubplus.svg",alt:"DubPlus Icon"}))}}]),t}();setTimeout(function(){var e,t,n,o;de.load("/css/dubplus.css"),de.loadExternal("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"),"undefined"==typeof Promise&&(e="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js",n=document.createElement("script"),o=document.getElementsByTagName("script")[0],n.async=1,n.onload=n.onreadystatechange=function(e,o){(o||!n.readyState||/loaded|complete/.test(n.readyState))&&(n.onload=n.onreadystatechange=null,n=void 0,o||t&&t())},n.src=e,o.parentNode.insertBefore(n,o))},1),A(o(function(e){function t(){var e,n,o;P(this,t);for(var r=arguments.length,i=Array(r),s=0;s<r;s++)i[s]=arguments[s];return n=o=L(this,(e=t.__proto__||Object.getPrototypeOf(t)).call.apply(e,[this].concat(i))),o.state={loading:!0,error:!1,errorMsg:"",failed:!1},L(o,n)}return j(t,M),E(t,[{key:"componentDidMount",value:function(){var e=this;if(window.DubPlus)Dubtrack.session.id?this.showError("Dub+ is already loaded"):this.showError("You're not logged in. Please login to use Dub+.");else{new function(e,t){if("string"==typeof e||Array.isArray(e)){var n=function(){},o=function(){},r=Array.isArray(e)?se:ie,i=Object.assign({},{interval:500,seconds:15},t),s=0,a=1e3*i.seconds/i.interval,u=function t(){return s++,r(e)?n():s<a?void window.setTimeout(t,i.interval):o()};return{then:function(e){return"function"==typeof e&&(n=e),window.setTimeout(u,i.interval),this},fail:function(e){return"function"==typeof e&&(o=e),this}}}console.warn("WaitFor: invalid first argument")}(["Dubtrack.session.id","Dubtrack.room.chat","Dubtrack.Events","Dubtrack.room.player","Dubtrack.helpers.cookie","Dubtrack.room.model","Dubtrack.room.users"],{seconds:120}).then(function(){e.setState({loading:!1,error:!1})}).fail(function(){Dubtrack.session.id?(e.showError("Something happed, refresh and try again"),$.event("Dub+ lib","load","failed")):e.showError("You're not logged in. Please login to use Dub+.")})}}},{key:"showError",value:function(e){this.setState({loading:!1,error:!0,errorMsg:e})}},{key:"render",value:function(e,t){var n=this;return t.loading?o(ce,null):t.error?o(Y,{title:"Dub+ Error",onClose:function(){n.setState({failed:!0,error:!1})},content:t.errorMsg}):t.failed?null:o(re,null)}}]),t}(),null),document.body),A(o(fe,null),document.querySelector(".header-right-navigation"));return{version:"0.1.8",description:"Dub+ - A simple script/extension for Dubtrack.fm",license:"MIT",bugs:"https://github.com/DubPlus/DubPlus/issues"}}();
+var DubPlus = (function () {
+	'use strict';
+
+	var VNode = function VNode() {};
+
+	var options = {};
+
+	var stack = [];
+
+	var EMPTY_CHILDREN = [];
+
+	function h(nodeName, attributes) {
+		var children = EMPTY_CHILDREN,
+		    lastSimple,
+		    child,
+		    simple,
+		    i;
+		for (i = arguments.length; i-- > 2;) {
+			stack.push(arguments[i]);
+		}
+		if (attributes && attributes.children != null) {
+			if (!stack.length) stack.push(attributes.children);
+			delete attributes.children;
+		}
+		while (stack.length) {
+			if ((child = stack.pop()) && child.pop !== undefined) {
+				for (i = child.length; i--;) {
+					stack.push(child[i]);
+				}
+			} else {
+				if (typeof child === 'boolean') child = null;
+
+				if (simple = typeof nodeName !== 'function') {
+					if (child == null) child = '';else if (typeof child === 'number') child = String(child);else if (typeof child !== 'string') simple = false;
+				}
+
+				if (simple && lastSimple) {
+					children[children.length - 1] += child;
+				} else if (children === EMPTY_CHILDREN) {
+					children = [child];
+				} else {
+					children.push(child);
+				}
+
+				lastSimple = simple;
+			}
+		}
+
+		var p = new VNode();
+		p.nodeName = nodeName;
+		p.children = children;
+		p.attributes = attributes == null ? undefined : attributes;
+		p.key = attributes == null ? undefined : attributes.key;
+
+		return p;
+	}
+
+	function extend(obj, props) {
+	  for (var i in props) {
+	    obj[i] = props[i];
+	  }return obj;
+	}
+
+	var defer = typeof Promise == 'function' ? Promise.resolve().then.bind(Promise.resolve()) : setTimeout;
+
+	var IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i;
+
+	var items = [];
+
+	function enqueueRender(component) {
+		if (!component._dirty && (component._dirty = true) && items.push(component) == 1) {
+			(defer)(rerender);
+		}
+	}
+
+	function rerender() {
+		var p,
+		    list = items;
+		items = [];
+		while (p = list.pop()) {
+			if (p._dirty) renderComponent(p);
+		}
+	}
+
+	function isSameNodeType(node, vnode, hydrating) {
+		if (typeof vnode === 'string' || typeof vnode === 'number') {
+			return node.splitText !== undefined;
+		}
+		if (typeof vnode.nodeName === 'string') {
+			return !node._componentConstructor && isNamedNode(node, vnode.nodeName);
+		}
+		return hydrating || node._componentConstructor === vnode.nodeName;
+	}
+
+	function isNamedNode(node, nodeName) {
+		return node.normalizedNodeName === nodeName || node.nodeName.toLowerCase() === nodeName.toLowerCase();
+	}
+
+	function getNodeProps(vnode) {
+		var props = extend({}, vnode.attributes);
+		props.children = vnode.children;
+
+		var defaultProps = vnode.nodeName.defaultProps;
+		if (defaultProps !== undefined) {
+			for (var i in defaultProps) {
+				if (props[i] === undefined) {
+					props[i] = defaultProps[i];
+				}
+			}
+		}
+
+		return props;
+	}
+
+	function createNode(nodeName, isSvg) {
+		var node = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', nodeName) : document.createElement(nodeName);
+		node.normalizedNodeName = nodeName;
+		return node;
+	}
+
+	function removeNode(node) {
+		var parentNode = node.parentNode;
+		if (parentNode) parentNode.removeChild(node);
+	}
+
+	function setAccessor(node, name, old, value, isSvg) {
+		if (name === 'className') name = 'class';
+
+		if (name === 'key') ; else if (name === 'ref') {
+			if (old) old(null);
+			if (value) value(node);
+		} else if (name === 'class' && !isSvg) {
+			node.className = value || '';
+		} else if (name === 'style') {
+			if (!value || typeof value === 'string' || typeof old === 'string') {
+				node.style.cssText = value || '';
+			}
+			if (value && typeof value === 'object') {
+				if (typeof old !== 'string') {
+					for (var i in old) {
+						if (!(i in value)) node.style[i] = '';
+					}
+				}
+				for (var i in value) {
+					node.style[i] = typeof value[i] === 'number' && IS_NON_DIMENSIONAL.test(i) === false ? value[i] + 'px' : value[i];
+				}
+			}
+		} else if (name === 'dangerouslySetInnerHTML') {
+			if (value) node.innerHTML = value.__html || '';
+		} else if (name[0] == 'o' && name[1] == 'n') {
+			var useCapture = name !== (name = name.replace(/Capture$/, ''));
+			name = name.toLowerCase().substring(2);
+			if (value) {
+				if (!old) node.addEventListener(name, eventProxy, useCapture);
+			} else {
+				node.removeEventListener(name, eventProxy, useCapture);
+			}
+			(node._listeners || (node._listeners = {}))[name] = value;
+		} else if (name !== 'list' && name !== 'type' && !isSvg && name in node) {
+			try {
+				node[name] = value == null ? '' : value;
+			} catch (e) {}
+			if ((value == null || value === false) && name != 'spellcheck') node.removeAttribute(name);
+		} else {
+			var ns = isSvg && name !== (name = name.replace(/^xlink:?/, ''));
+
+			if (value == null || value === false) {
+				if (ns) node.removeAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase());else node.removeAttribute(name);
+			} else if (typeof value !== 'function') {
+				if (ns) node.setAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase(), value);else node.setAttribute(name, value);
+			}
+		}
+	}
+
+	function eventProxy(e) {
+		return this._listeners[e.type](e);
+	}
+
+	var mounts = [];
+
+	var diffLevel = 0;
+
+	var isSvgMode = false;
+
+	var hydrating = false;
+
+	function flushMounts() {
+		var c;
+		while (c = mounts.pop()) {
+			if (c.componentDidMount) c.componentDidMount();
+		}
+	}
+
+	function diff(dom, vnode, context, mountAll, parent, componentRoot) {
+		if (!diffLevel++) {
+			isSvgMode = parent != null && parent.ownerSVGElement !== undefined;
+
+			hydrating = dom != null && !('__preactattr_' in dom);
+		}
+
+		var ret = idiff(dom, vnode, context, mountAll, componentRoot);
+
+		if (parent && ret.parentNode !== parent) parent.appendChild(ret);
+
+		if (! --diffLevel) {
+			hydrating = false;
+
+			if (!componentRoot) flushMounts();
+		}
+
+		return ret;
+	}
+
+	function idiff(dom, vnode, context, mountAll, componentRoot) {
+		var out = dom,
+		    prevSvgMode = isSvgMode;
+
+		if (vnode == null || typeof vnode === 'boolean') vnode = '';
+
+		if (typeof vnode === 'string' || typeof vnode === 'number') {
+			if (dom && dom.splitText !== undefined && dom.parentNode && (!dom._component || componentRoot)) {
+				if (dom.nodeValue != vnode) {
+					dom.nodeValue = vnode;
+				}
+			} else {
+				out = document.createTextNode(vnode);
+				if (dom) {
+					if (dom.parentNode) dom.parentNode.replaceChild(out, dom);
+					recollectNodeTree(dom, true);
+				}
+			}
+
+			out['__preactattr_'] = true;
+
+			return out;
+		}
+
+		var vnodeName = vnode.nodeName;
+		if (typeof vnodeName === 'function') {
+			return buildComponentFromVNode(dom, vnode, context, mountAll);
+		}
+
+		isSvgMode = vnodeName === 'svg' ? true : vnodeName === 'foreignObject' ? false : isSvgMode;
+
+		vnodeName = String(vnodeName);
+		if (!dom || !isNamedNode(dom, vnodeName)) {
+			out = createNode(vnodeName, isSvgMode);
+
+			if (dom) {
+				while (dom.firstChild) {
+					out.appendChild(dom.firstChild);
+				}
+				if (dom.parentNode) dom.parentNode.replaceChild(out, dom);
+
+				recollectNodeTree(dom, true);
+			}
+		}
+
+		var fc = out.firstChild,
+		    props = out['__preactattr_'],
+		    vchildren = vnode.children;
+
+		if (props == null) {
+			props = out['__preactattr_'] = {};
+			for (var a = out.attributes, i = a.length; i--;) {
+				props[a[i].name] = a[i].value;
+			}
+		}
+
+		if (!hydrating && vchildren && vchildren.length === 1 && typeof vchildren[0] === 'string' && fc != null && fc.splitText !== undefined && fc.nextSibling == null) {
+			if (fc.nodeValue != vchildren[0]) {
+				fc.nodeValue = vchildren[0];
+			}
+		} else if (vchildren && vchildren.length || fc != null) {
+				innerDiffNode(out, vchildren, context, mountAll, hydrating || props.dangerouslySetInnerHTML != null);
+			}
+
+		diffAttributes(out, vnode.attributes, props);
+
+		isSvgMode = prevSvgMode;
+
+		return out;
+	}
+
+	function innerDiffNode(dom, vchildren, context, mountAll, isHydrating) {
+		var originalChildren = dom.childNodes,
+		    children = [],
+		    keyed = {},
+		    keyedLen = 0,
+		    min = 0,
+		    len = originalChildren.length,
+		    childrenLen = 0,
+		    vlen = vchildren ? vchildren.length : 0,
+		    j,
+		    c,
+		    f,
+		    vchild,
+		    child;
+
+		if (len !== 0) {
+			for (var i = 0; i < len; i++) {
+				var _child = originalChildren[i],
+				    props = _child['__preactattr_'],
+				    key = vlen && props ? _child._component ? _child._component.__key : props.key : null;
+				if (key != null) {
+					keyedLen++;
+					keyed[key] = _child;
+				} else if (props || (_child.splitText !== undefined ? isHydrating ? _child.nodeValue.trim() : true : isHydrating)) {
+					children[childrenLen++] = _child;
+				}
+			}
+		}
+
+		if (vlen !== 0) {
+			for (var i = 0; i < vlen; i++) {
+				vchild = vchildren[i];
+				child = null;
+
+				var key = vchild.key;
+				if (key != null) {
+					if (keyedLen && keyed[key] !== undefined) {
+						child = keyed[key];
+						keyed[key] = undefined;
+						keyedLen--;
+					}
+				} else if (min < childrenLen) {
+						for (j = min; j < childrenLen; j++) {
+							if (children[j] !== undefined && isSameNodeType(c = children[j], vchild, isHydrating)) {
+								child = c;
+								children[j] = undefined;
+								if (j === childrenLen - 1) childrenLen--;
+								if (j === min) min++;
+								break;
+							}
+						}
+					}
+
+				child = idiff(child, vchild, context, mountAll);
+
+				f = originalChildren[i];
+				if (child && child !== dom && child !== f) {
+					if (f == null) {
+						dom.appendChild(child);
+					} else if (child === f.nextSibling) {
+						removeNode(f);
+					} else {
+						dom.insertBefore(child, f);
+					}
+				}
+			}
+		}
+
+		if (keyedLen) {
+			for (var i in keyed) {
+				if (keyed[i] !== undefined) recollectNodeTree(keyed[i], false);
+			}
+		}
+
+		while (min <= childrenLen) {
+			if ((child = children[childrenLen--]) !== undefined) recollectNodeTree(child, false);
+		}
+	}
+
+	function recollectNodeTree(node, unmountOnly) {
+		var component = node._component;
+		if (component) {
+			unmountComponent(component);
+		} else {
+			if (node['__preactattr_'] != null && node['__preactattr_'].ref) node['__preactattr_'].ref(null);
+
+			if (unmountOnly === false || node['__preactattr_'] == null) {
+				removeNode(node);
+			}
+
+			removeChildren(node);
+		}
+	}
+
+	function removeChildren(node) {
+		node = node.lastChild;
+		while (node) {
+			var next = node.previousSibling;
+			recollectNodeTree(node, true);
+			node = next;
+		}
+	}
+
+	function diffAttributes(dom, attrs, old) {
+		var name;
+
+		for (name in old) {
+			if (!(attrs && attrs[name] != null) && old[name] != null) {
+				setAccessor(dom, name, old[name], old[name] = undefined, isSvgMode);
+			}
+		}
+
+		for (name in attrs) {
+			if (name !== 'children' && name !== 'innerHTML' && (!(name in old) || attrs[name] !== (name === 'value' || name === 'checked' ? dom[name] : old[name]))) {
+				setAccessor(dom, name, old[name], old[name] = attrs[name], isSvgMode);
+			}
+		}
+	}
+
+	var recyclerComponents = [];
+
+	function createComponent(Ctor, props, context) {
+		var inst,
+		    i = recyclerComponents.length;
+
+		if (Ctor.prototype && Ctor.prototype.render) {
+			inst = new Ctor(props, context);
+			Component.call(inst, props, context);
+		} else {
+			inst = new Component(props, context);
+			inst.constructor = Ctor;
+			inst.render = doRender;
+		}
+
+		while (i--) {
+			if (recyclerComponents[i].constructor === Ctor) {
+				inst.nextBase = recyclerComponents[i].nextBase;
+				recyclerComponents.splice(i, 1);
+				return inst;
+			}
+		}
+
+		return inst;
+	}
+
+	function doRender(props, state, context) {
+		return this.constructor(props, context);
+	}
+
+	function setComponentProps(component, props, renderMode, context, mountAll) {
+		if (component._disable) return;
+		component._disable = true;
+
+		component.__ref = props.ref;
+		component.__key = props.key;
+		delete props.ref;
+		delete props.key;
+
+		if (typeof component.constructor.getDerivedStateFromProps === 'undefined') {
+			if (!component.base || mountAll) {
+				if (component.componentWillMount) component.componentWillMount();
+			} else if (component.componentWillReceiveProps) {
+				component.componentWillReceiveProps(props, context);
+			}
+		}
+
+		if (context && context !== component.context) {
+			if (!component.prevContext) component.prevContext = component.context;
+			component.context = context;
+		}
+
+		if (!component.prevProps) component.prevProps = component.props;
+		component.props = props;
+
+		component._disable = false;
+
+		if (renderMode !== 0) {
+			if (renderMode === 1 || options.syncComponentUpdates !== false || !component.base) {
+				renderComponent(component, 1, mountAll);
+			} else {
+				enqueueRender(component);
+			}
+		}
+
+		if (component.__ref) component.__ref(component);
+	}
+
+	function renderComponent(component, renderMode, mountAll, isChild) {
+		if (component._disable) return;
+
+		var props = component.props,
+		    state = component.state,
+		    context = component.context,
+		    previousProps = component.prevProps || props,
+		    previousState = component.prevState || state,
+		    previousContext = component.prevContext || context,
+		    isUpdate = component.base,
+		    nextBase = component.nextBase,
+		    initialBase = isUpdate || nextBase,
+		    initialChildComponent = component._component,
+		    skip = false,
+		    snapshot = previousContext,
+		    rendered,
+		    inst,
+		    cbase;
+
+		if (component.constructor.getDerivedStateFromProps) {
+			state = extend(extend({}, state), component.constructor.getDerivedStateFromProps(props, state));
+			component.state = state;
+		}
+
+		if (isUpdate) {
+			component.props = previousProps;
+			component.state = previousState;
+			component.context = previousContext;
+			if (renderMode !== 2 && component.shouldComponentUpdate && component.shouldComponentUpdate(props, state, context) === false) {
+				skip = true;
+			} else if (component.componentWillUpdate) {
+				component.componentWillUpdate(props, state, context);
+			}
+			component.props = props;
+			component.state = state;
+			component.context = context;
+		}
+
+		component.prevProps = component.prevState = component.prevContext = component.nextBase = null;
+		component._dirty = false;
+
+		if (!skip) {
+			rendered = component.render(props, state, context);
+
+			if (component.getChildContext) {
+				context = extend(extend({}, context), component.getChildContext());
+			}
+
+			if (isUpdate && component.getSnapshotBeforeUpdate) {
+				snapshot = component.getSnapshotBeforeUpdate(previousProps, previousState);
+			}
+
+			var childComponent = rendered && rendered.nodeName,
+			    toUnmount,
+			    base;
+
+			if (typeof childComponent === 'function') {
+
+				var childProps = getNodeProps(rendered);
+				inst = initialChildComponent;
+
+				if (inst && inst.constructor === childComponent && childProps.key == inst.__key) {
+					setComponentProps(inst, childProps, 1, context, false);
+				} else {
+					toUnmount = inst;
+
+					component._component = inst = createComponent(childComponent, childProps, context);
+					inst.nextBase = inst.nextBase || nextBase;
+					inst._parentComponent = component;
+					setComponentProps(inst, childProps, 0, context, false);
+					renderComponent(inst, 1, mountAll, true);
+				}
+
+				base = inst.base;
+			} else {
+				cbase = initialBase;
+
+				toUnmount = initialChildComponent;
+				if (toUnmount) {
+					cbase = component._component = null;
+				}
+
+				if (initialBase || renderMode === 1) {
+					if (cbase) cbase._component = null;
+					base = diff(cbase, rendered, context, mountAll || !isUpdate, initialBase && initialBase.parentNode, true);
+				}
+			}
+
+			if (initialBase && base !== initialBase && inst !== initialChildComponent) {
+				var baseParent = initialBase.parentNode;
+				if (baseParent && base !== baseParent) {
+					baseParent.replaceChild(base, initialBase);
+
+					if (!toUnmount) {
+						initialBase._component = null;
+						recollectNodeTree(initialBase, false);
+					}
+				}
+			}
+
+			if (toUnmount) {
+				unmountComponent(toUnmount);
+			}
+
+			component.base = base;
+			if (base && !isChild) {
+				var componentRef = component,
+				    t = component;
+				while (t = t._parentComponent) {
+					(componentRef = t).base = base;
+				}
+				base._component = componentRef;
+				base._componentConstructor = componentRef.constructor;
+			}
+		}
+
+		if (!isUpdate || mountAll) {
+			mounts.unshift(component);
+		} else if (!skip) {
+
+			if (component.componentDidUpdate) {
+				component.componentDidUpdate(previousProps, previousState, snapshot);
+			}
+		}
+
+		while (component._renderCallbacks.length) {
+			component._renderCallbacks.pop().call(component);
+		}if (!diffLevel && !isChild) flushMounts();
+	}
+
+	function buildComponentFromVNode(dom, vnode, context, mountAll) {
+		var c = dom && dom._component,
+		    originalComponent = c,
+		    oldDom = dom,
+		    isDirectOwner = c && dom._componentConstructor === vnode.nodeName,
+		    isOwner = isDirectOwner,
+		    props = getNodeProps(vnode);
+		while (c && !isOwner && (c = c._parentComponent)) {
+			isOwner = c.constructor === vnode.nodeName;
+		}
+
+		if (c && isOwner && (!mountAll || c._component)) {
+			setComponentProps(c, props, 3, context, mountAll);
+			dom = c.base;
+		} else {
+			if (originalComponent && !isDirectOwner) {
+				unmountComponent(originalComponent);
+				dom = oldDom = null;
+			}
+
+			c = createComponent(vnode.nodeName, props, context);
+			if (dom && !c.nextBase) {
+				c.nextBase = dom;
+
+				oldDom = null;
+			}
+			setComponentProps(c, props, 1, context, mountAll);
+			dom = c.base;
+
+			if (oldDom && dom !== oldDom) {
+				oldDom._component = null;
+				recollectNodeTree(oldDom, false);
+			}
+		}
+
+		return dom;
+	}
+
+	function unmountComponent(component) {
+
+		var base = component.base;
+
+		component._disable = true;
+
+		if (component.componentWillUnmount) component.componentWillUnmount();
+
+		component.base = null;
+
+		var inner = component._component;
+		if (inner) {
+			unmountComponent(inner);
+		} else if (base) {
+			if (base['__preactattr_'] && base['__preactattr_'].ref) base['__preactattr_'].ref(null);
+
+			component.nextBase = base;
+
+			removeNode(base);
+			recyclerComponents.push(component);
+
+			removeChildren(base);
+		}
+
+		if (component.__ref) component.__ref(null);
+	}
+
+	function Component(props, context) {
+		this._dirty = true;
+
+		this.context = context;
+
+		this.props = props;
+
+		this.state = this.state || {};
+
+		this._renderCallbacks = [];
+	}
+
+	extend(Component.prototype, {
+		setState: function setState(state, callback) {
+			if (!this.prevState) this.prevState = this.state;
+			this.state = extend(extend({}, this.state), typeof state === 'function' ? state(this.state, this.props) : state);
+			if (callback) this._renderCallbacks.push(callback);
+			enqueueRender(this);
+		},
+		forceUpdate: function forceUpdate(callback) {
+			if (callback) this._renderCallbacks.push(callback);
+			renderComponent(this, 2);
+		},
+		render: function render() {}
+	});
+
+	function render(vnode, parent, merge) {
+	  return diff(merge, vnode, {}, false, parent, false);
+	}
+
+	var classCallCheck = function (instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	};
+
+	var createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];
+	      descriptor.enumerable = descriptor.enumerable || false;
+	      descriptor.configurable = true;
+	      if ("value" in descriptor) descriptor.writable = true;
+	      Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }
+
+	  return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+	    if (staticProps) defineProperties(Constructor, staticProps);
+	    return Constructor;
+	  };
+	}();
+
+	var inherits = function (subClass, superClass) {
+	  if (typeof superClass !== "function" && superClass !== null) {
+	    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+	  }
+
+	  subClass.prototype = Object.create(superClass && superClass.prototype, {
+	    constructor: {
+	      value: subClass,
+	      enumerable: false,
+	      writable: true,
+	      configurable: true
+	    }
+	  });
+	  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+	};
+
+	var possibleConstructorReturn = function (self, call) {
+	  if (!self) {
+	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+	  }
+
+	  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+	};
+
+	/**
+	 * Snooze
+	 * Mutes audio for one song.
+	 *
+	 * This module is not a menu item, it is always automatically run on load
+	 */
+
+	/*global Dubtrack*/
+	var eventUtils = {
+	  currentVol: 50,
+	  snoozed: false
+	};
+
+	var eventSongAdvance = function eventSongAdvance(e) {
+	  if (e.startTime < 2) {
+	    if (eventUtils.snoozed) {
+	      Dubtrack.room.player.setVolume(eventUtils.currentVol);
+	      eventUtils.snoozed = false;
+	    }
+	    return true;
+	  }
+	};
+
+	var snooze = function snooze() {
+	  if (!eventUtils.snoozed && !Dubtrack.room.player.muted_player && Dubtrack.playerController.volume > 2) {
+	    eventUtils.currentVol = Dubtrack.playerController.volume;
+	    Dubtrack.room.player.mutePlayer();
+	    eventUtils.snoozed = true;
+	    Dubtrack.Events.bind("realtime:room_playlist-update", eventSongAdvance);
+	  } else if (eventUtils.snoozed) {
+	    Dubtrack.room.player.setVolume(eventUtils.currentVol);
+	    Dubtrack.room.player.updateVolumeBar();
+	    eventUtils.snoozed = false;
+	  }
+	};
+
+	var css = {
+	  position: 'absolute',
+	  font: '1rem/1.5 proxima-nova,sans-serif',
+	  display: 'block',
+	  left: '-33px',
+	  cursor: 'pointer',
+	  borderRadius: '1.5rem',
+	  padding: '8px 16px',
+	  background: '#fff',
+	  fontWeight: '700',
+	  fontSize: '13.6px',
+	  textTransform: 'uppercase',
+	  color: '#000',
+	  opacity: '0.8',
+	  textAlign: 'center',
+	  zIndex: '9'
+	};
+
+	var Snooze = function (_Component) {
+	  inherits(Snooze, _Component);
+
+	  function Snooze() {
+	    var _ref;
+
+	    var _temp, _this, _ret;
+
+	    classCallCheck(this, Snooze);
+
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = Snooze.__proto__ || Object.getPrototypeOf(Snooze)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+	      show: false
+	    }, _this.showTooltip = function () {
+	      _this.setState({ show: true });
+	    }, _this.hideTooltip = function () {
+	      _this.setState({ show: false });
+	    }, _temp), possibleConstructorReturn(_this, _ret);
+	  }
+
+	  createClass(Snooze, [{
+	    key: 'render',
+	    value: function render$$1(props, state) {
+	      return h(
+	        'span',
+	        { className: 'icon-mute snooze_btn',
+	          onClick: snooze,
+	          onMouseOver: this.showTooltip,
+	          onMouseOut: this.hideTooltip },
+	        state.show && h(
+	          'div',
+	          { className: 'snooze_tooltip', style: css },
+	          'Mute current song'
+	        )
+	      );
+	    }
+	  }]);
+	  return Snooze;
+	}(Component);
+
+	function snooze$1 () {
+	  render(h(Snooze, null), document.querySelector('.player_sharing'));
+	}
+
+	/**
+	 * ETA
+	 *
+	 * This module is not a menu item, it is run once on load
+	 */
+
+	var css$1 = {
+	  position: 'absolute',
+	  font: '1rem/1.5 proxima-nova,sans-serif',
+	  display: 'block',
+	  left: '-33px',
+	  cursor: 'pointer',
+	  borderRadius: '1.5rem',
+	  padding: '8px 16px',
+	  background: '#fff',
+	  fontWeight: '700',
+	  fontSize: '13.6px',
+	  textTransform: 'uppercase',
+	  color: '#000',
+	  opacity: '0.8',
+	  textAlign: 'center',
+	  zIndex: '9'
+	};
+
+	var ETA = function (_Component) {
+	  inherits(ETA, _Component);
+
+	  function ETA() {
+	    var _ref;
+
+	    var _temp, _this, _ret;
+
+	    classCallCheck(this, ETA);
+
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = ETA.__proto__ || Object.getPrototypeOf(ETA)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+	      show: false,
+	      booth_time: ''
+	    }, _this.showTooltip = function () {
+	      var tooltipText = _this.getEta();
+	      _this.setState({
+	        show: true,
+	        booth_time: tooltipText
+	      });
+	    }, _this.hideTooltip = function () {
+	      _this.setState({ show: false });
+	    }, _temp), possibleConstructorReturn(_this, _ret);
+	  }
+
+	  createClass(ETA, [{
+	    key: 'getEta',
+	    value: function getEta() {
+	      var time = 4;
+	      var current_time = parseInt(document.querySelector('#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min').textContent);
+	      var booth_duration = parseInt(document.querySelector('.queue-position').textContent);
+	      var booth_time = booth_duration * time - time + current_time;
+	      return booth_time >= 0 ? booth_time : 'You\'re not in the queue';
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render$$1(props, state) {
+	      return h(
+	        'span',
+	        { className: 'icon-history eta_tooltip_t',
+	          onMouseOver: this.showTooltip,
+	          onMouseOut: this.hideTooltip },
+	        this.state.show && h(
+	          'span',
+	          { className: 'eta_tooltip', style: css$1 },
+	          this.state.booth_time
+	        )
+	      );
+	    }
+	  }]);
+	  return ETA;
+	}(Component);
+
+	function eta () {
+	  render(h(ETA, null), document.querySelector('.player_sharing'));
+	}
+
+	function SectionHeader(props) {
+	  return h(
+	    "div",
+	    { id: props.id, className: "dubplus-menu-section-header" },
+	    h("span", { className: "fa fa-angle-" + props.arrow }),
+	    h(
+	      "p",
+	      null,
+	      props.category
+	    )
+	  );
+	}
+
+	/**
+	 * global State handler
+	 */
+
+	var defaults$1 = {
+	  "menu": {
+	    "general": "open",
+	    "user-interface": "open",
+	    "settings": "open",
+	    "customize": "open",
+	    "contact": "open"
+	  },
+
+	  "options": {
+	    "dubplus-autovote": false,
+	    "dubplus-emotes": false,
+	    "dubplus-autocomplete": false,
+	    "mention_notifications": false,
+	    "dubplus_pm_notifications": false,
+	    "dj-notification": false,
+	    "dubplus-dubs-hover": false,
+	    "dubplus-downdubs": false,
+	    "dubplus-grabschat": false,
+	    "dubplus-split-chat": false,
+	    "dubplus-show-timestamp": false,
+	    "dubplus-hide-bg": false,
+	    "dubplus-hide-avatars": false,
+	    "dubplus-chat-only": false,
+	    "dubplus-video-only": false,
+	    "warn_redirect": false,
+	    "dubplus-comm-theme": false,
+	    "dubplus-afk": false,
+	    "dubplus-snow": false,
+	    "dubplus-custom-css": false
+	  },
+
+	  "custom": {
+	    "customAfkMessage": "",
+	    "dj_notification": 1,
+	    "css": ""
+	  }
+	};
+
+	var UserSettings = function () {
+	  function UserSettings() {
+	    classCallCheck(this, UserSettings);
+	    this.srcRoot = "https://rawgit.com/FranciscoG/DubPlus/preact-version";
+
+	    var _savedSettings = localStorage.getItem('dubplusUserSettings');
+	    if (_savedSettings) {
+	      try {
+	        var storedOpts = JSON.parse(_savedSettings);
+	        this.stored = Object.assign({}, defaults$1, storedOpts);
+	      } catch (err) {
+	        this.stored = defaults$1;
+	      }
+	    } else {
+	      this.stored = defaults$1;
+	    }
+	  }
+
+	  /**
+	   * Save your settings value to memory and localStorage
+	   * @param {String} type The section of the stored values. i.e. "menu", "options", "custom"
+	   * @param {String} optionName the key name of the option to store
+	   * @param {String|Boolean} value the new setting value to store
+	   */
+
+
+	  createClass(UserSettings, [{
+	    key: "save",
+	    value: function save(type, optionName, value) {
+	      this.stored[type][optionName] = value;
+	      try {
+	        localStorage.setItem('dubplusUserSettings', JSON.stringify(this.stored));
+	      } catch (err) {
+	        console.error("an error occured saving dubplus to localStorage", err);
+	      }
+	    }
+	  }]);
+	  return UserSettings;
+	}();
+
+	var userSettings = new UserSettings();
+
+	/**
+	 * Modal used to display messages and also capture data
+	 * 
+	 * @prop  {string} title       title that shows at the top of the modal
+	 * @prop  {string} content     A descriptive message on what the modal is for
+	 * @prop  {string} placeholder placeholder for the textarea
+	 * @prop  {function} onConfirm  runs when user clicks confirm button.
+	 * @prop  {function} onClose  runs when user clicks close button
+	 * @prop  {number} maxlength   for the textarea maxlength attribute
+	 */
+
+	var Modal = function (_Component) {
+	  inherits(Modal, _Component);
+
+	  function Modal() {
+	    var _ref;
+
+	    var _temp, _this, _ret;
+
+	    classCallCheck(this, Modal);
+
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = Modal.__proto__ || Object.getPrototypeOf(Modal)).call.apply(_ref, [this].concat(args))), _this), _this.keyUpHandler = function (e) {
+	      // save and close when user presses enter
+	      // considering removing this though
+	      if (e.keyCode === 13) {
+	        _this.props.onConfirm(_this.textarea.value);
+	        _this.props.onClose();
+	      }
+	      // close modal when user hits the esc key
+	      if (e.keyCode === 27) {
+	        _this.props.onClose();
+	      }
+	    }, _this.confirmClick = function () {
+	      _this.props.onConfirm(_this.textarea.value);
+	      _this.props.onClose();
+	    }, _temp), possibleConstructorReturn(_this, _ret);
+	  }
+
+	  createClass(Modal, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      document.addEventListener('keyup', this.keyUpHandler);
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      document.removeEventListener('keyup', this.keyUpHandler);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render$$1(props, state) {
+	      var _this2 = this;
+
+	      var closeButtonText = !props.onConfirm ? 'close' : 'cancel';
+
+	      return h(
+	        'div',
+	        { className: 'dp-modal' },
+	        h(
+	          'aside',
+	          { className: 'container' },
+	          h(
+	            'div',
+	            { className: 'title' },
+	            h(
+	              'h1',
+	              null,
+	              ' ',
+	              props.title || 'Dub+'
+	            )
+	          ),
+	          h(
+	            'div',
+	            { className: 'content' },
+	            h(
+	              'p',
+	              null,
+	              props.content || ''
+	            ),
+	            props.placeholder && h(
+	              'textarea',
+	              {
+	                ref: function ref(c) {
+	                  return _this2.textarea = c;
+	                },
+	                placeholder: props.placeholder, maxlength: props.maxlength || 999 },
+	              props.value || ''
+	            )
+	          ),
+	          h(
+	            'div',
+	            { className: 'dp-modal-buttons' },
+	            h(
+	              'button',
+	              { id: 'dp-modal-cancel', onClick: props.onClose },
+	              closeButtonText
+	            ),
+	            props.onConfirm && h(
+	              'button',
+	              { id: 'dp-modal-confirm', onClick: this.confirmClick },
+	              'okay'
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }]);
+	  return Modal;
+	}(Component);
+
+	/**
+	 * Class wrapper for Google Analytics
+	 */
+
+	// shim just in case blocked by an adblocker or something
+	var ga = window.ga || function () {};
+
+	var GA = function () {
+	  function GA(uid) {
+	    classCallCheck(this, GA);
+
+	    ga('create', uid, 'auto', 'dubplusTracker');
+	  }
+
+	  // https://developers.google.com/analytics/devguides/collection/analyticsjs/events
+
+
+	  createClass(GA, [{
+	    key: 'event',
+	    value: function event(eventCategory, eventAction, eventLabel, eventValue) {
+	      ga('dubplusTracker.send', 'event', eventCategory, eventAction, eventLabel, eventValue);
+	    }
+
+	    /**
+	     * Use this method to track clicking on a menu item
+	     * @param {String} menuSection The menu section's title will be used for the event Category
+	     * @param {String} menuItem The ID of the menu item will be used for the event label
+	     * @param {Number} [onOff] optional - should be 1 or 0 representing on or off state of the menu item
+	     */
+
+	  }, {
+	    key: 'menuClick',
+	    value: function menuClick(menuSection, menuItem, onOff) {
+	      this.event(menuSection, 'click', menuItem, onOff);
+	    }
+	  }]);
+	  return GA;
+	}();
+
+	var track = new GA('UA-116652541-1');
+
+	var Portal = require('preact-portal');
+
+	/**
+	 * Component which brings up a modal box to allow user to
+	 * input and store a text value which will be used by the
+	 * parent menu item.
+	 *
+	 * MenuPencil must always by a child of MenuSwitch.
+	 */
+	var MenuPencil = function (_Component) {
+	  inherits(MenuPencil, _Component);
+
+	  function MenuPencil() {
+	    var _ref;
+
+	    var _temp, _this, _ret;
+
+	    classCallCheck(this, MenuPencil);
+
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = MenuPencil.__proto__ || Object.getPrototypeOf(MenuPencil)).call.apply(_ref, [this].concat(args))), _this), _this.loadModal = function () {
+	      _this.setState({ open: true });
+	      track.menuClick(_this.props.section + ' section', _this.props.id + ' edit');
+	    }, _this.closeModal = function () {
+	      _this.setState({ open: false });
+	    }, _temp), possibleConstructorReturn(_this, _ret);
+	  }
+
+	  createClass(MenuPencil, [{
+	    key: 'render',
+	    value: function render$$1(props, _ref2) {
+	      var open = _ref2.open;
+
+	      return h(
+	        'span',
+	        { onClick: this.loadModal, className: 'fa fa-pencil extra-icon' },
+	        open ? h(
+	          Portal,
+	          { into: 'body' },
+	          h(Modal, { title: props.title || 'Dub+ option',
+	            content: props.content || 'Please enter a value',
+	            placeholder: props.placeholder || 'in here',
+	            value: props.value,
+	            onConfirm: props.onConfirm,
+	            onClose: this.closeModal })
+	        ) : null
+	      );
+	    }
+	  }]);
+	  return MenuPencil;
+	}(Component);
+
+	var MenuSwitch = function (_Component2) {
+	  inherits(MenuSwitch, _Component2);
+
+	  function MenuSwitch() {
+	    var _ref3;
+
+	    var _temp2, _this2, _ret2;
+
+	    classCallCheck(this, MenuSwitch);
+
+	    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+	      args[_key2] = arguments[_key2];
+	    }
+
+	    return _ret2 = (_temp2 = (_this2 = possibleConstructorReturn(this, (_ref3 = MenuSwitch.__proto__ || Object.getPrototypeOf(MenuSwitch)).call.apply(_ref3, [this].concat(args))), _this2), _this2.state = {
+	      on: userSettings.stored.options[_this2.props.id] || false
+	    }, _this2.switchOn = function () {
+	      _this2.props.turnOn();
+	      userSettings.save('options', _this2.props.id, true);
+	      _this2.setState({ on: true });
+	      track.menuClick(_this2.props.section + ' section', _this2.props.id + ' on');
+	    }, _this2.switchOff = function () {
+	      _this2.props.turnOff();
+	      userSettings.save('options', _this2.props.id, false);
+	      _this2.setState({ on: false });
+	      track.menuClick(_this2.props.section + ' section', _this2.props.id + ' off');
+	    }, _this2.toggleSwitch = function () {
+	      if (_this2.state.on) {
+	        _this2.switchOff();
+	      } else {
+	        _this2.switchOn();
+	      }
+	    }, _temp2), possibleConstructorReturn(_this2, _ret2);
+	  }
+
+	  createClass(MenuSwitch, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      if (this.state.on) {
+	        this.props.turnOn();
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render$$1(props, state) {
+	      var _cn = ["dubplus-switch"];
+	      if (state.on) {
+	        _cn.push('dubplus-switch-on');
+	      }
+	      // combine with ones that were passed through
+	      if (props.className) {
+	        _cn.push(props.className);
+	      }
+
+	      return h(
+	        'li',
+	        { id: props.id,
+	          title: props.desc,
+	          className: _cn.join(' ') },
+	        props.children || [],
+	        h(
+	          'div',
+	          { onClick: this.toggleSwitch, className: 'dubplus-form-control' },
+	          h(
+	            'div',
+	            { 'class': 'dubplus-switch-bg' },
+	            h('div', { 'class': 'dubplus-switcher' })
+	          ),
+	          h(
+	            'span',
+	            { className: 'dubplus-menu-label' },
+	            props.menuTitle
+	          )
+	        )
+	      );
+	    }
+	  }]);
+	  return MenuSwitch;
+	}(Component);
+
+	/**
+	 * 
+	 * Away From Keyboard autoresponder
+	 * 
+	 * TODO: setup global state manager
+	 */
+
+	var AFK = function (_Component) {
+	  inherits(AFK, _Component);
+
+	  function AFK() {
+	    var _ref;
+
+	    var _temp, _this, _ret;
+
+	    classCallCheck(this, AFK);
+
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = AFK.__proto__ || Object.getPrototypeOf(AFK)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+	      canSend: true
+	    }, _this.afk_chat_respond = function (e) {
+	      if (!_this.state.canSend) {
+	        return; // do nothing until it's back to true
+	      }
+	      var content = e.message;
+	      var user = Dubtrack.session.get('username');
+
+	      if (content.indexOf('@' + user) > -1 && Dubtrack.session.id !== e.user.userInfo.userid) {
+	        var chatInput = document.getElementById('chat-txt-message');
+	        if (userSettings.stored.custom.customAfkMessage) {
+	          chatInput.value = '[AFK] ' + userSettings.stored.custom.customAfkMessage;
+	        } else {
+	          chatInput.value = "[AFK] I'm not here right now.";
+	        }
+
+	        Dubtrack.room.chat.sendMessage();
+
+	        // so we don't spam chat, we pause the auto respond for 30sec
+	        _this.setState({ canSend: false });
+
+	        // allow AFK responses after 30sec
+	        setTimeout(function () {
+	          _this.setState({ canSend: true });
+	        }, 30000);
+	      }
+	    }, _temp), possibleConstructorReturn(_this, _ret);
+	  }
+
+	  createClass(AFK, [{
+	    key: 'turnOn',
+	    value: function turnOn() {
+	      Dubtrack.Events.bind("realtime:chat-message", this.afk_chat_respond);
+	    }
+	  }, {
+	    key: 'turnOff',
+	    value: function turnOff() {
+	      Dubtrack.Events.unbind("realtime:chat-message", this.afk_chat_respond);
+	    }
+	  }, {
+	    key: 'saveAFKmessage',
+	    value: function saveAFKmessage(val) {
+	      if (val !== '') {
+	        // TODO: save to global state
+	        userSettings.save('custom', 'customAfkMessage', val);
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render$$1(props, state) {
+	      return h(
+	        MenuSwitch,
+	        {
+	          id: 'dubplus-afk',
+	          section: 'General',
+	          menuTitle: 'AFK Auto-respond',
+	          desc: 'Toggle Away from Keyboard and customize AFK message.',
+	          turnOn: this.turnOn,
+	          turnOff: this.turnOff },
+	        h(MenuPencil, {
+	          title: 'Custom AFK Message',
+	          section: 'General',
+	          content: 'Enter a custom Away From Keyboard [AFK] message here',
+	          value: userSettings.stored.custom.customAfkMessage || '',
+	          placeholder: 'Be right back!',
+	          maxlength: '255',
+	          onConfirm: this.saveAFKmessage })
+	      );
+	    }
+	  }]);
+	  return AFK;
+	}(Component);
+
+	/**
+	 * Menu item for Autovote
+	 */
+
+	var Autovote = function (_Component) {
+	  inherits(Autovote, _Component);
+
+	  function Autovote() {
+	    classCallCheck(this, Autovote);
+
+	    var _this = possibleConstructorReturn(this, (Autovote.__proto__ || Object.getPrototypeOf(Autovote)).call(this));
+
+	    _this.advance_vote = function () {
+	      var event = document.createEvent('HTMLEvents');
+	      event.initEvent('click', true, false);
+	      _this.dubup.dispatchEvent(event);
+	    };
+
+	    _this.voteCheck = function (obj) {
+	      if (obj.startTime < 2) {
+	        _this.advance_vote();
+	      }
+	    };
+
+	    _this.turnOn = function (e) {
+	      var song = Dubtrack.room.player.activeSong.get('song');
+	      var dubCookie = Dubtrack.helpers.cookie.get('dub-' + Dubtrack.room.model.get("_id"));
+	      var dubsong = Dubtrack.helpers.cookie.get('dub-song');
+
+	      if (!Dubtrack.room || !song || song.songid !== dubsong) {
+	        dubCookie = false;
+	      }
+
+	      // Only cast the vote if user hasn't already voted
+	      if (!_this.dubup.classList.contains('voted') && !_this.dubdown.classList.contains('voted') && !dubCookie) {
+	        _this.advance_vote();
+	      }
+
+	      Dubtrack.Events.bind("realtime:room_playlist-update", _this.voteCheck);
+	    };
+
+	    _this.turnOff = function (e) {
+	      Dubtrack.Events.unbind("realtime:room_playlist-update", _this.voteCheck);
+	    };
+
+	    _this.dubup = document.querySelector('.dubup');
+	    _this.dubdown = document.querySelector('.dubdown');
+	    return _this;
+	  }
+
+	  createClass(Autovote, [{
+	    key: 'render',
+	    value: function render$$1(props, state) {
+	      return h(MenuSwitch, {
+	        id: 'dubplus-autovote',
+	        section: 'General',
+	        menuTitle: 'Autovote',
+	        desc: 'Toggles auto upvoting for every song',
+	        turnOn: this.turnOn,
+	        turnOff: this.turnOff });
+	    }
+	  }]);
+	  return Autovote;
+	}(Component);
+
+	/** Redirect rendering of descendants into the given CSS selector.
+	 *  @example
+	 *    <Portal into="body">
+	 *      <div>I am rendered into document.body</div>
+	 *    </Portal>
+	 */
+
+	var Portal$1 = function (_Component) {
+	  inherits(Portal, _Component);
+
+	  function Portal() {
+	    classCallCheck(this, Portal);
+	    return possibleConstructorReturn(this, (Portal.__proto__ || Object.getPrototypeOf(Portal)).apply(this, arguments));
+	  }
+
+	  createClass(Portal, [{
+	    key: 'componentDidUpdate',
+	    value: function componentDidUpdate(props) {
+	      for (var i in props) {
+	        if (props[i] !== this.props[i]) {
+	          return setTimeout(this.renderLayer);
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.isMounted = true;
+	      this.renderLayer = this.renderLayer.bind(this);
+	      this.renderLayer();
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      this.renderLayer(false);
+	      this.isMounted = false;
+	      if (this.remote) this.remote.parentNode.removeChild(this.remote);
+	    }
+	  }, {
+	    key: 'findNode',
+	    value: function findNode(node) {
+	      return typeof node === 'string' ? document.querySelector(node) : node;
+	    }
+	  }, {
+	    key: 'renderLayer',
+	    value: function renderLayer() {
+	      var show = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
+	      if (!this.isMounted) return;
+
+	      // clean up old node if moving bases:
+	      if (this.props.into !== this.intoPointer) {
+	        this.intoPointer = this.props.into;
+	        if (this.into && this.remote) {
+	          this.remote = render(h(PortalProxy, null), this.into, this.remote);
+	        }
+	        this.into = this.findNode(this.props.into);
+	      }
+
+	      this.remote = render(h(
+	        PortalProxy,
+	        { context: this.context },
+	        show && this.props.children || null
+	      ), this.into, this.remote);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render$$1() {
+	      return null;
+	    }
+	  }]);
+	  return Portal;
+	}(Component);
+
+	var PortalProxy = function (_Component2) {
+	  inherits(PortalProxy, _Component2);
+
+	  function PortalProxy() {
+	    classCallCheck(this, PortalProxy);
+	    return possibleConstructorReturn(this, (PortalProxy.__proto__ || Object.getPrototypeOf(PortalProxy)).apply(this, arguments));
+	  }
+
+	  createClass(PortalProxy, [{
+	    key: 'getChildContext',
+	    value: function getChildContext() {
+	      return this.props.context;
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render$$1(_ref) {
+	      var children = _ref.children;
+
+	      return children && children[0] || null;
+	    }
+	  }]);
+	  return PortalProxy;
+	}(Component);
+
+	/**********************************************************************
+	 * Autocomplete Emoji / Emotes
+	 * Brings up a small window above the chat input to help the user
+	 * pick emoji/emotes
+	 */
+
+	/*
+	TODO: 
+	 - Create the hidden preview component
+	 - listen to the chat input for the beginning of possible emotes
+	 - if found:
+	   - open preview/picker window
+	   - hijack arrow keys to make it move around the preview window
+	   - moving around auto completes the text
+	   - typing continues to filter
+	*/
+
+	var AutocompleteEmoji = function (_Component) {
+	  inherits(AutocompleteEmoji, _Component);
+
+	  function AutocompleteEmoji() {
+	    var _ref;
+
+	    var _temp, _this, _ret;
+
+	    classCallCheck(this, AutocompleteEmoji);
+
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = AutocompleteEmoji.__proto__ || Object.getPrototypeOf(AutocompleteEmoji)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+	      open: false
+	    }, _this.turnOn = function (e) {}, _this.turnOff = function (e) {}, _temp), possibleConstructorReturn(_this, _ret);
+	  }
+
+	  createClass(AutocompleteEmoji, [{
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
+	      this.renderTo = document.querySelector('.pusher-chat-widget-input');
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render$$1(props, _ref2) {
+	      var open = _ref2.open;
+
+	      return h(
+	        MenuSwitch,
+	        {
+	          id: 'dubplus-emotes',
+	          section: 'General',
+	          menuTitle: 'Autocomplete Emoji',
+	          desc: 'Quick find and insert emojis and emotes while typing in the chat input',
+	          turnOn: this.turnOn,
+	          turnOff: this.turnOff },
+	        open ? h(Portal$1, { into: this.renderTo }) : null
+	      );
+	    }
+	  }]);
+	  return AutocompleteEmoji;
+	}(Component);
+
+	/**
+	 * Custom mentions
+	 */
+
+	var CustomMentions = function (_Component) {
+	  inherits(CustomMentions, _Component);
+
+	  function CustomMentions() {
+	    var _ref;
+
+	    var _temp, _this, _ret;
+
+	    classCallCheck(this, CustomMentions);
+
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = CustomMentions.__proto__ || Object.getPrototypeOf(CustomMentions)).call.apply(_ref, [this].concat(args))), _this), _this.customMentionCheck = function (e) {
+	      var content = e.message;
+	      if (userSettings.custom.custom_mentions) {
+	        var customMentions = userSettings.custom.custom_mentions.split(',');
+	        var inUsers = customMentions.some(function (v) {
+	          var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
+	          return reg.test(content);
+	        });
+	        if (Dubtrack.session.id !== e.user.userInfo.userid && inUsers) {
+	          Dubtrack.room.chat.mentionChatSound.play();
+	        }
+	      }
+	    }, _this.saveCustomMentions = function (val) {
+	      if (val !== '') {
+	        // TODO: save to global state
+	        userSettings.save('custom', 'custom_mentions', val);
+	      }
+	    }, _temp), possibleConstructorReturn(_this, _ret);
+	  }
+
+	  createClass(CustomMentions, [{
+	    key: 'turnOn',
+	    value: function turnOn() {
+	      Dubtrack.Events.bind("realtime:chat-message", this.customMentionCheck);
+	    }
+	  }, {
+	    key: 'turnOff',
+	    value: function turnOff() {
+	      Dubtrack.Events.unbind("realtime:chat-message", this.customMentionCheck);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render$$1(props, state) {
+	      return h(
+	        MenuSwitch,
+	        {
+	          id: 'custom_mentions',
+	          section: 'General',
+	          menuTitle: 'Custom Mentions',
+	          desc: 'Toggle using custom mentions to trigger sounds in chat',
+	          turnOn: this.turnOn,
+	          turnOff: this.turnOff },
+	        h(MenuPencil, {
+	          title: 'Custom AFK Message',
+	          section: 'General',
+	          content: 'Add your custom mention triggers here (separate by comma)',
+	          value: userSettings.stored.custom.custom_mentions || '',
+	          placeholder: 'separate, custom triggers, by, comma, :heart:',
+	          maxlength: '255',
+	          onConfirm: this.saveCustomMentions })
+	      );
+	    }
+	  }]);
+	  return CustomMentions;
+	}(Component);
+
+	/**
+	  // General 
+	  require('./chatCleaner.js'),
+	  require('./chatNotifications.js'),
+	  require('./pmNotifications.js'),
+	  require('./djNotification.js'),
+	  require('./showDubsOnHover.js'),
+	  require('./downDubInChat.js'), // (mod only)
+	  require('./upDubInChat.js'),
+	  require('./grabsInChat.js'),
+	  require('./snow.js'),
+	  require('./rain.js'),
+	 */
+
+	var GeneralSection = function (_Component) {
+	  inherits(GeneralSection, _Component);
+
+	  function GeneralSection() {
+	    var _ref;
+
+	    var _temp, _this, _ret;
+
+	    classCallCheck(this, GeneralSection);
+
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = GeneralSection.__proto__ || Object.getPrototypeOf(GeneralSection)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+	      css: userSettings.stored.general || "open"
+	    }, _this.toggleSection = function () {
+	      _this.setState(function (prevState) {
+	        var newState = prevState.css === "open" ? "closed" : "open";
+	        userSettings.save('menu', 'general', newState);
+	        return { css: newState };
+	      });
+	    }, _temp), possibleConstructorReturn(_this, _ret);
+	  }
+
+	  createClass(GeneralSection, [{
+	    key: 'render',
+	    value: function render$$1(props, state) {
+	      var _cn = ['dubplus-menu-section'];
+	      if (state.css === "closed") {
+	        _cn.push('dubplus-menu-section-closed');
+	      }
+	      return (
+	        // until Preact incorporates something like React.Fragment (which is in the works) 
+	        // we have to wrap adjacent elements in one parent element
+	        h(
+	          'span',
+	          null,
+	          h(SectionHeader, {
+	            onClick: this.toggleSection,
+	            id: 'dubplus-general',
+	            category: 'General' }),
+	          h(
+	            'ul',
+	            { className: _cn.join(' ') },
+	            h(Autovote, null),
+	            h(AFK, null),
+	            h(AutocompleteEmoji, null),
+	            h(CustomMentions, null)
+	          )
+	        )
+	      );
+	    }
+	  }]);
+	  return GeneralSection;
+	}(Component);
+
+	/**
+	 * DubPlus Menu Container
+	 */
+
+	var DubPlusMenu = function (_Component) {
+	  inherits(DubPlusMenu, _Component);
+
+	  function DubPlusMenu() {
+	    classCallCheck(this, DubPlusMenu);
+	    return possibleConstructorReturn(this, (DubPlusMenu.__proto__ || Object.getPrototypeOf(DubPlusMenu)).apply(this, arguments));
+	  }
+
+	  createClass(DubPlusMenu, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      // load this async so it doesn't block the rest of the menu render
+	      // since these buttons are completely independent from the menu
+	      setTimeout(function () {
+	        snooze$1();
+	        eta();
+	      }, 1);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render$$1(props, state) {
+	      return h(
+	        'section',
+	        { className: 'dubplus-menu' },
+	        h(
+	          'p',
+	          { className: 'dubplus-menu-header' },
+	          'Dub+ Options'
+	        ),
+	        h(GeneralSection, null)
+	      );
+	    }
+	  }]);
+	  return DubPlusMenu;
+	}(Component);
+
+	/**
+	 * Takes a string  representation of a variable or object and checks if it's
+	 * definied starting at provided scope or default to global window scope.
+	 * @param  {string} dottedString  the item you are looking for
+	 * @param  {var}    startingScope where to start lookined
+	 * @return {boolean}              if it is defined or not
+	 */
+	function deepCheck(dottedString, startingScope) {
+	  var _vars = dottedString.split('.');
+	  var len = _vars.length;
+
+	  var depth = startingScope || window;
+	  for (var i = 0; i < len; i++) {
+	    if (typeof depth[_vars[i]] === 'undefined') {
+	      return false;
+	    }
+	    depth = depth[_vars[i]];
+	  }
+	  return true;
+	}
+
+	function arrayDeepCheck(arr, startingScope) {
+	  var len = arr.length;
+	  var scope = startingScope || window;
+
+	  for (var i = 0; i < len; i++) {
+	    if (!deepCheck(arr[i], scope)) {
+	      console.log(arr[i], 'is not found yet');
+	      return false;
+	    }
+	  }
+	  return true;
+	}
+
+	/**
+	 * pings for the existence of var/function for # seconds until it's defined
+	 * runs callback once found and stops pinging
+	 * @param {string|array} waitingFor          what you are waiting for
+	 * @param {object}       options             optional options to pass
+	 *                       options.interval    how often to ping
+	 *                       options.seconds     how long to ping for
+	 *                       
+	 * @return {object}                    2 functions:
+	 *                  .then(fn)          will run fn only when item successfully found.  This also starts the ping process
+	 *                  .fail(fn)          will run fn only when is never found in the time given
+	 */
+	function WaitFor(waitingFor, options) {
+	  if (typeof waitingFor !== "string" && !Array.isArray(waitingFor)) {
+	    console.warn('WaitFor: invalid first argument');
+	    return;
+	  }
+	  var defaults = {
+	    interval: 500, // every XX ms we check to see if waitingFor is defined
+	    seconds: 15 // how many total seconds we wish to continue pinging
+	  };
+
+	  var _cb = function _cb() {};
+	  var _failCB = function _failCB() {};
+	  var checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
+
+	  var opts = Object.assign({}, defaults, options);
+
+	  var tryCount = 0;
+	  var tryLimit = opts.seconds * 1000 / opts.interval; // how many intervals
+
+	  var check = function check() {
+	    tryCount++;
+	    var _test = checkFunc(waitingFor);
+
+	    if (_test) {
+	      return _cb();
+	    }if (tryCount < tryLimit) {
+	      window.setTimeout(check, opts.interval);
+	    } else {
+	      return _failCB();
+	    }
+	  };
+
+	  var then = function then(cb) {
+	    if (typeof cb === 'function') {
+	      _cb = cb;
+	    }
+	    // start the first one
+	    window.setTimeout(check, opts.interval);
+	    return this;
+	  };
+
+	  var fail = function fail(cb) {
+	    if (typeof cb === 'function') {
+	      _failCB = cb;
+	    }
+	    return this;
+	  };
+
+	  return {
+	    then: then,
+	    fail: fail
+	  };
+	}
+
+	var waitingStyles = {
+	  fontFamily: "'Trebuchet MS', Helvetica, sans-serif",
+	  zIndex: '2147483647',
+	  color: 'white',
+	  position: 'fixed',
+	  top: '69px',
+	  right: '-250px',
+	  background: '#222',
+	  padding: '10px',
+	  lineHeight: 1,
+	  boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.75)',
+	  borderRadius: '5px',
+	  overflow: 'hidden',
+	  width: '230px',
+	  transition: 'right 200ms'
+	};
+
+	var dpIcon = {
+	  float: 'left',
+	  width: '26px',
+	  marginRight: '5px'
+	};
+
+	var dpText = {
+	  display: 'table-cell',
+	  width: '10000px',
+	  paddingTop: '5px'
+	};
+
+	var LoadingNotice = function (_Component) {
+	  inherits(LoadingNotice, _Component);
+
+	  function LoadingNotice() {
+	    var _ref;
+
+	    var _temp, _this, _ret;
+
+	    classCallCheck(this, LoadingNotice);
+
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = LoadingNotice.__proto__ || Object.getPrototypeOf(LoadingNotice)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+	      mainStyles: waitingStyles
+	    }, _temp), possibleConstructorReturn(_this, _ret);
+	  }
+
+	  createClass(LoadingNotice, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var _this2 = this;
+
+	      setTimeout(function () {
+	        _this2.setState(function (prevState, props) {
+	          return {
+	            mainStyles: Object.assign({}, prevState.mainStyles, { right: '13px' })
+	          };
+	        });
+	      }, 200);
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      this.setState(function (prevState, props) {
+	        return {
+	          mainStyles: Object.assign({}, prevState.mainStyles, { right: '-250px' })
+	        };
+	      });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render$$1(props, state) {
+	      return h(
+	        'div',
+	        { style: state.mainStyles },
+	        h(
+	          'div',
+	          { style: dpIcon },
+	          h('img', { src: userSettings.srcRoot + '/images/dubplus.svg', alt: 'DubPlus icon' })
+	        ),
+	        h(
+	          'span',
+	          { style: dpText },
+	          props.text || 'Waiting for Dubtrack...'
+	        )
+	      );
+	    }
+	  }]);
+	  return LoadingNotice;
+	}(Component);
+
+	var makeLink = function makeLink(className, FileName) {
+	  var link = document.createElement('link');
+	  link.rel = "stylesheet";link.type = "text/css";
+	  link.className = className || '';
+	  link.href = FileName;
+	  return link;
+	};
+
+	/**
+	 * Loads a CSS file into <head>.  It concats settings.srcRoot with the first 
+	 * argument (cssFile)
+	 * @param {string} cssFile    the css file location
+	 * @param {string} className  class name to give the <link> element
+	 *
+	 * example:  css.load("/options/show_timestamps.css", "show_timestamps_link");
+	 */
+	function load(cssFile, className) {
+	  if (!cssFile) {
+	    return;
+	  }
+	  var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1540471937089);
+	  document.head.appendChild(link);
+	}
+
+	/**
+	 * Loads a css file from a full URL in the <head>
+	 * @param  {String} cssFile   the full url location of a CSS file
+	 * @param  {String} className a class name to give to the <link> element
+	 */
+	function loadExternal(cssFile, className) {
+	  if (!cssFile) {
+	    return;
+	  }
+	  var link = makeLink(className, cssFile);
+	  document.head.appendChild(link);
+	}
+
+	var cssHelper = {
+	  load: load,
+	  loadExternal: loadExternal
+	};
+
+	var MenuIcon = function (_Component) {
+	  inherits(MenuIcon, _Component);
+
+	  function MenuIcon() {
+	    var _ref;
+
+	    var _temp, _this, _ret;
+
+	    classCallCheck(this, MenuIcon);
+
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = MenuIcon.__proto__ || Object.getPrototypeOf(MenuIcon)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+	      open: false
+	    }, _this.toggle = function () {
+	      var menu = document.querySelector('.dubplus-menu');
+	      if (_this.state.open) {
+	        menu.classList.add('dubplus-menu-open');
+	        _this.setState({ open: false });
+	      } else {
+	        menu.classList.remove('dubplus-menu-open');
+	        _this.setState({ open: true });
+	      }
+	    }, _temp), possibleConstructorReturn(_this, _ret);
+	  }
+
+	  createClass(MenuIcon, [{
+	    key: 'render',
+	    value: function render$$1(props, state) {
+	      return h(
+	        'div',
+	        { className: 'dubplus-icon', onClick: this.toggle },
+	        h('img', { src: userSettings.srcRoot + '/images/dubplus.svg', alt: 'DubPlus Icon' })
+	      );
+	    }
+	  }]);
+	  return MenuIcon;
+	}(Component);
+
+	/**
+	 * Pure JS version of jQuery's $.getScript
+	 * 
+	 * @param {string} source url or path to JS file
+	 * @param {function} callback function to run after script is loaded
+	 */
+	function getScript(source, callback) {
+	    var script = document.createElement('script');
+	    var prior = document.getElementsByTagName('script')[0];
+	    script.async = 1;
+
+	    script.onload = script.onreadystatechange = function (_, isAbort) {
+	        if (isAbort || !script.readyState || /loaded|complete/.test(script.readyState)) {
+	            script.onload = script.onreadystatechange = null;
+	            script = undefined;
+
+	            if (!isAbort) {
+	                if (callback) callback();
+	            }
+	        }
+	    };
+
+	    script.src = source;
+	    prior.parentNode.insertBefore(script, prior);
+	}
+
+	setTimeout(function () {
+	  // start the loading of the CSS asynchronously
+	  cssHelper.load('/css/dubplus.css');
+	  cssHelper.loadExternal('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+	  if (typeof Promise === "undefined") {
+	    // load Promise polyfill for IE because we are still supporting it
+	    getScript('https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js');
+	  }
+	}, 1);
+
+	var DubPlusContainer = function (_Component) {
+	  inherits(DubPlusContainer, _Component);
+
+	  function DubPlusContainer() {
+	    var _ref;
+
+	    var _temp, _this, _ret;
+
+	    classCallCheck(this, DubPlusContainer);
+
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = DubPlusContainer.__proto__ || Object.getPrototypeOf(DubPlusContainer)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+	      loading: true,
+	      error: false,
+	      errorMsg: '',
+	      failed: false
+	    }, _temp), possibleConstructorReturn(_this, _ret);
+	  }
+
+	  createClass(DubPlusContainer, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var _this2 = this;
+
+	      /* globals Dubtrack */
+	      if (!window.DubPlus) {
+
+	        // checking to see if these items exist before initializing the script
+	        // instead of just picking an arbitrary setTimeout and hoping for the best
+	        var checkList = ['Dubtrack.session.id', 'Dubtrack.room.chat', 'Dubtrack.Events', 'Dubtrack.room.player', 'Dubtrack.helpers.cookie', 'Dubtrack.room.model', 'Dubtrack.room.users'];
+
+	        var _dubplusWaiting = new WaitFor(checkList, { seconds: 120 });
+
+	        _dubplusWaiting.then(function () {
+	          _this2.setState({
+	            loading: false,
+	            error: false
+	          });
+	        }).fail(function () {
+	          if (!Dubtrack.session.id) {
+	            _this2.showError('You\'re not logged in. Please login to use Dub+.');
+	          } else {
+	            _this2.showError('Something happed, refresh and try again');
+	            track.event('Dub+ lib', 'load', 'failed');
+	          }
+	        });
+	      } else {
+	        if (!Dubtrack.session.id) {
+	          this.showError('You\'re not logged in. Please login to use Dub+.');
+	        } else {
+	          this.showError('Dub+ is already loaded');
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'showError',
+	    value: function showError(msg) {
+	      this.setState({
+	        loading: false,
+	        error: true,
+	        errorMsg: msg
+	      });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render$$1(props, state) {
+	      var _this3 = this;
+
+	      if (state.loading) {
+	        return h(LoadingNotice, null);
+	      }
+
+	      if (state.error) {
+	        return h(Modal, { title: 'Dub+ Error',
+	          onClose: function onClose() {
+	            _this3.setState({ failed: true, error: false });
+	          },
+	          content: state.errorMsg });
+	      }
+
+	      if (state.failed) {
+	        return null;
+	      }
+
+	      return h(DubPlusMenu, null);
+	    }
+	  }]);
+	  return DubPlusContainer;
+	}(Component);
+
+	render(h(DubPlusContainer, null), document.body);
+	render(h(MenuIcon, null), document.querySelector('.header-right-navigation'));
+
+	// {"version":"0.1.8","description":"Dub+ - A simple script/extension for Dubtrack.fm","license":"MIT","bugs":"https://github.com/DubPlus/DubPlus/issues"} is inserted by the rollup build process
+	var index = { "version": "0.1.8", "description": "Dub+ - A simple script/extension for Dubtrack.fm", "license": "MIT", "bugs": "https://github.com/DubPlus/DubPlus/issues" };
+
+	return index;
+
+}());

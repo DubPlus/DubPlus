@@ -2,7 +2,9 @@ import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
 import uglify from 'rollup-plugin-uglify';
 import replace from 'rollup-plugin-replace';
-import { writeFileSync } from 'fs';
+import browser from './browser';
+
+const watchMode = process.env.ROLLUP_WATCH === 'true';
 
 // our own custom module
 var gitInfo = require('./repoInfo.js');
@@ -80,10 +82,13 @@ export default {
         }]
       ]
     }),
+    // only uglify when NOT in watching mode
     uglify({
       output: {
         preamble: introBanner
       }
-    })
+    }), 
+    // only launch browser when in watch mode
+    watchMode && browser()
   ]
 };

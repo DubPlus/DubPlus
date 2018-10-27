@@ -1,8 +1,9 @@
 import {h, Component} from 'preact';
-import Portal from './Portal.js';
+// import Portal from './Portal.js';
 import settings from '../utils/UserSettings.js';
 import Modal from './modal.js';
 import track from '../utils/analytics.js';
+const Portal = require('preact-portal');
 
 /**
  * Component to render a simple row like the links in the contact section 

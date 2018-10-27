@@ -9,9 +9,10 @@ var makeLink = function(className, FileName){
 };
 
 /**
- * Loads a CSS file into <head>.  It concats settings.srcRoot with the first argument (cssFile)
+ * Loads a CSS file into <head>.  It concats settings.srcRoot with the first 
+ * argument (cssFile)
  * @param {string} cssFile    the css file location
- * @param {string} className  class name for element
+ * @param {string} className  class name to give the <link> element
  *
  * example:  css.load("/options/show_timestamps.css", "show_timestamps_link");
  */
@@ -25,7 +26,6 @@ function load(cssFile, className){
  * Loads a css file from a full URL in the <head>
  * @param  {String} cssFile   the full url location of a CSS file
  * @param  {String} className a class name to give to the <link> element
- * @return {undefined}           
  */
 function loadExternal(cssFile, className){
   if (!cssFile) {return;}
