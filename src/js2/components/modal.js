@@ -1,8 +1,9 @@
-import { h, Component } from 'preact';
+import { h, Component } from "preact";
+import Portal from "preact-portal/src/preact-portal";
 
 /**
  * Modal used to display messages and also capture data
- * 
+ *
  * @prop  {string} title       title that shows at the top of the modal
  * @prop  {string} content     A descriptive message on what the modal is for
  * @prop  {string} placeholder placeholder for the textarea
@@ -11,60 +12,67 @@ import { h, Component } from 'preact';
  * @prop  {number} maxlength   for the textarea maxlength attribute
  */
 export default class Modal extends Component {
-
-  keyUpHandler = (e) => {
+  keyUpHandler = e => {
     // save and close when user presses enter
     // considering removing this though
-    if (e.keyCode === 13) { 
+    if (e.keyCode === 13) {
       this.props.onConfirm(this.textarea.value);
       this.props.onClose();
     }
     // close modal when user hits the esc key
-    if (e.keyCode === 27) { 
+    if (e.keyCode === 27) {
       this.props.onClose();
     }
-  }
+  };
 
-  componentDidMount(){
-    document.addEventListener('keyup', this.keyUpHandler);
+  componentDidMount() {
+    document.addEventListener("keyup", this.keyUpHandler);
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keyup', this.keyUpHandler);
+    document.removeEventListener("keyup", this.keyUpHandler);
   }
-  
+
   confirmClick = () => {
     this.props.onConfirm(this.textarea.value);
     this.props.onClose();
-  }
+  };
 
-  render(props,state) {
-    let closeButtonText = !props.onConfirm ? 'close' : 'cancel';
+  render(props) {
+    let closeButtonText = !props.onConfirm ? "close" : "cancel";
 
-    return (
-      <div className='dp-modal'>
-        <aside className="container">
-          <div className="title">
-            <h1> { props.title || 'Dub+' }</h1>
-          </div>
-          <div className="content">
-            <p>{props.content || ''}</p>
-            {props.placeholder &&
-              <textarea
-                ref={ c => this.textarea=c } 
-                placeholder={props.placeholder} maxlength={props.maxlength || 999}>
-                {props.value || ''}
-              </textarea>
-            }
-          </div>
-          <div className="dp-modal-buttons">
-            <button id="dp-modal-cancel" onClick={props.onClose}>{closeButtonText}</button>
-            {props.onConfirm &&
-              <button id="dp-modal-confirm" onClick={this.confirmClick}>okay</button>
-            }
-          </div>
-        </aside>
-      </div>
-    );
+    return props.open ? (
+      <Portal into="body">
+        <div className="dp-modal">
+          <aside className="container">
+            <div className="title">
+              <h1> {props.title || "Dub+"}</h1>
+            </div>
+            <div className="content">
+              <p>{props.content || ""}</p>
+              {props.placeholder && (
+                <textarea
+                  ref={c => (this.textarea = c)}
+                  placeholder={props.placeholder}
+                  maxlength={props.maxlength || 999}
+                >
+                  {props.value || ""}
+                </textarea>
+              )}
+            </div>
+            <div className="dp-modal-buttons">
+              <button id="dp-modal-cancel" onClick={props.onClose}>
+                {closeButtonText}
+              </button>
+              {props.onConfirm && (
+                <button id="dp-modal-confirm" onClick={this.confirmClick}>
+                  okay
+                </button>
+              )}
+            </div>
+          </aside>
+        </div>
+      </Portal>
+    ) : null;
   }
 }

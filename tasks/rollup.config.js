@@ -70,7 +70,10 @@ export default {
     }),
     babel({
       babelrc: false,
-      exclude: ['node_modules/**'], // only transpile our source code. Assuming npm modules already transpiled
+      include: [
+        'src/js2/**',
+        'node_modules/preact-portal/**'
+      ],
       plugins : [
         "external-helpers",
         "transform-class-properties",

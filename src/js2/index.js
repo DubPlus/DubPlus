@@ -84,22 +84,22 @@ class DubPlusContainer extends Component {
   render(props,state) {
 
     if (state.loading) {
-      return <Loading />
+      return ( <Loading />)
     } 
 
     if (state.error) {
-      return <Modal title="Dub+ Error" 
+      return (<Modal title="Dub+ Error" 
                 onClose={()=>{
                   this.setState({failed:true, error: false});
                 }} 
-                content={state.errorMsg} />
+                content={state.errorMsg} />)
     }
 
     if (state.failed) {
       return null;
     }
 
-    return <DubPlusMenu />
+    return  ( <DubPlusMenu /> )
 
   }
 }
