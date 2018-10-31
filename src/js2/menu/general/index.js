@@ -1,6 +1,5 @@
 /**
   // General 
-  require('./chatCleaner.js'),
   require('./chatNotifications.js'),
   require('./pmNotifications.js'),
   require('./djNotification.js'),
@@ -19,6 +18,7 @@ import Autovote from './autovote.js'
 import settings from '../../utils/UserSettings.js';
 import AutocompleteEmoji from './autocomplete-emoji.js';
 import CustomMentions from './custom-mentions.js';
+import ChatCleaner from './chat-cleaner.js';
 
 export default class GeneralSection extends Component {
   state = {
@@ -51,6 +51,7 @@ export default class GeneralSection extends Component {
           <AFK />
           <AutocompleteEmoji />
           <CustomMentions />
+          <ChatCleaner />
         </ul>
       </span>
     );
