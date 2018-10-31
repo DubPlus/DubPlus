@@ -41,7 +41,8 @@ export default class ChatNotification extends Component {
       if (granted === true) {
         Dubtrack.Events.bind("realtime:chat-message", this.notifyOnMention);
       } else {
-        // call MenuSwitch's switchOff
+        // call MenuSwitch's switchOff with noTrack=true argument
+        this.switchRef.switchOff(true);
       }
     });
   };
@@ -53,6 +54,7 @@ export default class ChatNotification extends Component {
   render() {
     return (
       <MenuSwitch
+        ref={ s => this.switchRef = s}
         id="mention_notifications"
         section="General"
         menuTitle="Notification on Mentions"

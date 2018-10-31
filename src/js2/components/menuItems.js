@@ -85,11 +85,13 @@ export class MenuSwitch extends Component {
     track.menuClick(this.props.section + " section", this.props.id + " on");
   };
 
-  switchOff = () => {
+  switchOff = (noTrack = false) => {
     this.props.turnOff();
     settings.save("options", this.props.id, false);
     this.setState({ on: false });
-    track.menuClick(this.props.section + " section", this.props.id + " off");
+    if (!noTrack) {
+      track.menuClick(this.props.section + " section", this.props.id + " off");
+    }
   };
 
   toggleSwitch = () => {
