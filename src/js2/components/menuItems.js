@@ -1,5 +1,4 @@
 import { h, Component } from "preact";
-// import Portal from './Portal.js';
 import settings from "../utils/UserSettings.js";
 import Modal from "./modal.js";
 import track from "../utils/analytics.js";

@@ -62,9 +62,13 @@ const onLoad = async () => {
     });
 
   // OR if already logged, start DubPlus
-  page.waitForSelector(".user-info", { visible: true }).then(() => {
-    startDubPlus(page);
-  });
+  page.waitForSelector(".user-info", { visible: true })
+    .then(() => {
+      startDubPlus(page);
+    })
+    .catch((err)=>{
+      console.error('.user-info timeout', err);
+    });
 };
 
 const dubDev = async () => {
@@ -102,12 +106,14 @@ export default () => {
         );
       }
 
+      // *****************************
+      // because for some reason this plugin gets run twice in a row
       if (count > 1) {
         count = 0;
         return;
       }
-
       count++;
+      // *****************************
 
       if (page) {
         page.reload().then(() => {

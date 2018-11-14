@@ -1,14 +1,10 @@
 /**
   // General 
-  require('./chatNotifications.js'),
-  require('./pmNotifications.js'),
   require('./djNotification.js'),
   require('./showDubsOnHover.js'),
   require('./downDubInChat.js'), // (mod only)
   require('./upDubInChat.js'),
   require('./grabsInChat.js'),
-  require('./snow.js'),
-  require('./rain.js'),
  */
 
 import { h, Component } from 'preact';
@@ -19,6 +15,11 @@ import settings from '../../utils/UserSettings.js';
 import AutocompleteEmoji from './autocomplete-emoji.js';
 import CustomMentions from './custom-mentions.js';
 import ChatCleaner from './chat-cleaner.js';
+import ChatNotification from './chat-notifications.js';
+import PMNotifications from './pm-notifications.js';
+
+import SnowSwitch from './snow-switch.js';
+import RainSwitch from './rain-switch.js';
 
 export default class GeneralSection extends Component {
   state = {
@@ -52,6 +53,11 @@ export default class GeneralSection extends Component {
           <AutocompleteEmoji />
           <CustomMentions />
           <ChatCleaner />
+          <ChatNotification />
+          <PMNotifications />
+
+          <SnowSwitch />
+          <RainSwitch />
         </ul>
       </span>
     );

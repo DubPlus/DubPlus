@@ -2,8 +2,15 @@ import { h, Component } from "preact";
 import { MenuSwitch } from "../../components/menuItems.js";
 import settings from "../../utils/UserSettings.js";
 import { notifyCheckPermission, showNotification } from "../../utils/notify.js";
+import Modal from "../../components/modal";
 
 export default class ChatNotification extends Component {
+  state = {
+    showWarning : false,
+    warnTitle : '',
+    warnContent: ''
+  }
+
   notifyOnMention(e) {
     var content = e.message;
     var user = Dubtrack.session.get("username").toLowerCase();
@@ -37,31 +44,47 @@ export default class ChatNotification extends Component {
   }
 
   turnOn = () => {
-    notifyCheckPermission(granted => {
-      if (granted === true) {
+    notifyCheckPermission((status, reason) => {
+      if (status === true) {
         Dubtrack.Events.bind("realtime:chat-message", this.notifyOnMention);
       } else {
         // call MenuSwitch's switchOff with noTrack=true argument
         this.switchRef.switchOff(true);
+        this.setState({
+          showWarning: true,
+          warnTitle: reason.title,
+          warnContent: reason.content
+        });
       }
     });
   };
+
+  closeModal = () => {
+    this.setState({ showWarning: false });
+  }
 
   turnOff = () => {
     Dubtrack.Events.unbind("realtime:chat-message", this.notifyOnMention);
   };
 
-  render() {
+  render(props, state) {
     return (
       <MenuSwitch
-        ref={ s => this.switchRef = s}
+        ref={s => (this.switchRef = s)}
         id="mention_notifications"
         section="General"
         menuTitle="Notification on Mentions"
         desc="Enable desktop notifications when a user mentions you in chat"
         turnOn={this.turnOn}
         turnOff={this.turnOff}
-      />
+      >
+        <Modal
+          open={state.showWarning}
+          title={state.warnTitle}
+          content={state.warnContent}
+          onClose={this.closeModal}
+        />
+      </MenuSwitch>
     );
   }
 }

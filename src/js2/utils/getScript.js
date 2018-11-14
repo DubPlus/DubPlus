@@ -18,6 +18,10 @@ export default function getScript(source, callback) {
       }
   };
 
+  script.onerror = function(err){
+    if(callback) callback(err);
+  };
+
   script.src = source;
   prior.parentNode.insertBefore(script, prior);
 }
