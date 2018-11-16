@@ -23,20 +23,20 @@ import RainSwitch from './rain-switch.js';
 
 export default class GeneralSection extends Component {
   state = {
-    css : settings.stored.general || "open"
+    section : settings.stored.general || "open"
   }
 
-  toggleSection = () => {
+  toggleSection = (e) => {
     this.setState((prevState)=>{
-      let newState = prevState.css === "open" ? "closed" : "open";
+      let newState = prevState.section === "open" ? "closed" : "open";
       settings.save('menu', 'general', newState);
-      return {css : newState}
+      return {section : newState}
     });
   }
 
   render(props,state) {
     let _cn = ['dubplus-menu-section'];
-    if (state.css === "closed") {
+    if (state.section === "closed") {
       _cn.push('dubplus-menu-section-closed');
     }
     return (
@@ -46,7 +46,8 @@ export default class GeneralSection extends Component {
         <SectionHeader 
           onClick={this.toggleSection}
           id="dubplus-general" 
-          category="General" />
+          category="General"
+          open={state.section} />
         <ul className={_cn.join(' ')}>
           <Autovote />
           <AFK />
