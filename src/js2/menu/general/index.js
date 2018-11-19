@@ -1,6 +1,5 @@
 /**
   // General 
-  require('./djNotification.js'),
   require('./showDubsOnHover.js'),
   require('./downDubInChat.js'), // (mod only)
   require('./upDubInChat.js'),
@@ -17,7 +16,7 @@ import CustomMentions from './custom-mentions.js';
 import ChatCleaner from './chat-cleaner.js';
 import ChatNotification from './chat-notifications.js';
 import PMNotifications from './pm-notifications.js';
-
+import DJNotification from './dj-notification.js';
 import SnowSwitch from './snow-switch.js';
 import RainSwitch from './rain-switch.js';
 
@@ -56,6 +55,7 @@ export default class GeneralSection extends Component {
           <ChatCleaner />
           <ChatNotification />
           <PMNotifications />
+          <DJNotification />
 
           <SnowSwitch />
           <RainSwitch />

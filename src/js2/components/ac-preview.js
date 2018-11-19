@@ -18,7 +18,7 @@ export default class EmojiPreview extends Component {
         css += ' selected';
       }
       return (
-        <li key={`emo-${i}`} className={css} tabIndex="-1">
+        <li key={`emo-${i}`} className={css}>
           <img className="ac-image" src={e.src} />
           <span className="ac-text">{e.text}</span>
         </li>
