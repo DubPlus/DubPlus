@@ -3051,7 +3051,7 @@ module.exports = {
 
     if (!$.snowfall) {
       // only pull in the script once if it doesn't exist
-      $.getScript("https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js").done(function () {
+      $.getScript("https://cdn.jsdelivr.net/gh/loktar00/JQuery-Snowfall/src/snowfall.jquery.js").done(function () {
         _this.doSnow();
       }).fail(function (jqxhr, settings, exception) {
         options.toggleAndSave(_this.id, false);
