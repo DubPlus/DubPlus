@@ -641,7 +641,7 @@ module.exports = function () {
   (0, _eta2.default)();
 };
 
-}).call(this,'{"name":"DubPlus","version":"0.1.8","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+}).call(this,'{"name":"DubPlus","version":"0.1.9","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
@@ -952,7 +952,7 @@ exportSettings.srcRoot = _RESOURCE_SRC_;
 
 module.exports = exportSettings;
 
-}).call(this,'https://rawgit.com/coryshaw1/DubPlus/master')
+}).call(this,'https://rawgit.com/DubPlus/DubPlus/master')
 },{}],9:[function(require,module,exports){
 'use strict';
 
@@ -3240,7 +3240,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1544452424319')
+}).call(this,'1544452757756')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
