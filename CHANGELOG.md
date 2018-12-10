@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.1.9] - 2018-12-10
 ### Fixed
 - Fix multiple errors with Dubtrack changes
+
 ### Removed
 - Removed perfect-scrollbar support
 
