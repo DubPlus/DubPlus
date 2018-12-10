@@ -274,7 +274,7 @@ prepEmoji.loadFrankerFacez = function () {
   this.shouldUpdateAPIs('frankerfacez', function (update) {
     if (update) {
       console.log('dub+', 'frankerfacez', 'loading from api');
-      var frankerFacezApi = new GetJSON('//rawgit.com/Jiiks/BetterDiscordApp/master/data/emotedata_ffz.json', 'frankerfacez:loaded');
+      var frankerFacezApi = new GetJSON('//cdn.jsdelivr.net/gh/Jiiks/BetterDiscordApp/data/emotedata_ffz.json', 'frankerfacez:loaded');
       frankerFacezApi.done(function (data) {
         var frankerFacez = JSON.parse(data);
         localStorage.setItem('frankerfacez_api_timestamp', Date.now().toString());
@@ -952,7 +952,7 @@ exportSettings.srcRoot = _RESOURCE_SRC_;
 
 module.exports = exportSettings;
 
-}).call(this,'https://rawgit.com/DubPlus/DubPlus/master')
+}).call(this,'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus')
 },{}],9:[function(require,module,exports){
 'use strict';
 
@@ -1114,10 +1114,11 @@ var emojiUtils = {
   filterEmoji: function filterEmoji(str) {
     var finalStr = str.replace(/([+()])/, "\\$1");
     var re = new RegExp('^' + finalStr, "i");
-    var arrayToUse = emojify.emojiNames;
+    var arrayToUse = emojify.emojiNames || [];
     if (settings.options['dubplus-emotes']) {
-      arrayToUse = prepEmjoji.emojiEmotes; // merged array
+      arrayToUse = prepEmjoji.emojiEmotes || []; // merged array
     }
+
     return arrayToUse.filter(function (val) {
       return re.test(val);
     });
@@ -3041,7 +3042,7 @@ module.exports = {
 
     if (!$.snowfall) {
       // only pull in the script once if it doesn't exist
-      $.getScript("https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js").done(function () {
+      $.getScript("https://cdn.jsdelivr.net/gh/loktar00/JQuery-Snowfall/src/snowfall.jquery.js").done(function () {
         _this.doSnow();
       }).fail(function (jqxhr, settings, exception) {
         options.toggleAndSave(_this.id, false);
@@ -3240,7 +3241,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1544452757756')
+}).call(this,'1544453385240')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 

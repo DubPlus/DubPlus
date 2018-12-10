@@ -1,1 +1,1 @@
-$.getScript('https://rawgit.com/DubPlus/DubPlus/master/dubplus.js');
+$.getScript('https://cdn.jsdelivr.net/gh/DubPlus/DubPlus/dubplus.js');
