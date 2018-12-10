@@ -21,7 +21,7 @@ module.exports = {
   turnOn : function() {
     if (!$.snowfall) {
       // only pull in the script once if it doesn't exist
-      $.getScript( "https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js" )
+      $.getScript( "https://cdn.jsdelivr.net/gh/loktar00/JQuery-Snowfall/src/snowfall.jquery.js" )
         .done(()=> {
           this.doSnow();
         })
