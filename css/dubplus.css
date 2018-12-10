@@ -32,7 +32,8 @@
   font-size: 13px;
   line-height: 1.4;
   padding-bottom: 100px;
-  height: calc(100% - 114px); }
+  height: calc(100% - 114px);
+  overflow-y: auto; }
   .dubplus-menu a {
     color: #999; }
 

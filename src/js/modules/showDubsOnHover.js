@@ -146,8 +146,6 @@ dubshover.showDubsOnHover = function(){
       this.updateChatInputWithString(new_text);
     });
 
-    $('#dubinfo-preview').perfectScrollbar();
-
     $('.dubplus-updubs-hover').mouseleave(function(event){
       var x = event.clientX, y = event.clientY;
 
@@ -225,8 +223,6 @@ dubshover.showDubsOnHover = function(){
       this.updateChatInputWithString(new_text);
     });
 
-    $('#dubinfo-preview').perfectScrollbar();
-
     $('.dubplus-downdubs-hover').mouseleave(function(event){
       var x = event.clientX, y = event.clientY;
 
@@ -301,8 +297,6 @@ dubshover.showDubsOnHover = function(){
       var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ' ;
       this.updateChatInputWithString(new_text);
     });
-
-    $('#dubinfo-preview').perfectScrollbar();
 
     $('.dubplus-grabs-hover').mouseleave(function(event){
       var x = event.clientX, y = event.clientY;

@@ -58,6 +58,7 @@ $buttonBorderOn : #6fcbdc;
   line-height: 1.4;
   padding-bottom: 100px;
   height: calc(100% - 114px);
+  overflow-y: auto;
   a {
     color: #999;
   }
