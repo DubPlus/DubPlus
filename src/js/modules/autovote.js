@@ -9,7 +9,7 @@ autovote.category = "General";
 // add any custom functions to this module
 
 var advance_vote = function() {
-  $('.dubup').click();
+  $(Dubtrack.playerController.voteUp).click();
 };
 
 var voteCheck = function (obj) {

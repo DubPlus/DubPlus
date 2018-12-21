@@ -641,7 +641,7 @@ module.exports = function () {
   (0, _eta2.default)();
 };
 
-}).call(this,'{"name":"DubPlus","version":"0.1.9","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+}).call(this,'{"name":"DubPlus","version":"0.2.0","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
@@ -1258,7 +1258,7 @@ autovote.category = "General";
 // add any custom functions to this module
 
 var advance_vote = function advance_vote() {
-  $('.dubup').click();
+  $(Dubtrack.playerController.voteUp).click();
 };
 
 var voteCheck = function voteCheck(obj) {
@@ -3241,7 +3241,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1544453385240')
+}).call(this,'1545403006902')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
