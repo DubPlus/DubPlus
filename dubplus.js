@@ -1258,10 +1258,12 @@ autovote.category = "General";
 // add any custom functions to this module
 
 var advance_vote = function advance_vote() {
+  console.log('voting');
   Dubtrack.playerController.voteUp.click();
 };
 
 var voteCheck = function voteCheck(obj) {
+  console.log('checking vote', obj);
   if (obj.startTime < 2) {
     advance_vote();
   }
@@ -1284,6 +1286,8 @@ autovote.turnOn = function () {
   //Only cast the vote if user hasn't already voted
   if (!$('.dubup, .dubdown').hasClass('voted') && !dubCookie) {
     advance_vote();
+  } else {
+    console.log('turned on but not voting', $('.dubup, .dubdown').hasClass('voted'), dubCookie);
   }
 
   Dubtrack.Events.bind("realtime:room_playlist-update", voteCheck);
@@ -3240,7 +3244,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1545431756079')
+}).call(this,'1545664198513')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
