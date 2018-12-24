@@ -1258,7 +1258,10 @@ autovote.category = "General";
 // add any custom functions to this module
 
 var advance_vote = function advance_vote() {
-  Dubtrack.playerController.voteUp.click();
+  if (Dubtrack && Dubtrack.playerController && Dubtrack.playerController.voteUp) {
+    console.log('voting');
+    Dubtrack.playerController.voteUp.click();
+  }
 };
 
 var voteCheck = function voteCheck(obj) {
@@ -3240,7 +3243,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1545431756079')
+}).call(this,'1545665217342')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
