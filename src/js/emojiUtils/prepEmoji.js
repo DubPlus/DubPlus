@@ -144,7 +144,7 @@ prepEmoji.loadFrankerFacez = function(){
   this.shouldUpdateAPIs('frankerfacez', function(update) {
     if (update) {
       console.log('dub+','frankerfacez','loading from api');
-      var frankerFacezApi = new GetJSON('//rawgit.com/Jiiks/BetterDiscordApp/master/data/emotedata_ffz.json', 'frankerfacez:loaded');
+      var frankerFacezApi = new GetJSON('//cdn.jsdelivr.net/gh/Jiiks/BetterDiscordApp/data/emotedata_ffz.json', 'frankerfacez:loaded');
       frankerFacezApi.done((data)=>{
           var frankerFacez = JSON.parse(data);
           localStorage.setItem('frankerfacez_api_timestamp', Date.now().toString());

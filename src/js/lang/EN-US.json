@@ -1,0 +1,181 @@
+{
+  "menu_title" : "Dub+ Options",
+
+  "menu_sections" : {
+    "General" : "General",
+    "User Interface" : "User Interface",
+    "Settings" : "Settings",
+    "Customize" : "Customize"
+  },
+
+  "menu_contact" : {
+    "report_bugs" : "Report bugs on Discord"
+  },
+
+  "modules" : {
+    
+    "afk" : {
+      "module_name" : "AFK Auto-respond",
+      "description" : "Toggle Away from Keyboard and customize AFK message.",
+      "default_AFK_message" : "[AFK] I'm not here right now.",
+      "modal_title" : "Custom AFK Message",
+      "modal_content" : "Enter a custom Away From Keyboard [AFK] message here",
+      "modal_placeholder" : "Be right back!"
+    },
+
+    "autocomplete" : {
+      "module_name" : "Autocomplete Emoji",
+      "description" : "Toggle autocompleting emojis and emotes.  Shows a preview box in the chat"
+    },
+
+    "autovote" : {
+      "module_name" : "Autovote",
+      "description" : "Toggles auto upvoting for every song"
+    },
+
+    "chat_notifications" : {
+      "module_name" : "Notification on Mentions",
+      "description" : "Enable desktop notifications when a user mentions you in chat",
+      "notification_title" : "Message from @%username%"
+    },
+
+    "community_theme" : {
+      "module_name" : "Community Theme",
+      "description" : "Toggle Community CSS theme."
+    },
+
+    "custom_css" : {
+      "module_name" : "Custom CSS",
+      "description" : "Add your own custom CSS.",
+      "modal_title" : "Custom CSS",
+      "modal_content" : "Enter a url location for your custom css"
+    },
+
+    "custom_mentions" : {
+      "module_name" : "Custom Mentions",
+      "description" : "Toggle using custom mentions to trigger sounds in chat",
+      "modal_title" : "Custom Mentions",
+      "modal_content" : "Add your custom mention triggers here (separate by comma)",
+      "modal_placeholder" : "separate, custom triggers, by, comma, :heart:"
+    },
+
+    "custom_sound" : {
+      "module_name" : "Custom Notification Sound",
+      "description" : "Change the notification sound to a custom one.",
+      "modal_title" : "Custom Notification Sound",
+      "modal_content" : "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to Dubtrack's default sound",
+      "modal_placeholder" : "separate, custom triggers, by, comma, :heart:"
+    },
+
+    "dj_notification" : {
+      "module_name" : "DJ Notification",
+      "description" : "Notification when you are coming up to be the DJ",
+      "notification_title" : "DJ Alert!",
+      "notification_content" : "You will be DJing shortly! Make sure your song is set!"
+    },
+
+    "downdub_in_chat" : {
+      "module_name" : "Downdubs in Chat (mods only)",
+      "description" : "Toggle showing downdubs in the chat box (mods only)",
+      "chat_message" : "@%username% has downdubbed your song %songname%"
+    },
+
+    "emotes" : {
+      "module_name" : "Emotes",
+      "description" : "Adds twitch and bttv emotes in chat."
+    },
+
+    "eta" : {
+      "in_queue" : "ETA: %booth_time% minutes",
+      "not_in_queue" : "You're not in the queue"
+    },
+
+    "fullscreen" : {
+      "module_name" : "Fullscreen Video",
+      "description" : "Toggle fullscreen video mode"
+    },
+
+    "grabs_in_chat" : {
+      "module_name" : "Grabs in Chat",
+      "description" : "Toggle showing grabs in the chat box",
+      "chat_message" : "@%username% has grabbed your song %songname%"
+    },
+
+    "hide_avatars" : {
+      "module_name" : "Hide Avatars",
+      "description" : "Toggle hiding user avatars in the chat box."
+    },
+
+    "hide_background" : {
+      "module_name" : "Hide Background",
+      "description" : "Toggle hiding background image."
+    },
+
+    "hide_chat" : {
+      "module_name" : "Hide Chat",
+      "description" : "Toggles hiding the chat box"
+    },
+
+    "hide_video" : {
+      "module_name" : "Hide Video",
+      "description" : "Toggles hiding the video box"
+    },
+
+    "pm_notifications" : {
+      "module_name" : "Notification on PM",
+      "description" : "Enable desktop notifications when a user receives a private message",
+      "notification_title" : "You have a new PM"
+    },
+
+    "rain" : {
+      "module_name" : "Rain",
+      "description" : "Make it rain!"
+    },
+
+    "shows_dubs_on_hover" : {
+      "module_name" : "Show Dub info on Hover",
+      "description" : "Show Dub info on Hover.",
+      "modal_title" : "Grab Vote Info",
+      "modal_content" : "Please note that this feature is currently still in development. We are waiting on the ability to pull grab vote information from Dubtrack on load. Until then the only grabs you will be able to see are those you are present in the room for.",
+      "no_updubs" : "No updubs have been casted yet!",
+      "no_downdubs" : "No downdubs have been casted yet!",
+      "no_grabs" : "This song hasn't been grabbed yet!"
+    },
+
+    "show_timestamps" : {
+      "module_name" : "Show Timestamps",
+      "description" : "Toggle always showing chat message timestamps."
+    },
+
+    "snooze" : {
+      "tooltip" : "Mute current song"
+    },
+
+    "snow" : {
+      "module_name" : "Snow",
+      "description" : "Make it snow!"
+    },
+
+    "spacebar_mute" : {
+      "module_name" : "Spacebar Mute",
+      "description" : "Turn on/off the ability to mute current song with the spacebar."
+    },
+
+    "split_chat" : {
+      "module_name" : "Split Chat",
+      "description" : "Toggle Split Chat UI enhancement"
+    },
+
+    "updubs_in_chat" : {
+      "module_name" : "Updubs in Chat",
+      "description" : "Toggle showing updubs in the chat box",
+      "chat_message" : "@%username% has updubbed your song %songname%"
+    },
+
+    "warn_on_nav" : {
+      "module_name" : "Warn On Navigation",
+      "description" : "Warns you when accidentally clicking on a link that takes you out of dubtrack."
+    }
+
+  }
+}

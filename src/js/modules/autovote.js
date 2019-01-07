@@ -9,7 +9,10 @@ autovote.category = "General";
 // add any custom functions to this module
 
 var advance_vote = function() {
-  $('.dubup').click();
+  if (Dubtrack && Dubtrack.playerController && Dubtrack.playerController.voteUp) {
+    console.log('voting');
+    Dubtrack.playerController.voteUp.click();
+  }
 };
 
 var voteCheck = function (obj) {

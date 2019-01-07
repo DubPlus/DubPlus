@@ -26,9 +26,6 @@ myModule.chatCleanerCheck = function (e) {
   if (isNaN(totalChats) || isNaN(settings.custom.chat_cleaner) || totalChats < settings.custom.chat_cleaner) return;
 
   $('ul.chat-main > li:lt('+($('ul.chat-main > li').length - settings.custom.chat_cleaner)+')').remove();
-  
-  //Fix scroll bar
-  $('.chat-messages').perfectScrollbar('update');
 };
 
 myModule.turnOn = function () {
