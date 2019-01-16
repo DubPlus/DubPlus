@@ -20,9 +20,9 @@ export default class SnowSwitch extends Component {
 
   turnOn = () => {
     if (!$.snowfall) {
-      // only pull in the script once if it doesn't exist
+      // only pull in the script once if it doesn't exist 
       getScript(
-        "https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js",
+        "https://cdn.jsdelivr.net/gh/loktar00/JQuery-Snowfall/src/snowfall.jquery.js" ,
         err => {
           if (err) {
             this.switchRef.switchOff(true);

@@ -2,7 +2,7 @@
  * Takes a string  representation of a variable or object and checks if it's
  * definied starting at provided scope or default to global window scope.
  * @param  {string} dottedString  the item you are looking for
- * @param  {var}    startingScope where to start lookined
+ * @param  {var}    startingScope where to start looking
  * @return {boolean}              if it is defined or not
  */
 function deepCheck(dottedString, startingScope) {
