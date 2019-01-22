@@ -2,7 +2,6 @@ import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
 import uglify from 'rollup-plugin-uglify';
 import replace from 'rollup-plugin-replace';
-import browser from './browser';
 
 const watchMode = process.env.ROLLUP_WATCH === 'true';
 
@@ -90,8 +89,6 @@ export default {
       output: {
         preamble: introBanner
       }
-    }), 
-    // only launch browser when in watch mode
-    watchMode && browser()
+    })
   ]
 };

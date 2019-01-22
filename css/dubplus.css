@@ -291,12 +291,12 @@
   font-weight: 700 !important;
   color: #89BE6C !important; }
 
-#avatar-list .user-ciscog .dubs:before {
+#avatar-list .user-disco-g .dubs:before {
   content: "Dub+ TEAM  -  ";
   font-weight: 700 !important;
   color: #89BE6C !important; }
 
-#avatar-list .user-ciscog {
+#avatar-list .user-disco-g {
   color: #89BE6C !important; }
 
 #chat .chat-container ul.chat-main li.user-56008425621a9e0300317238 .stream-item-content .activity-row .username {
@@ -321,13 +321,12 @@
     font-family: proxima-nova,sans-serif;
     font-size: 10px; }
 
-#avatar-list .user-ciscog p.dubs:hover:before {
+#avatar-list .user-disco-g p.dubs:hover:before {
   content: "Dub+ Owner  -  ";
   font-weight: 700 !important;
   color: #89BE6C !important; }
 
 .dubplus-split-chat .chat-main li:nth-child(2n) {
-  background: -webkit-linear-gradient(left, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
   background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
   box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
   width: 100%; }
@@ -335,7 +334,6 @@
     right: 1.7em !important; }
 
 .dubplus-split-chat .split {
-  background: -webkit-linear-gradient(left, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
   background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
   box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
   width: 100%; }
@@ -385,7 +383,7 @@
   background-image: url(https://i.imgur.com/oTfAI0O.png); }
 
 .tasty-previews {
-  background-image: url(https://rawgit.com/FranciscoG/DubPlus/preact-version/emotes/tastycat/21.png); }
+  background-image: url(https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus/emotes/tastycat/21.png); }
 
 .frankerFacez-previews {
   background-image: url(https://i.imgur.com/DuJfI4T.png); }
