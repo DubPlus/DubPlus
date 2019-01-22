@@ -1,6 +1,5 @@
 /**
   // General 
-  require('./showDubsOnHover.js'),
   require('./downDubInChat.js'), // (mod only)
   require('./upDubInChat.js'),
   require('./grabsInChat.js'),
@@ -19,6 +18,7 @@ import PMNotifications from './pm-notifications.js';
 import DJNotification from './dj-notification.js';
 import SnowSwitch from './snow-switch.js';
 import RainSwitch from './rain-switch.js';
+import ShowDubsOnHover from './show-dubs-on-hover.js';
 
 export default class GeneralSection extends Component {
   state = {
@@ -56,6 +56,7 @@ export default class GeneralSection extends Component {
           <ChatNotification />
           <PMNotifications />
           <DJNotification />
+          <ShowDubsOnHover />
 
           <SnowSwitch />
           <RainSwitch />

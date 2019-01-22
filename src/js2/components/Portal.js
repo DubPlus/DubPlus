@@ -1,11 +1,5 @@
 import { h, Component, render } from 'preact';
 
-/** Redirect rendering of descendants into the given CSS selector.
- *  @example
- *    <Portal into="body">
- *      <div>I am rendered into document.body</div>
- *    </Portal>
- */
 export default class Portal extends Component {
   componentDidUpdate(props) {
     for (let i in props) {

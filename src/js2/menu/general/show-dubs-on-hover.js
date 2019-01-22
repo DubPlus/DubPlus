@@ -1,7 +1,9 @@
 import { h, Component } from "preact";
 import { MenuSwitch } from "../../components/menuItems.js";
 import Modal from "../../components/modal";
-// userIsAtLeastMod
+import getJSON from "../../utils/getJSON.js";
+import userIsAtLeastMod from "../../utils/modcheck.js";
+import DubsInfo from "./dubs-hover/dubs-info";
 
 export default class ShowDubsOnHover extends Component {
   state = {
@@ -9,7 +11,8 @@ export default class ShowDubsOnHover extends Component {
     warned: false,
     upDubs: [],
     downDubs: [],
-    grabs: []
+    grabs: [],
+    isOn: false
   };
 
   turnOn = () => {
@@ -21,9 +24,12 @@ export default class ShowDubsOnHover extends Component {
     }
 
     this.begin();
+
+    this.setState({ isOn: true });
   };
 
   turnOff() {
+    this.setState({ isOn: false });
     Dubtrack.Events.unbind("realtime:room_playlist-dub", this.dubWatcher);
     Dubtrack.Events.unbind(
       "realtime:room_playlist-queue-update-grabs",
@@ -42,161 +48,254 @@ export default class ShowDubsOnHover extends Component {
     this.resetDubs();
 
     Dubtrack.Events.bind("realtime:room_playlist-dub", this.dubWatcher);
-    Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs",this.grabWatcher);
+    Dubtrack.Events.bind(
+      "realtime:room_playlist-queue-update-grabs",
+      this.grabWatcher
+    );
     Dubtrack.Events.bind("realtime:user-leave", this.dubUserLeaveWatcher);
     Dubtrack.Events.bind("realtime:room_playlist-update", this.resetDubs);
     Dubtrack.Events.bind("realtime:room_playlist-update", this.resetGrabs);
   }
-  
+
   /**
    * the callback for the up and down dub events
    * Stores the user info of who has dubbed the current song in local state
    */
-  dubWatcher = (e) => {
+  dubWatcher = e => {
+    // split dubs into 2 arrays, one containing current user
+    // and one with current user removed. Do the same for both
+    // up and down dubs
 
-    if(e.dubtype === 'updub'){
-  
-      // If dub not already casted
-      if(this.state.upDubs.filter(function(el){ return el.userid === e.user._id; }).length <= 0){
-        this.setState((state) => {
+    const userInUpdubs = [];
+    const userRemovedFromUpdubs = this.state.upDubs.filter(function(el) {
+      let test = el.userid !== e.user._id;
+      if (!test) {
+        userInUpdubs.push(el);
+      }
+      return test;
+    });
+
+    const userInDownDubs = [];
+    const userRemovedFromDowndubs = this.state.upDubs.filter(function(el) {
+      let test = el.userid !== e.user._id;
+      if (!test) {
+        userInDownDubs.push(el);
+      }
+      return test;
+    });
+
+    if (e.dubtype === "updub") {
+      // If user has not updubbed, we add them them to it
+      if (userInUpdubs.length <= 0) {
+        this.setState(state => {
           let newUpDubs = [...state.upDubs].push({
             userid: e.user._id,
             username: e.user.username
-          })
-          return {upDubs: newUpDubs};
+          });
+          return { upDubs: newUpDubs };
         });
       }
-      
-      // Remove user from downdubs if exists
-      let filteredDownDubs = this.state.downDubs.filter(function(el){ return el.userid !== e.user._id; });
-      this.setState({downDubs: filteredDownDubs});
-      
-    } else if (e.dubtype === 'downdub'){
-  
-      //If dub not already casted
-      if(this.state.downDubs.filter(function(el){ return el.userid === e.user._id; }).length <= 0 && userIsAtLeastMod(Dubtrack.session.id)){
-          this.setState((state) => {
-            let newDownDubs = [...state.downDubs].push({
-              userid: e.user._id,
-              username: e.user.username
-            })
-            return {downDubs: newDownDubs};
+
+      // and then remove them from downdubs
+      this.setState({ downDubs: userRemovedFromDowndubs });
+    } else if (e.dubtype === "downdub") {
+      // is user has not downdubbed, then we add them
+      if (userInDownDubs.length <= 0 && userIsAtLeastMod(Dubtrack.session.id)) {
+        this.setState(state => {
+          let newDownDubs = [...state.downDubs].push({
+            userid: e.user._id,
+            username: e.user.username
           });
+          return { downDubs: newDownDubs };
+        });
       }
-  
+
       //Remove user from other dubtype if exists
-      let filteredUpDubs = this.state.upDubs.filter(function(el){ return el.userid !== e.user._id; });
-      this.setState({upDubs: filteredUpDubs});
-  
+      this.setState({ upDubs: userRemovedFromUpdubs });
     }
-  
-    var msSinceSongStart = new Date() - new Date(Dubtrack.room.player.activeSong.attributes.song.played);
-    if(msSinceSongStart < 1000) {return;}
-  
-    if(this.state.upDubs.length !== Dubtrack.room.player.activeSong.attributes.song.updubs){
+
+    var msSinceSongStart =
+      new Date() -
+      new Date(Dubtrack.room.player.activeSong.attributes.song.played);
+    if (msSinceSongStart < 1000) {
+      return;
+    }
+
+    if (
+      this.state.upDubs.length !==
+      Dubtrack.room.player.activeSong.attributes.song.updubs
+    ) {
       // console.log("Updubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
       this.resetDubs();
-    } else if(userIsAtLeastMod(Dubtrack.session.id) && this.state.downDubs.length !== Dubtrack.room.player.activeSong.attributes.song.downdubs){
+    } else if (
+      userIsAtLeastMod(Dubtrack.session.id) &&
+      this.state.downDubs.length !==
+        Dubtrack.room.player.activeSong.attributes.song.downdubs
+    ) {
       // console.log("Downdubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
       this.resetDubs();
     }
-  }
+  };
 
   /**
    * Callback for the grab event
    * Stores user info for each grab in an array in local state
    */
-  grabWatcher = (e) => {
+  grabWatcher = e => {
     // only add Grab if it doesn't exist in the array already
-    if(this.state.grabs.filter(function(el){ return el.userid === e.user._id; }).length <= 0){
-      this.setState((state) => {
+    if (
+      this.state.grabs.filter(function(el) {
+        return el.userid === e.user._id;
+      }).length <= 0
+    ) {
+      this.setState(state => {
         let newGrabs = [...state.grabs].push({
           userid: e.user._id,
           username: e.user.username
-        })
-        return {grabs: newGrabs};
+        });
+        return { grabs: newGrabs };
       });
     }
-  }
+  };
 
   /**
    * Removes a user from all of the arrays in state when a user logs off
    */
-  dubUserLeaveWatcher = (e) => {
+  dubUserLeaveWatcher = e => {
     //Remove user from dub list
-    let newUpDubs = this.state.upDubs.filter( el => el.userid !== e.user._id );
-    let newDownDubs = this.state.downDubs.filter( el => el.userid !== e.user._id );
-    let newGrabs = this.state.grabs.filter( el => el.userid !== e.user._id );
+    let newUpDubs = this.state.upDubs.filter(el => el.userid !== e.user._id);
+    let newDownDubs = this.state.downDubs.filter(
+      el => el.userid !== e.user._id
+    );
+    let newGrabs = this.state.grabs.filter(el => el.userid !== e.user._id);
     this.setState({
       upDubs: newUpDubs,
-      downDubs : newDownDubs,
+      downDubs: newDownDubs,
       grabs: newGrabs
     });
-  }
+  };
 
-  /**
-   * 
-   */
-  resetDubs = function(){
-    this.setState({
-      upDubs: [],
-      downDubs: []
-    });
-  
-    var dubsURL = "https://api.dubtrack.fm/room/" + Dubtrack.room.model.id + "/playlist/active/dubs";
-    $.getJSON(dubsURL, (response)=>{
-      response.data.upDubs.forEach((e)=>{
-        //Dub already casted (usually from autodub)
-        if($.grep(window.dubplus.dubs.upDubs, function(el){ return el.userid === e.userid; }).length > 0){
+  handleReset = () => {
+    let updubs = [];
+    let downdubs = [];
+
+    // get the current active dubs in the room via api
+    const dubsURL =
+      "https://api.dubtrack.fm/room/" +
+      Dubtrack.room.model.id +
+      "/playlist/active/dubs";
+
+    const roomDubs = getJSON(dubsURL);
+
+    roomDubs.then(response => {
+      let data = JSON.parse(response);
+      data.upDubs.forEach(e => {
+        // Dub already casted (usually from autodub)
+        if (
+          this.state.upDubs.filter(function(el) {
+            return el.userid === e.userid;
+          }).length > 0
+        ) {
           return;
         }
-  
-        var username;
-        if(!Dubtrack.room.users.collection.findWhere({userid: e.userid}) || 
-           !Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes) {
-            $.getJSON("https://api.dubtrack.fm/user/" + e.userid, function(response){
-                if(response && response.userinfo) {
-                  username = response.userinfo.username;
-                }
-            });
+
+        // check for user info in the DT room's user collection
+        if (
+          !Dubtrack.room.users.collection.findWhere({ userid: e.userid }) ||
+          !Dubtrack.room.users.collection.findWhere({ userid: e.userid })
+            .attributes
+        ) {
+          // if they don't exist, we can check the user api directly
+          let userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
+          userInfo.then(response => {
+            let data = JSON.parse(response);
+            if (data && data.userinfo && data.userinfo.username) {
+              let username = data.userinfo.username;
+              updubs.push({
+                userid: e.userid,
+                username: username
+              });
+            }
+          });
         } else {
-          username = Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes._user.username;
+          let username = Dubtrack.room.users.collection.findWhere({
+            userid: e.userid
+          }).attributes._user.username;
+
+          if (username) {
+            updubs.push({
+              userid: e.userid,
+              username: username
+            });
+          }
         }
-  
-        if(!username) { return; }
-  
-        window.dubplus.dubs.upDubs.push({
-            userid: e.userid,
-            username: username
-        });
+      });
+
+      this.setState(prevState => {
+        return {
+          upDubs: prevState.upDubs.concat(updubs)
+        };
       });
 
       //Only let mods or higher access down dubs
-      if(userIsAtLeastMod(Dubtrack.session.id)){
-        response.data.downDubs.forEach(function(e){
+      if (userIsAtLeastMod(Dubtrack.session.id)) {
+        data.downDubs.forEach(function(e) {
           //Dub already casted
-          if($.grep(window.dubplus.dubs.downDubs, function(el){ return el.userid === e.userid; }).length > 0){
-              return;
+          if (
+            this.state.downDubs.filter(function(el) {
+              return el.userid === e.userid;
+            }).length > 0
+          ) {
+            return;
           }
-  
-          var username;
-          if(!Dubtrack.room.users.collection.findWhere({userid: e.userid}) || !Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes) {
-              $.getJSON("https://api.dubtrack.fm/user/" + e.userid, function(response){
-                  username = response.userinfo.username;
+
+          if (
+            !Dubtrack.room.users.collection.findWhere({ userid: e.userid }) ||
+            !Dubtrack.room.users.collection.findWhere({ userid: e.userid })
+              .attributes
+          ) {
+            let userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
+            userInfo.then(response => {
+              let data = JSON.parse(response);
+              if (data && data.userinfo && data.userinfo.username) {
+                let username = data.userinfo.username;
+                downdubs.push({
+                  userid: e.userid,
+                  username: username
+                });
+              }
+            });
+          } else {
+            let username = Dubtrack.room.users.collection.findWhere({
+              userid: e.userid
+            }).attributes._user.username;
+            if (username) {
+              downdubs.push({
+                userid: e.userid,
+                username: username
               });
+            }
           }
-          else{
-              username = Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes._user.username;
-          }
-  
-          window.dubplus.dubs.downDubs.push({
-              userid: e.userid,
-              username: Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes._user.username
-          });
+        });
+
+        this.setState(prevState => {
+          return {
+            upDubs: prevState.downDubs.concat(downdubs)
+          };
         });
       }
     });
-  }
+  };
+
+  resetDubs = () => {
+    this.setState(
+      {
+        upDubs: [],
+        downDubs: []
+      },
+      this.handleReset
+    );
+  };
 
   render() {
     return (
@@ -213,6 +312,24 @@ export default class ShowDubsOnHover extends Component {
           title="Grab Vote Info"
           content="Please note that this feature is currently still in development. We are waiting on the ability to pull grab vote information from Dubtrack on load. Until then the only grabs you will be able to see are those you are present in the room for."
           onClose={this.closeModal}
+        />
+        <DubsInfo
+          show={this.isOn}
+          into=".dubpus-updubs-hover"
+          type="updubs"
+          dubs={this.state.upDubs}
+        />
+        <DubsInfo
+          show={this.isOn}
+          into=".dubpus-downdubs-hover"
+          type="downdubs"
+          dubs={this.state.downDubs}
+        />
+        <DubsInfo
+          show={this.isOn}
+          into=".dubpus-grabs-hover"
+          type="grabs"
+          dubs={this.state.grabs}
         />
       </MenuSwitch>
     );
