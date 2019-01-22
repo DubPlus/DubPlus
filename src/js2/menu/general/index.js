@@ -1,6 +1,5 @@
 /**
   // General 
-  require('./grabsInChat.js'),
  */
 
 import { h, Component } from 'preact';
@@ -19,6 +18,7 @@ import RainSwitch from './rain-switch.js';
 import ShowDubsOnHover from './show-dubs-on-hover.js';
 import DowndubInChat from './downdub-in-chat.js';
 import UpdubsInChat from './updubs-in-chat.js';
+import GrabsInChat from './grabs-in-chat.js';
 
 export default class GeneralSection extends Component {
   state = {
@@ -59,7 +59,7 @@ export default class GeneralSection extends Component {
           <ShowDubsOnHover />
           <DowndubInChat />
           <UpdubsInChat />
-
+          <GrabsInChat />
           <SnowSwitch />
           <RainSwitch />
         </ul>
