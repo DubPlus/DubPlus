@@ -9,10 +9,10 @@ class MenuIcon extends Component {
   toggle = () => {
     let menu = document.querySelector('.dubplus-menu');
     if (this.state.open) {
-      menu.classList.add('dubplus-menu-open');
+      menu.classList.remove('dubplus-menu-open');
       this.setState({open: false});
     } else {
-      menu.classList.remove('dubplus-menu-open');
+      menu.classList.add('dubplus-menu-open');
       this.setState({open: true});
     }
   }

@@ -16,19 +16,17 @@ export default class ShowDubsOnHover extends Component {
   };
 
   turnOn = () => {
+    var onState = {
+      isOn: true
+    };
     if (!this.state.warned) {
-      this.setState({
-        showWarning: true,
-        warned: true
-      });
+      onState.showWarning = true;
+      onState.warned = true;
     }
-
-    this.begin();
-
-    this.setState({ isOn: true });
+    this.setState(onState, this.begin);
   };
 
-  turnOff() {
+  turnOff = () => {
     this.setState({ isOn: false });
     Dubtrack.Events.unbind("realtime:room_playlist-dub", this.dubWatcher);
     Dubtrack.Events.unbind(
@@ -38,13 +36,13 @@ export default class ShowDubsOnHover extends Component {
     Dubtrack.Events.unbind("realtime:user-leave", this.dubUserLeaveWatcher);
     Dubtrack.Events.unbind("realtime:room_playlist-update", this.resetDubs);
     Dubtrack.Events.unbind("realtime:room_playlist-update", this.resetGrabs); //TODO: Remove when we can hit the api for all grabs of current playing song
-  }
+  };
 
   closeModal = () => {
     this.setState({ showWarning: false });
   };
 
-  begin() {
+  begin = () => {
     this.resetDubs();
 
     Dubtrack.Events.bind("realtime:room_playlist-dub", this.dubWatcher);
@@ -55,7 +53,7 @@ export default class ShowDubsOnHover extends Component {
     Dubtrack.Events.bind("realtime:user-leave", this.dubUserLeaveWatcher);
     Dubtrack.Events.bind("realtime:room_playlist-update", this.resetDubs);
     Dubtrack.Events.bind("realtime:room_playlist-update", this.resetGrabs);
-  }
+  };
 
   /**
    * the callback for the up and down dub events
@@ -87,8 +85,8 @@ export default class ShowDubsOnHover extends Component {
     if (e.dubtype === "updub") {
       // If user has not updubbed, we add them them to it
       if (userInUpdubs.length <= 0) {
-        this.setState(state => {
-          let newUpDubs = [...state.upDubs].push({
+        this.setState(prevState => {
+          let newUpDubs = prevState.upDubs.push({
             userid: e.user._id,
             username: e.user.username
           });
@@ -101,8 +99,8 @@ export default class ShowDubsOnHover extends Component {
     } else if (e.dubtype === "downdub") {
       // is user has not downdubbed, then we add them
       if (userInDownDubs.length <= 0 && userIsAtLeastMod(Dubtrack.session.id)) {
-        this.setState(state => {
-          let newDownDubs = [...state.downDubs].push({
+        this.setState(prevState => {
+          let newDownDubs = prevState.downDubs.push({
             userid: e.user._id,
             username: e.user.username
           });
@@ -148,8 +146,8 @@ export default class ShowDubsOnHover extends Component {
         return el.userid === e.user._id;
       }).length <= 0
     ) {
-      this.setState(state => {
-        let newGrabs = [...state.grabs].push({
+      this.setState(prevState => {
+        let newGrabs = prevState.grabs.push({
           userid: e.user._id,
           username: e.user.username
         });
@@ -180,16 +178,15 @@ export default class ShowDubsOnHover extends Component {
     let downdubs = [];
 
     // get the current active dubs in the room via api
-    const dubsURL =
-      "https://api.dubtrack.fm/room/" +
-      Dubtrack.room.model.id +
-      "/playlist/active/dubs";
+    const dubsURL = `https://api.dubtrack.fm/room/${
+      Dubtrack.room.model.id
+    }/playlist/active/dubs`;
 
     const roomDubs = getJSON(dubsURL);
 
     roomDubs.then(response => {
-      let data = JSON.parse(response);
-      data.upDubs.forEach(e => {
+      let resp = JSON.parse(response);
+      resp.data.upDubs.forEach(e => {
         // Dub already casted (usually from autodub)
         if (
           this.state.upDubs.filter(function(el) {
@@ -208,7 +205,8 @@ export default class ShowDubsOnHover extends Component {
           // if they don't exist, we can check the user api directly
           let userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
           userInfo.then(response => {
-            let data = JSON.parse(response);
+            let resp = JSON.parse(response);
+            let data = resp.data;
             if (data && data.userinfo && data.userinfo.username) {
               let username = data.userinfo.username;
               updubs.push({
@@ -239,7 +237,7 @@ export default class ShowDubsOnHover extends Component {
 
       //Only let mods or higher access down dubs
       if (userIsAtLeastMod(Dubtrack.session.id)) {
-        data.downDubs.forEach(function(e) {
+        resp.data.downDubs.forEach(e => {
           //Dub already casted
           if (
             this.state.downDubs.filter(function(el) {
@@ -256,7 +254,8 @@ export default class ShowDubsOnHover extends Component {
           ) {
             let userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
             userInfo.then(response => {
-              let data = JSON.parse(response);
+              let resp = JSON.parse(response);
+              let data = resp.data;
               if (data && data.userinfo && data.userinfo.username) {
                 let username = data.userinfo.username;
                 downdubs.push({
@@ -297,7 +296,12 @@ export default class ShowDubsOnHover extends Component {
     );
   };
 
-  render() {
+  render(props, state) {
+    let grabElem = document.querySelector(".add-to-playlist-button")
+      .parentElement;
+    let upElem = document.querySelector(".dubup").parentElement;
+    let downElem = document.querySelector(".dubdown").parentElement;
+
     return (
       <MenuSwitch
         id="dubplus-dubs-hover"
@@ -313,24 +317,24 @@ export default class ShowDubsOnHover extends Component {
           content="Please note that this feature is currently still in development. We are waiting on the ability to pull grab vote information from Dubtrack on load. Until then the only grabs you will be able to see are those you are present in the room for."
           onClose={this.closeModal}
         />
-        <DubsInfo
-          show={this.isOn}
-          into=".dubpus-updubs-hover"
+        {/* <DubsInfo
+          show={state.isOn}
+          into={upElem}
           type="updubs"
-          dubs={this.state.upDubs}
+          dubs={state.upDubs}
         />
         <DubsInfo
-          show={this.isOn}
-          into=".dubpus-downdubs-hover"
+          show={state.isOn}
+          into={downElem}
           type="downdubs"
-          dubs={this.state.downDubs}
+          dubs={state.downDubs}
         />
         <DubsInfo
-          show={this.isOn}
-          into=".dubpus-grabs-hover"
+          show={state.isOn}
+          into={grabElem}
           type="grabs"
-          dubs={this.state.grabs}
-        />
+          dubs={state.grabs}
+        /> */}
       </MenuSwitch>
     );
   }

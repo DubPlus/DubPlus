@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import { MenuSwitch } from "../../components/menuItems.js";
+import { MenuSwitch, MenuPencil } from "../../components/menuItems.js";
 import settings from "../../utils/UserSettings.js";
 import { notifyCheckPermission, showNotification } from "../../utils/notify.js";
 

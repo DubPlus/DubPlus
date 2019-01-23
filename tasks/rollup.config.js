@@ -1,6 +1,6 @@
 import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
-import uglify from 'rollup-plugin-uglify';
+import { uglify } from 'rollup-plugin-uglify';
 import replace from 'rollup-plugin-replace';
 
 const watchMode = process.env.ROLLUP_WATCH === 'true';
@@ -49,10 +49,7 @@ export default {
     file : jsOutput,
     format: 'iife',
     name: 'DubPlus',
-    treeshake : true,
-    globals : {
-      jquery: '$'
-    }
+    treeshake : true
   },
   watch : {
     clearScreen: false
@@ -74,12 +71,12 @@ export default {
         'node_modules/preact-portal/**'
       ],
       plugins : [
-        "external-helpers",
-        "transform-class-properties",
-        ["transform-react-jsx", { "pragma":"h" }]
+        "@babel/plugin-transform-spread",
+        "@babel/plugin-proposal-class-properties",
+        ["@babel/plugin-transform-react-jsx", { "pragma":"h" }]
       ],
       "presets": [
-        ["env", {
+        ["@babel/preset-env", {
           "modules": false
         }]
       ]

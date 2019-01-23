@@ -46,14 +46,14 @@ export default class DubsInfo extends Component {
       return (
         <li
           onClick={() => this.updateChat("@" + d.username + " ")}
-          class={
+          className={
             "preview-dubinfo-item users-previews " + `dubplus-${type}-hover`
           }
         >
-          <div class="dubinfo-image">
+          <div className="dubinfo-image">
             <img src={`https://api.dubtrack.fm/user/${d.userID}/image`} />
           </div>
-          <span class="dubinfo-text">@{d.username}</span>
+          <span className="dubinfo-text">@{d.username}</span>
         </li>
       );
     });
@@ -73,7 +73,7 @@ export default class DubsInfo extends Component {
         <ul
           id="dubinfo-preview"
           syle={{ backgroundColor: this.getBgColor(type.replace("dubs", "")) }}
-          class={containerCss.join(" ")}
+          className={containerCss.join(" ")}
         >
           {list.length > 0 ? list : <li>{notYetMsg}</li>}
         </ul>

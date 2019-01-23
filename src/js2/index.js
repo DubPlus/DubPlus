@@ -7,24 +7,16 @@ import WaitFor from "./utils/waitFor.js";
 import Loading from "./components/loading.js";
 import cssHelper from "./utils/css.js";
 import MenuIcon from "./components/MenuIcon.js";
-import getScript from "./utils/getScript.js";
 import track from "./utils/analytics.js";
 
 polyfills();
 
 setTimeout(function() {
   // start the loading of the CSS asynchronously
-  cssHelper.load("/css/dubplus.css");
   cssHelper.loadExternal(
     "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-  );
-
-  if (typeof Promise === "undefined") {
-    // load Promise polyfill for IE because we are still supporting it
-    getScript(
-      "https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"
     );
-  }
+  cssHelper.load("/css/dubplus.css");
 }, 1);
 
 class DubPlusContainer extends Component {
@@ -112,5 +104,5 @@ class DubPlusContainer extends Component {
 render(<DubPlusContainer />, document.body);
 render(<MenuIcon />, document.querySelector(".header-right-navigation"));
 
-// _PKGINFO_ is inserted by the rollup build process
+// PKGINFO is inserted by the rollup build process
 export default _PKGINFO_;

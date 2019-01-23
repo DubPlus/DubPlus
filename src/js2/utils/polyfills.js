@@ -1,3 +1,5 @@
+import getScript from "./getScript.js";
+
 export default function() {
 
   // Element.remove() polyfill
@@ -17,5 +19,12 @@ export default function() {
       });
     });
   })([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
+
+  if (typeof Promise === "undefined") {
+    // load Promise polyfill for IE because we are still supporting it
+    getScript(
+      "https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"
+    );
+  }
 
 }

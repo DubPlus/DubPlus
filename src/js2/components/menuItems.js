@@ -120,8 +120,8 @@ export class MenuSwitch extends Component {
         {props.children || null}
 
         <div onClick={this.toggleSwitch} className="dubplus-form-control">
-          <div class="dubplus-switch-bg">
-            <div class="dubplus-switcher" />
+          <div className="dubplus-switch-bg">
+            <div className="dubplus-switcher" />
           </div>
 
           <span className="dubplus-menu-label">{props.menuTitle}</span>
