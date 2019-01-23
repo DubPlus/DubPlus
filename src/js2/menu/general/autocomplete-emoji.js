@@ -1,6 +1,6 @@
 import {h, Component} from 'preact';
 import {MenuSwitch} from '../../components/menuItems.js';
-import Portal from '../../components/Portal.js';
+import Portal from "preact-portal/src/preact-portal";
 
 /**********************************************************************
  * Autocomplete Emoji / Emotes

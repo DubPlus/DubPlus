@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import Portal from "../../../components/Portal";
+import Portal from "preact-portal/src/preact-portal";
 
 /**
  * DubsInfo component

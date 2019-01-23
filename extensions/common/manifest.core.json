@@ -14,7 +14,6 @@
         "*://*.dubtrack.fm/join/*"
       ],
       "js": [
-        "scripts/jquery-3.3.1.min.js",
         "scripts/loader.js"
       ],
       "run_at": "document_end"
