@@ -4,6 +4,7 @@ import Modal from "../../components/modal";
 import getJSON from "../../utils/getJSON.js";
 import userIsAtLeastMod from "../../utils/modcheck.js";
 import DubsInfo from "./dubs-hover/dubs-info";
+import Portal from "preact-portal/src/preact-portal";
 
 export default class ShowDubsOnHover extends Component {
   state = {
@@ -11,23 +12,20 @@ export default class ShowDubsOnHover extends Component {
     warned: false,
     upDubs: [],
     downDubs: [],
-    grabs: [],
-    isOn: false
+    grabs: []
   };
 
   turnOn = () => {
-    var onState = {
-      isOn: true
-    };
     if (!this.state.warned) {
-      onState.showWarning = true;
-      onState.warned = true;
+      this.setState({
+        showWarning : true,
+        warned :true
+      });
     }
-    this.setState(onState, this.begin);
+    this.begin();
   };
 
   turnOff = () => {
-    this.setState({ isOn: false });
     Dubtrack.Events.unbind("realtime:room_playlist-dub", this.dubWatcher);
     Dubtrack.Events.unbind(
       "realtime:room_playlist-queue-update-grabs",
@@ -63,54 +61,54 @@ export default class ShowDubsOnHover extends Component {
     // split dubs into 2 arrays, one containing current user
     // and one with current user removed. Do the same for both
     // up and down dubs
+    let {upDubs, downDubs} = this.state;
 
-    const userInUpdubs = [];
-    const userRemovedFromUpdubs = this.state.upDubs.filter(function(el) {
-      let test = el.userid !== e.user._id;
-      if (!test) {
-        userInUpdubs.push(el);
-      }
-      return test;
-    });
-
-    const userInDownDubs = [];
-    const userRemovedFromDowndubs = this.state.upDubs.filter(function(el) {
-      let test = el.userid !== e.user._id;
-      if (!test) {
-        userInDownDubs.push(el);
-      }
-      return test;
-    });
+    let user = {
+      userid: e.user._id,
+      username: e.user.username
+    };
 
     if (e.dubtype === "updub") {
+      let userNotUpdubbed = upDubs.filter(el => el.userid !== e.user._id).length === 0;
       // If user has not updubbed, we add them them to it
-      if (userInUpdubs.length <= 0) {
+      if (userNotUpdubbed) {
         this.setState(prevState => {
-          let newUpDubs = prevState.upDubs.push({
-            userid: e.user._id,
-            username: e.user.username
-          });
-          return { upDubs: newUpDubs };
+          return { upDubs: [...prevState.upDubs, user] };
         });
       }
 
+      let userDowndubbed = downDubs.filter(el => el.userid === e.user._id).length > 0;
       // and then remove them from downdubs
-      this.setState({ downDubs: userRemovedFromDowndubs });
-    } else if (e.dubtype === "downdub") {
-      // is user has not downdubbed, then we add them
-      if (userInDownDubs.length <= 0 && userIsAtLeastMod(Dubtrack.session.id)) {
+      if (userDowndubbed) {
         this.setState(prevState => {
-          let newDownDubs = prevState.downDubs.push({
-            userid: e.user._id,
-            username: e.user.username
-          });
-          return { downDubs: newDownDubs };
+          return { downDubs: prevState.downDubs.filter(el => el.userid !== e.user._id) };
+        });
+      }
+    }
+    
+    if (e.dubtype === "downdub") {
+      let userNotDowndub = downDubs.filter(el => el.userid !== e.user._id).length === 0;
+      // is user has not downdubbed, then we add them
+      if (userNotDowndub && userIsAtLeastMod(Dubtrack.session.id)) {
+        this.setState(prevState => {
+          return { downDubs: [...prevState.downDubs, user] };
         });
       }
 
-      //Remove user from other dubtype if exists
-      this.setState({ upDubs: userRemovedFromUpdubs });
+      //Remove user from from updubs
+      let userUpdubbed = upDubs.filter(el => el.userid === e.user._id).length > 0;
+      // and then remove them from downdubs
+      if (userUpdubbed) {
+        this.setState(prevState => {
+          return { upDubs: prevState.upDubs.filter(el => el.userid !== e.user._id) };
+        });
+      }
     }
+  };
+
+  checkDubs(){
+    // because (P)react setState is async, this might always fail
+    // so commenting out for now until I can figure something out
 
     var msSinceSongStart =
       new Date() -
@@ -123,17 +121,20 @@ export default class ShowDubsOnHover extends Component {
       this.state.upDubs.length !==
       Dubtrack.room.player.activeSong.attributes.song.updubs
     ) {
-      // console.log("Updubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
+      console.log("Updubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
       this.resetDubs();
-    } else if (
+      return;
+    }
+    
+    if (
       userIsAtLeastMod(Dubtrack.session.id) &&
       this.state.downDubs.length !==
         Dubtrack.room.player.activeSong.attributes.song.downdubs
     ) {
-      // console.log("Downdubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
+      console.log("Downdubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
       this.resetDubs();
     }
-  };
+  }
 
   /**
    * Callback for the grab event
@@ -146,12 +147,12 @@ export default class ShowDubsOnHover extends Component {
         return el.userid === e.user._id;
       }).length <= 0
     ) {
-      this.setState(prevState => {
-        let newGrabs = prevState.grabs.push({
+      let user = {
           userid: e.user._id,
           username: e.user.username
-        });
-        return { grabs: newGrabs };
+      };
+      this.setState(prevState => {
+        return { grabs: [...prevState.grabs, user] };
       });
     }
   };
@@ -160,7 +161,6 @@ export default class ShowDubsOnHover extends Component {
    * Removes a user from all of the arrays in state when a user logs off
    */
   dubUserLeaveWatcher = e => {
-    //Remove user from dub list
     let newUpDubs = this.state.upDubs.filter(el => el.userid !== e.user._id);
     let newDownDubs = this.state.downDubs.filter(
       el => el.userid !== e.user._id
@@ -173,114 +173,98 @@ export default class ShowDubsOnHover extends Component {
     });
   };
 
-  handleReset = () => {
-    let updubs = [];
-    let downdubs = [];
-
+  /**
+   * Callback for resetDubs()'s setState
+   * Wipes out local state and repopulates with data from the api
+   */
+  handleReset() {
     // get the current active dubs in the room via api
-    const dubsURL = `https://api.dubtrack.fm/room/${
-      Dubtrack.room.model.id
-    }/playlist/active/dubs`;
+    const dubsURL = `https://api.dubtrack.fm/room/${Dubtrack.room.model.id}/playlist/active/dubs`;
 
     const roomDubs = getJSON(dubsURL);
 
-    roomDubs.then(response => {
-      let resp = JSON.parse(response);
-      resp.data.upDubs.forEach(e => {
+    roomDubs.then(json => {
+      // loop through all the upDubs in the room and add them to our local state
+      json.data.upDubs.forEach(e => {
         // Dub already casted (usually from autodub)
-        if (
-          this.state.upDubs.filter(function(el) {
-            return el.userid === e.userid;
-          }).length > 0
-        ) {
+        if (this.state.upDubs.filter(el => el.userid === e.userid).length > 0) {
           return;
         }
 
-        // check for user info in the DT room's user collection
-        if (
-          !Dubtrack.room.users.collection.findWhere({ userid: e.userid }) ||
-          !Dubtrack.room.users.collection.findWhere({ userid: e.userid })
-            .attributes
-        ) {
+        // to get username we check for user info in the DT room's user collection
+        let checkUser = Dubtrack.room.users.collection.findWhere({ userid: e.userid });
+        if (!checkUser || !checkUser.attributes) {
           // if they don't exist, we can check the user api directly
           let userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
-          userInfo.then(response => {
-            let resp = JSON.parse(response);
-            let data = resp.data;
+          userInfo.then(json2 => {
+            let data = json2.data;
             if (data && data.userinfo && data.userinfo.username) {
-              let username = data.userinfo.username;
-              updubs.push({
+              let user = {
                 userid: e.userid,
-                username: username
+                username: data.userinfo.username
+              };
+              this.setState(prevState => {
+                return {
+                  upDubs: [...prevState.upDubs, user]
+                };
               });
             }
           });
-        } else {
-          let username = Dubtrack.room.users.collection.findWhere({
-            userid: e.userid
-          }).attributes._user.username;
-
-          if (username) {
-            updubs.push({
-              userid: e.userid,
-              username: username
-            });
-          }
+          return;
         }
-      });
-
-      this.setState(prevState => {
-        return {
-          upDubs: prevState.upDubs.concat(updubs)
-        };
+        
+        if (checkUser.attributes._user.username) {
+          let user = {
+            userid: e.userid,
+            username: checkUser.attributes._user.username
+          };
+          this.setState(prevState => {
+            return {
+              upDubs: [...prevState.upDubs, user]
+            };
+          });
+        }
       });
 
       //Only let mods or higher access down dubs
       if (userIsAtLeastMod(Dubtrack.session.id)) {
-        resp.data.downDubs.forEach(e => {
+        json.data.downDubs.forEach(e => {
           //Dub already casted
-          if (
-            this.state.downDubs.filter(function(el) {
-              return el.userid === e.userid;
-            }).length > 0
-          ) {
+          if (this.state.downDubs.filter(el => el.userid === e.userid).length > 0) {
             return;
           }
-
-          if (
-            !Dubtrack.room.users.collection.findWhere({ userid: e.userid }) ||
-            !Dubtrack.room.users.collection.findWhere({ userid: e.userid })
-              .attributes
-          ) {
+          
+          let checkUsers = Dubtrack.room.users.collection.findWhere({ userid: e.userid });
+          if (!checkUsers || !checkUsers.attributes) {
             let userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
-            userInfo.then(response => {
-              let resp = JSON.parse(response);
-              let data = resp.data;
+            userInfo.then(json3 => {
+              let data = json3.data;
               if (data && data.userinfo && data.userinfo.username) {
-                let username = data.userinfo.username;
-                downdubs.push({
+                let user = {
                   userid: e.userid,
-                  username: username
+                  username: data.userinfo.username
+                };
+                this.setState(prevState => {
+                  return {
+                    downDubs: [...prevState.downDubs, user]
+                  };
                 });
               }
             });
-          } else {
-            let username = Dubtrack.room.users.collection.findWhere({
-              userid: e.userid
-            }).attributes._user.username;
-            if (username) {
-              downdubs.push({
-                userid: e.userid,
-                username: username
-              });
-            }
+            return;
           }
-        });
 
-        this.setState(prevState => {
-          return {
-            upDubs: prevState.downDubs.concat(downdubs)
-          };
+          if (checkUsers.attributes._user.username) {
+            let user = {
+              userid: e.userid,
+              username: checkUsers.attributes._user.username
+            };
+            this.setState(prevState => {
+              return {
+                downDubs: [...prevState.downDubs, user]
+              };
+            });
+          }
         });
       }
     });
@@ -296,12 +280,18 @@ export default class ShowDubsOnHover extends Component {
     );
   };
 
-  render(props, state) {
+  
+  componentWillMount() {
+    this.upElem = document.querySelector(".dubup").parentElement;
+    upElem.classList.add('dubtrack-updub');
+    
     let grabElem = document.querySelector(".add-to-playlist-button")
       .parentElement;
-    let upElem = document.querySelector(".dubup").parentElement;
     let downElem = document.querySelector(".dubdown").parentElement;
+  }
+  
 
+  render(props, state) {
     return (
       <MenuSwitch
         id="dubplus-dubs-hover"
@@ -317,20 +307,21 @@ export default class ShowDubsOnHover extends Component {
           content="Please note that this feature is currently still in development. We are waiting on the ability to pull grab vote information from Dubtrack on load. Until then the only grabs you will be able to see are those you are present in the room for."
           onClose={this.closeModal}
         />
-        {/* <DubsInfo
-          show={state.isOn}
-          into={upElem}
-          type="updubs"
-          dubs={state.upDubs}
-        />
+        <Portal into={upElem}>
+          <DubsInfo
+            into={this.upElem}
+            type="updubs"
+            dubs={state.upDubs}
+          />
+        </Portal>
+        {
+        /*
         <DubsInfo
-          show={state.isOn}
           into={downElem}
           type="downdubs"
           dubs={state.downDubs}
         />
         <DubsInfo
-          show={state.isOn}
           into={grabElem}
           type="grabs"
           dubs={state.grabs}

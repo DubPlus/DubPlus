@@ -7,11 +7,8 @@ import Portal from "preact-portal/src/preact-portal";
  * hovering each of them.
  */
 export default class DubsInfo extends Component {
-  state = {
-    bgColor: "auto"
-  };
-
-  getBgColor(whichVote) {
+  getBgColor() {
+    let whichVote = this.props.type.replace("dubs", "");
     let elem;
     if (whichVote === "up") {
       elem = document.querySelector(".dubup");
@@ -26,9 +23,7 @@ export default class DubsInfo extends Component {
       : window.getComputedStyle(elem.querySelector(`.icon-${whichVote}vote`))
           .color;
 
-    this.setState({
-      bgColor: bgColor
-    });
+    return bgColor;
   }
 
   updateChat(str) {
@@ -37,18 +32,14 @@ export default class DubsInfo extends Component {
     chat.focus();
   }
 
-  render({ type, dubs, into, show }) {
-    if (!show) {
-      return null;
-    }
-
-    let list = dubs.map(d => {
+  makeList() {
+    return this.props.dubs.map(d => {
       return (
         <li
           onClick={() => this.updateChat("@" + d.username + " ")}
-          className={
-            "preview-dubinfo-item users-previews " + `dubplus-${type}-hover`
-          }
+          className={`preview-dubinfo-item users-previews dubplus-${
+            this.props.type
+          }-hover`}
         >
           <div className="dubinfo-image">
             <img src={`https://api.dubtrack.fm/user/${d.userID}/image`} />
@@ -57,27 +48,35 @@ export default class DubsInfo extends Component {
         </li>
       );
     });
+  }
 
-    let containerCss = ["dubinfo-show", `dubplus-${type}-container`];
-    if (list.length === 0) {
-      containerCss.push("dubinfo-no-dubs");
-    }
-
+  render({ type }) {
     let notYetMsg = `No ${type} have been casted yet!`;
     if (type === "grabs") {
       notYetMsg = "This song hasn't been grabbed yet!";
     }
 
+    let list = this.makeList();
+
+    let containerCss = [
+      "dubinfo-preview",
+      "dubinfo-show", 
+      `dubplus-${type}-container`
+    ];
+
+    if (list.length === 0) {
+      list = <li>{notYetMsg}</li>;
+      containerCss.push("dubinfo-no-dubs");
+    }
+
     return (
-      <Portal into={into}>
-        <ul
-          id="dubinfo-preview"
-          syle={{ backgroundColor: this.getBgColor(type.replace("dubs", "")) }}
-          className={containerCss.join(" ")}
-        >
-          {list.length > 0 ? list : <li>{notYetMsg}</li>}
-        </ul>
-      </Portal>
+      <ul
+        className="dubinfo-preview"
+        syle={{ borderColor: this.getBgColor() }}
+        className={containerCss.join(" ")}
+      >
+        {list}
+      </ul>
     );
   }
 }

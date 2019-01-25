@@ -39,9 +39,7 @@ export default class GeneralSection extends Component {
       _cn.push('dubplus-menu-section-closed');
     }
     return (
-      // until Preact incorporates something like React.Fragment (which is in the works) 
-      // we have to wrap adjacent elements in one parent element
-      <span>
+      <>
         <SectionHeader 
           onClick={this.toggleSection}
           id="dubplus-general" 
@@ -63,7 +61,7 @@ export default class GeneralSection extends Component {
           <SnowSwitch />
           <RainSwitch />
         </ul>
-      </span>
+      </>
     );
   }
 }

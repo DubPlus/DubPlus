@@ -59,8 +59,7 @@ class TwitchEmotes {
       }
     );
 
-    return twApi.then(data => {
-      let json = JSON.parse(data);
+    return twApi.then(json => {
       let twitchEmotes = {};
       json.emoticons.forEach(e => {
         if (!twitchEmotes[e.code] || e.emoticon_set === null) {

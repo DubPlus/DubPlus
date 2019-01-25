@@ -51,8 +51,7 @@ class BTTVemotes {
       this.headers
     );
 
-    return bttvApi.then(data => {
-      var json = JSON.parse(data);
+    return bttvApi.then(json => {
       var bttvEmotes = {};
       json.emotes.forEach(e => {
         if (!bttvEmotes[e.code]) {

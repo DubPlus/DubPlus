@@ -18,8 +18,12 @@ function getJSON(url, headers={}) {
     }
     
     xhr.onload = function() {
-      let resp = xhr.responseText;
-      resolve(resp);
+      try {
+        let resp = JSON.parse(xhr.responseText);
+        resolve(resp);
+      } catch(e) {
+        reject(e);
+      }
     };
 
     xhr.onerror = function() {

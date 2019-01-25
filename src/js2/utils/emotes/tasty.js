@@ -46,7 +46,7 @@ class TastyEmotes {
 
     return tastyApi.then(data => {
       ldb.set("tasty_api", JSON.stringify(data));
-      this.processEmotes(JSON.parse(data));
+      this.processEmotes(data);
       localStorage.setItem("tasty_api_timestamp", Date.now().toString());
     });
   }
