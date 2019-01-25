@@ -27,13 +27,12 @@ export default class ShowDubsOnHover extends Component {
 
   turnOff = () => {
     Dubtrack.Events.unbind("realtime:room_playlist-dub", this.dubWatcher);
-    Dubtrack.Events.unbind(
-      "realtime:room_playlist-queue-update-grabs",
-      this.grabWatcher
-    );
+    Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs",this.grabWatcher);
     Dubtrack.Events.unbind("realtime:user-leave", this.dubUserLeaveWatcher);
     Dubtrack.Events.unbind("realtime:room_playlist-update", this.resetDubs);
-    Dubtrack.Events.unbind("realtime:room_playlist-update", this.resetGrabs); //TODO: Remove when we can hit the api for all grabs of current playing song
+    
+    //TODO: Remove when we can hit the api for all grabs of current playing song
+    Dubtrack.Events.unbind("realtime:room_playlist-update", this.resetGrabs); 
   };
 
   closeModal = () => {
@@ -44,10 +43,7 @@ export default class ShowDubsOnHover extends Component {
     this.resetDubs();
 
     Dubtrack.Events.bind("realtime:room_playlist-dub", this.dubWatcher);
-    Dubtrack.Events.bind(
-      "realtime:room_playlist-queue-update-grabs",
-      this.grabWatcher
-    );
+    Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs",this.grabWatcher);
     Dubtrack.Events.bind("realtime:user-leave", this.dubUserLeaveWatcher);
     Dubtrack.Events.bind("realtime:room_playlist-update", this.resetDubs);
     Dubtrack.Events.bind("realtime:room_playlist-update", this.resetGrabs);
@@ -58,9 +54,6 @@ export default class ShowDubsOnHover extends Component {
    * Stores the user info of who has dubbed the current song in local state
    */
   dubWatcher = e => {
-    // split dubs into 2 arrays, one containing current user
-    // and one with current user removed. Do the same for both
-    // up and down dubs
     let {upDubs, downDubs} = this.state;
 
     let user = {
@@ -106,47 +99,13 @@ export default class ShowDubsOnHover extends Component {
     }
   };
 
-  checkDubs(){
-    // because (P)react setState is async, this might always fail
-    // so commenting out for now until I can figure something out
-
-    var msSinceSongStart =
-      new Date() -
-      new Date(Dubtrack.room.player.activeSong.attributes.song.played);
-    if (msSinceSongStart < 1000) {
-      return;
-    }
-
-    if (
-      this.state.upDubs.length !==
-      Dubtrack.room.player.activeSong.attributes.song.updubs
-    ) {
-      console.log("Updubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
-      this.resetDubs();
-      return;
-    }
-    
-    if (
-      userIsAtLeastMod(Dubtrack.session.id) &&
-      this.state.downDubs.length !==
-        Dubtrack.room.player.activeSong.attributes.song.downdubs
-    ) {
-      console.log("Downdubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
-      this.resetDubs();
-    }
-  }
-
   /**
    * Callback for the grab event
    * Stores user info for each grab in an array in local state
    */
   grabWatcher = e => {
     // only add Grab if it doesn't exist in the array already
-    if (
-      this.state.grabs.filter(function(el) {
-        return el.userid === e.user._id;
-      }).length <= 0
-    ) {
+    if (this.state.grabs.filter(el => el.userid === e.user._id).length <= 0) {
       let user = {
           userid: e.user._id,
           username: e.user.username
@@ -162,9 +121,7 @@ export default class ShowDubsOnHover extends Component {
    */
   dubUserLeaveWatcher = e => {
     let newUpDubs = this.state.upDubs.filter(el => el.userid !== e.user._id);
-    let newDownDubs = this.state.downDubs.filter(
-      el => el.userid !== e.user._id
-    );
+    let newDownDubs = this.state.downDubs.filter(el => el.userid !== e.user._id);
     let newGrabs = this.state.grabs.filter(el => el.userid !== e.user._id);
     this.setState({
       upDubs: newUpDubs,
@@ -280,14 +237,20 @@ export default class ShowDubsOnHover extends Component {
     );
   };
 
+  resetGrabs = () => {
+    this.setState({grabs: []});
+  }
+
   
   componentWillMount() {
     this.upElem = document.querySelector(".dubup").parentElement;
     this.upElem.classList.add('dubtrack-updub');
     
-    let grabElem = document.querySelector(".add-to-playlist-button")
-      .parentElement;
-    let downElem = document.querySelector(".dubdown").parentElement;
+    this.grabElem = document.querySelector(".add-to-playlist-button").parentElement;
+    this.grabElem.classList.add('dubtrack-grab');
+
+    this.downElem = document.querySelector(".dubdown").parentElement;
+    this.downElem.classList.add('dubtrack-downdub');
   }
   
 
@@ -313,18 +276,18 @@ export default class ShowDubsOnHover extends Component {
             dubs={state.upDubs}
           />
         </Portal>
-        {
-        /*
-        <DubsInfo
-          into={downElem}
-          type="downdubs"
-          dubs={state.downDubs}
-        />
-        <DubsInfo
-          into={grabElem}
-          type="grabs"
-          dubs={state.grabs}
-        /> */}
+        <Portal into={this.downElem}>
+          <DubsInfo
+            type="downdubs"
+            dubs={state.downDubs}
+          />
+        </Portal>
+        <Portal into={this.grabElem}>
+          <DubsInfo
+            type="grabs"
+            dubs={state.grabs}
+          />
+        </Portal>
       </MenuSwitch>
     );
   }
