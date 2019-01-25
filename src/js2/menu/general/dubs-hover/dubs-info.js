@@ -1,6 +1,20 @@
 import { h, Component } from "preact";
 import Portal from "preact-portal/src/preact-portal";
 
+const DubsInfoListItem = ({ data, dubtype, click }) => {
+  return (
+    <li
+      onClick={() => click("@" + data.username + " ")}
+      className={`preview-dubinfo-item users-previews dubplus-${dubtype}-hover`}
+    >
+      <div className="dubinfo-image">
+        <img src={`https://api.dubtrack.fm/user/${data.userID}/image`} />
+      </div>
+      <span className="dubinfo-text">@{data.username}</span>
+    </li>
+  );
+};
+
 /**
  * DubsInfo component
  * used to create the grabs, upDubs, and downdubs lists that popup when
@@ -33,19 +47,14 @@ export default class DubsInfo extends Component {
   }
 
   makeList() {
-    return this.props.dubs.map(d => {
+    return this.props.dubs.map((d, i) => {
       return (
-        <li
-          onClick={() => this.updateChat("@" + d.username + " ")}
-          className={`preview-dubinfo-item users-previews dubplus-${
-            this.props.type
-          }-hover`}
-        >
-          <div className="dubinfo-image">
-            <img src={`https://api.dubtrack.fm/user/${d.userID}/image`} />
-          </div>
-          <span className="dubinfo-text">@{d.username}</span>
-        </li>
+        <DubsInfoListItem
+          data={d}
+          dubtype={this.props.type}
+          click={this.updateChat}
+          key={`info-${this.props.type}-${i}`}
+        />
       );
     });
   }
@@ -60,7 +69,7 @@ export default class DubsInfo extends Component {
 
     let containerCss = [
       "dubinfo-preview",
-      "dubinfo-show", 
+      "dubinfo-show",
       `dubplus-${type}-container`
     ];
 
@@ -72,7 +81,7 @@ export default class DubsInfo extends Component {
     return (
       <ul
         className="dubinfo-preview"
-        syle={{ borderColor: this.getBgColor() }}
+        style={{ borderColor: this.getBgColor() }}
         className={containerCss.join(" ")}
       >
         {list}

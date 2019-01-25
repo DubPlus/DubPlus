@@ -283,7 +283,7 @@ export default class ShowDubsOnHover extends Component {
   
   componentWillMount() {
     this.upElem = document.querySelector(".dubup").parentElement;
-    upElem.classList.add('dubtrack-updub');
+    this.upElem.classList.add('dubtrack-updub');
     
     let grabElem = document.querySelector(".add-to-playlist-button")
       .parentElement;
@@ -307,9 +307,8 @@ export default class ShowDubsOnHover extends Component {
           content="Please note that this feature is currently still in development. We are waiting on the ability to pull grab vote information from Dubtrack on load. Until then the only grabs you will be able to see are those you are present in the room for."
           onClose={this.closeModal}
         />
-        <Portal into={upElem}>
+        <Portal into={this.upElem}>
           <DubsInfo
-            into={this.upElem}
             type="updubs"
             dubs={state.upDubs}
           />
