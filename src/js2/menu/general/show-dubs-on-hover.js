@@ -69,7 +69,7 @@ export default class ShowDubsOnHover extends Component {
     };
 
     if (e.dubtype === "updub") {
-      let userNotUpdubbed = upDubs.filter(el => el.userid !== e.user._id).length === 0;
+      let userNotUpdubbed = upDubs.filter(el => el.userid === e.user._id).length === 0;
       // If user has not updubbed, we add them them to it
       if (userNotUpdubbed) {
         this.setState(prevState => {
@@ -78,7 +78,7 @@ export default class ShowDubsOnHover extends Component {
       }
 
       let userDowndubbed = downDubs.filter(el => el.userid === e.user._id).length > 0;
-      // and then remove them from downdubs
+      // if user was previous in downdubs then remove them from downdubs
       if (userDowndubbed) {
         this.setState(prevState => {
           return { downDubs: prevState.downDubs.filter(el => el.userid !== e.user._id) };
@@ -87,7 +87,7 @@ export default class ShowDubsOnHover extends Component {
     }
     
     if (e.dubtype === "downdub") {
-      let userNotDowndub = downDubs.filter(el => el.userid !== e.user._id).length === 0;
+      let userNotDowndub = downDubs.filter(el => el.userid === e.user._id).length === 0;
       // is user has not downdubbed, then we add them
       if (userNotDowndub && userIsAtLeastMod(Dubtrack.session.id)) {
         this.setState(prevState => {
@@ -303,7 +303,7 @@ export default class ShowDubsOnHover extends Component {
       >
         <Modal
           open={state.showWarning}
-          title="Grab Vote Info"
+          title="Vote &amp; Grab Info"
           content="Please note that this feature is currently still in development. We are waiting on the ability to pull grab vote information from Dubtrack on load. Until then the only grabs you will be able to see are those you are present in the room for."
           onClose={this.closeModal}
         />

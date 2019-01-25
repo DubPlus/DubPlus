@@ -8,7 +8,7 @@ const DubsInfoListItem = ({ data, dubtype, click }) => {
       className={`preview-dubinfo-item users-previews dubplus-${dubtype}-hover`}
     >
       <div className="dubinfo-image">
-        <img src={`https://api.dubtrack.fm/user/${data.userID}/image`} />
+        <img src={`https://api.dubtrack.fm/user/${data.userid}/image`} />
       </div>
       <span className="dubinfo-text">@{data.username}</span>
     </li>
