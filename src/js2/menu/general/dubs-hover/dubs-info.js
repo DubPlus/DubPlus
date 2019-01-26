@@ -62,7 +62,7 @@ export default class DubsInfo extends Component {
     if (type === "grabs") {
       notYetMsg = "This song hasn't been grabbed yet!";
     }
-
+    
     let list = this.makeList();
 
     let containerCss = [

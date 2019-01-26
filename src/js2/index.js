@@ -97,6 +97,7 @@ class DubPlusContainer extends Component {
       return null;
     }
 
+    document.querySelector('html').classList.add('dubplus');
     return <DubPlusMenu />;
   }
 }

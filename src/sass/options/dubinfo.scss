@@ -4,34 +4,35 @@
   }
 }
 
-.dubplus-updub-btn,
-.dubplus-downdub-btn,
-.dubplus-grab-btn {
-  position: relative;
+#player-controller .right {
+  .dubplus-updub-btn,
+  .dubplus-downdub-btn,
+  .dubplus-grab-btn {
+    position: relative;
 
-  &:hover .dubinfo-preview {
-    max-height: 164px;
-    display: block;
+    &:hover .dubinfo-preview {
+      max-height: 164px;
+      display: block;
+    }
   }
 }
 
-.dubinfo-preview {
-  display: none;
+#player-controller .right .dubinfo-preview {
   background-color: rgba(0, 0, 0, 0.9);
-  width: 100%;
-  padding: 0;
+  border-bottom: 1px solid #878c8e;
+  border: 1px solid #202020;
+  bottom: 100%;
+  display: none;
+  height: 164px;
   list-style-type: none;
   margin: 0;
-  position: absolute;
-  bottom: 100%;
+  max-height: 0;
   overflow-x: hidden;
   overflow-y: scroll;
-  height: 164px;
-  max-height: 0;
-  border: 1px solid #202020;
-  border-bottom: 1px solid #878c8e;
+  padding: 0;
+  position: absolute;
+  width: 100%;
   z-index: 10001;
-
   transition: max-height 0.4s;
 
   &.dubinfo-updubs,
@@ -48,7 +49,8 @@
     .dubinfo-preview-none {
       float: none;
       text-align: center;
-      padding: 50px 10px;
+      padding: 50px 10px 0;
+      width: 100%;
     }
   }
 
@@ -65,15 +67,16 @@
   }
 
   .dubinfo-preview-item {
+    background-position: 98% center;
+    background-repeat: no-repeat;
+    background-size: 25px;
+    cursor: pointer;
     display: flex;
     flex-direction: row;
     float: none;
-    padding: 6px 10px;
     margin: 0;
-    cursor: pointer;
-    background-repeat: no-repeat;
-    background-size: 25px;
-    background-position: 98% center;
+    padding: 6px 10px;
+    width: 100%;
 
     &:hover,
     &.selected {
@@ -94,7 +97,8 @@
   }
 
   .dubinfo-image {
-    border-radius: 100%;
+    border-radius: 50%;
+    overflow: hidden;
     width: 1.4em;
   }
 
