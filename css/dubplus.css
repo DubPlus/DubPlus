@@ -383,7 +383,7 @@
   background-image: url(https://i.imgur.com/oTfAI0O.png); }
 
 .tasty-previews {
-  background-image: url(https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus/emotes/tastycat/21.png); }
+  background-image: url(https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@preact-version/emotes/tastycat/21.png); }
 
 .frankerFacez-previews {
   background-image: url(https://i.imgur.com/DuJfI4T.png); }
@@ -439,33 +439,19 @@
 .dubplus-chat-only .activity-row .text img {
   max-height: 30rem; }
 
-#dubplus-updubs-container,
-#dubplus-downdubs-container,
-#dubplus-grabs-container {
-  position: fixed;
-  overflow-y: auto;
-  overflow-x: visible;
-  height: 150px;
-  width: 200px;
-  z-index: 100001; }
-
-.dubtrack-updub {
-  position: relative; }
-  .dubtrack-updub:hover .dubinfo-preview {
-    display: block; }
-
 .dubinfo-preview {
   display: none;
   background-color: rgba(0, 0, 0, 0.9);
-  width: 100%;
+  width: 200px;
   padding: 0;
   list-style-type: none;
   margin: 0;
   position: absolute;
-  bottom: 100%;
-  overflow: hidden;
+  right: 0;
+  overflow: auto;
   height: 150px;
-  border: 1px solid white; }
+  border: 1px solid white;
+  z-index: 100001; }
 
 .dubinfo-preview.dubplus-updubs-hover,
 .dubinfo-preview.dubplus-grabs-hover {
