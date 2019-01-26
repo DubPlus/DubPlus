@@ -70,6 +70,7 @@ export default class DubsInfo extends Component {
     let containerCss = [
       "dubinfo-preview",
       "dubinfo-show",
+      `dubplus-${type}-hover`,
       `dubplus-${type}-container`
     ];
 

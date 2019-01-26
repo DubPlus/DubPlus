@@ -1,4 +1,4 @@
-import { h, Component, createRef } from "preact";
+import { h, Component } from "preact";
 import { MenuSwitch } from "../../components/menuItems.js";
 import Modal from "../../components/modal";
 import getJSON from "../../utils/getJSON.js";
@@ -7,20 +7,12 @@ import DubsInfo from "./dubs-hover/dubs-info";
 import Portal from "preact-portal/src/preact-portal";
 
 export default class ShowDubsOnHover extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      isOn: false,
-      showWarning: true,
-      upDubs: [],
-      downDubs: [],
-      grabs: []
-    };
-
-    this.upRef = createRef();
-    this.downRef = createRef();
-    this.grabRef = createRef();
+  state = {
+    isOn: false,
+    showWarning: true,
+    upDubs: [],
+    downDubs: [],
+    grabs: []
   }
   
   turnOn = () => {
@@ -243,43 +235,16 @@ export default class ShowDubsOnHover extends Component {
     this.setState({grabs: []});
   }
 
-  handleMouseEnter(trigger, container) {
-    const rect = trigger.getBoundingClientRect();
-    container.style.cssText = `
-      display: block;
-      top: ${rect.y - 150}px;
-    `;
-  }
-  handleMouseLeave(container) {
-    container.style.display = 'none';
-  }
-
-  componentDidMount() {
-    const upElem = document.querySelector(".dubup").parentElement;
-    upElem.addEventListener('mouseenter', () => {
-      this.handleMouseEnter(upElem, this.upRef.current.base);
-    });
-    upElem.addEventListener('mouseleave', () => {
-      this.handleMouseLeave(this.upRef.current.base);
-    });
+  componentWillMount() {
+    this.upElem = document.querySelector(".dubup").parentElement;
+    this.upElem.classList.add('dubplus-updub-btn');
     
-    const grabElem = document.querySelector(".add-to-playlist-button").parentElement;
-    grabElem.addEventListener('mouseenter', () => {
-      this.handleMouseEnter(grabElem, this.grabRef.current.base);
-    });
-    grabElem.addEventListener('mouseleave', () => {
-      this.handleMouseLeave(this.grabRef.current.base);
-    });
+    this.downElem = document.querySelector(".dubdown").parentElement;
+    this.downElem.classList.add('dubplus-downdub-btn');
 
-    const downElem = document.querySelector(".dubdown").parentElement;
-    downElem.addEventListener('mouseenter', () => {
-      this.handleMouseEnter(downElem, this.downRef.current.base);
-    });
-    downElem.addEventListener('mouseleave', () => {
-      this.handleMouseLeave(this.downRef.current.base);
-    });
+    this.grabElem = document.querySelector(".add-to-playlist-button").parentElement;
+    this.grabElem.classList.add('dubplus-grab-btn');
   }
-  
 
   render(props, state) {
     return (
@@ -301,23 +266,20 @@ export default class ShowDubsOnHover extends Component {
           // create the lists and hide them the body
           state.isOn ? (
             <>
-              <Portal into="#main-section">
+              <Portal into={this.upElem}>
                 <DubsInfo
-                  ref={this.upRef}
                   type="updubs"
                   dubs={state.upDubs}
                 />
               </Portal>
-              <Portal into="#main-section">
+              <Portal into={this.downElem}>
                 <DubsInfo
-                  ref={this.downRef}
                   type="downdubs"
                   dubs={state.downDubs}
                 />
               </Portal>
-              <Portal into="#main-section">
+              <Portal into={this.grabElem}>
                 <DubsInfo
-                  ref={this.grabRef}
                   type="grabs"
                   dubs={state.grabs}
                 />

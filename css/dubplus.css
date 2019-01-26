@@ -439,19 +439,33 @@
 .dubplus-chat-only .activity-row .text img {
   max-height: 30rem; }
 
+@media screen and (min-width: 72em) {
+  .dubplus #player-controller {
+    overflow: visible; } }
+
+.dubplus-updub-btn,
+.dubplus-downdub-btn,
+.dubplus-grab-btn {
+  position: relative; }
+  .dubplus-updub-btn:hover .dubinfo-preview,
+  .dubplus-downdub-btn:hover .dubinfo-preview,
+  .dubplus-grab-btn:hover .dubinfo-preview {
+    display: block; }
+
 .dubinfo-preview {
   display: none;
   background-color: rgba(0, 0, 0, 0.9);
-  width: 200px;
+  width: 100%;
   padding: 0;
   list-style-type: none;
   margin: 0;
   position: absolute;
-  right: 0;
-  overflow: auto;
+  bottom: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
   height: 150px;
   border: 1px solid white;
-  z-index: 100001; }
+  z-index: 10001; }
 
 .dubinfo-preview.dubplus-updubs-hover,
 .dubinfo-preview.dubplus-grabs-hover {
@@ -477,8 +491,9 @@
   min-height: 1rem;
   text-align: left; }
 
-.dubplus-chat-system-grab, .chat-system-grabbed {
-  color: #B3E790 !important; }
+.dubplus-chat-system-grab,
+.chat-system-grabbed {
+  color: #b3e790 !important; }
 
 .dubplus-chat-system-updub {
   color: #0ff; }
@@ -487,7 +502,7 @@
   color: #f0f; }
 
 .dubinfo-preview.dubplus-no-grabs {
-  color: #B3E790; }
+  color: #b3e790; }
 
 .dubinfo-preview.dubplus-downdubs-unauthorized {
   color: #f0f; }
