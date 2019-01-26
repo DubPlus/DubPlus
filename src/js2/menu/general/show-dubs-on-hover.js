@@ -14,6 +14,8 @@ export default class ShowDubsOnHover extends Component {
     downDubs: [],
     grabs: []
   }
+
+  userIsMod = userIsAtLeastMod(Dubtrack.session.id)
   
   turnOn = () => {
     this.setState({isOn: true}, this.resetDubs);
@@ -74,7 +76,7 @@ export default class ShowDubsOnHover extends Component {
     if (e.dubtype === "downdub") {
       let userNotDowndub = downDubs.filter(el => el.userid === e.user._id).length === 0;
       // is user has not downdubbed, then we add them
-      if (userNotDowndub && userIsAtLeastMod(Dubtrack.session.id)) {
+      if (userNotDowndub && this.userIsMod) {
         this.setState(prevState => {
           return { downDubs: [...prevState.downDubs, user] };
         });
@@ -178,7 +180,7 @@ export default class ShowDubsOnHover extends Component {
       }
 
       //Only let mods or higher access down dubs
-      if (json.data && json.data.downDubs && userIsAtLeastMod(Dubtrack.session.id)) {
+      if (json.data && json.data.downDubs && this.userIsMod) {
         json.data.downDubs.forEach(e => {
           //Dub already casted
           if (this.state.downDubs.filter(el => el.userid === e.userid).length > 0) {
@@ -263,7 +265,6 @@ export default class ShowDubsOnHover extends Component {
           onClose={this.closeModal}
         />
         {
-          // create the lists and hide them the body
           state.isOn ? (
             <>
               <Portal into={this.upElem}>
@@ -275,6 +276,7 @@ export default class ShowDubsOnHover extends Component {
               <Portal into={this.downElem}>
                 <DubsInfo
                   type="downdubs"
+                  isMod={this.userIsMod}
                   dubs={state.downDubs}
                 />
               </Portal>

@@ -1,11 +1,10 @@
 import { h, Component } from "preact";
-import Portal from "preact-portal/src/preact-portal";
 
-const DubsInfoListItem = ({ data, dubtype, click }) => {
+const DubsInfoListItem = ({ data, click }) => {
   return (
     <li
       onClick={() => click("@" + data.username + " ")}
-      className={`preview-dubinfo-item users-previews dubplus-${dubtype}-hover`}
+      className="dubinfo-preview-item"
     >
       <div className="dubinfo-image">
         <img src={`https://api.dubtrack.fm/user/${data.userid}/image`} />
@@ -51,7 +50,6 @@ export default class DubsInfo extends Component {
       return (
         <DubsInfoListItem
           data={d}
-          dubtype={this.props.type}
           click={this.updateChat}
           key={`info-${this.props.type}-${i}`}
         />
@@ -59,7 +57,7 @@ export default class DubsInfo extends Component {
     });
   }
 
-  render({ type }) {
+  render({ type, isMod }) {
     let notYetMsg = `No ${type} have been casted yet!`;
     if (type === "grabs") {
       notYetMsg = "This song hasn't been grabbed yet!";
@@ -69,14 +67,16 @@ export default class DubsInfo extends Component {
 
     let containerCss = [
       "dubinfo-preview",
-      "dubinfo-show",
-      `dubplus-${type}-hover`,
-      `dubplus-${type}-container`
+      `dubinfo-${type}`
     ];
 
     if (list.length === 0) {
-      list = <li>{notYetMsg}</li>;
+      list = <li className="dubinfo-preview-none">{notYetMsg}</li>;
       containerCss.push("dubinfo-no-dubs");
+    }
+
+    if (type === 'downdubs' && !isMod) {
+      containerCss.push("dubinfo-unauthorized");
     }
 
     return (
