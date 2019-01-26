@@ -1,4 +1,4 @@
-import { h, Component } from "preact";
+import { h, Component, createRef } from "preact";
 import { MenuSwitch } from "../../components/menuItems.js";
 import Modal from "../../components/modal";
 import getJSON from "../../utils/getJSON.js";
@@ -7,25 +7,35 @@ import DubsInfo from "./dubs-hover/dubs-info";
 import Portal from "preact-portal/src/preact-portal";
 
 export default class ShowDubsOnHover extends Component {
-  state = {
-    showWarning: false,
-    warned: false,
-    upDubs: [],
-    downDubs: [],
-    grabs: []
-  };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      isOn: false,
+      showWarning: true,
+      upDubs: [],
+      downDubs: [],
+      grabs: []
+    };
+
+    this.upRef = createRef();
+    this.downRef = createRef();
+    this.grabRef = createRef();
+  }
+  
   turnOn = () => {
-    if (!this.state.warned) {
-      this.setState({
-        showWarning : true,
-        warned :true
-      });
-    }
-    this.begin();
-  };
+    this.setState({isOn: true}, this.resetDubs);
+
+    Dubtrack.Events.bind("realtime:room_playlist-dub", this.dubWatcher);
+    Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs",this.grabWatcher);
+    Dubtrack.Events.bind("realtime:user-leave", this.dubUserLeaveWatcher);
+    Dubtrack.Events.bind("realtime:room_playlist-update", this.resetDubs);
+    Dubtrack.Events.bind("realtime:room_playlist-update", this.resetGrabs);
+  }
 
   turnOff = () => {
+    this.setState({isOn: false});
+
     Dubtrack.Events.unbind("realtime:room_playlist-dub", this.dubWatcher);
     Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs",this.grabWatcher);
     Dubtrack.Events.unbind("realtime:user-leave", this.dubUserLeaveWatcher);
@@ -37,16 +47,6 @@ export default class ShowDubsOnHover extends Component {
 
   closeModal = () => {
     this.setState({ showWarning: false });
-  };
-
-  begin = () => {
-    this.resetDubs();
-
-    Dubtrack.Events.bind("realtime:room_playlist-dub", this.dubWatcher);
-    Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs",this.grabWatcher);
-    Dubtrack.Events.bind("realtime:user-leave", this.dubUserLeaveWatcher);
-    Dubtrack.Events.bind("realtime:room_playlist-update", this.resetDubs);
-    Dubtrack.Events.bind("realtime:room_playlist-update", this.resetGrabs);
   };
 
   /**
@@ -142,49 +142,51 @@ export default class ShowDubsOnHover extends Component {
 
     roomDubs.then(json => {
       // loop through all the upDubs in the room and add them to our local state
-      json.data.upDubs.forEach(e => {
-        // Dub already casted (usually from autodub)
-        if (this.state.upDubs.filter(el => el.userid === e.userid).length > 0) {
-          return;
-        }
+      if (json.data && json.data.upDubs) {
+        json.data.upDubs.forEach(e => {
+          // Dub already casted (usually from autodub)
+          if (this.state.upDubs.filter(el => el.userid === e.userid).length > 0) {
+            return;
+          }
 
-        // to get username we check for user info in the DT room's user collection
-        let checkUser = Dubtrack.room.users.collection.findWhere({ userid: e.userid });
-        if (!checkUser || !checkUser.attributes) {
-          // if they don't exist, we can check the user api directly
-          let userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
-          userInfo.then(json2 => {
-            let data = json2.data;
-            if (data && data.userinfo && data.userinfo.username) {
-              let user = {
-                userid: e.userid,
-                username: data.userinfo.username
-              };
-              this.setState(prevState => {
-                return {
-                  upDubs: [...prevState.upDubs, user]
+          // to get username we check for user info in the DT room's user collection
+          let checkUser = Dubtrack.room.users.collection.findWhere({ userid: e.userid });
+          if (!checkUser || !checkUser.attributes) {
+            // if they don't exist, we can check the user api directly
+            let userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
+            userInfo.then(json2 => {
+              let data = json2.data;
+              if (data && data.userinfo && data.userinfo.username) {
+                let user = {
+                  userid: e.userid,
+                  username: data.userinfo.username
                 };
-              });
-            }
-          });
-          return;
-        }
-        
-        if (checkUser.attributes._user.username) {
-          let user = {
-            userid: e.userid,
-            username: checkUser.attributes._user.username
-          };
-          this.setState(prevState => {
-            return {
-              upDubs: [...prevState.upDubs, user]
+                this.setState(prevState => {
+                  return {
+                    upDubs: [...prevState.upDubs, user]
+                  };
+                });
+              }
+            });
+            return;
+          }
+          
+          if (checkUser.attributes._user.username) {
+            let user = {
+              userid: e.userid,
+              username: checkUser.attributes._user.username
             };
-          });
-        }
-      });
+            this.setState(prevState => {
+              return {
+                upDubs: [...prevState.upDubs, user]
+              };
+            });
+          }
+        });
+      }
 
       //Only let mods or higher access down dubs
-      if (userIsAtLeastMod(Dubtrack.session.id)) {
+      if (json.data && json.data.downDubs && userIsAtLeastMod(Dubtrack.session.id)) {
         json.data.downDubs.forEach(e => {
           //Dub already casted
           if (this.state.downDubs.filter(el => el.userid === e.userid).length > 0) {
@@ -241,16 +243,41 @@ export default class ShowDubsOnHover extends Component {
     this.setState({grabs: []});
   }
 
-  
-  componentWillMount() {
-    this.upElem = document.querySelector(".dubup").parentElement;
-    this.upElem.classList.add('dubtrack-updub');
-    
-    this.grabElem = document.querySelector(".add-to-playlist-button").parentElement;
-    this.grabElem.classList.add('dubtrack-grab');
+  handleMouseEnter(trigger, container) {
+    const rect = trigger.getBoundingClientRect();
+    container.style.cssText = `
+      display: block;
+      top: ${rect.y - 150}px;
+    `;
+  }
+  handleMouseLeave(container) {
+    container.style.display = 'none';
+  }
 
-    this.downElem = document.querySelector(".dubdown").parentElement;
-    this.downElem.classList.add('dubtrack-downdub');
+  componentDidMount() {
+    const upElem = document.querySelector(".dubup").parentElement;
+    upElem.addEventListener('mouseenter', () => {
+      this.handleMouseEnter(upElem, this.upRef.current.base);
+    });
+    upElem.addEventListener('mouseleave', () => {
+      this.handleMouseLeave(this.upRef.current.base);
+    });
+    
+    const grabElem = document.querySelector(".add-to-playlist-button").parentElement;
+    grabElem.addEventListener('mouseenter', () => {
+      this.handleMouseEnter(grabElem, this.grabRef.current.base);
+    });
+    grabElem.addEventListener('mouseleave', () => {
+      this.handleMouseLeave(this.grabRef.current.base);
+    });
+
+    const downElem = document.querySelector(".dubdown").parentElement;
+    downElem.addEventListener('mouseenter', () => {
+      this.handleMouseEnter(downElem, this.downRef.current.base);
+    });
+    downElem.addEventListener('mouseleave', () => {
+      this.handleMouseLeave(this.downRef.current.base);
+    });
   }
   
 
@@ -270,24 +297,34 @@ export default class ShowDubsOnHover extends Component {
           content="Please note that this feature is currently still in development. We are waiting on the ability to pull grab vote information from Dubtrack on load. Until then the only grabs you will be able to see are those you are present in the room for."
           onClose={this.closeModal}
         />
-        <Portal into={this.upElem}>
-          <DubsInfo
-            type="updubs"
-            dubs={state.upDubs}
-          />
-        </Portal>
-        <Portal into={this.downElem}>
-          <DubsInfo
-            type="downdubs"
-            dubs={state.downDubs}
-          />
-        </Portal>
-        <Portal into={this.grabElem}>
-          <DubsInfo
-            type="grabs"
-            dubs={state.grabs}
-          />
-        </Portal>
+        {
+          // create the lists and hide them the body
+          state.isOn ? (
+            <>
+              <Portal into="#main-section">
+                <DubsInfo
+                  ref={this.upRef}
+                  type="updubs"
+                  dubs={state.upDubs}
+                />
+              </Portal>
+              <Portal into="#main-section">
+                <DubsInfo
+                  ref={this.downRef}
+                  type="downdubs"
+                  dubs={state.downDubs}
+                />
+              </Portal>
+              <Portal into="#main-section">
+                <DubsInfo
+                  ref={this.grabRef}
+                  type="grabs"
+                  dubs={state.grabs}
+                />
+              </Portal>
+            </>
+            ) : null
+          }
       </MenuSwitch>
     );
   }

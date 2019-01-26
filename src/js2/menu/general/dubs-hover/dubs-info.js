@@ -80,7 +80,6 @@ export default class DubsInfo extends Component {
 
     return (
       <ul
-        className="dubinfo-preview"
         style={{ borderColor: this.getBgColor() }}
         className={containerCss.join(" ")}
       >
