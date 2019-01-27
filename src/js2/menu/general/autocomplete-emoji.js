@@ -1,6 +1,7 @@
 import {h, Component} from 'preact';
 import {MenuSwitch} from '../../components/menuItems.js';
 import Portal from "preact-portal/src/preact-portal";
+import AutocompletePreview from './autocomplete-preview';
 
 /**********************************************************************
  * Autocomplete Emoji / Emotes
@@ -22,22 +23,20 @@ TODO:
 export default class AutocompleteEmoji extends Component {
 
   state = {
-    open : false
+    isOn : false
   }
   
   renderTo =  document.querySelector('.pusher-chat-widget-input')
   
   turnOn = (e) => {
-    
+    this.setState({isOn: true});
   }
 
-  
   turnOff = (e) => {
-  
+    this.setState({isOn: false});
   }
 
-
-  render(props,{open}){
+  render(props,{isOn}){
     return (
       <MenuSwitch
         id="dubplus-emotes"
@@ -47,9 +46,9 @@ export default class AutocompleteEmoji extends Component {
         turnOn={this.turnOn}
         turnOff={this.turnOff}>
 
-        { open ? (
+        { isOn ? (
           <Portal into={this.renderTo}>
-            
+            <AutocompletePreview />
           </Portal>
         ) : null }
 
