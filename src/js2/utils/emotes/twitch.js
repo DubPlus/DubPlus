@@ -51,12 +51,9 @@ class TwitchEmotes {
   updateFromApi() {
     console.log("dub+", "twitch", "loading from api");
 
+    let corsEsc = 'https://cors-escape.herokuapp.com';
     let twApi = getJSON(
-      "https://api.twitch.tv/kraken/chat/emoticon_images",
-      {
-        Accept: "application/vnd.twitchtv.v5+json",
-        "Client-ID": "z5bpa7x6y717dsw28qnmcooolzm2js"
-      }
+      `${corsEsc}/https://api.twitch.tv/kraken/chat/emoticon_images`
     );
 
     return twApi.then(json => {

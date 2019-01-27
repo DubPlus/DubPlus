@@ -4,7 +4,6 @@ import chatReplace from '../../utils/emotes/chat-replace.js';
 
 import twitchEmotes from '../../utils/emotes/twitch.js';
 import bttvEmotes from '../../utils/emotes/bttv.js';
-import tastyEmotes from '../../utils/emotes/tasty.js';
 
 /**********************************************************************
  * handles replacing twitch emotes in the chat box with the images
@@ -12,15 +11,15 @@ import tastyEmotes from '../../utils/emotes/tasty.js';
 
 export default class Emotes extends Component {
 
-  turnOn = (e) => {
+  turnOn = () => {
     if (!twitchEmotes.loaded) {
 
       Promise.all([
         twitchEmotes.load(),
         bttvEmotes.load()
-      ]).then(()=>{
-        this.begin();
-      }).catch((err)=>{
+      ])
+      .then(this.begin)
+      .catch((err)=>{
         console.error(err);
       });
       return;
@@ -31,7 +30,7 @@ export default class Emotes extends Component {
 
   begin() {
     // when first turning it on, it replaces ALL of the emotes in chat history
-    chatReplace(document.querySelectorAll('.chat-main'));
+    chatReplace(document.querySelector('.chat-main'));
     // then it sets up replacing emotes on new chat messages
     Dubtrack.Events.bind("realtime:chat-message", chatReplace);
   }

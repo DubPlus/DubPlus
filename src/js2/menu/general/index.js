@@ -8,6 +8,7 @@ import AFK from './afk.js'
 import Autovote from './autovote.js'
 import settings from '../../utils/UserSettings.js';
 import AutocompleteEmoji from './autocomplete-emoji.js';
+import Emotes from './emotes.js';
 import CustomMentions from './custom-mentions.js';
 import ChatCleaner from './chat-cleaner.js';
 import ChatNotification from './chat-notifications.js';
@@ -49,6 +50,7 @@ export default class GeneralSection extends Component {
           <Autovote />
           <AFK />
           <AutocompleteEmoji />
+          <Emotes />
           <CustomMentions />
           <ChatCleaner />
           <ChatNotification />

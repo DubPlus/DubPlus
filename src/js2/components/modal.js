@@ -25,12 +25,16 @@ export default class Modal extends Component {
     }
   };
 
-  componentDidMount() {
-    document.addEventListener("keyup", this.keyUpHandler);
-  }
-
   componentWillUnmount() {
     document.removeEventListener("keyup", this.keyUpHandler);
+  }
+
+  componentDidUpdate() {
+    if (this.props.open) {
+      document.addEventListener("keyup", this.keyUpHandler);
+    } else {
+      document.removeEventListener("keyup", this.keyUpHandler);
+    }
   }
 
   confirmClick = () => {

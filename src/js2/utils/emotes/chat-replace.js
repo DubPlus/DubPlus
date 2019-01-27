@@ -9,7 +9,6 @@
 
 import twitch from './twitch.js';
 import bttv from './bttv.js';
-import tasty from './tasty.js';
 import parser from './parser.js';
 
 /**
@@ -21,6 +20,7 @@ export function getLatestChatNode(){
   if (list.length > 0) {
     return list[list.length - 1];
   }
+  return null;
 }
 
 /**
@@ -72,6 +72,8 @@ export function getImageDataForEmote(emote) {
       name: key
     }
   }
+
+  return false;
 }
 
 /**
@@ -88,16 +90,13 @@ export function processTextNode(textNode, emoteMatches ) {
   // be removed by string.split
   let splitter = '-0wrap__emote0-';
 
-  // filter matches to only contain actual emotes from one of the apis
+  // Search matches emotes from one of the apis
   // and setup the textNodeVal to make it easy to find them
-  let realMatches = emoteMatches.filter(m => {
+  emoteMatches.forEach(m => {
     let imgData = getImageDataForEmote(m);
     if (imgData) {
       let d = JSON.stringify(imgData);
       textNodeVal = textNodeVal.replace(m, `${splitter}${d}${splitter}`);
-      return true;
-    } else {
-      return false;
     }
   });
 
@@ -119,8 +118,15 @@ export function processTextNode(textNode, emoteMatches ) {
 }
 
 export default function beginReplace(nodeStart) {
-  let root = nodeStart || getLatestChatNode();
-  let texts = getTextNodesUnder(root);
+  if (!nodeStart.nodeType) {
+    nodeStart = getLatestChatNode();
+  }
+  
+  if (!nodeStart) {
+    return;
+  }
+
+  let texts = getTextNodesUnder(nodeStart);
 
   texts.forEach(t => {
     let val = t.nodeValue.trim();

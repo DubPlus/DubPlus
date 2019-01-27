@@ -24,11 +24,9 @@ export default class AutocompleteEmoji extends Component {
   state = {
     open : false
   }
-
-  componentWillMount() {
-    this.renderTo =  document.querySelector('.pusher-chat-widget-input');
-  }
-
+  
+  renderTo =  document.querySelector('.pusher-chat-widget-input')
+  
   turnOn = (e) => {
     
   }
