@@ -23,20 +23,43 @@ TODO:
 export default class AutocompleteEmoji extends Component {
 
   state = {
-    isOn : false
+    isOn : false,
+    symbol : ''
   }
   
   renderTo =  document.querySelector('.pusher-chat-widget-input')
-  
+
+  chatInput = document.getElementById("chat-txt-message")
+
+  /**
+   * check chat input for the beginning of an emoji at the very end
+   * of the input string. Similar to how Dubtrack handles user autocomplete
+   */
+  checkInput = (e) => {
+    const parts = e.target.value.split(' ');
+    if (parts.length  === 0) { return; }
+    const last = parts[parts.length - 1];
+    const lastChar = last.charAt(last.length - 1);
+    if (last.charAt(0) === ':' && last.length > 2 && lastChar !== ':') {
+      this.setState({symbol: last});
+    } else {
+      this.setState({symbol: ''});
+    }
+  }
+
   turnOn = (e) => {
     this.setState({isOn: true});
+    Dubtrack.room.chat.delegateEvents(_.omit(Dubtrack.room.chat.events, ['keydown #chat-txt-message']));
+    this.chatInput.addEventListener('keyup', this.checkInput);
   }
 
   turnOff = (e) => {
     this.setState({isOn: false});
+    Dubtrack.room.chat.delegateEvents(Dubtrack.room.chat.events);
+    this.chatInput.removeEventListener('keyup', this.checkInput);
   }
 
-  render(props,{isOn}){
+  render(props,{isOn, symbol}){
     return (
       <MenuSwitch
         id="dubplus-emotes"
@@ -48,7 +71,7 @@ export default class AutocompleteEmoji extends Component {
 
         { isOn ? (
           <Portal into={this.renderTo}>
-            <AutocompletePreview />
+            <AutocompletePreview symbol={symbol} />
           </Portal>
         ) : null }
 

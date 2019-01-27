@@ -2,7 +2,6 @@ import {h, Component} from 'preact';
 
 /*
 TODO: 
- - Create the hidden preview component
  - listen to the chat input for the beginning of possible emotes
  - if found:
    - open preview/picker window
@@ -11,9 +10,27 @@ TODO:
    - typing continues to filter
 */
 
-export default class AutocompletePreview extends Component {  
+export default class AutocompletePreview extends Component {
+  state = {
+    emotes : []
+  }
 
-  render(props,open){
+  chatInput = document.getElementById("chat-txt-message")
+
+  updateChatInput(emote) {
+    let inputText = this.chatInput.value.split(' ');
+    inputText.pop();
+    inputText.push(emote);
+    this.chatInput.value = inputText.join(' ');
+    this.chatInput.focus();
+    this.setState({emotes: []});
+  }
+
+  render(props,state){
+    if (!props.symbol || state.emotes.length === 0) {
+      return null;
+    }
+
     return (
       <ul id="autocomplete-preview">
 
