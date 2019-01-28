@@ -25,17 +25,6 @@ const PreviewListItem = ({ data, onSelect }) => {
 };
 
 export default class AutocompletePreview extends Component {
-  chatInput = document.getElementById("chat-txt-message")
-  
-  updateChatInput = (emote) => {
-    let inputText = this.chatInput.value.split(" ");
-    inputText.pop();
-    inputText.push(`:${emote}:`);
-    this.chatInput.value = inputText.join(" ");
-    this.chatInput.focus();
-    this.props.close();
-  }
-
   getMatches(symbol) {
     symbol = symbol.replace(/^:/, '');
     var twitchMatches = twitch.find(symbol);
@@ -49,7 +38,7 @@ export default class AutocompletePreview extends Component {
         <PreviewListItem
           data={m}
           key={`${m.type}-${m.name}`}
-          onSelect={this.updateChatInput}
+          onSelect={this.props.onSelect}
         />
       );
     });
