@@ -1,40 +1,77 @@
-import {h, Component} from 'preact';
+import { h, Component } from "preact";
+import twitch from "../../utils/emotes/twitch.js";
+import bttv from "../../utils/emotes/bttv.js";
 
 /*
 TODO: 
- - listen to the chat input for the beginning of possible emotes
  - if found:
-   - open preview/picker window
    - hijack arrow keys to make it move around the preview window
    - moving around auto completes the text
    - typing continues to filter
 */
 
+const PreviewListItem = ({ data, onSelect }) => {
+  return (
+    <li
+      className={`preview-item ${data.type}-previews`}
+      onClick={() => onSelect(data.name)}
+    >
+      <div className="ac-image">
+        <img src={data.src} alt={data.name} title={data.name} />
+      </div>
+      <span className="ac-text">{data.name}</span>
+    </li>
+  );
+};
+
 export default class AutocompletePreview extends Component {
-  state = {
-    emotes : []
-  }
-
   chatInput = document.getElementById("chat-txt-message")
-
-  updateChatInput(emote) {
-    let inputText = this.chatInput.value.split(' ');
+  
+  updateChatInput = (emote) => {
+    let inputText = this.chatInput.value.split(" ");
     inputText.pop();
-    inputText.push(emote);
-    this.chatInput.value = inputText.join(' ');
+    inputText.push(`:${emote}:`);
+    this.chatInput.value = inputText.join(" ");
     this.chatInput.focus();
-    this.setState({emotes: []});
+    this.props.close();
   }
 
-  render(props,state){
-    if (!props.symbol || state.emotes.length === 0) {
-      return null;
+  getMatches(symbol) {
+    symbol = symbol.replace(/^:/, '');
+    var twitchMatches = twitch.find(symbol);
+    var bttvMatches = bttv.find(symbol);
+    return twitchMatches.concat(bttvMatches);
+  }
+
+  makeList(matches) {
+    return matches.map((m, i) => {
+      return (
+        <PreviewListItem
+          data={m}
+          key={`${m.type}-${m.name}`}
+          onSelect={this.updateChatInput}
+        />
+      );
+    });
+  }
+
+  render(props) {
+    if (!props.symbol) {
+      return <ul id="autocomplete-preview"></ul>;
     }
 
-    return (
-      <ul id="autocomplete-preview">
+    let matches = this.getMatches(props.symbol);
 
+    if (matches.length === 0) {
+      return <ul id="autocomplete-preview"></ul>;
+    }
+
+    let list = this.makeList(matches);
+
+    return (
+      <ul id="autocomplete-preview" className="ac-show">
+        {list}
       </ul>
-    )
+    );
   }
 }

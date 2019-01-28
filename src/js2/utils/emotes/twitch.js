@@ -17,6 +17,9 @@ import {
 class TwitchEmotes {
   specialEmotes  = []
   emotes = {}
+  sortedKeys = {
+    'nonAlpha' : []
+  }
   loaded = false
 
   load() {
@@ -76,6 +79,42 @@ class TwitchEmotes {
     return `//static-cdn.jtvnw.net/emoticons/v1/${id}/3.0`;
   }
 
+  addKeyToSorted = (key) => {
+    let first = key.charAt(0);
+
+    // all numbers and symbols get stored in one 'nonAlpha' array
+    if (!/[a-z]/i.test(first)) {
+      this.sortedKeys.nonAlpha.push(key);
+      return;
+    }
+
+    if (!this.sortedKeys[first]) {
+      this.sortedKeys[first] = [key];
+      return
+    }
+
+    this.sortedKeys[first].push(key);
+  }
+
+  find(symbol) {
+    let first = symbol.charAt(0);
+    let arr;
+    if (!/[a-z]/i.test(first)) {
+      arr = this.sortedKeys.nonAlpha
+    } else {
+      arr = this.sortedKeys[first] || [];
+    }
+
+    var matchTwitchKeys = arr.filter(key => key.indexOf(symbol) === 0);
+    return matchTwitchKeys.map(key => {
+      return {
+        type: "twitch",
+        src: this.template(this.emotes[key]),
+        name: key
+      }
+    });
+  }
+
   processEmotes(data) {
     for (var code in data) {
       if (data.hasOwnProperty(code)) {
@@ -95,6 +134,7 @@ class TwitchEmotes {
         if (!this.emotes[_key]) {
           // if emote doesn't exist, add it
           this.emotes[_key] = data[code];
+          this.addKeyToSorted(_key);
         }
       }
     }

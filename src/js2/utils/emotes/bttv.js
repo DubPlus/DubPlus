@@ -7,6 +7,9 @@ import {
 
 class BTTVemotes {
   emotes = {};
+  sortedKeys = {
+    'nonAlpha' : []
+  }
   loaded = false;
   headers = {};
 
@@ -68,6 +71,41 @@ class BTTVemotes {
     return `//cdn.betterttv.net/emote/${id}/3x`;
   }
 
+  addKeyToSorted = (key) => {
+    let first = key.charAt(0);
+
+    // all numbers and symbols get stored in one 'nonAlpha' array
+    if (!/[a-z]/i.test(first)) {
+      this.sortedKeys.nonAlpha.push(key);
+      return;
+    }
+
+    if (!this.sortedKeys[first]) {
+      this.sortedKeys[first] = [];
+    }
+    
+    this.sortedKeys[first].push(key);
+  }
+
+  find(symbol) {
+    let first = symbol.charAt(0);
+    let arr;
+    if (!/[a-z]/i.test(first)) {
+      arr = this.sortedKeys.nonAlpha
+    } else {
+      arr = this.sortedKeys[first] || [];
+    }
+
+    var matchBttvKeys = arr.filter(key => key.indexOf(symbol) === 0);
+    return matchBttvKeys.map(key => {
+      return {
+        type: "bttv",
+        src: this.template(this.emotes[key]),
+        name: key
+      }
+    });
+  }
+
   processEmotes(data) {
     for (var code in data) {
       if (data.hasOwnProperty(code)) {
@@ -86,8 +124,10 @@ class BTTVemotes {
         }
 
         this.emotes[_key] = data[code];
+        this.addKeyToSorted(_key);
       }
     }
+
     this.loaded = true;
   }
 }

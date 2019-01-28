@@ -2,7 +2,7 @@ import resolve from "rollup-plugin-node-resolve";
 import babel from "rollup-plugin-babel";
 import { uglify } from "rollup-plugin-uglify";
 import replace from "rollup-plugin-replace";
-var sassTasks = require(process.cwd() + "/tasks/sassbundle.js");
+// var sassTasks = require(process.cwd() + "/tasks/sassbundle.js");
 
 const watchMode = process.env.ROLLUP_WATCH === "true";
 

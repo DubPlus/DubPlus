@@ -11,10 +11,7 @@ import AutocompletePreview from './autocomplete-preview';
 
 /*
 TODO: 
- - Create the hidden preview component
- - listen to the chat input for the beginning of possible emotes
  - if found:
-   - open preview/picker window
    - hijack arrow keys to make it move around the preview window
    - moving around auto completes the text
    - typing continues to filter
@@ -38,13 +35,22 @@ export default class AutocompleteEmoji extends Component {
   checkInput = (e) => {
     const parts = e.target.value.split(' ');
     if (parts.length  === 0) { return; }
+    
     const last = parts[parts.length - 1];
     const lastChar = last.charAt(last.length - 1);
-    if (last.charAt(0) === ':' && last.length > 2 && lastChar !== ':') {
+    
+    if (last.charAt(0) === ':' && last.length > 3 && lastChar !== ':') {
       this.setState({symbol: last});
-    } else {
+      return;
+    }
+    
+    if (this.state.symbol !== '') {
       this.setState({symbol: ''});
     }
+  }
+
+  closePreview = () => {
+    this.setState({symbol: ''});
   }
 
   turnOn = (e) => {
@@ -71,7 +77,7 @@ export default class AutocompleteEmoji extends Component {
 
         { isOn ? (
           <Portal into={this.renderTo}>
-            <AutocompletePreview symbol={symbol} />
+            <AutocompletePreview close={this.closePreview} symbol={symbol} />
           </Portal>
         ) : null }
 
