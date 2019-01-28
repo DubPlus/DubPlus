@@ -15,6 +15,7 @@ const PreviewListItem = ({ data, onSelect }) => {
     <li
       className={`preview-item ${data.type}-previews`}
       onClick={() => onSelect(data.name)}
+      tabIndex="0"
     >
       <div className="ac-image">
         <img src={data.src} alt={data.name} title={data.name} />

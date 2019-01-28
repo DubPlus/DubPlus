@@ -81,31 +81,40 @@ export default class AutocompleteEmoji extends Component {
     this.navIndex = -1;
   }
 
+  clearSelected() {
+    let selected = document.querySelector('.preview-item.selected')
+    if (selected) selected.classList.remove('selected');
+  }
+
   navDown() {
-    document.querySelector('.preview-item.selected').classList.remove('selected');
+    this.clearSelected();
     this.navIndex++;
-    if (navIndex >= this.previewList.length) {
+    if (this.navIndex >= this.previewList.length) {
       this.navIndex = 0;
     }
-    console.log(this.previewList[this.navIndex]);
-    this.previewList[this.navIndex].classList.add('selected');
-    this.previewList[this.navIndex].scrollIntoView();
+    let item = this.previewList[this.navIndex];
+    console.log(item);
+    item.classList.add('selected');
+    item.scrollIntoView();
   }
 
   navUp() {
-    document.querySelector('.preview-item.selected').classList.remove('selected');
+    this.clearSelected();
     this.navIndex--;
-    if (navIndex < 0) {
+    if (this.navIndex < 0) {
       this.navIndex = this.previewList.length - 1;
     }
-    this.previewList[this.navIndex].classList.add('selected');
-    this.previewList[this.navIndex].scrollIntoView(true);
+    let item = this.previewList[this.navIndex];
+    console.log(item);
+    item.classList.add('selected');
+    item.scrollIntoView(true);
   }
 
 
   keyboardNav = e => {
+    console.log('naving', this.state.symbol, this.previewList.length);
     if (
-      !this.props.symbol ||
+      !this.state.symbol ||
       !this.previewList ||
       this.previewList.length === 0
     ) {
