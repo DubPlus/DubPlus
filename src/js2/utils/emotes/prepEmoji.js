@@ -1,9 +1,19 @@
 /* global  emojify */
 import ldb from '../indexedDB.js';
 
-export var emoji = {
+export const emoji = {
   template: function(id) {
     return emojify.defaultConfig.img_dir + "/" + encodeURI(id) + ".png";
+  },
+  find(symbol) {
+    let found = emojify.emojiNames.filter(e => e.indexOf(symbol) === 0);
+    return found.map(key => {
+      return {
+        type: "emojify",
+        src: this.template(key),
+        name: key
+      }
+    });
   }
 }
 

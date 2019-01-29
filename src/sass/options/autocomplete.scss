@@ -6,11 +6,14 @@
 
 #autocomplete-preview {
     overflow: auto; 
-    display: block; 
+    display: flex; 
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
     position: absolute; 
-    bottom: 54px; 
+    bottom: 56px; 
     background-color: rgba(0,0,0,0.9);
-    width: 100%;
+    width: 97%;
     height: auto;
     max-height: 0;
     padding: 0;
@@ -18,49 +21,51 @@
     margin: 0;
 }
 
-#autocomplete-preview li {
+#autocomplete-preview .preview-item {
   display: block;
   padding: 6px 10px;
   margin: 0;
+  cursor: pointer;
 }
 
 #autocomplete-preview li:hover,
 #autocomplete-preview li.selected {
-  background-color: #555;
+  background-color: rgba(85,85,85,0.6);
+  border-radius: 5px;
 }
 
-#autocomplete-preview li:focus {
-  outline: none;
-}
+// #autocomplete-preview li:focus {
+//   outline: none;
+// }
 
-#autocomplete-preview .preview-item {
-  background-repeat: no-repeat;
-  background-size: 25px;
-  background-position: 98% center;
-}
+// #autocomplete-preview .preview-item {
+//   background-repeat: no-repeat;
+//   background-size: 25px;
+//   background-position: 98% center;
+// }
 
-.twitch-previews {
-  background-image: url(https://i.imgur.com/FhzONPQ.png); 
-}
+// .twitch-previews {
+//   background-image: url(https://i.imgur.com/FhzONPQ.png); 
+// }
 
-.bttv-previews {
-  background-image: url(https://i.imgur.com/oTfAI0O.png);
-}
+// .bttv-previews {
+//   background-image: url(https://i.imgur.com/oTfAI0O.png);
+// }
 
-.tasty-previews {
-  background-image: url(#{$resourceSrc}/emotes/tastycat/21.png);
-}
+// .tasty-previews {
+//   background-image: url(#{$resourceSrc}/emotes/tastycat/21.png);
+// }
 
-.frankerFacez-previews {
-  background-image: url(https://i.imgur.com/DuJfI4T.png);
-}
+// .frankerFacez-previews {
+//   background-image: url(https://i.imgur.com/DuJfI4T.png);
+// }
 
 #autocomplete-preview span {
-  font-size: 0.8em;
+  font-size: 0.9em;
   display:inline-block; 
-  padding-left: 20px;
+  padding-left: 13px;
   position: relative;
-  top: -7px;
+  top: -5px;
 }
 
 #autocomplete-preview .ac-image {

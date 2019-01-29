@@ -9,7 +9,7 @@ import Portal from "preact-portal/src/preact-portal";
 export default class ShowDubsOnHover extends Component {
   state = {
     isOn: false,
-    showWarning: true,
+    showWarning: false,
     upDubs: [],
     downDubs: [],
     grabs: []

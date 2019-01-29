@@ -2,6 +2,9 @@ import { h, Component } from "preact";
 import { MenuSwitch } from "../../components/menuItems.js";
 import Portal from "preact-portal/src/preact-portal";
 import AutocompletePreview from "./autocomplete-preview";
+import twitch from "../../utils/emotes/twitch.js";
+import bttv from "../../utils/emotes/bttv.js";
+import { emoji } from "../../utils/emotes/prepEmoji.js";
 
 /**********************************************************************
  * Autocomplete Emoji / Emotes
@@ -24,18 +27,21 @@ const KEYS = {
   right: 39,
   enter: 13,
   esc: 27,
-  tab: 9,
-  shiftKey: 16,
-  backspace: 8,
-  del: 46,
-  space: 32,
-  ctrl: 17
+  tab: 9
 };
+const ignoreKeys = [
+  KEYS.up,
+  KEYS.down,
+  KEYS.left,
+  KEYS.right,
+  KEYS.esc,
+  KEYS.enter
+];
 
 export default class AutocompleteEmoji extends Component {
   state = {
     isOn: false,
-    symbol: ""
+    matches: []
   };
 
   renderTo = document.querySelector(".pusher-chat-widget-input");
@@ -49,41 +55,77 @@ export default class AutocompleteEmoji extends Component {
    * of the input string. Similar to how Dubtrack handles user autocomplete
    */
   checkInput = e => {
+    const key = "which" in e ? e.which : e.keyCode;
+    if (ignoreKeys.indexOf(key) >= 0) {
+      return;
+    }
+
     const parts = e.target.value.split(" ");
     if (parts.length === 0) {
       return;
     }
 
-    const last = parts[parts.length - 1];
-    const lastChar = last.charAt(last.length - 1);
+    const lastPart = parts[parts.length - 1];
+    const lastChar = lastPart.charAt(lastPart.length - 1);
 
-    if (last.charAt(0) === ":" && last.length > 3 && lastChar !== ":") {
-      this.setState({ symbol: last });
+    if (lastPart.charAt(0) === ":" && lastPart.length > 3 && lastChar !== ":") {
+      let new_matches = this.getMatches(lastPart);
+      this.chunkLoadMatches(new_matches);
       return;
     }
 
-    if (this.state.symbol !== "") {
+    if (this.state.matches.length !== 0) {
       this.closePreview();
     }
   };
 
-  updateChatInput = emote => {
+  chunkLoadMatches(matches) {
+    let limit = 50;
+    if (matches.length < limit + 1) {
+      this.setState({ matches: matches });
+      return;
+    }
+
+    // render the first 50 matches
+    let startingArray = matches.slice(0, limit);
+    this.setState({ matches: startingArray });
+
+    // then render the full list after given time
+    // dom diffing should leave the first in place and just add the
+    // remaining matches
+    setTimeout(() => {
+      this.setState({ matches: matches });
+    }, 250);
+  }
+
+  getMatches(symbol) {
+    symbol = symbol.replace(/^:/, "");
+    let classic = emoji.find(symbol);
+    var twitchMatches = twitch.find(symbol);
+    var bttvMatches = bttv.find(symbol);
+    return classic.concat(twitchMatches, bttvMatches);
+  }
+
+  updateChatInput = (emote, focusBack = true) => {
     let inputText = this.chatInput.value.split(" ");
     inputText.pop();
     inputText.push(`:${emote}:`);
     this.chatInput.value = inputText.join(" ");
-    this.chatInput.focus();
-    this.closePreview();
+    if (focusBack) {
+      this.chatInput.focus();
+      this.closePreview();
+    }
   };
 
   closePreview() {
-    this.setState({ symbol: "" });
+    this.setState({ matches: [] });
     this.navIndex = -1;
+    this.previewList = [];
   }
 
   clearSelected() {
-    let selected = document.querySelector('.preview-item.selected')
-    if (selected) selected.classList.remove('selected');
+    let selected = document.querySelector(".preview-item.selected");
+    if (selected) selected.classList.remove("selected");
   }
 
   navDown() {
@@ -92,10 +134,12 @@ export default class AutocompleteEmoji extends Component {
     if (this.navIndex >= this.previewList.length) {
       this.navIndex = 0;
     }
+    console.log('down', this.navIndex);
     let item = this.previewList[this.navIndex];
     console.log(item);
-    item.classList.add('selected');
+    item.classList.add("selected");
     item.scrollIntoView();
+    this.updateChatInput(item.dataset.name, false);
   }
 
   navUp() {
@@ -105,20 +149,18 @@ export default class AutocompleteEmoji extends Component {
       this.navIndex = this.previewList.length - 1;
     }
     let item = this.previewList[this.navIndex];
-    console.log(item);
-    item.classList.add('selected');
+    item.classList.add("selected");
     item.scrollIntoView(true);
+    this.updateChatInput(item.dataset.name, false);
   }
 
-
   keyboardNav = e => {
-    console.log('naving', this.state.symbol, this.previewList.length);
     if (
-      !this.state.symbol ||
+      this.state.matches.length === 0 ||
       !this.previewList ||
       this.previewList.length === 0
     ) {
-      return;
+      return true;
     }
 
     const key = "which" in e ? e.which : e.keyCode;
@@ -126,16 +168,20 @@ export default class AutocompleteEmoji extends Component {
       case KEYS.down:
       case KEYS.tab:
         e.preventDefault();
+        e.stopImmediatePropagation();
         this.navDown();
+        break;
       case KEYS.up:
         e.preventDefault();
+        e.stopImmediatePropagation();
         this.navUp();
-      case KEYS.enter:
-        let emote = document.querySelector('.preview-item.selected .ac-text').textContent.trim();
-        this.updateChatInput(emote);
+        break;
       case KEYS.esc:
         this.closePreview();
         this.chatInput.focus();
+        break;
+      default:
+        return true;
     }
   };
 
@@ -144,24 +190,30 @@ export default class AutocompleteEmoji extends Component {
     Dubtrack.room.chat.delegateEvents(
       _.omit(Dubtrack.room.chat.events, ["keydown #chat-txt-message"])
     );
-    this.chatInput.addEventListener("keyup", this.checkInput);
-    this.chatInput.addEventListener("keydown", this.keyboardNav);
+
+    // relying on Dubtrack.fm's lodash being globally available
+    this.debouncedCheckInput = window._.debounce(this.checkInput, 100);
+    this.debouncedNav = window._.debounce(this.keyboardNav, 100);
+    this.chatInput.addEventListener("keydown", this.debouncedNav);
+    this.chatInput.addEventListener("keyup", this.debouncedCheckInput);
   };
 
   turnOff = e => {
     this.setState({ isOn: false });
     Dubtrack.room.chat.delegateEvents(Dubtrack.room.chat.events);
-    this.chatInput.removeEventListener("keyup", this.checkInput);
-    this.chatInput.removeEventListener("keydown", this.keyboardNav);
+    this.chatInput.removeEventListener("keydown", this.debouncedNav);
+    this.chatInput.removeEventListener("keyup", this.debouncedCheckInput);
   };
 
   componentDidUpdate(prevProps, prevState) {
+    console.log('updated');
     if (this.state.isOn) {
       this.previewList = document.querySelectorAll("#autocomplete-preview li");
+      if (this.previewList[0]) console.log('new list', this.previewList[0].dataset.name);
     }
   }
 
-  render(props, { isOn, symbol }) {
+  render(props, { isOn, matches }) {
     return (
       <MenuSwitch
         id="dubplus-emotes"
@@ -175,7 +227,7 @@ export default class AutocompleteEmoji extends Component {
           <Portal into={this.renderTo}>
             <AutocompletePreview
               onSelect={this.updateChatInput}
-              symbol={symbol}
+              matches={matches}
             />
           </Portal>
         ) : null}
