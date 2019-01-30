@@ -48,12 +48,20 @@ function combine(obj1, obj2, dest) {
 
 function copyScript() {
   ['Chrome','Firefox'].forEach(function(dir){
-    fs.copySync('./dubplus.js', `${extPath}/${dir}/scripts/dubplus.js`);
-    fs.copySync('./dubplus.min.js', `${extPath}/${dir}/scripts/dubplus.min.js`);
+    fs.copySync(process.cwd() + '/dist/dubplus.js', `${extPath}/${dir}/scripts/dubplus.js`);
+    // fs.copySync(process.cwd() + '/dist/dubplus.min.js', `${extPath}/${dir}/scripts/dubplus.min.js`);
   });
 }
 
-module.exports = function(shouldZip) {
+function copyCSS() {
+  ['Chrome','Firefox'].forEach(function(dir){
+    fs.copySync(process.cwd() + '/css/dubplus.css', `${extPath}/${dir}/css/dubplus.css`);
+    fs.copySync(process.cwd() + '/css/dubplus.min.css', `${extPath}/${dir}/css/dubplus.min.css`);
+  });
+}
+__dirname
+
+function build(shouldZip) {
   /***********************************************
    * Create our Chrome and Firefox folders if they
    * don't exist already
@@ -89,11 +97,30 @@ module.exports = function(shouldZip) {
   // remove the common manifests from each folder
   rmCommonManifests();
 
-  // just in case, copy the Dubplus script to each extension folder
+  // just in case, copy the Dubplus script and css to each extension folder
   copyScript();
+  copyCSS();
 
   if (shouldZip) {
     doZip("Chrome");
     doZip("Firefox");
   }
 };
+
+function plugin () {
+  return {
+    name: 'extension', // this name will show up in warnings and errors
+    buildEnd() {
+      build()
+    }
+  };
+}
+
+module.exports = {
+  build: build,
+  plugin: plugin
+}
+
+if (require.main === module) {
+  build();
+}

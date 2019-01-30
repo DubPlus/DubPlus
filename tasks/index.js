@@ -5,7 +5,7 @@
 const log = require('./colored-console.js');
 var jsTasks = require(process.cwd() + '/tasks/jsbundle.js');
 var sassTasks = require(process.cwd() + '/tasks/sassbundle.js');
-var extensionBuild = require(process.cwd() + '/tasks/extensions.js');
+var extension = require(process.cwd() + '/tasks/extensions.js');
 
 // find out which task we're running
 var currentTask = process.argv[2]; 
@@ -49,7 +49,7 @@ switch (currentTask) {
     break;
 
   case 'ext':
-    extensionBuild();
+    extension.build();
     break;
 
   case 'ext-zip':

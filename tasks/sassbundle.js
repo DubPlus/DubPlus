@@ -6,6 +6,10 @@ const autoprefixer = require("autoprefixer");
 const prefixer = postcss([autoprefixer]);
 const log = require("./colored-console.js");
 
+function onError(err){
+  log.error(err);
+}
+
 // our own custom module
 var gitInfo = require(process.cwd() + "/tasks/repoInfo.js");
 console.log(`SASS $resourceSrc set to ${gitInfo.resourceSrc}`);
@@ -75,10 +79,24 @@ function watchingSASS() {
   );
 }
 
+
+function plugin () {
+  return {
+    name: 'sass', // this name will show up in warnings and errors
+    buildEnd() {
+      compileSASS()
+        .then(minifySASS)
+        .then(function(){ console.log('sass finished compiling & minifying');})
+        .catch(onError);
+    }
+  };
+}
+
 module.exports = {
   compile: compileSASS,
   watch: watchingSASS,
-  minify: minifySASS
+  minify: minifySASS,
+  plugin: plugin
 };
 
 if (require.main === module) {

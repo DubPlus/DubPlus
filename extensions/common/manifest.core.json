@@ -14,7 +14,10 @@
         "*://*.dubtrack.fm/join/*"
       ],
       "js": [
-        "scripts/loader.js"
+        "scripts/load.js"
+      ],
+      "css": [
+        "css/dubplus.css"
       ],
       "run_at": "document_end"
     }

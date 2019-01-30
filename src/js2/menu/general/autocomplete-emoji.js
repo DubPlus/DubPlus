@@ -187,6 +187,7 @@ export default class AutocompleteEmoji extends Component {
 
   turnOn = e => {
     this.setState({ isOn: true });
+    
     Dubtrack.room.chat.delegateEvents(
       _.omit(Dubtrack.room.chat.events, ["keydown #chat-txt-message"])
     );

@@ -11,13 +11,13 @@ import track from "./utils/analytics.js";
 
 polyfills();
 
-setTimeout(function() {
-  // start the loading of the CSS asynchronously
-  cssHelper.loadExternal(
-    "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-    );
-  cssHelper.load("/css/dubplus.css");
-}, 1);
+// setTimeout(function() {
+//   // start the loading of the CSS asynchronously
+//   cssHelper.loadExternal(
+//     "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+//     );
+//   cssHelper.load("/css/dubplus.css");
+// }, 1);
 
 class DubPlusContainer extends Component {
   state = {
@@ -103,7 +103,10 @@ class DubPlusContainer extends Component {
 }
 
 render(<DubPlusContainer />, document.body);
-render(<MenuIcon />, document.querySelector(".header-right-navigation"));
+let navWait = new WaitFor(".header-right-navigation", { seconds: 30, isNode: true });
+navWait.then(()=>{
+  render(<MenuIcon />, document.querySelector(".header-right-navigation"));
+});
 
 // PKGINFO is inserted by the rollup build process
 export default _PKGINFO_;

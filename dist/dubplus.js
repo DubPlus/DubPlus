@@ -19,4 +19,4927 @@
 
     more info at https://dub.plus
 */
-var DubPlus=function(){"use strict";function s(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function o(e,t){for(var n=0;n<t.length;n++){var o=t[n];o.enumerable=o.enumerable||!1,o.configurable=!0,"value"in o&&(o.writable=!0),Object.defineProperty(e,o.key,o)}}function a(e,t,n){return t&&o(e.prototype,t),n&&o(e,n),e}function u(e,t,n){return t in e?Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[t]=n,e}function n(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function");e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,writable:!0,configurable:!0}}),t&&r(e,t)}function c(e){return(c=Object.setPrototypeOf?Object.getPrototypeOf:function(e){return e.__proto__||Object.getPrototypeOf(e)})(e)}function r(e,t){return(r=Object.setPrototypeOf||function(e,t){return e.__proto__=t,e})(e,t)}function l(e){if(void 0===e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return e}function d(e,t){return!t||"object"!=typeof t&&"function"!=typeof t?l(e):t}function p(e){return function(e){if(Array.isArray(e)){for(var t=0,n=new Array(e.length);t<e.length;t++)n[t]=e[t];return n}}(e)||function(e){if(Symbol.iterator in Object(e)||"[object Arguments]"===Object.prototype.toString.call(e))return Array.from(e)}(e)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance")}()}var f=function(){},i={},h=[],m=[];function v(e,t){var n,o,r,i,a=m;for(i=arguments.length;2<i--;)h.push(arguments[i]);for(t&&null!=t.children&&(h.length||h.push(t.children),delete t.children);h.length;)if((o=h.pop())&&void 0!==o.pop)for(i=o.length;i--;)h.push(o[i]);else"boolean"==typeof o&&(o=null),(r="function"!=typeof e)&&(null==o?o="":"number"==typeof o?o=String(o):"string"!=typeof o&&(r=!1)),r&&n?a[a.length-1]+=o:a===m?a=[o]:a.push(o),n=r;var s=new f;return s.nodeName=e,s.children=a,s.attributes=null==t?void 0:t,s.key=null==t?void 0:t.key,s}function O(e,t){for(var n in t)e[n]=t[n];return e}function b(e,t){null!=e&&("function"==typeof e?e(t):e.current=t)}var t="function"==typeof Promise?Promise.resolve().then.bind(Promise.resolve()):setTimeout,y=/acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i,g=[];function w(e){!e._dirty&&(e._dirty=!0)&&1==g.push(e)&&t(k)}function k(){for(var e;e=g.pop();)e._dirty&&B(e)}function S(e,t){return e.normalizedNodeName===t||e.nodeName.toLowerCase()===t.toLowerCase()}function x(e){var t=O({},e.attributes);t.children=e.children;var n=e.nodeName.defaultProps;if(void 0!==n)for(var o in n)void 0===t[o]&&(t[o]=n[o]);return t}function N(e){var t=e.parentNode;t&&t.removeChild(e)}function D(e,t,n,o,r){if("className"===t&&(t="class"),"key"===t);else if("ref"===t)b(n,null),b(o,e);else if("class"!==t||r)if("style"===t){if(o&&"string"!=typeof o&&"string"!=typeof n||(e.style.cssText=o||""),o&&"object"==typeof o){if("string"!=typeof n)for(var i in n)i in o||(e.style[i]="");for(var i in o)e.style[i]="number"==typeof o[i]&&!1===y.test(i)?o[i]+"px":o[i]}}else if("dangerouslySetInnerHTML"===t)o&&(e.innerHTML=o.__html||"");else if("o"==t[0]&&"n"==t[1]){var a=t!==(t=t.replace(/Capture$/,""));t=t.toLowerCase().substring(2),o?n||e.addEventListener(t,C,a):e.removeEventListener(t,C,a),(e._listeners||(e._listeners={}))[t]=o}else if("list"!==t&&"type"!==t&&!r&&t in e){try{e[t]=null==o?"":o}catch(e){}null!=o&&!1!==o||"spellcheck"==t||e.removeAttribute(t)}else{var s=r&&t!==(t=t.replace(/^xlink:?/,""));null==o||!1===o?s?e.removeAttributeNS("http://www.w3.org/1999/xlink",t.toLowerCase()):e.removeAttribute(t):"function"!=typeof o&&(s?e.setAttributeNS("http://www.w3.org/1999/xlink",t.toLowerCase(),o):e.setAttribute(t,o))}else e.className=o||""}function C(e){return this._listeners[e.type](e)}var E=[],T=0,A=!1,M=!1;function I(){for(var e;e=E.shift();)e.componentDidMount&&e.componentDidMount()}function P(e,t,n,o,r,i){T++||(A=null!=r&&void 0!==r.ownerSVGElement,M=null!=e&&!("__preactattr_"in e));var a=L(e,t,n,o,i);return r&&a.parentNode!==r&&r.appendChild(a),--T||(M=!1,i||I()),a}function L(e,t,n,o,r){var i=e,a=A;if(null!=t&&"boolean"!=typeof t||(t=""),"string"==typeof t||"number"==typeof t)return e&&void 0!==e.splitText&&e.parentNode&&(!e._component||r)?e.nodeValue!=t&&(e.nodeValue=t):(i=document.createTextNode(t),e&&(e.parentNode&&e.parentNode.replaceChild(i,e),W(e,!0))),i.__preactattr_=!0,i;var s,u,c=t.nodeName;if("function"==typeof c)return function(e,t,n,o){var r=e&&e._component,i=r,a=e,s=r&&e._componentConstructor===t.nodeName,u=s,c=x(t);for(;r&&!u&&(r=r._parentComponent);)u=r.constructor===t.nodeName;r&&u&&(!o||r._component)?(U(r,c,3,n,o),e=r.base):(i&&!s&&(z(i),e=a=null),r=R(t.nodeName,c,n),e&&!r.nextBase&&(r.nextBase=e,a=null),U(r,c,1,n,o),e=r.base,a&&e!==a&&(a._component=null,W(a,!1)));return e}(e,t,n,o);if(A="svg"===c||"foreignObject"!==c&&A,c=String(c),(!e||!S(e,c))&&(s=c,(u=A?document.createElementNS("http://www.w3.org/2000/svg",s):document.createElement(s)).normalizedNodeName=s,i=u,e)){for(;e.firstChild;)i.appendChild(e.firstChild);e.parentNode&&e.parentNode.replaceChild(i,e),W(e,!0)}var l=i.firstChild,d=i.__preactattr_,p=t.children;if(null==d){d=i.__preactattr_={};for(var f=i.attributes,h=f.length;h--;)d[f[h].name]=f[h].value}return!M&&p&&1===p.length&&"string"==typeof p[0]&&null!=l&&void 0!==l.splitText&&null==l.nextSibling?l.nodeValue!=p[0]&&(l.nodeValue=p[0]):(p&&p.length||null!=l)&&function(e,t,n,o,r){var i,a,s,u,c,l=e.childNodes,d=[],p={},f=0,h=0,m=l.length,v=0,b=t?t.length:0;if(0!==m)for(var y=0;y<m;y++){var g=l[y],w=g.__preactattr_,k=b&&w?g._component?g._component.__key:w.key:null;null!=k?(f++,p[k]=g):(w||(void 0!==g.splitText?!r||g.nodeValue.trim():r))&&(d[v++]=g)}if(0!==b)for(var y=0;y<b;y++){u=t[y],c=null;var k=u.key;if(null!=k)f&&void 0!==p[k]&&(c=p[k],p[k]=void 0,f--);else if(h<v)for(i=h;i<v;i++)if(void 0!==d[i]&&(D=a=d[i],C=r,"string"==typeof(_=u)||"number"==typeof _?void 0!==D.splitText:"string"==typeof _.nodeName?!D._componentConstructor&&S(D,_.nodeName):C||D._componentConstructor===_.nodeName)){c=a,d[i]=void 0,i===v-1&&v--,i===h&&h++;break}c=L(c,u,n,o),s=l[y],c&&c!==e&&c!==s&&(null==s?e.appendChild(c):c===s.nextSibling?N(s):e.insertBefore(c,s))}var D,_,C;if(f)for(var y in p)void 0!==p[y]&&W(p[y],!1);for(;h<=v;)void 0!==(c=d[v--])&&W(c,!1)}(i,p,n,o,M||null!=d.dangerouslySetInnerHTML),function(e,t,n){var o;for(o in n)t&&null!=t[o]||null==n[o]||D(e,o,n[o],n[o]=void 0,A);for(o in t)"children"===o||"innerHTML"===o||o in n&&t[o]===("value"===o||"checked"===o?e[o]:n[o])||D(e,o,n[o],n[o]=t[o],A)}(i,t.attributes,d),A=a,i}function W(e,t){var n=e._component;n?z(n):(null!=e.__preactattr_&&b(e.__preactattr_.ref,null),!1!==t&&null!=e.__preactattr_||N(e),j(e))}function j(e){for(e=e.lastChild;e;){var t=e.previousSibling;W(e,!0),e=t}}var q=[];function R(e,t,n){var o,r=q.length;for(e.prototype&&e.prototype.render?(o=new e(t,n),G.call(o,t,n)):((o=new G(t,n)).constructor=e,o.render=F);r--;)if(q[r].constructor===e)return o.nextBase=q[r].nextBase,q.splice(r,1),o;return o}function F(e,t,n){return this.constructor(e,n)}function U(e,t,n,o,r){e._disable||(e._disable=!0,e.__ref=t.ref,e.__key=t.key,delete t.ref,delete t.key,void 0===e.constructor.getDerivedStateFromProps&&(!e.base||r?e.componentWillMount&&e.componentWillMount():e.componentWillReceiveProps&&e.componentWillReceiveProps(t,o)),o&&o!==e.context&&(e.prevContext||(e.prevContext=e.context),e.context=o),e.prevProps||(e.prevProps=e.props),e.props=t,e._disable=!1,0!==n&&(1!==n&&!1===i.syncComponentUpdates&&e.base?w(e):B(e,1,r)),b(e.__ref,e))}function B(e,t,n,o){if(!e._disable){var r,i,a,s=e.props,u=e.state,c=e.context,l=e.prevProps||s,d=e.prevState||u,p=e.prevContext||c,f=e.base,h=e.nextBase,m=f||h,v=e._component,b=!1,y=p;if(e.constructor.getDerivedStateFromProps&&(u=O(O({},u),e.constructor.getDerivedStateFromProps(s,u)),e.state=u),f&&(e.props=l,e.state=d,e.context=p,2!==t&&e.shouldComponentUpdate&&!1===e.shouldComponentUpdate(s,u,c)?b=!0:e.componentWillUpdate&&e.componentWillUpdate(s,u,c),e.props=s,e.state=u,e.context=c),e.prevProps=e.prevState=e.prevContext=e.nextBase=null,e._dirty=!1,!b){r=e.render(s,u,c),e.getChildContext&&(c=O(O({},c),e.getChildContext())),f&&e.getSnapshotBeforeUpdate&&(y=e.getSnapshotBeforeUpdate(l,d));var g,w,k=r&&r.nodeName;if("function"==typeof k){var D=x(r);(i=v)&&i.constructor===k&&D.key==i.__key?U(i,D,1,c,!1):(g=i,e._component=i=R(k,D,c),i.nextBase=i.nextBase||h,i._parentComponent=e,U(i,D,0,c,!1),B(i,1,n,!0)),w=i.base}else a=m,(g=v)&&(a=e._component=null),(m||1===t)&&(a&&(a._component=null),w=P(a,r,c,n||!f,m&&m.parentNode,!0));if(m&&w!==m&&i!==v){var _=m.parentNode;_&&w!==_&&(_.replaceChild(w,m),g||(m._component=null,W(m,!1)))}if(g&&z(g),(e.base=w)&&!o){for(var C=e,S=e;S=S._parentComponent;)(C=S).base=w;w._component=C,w._componentConstructor=C.constructor}}for(!f||n?E.push(e):b||e.componentDidUpdate&&e.componentDidUpdate(l,d,y);e._renderCallbacks.length;)e._renderCallbacks.pop().call(e);T||o||I()}}function z(e){var t=e.base;e._disable=!0,e.componentWillUnmount&&e.componentWillUnmount(),e.base=null;var n=e._component;n?z(n):t&&(null!=t.__preactattr_&&b(t.__preactattr_.ref,null),N(e.nextBase=t),q.push(e),j(t)),b(e.__ref,null)}function G(e,t){this._dirty=!0,this.context=t,this.props=e,this.state=this.state||{},this._renderCallbacks=[]}function K(e,t,n){return P(n,e,{},!1,t,!1)}function Y(e,n){var o=document.createElement("script"),t=document.getElementsByTagName("script")[0];o.async=1,o.onload=o.onreadystatechange=function(e,t){(t||!o.readyState||/loaded|complete/.test(o.readyState))&&(o.onload=o.onreadystatechange=null,o=void 0,t||n&&n())},o.onerror=function(e){n&&n(e)},o.src=e,t.parentNode.insertBefore(o,t)}O(G.prototype,{setState:function(e,t){this.prevState||(this.prevState=this.state),this.state=O(O({},this.state),"function"==typeof e?e(this.state,this.props):e),t&&this._renderCallbacks.push(t),w(this)},forceUpdate:function(e){e&&this._renderCallbacks.push(e),B(this,2)},render:function(){}});var H={currentVol:50,snoozed:!1},e=function(e){if(e.startTime<2)return H.snoozed&&(Dubtrack.room.player.setVolume(H.currentVol),H.snoozed=!1),!0},V=function(){!H.snoozed&&!Dubtrack.room.player.muted_player&&2<Dubtrack.playerController.volume?(H.currentVol=Dubtrack.playerController.volume,Dubtrack.room.player.mutePlayer(),H.snoozed=!0,Dubtrack.Events.bind("realtime:room_playlist-update",e)):H.snoozed&&(Dubtrack.room.player.setVolume(H.currentVol),Dubtrack.room.player.updateVolumeBar(),H.snoozed=!1)},J={position:"absolute",font:"1rem/1.5 proxima-nova,sans-serif",display:"block",left:"-33px",cursor:"pointer",borderRadius:"1.5rem",padding:"8px 16px",background:"#fff",fontWeight:"700",fontSize:"13.6px",textTransform:"uppercase",color:"#000",opacity:"0.8",textAlign:"center",zIndex:"9"},X=function(e){function i(){var e,t;s(this,i);for(var n=arguments.length,o=new Array(n),r=0;r<n;r++)o[r]=arguments[r];return u(l(l(t=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"state",{show:!1}),u(l(l(t)),"showTooltip",function(){t.setState({show:!0})}),u(l(l(t)),"hideTooltip",function(){t.setState({show:!1})}),t}return n(i,G),a(i,[{key:"render",value:function(e,t){return v("span",{className:"icon-mute snooze_btn",onClick:V,onMouseOver:this.showTooltip,onMouseOut:this.hideTooltip},t.show&&v("div",{className:"snooze_tooltip",style:J},"Mute current song"))}}]),i}();var Q={position:"absolute",font:"1rem/1.5 proxima-nova,sans-serif",display:"block",left:"-33px",cursor:"pointer",borderRadius:"1.5rem",padding:"8px 16px",background:"#fff",fontWeight:"700",fontSize:"13.6px",textTransform:"uppercase",color:"#000",opacity:"0.8",textAlign:"center",zIndex:"9"},Z=function(e){function i(){var e,t;s(this,i);for(var n=arguments.length,o=new Array(n),r=0;r<n;r++)o[r]=arguments[r];return u(l(l(t=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"state",{show:!1,booth_time:""}),u(l(l(t)),"showTooltip",function(){var e=t.getEta();t.setState({show:!0,booth_time:e})}),u(l(l(t)),"hideTooltip",function(){t.setState({show:!1})}),t}return n(i,G),a(i,[{key:"getEta",value:function(){var e=parseInt(document.querySelector("#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min").textContent),t=4*parseInt(document.querySelector(".queue-position").textContent)-4+e;return 0<=t?t:"You're not in the queue"}},{key:"render",value:function(e,t){return v("span",{className:"icon-history eta_tooltip_t",onMouseOver:this.showTooltip,onMouseOut:this.hideTooltip},this.state.show&&v("span",{className:"eta_tooltip",style:Q},this.state.booth_time))}}]),i}();function ee(e){var t="open"===e.open?"down":"right";return v("div",{id:e.id,onClick:e.onClick,className:"dubplus-menu-section-header"},v("span",{className:"fa fa-angle-".concat(t)}),v("p",null,e.category))}var te={menu:{general:"open","user-interface":"open",settings:"open",customize:"open",contact:"open"},options:{"dubplus-autovote":!1,"dubplus-emotes":!1,"dubplus-autocomplete":!1,mention_notifications:!1,dubplus_pm_notifications:!1,"dj-notification":!1,"dubplus-dubs-hover":!1,"dubplus-downdubs":!1,"dubplus-grabschat":!1,"dubplus-split-chat":!1,"dubplus-show-timestamp":!1,"dubplus-hide-bg":!1,"dubplus-hide-avatars":!1,"dubplus-chat-only":!1,"dubplus-video-only":!1,warn_redirect:!1,"dubplus-comm-theme":!1,"dubplus-afk":!1,"dubplus-snow":!1,"dubplus-custom-css":!1},custom:{customAfkMessage:"",dj_notification:1,css:""}},ne=new(function(){function n(){s(this,n),u(this,"srcRoot","https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@preact-version");var e=localStorage.getItem("dubplusUserSettings");if(e)try{var t=JSON.parse(e);this.stored=Object.assign({},te,t)}catch(e){this.stored=te}else this.stored=te}return a(n,[{key:"save",value:function(e,t,n){this.stored[e][t]=n;try{localStorage.setItem("dubplusUserSettings",JSON.stringify(this.stored))}catch(e){console.error("an error occured saving dubplus to localStorage",e)}}}]),n}()),oe=function(e){function t(){return s(this,t),d(this,c(t).apply(this,arguments))}return n(t,G),a(t,[{key:"componentDidUpdate",value:function(e){for(var t in e)if(e[t]!==this.props[t])return setTimeout(this.renderLayer)}},{key:"componentDidMount",value:function(){this.isMounted=!0,this.renderLayer=this.renderLayer.bind(this),this.renderLayer()}},{key:"componentWillUnmount",value:function(){this.renderLayer(!1),this.isMounted=!1,this.remote&&this.remote.parentNode.removeChild(this.remote)}},{key:"findNode",value:function(e){return"string"==typeof e?document.querySelector(e):e}},{key:"renderLayer",value:function(){var e=!(0<arguments.length&&void 0!==arguments[0])||arguments[0];this.isMounted&&(this.props.into!==this.intoPointer&&(this.intoPointer=this.props.into,this.into&&this.remote&&(this.remote=K(v(re,null),this.into,this.remote)),this.into=this.findNode(this.props.into)),this.remote=K(v(re,{context:this.context},e&&this.props.children||null),this.into,this.remote))}},{key:"render",value:function(){return null}}]),t}(),re=function(e){function t(){return s(this,t),d(this,c(t).apply(this,arguments))}return n(t,G),a(t,[{key:"getChildContext",value:function(){return this.props.context}},{key:"render",value:function(e){var t=e.children;return t&&t[0]||null}}]),t}(),ie=function(e){function i(){var e,t;s(this,i);for(var n=arguments.length,o=new Array(n),r=0;r<n;r++)o[r]=arguments[r];return u(l(l(t=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"keyUpHandler",function(e){13===e.keyCode&&(t.props.onConfirm(t.textarea.value),t.props.onClose()),27===e.keyCode&&t.props.onClose()}),u(l(l(t)),"confirmClick",function(){t.props.onConfirm(t.textarea.value),t.props.onClose()}),t}return n(i,G),a(i,[{key:"componentWillUnmount",value:function(){document.removeEventListener("keyup",this.keyUpHandler)}},{key:"componentDidUpdate",value:function(){this.props.open?document.addEventListener("keyup",this.keyUpHandler):document.removeEventListener("keyup",this.keyUpHandler)}},{key:"render",value:function(e){var t=this,n=e.onConfirm?"cancel":"close";return e.open?v(oe,{into:"body"},v("div",{className:"dp-modal"},v("aside",{className:"container"},v("div",{className:"title"},v("h1",null," ",e.title||"Dub+")),v("div",{className:"content"},v("p",null,e.content||""),e.placeholder&&v("textarea",{ref:function(e){return t.textarea=e},placeholder:e.placeholder,maxlength:e.maxlength||999},e.value||"")),v("div",{className:"dp-modal-buttons"},v("button",{id:"dp-modal-cancel",onClick:e.onClose},n),e.onConfirm&&v("button",{id:"dp-modal-confirm",onClick:this.confirmClick},"okay"))))):null}}]),i}(),ae=window.ga||function(){},se=new(function(){function t(e){s(this,t),ae("create",e,"auto","dubplusTracker")}return a(t,[{key:"event",value:function(e,t,n,o){ae("dubplusTracker.send","event",e,t,n,o)}},{key:"menuClick",value:function(e,t,n){this.event(e,"click",t,n)}}]),t}())("UA-116652541-1"),ue=function(e){function i(){var e,t;s(this,i);for(var n=arguments.length,o=new Array(n),r=0;r<n;r++)o[r]=arguments[r];return u(l(l(t=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"state",{open:!1}),u(l(l(t)),"loadModal",function(){t.setState({open:!0}),se.menuClick(t.props.section+" section",t.props.id+" edit")}),u(l(l(t)),"closeModal",function(){console.log("closing dub+ modal"),t.setState({open:!1})}),t}return n(i,G),a(i,[{key:"render",value:function(e,t){return v("span",{onClick:this.loadModal,className:"fa fa-pencil extra-icon"},v(ie,{open:t.open,title:e.title||"Dub+ option",content:e.content||"Please enter a value",placeholder:e.placeholder||"in here",value:e.value,onConfirm:e.onConfirm,onClose:this.closeModal}))}}]),i}(),ce=function(e){function i(){var e,t;s(this,i);for(var n=arguments.length,o=new Array(n),r=0;r<n;r++)o[r]=arguments[r];return u(l(l(t=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"state",{on:ne.stored.options[t.props.id]||!1}),u(l(l(t)),"switchOn",function(){t.props.turnOn(),ne.save("options",t.props.id,!0),t.setState({on:!0}),se.menuClick(t.props.section+" section",t.props.id+" on")}),u(l(l(t)),"switchOff",function(){var e=0<arguments.length&&void 0!==arguments[0]&&arguments[0];t.props.turnOff(),ne.save("options",t.props.id,!1),t.setState({on:!1}),e||se.menuClick(t.props.section+" section",t.props.id+" off")}),u(l(l(t)),"toggleSwitch",function(){t.state.on?t.switchOff():t.switchOn()}),t}return n(i,G),a(i,[{key:"componentDidMount",value:function(){this.state.on&&this.props.turnOn()}},{key:"render",value:function(e,t){var n=["dubplus-switch"];return t.on&&n.push("dubplus-switch-on"),e.className&&n.push(e.className),v("li",{id:e.id,title:e.desc,className:n.join(" ")},e.children||null,v("div",{onClick:this.toggleSwitch,className:"dubplus-form-control"},v("div",{className:"dubplus-switch-bg"},v("div",{className:"dubplus-switcher"})),v("span",{className:"dubplus-menu-label"},e.menuTitle)))}}]),i}(),le=function(e){function i(){var e,r;s(this,i);for(var t=arguments.length,n=new Array(t),o=0;o<t;o++)n[o]=arguments[o];return u(l(l(r=d(this,(e=c(i)).call.apply(e,[this].concat(n))))),"state",{canSend:!0}),u(l(l(r)),"afk_chat_respond",function(e){if(r.state.canSend){var t=e.message,n=Dubtrack.session.get("username");if(-1<t.indexOf("@"+n)&&Dubtrack.session.id!==e.user.userInfo.userid){var o=document.getElementById("chat-txt-message");ne.stored.custom.customAfkMessage?o.value="[AFK] "+ne.stored.custom.customAfkMessage:o.value="[AFK] I'm not here right now.",Dubtrack.room.chat.sendMessage(),r.setState({canSend:!1}),setTimeout(function(){r.setState({canSend:!0})},3e4)}}}),r}return n(i,G),a(i,[{key:"turnOn",value:function(){Dubtrack.Events.bind("realtime:chat-message",this.afk_chat_respond)}},{key:"turnOff",value:function(){Dubtrack.Events.unbind("realtime:chat-message",this.afk_chat_respond)}},{key:"saveAFKmessage",value:function(e){""!==e&&ne.save("custom","customAfkMessage",e)}},{key:"render",value:function(e,t){return v(ce,{id:"dubplus-afk",section:"General",menuTitle:"AFK Auto-respond",desc:"Toggle Away from Keyboard and customize AFK message.",turnOn:this.turnOn,turnOff:this.turnOff},v(ue,{title:"Custom AFK Message",section:"General",content:"Enter a custom Away From Keyboard [AFK] message here",value:ne.stored.custom.customAfkMessage||"",placeholder:"Be right back!",maxlength:"255",onConfirm:this.saveAFKmessage}))}}]),i}(),de=function(e){function t(){var r;return s(this,t),u(l(l(r=d(this,c(t).call(this)))),"advance_vote",function(){var e=document.createEvent("HTMLEvents");e.initEvent("click",!0,!1),r.dubup.dispatchEvent(e)}),u(l(l(r)),"voteCheck",function(e){e.startTime<2&&r.advance_vote()}),u(l(l(r)),"turnOn",function(e){var t=Dubtrack.room.player.activeSong.get("song"),n=Dubtrack.helpers.cookie.get("dub-"+Dubtrack.room.model.get("_id")),o=Dubtrack.helpers.cookie.get("dub-song");Dubtrack.room&&t&&t.songid===o||(n=!1),r.dubup.classList.contains("voted")||r.dubdown.classList.contains("voted")||n||r.advance_vote(),Dubtrack.Events.bind("realtime:room_playlist-update",r.voteCheck)}),u(l(l(r)),"turnOff",function(e){Dubtrack.Events.unbind("realtime:room_playlist-update",r.voteCheck)}),r.dubup=document.querySelector(".dubup"),r.dubdown=document.querySelector(".dubdown"),r}return n(t,G),a(t,[{key:"render",value:function(e,t){return v(ce,{id:"dubplus-autovote",section:"General",menuTitle:"Autovote",desc:"Toggles auto upvoting for every song",turnOn:this.turnOn,turnOff:this.turnOff})}}]),t}(),pe=function(e){var t=e.data,n=e.onSelect;return v("li",{className:"preview-item ".concat(t.type,"-previews"),onClick:function(){n(t.name)},"data-name":t.name},v("div",{className:"ac-image"},v("img",{src:t.src,alt:t.name,title:t.name})),v("span",{className:"ac-text"},t.name))},fe=function(e){var t=e.matches,n=e.onSelect;return 0===t.length?v("ul",{id:"autocomplete-preview"}):v("ul",{id:"autocomplete-preview",className:"ac-show"},t.map(function(e,t){return v(pe,{data:e,key:"".concat(e.type,"-").concat(e.name),onSelect:n})}))};function he(r){var i=1<arguments.length&&void 0!==arguments[1]?arguments[1]:{};return new Promise(function(t,n){var o=new XMLHttpRequest;for(var e in i)i.hasOwnProperty(e)&&o.setRequestHeader(e,i[e]);o.onload=function(){try{var e=JSON.parse(o.responseText);t(e)}catch(e){n(e)}},o.onerror=function(){n()},o.open("GET",r),o.send()})}var me=new function(){var r,e=window.indexedDB||window.mozIndexedDB||window.webkitIndexedDB||window.msIndexedDB;if(!e)return console.error("indexDB not supported");var i=50,t=e.open("d2",1);return t.onsuccess=function(e){r=this.result},t.onerror=function(e){console.error("indexedDB request error",e)},t.onupgradeneeded=function(e){(r=this.result).createObjectStore("s",{keyPath:"k"}),r.transaction.oncomplete=function(e){r=e.target.db}},{get:function e(t,n){return!r&&0<=i?(setTimeout(function(){e(t,n)},100),void i--):(i=30,r.transaction("s").objectStore("s").get(t).onsuccess=function(e){var t=e.target.result&&e.target.result.v||null;n(t)})},set:function e(t,n){if(!r&&0<=i)return setTimeout(function(){e(t,n)},100),void i--;i=30;var o={k:t,v:n};r.transaction("s","readwrite").objectStore("s").put(o)}}},ve={template:function(e){return emojify.defaultConfig.img_dir+"/"+encodeURI(e)+".png"},find:function(t){var n=this;return emojify.emojiNames.filter(function(e){return 0===e.indexOf(t)}).map(function(e){return{type:"emojify",src:n.template(e),name:e}})}};function be(r){return new Promise(function(o,e){me.get(r+"_api",function(e){if(e)try{void 0!==JSON.parse(e).error&&o(!0)}catch(e){o(!0)}else o(!0);var t=Date.now(),n=parseInt(localStorage.getItem(r+"_api_timestamp"));o(isNaN(n)||6048e5<t-n)})})}var ye=new(function(){function e(){var n=this;s(this,e),u(this,"specialEmotes",[]),u(this,"emotes",{}),u(this,"sortedKeys",{nonAlpha:[]}),u(this,"loaded",!1),u(this,"addKeyToSorted",function(e){var t=e.charAt(0);/[a-z]/i.test(t)?n.sortedKeys[t]?n.sortedKeys[t].push(e):n.sortedKeys[t]=[e]:n.sortedKeys.nonAlpha.push(e)})}return a(e,[{key:"load",value:function(){var t=this;return be("twitch").then(function(e){return e?t.updateFromApi():t.grabFromDb()})}},{key:"grabFromDb",value:function(){var o=this;return new Promise(function(n,t){try{me.get("twitch_api",function(e){console.log("dub+","twitch","loading from IndexedDB");var t=JSON.parse(e);o.processEmotes(t),o.loaded="from db",t=null,n()})}catch(e){t(e)}})}},{key:"updateFromApi",value:function(){var n=this;console.log("dub+","twitch","loading from api");return he("".concat("https://cors-escape.herokuapp.com","/https://api.twitch.tv/kraken/chat/emoticon_images")).then(function(e){var t={};e.emoticons.forEach(function(e){t[e.code]&&null!==e.emoticon_set||(t[e.code]=e.id)}),localStorage.setItem("twitch_api_timestamp",Date.now().toString()),me.set("twitch_api",JSON.stringify(t)),n.processEmotes(t),n.loaded="from api"})}},{key:"template",value:function(e){return"//static-cdn.jtvnw.net/emoticons/v1/".concat(e,"/3.0")}},{key:"find",value:function(t){var n=this,e=t.charAt(0);return(/[a-z]/i.test(e)?this.sortedKeys[e]||[]:this.sortedKeys.nonAlpha).filter(function(e){return 0===e.indexOf(t)}).map(function(e){return{type:"twitch",src:n.template(n.emotes[e]),name:e}})}},{key:"processEmotes",value:function(e){for(var t in e)if(e.hasOwnProperty(t)){var n=t.toLowerCase();if(0<=t.indexOf("\\")){this.specialEmotes.push([t,e[t]]);continue}if(0<=emojify.emojiNames.indexOf(n))continue;this.emotes[n]||(this.emotes[n]=e[t],this.addKeyToSorted(n))}}}]),e}()),ge=new(function(){function e(){var n=this;s(this,e),u(this,"emotes",{}),u(this,"sortedKeys",{nonAlpha:[]}),u(this,"loaded",!1),u(this,"headers",{}),u(this,"addKeyToSorted",function(e){var t=e.charAt(0);/[a-z]/i.test(t)?(n.sortedKeys[t]||(n.sortedKeys[t]=[]),n.sortedKeys[t].push(e)):n.sortedKeys.nonAlpha.push(e)})}return a(e,[{key:"optionalSetHeaders",value:function(e){this.headers=e}},{key:"load",value:function(){var t=this;return be("bttv").then(function(e){return e?t.updateFromAPI():t.loadFromDB()})}},{key:"loadFromDB",value:function(){var o=this;return new Promise(function(n,t){try{me.get("bttv_api",function(e){console.log("dub+","bttv","loading from IndexedDB");var t=JSON.parse(e);o.processEmotes(t),t=null,n()})}catch(e){t(e)}})}},{key:"updateFromAPI",value:function(){var n=this;return console.log("dub+","bttv","loading from api"),he("https://api.betterttv.net/2/emotes",this.headers).then(function(e){var t={};e.emotes.forEach(function(e){t[e.code]||(t[e.code]=e.id)}),localStorage.setItem("bttv_api_timestamp",Date.now().toString()),me.set("bttv_api",JSON.stringify(t)),n.processEmotes(t)})}},{key:"template",value:function(e){return"//cdn.betterttv.net/emote/".concat(e,"/3x")}},{key:"find",value:function(t){var n=this,e=t.charAt(0);return(/[a-z]/i.test(e)?this.sortedKeys[e]||[]:this.sortedKeys.nonAlpha).filter(function(e){return 0===e.indexOf(t)}).map(function(e){return{type:"bttv",src:n.template(n.emotes[e]),name:e}})}},{key:"processEmotes",value:function(e){for(var t in e)if(e.hasOwnProperty(t)){var n=t.toLowerCase();if(0<=t.indexOf(":"))continue;if(0<=emojify.emojiNames.indexOf(n))continue;0<=t.indexOf("(")&&(n=n.replace(/([()])/g,"")),this.emotes[n]=e[t],this.addKeyToSorted(n)}this.loaded=!0}}]),e}()),we=38,ke=40,De=27,_e=9,Ce=[we,ke,37,39,De,13],Se=function(e){function r(){var e,a;s(this,r);for(var t=arguments.length,n=new Array(t),o=0;o<t;o++)n[o]=arguments[o];return u(l(l(a=d(this,(e=c(r)).call.apply(e,[this].concat(n))))),"state",{isOn:!1,matches:[]}),u(l(l(a)),"renderTo",document.querySelector(".pusher-chat-widget-input")),u(l(l(a)),"chatInput",document.getElementById("chat-txt-message")),u(l(l(a)),"navIndex",0),u(l(l(a)),"checkInput",function(e){var t="which"in e?e.which:e.keyCode;if(!(0<=Ce.indexOf(t))){var n=e.target.value.split(" ");if(0!==n.length){var o=n[n.length-1],r=o.charAt(o.length-1);if(":"===o.charAt(0)&&3<o.length&&":"!==r){var i=a.getMatches(o);a.chunkLoadMatches(i)}else 0!==a.state.matches.length&&a.closePreview()}}}),u(l(l(a)),"updateChatInput",function(e){var t=!(1<arguments.length&&void 0!==arguments[1])||arguments[1],n=a.chatInput.value.split(" ");n.pop(),n.push(":".concat(e,":")),a.chatInput.value=n.join(" "),t&&(a.chatInput.focus(),a.closePreview())}),u(l(l(a)),"keyboardNav",function(e){if(0===a.state.matches.length||!a.previewList||0===a.previewList.length)return!0;switch("which"in e?e.which:e.keyCode){case ke:case _e:e.preventDefault(),e.stopImmediatePropagation(),a.navDown();break;case we:e.preventDefault(),e.stopImmediatePropagation(),a.navUp();break;case De:a.closePreview(),a.chatInput.focus();break;default:return!0}}),u(l(l(a)),"turnOn",function(e){a.setState({isOn:!0}),Dubtrack.room.chat.delegateEvents(_.omit(Dubtrack.room.chat.events,["keydown #chat-txt-message"])),a.debouncedCheckInput=window._.debounce(a.checkInput,100),a.debouncedNav=window._.debounce(a.keyboardNav,100),a.chatInput.addEventListener("keydown",a.debouncedNav),a.chatInput.addEventListener("keyup",a.debouncedCheckInput)}),u(l(l(a)),"turnOff",function(e){a.setState({isOn:!1}),Dubtrack.room.chat.delegateEvents(Dubtrack.room.chat.events),a.chatInput.removeEventListener("keydown",a.debouncedNav),a.chatInput.removeEventListener("keyup",a.debouncedCheckInput)}),a}return n(r,G),a(r,[{key:"chunkLoadMatches",value:function(e){var t=this;if(e.length<51)this.setState({matches:e});else{var n=e.slice(0,50);this.setState({matches:n}),setTimeout(function(){t.setState({matches:e})},250)}}},{key:"getMatches",value:function(e){e=e.replace(/^:/,"");var t=ve.find(e),n=ye.find(e),o=ge.find(e);return t.concat(n,o)}},{key:"closePreview",value:function(){this.setState({matches:[]}),this.navIndex=-1,this.previewList=[]}},{key:"clearSelected",value:function(){var e=document.querySelector(".preview-item.selected");e&&e.classList.remove("selected")}},{key:"navDown",value:function(){this.clearSelected(),this.navIndex++,this.navIndex>=this.previewList.length&&(this.navIndex=0),console.log("down",this.navIndex);var e=this.previewList[this.navIndex];console.log(e),e.classList.add("selected"),e.scrollIntoView(),this.updateChatInput(e.dataset.name,!1)}},{key:"navUp",value:function(){this.clearSelected(),this.navIndex--,this.navIndex<0&&(this.navIndex=this.previewList.length-1);var e=this.previewList[this.navIndex];e.classList.add("selected"),e.scrollIntoView(!0),this.updateChatInput(e.dataset.name,!1)}},{key:"componentDidUpdate",value:function(e,t){console.log("updated"),this.state.isOn&&(this.previewList=document.querySelectorAll("#autocomplete-preview li"),this.previewList[0]&&console.log("new list",this.previewList[0].dataset.name))}},{key:"render",value:function(e,t){var n=t.isOn,o=t.matches;return v(ce,{id:"dubplus-emotes",section:"General",menuTitle:"Autocomplete Emoji",desc:"Quick find and insert emojis and emotes while typing in the chat input",turnOn:this.turnOn,turnOff:this.turnOff},n?v(oe,{into:this.renderTo},v(fe,{onSelect:this.updateChatInput,matches:o})):null)}}]),r}();function Oe(e,t){var n=e.parentNode,r=e.nodeValue.trim(),l=document.createDocumentFragment(),i="-0wrap__emote0-";t.forEach(function(e){var t,n=(t=e.replace(/^:|:$/g,""),ye.emotes[t]?{type:"twitch",src:ye.template(ye.emotes[t]),name:t}:!!ge.emotes[t]&&{type:"bttv",src:ge.template(ge.emotes[t]),name:t});if(n){var o=JSON.stringify(n);r=r.replace(e,"".concat(i).concat(o).concat(i))}}),r.split(i).forEach(function(t){try{var e=JSON.parse(t),n=(r=(o=e).type,i=o.src,a=o.name,s=o.w,u=o.h,c=document.createElement("img"),s&&(c.width=s),u&&(c.height=u),c.className="emoji ".concat(r,"-emote"),c.title=a,c.alt=a,c.src=i,c);l.appendChild(n)}catch(e){l.appendChild(document.createTextNode(t))}var o,r,i,a,s,u,c}),n.replaceChild(l,e)}function xe(e){var t;(e.nodeType||(e=0<(t=document.querySelectorAll(".chat-main .text")).length?t[t.length-1]:null),e)&&function(e){for(var t,n=[],o=document.createTreeWalker(e,NodeFilter.SHOW_TEXT,null,!1);t=o.nextNode();)n.push(t);return n}(e).forEach(function(e){var t=e.nodeValue.trim();if(""!==t){var n=function(e){var t=[],n="",o=!1,r=0;function i(){n="",o=!1}function a(e){n+=e}for(;r<e.length;){var s=e.charAt(r);if(o||":"!==s){if(o){if(":"===s){a(s),"::"!==n&&t.push(n),i(),r++;continue}if(" "===s){i(),r++;continue}a(s)}r++}else o=!0,a(s),r++}return t}(t);0!==n.length&&Oe(e,n)}})}var Ne=function(e){function i(){var e,t;s(this,i);for(var n=arguments.length,o=new Array(n),r=0;r<n;r++)o[r]=arguments[r];return u(l(l(t=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"turnOn",function(){ye.loaded?t.begin():Promise.all([ye.load(),ge.load()]).then(t.begin).catch(function(e){console.error(e)})}),u(l(l(t)),"turnOff",function(e){Dubtrack.Events.unbind("realtime:chat-message",xe)}),t}return n(i,G),a(i,[{key:"begin",value:function(){xe(document.querySelector(".chat-main")),Dubtrack.Events.bind("realtime:chat-message",xe)}},{key:"render",value:function(e,t){return v(ce,{id:"dubplus-emotes",section:"General",menuTitle:"Emotes",desc:"Adds twitch and bttv emotes in chat.",turnOn:this.turnOn,turnOff:this.turnOff})}}]),i}(),Ee=function(e){function i(){var e,t;s(this,i);for(var n=arguments.length,o=new Array(n),r=0;r<n;r++)o[r]=arguments[r];return u(l(l(t=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"customMentionCheck",function(e){var t=e.message;if(ne.custom.custom_mentions){var n=ne.custom.custom_mentions.split(",").some(function(e){return new RegExp("\\b"+e.trim()+"\\b","i").test(t)});Dubtrack.session.id!==e.user.userInfo.userid&&n&&Dubtrack.room.chat.mentionChatSound.play()}}),u(l(l(t)),"saveCustomMentions",function(e){""!==e&&ne.save("custom","custom_mentions",e)}),t}return n(i,G),a(i,[{key:"turnOn",value:function(){Dubtrack.Events.bind("realtime:chat-message",this.customMentionCheck)}},{key:"turnOff",value:function(){Dubtrack.Events.unbind("realtime:chat-message",this.customMentionCheck)}},{key:"render",value:function(e,t){return v(ce,{id:"custom_mentions",section:"General",menuTitle:"Custom Mentions",desc:"Toggle using custom mentions to trigger sounds in chat",turnOn:this.turnOn,turnOff:this.turnOff},v(ue,{title:"Custom AFK Message",section:"General",content:"Add your custom mention triggers here (separate by comma)",value:ne.stored.custom.custom_mentions||"",placeholder:"separate, custom triggers, by, comma, :heart:",maxlength:"255",onConfirm:this.saveCustomMentions}))}}]),i}(),Te=function(e){function i(){var e,t;s(this,i);for(var n=arguments.length,o=new Array(n),r=0;r<n;r++)o[r]=arguments[r];return u(l(l(t=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"chatCleanerCheck",function(e){var t=Array.from(document.querySelectorAll("ul.chat-main > li")),n=parseInt(ne.stored.custom.chat_cleaner,10);if(!(isNaN(t.length)||isNaN(n)||!t.length||t.length<n)){var o=t[0].parentElement;t.slice(0,n).forEach(function(e,t){o.removeChild(e)}),$(".chat-messages").perfectScrollbar("update")}}),u(l(l(t)),"saveAmount",function(e){var t=parseInt(e,10),n=isNaN(t)?500:t;ne.save("custom","chat_cleaner",n)}),u(l(l(t)),"turnOn",function(){Dubtrack.Events.bind("realtime:chat-message",t.chatCleanerCheck)}),u(l(l(t)),"turnOff",function(){Dubtrack.Events.unbind("realtime:chat-message",t.chatCleanerCheck)}),t}return n(i,G),a(i,[{key:"render",value:function(){return v(ce,{id:"chat-cleaner",section:"General",menuTitle:"Chat Cleaner",desc:"Automatically only keep a designated chatItems of chat items while clearing older ones, keeping CPU stress down",turnOn:this.turnOn,turnOff:this.turnOff},v(ue,{title:"Chat Cleaner",section:"General",content:"Please specify the number of most recent chat items that will remain in your chat history",value:ne.stored.custom.chat_cleaner||"",placeholder:"500",maxlength:"5",onConfirm:this.saveAmount}))}}]),i}(),Ae=!0,Me={denyDismiss:{title:"Desktop Notifications",content:"You have dismissed or chosen to deny the request to allow desktop notifications. Reset this choice by clearing your cache for the site."},noSupport:{title:"Desktop Notifications",content:"Sorry this browser does not support desktop notifications.  Please use the latest version of Chrome or FireFox"}};function Ie(e){var t="function"==typeof e?e:function(){};return"Notification"in window?"granted"===Notification.permission?t(!0,"granted"):"denied"===Notification.permission?t(!1,Me.denyDismiss):void Notification.requestPermission().then(function(e){if("denied"!==e&&"default"!==e)return t(!0,"granted");t(!1,Me.denyDismiss)}):t(!1,Me.noSupport)}function Pe(e){var t=Object.assign({},{title:"New Message",content:"",ignoreActiveTab:!1,callback:null,wait:5e3},e);if(!0!==Ae||t.ignoreActiveTab){var n={body:t.content,icon:"https://res.cloudinary.com/hhberclba/image/upload/c_lpad,h_100,w_100/v1400351432/dubtrack_new_logo_fvpxa6.png"},o=new Notification(t.title,n);o.onclick=function(){window.focus(),"function"==typeof t.callback&&t.callback(),o.close()},setTimeout(o.close.bind(o),t.wait)}}window.onfocus=function(){Ae=!0},window.onblur=function(){Ae=!1};var Le=function(e){function i(){var e,n;s(this,i);for(var t=arguments.length,o=new Array(t),r=0;r<t;r++)o[r]=arguments[r];return u(l(l(n=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"state",{showWarning:!1,warnTitle:"",warnContent:""}),u(l(l(n)),"turnOn",function(){Ie(function(e,t){!0===e?Dubtrack.Events.bind("realtime:chat-message",n.notifyOnMention):(n.switchRef.switchOff(!0),n.setState({showWarning:!0,warnTitle:t.title,warnContent:t.content}))})}),u(l(l(n)),"closeModal",function(){n.setState({showWarning:!1})}),u(l(l(n)),"turnOff",function(){Dubtrack.Events.unbind("realtime:chat-message",n.notifyOnMention)}),n}return n(i,G),a(i,[{key:"notifyOnMention",value:function(e){var t=e.message,n=["@"+Dubtrack.session.get("username").toLowerCase()];ne.stored.options.custom_mentions&&ne.stored.custom.custom_mentions&&(n=n.concat(ne.stored.custom.custom_mentions.split(","))),n.some(function(e){return new RegExp("\\b"+e.trim()+"\\b","i").test(t)})&&!this.isActiveTab&&Dubtrack.session.id!==e.user.userInfo.userid&&Pe({title:"Message from ".concat(e.user.username),content:t})}},{key:"render",value:function(e,t){var n=this;return v(ce,{ref:function(e){return n.switchRef=e},id:"mention_notifications",section:"General",menuTitle:"Notification on Mentions",desc:"Enable desktop notifications when a user mentions you in chat",turnOn:this.turnOn,turnOff:this.turnOff},v(ie,{open:t.showWarning,title:t.warnTitle,content:t.warnContent,onClose:this.closeModal}))}}]),i}(),We=function(e){function i(){var e,n;s(this,i);for(var t=arguments.length,o=new Array(t),r=0;r<t;r++)o[r]=arguments[r];return u(l(l(n=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"state",{showWarning:!1,warnTitle:"",warnContent:""}),u(l(l(n)),"turnOn",function(){Ie(function(e,t){!0===e?Dubtrack.Events.bind("realtime:new-message",n.notify):(n.switchRef.switchOff(!0),n.setState({showWarning:!0,warnTitle:t.title,warnContent:t.content}))})}),u(l(l(n)),"closeModal",function(){n.setState({showWarning:!1})}),u(l(l(n)),"turnOff",function(){Dubtrack.Events.unbind("realtime:new-message",n.notify)}),n}return n(i,G),a(i,[{key:"notify",value:function(e){Dubtrack.session.get("_id")!==e.userid&&Pe({title:"You have a new PM",ignoreActiveTab:!0,callback:function(){document.querySelector(".user-messages").click(),setTimeout(function(){document.querySelector('.message-item[data-messageid="'.concat(e.messageid,'"]')).click()},500)},wait:1e4})}},{key:"render",value:function(e,t){var n=this;return v(ce,{ref:function(e){return n.switchRef=e},id:"dubplus_pm_notifications",section:"General",menuTitle:"Notification on PM",desc:"Enable desktop notifications when a user receives a private message",turnOn:this.turnOn,turnOff:this.turnOff},v(ie,{open:t.showWarning,title:t.warnTitle,content:t.warnContent,onClose:this.closeModal}))}}]),i}(),je=function(e){function i(){var e,r;s(this,i);for(var t=arguments.length,n=new Array(t),o=0;o<t;o++)n[o]=arguments[o];return u(l(l(r=d(this,(e=c(i)).call.apply(e,[this].concat(n))))),"state",{canNotify:!1}),u(l(l(r)),"savePosition",function(e){var t=parseInt(e,10),n=isNaN(t)?2:t;ne.save("custom","dj_notification",n)}),u(l(l(r)),"djNotificationCheck",function(e){if(!(2<e.startTime)){var t=document.querySelector(".queue-position").textContent,n=parseInt(t,10),o=e.startTime<0&&!isNaN(n)?n-1:n;isNaN(n)||o!==ne.stored.custom.dj_notification||(r.canNotify&&Pe({title:"DJ Alert!",content:"You will be DJing shortly! Make sure your song is set!",ignoreActiveTab:!0,wait:1e4}),Dubtrack.room.chat.mentionChatSound.play())}}),u(l(l(r)),"turnOn",function(){Ie(function(e,t){!0===e&&r.setState({canNotify:!0})}),Dubtrack.Events.bind("realtime:room_playlist-update",r.djNotificationCheck)}),u(l(l(r)),"turnOff",function(){Dubtrack.Events.unbind("realtime:room_playlist-update",r.djNotificationCheck)}),r}return n(i,G),a(i,[{key:"render",value:function(e,t){var n=this;return v(ce,{ref:function(e){return n.switchRef=e},id:"dj-notification",section:"General",menuTitle:"DJ Notification",desc:"Notification when you are coming up to be the DJ",turnOn:this.turnOn,turnOff:this.turnOff},v(ue,{title:"DJ Notification",section:"General",content:"Please specify the position in queue you want to be notified at",value:ne.stored.custom.dj_notification||"",placeholder:"2",maxlength:"2",onConfirm:this.savePosition}))}}]),i}(),qe=function(e){function i(){var e,t;s(this,i);for(var n=arguments.length,o=new Array(n),r=0;r<n;r++)o[r]=arguments[r];return u(l(l(t=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"turnOn",function(){$.snowfall?t.doSnow():Y("https://cdn.jsdelivr.net/gh/loktar00/JQuery-Snowfall/src/snowfall.jquery.js",function(e){if(e)return t.switchRef.switchOff(!0),void console.error("Could not load snowfall jquery plugin",e);t.doSnow()})}),t}return n(i,G),a(i,[{key:"doSnow",value:function(){$(document).snowfall({round:!0,shadow:!0,flakeCount:50,minSize:1,maxSize:5,minSpeed:5,maxSpeed:5})}},{key:"turnOff",value:function(){$.snowfall&&$(document).snowfall("clear")}},{key:"render",value:function(){var t=this;return v(ce,{ref:function(e){return t.switchRef=e},id:"dubplus-snow",section:"General",menuTitle:"Snow",desc:"Make it snow!",turnOn:this.turnOn,turnOff:this.turnOff})}}]),i}(),Re={particles:[],drops:[],numbase:5,numb:2,height:0,controls:{rain:2,alpha:1,color:200,opacity:1,saturation:100,lightness:50,back:0,multi:!1,speed:1},init:function(){var e=document.createElement("canvas");e.id="dubPlusRainCanvas",e.style.cssText="position : fixed; top : 0px; left : 0px; z-index: 100; pointer-events:none;",document.body.insertBefore(e,document.body.childNodes[0]),this.bindCanvas()},destroy:function(){document.body.removeChild(document.getElementById("dubPlusRainCanvas")),this.unbindCanvas()},bindCanvas:function(){this.requestAnimFrame=window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||function(e){window.setTimeout(e,1e3/60)};var e=document.getElementById("dubPlusRainCanvas");if(e){var t=e.getContext("2d");this.width,this.height=0,window.onresize=function(){this.width=e.width=window.innerWidth,this.height=e.height=window.innerHeight},window.onresize(),this.particles,this.drops=[],this.numbase=5,this.numb=2;var n=this;!function e(){n.requestAnimFrame(e),n.update(),n.rendu(t)}()}},buildRainParticle:function(e,t,n){for(n||(n=this.numb);n--;)this.particles.push({speedX:.25*Math.random(),speedY:9*Math.random()+1,X:e,Y:t,alpha:1,color:"hsla("+this.controls.color+","+this.controls.saturation+"%, "+this.controls.lightness+"%,"+this.controls.opacity+")"})},explosion:function(e,t,n,o){for(o||(o=this.numbase);o--;)this.drops.push({speedX:4*Math.random()-2,speedY:-4*Math.random(),X:e,Y:t,radius:.65+Math.floor(1.6*Math.random()),alpha:1,color:n})},rendu:function(e){1==this.controls.multi&&(this.controls.color=360*Math.random()),e.save(),e.clearRect(0,0,width,height);for(var t,n=this.particles,o=this.drops,r=2*Math.PI,i=0;t=n[i];i++)e.globalAlpha=t.alpha,e.fillStyle=t.color,e.fillRect(t.X,t.Y,t.speedY/4,t.speedY);var a;for(i=0;a=o[i];i++)e.globalAlpha=a.alpha,e.fillStyle=a.color,e.beginPath(),e.arc(a.X,a.Y,a.radius,0,r),e.fill();e.strokeStyle="white",e.lineWidth=2,e.restore()},update:function(){for(var e,t=this.particles,n=this.drops,o=0;e=t[o];o++)e.X+=e.speedX,e.Y+=e.speedY+5,e.Y>height-15&&(t.splice(o--,1),this.explosion(e.X,e.Y,e.color));var r;for(o=0;r=n[o];o++)r.X+=r.speedX,r.Y+=r.speedY,r.radius-=.075,0<r.alpha?r.alpha-=.005:r.alpha=0,r.radius<0&&n.splice(o--,1);for(o=this.controls.rain;o--;)this.buildRainParticle(Math.floor(Math.random()*width),-15)},unbindCanvas:function(){this.requestAnimFrame=function(){}}},Fe=function(e){function t(){return s(this,t),d(this,c(t).apply(this,arguments))}return n(t,G),a(t,[{key:"turnOn",value:function(){Re.init()}},{key:"turnOff",value:function(){Re.destroy()}},{key:"render",value:function(e,t){return v(ce,{id:"dubplus-rain",section:"General",menuTitle:"Rain",desc:"Make it rain!",turnOn:this.turnOn,turnOff:this.turnOff})}}]),t}();function Ue(e){return Dubtrack.helpers.isDubtrackAdmin(e)||Dubtrack.room.users.getIfOwner(e)||Dubtrack.room.users.getIfManager(e)||Dubtrack.room.users.getIfMod(e)}var Be=function(e){var t=e.data,n=e.click;return v("li",{onClick:function(){return n("@"+t.username+" ")},className:"dubinfo-preview-item"},v("div",{className:"dubinfo-image"},v("img",{src:"https://api.dubtrack.fm/user/".concat(t.userid,"/image")})),v("span",{className:"dubinfo-text"},"@",t.username))},ze=function(e){function t(){return s(this,t),d(this,c(t).apply(this,arguments))}return n(t,G),a(t,[{key:"getBgColor",value:function(){var e,t=this.props.type.replace("dubs","");if("up"===t)e=document.querySelector(".dubup");else{if("down"!==t)return;e=document.querySelector(".dubdown")}return e.classList.contains("voted")?window.getComputedStyle(e).backgroundColor:window.getComputedStyle(e.querySelector(".icon-".concat(t,"vote"))).color}},{key:"updateChat",value:function(e){var t=document.getElementById("chat-txt-message");t.value=e,t.focus()}},{key:"makeList",value:function(){var n=this;return this.props.dubs.map(function(e,t){return v(Be,{data:e,click:n.updateChat,key:"info-".concat(n.props.type,"-").concat(t)})})}},{key:"render",value:function(e){var t=e.type,n=e.isMod,o="No ".concat(t," have been casted yet!");"grabs"===t&&(o="This song hasn't been grabbed yet!");var r=this.makeList(),i=["dubinfo-preview","dubinfo-".concat(t)];return 0===r.length&&(r=v("li",{className:"dubinfo-preview-none"},o),i.push("dubinfo-no-dubs")),"downdubs"!==t||n||i.push("dubinfo-unauthorized"),v("ul",{style:{borderColor:this.getBgColor()},className:i.join(" ")},r)}}]),t}(),Ge=function(e){function r(){var e,i;s(this,r);for(var t=arguments.length,n=new Array(t),o=0;o<t;o++)n[o]=arguments[o];return u(l(l(i=d(this,(e=c(r)).call.apply(e,[this].concat(n))))),"state",{isOn:!1,showWarning:!1,upDubs:[],downDubs:[],grabs:[]}),u(l(l(i)),"userIsMod",Ue(Dubtrack.session.id)),u(l(l(i)),"turnOn",function(){i.setState({isOn:!0},i.resetDubs),Dubtrack.Events.bind("realtime:room_playlist-dub",i.dubWatcher),Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs",i.grabWatcher),Dubtrack.Events.bind("realtime:user-leave",i.dubUserLeaveWatcher),Dubtrack.Events.bind("realtime:room_playlist-update",i.resetDubs),Dubtrack.Events.bind("realtime:room_playlist-update",i.resetGrabs)}),u(l(l(i)),"turnOff",function(){i.setState({isOn:!1}),Dubtrack.Events.unbind("realtime:room_playlist-dub",i.dubWatcher),Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs",i.grabWatcher),Dubtrack.Events.unbind("realtime:user-leave",i.dubUserLeaveWatcher),Dubtrack.Events.unbind("realtime:room_playlist-update",i.resetDubs),Dubtrack.Events.unbind("realtime:room_playlist-update",i.resetGrabs)}),u(l(l(i)),"closeModal",function(){i.setState({showWarning:!1})}),u(l(l(i)),"dubWatcher",function(t){var e=i.state,n=e.upDubs,o=e.downDubs,r={userid:t.user._id,username:t.user.username};"updub"===t.dubtype&&(0===n.filter(function(e){return e.userid===t.user._id}).length&&i.setState(function(e){return{upDubs:[].concat(p(e.upDubs),[r])}}),0<o.filter(function(e){return e.userid===t.user._id}).length&&i.setState(function(e){return{downDubs:e.downDubs.filter(function(e){return e.userid!==t.user._id})}}));"downdub"===t.dubtype&&(0===o.filter(function(e){return e.userid===t.user._id}).length&&i.userIsMod&&i.setState(function(e){return{downDubs:[].concat(p(e.downDubs),[r])}}),0<n.filter(function(e){return e.userid===t.user._id}).length&&i.setState(function(e){return{upDubs:e.upDubs.filter(function(e){return e.userid!==t.user._id})}}))}),u(l(l(i)),"grabWatcher",function(t){if(i.state.grabs.filter(function(e){return e.userid===t.user._id}).length<=0){var n={userid:t.user._id,username:t.user.username};i.setState(function(e){return{grabs:[].concat(p(e.grabs),[n])}})}}),u(l(l(i)),"dubUserLeaveWatcher",function(t){var e=i.state.upDubs.filter(function(e){return e.userid!==t.user._id}),n=i.state.downDubs.filter(function(e){return e.userid!==t.user._id}),o=i.state.grabs.filter(function(e){return e.userid!==t.user._id});i.setState({upDubs:e,downDubs:n,grabs:o})}),u(l(l(i)),"resetDubs",function(){i.setState({upDubs:[],downDubs:[]},i.handleReset)}),u(l(l(i)),"resetGrabs",function(){i.setState({grabs:[]})}),i}return n(r,G),a(r,[{key:"handleReset",value:function(){var r=this;he("https://api.dubtrack.fm/room/".concat(Dubtrack.room.model.id,"/playlist/active/dubs")).then(function(e){e.data&&e.data.upDubs&&e.data.upDubs.forEach(function(o){if(!(0<r.state.upDubs.filter(function(e){return e.userid===o.userid}).length)){var e=Dubtrack.room.users.collection.findWhere({userid:o.userid});if(e&&e.attributes){if(e.attributes._user.username){var t={userid:o.userid,username:e.attributes._user.username};r.setState(function(e){return{upDubs:[].concat(p(e.upDubs),[t])}})}}else he("https://api.dubtrack.fm/user/"+o.userid).then(function(e){var t=e.data;if(t&&t.userinfo&&t.userinfo.username){var n={userid:o.userid,username:t.userinfo.username};r.setState(function(e){return{upDubs:[].concat(p(e.upDubs),[n])}})}})}}),e.data&&e.data.downDubs&&r.userIsMod&&e.data.downDubs.forEach(function(o){if(!(0<r.state.downDubs.filter(function(e){return e.userid===o.userid}).length)){var e=Dubtrack.room.users.collection.findWhere({userid:o.userid});if(e&&e.attributes){if(e.attributes._user.username){var t={userid:o.userid,username:e.attributes._user.username};r.setState(function(e){return{downDubs:[].concat(p(e.downDubs),[t])}})}}else he("https://api.dubtrack.fm/user/"+o.userid).then(function(e){var t=e.data;if(t&&t.userinfo&&t.userinfo.username){var n={userid:o.userid,username:t.userinfo.username};r.setState(function(e){return{downDubs:[].concat(p(e.downDubs),[n])}})}})}})})}},{key:"componentWillMount",value:function(){this.upElem=document.querySelector(".dubup").parentElement,this.upElem.classList.add("dubplus-updub-btn"),this.downElem=document.querySelector(".dubdown").parentElement,this.downElem.classList.add("dubplus-downdub-btn"),this.grabElem=document.querySelector(".add-to-playlist-button").parentElement,this.grabElem.classList.add("dubplus-grab-btn")}},{key:"render",value:function(e,t){return v(ce,{id:"dubplus-dubs-hover",section:"General",menuTitle:"Show Dub info on Hover",desc:"Show Dub info on Hover.",turnOn:this.turnOn,turnOff:this.turnOff},v(ie,{open:t.showWarning,title:"Vote & Grab Info",content:"Please note that this feature is currently still in development. We are waiting on the ability to pull grab vote information from Dubtrack on load. Until then the only grabs you will be able to see are those you are present in the room for.",onClose:this.closeModal}),t.isOn?v("span",null,v(oe,{into:this.upElem},v(ze,{type:"updubs",dubs:t.upDubs})),v(oe,{into:this.downElem},v(ze,{type:"downdubs",isMod:this.userIsMod,dubs:t.downDubs})),v(oe,{into:this.grabElem},v(ze,{type:"grabs",dubs:t.grabs}))):null)}}]),r}();var Ke=function(e){function t(){return s(this,t),d(this,c(t).apply(this,arguments))}return n(t,G),a(t,[{key:"turnOn",value:function(){Ue(Dubtrack.session.id)&&Dubtrack.Events.bind("realtime:room_playlist-dub",this.downdubWatcher)}},{key:"turnOff",value:function(){Dubtrack.Events.unbind("realtime:room_playlist-dub",this.downdubWatcher)}},{key:"downdubWatcher",value:function(e){if(Dubtrack.session.get("username")===Dubtrack.room.users.collection.findWhere({userid:Dubtrack.room.player.activeSong.attributes.song.userid}).attributes._user.username&&"downdub"===e.dubtype){var t=function(e,t){var n=document.createElement("li");n.className="dubplus-chat-system dubplus-chat-system-downdub";var o=document.createElement("div");o.className="chatDelete",o.onclick=function(e){return e.currentTarget.parentElement.remove()};var r=document.createElement("span");r.className="icon-close";var i=document.createElement("div");return i.className="text",i.textContent="@".concat(e," has downdubbed your song ").concat(t),o.appendChild(r),n.appendChild(o),n.appendChild(i),n}(e.user.username,Dubtrack.room.player.activeSong.attributes.songInfo.name);document.querySelector("ul.chat-main").appendChild(t)}}},{key:"render",value:function(){return v(ce,{id:"dubplus-downdubs",section:"General",menuTitle:"Downdubs in Chat (mods only)",desc:"Toggle showing downdubs in the chat box (mods only)",turnOn:this.turnOn,turnOff:this.turnOff})}}]),t}();var Ye=function(e){function t(){return s(this,t),d(this,c(t).apply(this,arguments))}return n(t,G),a(t,[{key:"turnOn",value:function(){Dubtrack.Events.bind("realtime:room_playlist-dub",this.updubWatcher)}},{key:"turnOff",value:function(){Dubtrack.Events.unbind("realtime:room_playlist-dub",this.updubWatcher)}},{key:"updubWatcher",value:function(e){if(Dubtrack.session.get("username")===Dubtrack.room.users.collection.findWhere({userid:Dubtrack.room.player.activeSong.attributes.song.userid}).attributes._user.username&&"updub"===e.dubtype){var t=function(e,t){var n=document.createElement("li");n.className="dubplus-chat-system dubplus-chat-system-updub";var o=document.createElement("div");o.className="chatDelete",o.onclick=function(e){return e.currentTarget.parentElement.remove()};var r=document.createElement("span");r.className="icon-close";var i=document.createElement("div");return i.className="text",i.textContent="@".concat(e," has updubbed your song ").concat(t),o.appendChild(r),n.appendChild(o),n.appendChild(i),n}(e.user.username,Dubtrack.room.player.activeSong.attributes.songInfo.name);document.querySelector("ul.chat-main").appendChild(t)}}},{key:"render",value:function(){return v(ce,{id:"dubplus-updubs",section:"General",menuTitle:"Updubs in Chat",desc:"Toggle showing updubs in the chat box",turnOn:this.turnOn,turnOff:this.turnOff})}}]),t}();var He=function(e){function t(){return s(this,t),d(this,c(t).apply(this,arguments))}return n(t,G),a(t,[{key:"turnOn",value:function(){Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs",this.grabChatWatcher)}},{key:"turnOff",value:function(){Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs",this.grabChatWatcher)}},{key:"grabChatWatcher",value:function(e){if(Dubtrack.session.get("username")===Dubtrack.room.users.collection.findWhere({userid:Dubtrack.room.player.activeSong.attributes.song.userid}).attributes._user.username&&!Dubtrack.room.model.get("displayUserGrab")){var t=function(e,t){var n=document.createElement("li");n.className="dubplus-chat-system dubplus-chat-system-grab";var o=document.createElement("div");o.className="chatDelete",o.onclick=function(e){return e.currentTarget.parentElement.remove()};var r=document.createElement("span");r.className="icon-close";var i=document.createElement("div");return i.className="text",i.textContent="@".concat(e," has grabbed your song ").concat(t),o.appendChild(r),n.appendChild(o),n.appendChild(i),n}(e.user.username,Dubtrack.room.player.activeSong.attributes.songInfo.name);document.querySelector("ul.chat-main").appendChild(t)}}},{key:"render",value:function(){return v(ce,{id:"dubplus-grabschat",section:"General",menuTitle:"Grabs in Chat",desc:"Toggle showing grabs in the chat box",turnOn:this.turnOn,turnOff:this.turnOff})}}]),t}(),Ve=function(e){function i(){var e,t;s(this,i);for(var n=arguments.length,o=new Array(n),r=0;r<n;r++)o[r]=arguments[r];return u(l(l(t=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"state",{section:ne.stored.general||"open"}),u(l(l(t)),"toggleSection",function(e){t.setState(function(e){var t="open"===e.section?"closed":"open";return ne.save("menu","general",t),{section:t}})}),t}return n(i,G),a(i,[{key:"render",value:function(e,t){var n=["dubplus-menu-section"];return"closed"===t.section&&n.push("dubplus-menu-section-closed"),v("span",null,v(ee,{onClick:this.toggleSection,id:"dubplus-general",category:"General",open:t.section}),v("ul",{className:n.join(" ")},v(de,null),v(le,null),v(Se,null),v(Ne,null),v(Ee,null),v(Te,null),v(Le,null),v(We,null),v(je,null),v(Ge,null),v(Ke,null),v(Ye,null),v(He,null),v(qe,null),v(Fe,null)))}}]),i}(),Je=function(e){function t(){return s(this,t),d(this,c(t).apply(this,arguments))}return n(t,G),a(t,[{key:"componentDidMount",value:function(){setTimeout(function(){K(v(X,null),document.querySelector(".player_sharing")),K(v(Z,null),document.querySelector(".player_sharing"))},10)}},{key:"render",value:function(e,t){return v("section",{className:"dubplus-menu"},v("p",{className:"dubplus-menu-header"},"Dub+ Options"),v(Ve,null))}}]),t}();function Xe(e,t){for(var n=e.split("."),o=n.length,r=t||window,i=0;i<o;i++){if(void 0===r[n[i]])return!1;r=r[n[i]]}return!0}function $e(e,t){for(var n=e.length,o=t||window,r=0;r<n;r++)if(!Xe(e[r],o))return console.log(e[r],"is not found yet"),!1;return!0}function Qe(t,e){if("string"==typeof t||Array.isArray(t)){var n=function(){},o=function(){},r=Array.isArray(t)?$e:Xe,i=Object.assign({},{interval:500,seconds:15},e),a=0,s=1e3*i.seconds/i.interval,u=function e(){return a++,r(t)?n():a<s?void window.setTimeout(e,i.interval):o()};return{then:function(e){return"function"==typeof e&&(n=e),window.setTimeout(u,i.interval),this},fail:function(e){return"function"==typeof e&&(o=e),this}}}console.warn("WaitFor: invalid first argument")}var Ze={fontFamily:"'Trebuchet MS', Helvetica, sans-serif",zIndex:"2147483647",color:"white",position:"fixed",top:"69px",right:"-250px",background:"#222",padding:"10px",lineHeight:1,boxShadow:"0px 0px 5px 0px rgba(0,0,0,0.75)",borderRadius:"5px",overflow:"hidden",width:"230px",transition:"right 200ms"},et={float:"left",width:"26px",marginRight:"5px"},tt={display:"table-cell",width:"10000px",paddingTop:"5px"},nt=function(e){function i(){var e,t;s(this,i);for(var n=arguments.length,o=new Array(n),r=0;r<n;r++)o[r]=arguments[r];return u(l(l(t=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"state",{mainStyles:Ze}),t}return n(i,G),a(i,[{key:"componentDidMount",value:function(){var e=this;setTimeout(function(){e.setState(function(e,t){return{mainStyles:Object.assign({},e.mainStyles,{right:"13px"})}})},200)}},{key:"componentWillUnmount",value:function(){this.setState(function(e,t){return{mainStyles:Object.assign({},e.mainStyles,{right:"-250px"})}})}},{key:"render",value:function(e,t){return v("div",{style:t.mainStyles},v("div",{style:et},v("img",{src:ne.srcRoot+"/images/dubplus.svg",alt:"DubPlus icon"})),v("span",{style:tt},e.text||"Waiting for Dubtrack..."))}}]),i}(),ot=function(e,t){var n=document.createElement("link");return n.rel="stylesheet",n.type="text/css",n.className=e||"",n.href=t,n};var rt={load:function(e,t){if(e){var n=ot(t,ne.srcRoot+e+"?1548737113196");document.head.appendChild(n)}},loadExternal:function(e,t){if(e){var n=ot(t,e);document.head.appendChild(n)}}},it=function(e){function i(){var e,t;s(this,i);for(var n=arguments.length,o=new Array(n),r=0;r<n;r++)o[r]=arguments[r];return u(l(l(t=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"state",{open:!1}),u(l(l(t)),"toggle",function(){var e=document.querySelector(".dubplus-menu");t.state.open?(e.classList.remove("dubplus-menu-open"),t.setState({open:!1})):(e.classList.add("dubplus-menu-open"),t.setState({open:!0}))}),t}return n(i,G),a(i,[{key:"render",value:function(e,t){return v("div",{className:"dubplus-icon",onClick:this.toggle},v("img",{src:"".concat(ne.srcRoot,"/images/dubplus.svg"),alt:"DubPlus Icon"}))}}]),i}();[Element.prototype,CharacterData.prototype,DocumentType.prototype].forEach(function(e){e.hasOwnProperty("remove")||Object.defineProperty(e,"remove",{configurable:!0,enumerable:!0,writable:!0,value:function(){null!==this.parentNode&&this.parentNode.removeChild(this)}})}),"undefined"==typeof Promise&&Y("https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"),setTimeout(function(){rt.loadExternal("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"),rt.load("/css/dubplus.css")},1),K(v(function(e){function i(){var e,t;s(this,i);for(var n=arguments.length,o=new Array(n),r=0;r<n;r++)o[r]=arguments[r];return u(l(l(t=d(this,(e=c(i)).call.apply(e,[this].concat(o))))),"state",{loading:!0,error:!1,errorMsg:"",failed:!1}),t}return n(i,G),a(i,[{key:"componentDidMount",value:function(){var e=this;if(window.DubPlus)Dubtrack.session.id?this.showError("Dub+ is already loaded"):this.showError("You're not logged in. Please login to use Dub+.");else{new Qe(["Dubtrack.session.id","Dubtrack.room.chat","Dubtrack.Events","Dubtrack.room.player","Dubtrack.helpers.cookie","Dubtrack.room.model","Dubtrack.room.users"],{seconds:120}).then(function(){e.setState({loading:!1,error:!1})}).fail(function(){Dubtrack.session.id?(e.showError("Something happed, refresh and try again"),se.event("Dub+ lib","load","failed")):e.showError("You're not logged in. Please login to use Dub+.")})}}},{key:"showError",value:function(e){this.setState({loading:!1,error:!0,errorMsg:e})}},{key:"render",value:function(e,t){var n=this;return t.loading?v(nt,null):t.error?v(ie,{title:"Dub+ Error",onClose:function(){n.setState({failed:!0,error:!1})},content:t.errorMsg}):t.failed?null:(document.querySelector("html").classList.add("dubplus"),v(Je,null))}}]),i}(),null),document.body),K(v(it,null),document.querySelector(".header-right-navigation"));return{version:"2.0.0",description:"Dub+ - A simple script/extension for Dubtrack.fm",license:"MIT",bugs:"https://github.com/DubPlus/DubPlus/issues"}}();
+var DubPlus = (function () {
+  'use strict';
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function");
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) _setPrototypeOf(subClass, superClass);
+  }
+
+  function _getPrototypeOf(o) {
+    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+      return o.__proto__ || Object.getPrototypeOf(o);
+    };
+    return _getPrototypeOf(o);
+  }
+
+  function _setPrototypeOf(o, p) {
+    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+      o.__proto__ = p;
+      return o;
+    };
+
+    return _setPrototypeOf(o, p);
+  }
+
+  function _assertThisInitialized(self) {
+    if (self === void 0) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return self;
+  }
+
+  function _possibleConstructorReturn(self, call) {
+    if (call && (typeof call === "object" || typeof call === "function")) {
+      return call;
+    }
+
+    return _assertThisInitialized(self);
+  }
+
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+  }
+
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+      return arr2;
+    }
+  }
+
+  function _iterableToArray(iter) {
+    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  }
+
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance");
+  }
+
+  var VNode = function VNode() {};
+
+  var options = {};
+
+  var stack = [];
+
+  var EMPTY_CHILDREN = [];
+
+  function h(nodeName, attributes) {
+  	var children = EMPTY_CHILDREN,
+  	    lastSimple,
+  	    child,
+  	    simple,
+  	    i;
+  	for (i = arguments.length; i-- > 2;) {
+  		stack.push(arguments[i]);
+  	}
+  	if (attributes && attributes.children != null) {
+  		if (!stack.length) stack.push(attributes.children);
+  		delete attributes.children;
+  	}
+  	while (stack.length) {
+  		if ((child = stack.pop()) && child.pop !== undefined) {
+  			for (i = child.length; i--;) {
+  				stack.push(child[i]);
+  			}
+  		} else {
+  			if (typeof child === 'boolean') child = null;
+
+  			if (simple = typeof nodeName !== 'function') {
+  				if (child == null) child = '';else if (typeof child === 'number') child = String(child);else if (typeof child !== 'string') simple = false;
+  			}
+
+  			if (simple && lastSimple) {
+  				children[children.length - 1] += child;
+  			} else if (children === EMPTY_CHILDREN) {
+  				children = [child];
+  			} else {
+  				children.push(child);
+  			}
+
+  			lastSimple = simple;
+  		}
+  	}
+
+  	var p = new VNode();
+  	p.nodeName = nodeName;
+  	p.children = children;
+  	p.attributes = attributes == null ? undefined : attributes;
+  	p.key = attributes == null ? undefined : attributes.key;
+
+  	return p;
+  }
+
+  function extend(obj, props) {
+    for (var i in props) {
+      obj[i] = props[i];
+    }return obj;
+  }
+
+  function applyRef(ref, value) {
+    if (ref != null) {
+      if (typeof ref == 'function') ref(value);else ref.current = value;
+    }
+  }
+
+  var defer = typeof Promise == 'function' ? Promise.resolve().then.bind(Promise.resolve()) : setTimeout;
+
+  var IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i;
+
+  var items = [];
+
+  function enqueueRender(component) {
+  	if (!component._dirty && (component._dirty = true) && items.push(component) == 1) {
+  		(defer)(rerender);
+  	}
+  }
+
+  function rerender() {
+  	var p;
+  	while (p = items.pop()) {
+  		if (p._dirty) renderComponent(p);
+  	}
+  }
+
+  function isSameNodeType(node, vnode, hydrating) {
+  	if (typeof vnode === 'string' || typeof vnode === 'number') {
+  		return node.splitText !== undefined;
+  	}
+  	if (typeof vnode.nodeName === 'string') {
+  		return !node._componentConstructor && isNamedNode(node, vnode.nodeName);
+  	}
+  	return hydrating || node._componentConstructor === vnode.nodeName;
+  }
+
+  function isNamedNode(node, nodeName) {
+  	return node.normalizedNodeName === nodeName || node.nodeName.toLowerCase() === nodeName.toLowerCase();
+  }
+
+  function getNodeProps(vnode) {
+  	var props = extend({}, vnode.attributes);
+  	props.children = vnode.children;
+
+  	var defaultProps = vnode.nodeName.defaultProps;
+  	if (defaultProps !== undefined) {
+  		for (var i in defaultProps) {
+  			if (props[i] === undefined) {
+  				props[i] = defaultProps[i];
+  			}
+  		}
+  	}
+
+  	return props;
+  }
+
+  function createNode(nodeName, isSvg) {
+  	var node = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', nodeName) : document.createElement(nodeName);
+  	node.normalizedNodeName = nodeName;
+  	return node;
+  }
+
+  function removeNode(node) {
+  	var parentNode = node.parentNode;
+  	if (parentNode) parentNode.removeChild(node);
+  }
+
+  function setAccessor(node, name, old, value, isSvg) {
+  	if (name === 'className') name = 'class';
+
+  	if (name === 'key') ; else if (name === 'ref') {
+  		applyRef(old, null);
+  		applyRef(value, node);
+  	} else if (name === 'class' && !isSvg) {
+  		node.className = value || '';
+  	} else if (name === 'style') {
+  		if (!value || typeof value === 'string' || typeof old === 'string') {
+  			node.style.cssText = value || '';
+  		}
+  		if (value && typeof value === 'object') {
+  			if (typeof old !== 'string') {
+  				for (var i in old) {
+  					if (!(i in value)) node.style[i] = '';
+  				}
+  			}
+  			for (var i in value) {
+  				node.style[i] = typeof value[i] === 'number' && IS_NON_DIMENSIONAL.test(i) === false ? value[i] + 'px' : value[i];
+  			}
+  		}
+  	} else if (name === 'dangerouslySetInnerHTML') {
+  		if (value) node.innerHTML = value.__html || '';
+  	} else if (name[0] == 'o' && name[1] == 'n') {
+  		var useCapture = name !== (name = name.replace(/Capture$/, ''));
+  		name = name.toLowerCase().substring(2);
+  		if (value) {
+  			if (!old) node.addEventListener(name, eventProxy, useCapture);
+  		} else {
+  			node.removeEventListener(name, eventProxy, useCapture);
+  		}
+  		(node._listeners || (node._listeners = {}))[name] = value;
+  	} else if (name !== 'list' && name !== 'type' && !isSvg && name in node) {
+  		try {
+  			node[name] = value == null ? '' : value;
+  		} catch (e) {}
+  		if ((value == null || value === false) && name != 'spellcheck') node.removeAttribute(name);
+  	} else {
+  		var ns = isSvg && name !== (name = name.replace(/^xlink:?/, ''));
+
+  		if (value == null || value === false) {
+  			if (ns) node.removeAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase());else node.removeAttribute(name);
+  		} else if (typeof value !== 'function') {
+  			if (ns) node.setAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase(), value);else node.setAttribute(name, value);
+  		}
+  	}
+  }
+
+  function eventProxy(e) {
+  	return this._listeners[e.type](e);
+  }
+
+  var mounts = [];
+
+  var diffLevel = 0;
+
+  var isSvgMode = false;
+
+  var hydrating = false;
+
+  function flushMounts() {
+  	var c;
+  	while (c = mounts.shift()) {
+  		if (c.componentDidMount) c.componentDidMount();
+  	}
+  }
+
+  function diff(dom, vnode, context, mountAll, parent, componentRoot) {
+  	if (!diffLevel++) {
+  		isSvgMode = parent != null && parent.ownerSVGElement !== undefined;
+
+  		hydrating = dom != null && !('__preactattr_' in dom);
+  	}
+
+  	var ret = idiff(dom, vnode, context, mountAll, componentRoot);
+
+  	if (parent && ret.parentNode !== parent) parent.appendChild(ret);
+
+  	if (! --diffLevel) {
+  		hydrating = false;
+
+  		if (!componentRoot) flushMounts();
+  	}
+
+  	return ret;
+  }
+
+  function idiff(dom, vnode, context, mountAll, componentRoot) {
+  	var out = dom,
+  	    prevSvgMode = isSvgMode;
+
+  	if (vnode == null || typeof vnode === 'boolean') vnode = '';
+
+  	if (typeof vnode === 'string' || typeof vnode === 'number') {
+  		if (dom && dom.splitText !== undefined && dom.parentNode && (!dom._component || componentRoot)) {
+  			if (dom.nodeValue != vnode) {
+  				dom.nodeValue = vnode;
+  			}
+  		} else {
+  			out = document.createTextNode(vnode);
+  			if (dom) {
+  				if (dom.parentNode) dom.parentNode.replaceChild(out, dom);
+  				recollectNodeTree(dom, true);
+  			}
+  		}
+
+  		out['__preactattr_'] = true;
+
+  		return out;
+  	}
+
+  	var vnodeName = vnode.nodeName;
+  	if (typeof vnodeName === 'function') {
+  		return buildComponentFromVNode(dom, vnode, context, mountAll);
+  	}
+
+  	isSvgMode = vnodeName === 'svg' ? true : vnodeName === 'foreignObject' ? false : isSvgMode;
+
+  	vnodeName = String(vnodeName);
+  	if (!dom || !isNamedNode(dom, vnodeName)) {
+  		out = createNode(vnodeName, isSvgMode);
+
+  		if (dom) {
+  			while (dom.firstChild) {
+  				out.appendChild(dom.firstChild);
+  			}
+  			if (dom.parentNode) dom.parentNode.replaceChild(out, dom);
+
+  			recollectNodeTree(dom, true);
+  		}
+  	}
+
+  	var fc = out.firstChild,
+  	    props = out['__preactattr_'],
+  	    vchildren = vnode.children;
+
+  	if (props == null) {
+  		props = out['__preactattr_'] = {};
+  		for (var a = out.attributes, i = a.length; i--;) {
+  			props[a[i].name] = a[i].value;
+  		}
+  	}
+
+  	if (!hydrating && vchildren && vchildren.length === 1 && typeof vchildren[0] === 'string' && fc != null && fc.splitText !== undefined && fc.nextSibling == null) {
+  		if (fc.nodeValue != vchildren[0]) {
+  			fc.nodeValue = vchildren[0];
+  		}
+  	} else if (vchildren && vchildren.length || fc != null) {
+  			innerDiffNode(out, vchildren, context, mountAll, hydrating || props.dangerouslySetInnerHTML != null);
+  		}
+
+  	diffAttributes(out, vnode.attributes, props);
+
+  	isSvgMode = prevSvgMode;
+
+  	return out;
+  }
+
+  function innerDiffNode(dom, vchildren, context, mountAll, isHydrating) {
+  	var originalChildren = dom.childNodes,
+  	    children = [],
+  	    keyed = {},
+  	    keyedLen = 0,
+  	    min = 0,
+  	    len = originalChildren.length,
+  	    childrenLen = 0,
+  	    vlen = vchildren ? vchildren.length : 0,
+  	    j,
+  	    c,
+  	    f,
+  	    vchild,
+  	    child;
+
+  	if (len !== 0) {
+  		for (var i = 0; i < len; i++) {
+  			var _child = originalChildren[i],
+  			    props = _child['__preactattr_'],
+  			    key = vlen && props ? _child._component ? _child._component.__key : props.key : null;
+  			if (key != null) {
+  				keyedLen++;
+  				keyed[key] = _child;
+  			} else if (props || (_child.splitText !== undefined ? isHydrating ? _child.nodeValue.trim() : true : isHydrating)) {
+  				children[childrenLen++] = _child;
+  			}
+  		}
+  	}
+
+  	if (vlen !== 0) {
+  		for (var i = 0; i < vlen; i++) {
+  			vchild = vchildren[i];
+  			child = null;
+
+  			var key = vchild.key;
+  			if (key != null) {
+  				if (keyedLen && keyed[key] !== undefined) {
+  					child = keyed[key];
+  					keyed[key] = undefined;
+  					keyedLen--;
+  				}
+  			} else if (min < childrenLen) {
+  					for (j = min; j < childrenLen; j++) {
+  						if (children[j] !== undefined && isSameNodeType(c = children[j], vchild, isHydrating)) {
+  							child = c;
+  							children[j] = undefined;
+  							if (j === childrenLen - 1) childrenLen--;
+  							if (j === min) min++;
+  							break;
+  						}
+  					}
+  				}
+
+  			child = idiff(child, vchild, context, mountAll);
+
+  			f = originalChildren[i];
+  			if (child && child !== dom && child !== f) {
+  				if (f == null) {
+  					dom.appendChild(child);
+  				} else if (child === f.nextSibling) {
+  					removeNode(f);
+  				} else {
+  					dom.insertBefore(child, f);
+  				}
+  			}
+  		}
+  	}
+
+  	if (keyedLen) {
+  		for (var i in keyed) {
+  			if (keyed[i] !== undefined) recollectNodeTree(keyed[i], false);
+  		}
+  	}
+
+  	while (min <= childrenLen) {
+  		if ((child = children[childrenLen--]) !== undefined) recollectNodeTree(child, false);
+  	}
+  }
+
+  function recollectNodeTree(node, unmountOnly) {
+  	var component = node._component;
+  	if (component) {
+  		unmountComponent(component);
+  	} else {
+  		if (node['__preactattr_'] != null) applyRef(node['__preactattr_'].ref, null);
+
+  		if (unmountOnly === false || node['__preactattr_'] == null) {
+  			removeNode(node);
+  		}
+
+  		removeChildren(node);
+  	}
+  }
+
+  function removeChildren(node) {
+  	node = node.lastChild;
+  	while (node) {
+  		var next = node.previousSibling;
+  		recollectNodeTree(node, true);
+  		node = next;
+  	}
+  }
+
+  function diffAttributes(dom, attrs, old) {
+  	var name;
+
+  	for (name in old) {
+  		if (!(attrs && attrs[name] != null) && old[name] != null) {
+  			setAccessor(dom, name, old[name], old[name] = undefined, isSvgMode);
+  		}
+  	}
+
+  	for (name in attrs) {
+  		if (name !== 'children' && name !== 'innerHTML' && (!(name in old) || attrs[name] !== (name === 'value' || name === 'checked' ? dom[name] : old[name]))) {
+  			setAccessor(dom, name, old[name], old[name] = attrs[name], isSvgMode);
+  		}
+  	}
+  }
+
+  var recyclerComponents = [];
+
+  function createComponent(Ctor, props, context) {
+  	var inst,
+  	    i = recyclerComponents.length;
+
+  	if (Ctor.prototype && Ctor.prototype.render) {
+  		inst = new Ctor(props, context);
+  		Component.call(inst, props, context);
+  	} else {
+  		inst = new Component(props, context);
+  		inst.constructor = Ctor;
+  		inst.render = doRender;
+  	}
+
+  	while (i--) {
+  		if (recyclerComponents[i].constructor === Ctor) {
+  			inst.nextBase = recyclerComponents[i].nextBase;
+  			recyclerComponents.splice(i, 1);
+  			return inst;
+  		}
+  	}
+
+  	return inst;
+  }
+
+  function doRender(props, state, context) {
+  	return this.constructor(props, context);
+  }
+
+  function setComponentProps(component, props, renderMode, context, mountAll) {
+  	if (component._disable) return;
+  	component._disable = true;
+
+  	component.__ref = props.ref;
+  	component.__key = props.key;
+  	delete props.ref;
+  	delete props.key;
+
+  	if (typeof component.constructor.getDerivedStateFromProps === 'undefined') {
+  		if (!component.base || mountAll) {
+  			if (component.componentWillMount) component.componentWillMount();
+  		} else if (component.componentWillReceiveProps) {
+  			component.componentWillReceiveProps(props, context);
+  		}
+  	}
+
+  	if (context && context !== component.context) {
+  		if (!component.prevContext) component.prevContext = component.context;
+  		component.context = context;
+  	}
+
+  	if (!component.prevProps) component.prevProps = component.props;
+  	component.props = props;
+
+  	component._disable = false;
+
+  	if (renderMode !== 0) {
+  		if (renderMode === 1 || options.syncComponentUpdates !== false || !component.base) {
+  			renderComponent(component, 1, mountAll);
+  		} else {
+  			enqueueRender(component);
+  		}
+  	}
+
+  	applyRef(component.__ref, component);
+  }
+
+  function renderComponent(component, renderMode, mountAll, isChild) {
+  	if (component._disable) return;
+
+  	var props = component.props,
+  	    state = component.state,
+  	    context = component.context,
+  	    previousProps = component.prevProps || props,
+  	    previousState = component.prevState || state,
+  	    previousContext = component.prevContext || context,
+  	    isUpdate = component.base,
+  	    nextBase = component.nextBase,
+  	    initialBase = isUpdate || nextBase,
+  	    initialChildComponent = component._component,
+  	    skip = false,
+  	    snapshot = previousContext,
+  	    rendered,
+  	    inst,
+  	    cbase;
+
+  	if (component.constructor.getDerivedStateFromProps) {
+  		state = extend(extend({}, state), component.constructor.getDerivedStateFromProps(props, state));
+  		component.state = state;
+  	}
+
+  	if (isUpdate) {
+  		component.props = previousProps;
+  		component.state = previousState;
+  		component.context = previousContext;
+  		if (renderMode !== 2 && component.shouldComponentUpdate && component.shouldComponentUpdate(props, state, context) === false) {
+  			skip = true;
+  		} else if (component.componentWillUpdate) {
+  			component.componentWillUpdate(props, state, context);
+  		}
+  		component.props = props;
+  		component.state = state;
+  		component.context = context;
+  	}
+
+  	component.prevProps = component.prevState = component.prevContext = component.nextBase = null;
+  	component._dirty = false;
+
+  	if (!skip) {
+  		rendered = component.render(props, state, context);
+
+  		if (component.getChildContext) {
+  			context = extend(extend({}, context), component.getChildContext());
+  		}
+
+  		if (isUpdate && component.getSnapshotBeforeUpdate) {
+  			snapshot = component.getSnapshotBeforeUpdate(previousProps, previousState);
+  		}
+
+  		var childComponent = rendered && rendered.nodeName,
+  		    toUnmount,
+  		    base;
+
+  		if (typeof childComponent === 'function') {
+
+  			var childProps = getNodeProps(rendered);
+  			inst = initialChildComponent;
+
+  			if (inst && inst.constructor === childComponent && childProps.key == inst.__key) {
+  				setComponentProps(inst, childProps, 1, context, false);
+  			} else {
+  				toUnmount = inst;
+
+  				component._component = inst = createComponent(childComponent, childProps, context);
+  				inst.nextBase = inst.nextBase || nextBase;
+  				inst._parentComponent = component;
+  				setComponentProps(inst, childProps, 0, context, false);
+  				renderComponent(inst, 1, mountAll, true);
+  			}
+
+  			base = inst.base;
+  		} else {
+  			cbase = initialBase;
+
+  			toUnmount = initialChildComponent;
+  			if (toUnmount) {
+  				cbase = component._component = null;
+  			}
+
+  			if (initialBase || renderMode === 1) {
+  				if (cbase) cbase._component = null;
+  				base = diff(cbase, rendered, context, mountAll || !isUpdate, initialBase && initialBase.parentNode, true);
+  			}
+  		}
+
+  		if (initialBase && base !== initialBase && inst !== initialChildComponent) {
+  			var baseParent = initialBase.parentNode;
+  			if (baseParent && base !== baseParent) {
+  				baseParent.replaceChild(base, initialBase);
+
+  				if (!toUnmount) {
+  					initialBase._component = null;
+  					recollectNodeTree(initialBase, false);
+  				}
+  			}
+  		}
+
+  		if (toUnmount) {
+  			unmountComponent(toUnmount);
+  		}
+
+  		component.base = base;
+  		if (base && !isChild) {
+  			var componentRef = component,
+  			    t = component;
+  			while (t = t._parentComponent) {
+  				(componentRef = t).base = base;
+  			}
+  			base._component = componentRef;
+  			base._componentConstructor = componentRef.constructor;
+  		}
+  	}
+
+  	if (!isUpdate || mountAll) {
+  		mounts.push(component);
+  	} else if (!skip) {
+
+  		if (component.componentDidUpdate) {
+  			component.componentDidUpdate(previousProps, previousState, snapshot);
+  		}
+  	}
+
+  	while (component._renderCallbacks.length) {
+  		component._renderCallbacks.pop().call(component);
+  	}if (!diffLevel && !isChild) flushMounts();
+  }
+
+  function buildComponentFromVNode(dom, vnode, context, mountAll) {
+  	var c = dom && dom._component,
+  	    originalComponent = c,
+  	    oldDom = dom,
+  	    isDirectOwner = c && dom._componentConstructor === vnode.nodeName,
+  	    isOwner = isDirectOwner,
+  	    props = getNodeProps(vnode);
+  	while (c && !isOwner && (c = c._parentComponent)) {
+  		isOwner = c.constructor === vnode.nodeName;
+  	}
+
+  	if (c && isOwner && (!mountAll || c._component)) {
+  		setComponentProps(c, props, 3, context, mountAll);
+  		dom = c.base;
+  	} else {
+  		if (originalComponent && !isDirectOwner) {
+  			unmountComponent(originalComponent);
+  			dom = oldDom = null;
+  		}
+
+  		c = createComponent(vnode.nodeName, props, context);
+  		if (dom && !c.nextBase) {
+  			c.nextBase = dom;
+
+  			oldDom = null;
+  		}
+  		setComponentProps(c, props, 1, context, mountAll);
+  		dom = c.base;
+
+  		if (oldDom && dom !== oldDom) {
+  			oldDom._component = null;
+  			recollectNodeTree(oldDom, false);
+  		}
+  	}
+
+  	return dom;
+  }
+
+  function unmountComponent(component) {
+
+  	var base = component.base;
+
+  	component._disable = true;
+
+  	if (component.componentWillUnmount) component.componentWillUnmount();
+
+  	component.base = null;
+
+  	var inner = component._component;
+  	if (inner) {
+  		unmountComponent(inner);
+  	} else if (base) {
+  		if (base['__preactattr_'] != null) applyRef(base['__preactattr_'].ref, null);
+
+  		component.nextBase = base;
+
+  		removeNode(base);
+  		recyclerComponents.push(component);
+
+  		removeChildren(base);
+  	}
+
+  	applyRef(component.__ref, null);
+  }
+
+  function Component(props, context) {
+  	this._dirty = true;
+
+  	this.context = context;
+
+  	this.props = props;
+
+  	this.state = this.state || {};
+
+  	this._renderCallbacks = [];
+  }
+
+  extend(Component.prototype, {
+  	setState: function setState(state, callback) {
+  		if (!this.prevState) this.prevState = this.state;
+  		this.state = extend(extend({}, this.state), typeof state === 'function' ? state(this.state, this.props) : state);
+  		if (callback) this._renderCallbacks.push(callback);
+  		enqueueRender(this);
+  	},
+  	forceUpdate: function forceUpdate(callback) {
+  		if (callback) this._renderCallbacks.push(callback);
+  		renderComponent(this, 2);
+  	},
+  	render: function render() {}
+  });
+
+  function render(vnode, parent, merge) {
+    return diff(merge, vnode, {}, false, parent, false);
+  }
+
+  /**
+   * Pure JS version of jQuery's $.getScript
+   * 
+   * @param {string} source url or path to JS file
+   * @param {function} callback function to run after script is loaded
+   */
+  function getScript(source, callback) {
+    var script = document.createElement('script');
+    var prior = document.getElementsByTagName('script')[0];
+    script.async = 1;
+
+    script.onload = script.onreadystatechange = function (_, isAbort) {
+      if (isAbort || !script.readyState || /loaded|complete/.test(script.readyState)) {
+        script.onload = script.onreadystatechange = null;
+        script = undefined;
+
+        if (!isAbort) {
+          if (callback) callback();
+        }
+      }
+    };
+
+    script.onerror = function (err) {
+      if (callback) callback(err);
+    };
+
+    script.src = source;
+    prior.parentNode.insertBefore(script, prior);
+  }
+
+  function polyfills () {
+    // Element.remove() polyfill
+    // from:https://github.com/jserz/js_piece/blob/master/DOM/ChildNode/remove()/remove().md
+    (function (arr) {
+      arr.forEach(function (item) {
+        if (item.hasOwnProperty("remove")) {
+          return;
+        }
+
+        Object.defineProperty(item, "remove", {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: function remove() {
+            if (this.parentNode !== null) this.parentNode.removeChild(this);
+          }
+        });
+      });
+    })([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
+
+    if (typeof Promise === "undefined") {
+      // load Promise polyfill for IE because we are still supporting it
+      getScript("https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js");
+    }
+  }
+
+  /*global Dubtrack*/
+
+  var eventUtils = {
+    currentVol: 50,
+    snoozed: false
+  };
+
+  var eventSongAdvance = function eventSongAdvance(e) {
+    if (e.startTime < 2) {
+      if (eventUtils.snoozed) {
+        Dubtrack.room.player.setVolume(eventUtils.currentVol);
+        eventUtils.snoozed = false;
+      }
+
+      return true;
+    }
+  };
+
+  var snooze = function snooze() {
+    if (!eventUtils.snoozed && !Dubtrack.room.player.muted_player && Dubtrack.playerController.volume > 2) {
+      eventUtils.currentVol = Dubtrack.playerController.volume;
+      Dubtrack.room.player.mutePlayer();
+      eventUtils.snoozed = true;
+      Dubtrack.Events.bind("realtime:room_playlist-update", eventSongAdvance);
+    } else if (eventUtils.snoozed) {
+      Dubtrack.room.player.setVolume(eventUtils.currentVol);
+      Dubtrack.room.player.updateVolumeBar();
+      eventUtils.snoozed = false;
+    }
+  };
+
+  var css = {
+    position: 'absolute',
+    font: '1rem/1.5 proxima-nova,sans-serif',
+    display: 'block',
+    left: '-33px',
+    cursor: 'pointer',
+    borderRadius: '1.5rem',
+    padding: '8px 16px',
+    background: '#fff',
+    fontWeight: '700',
+    fontSize: '13.6px',
+    textTransform: 'uppercase',
+    color: '#000',
+    opacity: '0.8',
+    textAlign: 'center',
+    zIndex: '9'
+  };
+
+  var Snooze =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(Snooze, _Component);
+
+    function Snooze() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, Snooze);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Snooze)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        show: false
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "showTooltip", function () {
+        _this.setState({
+          show: true
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "hideTooltip", function () {
+        _this.setState({
+          show: false
+        });
+      });
+
+      return _this;
+    }
+
+    _createClass(Snooze, [{
+      key: "render",
+      value: function render$$1(props, state) {
+        return h("span", {
+          className: "icon-mute snooze_btn",
+          onClick: snooze,
+          onMouseOver: this.showTooltip,
+          onMouseOut: this.hideTooltip
+        }, state.show && h("div", {
+          className: "snooze_tooltip",
+          style: css
+        }, "Mute current song"));
+      }
+    }]);
+
+    return Snooze;
+  }(Component);
+
+  function snooze$1 () {
+    render(h(Snooze, null), document.querySelector('.player_sharing'));
+  }
+
+  var css$1 = {
+    position: 'absolute',
+    font: '1rem/1.5 proxima-nova,sans-serif',
+    display: 'block',
+    left: '-33px',
+    cursor: 'pointer',
+    borderRadius: '1.5rem',
+    padding: '8px 16px',
+    background: '#fff',
+    fontWeight: '700',
+    fontSize: '13.6px',
+    textTransform: 'uppercase',
+    color: '#000',
+    opacity: '0.8',
+    textAlign: 'center',
+    zIndex: '9'
+  };
+
+  var ETA =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(ETA, _Component);
+
+    function ETA() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, ETA);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(ETA)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        show: false,
+        booth_time: ''
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "showTooltip", function () {
+        var tooltipText = _this.getEta();
+
+        _this.setState({
+          show: true,
+          booth_time: tooltipText
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "hideTooltip", function () {
+        _this.setState({
+          show: false
+        });
+      });
+
+      return _this;
+    }
+
+    _createClass(ETA, [{
+      key: "getEta",
+      value: function getEta() {
+        var time = 4;
+        var current_time = parseInt(document.querySelector('#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min').textContent);
+        var booth_duration = parseInt(document.querySelector('.queue-position').textContent);
+        var booth_time = booth_duration * time - time + current_time;
+        return booth_time >= 0 ? booth_time : 'You\'re not in the queue';
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        return h("span", {
+          className: "icon-history eta_tooltip_t",
+          onMouseOver: this.showTooltip,
+          onMouseOut: this.hideTooltip
+        }, this.state.show && h("span", {
+          className: "eta_tooltip",
+          style: css$1
+        }, this.state.booth_time));
+      }
+    }]);
+
+    return ETA;
+  }(Component);
+
+  function eta () {
+    render(h(ETA, null), document.querySelector('.player_sharing'));
+  }
+
+  function SectionHeader(props) {
+    var arrow = props.open === "open" ? 'down' : 'right';
+    return h("div", {
+      id: props.id,
+      onClick: props.onClick,
+      className: "dubplus-menu-section-header"
+    }, h("span", {
+      className: "fa fa-angle-".concat(arrow)
+    }), h("p", null, props.category));
+  }
+
+  /**
+   * global State handler
+   */
+  var defaults = {
+    "menu": {
+      "general": "open",
+      "user-interface": "open",
+      "settings": "open",
+      "customize": "open",
+      "contact": "open"
+    },
+    "options": {
+      "dubplus-autovote": false,
+      "dubplus-emotes": false,
+      "dubplus-autocomplete": false,
+      "mention_notifications": false,
+      "dubplus_pm_notifications": false,
+      "dj-notification": false,
+      "dubplus-dubs-hover": false,
+      "dubplus-downdubs": false,
+      "dubplus-grabschat": false,
+      "dubplus-split-chat": false,
+      "dubplus-show-timestamp": false,
+      "dubplus-hide-bg": false,
+      "dubplus-hide-avatars": false,
+      "dubplus-chat-only": false,
+      "dubplus-video-only": false,
+      "warn_redirect": false,
+      "dubplus-comm-theme": false,
+      "dubplus-afk": false,
+      "dubplus-snow": false,
+      "dubplus-custom-css": false
+    },
+    "custom": {
+      "customAfkMessage": "",
+      "dj_notification": 1,
+      "css": ""
+    }
+  };
+
+  var UserSettings =
+  /*#__PURE__*/
+  function () {
+    function UserSettings() {
+      _classCallCheck(this, UserSettings);
+
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@preact-version");
+
+      var _savedSettings = localStorage.getItem('dubplusUserSettings');
+
+      if (_savedSettings) {
+        try {
+          var storedOpts = JSON.parse(_savedSettings);
+          this.stored = Object.assign({}, defaults, storedOpts);
+        } catch (err) {
+          this.stored = defaults;
+        }
+      } else {
+        this.stored = defaults;
+      }
+    }
+    /**
+     * Save your settings value to memory and localStorage
+     * @param {String} type The section of the stored values. i.e. "menu", "options", "custom"
+     * @param {String} optionName the key name of the option to store
+     * @param {String|Boolean} value the new setting value to store
+     */
+
+
+    _createClass(UserSettings, [{
+      key: "save",
+      value: function save(type, optionName, value) {
+        this.stored[type][optionName] = value;
+
+        try {
+          localStorage.setItem('dubplusUserSettings', JSON.stringify(this.stored));
+        } catch (err) {
+          console.error("an error occured saving dubplus to localStorage", err);
+        }
+      }
+    }]);
+
+    return UserSettings;
+  }();
+
+  var userSettings = new UserSettings();
+
+  /** Redirect rendering of descendants into the given CSS selector.
+   *  @example
+   *    <Portal into="body">
+   *      <div>I am rendered into document.body</div>
+   *    </Portal>
+   */
+
+  var Portal =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(Portal, _Component);
+
+    function Portal() {
+      _classCallCheck(this, Portal);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(Portal).apply(this, arguments));
+    }
+
+    _createClass(Portal, [{
+      key: "componentDidUpdate",
+      value: function componentDidUpdate(props) {
+        for (var i in props) {
+          if (props[i] !== this.props[i]) {
+            return setTimeout(this.renderLayer);
+          }
+        }
+      }
+    }, {
+      key: "componentDidMount",
+      value: function componentDidMount() {
+        this.isMounted = true;
+        this.renderLayer = this.renderLayer.bind(this);
+        this.renderLayer();
+      }
+    }, {
+      key: "componentWillUnmount",
+      value: function componentWillUnmount() {
+        this.renderLayer(false);
+        this.isMounted = false;
+        if (this.remote) this.remote.parentNode.removeChild(this.remote);
+      }
+    }, {
+      key: "findNode",
+      value: function findNode(node) {
+        return typeof node === 'string' ? document.querySelector(node) : node;
+      }
+    }, {
+      key: "renderLayer",
+      value: function renderLayer() {
+        var show = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+        if (!this.isMounted) return; // clean up old node if moving bases:
+
+        if (this.props.into !== this.intoPointer) {
+          this.intoPointer = this.props.into;
+
+          if (this.into && this.remote) {
+            this.remote = render(h(PortalProxy, null), this.into, this.remote);
+          }
+
+          this.into = this.findNode(this.props.into);
+        }
+
+        this.remote = render(h(PortalProxy, {
+          context: this.context
+        }, show && this.props.children || null), this.into, this.remote);
+      }
+    }, {
+      key: "render",
+      value: function render$$1() {
+        return null;
+      }
+    }]);
+
+    return Portal;
+  }(Component); // high-order component that renders its first child if it exists.
+
+  var PortalProxy =
+  /*#__PURE__*/
+  function (_Component2) {
+    _inherits(PortalProxy, _Component2);
+
+    function PortalProxy() {
+      _classCallCheck(this, PortalProxy);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(PortalProxy).apply(this, arguments));
+    }
+
+    _createClass(PortalProxy, [{
+      key: "getChildContext",
+      value: function getChildContext() {
+        return this.props.context;
+      }
+    }, {
+      key: "render",
+      value: function render$$1(_ref) {
+        var children = _ref.children;
+        return children && children[0] || null;
+      }
+    }]);
+
+    return PortalProxy;
+  }(Component);
+
+  /**
+   * Modal used to display messages and also capture data
+   *
+   * @prop  {string} title       title that shows at the top of the modal
+   * @prop  {string} content     A descriptive message on what the modal is for
+   * @prop  {string} placeholder placeholder for the textarea
+   * @prop  {function} onConfirm  runs when user clicks confirm button.
+   * @prop  {function} onClose  runs when user clicks close button
+   * @prop  {number} maxlength   for the textarea maxlength attribute
+   */
+
+  var Modal =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(Modal, _Component);
+
+    function Modal() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, Modal);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Modal)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "keyUpHandler", function (e) {
+        // save and close when user presses enter
+        // considering removing this though
+        if (e.keyCode === 13) {
+          _this.props.onConfirm(_this.textarea.value);
+
+          _this.props.onClose();
+        } // close modal when user hits the esc key
+
+
+        if (e.keyCode === 27) {
+          _this.props.onClose();
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "confirmClick", function () {
+        _this.props.onConfirm(_this.textarea.value);
+
+        _this.props.onClose();
+      });
+
+      return _this;
+    }
+
+    _createClass(Modal, [{
+      key: "componentWillUnmount",
+      value: function componentWillUnmount() {
+        document.removeEventListener("keyup", this.keyUpHandler);
+      }
+    }, {
+      key: "componentDidUpdate",
+      value: function componentDidUpdate() {
+        if (this.props.open) {
+          document.addEventListener("keyup", this.keyUpHandler);
+        } else {
+          document.removeEventListener("keyup", this.keyUpHandler);
+        }
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props) {
+        var _this2 = this;
+
+        var closeButtonText = !props.onConfirm ? "close" : "cancel";
+        return props.open ? h(Portal, {
+          into: "body"
+        }, h("div", {
+          className: "dp-modal"
+        }, h("aside", {
+          className: "container"
+        }, h("div", {
+          className: "title"
+        }, h("h1", null, " ", props.title || "Dub+")), h("div", {
+          className: "content"
+        }, h("p", null, props.content || ""), props.placeholder && h("textarea", {
+          ref: function ref(c) {
+            return _this2.textarea = c;
+          },
+          placeholder: props.placeholder,
+          maxlength: props.maxlength || 999
+        }, props.value || "")), h("div", {
+          className: "dp-modal-buttons"
+        }, h("button", {
+          id: "dp-modal-cancel",
+          onClick: props.onClose
+        }, closeButtonText), props.onConfirm && h("button", {
+          id: "dp-modal-confirm",
+          onClick: this.confirmClick
+        }, "okay"))))) : null;
+      }
+    }]);
+
+    return Modal;
+  }(Component);
+
+  /**
+   * Class wrapper for Google Analytics
+   */
+  // shim just in case blocked by an adblocker or something
+  var ga = window.ga || function () {};
+
+  var GA =
+  /*#__PURE__*/
+  function () {
+    function GA(uid) {
+      _classCallCheck(this, GA);
+
+      ga('create', uid, 'auto', 'dubplusTracker');
+    } // https://developers.google.com/analytics/devguides/collection/analyticsjs/events
+
+
+    _createClass(GA, [{
+      key: "event",
+      value: function event(eventCategory, eventAction, eventLabel, eventValue) {
+        ga('dubplusTracker.send', 'event', eventCategory, eventAction, eventLabel, eventValue);
+      }
+      /**
+       * Use this method to track clicking on a menu item
+       * @param {String} menuSection The menu section's title will be used for the event Category
+       * @param {String} menuItem The ID of the menu item will be used for the event label
+       * @param {Number} [onOff] optional - should be 1 or 0 representing on or off state of the menu item
+       */
+
+    }, {
+      key: "menuClick",
+      value: function menuClick(menuSection, menuItem, onOff) {
+        this.event(menuSection, 'click', menuItem, onOff);
+      }
+    }]);
+
+    return GA;
+  }();
+
+  var track = new GA('UA-116652541-1');
+
+  /**
+   * Component which brings up a modal box to allow user to
+   * input and store a text value which will be used by the
+   * parent menu item.
+   *
+   * MenuPencil must always by a child of MenuSwitch.
+   */
+
+  var MenuPencil =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(MenuPencil, _Component);
+
+    function MenuPencil() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, MenuPencil);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(MenuPencil)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        open: false
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadModal", function () {
+        _this.setState({
+          open: true
+        });
+
+        track.menuClick(_this.props.section + " section", _this.props.id + " edit");
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "closeModal", function () {
+        console.log("closing dub+ modal");
+
+        _this.setState({
+          open: false
+        });
+      });
+
+      return _this;
+    }
+
+    _createClass(MenuPencil, [{
+      key: "render",
+      value: function render$$1(props, state) {
+        return h("span", {
+          onClick: this.loadModal,
+          className: "fa fa-pencil extra-icon"
+        }, h(Modal, {
+          open: state.open,
+          title: props.title || "Dub+ option",
+          content: props.content || "Please enter a value",
+          placeholder: props.placeholder || "in here",
+          value: props.value,
+          onConfirm: props.onConfirm,
+          onClose: this.closeModal
+        }));
+      }
+    }]);
+
+    return MenuPencil;
+  }(Component);
+  var MenuSwitch =
+  /*#__PURE__*/
+  function (_Component2) {
+    _inherits(MenuSwitch, _Component2);
+
+    function MenuSwitch() {
+      var _getPrototypeOf3;
+
+      var _this2;
+
+      _classCallCheck(this, MenuSwitch);
+
+      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+      }
+
+      _this2 = _possibleConstructorReturn(this, (_getPrototypeOf3 = _getPrototypeOf(MenuSwitch)).call.apply(_getPrototypeOf3, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "state", {
+        on: userSettings.stored.options[_this2.props.id] || false
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "switchOn", function () {
+        _this2.props.turnOn();
+
+        userSettings.save("options", _this2.props.id, true);
+
+        _this2.setState({
+          on: true
+        });
+
+        track.menuClick(_this2.props.section + " section", _this2.props.id + " on");
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "switchOff", function () {
+        var noTrack = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+        _this2.props.turnOff();
+
+        userSettings.save("options", _this2.props.id, false);
+
+        _this2.setState({
+          on: false
+        });
+
+        if (!noTrack) {
+          track.menuClick(_this2.props.section + " section", _this2.props.id + " off");
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "toggleSwitch", function () {
+        if (_this2.state.on) {
+          _this2.switchOff();
+        } else {
+          _this2.switchOn();
+        }
+      });
+
+      return _this2;
+    }
+
+    _createClass(MenuSwitch, [{
+      key: "componentDidMount",
+      value: function componentDidMount() {
+        if (this.state.on) {
+          this.props.turnOn();
+        }
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        var _cn = ["dubplus-switch"];
+
+        if (state.on) {
+          _cn.push("dubplus-switch-on");
+        } // combine with ones that were passed through
+
+
+        if (props.className) {
+          _cn.push(props.className);
+        }
+
+        return h("li", {
+          id: props.id,
+          title: props.desc,
+          className: _cn.join(" ")
+        }, props.children || null, h("div", {
+          onClick: this.toggleSwitch,
+          className: "dubplus-form-control"
+        }, h("div", {
+          className: "dubplus-switch-bg"
+        }, h("div", {
+          className: "dubplus-switcher"
+        })), h("span", {
+          className: "dubplus-menu-label"
+        }, props.menuTitle)));
+      }
+    }]);
+
+    return MenuSwitch;
+  }(Component);
+
+  /**
+   * 
+   * Away From Keyboard autoresponder
+   * 
+   * TODO: setup global state manager
+   */
+
+  var AFK =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(AFK, _Component);
+
+    function AFK() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, AFK);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(AFK)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        canSend: true
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "afk_chat_respond", function (e) {
+        if (!_this.state.canSend) {
+          return; // do nothing until it's back to true
+        }
+
+        var content = e.message;
+        var user = Dubtrack.session.get('username');
+
+        if (content.indexOf('@' + user) > -1 && Dubtrack.session.id !== e.user.userInfo.userid) {
+          var chatInput = document.getElementById('chat-txt-message');
+
+          if (userSettings.stored.custom.customAfkMessage) {
+            chatInput.value = '[AFK] ' + userSettings.stored.custom.customAfkMessage;
+          } else {
+            chatInput.value = "[AFK] I'm not here right now.";
+          }
+
+          Dubtrack.room.chat.sendMessage(); // so we don't spam chat, we pause the auto respond for 30sec
+
+          _this.setState({
+            canSend: false
+          }); // allow AFK responses after 30sec
+
+
+          setTimeout(function () {
+            _this.setState({
+              canSend: true
+            });
+          }, 30000);
+        }
+      });
+
+      return _this;
+    }
+
+    _createClass(AFK, [{
+      key: "turnOn",
+      value: function turnOn() {
+        Dubtrack.Events.bind("realtime:chat-message", this.afk_chat_respond);
+      }
+    }, {
+      key: "turnOff",
+      value: function turnOff() {
+        Dubtrack.Events.unbind("realtime:chat-message", this.afk_chat_respond);
+      }
+    }, {
+      key: "saveAFKmessage",
+      value: function saveAFKmessage(val) {
+        if (val !== '') {
+          // TODO: save to global state
+          userSettings.save('custom', 'customAfkMessage', val);
+        }
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        return h(MenuSwitch, {
+          id: "dubplus-afk",
+          section: "General",
+          menuTitle: "AFK Auto-respond",
+          desc: "Toggle Away from Keyboard and customize AFK message.",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, h(MenuPencil, {
+          title: "Custom AFK Message",
+          section: "General",
+          content: "Enter a custom Away From Keyboard [AFK] message here",
+          value: userSettings.stored.custom.customAfkMessage || '',
+          placeholder: "Be right back!",
+          maxlength: "255",
+          onConfirm: this.saveAFKmessage
+        }));
+      }
+    }]);
+
+    return AFK;
+  }(Component);
+
+  /**
+   * Menu item for Autovote
+   */
+
+  var Autovote =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(Autovote, _Component);
+
+    function Autovote() {
+      var _this;
+
+      _classCallCheck(this, Autovote);
+
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(Autovote).call(this));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "advance_vote", function () {
+        var event = document.createEvent('HTMLEvents');
+        event.initEvent('click', true, false);
+
+        _this.dubup.dispatchEvent(event);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "voteCheck", function (obj) {
+        if (obj.startTime < 2) {
+          _this.advance_vote();
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (e) {
+        var song = Dubtrack.room.player.activeSong.get('song');
+        var dubCookie = Dubtrack.helpers.cookie.get('dub-' + Dubtrack.room.model.get("_id"));
+        var dubsong = Dubtrack.helpers.cookie.get('dub-song');
+
+        if (!Dubtrack.room || !song || song.songid !== dubsong) {
+          dubCookie = false;
+        } // Only cast the vote if user hasn't already voted
+
+
+        if (!_this.dubup.classList.contains('voted') && !_this.dubdown.classList.contains('voted') && !dubCookie) {
+          _this.advance_vote();
+        }
+
+        Dubtrack.Events.bind("realtime:room_playlist-update", _this.voteCheck);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function (e) {
+        Dubtrack.Events.unbind("realtime:room_playlist-update", _this.voteCheck);
+      });
+
+      _this.dubup = document.querySelector('.dubup');
+      _this.dubdown = document.querySelector('.dubdown');
+      return _this;
+    }
+
+    _createClass(Autovote, [{
+      key: "render",
+      value: function render$$1(props, state) {
+        return h(MenuSwitch, {
+          id: "dubplus-autovote",
+          section: "General",
+          menuTitle: "Autovote",
+          desc: "Toggles auto upvoting for every song",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        });
+      }
+    }]);
+
+    return Autovote;
+  }(Component);
+
+  /*
+  TODO: 
+   - if found:
+     - hijack arrow keys to make it move around the preview window
+     - moving around auto completes the text
+     - typing continues to filter
+  */
+
+  var PreviewListItem = function PreviewListItem(_ref) {
+    var data = _ref.data,
+        onSelect = _ref.onSelect;
+    return h("li", {
+      className: "preview-item ".concat(data.type, "-previews"),
+      onClick: function onClick() {
+        onSelect(data.name);
+      },
+      "data-name": data.name
+    }, h("div", {
+      className: "ac-image"
+    }, h("img", {
+      src: data.src,
+      alt: data.name,
+      title: data.name
+    })), h("span", {
+      className: "ac-text"
+    }, data.name));
+  };
+
+  var AutocompletePreview = function AutocompletePreview(_ref2) {
+    var matches = _ref2.matches,
+        onSelect = _ref2.onSelect;
+
+    if (matches.length === 0) {
+      return h("ul", {
+        id: "autocomplete-preview"
+      });
+    }
+
+    var list = matches.map(function (m, i) {
+      return h(PreviewListItem, {
+        data: m,
+        key: "".concat(m.type, "-").concat(m.name),
+        onSelect: onSelect
+      });
+    });
+    return h("ul", {
+      id: "autocomplete-preview",
+      className: "ac-show"
+    }, list);
+  };
+
+  /**
+   * Wrapper around XMLHttpRequest with added ability to trigger a custom event 
+   * when the ajax request is complete. The event will be attached to the window 
+   * object. It returns a promise.
+   * 
+   * @param {String} url 
+   * @param {Object} headers object of xhr headers to add to the request
+   * @returns {Promise}
+   */
+  function getJSON(url) {
+    var headers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+
+      for (var property in headers) {
+        if (headers.hasOwnProperty(property)) {
+          xhr.setRequestHeader(property, headers[property]);
+        }
+      }
+
+      xhr.onload = function () {
+        try {
+          var resp = JSON.parse(xhr.responseText);
+          resolve(resp);
+        } catch (e) {
+          reject(e);
+        }
+      };
+
+      xhr.onerror = function () {
+        reject();
+      };
+
+      xhr.open('GET', url);
+      xhr.send();
+    });
+  }
+
+  // IndexedDB wrapper for increased quota compared to localstorage (5mb to 50mb)
+  function IndexDBWrapper() {
+    var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+
+    if (!indexedDB) {
+      return console.error("indexDB not supported");
+    }
+    var db;
+    var timeout = 50; // 50 * 100 = 5000ms = 5s
+
+    /**
+     * Get item from indexedDB
+     * @param {string} item the db key name of what you want to retrieve
+     * @param {function} [cb] optional callback because it also returns a promise
+     * @returns {Promise}
+     */
+
+    function getItem(item, cb) {
+      // keep trying until db open request is established
+      if (!db && timeout >= 0) {
+        setTimeout(function () {
+          getItem(item, cb);
+        }, 100);
+        timeout--;
+        return;
+      }
+
+      timeout = 30; // reset the dbrequest timeout counter
+
+      return db.transaction("s").objectStore("s").get(item).onsuccess = function (e) {
+        var t = e.target.result && e.target.result.v || null;
+        cb(t);
+      };
+    }
+    /**
+     * Store a value in indexedDB
+     * @param {string} item key name for the value that will be stored
+     * @param {string} val value to be stored
+     */
+
+
+    function setItem(item, val) {
+      // keep trying until db open request is established
+      if (!db && timeout >= 0) {
+        setTimeout(function () {
+          setItem(item, val);
+        }, 100);
+        timeout--;
+        return;
+      }
+
+      timeout = 30; // reset the dbrequest timeout counter
+
+      var obj = {
+        k: item,
+        v: val
+      };
+      db.transaction("s", "readwrite").objectStore("s").put(obj);
+    }
+
+    var dbRequest = indexedDB.open("d2", 1);
+
+    dbRequest.onsuccess = function (e) {
+      db = this.result;
+    };
+
+    dbRequest.onerror = function (e) {
+      console.error("indexedDB request error", e);
+    };
+
+    dbRequest.onupgradeneeded = function (e) {
+      db = this.result;
+      var t = db.createObjectStore("s", {
+        keyPath: "k"
+      });
+
+      db.transaction.oncomplete = function (e) {
+        db = e.target.db;
+      };
+    };
+
+    return {
+      get: getItem,
+      set: setItem
+    };
+  }
+
+  var ldb = new IndexDBWrapper();
+
+  /* global  emojify */
+  var emoji = {
+    template: function template(id) {
+      return emojify.defaultConfig.img_dir + "/" + encodeURI(id) + ".png";
+    },
+    find: function find(symbol) {
+      var _this = this;
+
+      var found = emojify.emojiNames.filter(function (e) {
+        return e.indexOf(symbol) === 0;
+      });
+      return found.map(function (key) {
+        return {
+          type: "emojify",
+          src: _this.template(key),
+          name: key
+        };
+      });
+    }
+  };
+  function shouldUpdateAPIs(apiName) {
+    var day = 1000 * 60 * 60 * 24; // milliseconds in a day
+
+    return new Promise(function (resolve, reject) {
+      // if api returned an object with an error and we stored it 
+      // then we should try again
+      ldb.get(apiName + "_api", function (savedItem) {
+        if (savedItem) {
+          try {
+            var parsed = JSON.parse(savedItem);
+
+            if (typeof parsed.error !== "undefined") {
+              resolve(true); // yes we should refresh data from api
+            }
+          } catch (e) {
+            resolve(true); // data was corrupted, needs to be refreshed
+          }
+        } else {
+          resolve(true); // data doesn't exist, needs to be fetched
+        } // at this point we have good data without issues in IndexedDB
+        // so now we check how old it is to see if we should update it (7 days is the limit)
+
+
+        var today = Date.now();
+        var lastSaved = parseInt(localStorage.getItem(apiName + "_api_timestamp")); // Is the lastsaved not a number for some strange reason, then we should update 
+        // OR
+        // are we past 5 days from last update? then we should update
+
+        resolve(isNaN(lastSaved) || today - lastSaved > day * 7);
+      });
+    });
+  }
+
+  /* global  emojify */
+
+  /**
+   * Handles loading emotes from api and storing them locally
+   * 
+   * @class TwitchEmotes
+   */
+
+  var TwitchEmotes =
+  /*#__PURE__*/
+  function () {
+    function TwitchEmotes() {
+      var _this = this;
+
+      _classCallCheck(this, TwitchEmotes);
+
+      _defineProperty(this, "specialEmotes", []);
+
+      _defineProperty(this, "emotes", {});
+
+      _defineProperty(this, "sortedKeys", {
+        'nonAlpha': []
+      });
+
+      _defineProperty(this, "loaded", false);
+
+      _defineProperty(this, "addKeyToSorted", function (key) {
+        var first = key.charAt(0); // all numbers and symbols get stored in one 'nonAlpha' array
+
+        if (!/[a-z]/i.test(first)) {
+          _this.sortedKeys.nonAlpha.push(key);
+
+          return;
+        }
+
+        if (!_this.sortedKeys[first]) {
+          _this.sortedKeys[first] = [key];
+          return;
+        }
+
+        _this.sortedKeys[first].push(key);
+      });
+    }
+
+    _createClass(TwitchEmotes, [{
+      key: "load",
+      value: function load() {
+        var _this2 = this;
+
+        // if it doesn't exist in indexedDB or it's older than 5 days
+        // grab it from the twitch API
+        return shouldUpdateAPIs("twitch").then(function (update) {
+          if (update) {
+            return _this2.updateFromApi();
+          }
+
+          return _this2.grabFromDb();
+        });
+      }
+    }, {
+      key: "grabFromDb",
+      value: function grabFromDb() {
+        var _this3 = this;
+
+        return new Promise(function (resolve, reject) {
+          try {
+            ldb.get("twitch_api", function (data) {
+              console.log("dub+", "twitch", "loading from IndexedDB");
+              var savedData = JSON.parse(data);
+
+              _this3.processEmotes(savedData);
+
+              _this3.loaded = 'from db';
+              savedData = null; // clear the var from memory
+
+              resolve();
+            });
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+    }, {
+      key: "updateFromApi",
+      value: function updateFromApi() {
+        var _this4 = this;
+
+        console.log("dub+", "twitch", "loading from api");
+        var corsEsc = 'https://cors-escape.herokuapp.com';
+        var twApi = getJSON("".concat(corsEsc, "/https://api.twitch.tv/kraken/chat/emoticon_images"));
+        return twApi.then(function (json) {
+          var twitchEmotes = {};
+          json.emoticons.forEach(function (e) {
+            if (!twitchEmotes[e.code] || e.emoticon_set === null) {
+              // if emote doesn't exist OR
+              // override if it's a global emote (null set = global emote)
+              twitchEmotes[e.code] = e.id;
+            }
+          });
+          localStorage.setItem("twitch_api_timestamp", Date.now().toString());
+          ldb.set("twitch_api", JSON.stringify(twitchEmotes));
+
+          _this4.processEmotes(twitchEmotes);
+
+          _this4.loaded = 'from api';
+        });
+      }
+    }, {
+      key: "template",
+      value: function template(id) {
+        return "//static-cdn.jtvnw.net/emoticons/v1/".concat(id, "/3.0");
+      }
+    }, {
+      key: "find",
+      value: function find(symbol) {
+        var _this5 = this;
+
+        var first = symbol.charAt(0);
+        var arr;
+
+        if (!/[a-z]/i.test(first)) {
+          arr = this.sortedKeys.nonAlpha;
+        } else {
+          arr = this.sortedKeys[first] || [];
+        }
+
+        var matchTwitchKeys = arr.filter(function (key) {
+          return key.indexOf(symbol) === 0;
+        });
+        return matchTwitchKeys.map(function (key) {
+          return {
+            type: "twitch",
+            src: _this5.template(_this5.emotes[key]),
+            name: key
+          };
+        });
+      }
+    }, {
+      key: "processEmotes",
+      value: function processEmotes(data) {
+        for (var code in data) {
+          if (data.hasOwnProperty(code)) {
+            var _key = code.toLowerCase(); // move twitch non-named emojis to their own array
+            // for now we are doing nothing with them
+
+
+            if (code.indexOf("\\") >= 0) {
+              this.specialEmotes.push([code, data[code]]);
+              continue;
+            }
+
+            if (emojify.emojiNames.indexOf(_key) >= 0) {
+              continue; // don't override regular emojis handled by emojify
+            }
+
+            if (!this.emotes[_key]) {
+              // if emote doesn't exist, add it
+              this.emotes[_key] = data[code];
+              this.addKeyToSorted(_key);
+            }
+          }
+        }
+      }
+    }]);
+
+    return TwitchEmotes;
+  }();
+
+  var twitch = new TwitchEmotes();
+
+  /* global  emojify */
+
+  var BTTVemotes =
+  /*#__PURE__*/
+  function () {
+    function BTTVemotes() {
+      var _this = this;
+
+      _classCallCheck(this, BTTVemotes);
+
+      _defineProperty(this, "emotes", {});
+
+      _defineProperty(this, "sortedKeys", {
+        'nonAlpha': []
+      });
+
+      _defineProperty(this, "loaded", false);
+
+      _defineProperty(this, "headers", {});
+
+      _defineProperty(this, "addKeyToSorted", function (key) {
+        var first = key.charAt(0); // all numbers and symbols get stored in one 'nonAlpha' array
+
+        if (!/[a-z]/i.test(first)) {
+          _this.sortedKeys.nonAlpha.push(key);
+
+          return;
+        }
+
+        if (!_this.sortedKeys[first]) {
+          _this.sortedKeys[first] = [];
+        }
+
+        _this.sortedKeys[first].push(key);
+      });
+    }
+
+    _createClass(BTTVemotes, [{
+      key: "optionalSetHeaders",
+      value: function optionalSetHeaders(obj) {
+        this.headers = obj;
+      }
+    }, {
+      key: "load",
+      value: function load() {
+        var _this2 = this;
+
+        // if it doesn't exist in localStorage or it's older than 5 days
+        // grab it from the bttv API
+        return shouldUpdateAPIs("bttv").then(function (update) {
+          if (update) {
+            return _this2.updateFromAPI();
+          }
+
+          return _this2.loadFromDB();
+        });
+      }
+    }, {
+      key: "loadFromDB",
+      value: function loadFromDB() {
+        var _this3 = this;
+
+        return new Promise(function (resolve, reject) {
+          try {
+            ldb.get("bttv_api", function (data) {
+              console.log("dub+", "bttv", "loading from IndexedDB");
+              var savedData = JSON.parse(data);
+
+              _this3.processEmotes(savedData);
+
+              savedData = null; // clear the var from memory
+
+              resolve();
+            });
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+    }, {
+      key: "updateFromAPI",
+      value: function updateFromAPI() {
+        var _this4 = this;
+
+        console.log("dub+", "bttv", "loading from api");
+        var bttvApi = getJSON("https://api.betterttv.net/2/emotes", this.headers);
+        return bttvApi.then(function (json) {
+          var bttvEmotes = {};
+          json.emotes.forEach(function (e) {
+            if (!bttvEmotes[e.code]) {
+              bttvEmotes[e.code] = e.id;
+            }
+          });
+          localStorage.setItem("bttv_api_timestamp", Date.now().toString());
+          ldb.set("bttv_api", JSON.stringify(bttvEmotes));
+
+          _this4.processEmotes(bttvEmotes);
+        });
+      }
+    }, {
+      key: "template",
+      value: function template(id) {
+        return "//cdn.betterttv.net/emote/".concat(id, "/3x");
+      }
+    }, {
+      key: "find",
+      value: function find(symbol) {
+        var _this5 = this;
+
+        var first = symbol.charAt(0);
+        var arr;
+
+        if (!/[a-z]/i.test(first)) {
+          arr = this.sortedKeys.nonAlpha;
+        } else {
+          arr = this.sortedKeys[first] || [];
+        }
+
+        var matchBttvKeys = arr.filter(function (key) {
+          return key.indexOf(symbol) === 0;
+        });
+        return matchBttvKeys.map(function (key) {
+          return {
+            type: "bttv",
+            src: _this5.template(_this5.emotes[key]),
+            name: key
+          };
+        });
+      }
+    }, {
+      key: "processEmotes",
+      value: function processEmotes(data) {
+        for (var code in data) {
+          if (data.hasOwnProperty(code)) {
+            var _key = code.toLowerCase();
+
+            if (code.indexOf(":") >= 0) {
+              continue; // don't want any emotes with smileys and stuff
+            }
+
+            if (emojify.emojiNames.indexOf(_key) >= 0) {
+              continue; // do nothing so we don't override emoji
+            }
+
+            if (code.indexOf("(") >= 0) {
+              _key = _key.replace(/([()])/g, "");
+            }
+
+            this.emotes[_key] = data[code];
+            this.addKeyToSorted(_key);
+          }
+        }
+
+        this.loaded = true;
+      }
+    }]);
+
+    return BTTVemotes;
+  }();
+
+  var bttv = new BTTVemotes();
+
+  /**********************************************************************
+   * Autocomplete Emoji / Emotes
+   * Brings up a small window above the chat input to help the user
+   * pick emoji/emotes
+   */
+
+  /*
+  TODO: 
+   - if found:
+     - hijack arrow keys to make it move around the preview window
+     - moving around auto completes the text
+     - typing continues to filter
+  */
+
+  var KEYS = {
+    up: 38,
+    down: 40,
+    left: 37,
+    right: 39,
+    enter: 13,
+    esc: 27,
+    tab: 9
+  };
+  var ignoreKeys = [KEYS.up, KEYS.down, KEYS.left, KEYS.right, KEYS.esc, KEYS.enter];
+
+  var AutocompleteEmoji =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(AutocompleteEmoji, _Component);
+
+    function AutocompleteEmoji() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, AutocompleteEmoji);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(AutocompleteEmoji)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        isOn: false,
+        matches: []
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "renderTo", document.querySelector(".pusher-chat-widget-input"));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatInput", document.getElementById("chat-txt-message"));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "navIndex", 0);
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "checkInput", function (e) {
+        var key = "which" in e ? e.which : e.keyCode;
+
+        if (ignoreKeys.indexOf(key) >= 0) {
+          return;
+        }
+
+        var parts = e.target.value.split(" ");
+
+        if (parts.length === 0) {
+          return;
+        }
+
+        var lastPart = parts[parts.length - 1];
+        var lastChar = lastPart.charAt(lastPart.length - 1);
+
+        if (lastPart.charAt(0) === ":" && lastPart.length > 3 && lastChar !== ":") {
+          var new_matches = _this.getMatches(lastPart);
+
+          _this.chunkLoadMatches(new_matches);
+
+          return;
+        }
+
+        if (_this.state.matches.length !== 0) {
+          _this.closePreview();
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateChatInput", function (emote) {
+        var focusBack = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+        var inputText = _this.chatInput.value.split(" ");
+
+        inputText.pop();
+        inputText.push(":".concat(emote, ":"));
+        _this.chatInput.value = inputText.join(" ");
+
+        if (focusBack) {
+          _this.chatInput.focus();
+
+          _this.closePreview();
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "keyboardNav", function (e) {
+        if (_this.state.matches.length === 0 || !_this.previewList || _this.previewList.length === 0) {
+          return true;
+        }
+
+        var key = "which" in e ? e.which : e.keyCode;
+
+        switch (key) {
+          case KEYS.down:
+          case KEYS.tab:
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            _this.navDown();
+
+            break;
+
+          case KEYS.up:
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            _this.navUp();
+
+            break;
+
+          case KEYS.esc:
+            _this.closePreview();
+
+            _this.chatInput.focus();
+
+            break;
+
+          default:
+            return true;
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (e) {
+        _this.setState({
+          isOn: true
+        });
+
+        Dubtrack.room.chat.delegateEvents(_.omit(Dubtrack.room.chat.events, ["keydown #chat-txt-message"])); // relying on Dubtrack.fm's lodash being globally available
+
+        _this.debouncedCheckInput = window._.debounce(_this.checkInput, 100);
+        _this.debouncedNav = window._.debounce(_this.keyboardNav, 100);
+
+        _this.chatInput.addEventListener("keydown", _this.debouncedNav);
+
+        _this.chatInput.addEventListener("keyup", _this.debouncedCheckInput);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function (e) {
+        _this.setState({
+          isOn: false
+        });
+
+        Dubtrack.room.chat.delegateEvents(Dubtrack.room.chat.events);
+
+        _this.chatInput.removeEventListener("keydown", _this.debouncedNav);
+
+        _this.chatInput.removeEventListener("keyup", _this.debouncedCheckInput);
+      });
+
+      return _this;
+    }
+
+    _createClass(AutocompleteEmoji, [{
+      key: "chunkLoadMatches",
+      value: function chunkLoadMatches(matches) {
+        var _this2 = this;
+
+        var limit = 50;
+
+        if (matches.length < limit + 1) {
+          this.setState({
+            matches: matches
+          });
+          return;
+        } // render the first 50 matches
+
+
+        var startingArray = matches.slice(0, limit);
+        this.setState({
+          matches: startingArray
+        }); // then render the full list after given time
+        // dom diffing should leave the first in place and just add the
+        // remaining matches
+
+        setTimeout(function () {
+          _this2.setState({
+            matches: matches
+          });
+        }, 250);
+      }
+    }, {
+      key: "getMatches",
+      value: function getMatches(symbol) {
+        symbol = symbol.replace(/^:/, "");
+        var classic = emoji.find(symbol);
+        var twitchMatches = twitch.find(symbol);
+        var bttvMatches = bttv.find(symbol);
+        return classic.concat(twitchMatches, bttvMatches);
+      }
+    }, {
+      key: "closePreview",
+      value: function closePreview() {
+        this.setState({
+          matches: []
+        });
+        this.navIndex = -1;
+        this.previewList = [];
+      }
+    }, {
+      key: "clearSelected",
+      value: function clearSelected() {
+        var selected = document.querySelector(".preview-item.selected");
+        if (selected) selected.classList.remove("selected");
+      }
+    }, {
+      key: "navDown",
+      value: function navDown() {
+        this.clearSelected();
+        this.navIndex++;
+
+        if (this.navIndex >= this.previewList.length) {
+          this.navIndex = 0;
+        }
+
+        console.log('down', this.navIndex);
+        var item = this.previewList[this.navIndex];
+        console.log(item);
+        item.classList.add("selected");
+        item.scrollIntoView();
+        this.updateChatInput(item.dataset.name, false);
+      }
+    }, {
+      key: "navUp",
+      value: function navUp() {
+        this.clearSelected();
+        this.navIndex--;
+
+        if (this.navIndex < 0) {
+          this.navIndex = this.previewList.length - 1;
+        }
+
+        var item = this.previewList[this.navIndex];
+        item.classList.add("selected");
+        item.scrollIntoView(true);
+        this.updateChatInput(item.dataset.name, false);
+      }
+    }, {
+      key: "componentDidUpdate",
+      value: function componentDidUpdate(prevProps, prevState) {
+        console.log('updated');
+
+        if (this.state.isOn) {
+          this.previewList = document.querySelectorAll("#autocomplete-preview li");
+          if (this.previewList[0]) console.log('new list', this.previewList[0].dataset.name);
+        }
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, _ref) {
+        var isOn = _ref.isOn,
+            matches = _ref.matches;
+        return h(MenuSwitch, {
+          id: "dubplus-emotes",
+          section: "General",
+          menuTitle: "Autocomplete Emoji",
+          desc: "Quick find and insert emojis and emotes while typing in the chat input",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, isOn ? h(Portal, {
+          into: this.renderTo
+        }, h(AutocompletePreview, {
+          onSelect: this.updateChatInput,
+          matches: matches
+        })) : null);
+      }
+    }]);
+
+    return AutocompleteEmoji;
+  }(Component);
+
+  /**
+   * Simple string parser based on Douglas Crockford's JSON.parse
+   * https://github.com/douglascrockford/JSON-js/blob/master/json_parse.js
+   * which itself is a simplified recursive descent parser
+   * 
+   * This parser is specifically written to find colon wrapped :emotes:
+   * in a string and extract them into an array
+   */
+
+  /**
+   * @param {String} str the string to parse
+   * @returns {Array} an array of matches or an empty array
+   */
+  function parser(str) {
+    var result = [];
+    var group = "";
+    var openTagFound = false;
+    var at = 0;
+
+    function reset() {
+      group = "";
+      openTagFound = false;
+    }
+
+    function capture(ch) {
+      group += ch;
+    }
+
+    function save() {
+      if (group !== "::") {
+        result.push(group);
+      }
+    }
+
+    while (at < str.length) {
+      var curr = str.charAt(at);
+
+      if (!openTagFound && curr === ":") {
+        openTagFound = true;
+        capture(curr);
+        at++;
+        continue;
+      }
+
+      if (openTagFound) {
+        if (curr === ":") {
+          capture(curr);
+          save();
+          reset();
+          at++;
+          continue;
+        }
+
+        if (curr === " ") {
+          reset();
+          at++;
+          continue;
+        }
+
+        capture(curr);
+      }
+
+      at++;
+    }
+
+    return result;
+  }
+
+  /*
+   * This is a collection of functions that will handle replacing custom emotes
+   * in chat with img tags
+   *
+   * What it does is grabs the last ".text" chat element and processes it
+   * by only looking at TextNodes. This way we can avoid any clashes with
+   * existing emoji in image tag titles/alt attributes
+   */
+  /**
+   * return the last chat item in the chat area
+   * this item could have a collection of <p> tags or just one
+   */
+
+  function getLatestChatNode() {
+    var list = document.querySelectorAll(".chat-main .text");
+
+    if (list.length > 0) {
+      return list[list.length - 1];
+    }
+
+    return null;
+  }
+  /**
+   * Searchs for all text nodes starting at a given Node
+   * src: https://stackoverflow.com/a/10730777/395414
+   * @param {HTMLElement} el parent node to begin searching for text nodes from
+   * @returns {array} of text nodes
+   */
+
+  function getTextNodesUnder(el) {
+    var n;
+    var a = [];
+    var walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+
+    while (n = walk.nextNode()) {
+      a.push(n);
+    }
+
+    return a;
+  }
+  function makeEmoteImg(_ref) {
+    var type = _ref.type,
+        src = _ref.src,
+        name = _ref.name,
+        w = _ref.w,
+        h = _ref.h;
+    var img = document.createElement("img");
+
+    if (w) {
+      img.width = w;
+    }
+
+    if (h) {
+      img.height = h;
+    }
+
+    img.className = "emoji ".concat(type, "-emote");
+    img.title = name;
+    img.alt = name;
+    img.src = src;
+    return img;
+  }
+  /**
+   * Search our stored emote data for matching emotes. Grab first match and return
+   * it. It checks in this specific order:  twitch, bttv, tasty
+   * @param {String} emote the emote to look for
+   * @returns {Object} the emote data {type: String, src: String, name: String}
+   */
+
+  function getImageDataForEmote(emote) {
+    // search emotes in order of preference
+    var key = emote.replace(/^:|:$/g, "");
+
+    if (twitch.emotes[key]) {
+      return {
+        type: "twitch",
+        src: twitch.template(twitch.emotes[key]),
+        name: key
+      };
+    }
+
+    if (bttv.emotes[key]) {
+      return {
+        type: "bttv",
+        src: bttv.template(bttv.emotes[key]),
+        name: key
+      };
+    }
+
+    return false;
+  }
+  /**
+   * Take a text node and converts it into a complex mix of text and img nodes
+   * @param {Node_Text} textNode a DOM text node
+   * @param {Array} emoteMatches Array of matching emotes found in the string
+   */
+
+  function processTextNode(textNode, emoteMatches) {
+    var parent = textNode.parentNode;
+    var textNodeVal = textNode.nodeValue.trim();
+    var fragment = document.createDocumentFragment(); // wrap emotes within text node value with a random & unique string that will
+    // be removed by string.split
+
+    var splitter = "-0wrap__emote0-"; // Search matches emotes from one of the apis
+    // and setup the textNodeVal to make it easy to find them
+
+    emoteMatches.forEach(function (m) {
+      var imgData = getImageDataForEmote(m);
+
+      if (imgData) {
+        var d = JSON.stringify(imgData);
+        textNodeVal = textNodeVal.replace(m, "".concat(splitter).concat(d).concat(splitter));
+      }
+    }); // split the new string, create either text nodes or new img nodes
+
+    var nodeArr = textNodeVal.split(splitter);
+    nodeArr.forEach(function (t) {
+      try {
+        // if it is a json object then we convert to image
+        var imgdata = JSON.parse(t);
+        var img = makeEmoteImg(imgdata);
+        fragment.appendChild(img);
+      } catch (e) {
+        // otherwise it's just a normal text node
+        fragment.appendChild(document.createTextNode(t));
+      }
+    });
+    parent.replaceChild(fragment, textNode);
+  }
+  function beginReplace(nodeStart) {
+    if (!nodeStart.nodeType) {
+      nodeStart = getLatestChatNode();
+    }
+
+    if (!nodeStart) {
+      return;
+    }
+
+    var texts = getTextNodesUnder(nodeStart);
+    texts.forEach(function (t) {
+      var val = t.nodeValue.trim();
+
+      if (val === "") {
+        return;
+      }
+
+      var found = parser(val);
+
+      if (found.length === 0) {
+        return;
+      }
+
+      processTextNode(t, found);
+    });
+  }
+
+  /**********************************************************************
+   * handles replacing twitch emotes in the chat box with the images
+   */
+
+  var Emotes =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(Emotes, _Component);
+
+    function Emotes() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, Emotes);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Emotes)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        if (!twitch.loaded) {
+          Promise.all([twitch.load(), bttv.load()]).then(_this.begin).catch(function (err) {
+            console.error(err);
+          });
+          return;
+        }
+
+        _this.begin();
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function (e) {
+        Dubtrack.Events.unbind("realtime:chat-message", beginReplace);
+      });
+
+      return _this;
+    }
+
+    _createClass(Emotes, [{
+      key: "begin",
+      value: function begin() {
+        // when first turning it on, it replaces ALL of the emotes in chat history
+        beginReplace(document.querySelector('.chat-main')); // then it sets up replacing emotes on new chat messages
+
+        Dubtrack.Events.bind("realtime:chat-message", beginReplace);
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        return h(MenuSwitch, {
+          id: "dubplus-emotes",
+          section: "General",
+          menuTitle: "Emotes",
+          desc: "Adds twitch and bttv emotes in chat.",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        });
+      }
+    }]);
+
+    return Emotes;
+  }(Component);
+
+  /**
+   * Custom mentions
+   */
+
+  var CustomMentions =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(CustomMentions, _Component);
+
+    function CustomMentions() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, CustomMentions);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(CustomMentions)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "customMentionCheck", function (e) {
+        var content = e.message;
+
+        if (userSettings.custom.custom_mentions) {
+          var customMentions = userSettings.custom.custom_mentions.split(',');
+          var inUsers = customMentions.some(function (v) {
+            var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
+            return reg.test(content);
+          });
+
+          if (Dubtrack.session.id !== e.user.userInfo.userid && inUsers) {
+            Dubtrack.room.chat.mentionChatSound.play();
+          }
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveCustomMentions", function (val) {
+        if (val !== '') {
+          // TODO: save to global state
+          userSettings.save('custom', 'custom_mentions', val);
+        }
+      });
+
+      return _this;
+    }
+
+    _createClass(CustomMentions, [{
+      key: "turnOn",
+      value: function turnOn() {
+        Dubtrack.Events.bind("realtime:chat-message", this.customMentionCheck);
+      }
+    }, {
+      key: "turnOff",
+      value: function turnOff() {
+        Dubtrack.Events.unbind("realtime:chat-message", this.customMentionCheck);
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        return h(MenuSwitch, {
+          id: "custom_mentions",
+          section: "General",
+          menuTitle: "Custom Mentions",
+          desc: "Toggle using custom mentions to trigger sounds in chat",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, h(MenuPencil, {
+          title: "Custom AFK Message",
+          section: "General",
+          content: "Add your custom mention triggers here (separate by comma)",
+          value: userSettings.stored.custom.custom_mentions || '',
+          placeholder: "separate, custom triggers, by, comma, :heart:",
+          maxlength: "255",
+          onConfirm: this.saveCustomMentions
+        }));
+      }
+    }]);
+
+    return CustomMentions;
+  }(Component);
+
+  /**
+   * Menu item for ChatCleaner
+   */
+
+  var ChatCleaner =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(ChatCleaner, _Component);
+
+    function ChatCleaner() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, ChatCleaner);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(ChatCleaner)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatCleanerCheck", function (e) {
+        var totalChats = Array.from(document.querySelectorAll("ul.chat-main > li"));
+        var max = parseInt(userSettings.stored.custom.chat_cleaner, 10);
+
+        if (isNaN(totalChats.length) || isNaN(max) || !totalChats.length || totalChats.length < max) {
+          return;
+        }
+
+        var parentUL = totalChats[0].parentElement;
+        totalChats.slice(0, max).forEach(function (li, i) {
+          parentUL.removeChild(li);
+        }); // Fix scroll bar
+
+        $(".chat-messages").perfectScrollbar("update");
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveAmount", function (value) {
+        var chatItems = parseInt(value, 10);
+        var amount = !isNaN(chatItems) ? chatItems : 500;
+        userSettings.save("custom", "chat_cleaner", amount); // default to 500
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        Dubtrack.Events.bind("realtime:chat-message", _this.chatCleanerCheck);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        Dubtrack.Events.unbind("realtime:chat-message", _this.chatCleanerCheck);
+      });
+
+      return _this;
+    }
+
+    _createClass(ChatCleaner, [{
+      key: "render",
+      value: function render$$1() {
+        return h(MenuSwitch, {
+          id: "chat-cleaner",
+          section: "General",
+          menuTitle: "Chat Cleaner",
+          desc: "Automatically only keep a designated chatItems of chat items while clearing older ones, keeping CPU stress down",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, h(MenuPencil, {
+          title: "Chat Cleaner",
+          section: "General",
+          content: "Please specify the number of most recent chat items that will remain in your chat history",
+          value: userSettings.stored.custom.chat_cleaner || "",
+          placeholder: "500",
+          maxlength: "5",
+          onConfirm: this.saveAmount
+        }));
+      }
+    }]);
+
+    return ChatCleaner;
+  }(Component);
+
+  /* global Dubtrack */
+  var isActiveTab = true;
+  var statuses = {
+    denyDismiss: {
+      title: "Desktop Notifications",
+      content: "You have dismissed or chosen to deny the request to allow desktop notifications. Reset this choice by clearing your cache for the site."
+    },
+    noSupport: {
+      title: "Desktop Notifications",
+      content: "Sorry this browser does not support desktop notifications.  Please use the latest version of Chrome or FireFox"
+    }
+  };
+
+  window.onfocus = function () {
+    isActiveTab = true;
+  };
+
+  window.onblur = function () {
+    isActiveTab = false;
+  };
+
+  function notifyCheckPermission(cb) {
+    var _cb = typeof cb === 'function' ? cb : function () {}; // first check if browser supports it
+
+
+    if (!("Notification" in window)) {
+      return _cb(false, statuses.noSupport);
+    } // no request needed, good to go
+
+
+    if (Notification.permission === "granted") {
+      return _cb(true, 'granted');
+    }
+
+    if (Notification.permission !== 'denied') {
+      Notification.requestPermission().then(function (result) {
+        if (result === 'denied' || result === 'default') {
+          _cb(false, statuses.denyDismiss);
+
+          return;
+        }
+
+        return _cb(true, 'granted');
+      });
+    } else {
+      return _cb(false, statuses.denyDismiss);
+    }
+  }
+  function showNotification(opts) {
+    var defaults = {
+      title: 'New Message',
+      content: '',
+      ignoreActiveTab: false,
+      callback: null,
+      wait: 5000
+    };
+    var options = Object.assign({}, defaults, opts); // don't show a notification if tab is active
+
+    if (isActiveTab === true && !options.ignoreActiveTab) {
+      return;
+    }
+
+    var notificationOptions = {
+      body: options.content,
+      icon: "https://res.cloudinary.com/hhberclba/image/upload/c_lpad,h_100,w_100/v1400351432/dubtrack_new_logo_fvpxa6.png"
+    };
+    var n = new Notification(options.title, notificationOptions);
+
+    n.onclick = function () {
+      window.focus();
+
+      if (typeof options.callback === "function") {
+        options.callback();
+      }
+
+      n.close();
+    };
+
+    setTimeout(n.close.bind(n), options.wait);
+  }
+
+  var ChatNotification =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(ChatNotification, _Component);
+
+    function ChatNotification() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, ChatNotification);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(ChatNotification)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        showWarning: false,
+        warnTitle: '',
+        warnContent: ''
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        notifyCheckPermission(function (status, reason) {
+          if (status === true) {
+            Dubtrack.Events.bind("realtime:chat-message", _this.notifyOnMention);
+          } else {
+            // call MenuSwitch's switchOff with noTrack=true argument
+            _this.switchRef.switchOff(true);
+
+            _this.setState({
+              showWarning: true,
+              warnTitle: reason.title,
+              warnContent: reason.content
+            });
+          }
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "closeModal", function () {
+        _this.setState({
+          showWarning: false
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        Dubtrack.Events.unbind("realtime:chat-message", _this.notifyOnMention);
+      });
+
+      return _this;
+    }
+
+    _createClass(ChatNotification, [{
+      key: "notifyOnMention",
+      value: function notifyOnMention(e) {
+        var content = e.message;
+        var user = Dubtrack.session.get("username").toLowerCase();
+        var mentionTriggers = ["@" + user];
+
+        if (userSettings.stored.options.custom_mentions && userSettings.stored.custom.custom_mentions) {
+          //add custom mention triggers to array
+          mentionTriggers = mentionTriggers.concat(userSettings.stored.custom.custom_mentions.split(","));
+        }
+
+        var mentionTriggersTest = mentionTriggers.some(function (v) {
+          var reg = new RegExp("\\b" + v.trim() + "\\b", "i");
+          return reg.test(content);
+        });
+
+        if (mentionTriggersTest && !this.isActiveTab && Dubtrack.session.id !== e.user.userInfo.userid) {
+          showNotification({
+            title: "Message from ".concat(e.user.username),
+            content: content
+          });
+        }
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        var _this2 = this;
+
+        return h(MenuSwitch, {
+          ref: function ref(s) {
+            return _this2.switchRef = s;
+          },
+          id: "mention_notifications",
+          section: "General",
+          menuTitle: "Notification on Mentions",
+          desc: "Enable desktop notifications when a user mentions you in chat",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, h(Modal, {
+          open: state.showWarning,
+          title: state.warnTitle,
+          content: state.warnContent,
+          onClose: this.closeModal
+        }));
+      }
+    }]);
+
+    return ChatNotification;
+  }(Component);
+
+  var PMNotifications =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(PMNotifications, _Component);
+
+    function PMNotifications() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, PMNotifications);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(PMNotifications)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        showWarning: false,
+        warnTitle: "",
+        warnContent: ""
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        notifyCheckPermission(function (status, reason) {
+          if (status === true) {
+            Dubtrack.Events.bind("realtime:new-message", _this.notify);
+          } else {
+            // call MenuSwitch's switchOff with noTrack=true argument
+            _this.switchRef.switchOff(true);
+
+            _this.setState({
+              showWarning: true,
+              warnTitle: reason.title,
+              warnContent: reason.content
+            });
+          }
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "closeModal", function () {
+        _this.setState({
+          showWarning: false
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        Dubtrack.Events.unbind("realtime:new-message", _this.notify);
+      });
+
+      return _this;
+    }
+
+    _createClass(PMNotifications, [{
+      key: "notify",
+      value: function notify(e) {
+        var userid = Dubtrack.session.get("_id");
+
+        if (userid === e.userid) {
+          return;
+        }
+
+        showNotification({
+          title: "You have a new PM",
+          ignoreActiveTab: true,
+          callback: function callback() {
+            document.querySelector(".user-messages").click();
+            setTimeout(function () {
+              document.querySelector(".message-item[data-messageid=\"".concat(e.messageid, "\"]")).click();
+            }, 500);
+          },
+          wait: 10000
+        });
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        var _this2 = this;
+
+        return h(MenuSwitch, {
+          ref: function ref(s) {
+            return _this2.switchRef = s;
+          },
+          id: "dubplus_pm_notifications",
+          section: "General",
+          menuTitle: "Notification on PM",
+          desc: "Enable desktop notifications when a user receives a private message",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, h(Modal, {
+          open: state.showWarning,
+          title: state.warnTitle,
+          content: state.warnContent,
+          onClose: this.closeModal
+        }));
+      }
+    }]);
+
+    return PMNotifications;
+  }(Component);
+
+  var DJNotification =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(DJNotification, _Component);
+
+    function DJNotification() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, DJNotification);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(DJNotification)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        canNotify: false
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "savePosition", function (value) {
+        var int = parseInt(value, 10);
+        var amount = !isNaN(int) ? int : 2;
+        userSettings.save("custom", "dj_notification", amount);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "djNotificationCheck", function (e) {
+        if (e.startTime > 2) return;
+        var queuePos = document.querySelector(".queue-position").textContent;
+        var positionParse = parseInt(queuePos, 10);
+        var position = e.startTime < 0 && !isNaN(positionParse) ? positionParse - 1 : positionParse;
+        if (isNaN(positionParse) || position !== userSettings.stored.custom.dj_notification) return;
+
+        if (_this.canNotify) {
+          showNotification({
+            title: "DJ Alert!",
+            content: "You will be DJing shortly! Make sure your song is set!",
+            ignoreActiveTab: true,
+            wait: 10000
+          });
+        }
+
+        Dubtrack.room.chat.mentionChatSound.play();
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        notifyCheckPermission(function (status, reason) {
+          if (status === true) {
+            _this.setState({
+              canNotify: true
+            });
+          }
+        });
+        Dubtrack.Events.bind("realtime:room_playlist-update", _this.djNotificationCheck);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        Dubtrack.Events.unbind("realtime:room_playlist-update", _this.djNotificationCheck);
+      });
+
+      return _this;
+    }
+
+    _createClass(DJNotification, [{
+      key: "render",
+      value: function render$$1(props, state) {
+        var _this2 = this;
+
+        return h(MenuSwitch, {
+          ref: function ref(s) {
+            return _this2.switchRef = s;
+          },
+          id: "dj-notification",
+          section: "General",
+          menuTitle: "DJ Notification",
+          desc: "Notification when you are coming up to be the DJ",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, h(MenuPencil, {
+          title: "DJ Notification",
+          section: "General",
+          content: "Please specify the position in queue you want to be notified at",
+          value: userSettings.stored.custom.dj_notification || "",
+          placeholder: "2",
+          maxlength: "2",
+          onConfirm: this.savePosition
+        }));
+      }
+    }]);
+
+    return DJNotification;
+  }(Component);
+
+  /**
+   * Menu item for Rain
+   */
+
+  var SnowSwitch =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(SnowSwitch, _Component);
+
+    function SnowSwitch() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, SnowSwitch);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(SnowSwitch)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        if (!$.snowfall) {
+          // only pull in the script once if it doesn't exist 
+          getScript("https://cdn.jsdelivr.net/gh/loktar00/JQuery-Snowfall/src/snowfall.jquery.js", function (err) {
+            if (err) {
+              _this.switchRef.switchOff(true);
+
+              console.error("Could not load snowfall jquery plugin", err);
+              return;
+            }
+
+            _this.doSnow();
+          });
+        } else {
+          _this.doSnow();
+        }
+      });
+
+      return _this;
+    }
+
+    _createClass(SnowSwitch, [{
+      key: "doSnow",
+      value: function doSnow() {
+        $(document).snowfall({
+          round: true,
+          shadow: true,
+          flakeCount: 50,
+          minSize: 1,
+          maxSize: 5,
+          minSpeed: 5,
+          maxSpeed: 5
+        });
+      }
+    }, {
+      key: "turnOff",
+      value: function turnOff() {
+        if ($.snowfall) {
+          // checking to avoid errors if you quickly switch it on/off before plugin
+          // is loaded in the turnOn function
+          $(document).snowfall("clear");
+        }
+      }
+    }, {
+      key: "render",
+      value: function render$$1() {
+        var _this2 = this;
+
+        return h(MenuSwitch, {
+          ref: function ref(s) {
+            return _this2.switchRef = s;
+          },
+          id: "dubplus-snow",
+          section: "General",
+          menuTitle: "Snow",
+          desc: "Make it snow!",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        });
+      }
+    }]);
+
+    return SnowSwitch;
+  }(Component);
+
+  var rain = {}; // Rain settings
+
+  rain.particles = [];
+  rain.drops = [];
+  rain.numbase = 5;
+  rain.numb = 2;
+  rain.height = 0; // We can update these realtime
+
+  rain.controls = {
+    rain: 2,
+    alpha: 1,
+    color: 200,
+    opacity: 1,
+    saturation: 100,
+    lightness: 50,
+    back: 0,
+    multi: false,
+    speed: 1
+  };
+
+  rain.init = function () {
+    var canvas = document.createElement("canvas");
+    canvas.id = "dubPlusRainCanvas";
+    canvas.style.cssText = "position : fixed; top : 0px; left : 0px; z-index: 100; pointer-events:none;";
+    document.body.insertBefore(canvas, document.body.childNodes[0]);
+    this.bindCanvas();
+  }; // this function will be run on each click of the menu
+
+
+  rain.destroy = function () {
+    document.body.removeChild(document.getElementById("dubPlusRainCanvas"));
+    this.unbindCanvas();
+  };
+
+  rain.bindCanvas = function () {
+    this.requestAnimFrame = function () {
+      return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
+        window.setTimeout(callback, 1000 / 60);
+      };
+    }();
+
+    var canvas = document.getElementById("dubPlusRainCanvas");
+    if (!canvas) return;
+    var ctx = canvas.getContext("2d");
+    this.width, this.height = 0;
+
+    window.onresize = function onresize() {
+      this.width = canvas.width = window.innerWidth;
+      this.height = canvas.height = window.innerHeight;
+    };
+
+    window.onresize();
+    this.particles, this.drops = [];
+    this.numbase = 5;
+    this.numb = 2;
+
+    var that = this;
+
+    (function boucle() {
+      that.requestAnimFrame(boucle);
+      that.update();
+      that.rendu(ctx);
+    })();
+  };
+
+  rain.buildRainParticle = function (X, Y, num) {
+    if (!num) {
+      num = this.numb;
+    }
+
+    while (num--) {
+      this.particles.push({
+        speedX: Math.random() * 0.25,
+        speedY: Math.random() * 9 + 1,
+        X: X,
+        Y: Y,
+        alpha: 1,
+        color: "hsla(" + this.controls.color + "," + this.controls.saturation + "%, " + this.controls.lightness + "%," + this.controls.opacity + ")"
+      });
+    }
+  };
+
+  rain.explosion = function (X, Y, color, num) {
+    if (!num) {
+      num = this.numbase;
+    }
+
+    while (num--) {
+      this.drops.push({
+        speedX: Math.random() * 4 - 2,
+        speedY: Math.random() * -4,
+        X: X,
+        Y: Y,
+        radius: 0.65 + Math.floor(Math.random() * 1.6),
+        alpha: 1,
+        color: color
+      });
+    }
+  };
+
+  rain.rendu = function (ctx) {
+    if (this.controls.multi == true) {
+      this.controls.color = Math.random() * 360;
+    }
+
+    ctx.save();
+    ctx.clearRect(0, 0, width, height);
+    var particleslocales = this.particles;
+    var dropslocales = this.drops;
+    var tau = Math.PI * 2;
+
+    for (var i = 0, particlesactives; particlesactives = particleslocales[i]; i++) {
+      ctx.globalAlpha = particlesactives.alpha;
+      ctx.fillStyle = particlesactives.color;
+      ctx.fillRect(particlesactives.X, particlesactives.Y, particlesactives.speedY / 4, particlesactives.speedY);
+    }
+
+    for (var i = 0, dropsactives; dropsactives = dropslocales[i]; i++) {
+      ctx.globalAlpha = dropsactives.alpha;
+      ctx.fillStyle = dropsactives.color;
+      ctx.beginPath();
+      ctx.arc(dropsactives.X, dropsactives.Y, dropsactives.radius, 0, tau);
+      ctx.fill();
+    }
+
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 2;
+    ctx.restore();
+  };
+
+  rain.update = function () {
+    var particleslocales = this.particles;
+    var dropslocales = this.drops;
+
+    for (var i = 0, particlesactives; particlesactives = particleslocales[i]; i++) {
+      particlesactives.X += particlesactives.speedX;
+      particlesactives.Y += particlesactives.speedY + 5;
+
+      if (particlesactives.Y > height - 15) {
+        particleslocales.splice(i--, 1);
+        this.explosion(particlesactives.X, particlesactives.Y, particlesactives.color);
+      }
+    }
+
+    for (var i = 0, dropsactives; dropsactives = dropslocales[i]; i++) {
+      dropsactives.X += dropsactives.speedX;
+      dropsactives.Y += dropsactives.speedY;
+      dropsactives.radius -= 0.075;
+
+      if (dropsactives.alpha > 0) {
+        dropsactives.alpha -= 0.005;
+      } else {
+        dropsactives.alpha = 0;
+      }
+
+      if (dropsactives.radius < 0) {
+        dropslocales.splice(i--, 1);
+      }
+    }
+
+    var i = this.controls.rain;
+
+    while (i--) {
+      this.buildRainParticle(Math.floor(Math.random() * width), -15);
+    }
+  };
+
+  rain.unbindCanvas = function () {
+    this.requestAnimFrame = function () {};
+  };
+
+  /**
+   * Menu item for Rain
+   */
+
+  var RainSwitch =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(RainSwitch, _Component);
+
+    function RainSwitch() {
+      _classCallCheck(this, RainSwitch);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(RainSwitch).apply(this, arguments));
+    }
+
+    _createClass(RainSwitch, [{
+      key: "turnOn",
+      value: function turnOn() {
+        rain.init();
+      }
+    }, {
+      key: "turnOff",
+      value: function turnOff() {
+        rain.destroy();
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        return h(MenuSwitch, {
+          id: "dubplus-rain",
+          section: "General",
+          menuTitle: "Rain",
+          desc: "Make it rain!",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        });
+      }
+    }]);
+
+    return RainSwitch;
+  }(Component);
+
+  /**
+   * Check if a user is at least a mod or above
+   */
+
+  /*global Dubtrack */
+  function modCheck(userid) {
+    return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
+  }
+
+  var DubsInfoListItem = function DubsInfoListItem(_ref) {
+    var data = _ref.data,
+        click = _ref.click;
+    return h("li", {
+      onClick: function onClick() {
+        return click("@" + data.username + " ");
+      },
+      className: "dubinfo-preview-item"
+    }, h("div", {
+      className: "dubinfo-image"
+    }, h("img", {
+      src: "https://api.dubtrack.fm/user/".concat(data.userid, "/image")
+    })), h("span", {
+      className: "dubinfo-text"
+    }, "@", data.username));
+  };
+  /**
+   * DubsInfo component
+   * used to create the grabs, upDubs, and downdubs lists that popup when
+   * hovering each of them.
+   */
+
+
+  var DubsInfo =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(DubsInfo, _Component);
+
+    function DubsInfo() {
+      _classCallCheck(this, DubsInfo);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(DubsInfo).apply(this, arguments));
+    }
+
+    _createClass(DubsInfo, [{
+      key: "getBgColor",
+      value: function getBgColor() {
+        var whichVote = this.props.type.replace("dubs", "");
+        var elem;
+
+        if (whichVote === "up") {
+          elem = document.querySelector(".dubup");
+        } else if (whichVote === "down") {
+          elem = document.querySelector(".dubdown");
+        } else {
+          return;
+        }
+
+        var bgColor = elem.classList.contains("voted") ? window.getComputedStyle(elem).backgroundColor : window.getComputedStyle(elem.querySelector(".icon-".concat(whichVote, "vote"))).color;
+        return bgColor;
+      }
+    }, {
+      key: "updateChat",
+      value: function updateChat(str) {
+        var chat = document.getElementById("chat-txt-message");
+        chat.value = str;
+        chat.focus();
+      }
+    }, {
+      key: "makeList",
+      value: function makeList() {
+        var _this = this;
+
+        return this.props.dubs.map(function (d, i) {
+          return h(DubsInfoListItem, {
+            data: d,
+            click: _this.updateChat,
+            key: "info-".concat(_this.props.type, "-").concat(i)
+          });
+        });
+      }
+    }, {
+      key: "render",
+      value: function render$$1(_ref2) {
+        var type = _ref2.type,
+            isMod = _ref2.isMod;
+        var notYetMsg = "No ".concat(type, " have been casted yet!");
+
+        if (type === "grabs") {
+          notYetMsg = "This song hasn't been grabbed yet!";
+        }
+
+        var list = this.makeList();
+        var containerCss = ["dubinfo-preview", "dubinfo-".concat(type)];
+
+        if (list.length === 0) {
+          list = h("li", {
+            className: "dubinfo-preview-none"
+          }, notYetMsg);
+          containerCss.push("dubinfo-no-dubs");
+        }
+
+        if (type === 'downdubs' && !isMod) {
+          containerCss.push("dubinfo-unauthorized");
+        }
+
+        return h("ul", {
+          style: {
+            borderColor: this.getBgColor()
+          },
+          className: containerCss.join(" ")
+        }, list);
+      }
+    }]);
+
+    return DubsInfo;
+  }(Component);
+
+  var ShowDubsOnHover =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(ShowDubsOnHover, _Component);
+
+    function ShowDubsOnHover() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, ShowDubsOnHover);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(ShowDubsOnHover)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        isOn: false,
+        showWarning: false,
+        upDubs: [],
+        downDubs: [],
+        grabs: []
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "userIsMod", modCheck(Dubtrack.session.id));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        _this.setState({
+          isOn: true
+        }, _this.resetDubs);
+
+        Dubtrack.Events.bind("realtime:room_playlist-dub", _this.dubWatcher);
+        Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", _this.grabWatcher);
+        Dubtrack.Events.bind("realtime:user-leave", _this.dubUserLeaveWatcher);
+        Dubtrack.Events.bind("realtime:room_playlist-update", _this.resetDubs);
+        Dubtrack.Events.bind("realtime:room_playlist-update", _this.resetGrabs);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        _this.setState({
+          isOn: false
+        });
+
+        Dubtrack.Events.unbind("realtime:room_playlist-dub", _this.dubWatcher);
+        Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", _this.grabWatcher);
+        Dubtrack.Events.unbind("realtime:user-leave", _this.dubUserLeaveWatcher);
+        Dubtrack.Events.unbind("realtime:room_playlist-update", _this.resetDubs); //TODO: Remove when we can hit the api for all grabs of current playing song
+
+        Dubtrack.Events.unbind("realtime:room_playlist-update", _this.resetGrabs);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "closeModal", function () {
+        _this.setState({
+          showWarning: false
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dubWatcher", function (e) {
+        var _this$state = _this.state,
+            upDubs = _this$state.upDubs,
+            downDubs = _this$state.downDubs;
+        var user = {
+          userid: e.user._id,
+          username: e.user.username
+        };
+
+        if (e.dubtype === "updub") {
+          var userNotUpdubbed = upDubs.filter(function (el) {
+            return el.userid === e.user._id;
+          }).length === 0; // If user has not updubbed, we add them them to it
+
+          if (userNotUpdubbed) {
+            _this.setState(function (prevState) {
+              return {
+                upDubs: [].concat(_toConsumableArray(prevState.upDubs), [user])
+              };
+            });
+          }
+
+          var userDowndubbed = downDubs.filter(function (el) {
+            return el.userid === e.user._id;
+          }).length > 0; // if user was previous in downdubs then remove them from downdubs
+
+          if (userDowndubbed) {
+            _this.setState(function (prevState) {
+              return {
+                downDubs: prevState.downDubs.filter(function (el) {
+                  return el.userid !== e.user._id;
+                })
+              };
+            });
+          }
+        }
+
+        if (e.dubtype === "downdub") {
+          var userNotDowndub = downDubs.filter(function (el) {
+            return el.userid === e.user._id;
+          }).length === 0; // is user has not downdubbed, then we add them
+
+          if (userNotDowndub && _this.userIsMod) {
+            _this.setState(function (prevState) {
+              return {
+                downDubs: [].concat(_toConsumableArray(prevState.downDubs), [user])
+              };
+            });
+          } //Remove user from from updubs
+
+
+          var userUpdubbed = upDubs.filter(function (el) {
+            return el.userid === e.user._id;
+          }).length > 0; // and then remove them from downdubs
+
+          if (userUpdubbed) {
+            _this.setState(function (prevState) {
+              return {
+                upDubs: prevState.upDubs.filter(function (el) {
+                  return el.userid !== e.user._id;
+                })
+              };
+            });
+          }
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "grabWatcher", function (e) {
+        // only add Grab if it doesn't exist in the array already
+        if (_this.state.grabs.filter(function (el) {
+          return el.userid === e.user._id;
+        }).length <= 0) {
+          var user = {
+            userid: e.user._id,
+            username: e.user.username
+          };
+
+          _this.setState(function (prevState) {
+            return {
+              grabs: [].concat(_toConsumableArray(prevState.grabs), [user])
+            };
+          });
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dubUserLeaveWatcher", function (e) {
+        var newUpDubs = _this.state.upDubs.filter(function (el) {
+          return el.userid !== e.user._id;
+        });
+
+        var newDownDubs = _this.state.downDubs.filter(function (el) {
+          return el.userid !== e.user._id;
+        });
+
+        var newGrabs = _this.state.grabs.filter(function (el) {
+          return el.userid !== e.user._id;
+        });
+
+        _this.setState({
+          upDubs: newUpDubs,
+          downDubs: newDownDubs,
+          grabs: newGrabs
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "resetDubs", function () {
+        _this.setState({
+          upDubs: [],
+          downDubs: []
+        }, _this.handleReset);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "resetGrabs", function () {
+        _this.setState({
+          grabs: []
+        });
+      });
+
+      return _this;
+    }
+
+    _createClass(ShowDubsOnHover, [{
+      key: "handleReset",
+
+      /**
+       * Callback for resetDubs()'s setState
+       * Wipes out local state and repopulates with data from the api
+       */
+      value: function handleReset() {
+        var _this2 = this;
+
+        // get the current active dubs in the room via api
+        var dubsURL = "https://api.dubtrack.fm/room/".concat(Dubtrack.room.model.id, "/playlist/active/dubs");
+        var roomDubs = getJSON(dubsURL);
+        roomDubs.then(function (json) {
+          // loop through all the upDubs in the room and add them to our local state
+          if (json.data && json.data.upDubs) {
+            json.data.upDubs.forEach(function (e) {
+              // Dub already casted (usually from autodub)
+              if (_this2.state.upDubs.filter(function (el) {
+                return el.userid === e.userid;
+              }).length > 0) {
+                return;
+              } // to get username we check for user info in the DT room's user collection
+
+
+              var checkUser = Dubtrack.room.users.collection.findWhere({
+                userid: e.userid
+              });
+
+              if (!checkUser || !checkUser.attributes) {
+                // if they don't exist, we can check the user api directly
+                var userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
+                userInfo.then(function (json2) {
+                  var data = json2.data;
+
+                  if (data && data.userinfo && data.userinfo.username) {
+                    var user = {
+                      userid: e.userid,
+                      username: data.userinfo.username
+                    };
+
+                    _this2.setState(function (prevState) {
+                      return {
+                        upDubs: [].concat(_toConsumableArray(prevState.upDubs), [user])
+                      };
+                    });
+                  }
+                });
+                return;
+              }
+
+              if (checkUser.attributes._user.username) {
+                var user = {
+                  userid: e.userid,
+                  username: checkUser.attributes._user.username
+                };
+
+                _this2.setState(function (prevState) {
+                  return {
+                    upDubs: [].concat(_toConsumableArray(prevState.upDubs), [user])
+                  };
+                });
+              }
+            });
+          } //Only let mods or higher access down dubs
+
+
+          if (json.data && json.data.downDubs && _this2.userIsMod) {
+            json.data.downDubs.forEach(function (e) {
+              //Dub already casted
+              if (_this2.state.downDubs.filter(function (el) {
+                return el.userid === e.userid;
+              }).length > 0) {
+                return;
+              }
+
+              var checkUsers = Dubtrack.room.users.collection.findWhere({
+                userid: e.userid
+              });
+
+              if (!checkUsers || !checkUsers.attributes) {
+                var userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
+                userInfo.then(function (json3) {
+                  var data = json3.data;
+
+                  if (data && data.userinfo && data.userinfo.username) {
+                    var user = {
+                      userid: e.userid,
+                      username: data.userinfo.username
+                    };
+
+                    _this2.setState(function (prevState) {
+                      return {
+                        downDubs: [].concat(_toConsumableArray(prevState.downDubs), [user])
+                      };
+                    });
+                  }
+                });
+                return;
+              }
+
+              if (checkUsers.attributes._user.username) {
+                var user = {
+                  userid: e.userid,
+                  username: checkUsers.attributes._user.username
+                };
+
+                _this2.setState(function (prevState) {
+                  return {
+                    downDubs: [].concat(_toConsumableArray(prevState.downDubs), [user])
+                  };
+                });
+              }
+            });
+          }
+        });
+      }
+    }, {
+      key: "componentWillMount",
+      value: function componentWillMount() {
+        this.upElem = document.querySelector(".dubup").parentElement;
+        this.upElem.classList.add('dubplus-updub-btn');
+        this.downElem = document.querySelector(".dubdown").parentElement;
+        this.downElem.classList.add('dubplus-downdub-btn');
+        this.grabElem = document.querySelector(".add-to-playlist-button").parentElement;
+        this.grabElem.classList.add('dubplus-grab-btn');
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        return h(MenuSwitch, {
+          id: "dubplus-dubs-hover",
+          section: "General",
+          menuTitle: "Show Dub info on Hover",
+          desc: "Show Dub info on Hover.",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, h(Modal, {
+          open: state.showWarning,
+          title: "Vote & Grab Info",
+          content: "Please note that this feature is currently still in development. We are waiting on the ability to pull grab vote information from Dubtrack on load. Until then the only grabs you will be able to see are those you are present in the room for.",
+          onClose: this.closeModal
+        }), state.isOn ? h("span", null, h(Portal, {
+          into: this.upElem
+        }, h(DubsInfo, {
+          type: "updubs",
+          dubs: state.upDubs
+        })), h(Portal, {
+          into: this.downElem
+        }, h(DubsInfo, {
+          type: "downdubs",
+          isMod: this.userIsMod,
+          dubs: state.downDubs
+        })), h(Portal, {
+          into: this.grabElem
+        }, h(DubsInfo, {
+          type: "grabs",
+          dubs: state.grabs
+        }))) : null);
+      }
+    }]);
+
+    return ShowDubsOnHover;
+  }(Component);
+
+  function chatMessage(username, song) {
+    var li = document.createElement('li');
+    li.className = "dubplus-chat-system dubplus-chat-system-downdub";
+    var div = document.createElement('div');
+    div.className = "chatDelete";
+
+    div.onclick = function (e) {
+      return e.currentTarget.parentElement.remove();
+    };
+
+    var span = document.createElement('span');
+    span.className = "icon-close";
+    var text = document.createElement('div');
+    text.className = "text";
+    text.textContent = "@".concat(username, " has downdubbed your song ").concat(song);
+    div.appendChild(span);
+    li.appendChild(div);
+    li.appendChild(text);
+    return li;
+  }
+
+  var DowndubInChat =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(DowndubInChat, _Component);
+
+    function DowndubInChat() {
+      _classCallCheck(this, DowndubInChat);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(DowndubInChat).apply(this, arguments));
+    }
+
+    _createClass(DowndubInChat, [{
+      key: "turnOn",
+      value: function turnOn() {
+        if (!modCheck(Dubtrack.session.id)) {
+          return;
+        }
+
+        Dubtrack.Events.bind("realtime:room_playlist-dub", this.downdubWatcher);
+      }
+    }, {
+      key: "turnOff",
+      value: function turnOff() {
+        Dubtrack.Events.unbind("realtime:room_playlist-dub", this.downdubWatcher);
+      }
+    }, {
+      key: "downdubWatcher",
+      value: function downdubWatcher(e) {
+        var user = Dubtrack.session.get("username");
+
+        var currentDj = Dubtrack.room.users.collection.findWhere({
+          userid: Dubtrack.room.player.activeSong.attributes.song.userid
+        }).attributes._user.username;
+
+        if (user === currentDj && e.dubtype === "downdub") {
+          var newChat = chatMessage(e.user.username, Dubtrack.room.player.activeSong.attributes.songInfo.name);
+          document.querySelector("ul.chat-main").appendChild(newChat);
+        }
+      }
+    }, {
+      key: "render",
+      value: function render$$1() {
+        return h(MenuSwitch, {
+          id: "dubplus-downdubs",
+          section: "General",
+          menuTitle: "Downdubs in Chat (mods only)",
+          desc: "Toggle showing downdubs in the chat box (mods only)",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        });
+      }
+    }]);
+
+    return DowndubInChat;
+  }(Component);
+
+  function chatMessage$1(username, song) {
+    var li = document.createElement('li');
+    li.className = "dubplus-chat-system dubplus-chat-system-updub";
+    var div = document.createElement('div');
+    div.className = "chatDelete";
+
+    div.onclick = function (e) {
+      return e.currentTarget.parentElement.remove();
+    };
+
+    var span = document.createElement('span');
+    span.className = "icon-close";
+    var text = document.createElement('div');
+    text.className = "text";
+    text.textContent = "@".concat(username, " has updubbed your song ").concat(song);
+    div.appendChild(span);
+    li.appendChild(div);
+    li.appendChild(text);
+    return li;
+  }
+
+  var UpdubsInChat =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(UpdubsInChat, _Component);
+
+    function UpdubsInChat() {
+      _classCallCheck(this, UpdubsInChat);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(UpdubsInChat).apply(this, arguments));
+    }
+
+    _createClass(UpdubsInChat, [{
+      key: "turnOn",
+      value: function turnOn() {
+        Dubtrack.Events.bind("realtime:room_playlist-dub", this.updubWatcher);
+      }
+    }, {
+      key: "turnOff",
+      value: function turnOff() {
+        Dubtrack.Events.unbind("realtime:room_playlist-dub", this.updubWatcher);
+      }
+    }, {
+      key: "updubWatcher",
+      value: function updubWatcher(e) {
+        var user = Dubtrack.session.get("username");
+
+        var currentDj = Dubtrack.room.users.collection.findWhere({
+          userid: Dubtrack.room.player.activeSong.attributes.song.userid
+        }).attributes._user.username;
+
+        if (user === currentDj && e.dubtype === "updub") {
+          var newChat = chatMessage$1(e.user.username, Dubtrack.room.player.activeSong.attributes.songInfo.name);
+          document.querySelector("ul.chat-main").appendChild(newChat);
+        }
+      }
+    }, {
+      key: "render",
+      value: function render$$1() {
+        return h(MenuSwitch, {
+          id: "dubplus-updubs",
+          section: "General",
+          menuTitle: "Updubs in Chat",
+          desc: "Toggle showing updubs in the chat box",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        });
+      }
+    }]);
+
+    return UpdubsInChat;
+  }(Component);
+
+  function chatMessage$2(username, song) {
+    var li = document.createElement('li');
+    li.className = "dubplus-chat-system dubplus-chat-system-grab";
+    var div = document.createElement('div');
+    div.className = "chatDelete";
+
+    div.onclick = function (e) {
+      return e.currentTarget.parentElement.remove();
+    };
+
+    var span = document.createElement('span');
+    span.className = "icon-close";
+    var text = document.createElement('div');
+    text.className = "text";
+    text.textContent = "@".concat(username, " has grabbed your song ").concat(song);
+    div.appendChild(span);
+    li.appendChild(div);
+    li.appendChild(text);
+    return li;
+  }
+
+  var GrabsInChat =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(GrabsInChat, _Component);
+
+    function GrabsInChat() {
+      _classCallCheck(this, GrabsInChat);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(GrabsInChat).apply(this, arguments));
+    }
+
+    _createClass(GrabsInChat, [{
+      key: "turnOn",
+      value: function turnOn() {
+        Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
+      }
+    }, {
+      key: "turnOff",
+      value: function turnOff() {
+        Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
+      }
+    }, {
+      key: "grabChatWatcher",
+      value: function grabChatWatcher(e) {
+        var user = Dubtrack.session.get("username");
+
+        var currentDj = Dubtrack.room.users.collection.findWhere({
+          userid: Dubtrack.room.player.activeSong.attributes.song.userid
+        }).attributes._user.username;
+
+        if (user === currentDj && !Dubtrack.room.model.get('displayUserGrab')) {
+          var newChat = chatMessage$2(e.user.username, Dubtrack.room.player.activeSong.attributes.songInfo.name);
+          document.querySelector("ul.chat-main").appendChild(newChat);
+        }
+      }
+    }, {
+      key: "render",
+      value: function render$$1() {
+        return h(MenuSwitch, {
+          id: "dubplus-grabschat",
+          section: "General",
+          menuTitle: "Grabs in Chat",
+          desc: "Toggle showing grabs in the chat box",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        });
+      }
+    }]);
+
+    return GrabsInChat;
+  }(Component);
+
+  var GeneralSection =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(GeneralSection, _Component);
+
+    function GeneralSection() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, GeneralSection);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(GeneralSection)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        section: userSettings.stored.general || "open"
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleSection", function (e) {
+        _this.setState(function (prevState) {
+          var newState = prevState.section === "open" ? "closed" : "open";
+          userSettings.save('menu', 'general', newState);
+          return {
+            section: newState
+          };
+        });
+      });
+
+      return _this;
+    }
+
+    _createClass(GeneralSection, [{
+      key: "render",
+      value: function render$$1(props, state) {
+        var _cn = ['dubplus-menu-section'];
+
+        if (state.section === "closed") {
+          _cn.push('dubplus-menu-section-closed');
+        }
+
+        return h("span", null, h(SectionHeader, {
+          onClick: this.toggleSection,
+          id: "dubplus-general",
+          category: "General",
+          open: state.section
+        }), h("ul", {
+          className: _cn.join(' ')
+        }, h(Autovote, null), h(AFK, null), h(AutocompleteEmoji, null), h(Emotes, null), h(CustomMentions, null), h(ChatCleaner, null), h(ChatNotification, null), h(PMNotifications, null), h(DJNotification, null), h(ShowDubsOnHover, null), h(DowndubInChat, null), h(UpdubsInChat, null), h(GrabsInChat, null), h(SnowSwitch, null), h(RainSwitch, null)));
+      }
+    }]);
+
+    return GeneralSection;
+  }(Component);
+
+  var DubPlusMenu =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(DubPlusMenu, _Component);
+
+    function DubPlusMenu() {
+      _classCallCheck(this, DubPlusMenu);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(DubPlusMenu).apply(this, arguments));
+    }
+
+    _createClass(DubPlusMenu, [{
+      key: "componentDidMount",
+      value: function componentDidMount() {
+        // load this async so it doesn't block the rest of the menu render
+        // since these buttons are completely independent from the menu
+        setTimeout(function () {
+          snooze$1();
+          eta();
+        }, 10);
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        return h("section", {
+          className: "dubplus-menu"
+        }, h("p", {
+          className: "dubplus-menu-header"
+        }, "Dub+ Options"), h(GeneralSection, null));
+      }
+    }]);
+
+    return DubPlusMenu;
+  }(Component);
+
+  /**
+   * Takes a string  representation of a variable or object and checks if it's
+   * definied starting at provided scope or default to global window scope.
+   * @param  {string} dottedString  the item you are looking for
+   * @param  {var}    startingScope where to start looking
+   * @return {boolean}              if it is defined or not
+   */
+  function deepCheck(dottedString, startingScope) {
+    var _vars = dottedString.split('.');
+
+    var len = _vars.length;
+    var depth = startingScope || window;
+
+    for (var i = 0; i < len; i++) {
+      if (typeof depth[_vars[i]] === 'undefined') {
+        return false;
+      }
+
+      depth = depth[_vars[i]];
+    }
+
+    return true;
+  }
+
+  function arrayDeepCheck(arr, startingScope) {
+    var len = arr.length;
+    var scope = startingScope || window;
+
+    for (var i = 0; i < len; i++) {
+      if (!deepCheck(arr[i], scope)) {
+        console.log(arr[i], 'is not found yet');
+        return false;
+      }
+    }
+
+    return true;
+  }
+  /**
+   * pings for the existence of var/function for # seconds until it's defined
+   * runs callback once found and stops pinging
+   * @param {string|array} waitingFor          what you are waiting for
+   * @param {object}       options             optional options to pass
+   *                       options.interval    how often to ping
+   *                       options.seconds     how long to ping for
+   *                       
+   * @return {object}                    2 functions:
+   *                  .then(fn)          will run fn only when item successfully found.  This also starts the ping process
+   *                  .fail(fn)          will run fn only when is never found in the time given
+   */
+
+
+  function WaitFor(waitingFor, options) {
+    if (typeof waitingFor !== "string" && !Array.isArray(waitingFor)) {
+      console.warn('WaitFor: invalid first argument');
+      return;
+    }
+
+    var defaults = {
+      interval: 500,
+      // every XX ms we check to see if waitingFor is defined
+      seconds: 15,
+      // how many total seconds we wish to continue pinging
+      isNode: false
+    };
+
+    var _cb = function _cb() {};
+
+    var _failCB = function _failCB() {};
+
+    var opts = Object.assign({}, defaults, options);
+    var checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
+
+    if (opts.isNode) {
+      checkFunc = function checkFunc(selector) {
+        return typeof document.querySelector(selector) !== null;
+      };
+    }
+
+    var tryCount = 0;
+    var tryLimit = opts.seconds * 1000 / opts.interval; // how many intervals
+
+    var check = function check() {
+      tryCount++;
+
+      var _test = checkFunc(waitingFor);
+
+      if (_test) {
+        return _cb();
+      }
+
+      if (tryCount < tryLimit) {
+        window.setTimeout(check, opts.interval);
+      } else {
+        return _failCB();
+      }
+    };
+
+    var then = function then(cb) {
+      if (typeof cb === 'function') {
+        _cb = cb;
+      } // start the first one
+
+
+      window.setTimeout(check, opts.interval);
+      return this;
+    };
+
+    var fail = function fail(cb) {
+      if (typeof cb === 'function') {
+        _failCB = cb;
+      }
+
+      return this;
+    };
+
+    return {
+      then: then,
+      fail: fail
+    };
+  }
+
+  var waitingStyles = {
+    fontFamily: "'Trebuchet MS', Helvetica, sans-serif",
+    zIndex: '2147483647',
+    color: 'white',
+    position: 'fixed',
+    top: '69px',
+    right: '-250px',
+    background: '#222',
+    padding: '10px',
+    lineHeight: 1,
+    boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.75)',
+    borderRadius: '5px',
+    overflow: 'hidden',
+    width: '230px',
+    transition: 'right 200ms'
+  };
+  var dpIcon = {
+    float: 'left',
+    width: '26px',
+    marginRight: '5px'
+  };
+  var dpText = {
+    display: 'table-cell',
+    width: '10000px',
+    paddingTop: '5px'
+  };
+
+  var LoadingNotice =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(LoadingNotice, _Component);
+
+    function LoadingNotice() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, LoadingNotice);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(LoadingNotice)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        mainStyles: waitingStyles
+      });
+
+      return _this;
+    }
+
+    _createClass(LoadingNotice, [{
+      key: "componentDidMount",
+      value: function componentDidMount() {
+        var _this2 = this;
+
+        setTimeout(function () {
+          _this2.setState(function (prevState, props) {
+            return {
+              mainStyles: Object.assign({}, prevState.mainStyles, {
+                right: '13px'
+              })
+            };
+          });
+        }, 200);
+      }
+    }, {
+      key: "componentWillUnmount",
+      value: function componentWillUnmount() {
+        this.setState(function (prevState, props) {
+          return {
+            mainStyles: Object.assign({}, prevState.mainStyles, {
+              right: '-250px'
+            })
+          };
+        });
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        return h("div", {
+          style: state.mainStyles
+        }, h("div", {
+          style: dpIcon
+        }, h("img", {
+          src: userSettings.srcRoot + '/images/dubplus.svg',
+          alt: "DubPlus icon"
+        })), h("span", {
+          style: dpText
+        }, props.text || 'Waiting for Dubtrack...'));
+      }
+    }]);
+
+    return LoadingNotice;
+  }(Component);
+
+  var MenuIcon =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(MenuIcon, _Component);
+
+    function MenuIcon() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, MenuIcon);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(MenuIcon)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        open: false
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggle", function () {
+        var menu = document.querySelector('.dubplus-menu');
+
+        if (_this.state.open) {
+          menu.classList.remove('dubplus-menu-open');
+
+          _this.setState({
+            open: false
+          });
+        } else {
+          menu.classList.add('dubplus-menu-open');
+
+          _this.setState({
+            open: true
+          });
+        }
+      });
+
+      return _this;
+    }
+
+    _createClass(MenuIcon, [{
+      key: "render",
+      value: function render$$1(props, state) {
+        return h("div", {
+          className: "dubplus-icon",
+          onClick: this.toggle
+        }, h("img", {
+          src: "".concat(userSettings.srcRoot, "/images/dubplus.svg"),
+          alt: "DubPlus Icon"
+        }));
+      }
+    }]);
+
+    return MenuIcon;
+  }(Component);
+
+  polyfills(); // setTimeout(function() {
+  //   // start the loading of the CSS asynchronously
+  //   cssHelper.loadExternal(
+  //     "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+  //     );
+  //   cssHelper.load("/css/dubplus.css");
+  // }, 1);
+
+  var DubPlusContainer =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(DubPlusContainer, _Component);
+
+    function DubPlusContainer() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, DubPlusContainer);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(DubPlusContainer)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        loading: true,
+        error: false,
+        errorMsg: "",
+        failed: false
+      });
+
+      return _this;
+    }
+
+    _createClass(DubPlusContainer, [{
+      key: "componentDidMount",
+      value: function componentDidMount() {
+        var _this2 = this;
+
+        /* globals Dubtrack */
+        if (!window.DubPlus) {
+          // checking to see if these items exist before initializing the script
+          // instead of just picking an arbitrary setTimeout and hoping for the best
+          var checkList = ["Dubtrack.session.id", "Dubtrack.room.chat", "Dubtrack.Events", "Dubtrack.room.player", "Dubtrack.helpers.cookie", "Dubtrack.room.model", "Dubtrack.room.users"];
+
+          var _dubplusWaiting = new WaitFor(checkList, {
+            seconds: 120
+          });
+
+          _dubplusWaiting.then(function () {
+            _this2.setState({
+              loading: false,
+              error: false
+            });
+          }).fail(function () {
+            if (!Dubtrack.session.id) {
+              _this2.showError("You're not logged in. Please login to use Dub+.");
+            } else {
+              _this2.showError("Something happed, refresh and try again");
+
+              track.event("Dub+ lib", "load", "failed");
+            }
+          });
+        } else {
+          if (!Dubtrack.session.id) {
+            this.showError("You're not logged in. Please login to use Dub+.");
+          } else {
+            this.showError("Dub+ is already loaded");
+          }
+        }
+      }
+    }, {
+      key: "showError",
+      value: function showError(msg) {
+        this.setState({
+          loading: false,
+          error: true,
+          errorMsg: msg
+        });
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        var _this3 = this;
+
+        if (state.loading) {
+          return h(LoadingNotice, null);
+        }
+
+        if (state.error) {
+          return h(Modal, {
+            title: "Dub+ Error",
+            onClose: function onClose() {
+              _this3.setState({
+                failed: true,
+                error: false
+              });
+            },
+            content: state.errorMsg
+          });
+        }
+
+        if (state.failed) {
+          return null;
+        }
+
+        document.querySelector('html').classList.add('dubplus');
+        return h(DubPlusMenu, null);
+      }
+    }]);
+
+    return DubPlusContainer;
+  }(Component);
+
+  render(h(DubPlusContainer, null), document.body);
+  var navWait = new WaitFor(".header-right-navigation", {
+    seconds: 30,
+    isNode: true
+  });
+  navWait.then(function () {
+    render(h(MenuIcon, null), document.querySelector(".header-right-navigation"));
+  }); // PKGINFO is inserted by the rollup build process
+
+  var index = {
+    "version": "2.0.0",
+    "description": "Dub+ - A simple script/extension for Dubtrack.fm",
+    "license": "MIT",
+    "bugs": "https://github.com/DubPlus/DubPlus/issues"
+  };
+
+  return index;
+
+}());

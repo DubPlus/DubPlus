@@ -52,13 +52,19 @@ function WaitFor(waitingFor, options) {
   var defaults = {
     interval : 500, // every XX ms we check to see if waitingFor is defined
     seconds : 15,  // how many total seconds we wish to continue pinging
+    isNode: false
   };
 
   var _cb = ()=>{};
   var _failCB = ()=>{};
-  var checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
-
   var opts = Object.assign({}, defaults, options);
+
+  var checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
+  if (opts.isNode) {
+    checkFunc = function(selector){
+      return typeof document.querySelector(selector) !== null
+    }
+  }
 
   var tryCount = 0;
   var tryLimit = (opts.seconds * 1000) / opts.interval; // how many intervals
