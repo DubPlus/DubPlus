@@ -47,7 +47,7 @@ $buttonBorderOn : #6fcbdc;
   background-color: rgba(10,10,10,0.98);
   transition: transform 0.3s;
   width: $menuWidth;
-  overflow-y: hidden;
+  overflow-y: auto;
   top: 58px;
   right: 0;
   transform: translateX($menuWidth);

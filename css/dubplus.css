@@ -20,7 +20,7 @@
   transition: transform 0.3s;
   transition: transform 0.3s, -webkit-transform 0.3s;
   width: 255px;
-  overflow-y: hidden;
+  overflow-y: auto;
   top: 58px;
   right: 0;
   -webkit-transform: translateX(255px);

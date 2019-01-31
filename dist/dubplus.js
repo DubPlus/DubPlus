@@ -4711,12 +4711,162 @@ var DubPlus = (function () {
     }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(ShowTS, null));
   };
 
+  function handleKeyup(e) {
+    if ((e.keyCode || e.which) !== 32) {
+      return;
+    }
+
+    var tag = event.target.tagName.toLowerCase();
+
+    if (tag !== "input" && tag !== "textarea") {
+      Dubtrack.room.player.mutePlayer();
+    }
+  }
+
+  function turnOn$6() {
+    document.addEventListener("keyup", handleKeyup);
+  }
+
+  function turnOff$6() {
+    document.removeEventListener("keyup", handleKeyup);
+  }
+
+  var SpacebarMute = function SpacebarMute() {
+    return h(MenuSwitch, {
+      id: "dubplus-spacebar-mute",
+      section: "Settings",
+      menuTitle: "Spacebar Mute",
+      desc: "Turn on/off the ability to mute current song with the spacebar.",
+      turnOn: turnOn$6,
+      turnOff: turnOff$6
+    });
+  };
+
+  function unloader(e) {
+    var confirmationMessage = "";
+    e.returnValue = confirmationMessage;
+    return confirmationMessage;
+  }
+
+  function turnOn$7() {
+    window.addEventListener("beforeunload", unloader);
+  }
+
+  function turnOff$7() {
+    window.removeEventListener("beforeunload", unloader);
+  }
+
+  var WarnNav = function WarnNav() {
+    return h(MenuSwitch, {
+      id: "warn_redirect",
+      section: "Settings",
+      menuTitle: "Warn On Navigation",
+      desc: "Warns you when accidentally clicking on a link that takes you out of dubtrack.",
+      turnOn: turnOn$7,
+      turnOff: turnOff$7
+    });
+  };
+
   var SettingsSection = function SettingsSection() {
     return h(MenuSection, {
       id: "dubplus-settings",
       title: "Settings",
       settingsKey: "settings"
+    }, h(SpacebarMute, null), h(WarnNav, null));
+  };
+
+  var makeLink = function makeLink(className, FileName) {
+    var link = document.createElement('link');
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    link.className = className || '';
+    link.href = FileName;
+    return link;
+  };
+  /**
+   * Loads a CSS file into <head>.  It concats settings.srcRoot with the first 
+   * argument (cssFile)
+   * @param {string} cssFile    the css file location
+   * @param {string} className  class name to give the <link> element
+   *
+   * example:  css.load("/options/show_timestamps.css", "show_timestamps_link");
+   */
+
+
+  function load(cssFile, className) {
+    if (!cssFile) {
+      return;
+    }
+
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548914006692);
+    document.head.appendChild(link);
+  }
+  /**
+   * Loads a css file from a full URL in the <head>
+   * @param  {String} cssFile   the full url location of a CSS file
+   * @param  {String} className a class name to give to the <link> element
+   */
+
+
+  function loadExternal(cssFile, className) {
+    if (!cssFile) {
+      return;
+    }
+
+    var link = makeLink(className, cssFile);
+    document.head.appendChild(link);
+  }
+
+  var css$2 = {
+    load: load,
+    loadExternal: loadExternal
+  };
+
+  function turnOn$8() {
+    var location = Dubtrack.room.model.get("roomUrl");
+    var roomAjax = getJSON("https://api.dubtrack.fm/room/" + location);
+    roomAjax.then(function (json) {
+      var content = json.data.description; // for backwards compatibility with dubx we're checking for both @dubx and @dubplus and @dub+
+
+      var themeCheck = new RegExp(/(@dub(x|plus|\+)=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/, "i");
+      var communityCSSUrl = null;
+      content.replace(themeCheck, function (match, p1, p2, p3) {
+        console.log("loading community css theme:", p3);
+        communityCSSUrl = p3;
+      });
+
+      if (!communityCSSUrl) {
+        return;
+      }
+
+      css$2.loadExternal(communityCSSUrl, "dubplus-comm-theme");
     });
+  }
+
+  function turnOff$8() {
+    document.querySelector(".dubplus-comm-theme").remove();
+  }
+
+  var CommunityTheme = function CommunityTheme() {
+    return h(MenuSwitch, {
+      id: "dubplus-comm-theme",
+      section: "Customize",
+      menuTitle: "Community Theme",
+      desc: "Toggle Community CSS theme.",
+      turnOn: turnOn$8,
+      turnOff: turnOff$8
+    });
+  };
+
+  // import CustomBG from './custom-Background';
+  // import CustomNotificaton from './custom-notification-sound';
+
+  var CustomizeSection = function CustomizeSection() {
+    return h(MenuSection, {
+      id: "dubplus-customize",
+      title: "Customize",
+      settingsKey: "customize"
+    }, h(CommunityTheme, null));
   };
 
   /**
@@ -4734,7 +4884,7 @@ var DubPlus = (function () {
       className: "dubplus-menu"
     }, h("p", {
       className: "dubplus-menu-header"
-    }, "Dub+ Options"), h(GeneralSection, null), h(UISection, null), h(SettingsSection, null));
+    }, "Dub+ Options"), h(GeneralSection, null), h(UISection, null), h(SettingsSection, null), h(CustomizeSection, null));
   };
 
   /**
@@ -4961,53 +5111,6 @@ var DubPlus = (function () {
     return LoadingNotice;
   }(Component);
 
-  var makeLink = function makeLink(className, FileName) {
-    var link = document.createElement('link');
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.className = className || '';
-    link.href = FileName;
-    return link;
-  };
-  /**
-   * Loads a CSS file into <head>.  It concats settings.srcRoot with the first 
-   * argument (cssFile)
-   * @param {string} cssFile    the css file location
-   * @param {string} className  class name to give the <link> element
-   *
-   * example:  css.load("/options/show_timestamps.css", "show_timestamps_link");
-   */
-
-
-  function load(cssFile, className) {
-    if (!cssFile) {
-      return;
-    }
-
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548909472802);
-    document.head.appendChild(link);
-  }
-  /**
-   * Loads a css file from a full URL in the <head>
-   * @param  {String} cssFile   the full url location of a CSS file
-   * @param  {String} className a class name to give to the <link> element
-   */
-
-
-  function loadExternal(cssFile, className) {
-    if (!cssFile) {
-      return;
-    }
-
-    var link = makeLink(className, cssFile);
-    document.head.appendChild(link);
-  }
-
-  var cssHelper = {
-    load: load,
-    loadExternal: loadExternal
-  };
-
   var MenuIcon =
   /*#__PURE__*/
   function (_Component) {
@@ -5075,8 +5178,8 @@ var DubPlus = (function () {
   if (!isExtension) {
     setTimeout(function () {
       // start the loading of the CSS asynchronously
-      cssHelper.loadExternal("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
-      cssHelper.load("/css/dubplus.css");
+      css$2.loadExternal("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+      css$2.load("/css/dubplus.css");
     }, 1);
   }
 

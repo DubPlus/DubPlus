@@ -35,8 +35,8 @@ UI
 - ~~Show Timestamps~~
 
 Settings    
-- Spacebar mute
-- Warn on navigation
+- ~~Spacebar mute~~
+- ~~Warn on navigation~~
 
 Customize    
 - Community Theme

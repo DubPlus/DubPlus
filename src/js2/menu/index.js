@@ -7,6 +7,7 @@ import eta from "../components/eta";
 import GeneralSection from "./general/index";
 import UISection from "./ui/index";
 import SettingsSection from "./settings/index";
+import CustomizeSection from "./customize/index";
 
 const DubPlusMenu = function() {
   setTimeout(() => {
@@ -22,6 +23,7 @@ const DubPlusMenu = function() {
       <GeneralSection />
       <UISection />
       <SettingsSection />
+      <CustomizeSection />
     </section>
   );
 };
