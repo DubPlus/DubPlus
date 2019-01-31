@@ -12,16 +12,16 @@ import bttvEmotes from '../../utils/emotes/bttv.js';
 export default class Emotes extends Component {
 
   turnOn = () => {
+    // only needs to load twitch emotes into memory once per page load
     if (!twitchEmotes.loaded) {
-
-      Promise.all([
-        twitchEmotes.load(),
-        bttvEmotes.load()
-      ])
-      .then(this.begin)
-      .catch((err)=>{
-        console.error(err);
-      });
+      // spin logo to indicate emotes are still loading
+      document.body.classList.add('dubplus-icon-spinning');
+      // bttv emotes load in a few ms
+      bttvEmotes.load();
+      // there are thousands upon thousands of twitch emotes so they
+      // take a lot longer to load.
+      twitchEmotes.done(this.begin);
+      twitchEmotes.load();
       return;
     }
 
@@ -29,6 +29,7 @@ export default class Emotes extends Component {
   }
 
   begin() {
+    document.body.classList.remove('dubplus-icon-spinning');
     // when first turning it on, it replaces ALL of the emotes in chat history
     chatReplace(document.querySelector('.chat-main'));
     // then it sets up replacing emotes on new chat messages

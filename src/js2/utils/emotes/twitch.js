@@ -21,22 +21,28 @@ class TwitchEmotes {
   loaded = false;
 
   load() {
-    console.time("twitch_load");
     // if it doesn't exist in indexedDB or it's older than 5 days
     // grab it from the twitch API
-    return shouldUpdateAPIs("twitch").then(update => {
-      if (update) {
-        return this.updateFromApi();
-      }
-      return this.grabFromDb();
-    });
+    return shouldUpdateAPIs("twitch")
+      .then(update => {
+        if (update) {
+          return this.updateFromApi();
+        }
+        return this.grabFromDb();
+      })
+      .catch(e => console.error(e.message));
+  }
+
+  done(cb) {
+    this.doneCB = cb;
   }
 
   grabFromDb() {
     return new Promise((resolve, reject) => {
       try {
+        console.time("twitch load time:");
         ldb.get("twitch_api", data => {
-          console.timeEnd("twitch_load");
+          console.timeEnd("twitch load time:");
           console.log("dub+", "twitch", "loading from IndexedDB");
           let savedData = JSON.parse(data);
           // this.processEmotes(savedData);
@@ -52,6 +58,7 @@ class TwitchEmotes {
   }
 
   updateFromApi() {
+    console.time("twitch load time:");
     console.log("dub+", "twitch", "loading from api");
 
     let corsEsc = "https://cors-escape.herokuapp.com";
@@ -60,7 +67,7 @@ class TwitchEmotes {
     );
 
     return twApi.then(json => {
-      console.timeEnd("twitch_load");
+      console.timeEnd("twitch load time:");
       let twitchEmotes = {};
       json.emoticons.forEach(e => {
         if (!twitchEmotes[e.code] || e.emoticon_set === null) {
@@ -141,6 +148,8 @@ class TwitchEmotes {
         }
       }
     }
+    this.loaded = true;
+    this.doneCB();
     console.timeEnd("twitch_process");
   }
 
@@ -205,6 +214,7 @@ class TwitchEmotes {
           emotes: emotes,
           sortedKeys: sortedKeys
         });
+        close();
       }, false);
     `;
     var blob;
@@ -220,9 +230,14 @@ class TwitchEmotes {
     }
     var worker = new Worker(URL.createObjectURL(blob));
 
+    console.time("twitch_web_worker_process");
+
     worker.addEventListener("message", e => {
       this.emotes = e.data.emotes;
       this.sortedKeys = e.data.sortedKeys;
+      this.loaded = true;
+      console.timeEnd("twitch_web_worker_process");
+      this.doneCB();
     });
 
     worker.postMessage({

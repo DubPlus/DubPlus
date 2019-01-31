@@ -1876,6 +1876,13 @@ var DubPlus = (function () {
   var PreviewListItem = function PreviewListItem(_ref) {
     var data = _ref.data,
         onSelect = _ref.onSelect;
+
+    if (data.header) {
+      return h("li", {
+        className: "preview-item-header ".concat(data.header.toLowerCase(), "-preview-header")
+      }, h("span", null, data.header));
+    }
+
     return h("li", {
       className: "preview-item ".concat(data.type, "-previews"),
       onClick: function onClick() {
@@ -1906,7 +1913,7 @@ var DubPlus = (function () {
     var list = matches.map(function (m, i) {
       return h(PreviewListItem, {
         data: m,
-        key: "".concat(m.type, "-").concat(m.name),
+        key: m.header ? "header-row-".concat(m.header) : "".concat(m.type, "-").concat(m.name),
         onSelect: onSelect
       });
     });
@@ -2145,16 +2152,22 @@ var DubPlus = (function () {
       value: function load() {
         var _this2 = this;
 
-        console.time("twitch_load"); // if it doesn't exist in indexedDB or it's older than 5 days
+        // if it doesn't exist in indexedDB or it's older than 5 days
         // grab it from the twitch API
-
         return shouldUpdateAPIs("twitch").then(function (update) {
           if (update) {
             return _this2.updateFromApi();
           }
 
           return _this2.grabFromDb();
+        }).catch(function (e) {
+          return console.error(e.message);
         });
+      }
+    }, {
+      key: "done",
+      value: function done(cb) {
+        this.doneCB = cb;
       }
     }, {
       key: "grabFromDb",
@@ -2163,8 +2176,9 @@ var DubPlus = (function () {
 
         return new Promise(function (resolve, reject) {
           try {
+            console.time("twitch load time:");
             ldb.get("twitch_api", function (data) {
-              console.timeEnd("twitch_load");
+              console.timeEnd("twitch load time:");
               console.log("dub+", "twitch", "loading from IndexedDB");
               var savedData = JSON.parse(data); // this.processEmotes(savedData);
 
@@ -2185,11 +2199,12 @@ var DubPlus = (function () {
       value: function updateFromApi() {
         var _this4 = this;
 
+        console.time("twitch load time:");
         console.log("dub+", "twitch", "loading from api");
         var corsEsc = "https://cors-escape.herokuapp.com";
         var twApi = getJSON("".concat(corsEsc, "/https://api.twitch.tv/kraken/chat/emoticon_images"));
         return twApi.then(function (json) {
-          console.timeEnd("twitch_load");
+          console.timeEnd("twitch load time:");
           var twitchEmotes = {};
           json.emoticons.forEach(function (e) {
             if (!twitchEmotes[e.code] || e.emoticon_set === null) {
@@ -2264,8 +2279,16 @@ var DubPlus = (function () {
           }
         }
 
+        this.loaded = true;
+        this.doneCB();
         console.timeEnd("twitch_process");
       }
+      /**
+       * In order to speed up the initial load of the script I'm using a web worker
+       * do some of the more cpu expensive and UI blocking work
+       * help from: https://stackoverflow.com/a/10372280/395414
+       */
+
     }, {
       key: "processViaWebWorker",
       value: function processViaWebWorker(data) {
@@ -2273,7 +2296,7 @@ var DubPlus = (function () {
 
         // URL.createObjectURL
         window.URL = window.URL || window.webkitURL;
-        var response = "\n      var emotes = {};\n      var sortedKeys = {\n        'nonAlpha' : []\n      };\n\n      function addKeyToSorted(key) {\n        let first = key.charAt(0);\n    \n        // all numbers and symbols get stored in one 'nonAlpha' array\n        if (!/[a-z]/i.test(first)) {\n          sortedKeys.nonAlpha.push(key);\n          return;\n        }\n    \n        if (!sortedKeys[first]) {\n          sortedKeys[first] = [key];\n          return\n        }\n    \n        sortedKeys[first].push(key);\n      }\n\n      self.addEventListener('message', function(e) {\n        var emojiNames = e.data.emojiNames;\n        var data = e.data.data;\n\n        for (var code in data) {\n          if (data.hasOwnProperty(code)) {\n            var _key = code.toLowerCase();\n      \n            // not doing anything with non-named emojis\n            if (/\\\\/g.test(code)) {\n              continue;\n            }\n      \n            if (emojiNames.indexOf(_key) >= 0) {\n              continue; // don't override regular emojis handled by emojify\n            }\n      \n            if (!emotes[_key]) {\n              // if emote doesn't exist, add it\n              emotes[_key] = data[code];\n              addKeyToSorted(_key);\n            }\n          }\n        }\n\n        self.postMessage({\n          emotes: emotes,\n          sortedKeys: sortedKeys\n        });\n      }, false);\n    ";
+        var response = "\n      var emotes = {};\n      var sortedKeys = {\n        'nonAlpha' : []\n      };\n\n      function addKeyToSorted(key) {\n        let first = key.charAt(0);\n    \n        // all numbers and symbols get stored in one 'nonAlpha' array\n        if (!/[a-z]/i.test(first)) {\n          sortedKeys.nonAlpha.push(key);\n          return;\n        }\n    \n        if (!sortedKeys[first]) {\n          sortedKeys[first] = [key];\n          return\n        }\n    \n        sortedKeys[first].push(key);\n      }\n\n      self.addEventListener('message', function(e) {\n        var emojiNames = e.data.emojiNames;\n        var data = e.data.data;\n\n        for (var code in data) {\n          if (data.hasOwnProperty(code)) {\n            var _key = code.toLowerCase();\n      \n            // not doing anything with non-named emojis\n            if (/\\\\/g.test(code)) {\n              continue;\n            }\n      \n            if (emojiNames.indexOf(_key) >= 0) {\n              continue; // don't override regular emojis handled by emojify\n            }\n      \n            if (!emotes[_key]) {\n              // if emote doesn't exist, add it\n              emotes[_key] = data[code];\n              addKeyToSorted(_key);\n            }\n          }\n        }\n\n        self.postMessage({\n          emotes: emotes,\n          sortedKeys: sortedKeys\n        });\n        close();\n      }, false);\n    ";
         var blob;
 
         try {
@@ -2289,9 +2312,14 @@ var DubPlus = (function () {
         }
 
         var worker = new Worker(URL.createObjectURL(blob));
+        console.time("twitch_web_worker_process");
         worker.addEventListener("message", function (e) {
           _this6.emotes = e.data.emotes;
           _this6.sortedKeys = e.data.sortedKeys;
+          _this6.loaded = true;
+          console.timeEnd("twitch_web_worker_process");
+
+          _this6.doneCB();
         });
         worker.postMessage({
           data: data,
@@ -2352,9 +2380,8 @@ var DubPlus = (function () {
       value: function load() {
         var _this2 = this;
 
-        console.time('bttv_load'); // if it doesn't exist in localStorage or it's older than 5 days
+        // if it doesn't exist in localStorage or it's older than 5 days
         // grab it from the bttv API
-
         return shouldUpdateAPIs("bttv").then(function (update) {
           if (update) {
             return _this2.updateFromAPI();
@@ -2371,7 +2398,6 @@ var DubPlus = (function () {
         return new Promise(function (resolve, reject) {
           try {
             ldb.get("bttv_api", function (data) {
-              console.timeEnd('bttv_load');
               console.log("dub+", "bttv", "loading from IndexedDB");
               var savedData = JSON.parse(data);
 
@@ -2394,7 +2420,6 @@ var DubPlus = (function () {
         console.log("dub+", "bttv", "loading from api");
         var bttvApi = getJSON("https://api.betterttv.net/2/emotes", this.headers);
         return bttvApi.then(function (json) {
-          console.timeEnd('bttv_load');
           var bttvEmotes = {};
           json.emotes.forEach(function (e) {
             if (!bttvEmotes[e.code]) {
@@ -2440,8 +2465,6 @@ var DubPlus = (function () {
     }, {
       key: "processEmotes",
       value: function processEmotes(data) {
-        console.time('bttv_process');
-
         for (var code in data) {
           if (data.hasOwnProperty(code)) {
             var _key = code.toLowerCase();
@@ -2464,7 +2487,6 @@ var DubPlus = (function () {
         }
 
         this.loaded = true;
-        console.timeEnd('bttv_process');
       }
     }]);
 
@@ -2525,7 +2547,7 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatInput", document.getElementById("chat-txt-message"));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "navIndex", -1);
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "selectedItem", null);
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "checkInput", function (e) {
         // we want to ignore keyups that don't output anything
@@ -2544,7 +2566,7 @@ var DubPlus = (function () {
         }
 
         var lastPart = parts[parts.length - 1];
-        var lastChar = lastPart.charAt(lastPart.length - 1); // now we check if the last word in the input starts with the opening 
+        var lastChar = lastPart.charAt(lastPart.length - 1); // now we check if the last word in the input starts with the opening
         // emoji colon but does not have the closing emoji colon
 
         if (lastPart.charAt(0) === ":" && lastPart.length > 3 && lastChar !== ":") {
@@ -2577,7 +2599,7 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "keyboardNav", function (e) {
-        if (_this.state.matches.length === 0 || !_this.previewList || _this.previewList.length === 0) {
+        if (_this.state.matches.length === 0) {
           return true;
         }
 
@@ -2680,9 +2702,30 @@ var DubPlus = (function () {
       value: function getMatches(symbol) {
         symbol = symbol.replace(/^:/, "");
         var classic = emoji.find(symbol);
-        var twitchMatches = twitch.find(symbol);
+
+        if (classic.length > 0) {
+          classic.unshift({
+            header: "Emoji"
+          });
+        }
+
         var bttvMatches = bttv.find(symbol);
-        return classic.concat(twitchMatches, bttvMatches);
+
+        if (bttvMatches.length > 0) {
+          bttvMatches.unshift({
+            header: "BetterTTV"
+          });
+        }
+
+        var twitchMatches = twitch.find(symbol);
+
+        if (twitchMatches.length > 0) {
+          twitchMatches.unshift({
+            header: "Twitch"
+          });
+        }
+
+        return classic.concat(bttvMatches, twitchMatches);
       }
     }, {
       key: "closePreview",
@@ -2690,19 +2733,12 @@ var DubPlus = (function () {
         this.setState({
           matches: []
         });
-        this.navIndex = -1;
-        this.previewList = [];
-      }
-    }, {
-      key: "clearSelected",
-      value: function clearSelected() {
-        var selected = document.querySelector(".preview-item.selected");
-        if (selected) selected.classList.remove("selected");
+        this.selectedItem = null;
       }
     }, {
       key: "isElementInView",
       value: function isElementInView(el) {
-        var container = document.querySelector('#autocomplete-preview');
+        var container = document.querySelector("#autocomplete-preview");
         var rect = el.getBoundingClientRect();
         var outerRect = container.getBoundingClientRect();
         return rect.top >= outerRect.top && rect.bottom <= outerRect.bottom;
@@ -2710,48 +2746,65 @@ var DubPlus = (function () {
     }, {
       key: "navDown",
       value: function navDown() {
-        this.clearSelected();
-        this.navIndex++;
+        var item;
 
-        if (this.navIndex >= this.previewList.length) {
-          this.navIndex = 0;
+        if (this.selectedItem) {
+          this.selectedItem.classList.remove("selected");
+          item = this.selectedItem.nextSibling;
+        } // go back to the first item
+
+
+        if (!item) {
+          item = document.querySelector(".preview-item");
+        } // there should always be a nextSibling after a header so
+        // we don't need to check item again after this
+
+
+        if (item.classList.contains("preview-item-header")) {
+          item = item.nextSibling;
         }
 
-        var item = this.previewList[this.navIndex];
         item.classList.add("selected");
 
         if (!this.isElementInView(item)) {
           item.scrollIntoView(false);
         }
 
+        this.selectedItem = item;
         this.updateChatInput(item.dataset.name, false);
       }
     }, {
       key: "navUp",
       value: function navUp() {
-        this.clearSelected();
-        this.navIndex--;
+        var item;
 
-        if (this.navIndex < 0) {
-          this.navIndex = this.previewList.length - 1;
+        if (this.selectedItem) {
+          this.selectedItem.classList.remove("selected");
+          item = this.selectedItem.previousSibling;
+        } // get to the last item
+
+
+        if (!item) {
+          item = [].slice.call(document.querySelectorAll(".preview-item")).pop();
         }
 
-        var item = this.previewList[this.navIndex];
+        if (item.classList.contains("preview-item-header")) {
+          item = item.previousSibling;
+        } // check again because the header
+
+
+        if (!item) {
+          item = [].slice.call(document.querySelectorAll(".preview-item")).pop();
+        }
+
         item.classList.add("selected");
 
         if (!this.isElementInView(item)) {
           item.scrollIntoView(true);
         }
 
+        this.selectedItem = item;
         this.updateChatInput(item.dataset.name, false);
-      }
-    }, {
-      key: "componentDidUpdate",
-      value: function componentDidUpdate(prevProps, prevState) {
-        if (this.state.isOn) {
-          this.previewList = document.querySelectorAll("#autocomplete-preview li");
-          console.log('previewList: ', this.previewList.length);
-        }
       }
     }, {
       key: "render",
@@ -3024,10 +3077,16 @@ var DubPlus = (function () {
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Emotes)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        // only needs to load twitch emotes into memory once per page load
         if (!twitch.loaded) {
-          Promise.all([twitch.load(), bttv.load()]).then(_this.begin).catch(function (err) {
-            console.error(err);
-          });
+          // spin logo to indicate emotes are still loading
+          document.body.classList.add('dubplus-icon-spinning'); // bttv emotes load in a few ms
+
+          bttv.load(); // there are thousands upon thousands of twitch emotes so they
+          // take a lot longer to load.
+
+          twitch.done(_this.begin);
+          twitch.load();
           return;
         }
 
@@ -3044,7 +3103,8 @@ var DubPlus = (function () {
     _createClass(Emotes, [{
       key: "begin",
       value: function begin() {
-        // when first turning it on, it replaces ALL of the emotes in chat history
+        document.body.classList.remove('dubplus-icon-spinning'); // when first turning it on, it replaces ALL of the emotes in chat history
+
         beginReplace(document.querySelector('.chat-main')); // then it sets up replacing emotes on new chat messages
 
         Dubtrack.Events.bind("realtime:chat-message", beginReplace);
@@ -4863,7 +4923,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548961270704);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548976215478);
     document.head.appendChild(link);
   }
   /**

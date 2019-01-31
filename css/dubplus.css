@@ -12,6 +12,32 @@
   vertical-align: bottom;
   margin-left: 1rem; }
 
+.dubplus-icon-spinning .dubplus-icon img {
+  -webkit-animation-name: spin;
+          animation-name: spin;
+  -webkit-animation-duration: 750ms;
+          animation-duration: 750ms;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease;
+          animation-timing-function: ease; }
+
+@-webkit-keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg); }
+  to {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg); } }
+
+@keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg); }
+  to {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg); } }
+
 .dubplus-menu {
   position: fixed;
   z-index: 999;
@@ -27,7 +53,7 @@
           transform: translateX(255px);
   box-sizing: border-box;
   color: #999;
-  font-family: 'Trebuchet MS', Helvetica, sans-serif;
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
   font-size: 13px;
   line-height: 1.4;
   padding-bottom: 100px;
@@ -355,9 +381,6 @@
   -webkit-box-direction: normal;
       -ms-flex-direction: row;
           flex-direction: row;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
   position: absolute;
@@ -380,6 +403,26 @@
 #autocomplete-preview li.selected {
   background-color: rgba(85, 85, 85, 0.6);
   border-radius: 5px; }
+
+.preview-item-header {
+  -ms-flex-preferred-size: 100%;
+      flex-basis: 100%;
+  line-height: 1;
+  width: 100%;
+  color: #fff;
+  padding: 6px 10px 0;
+  background-color: rgba(119, 121, 123, 0.5);
+  background-repeat: no-repeat;
+  background-size: 25px;
+  background-position: 5% center; }
+
+.betterttv-preview-header {
+  padding: 11px 10px 3px 44px;
+  background-image: url(https://i.imgur.com/oTfAI0O.png); }
+
+.twitch-preview-header {
+  padding: 11px 10px 3px 44px;
+  background-image: url(https://i.imgur.com/FhzONPQ.png); }
 
 #autocomplete-preview span {
   font-size: 0.9em;

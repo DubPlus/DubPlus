@@ -16,7 +16,6 @@ class BTTVemotes {
   }
 
   load() {
-    console.time('bttv_load');
     // if it doesn't exist in localStorage or it's older than 5 days
     // grab it from the bttv API
     return shouldUpdateAPIs("bttv")
@@ -33,7 +32,6 @@ class BTTVemotes {
     return new Promise((resolve, reject) => {
       try {
         ldb.get("bttv_api", (data) => {
-          console.timeEnd('bttv_load');
           console.log("dub+", "bttv", "loading from IndexedDB");
           let savedData = JSON.parse(data);
           this.processEmotes(savedData);
@@ -55,7 +53,6 @@ class BTTVemotes {
     );
 
     return bttvApi.then(json => {
-      console.timeEnd('bttv_load');
       var bttvEmotes = {};
       json.emotes.forEach(e => {
         if (!bttvEmotes[e.code]) {
@@ -108,7 +105,6 @@ class BTTVemotes {
   }
 
   processEmotes(data) {
-    console.time('bttv_process');
     for (var code in data) {
       if (data.hasOwnProperty(code)) {
         var _key = code.toLowerCase();
@@ -131,7 +127,6 @@ class BTTVemotes {
     }
 
     this.loaded = true;
-    console.timeEnd('bttv_process');
   }
 }
 

@@ -8,7 +8,6 @@
     overflow: auto; 
     display: flex; 
     flex-direction: row;
-    justify-content: space-between;
     flex-wrap: wrap;
     position: absolute; 
     bottom: 56px; 
@@ -33,6 +32,27 @@
   background-color: rgba(85,85,85,0.6);
   border-radius: 5px;
 }
+
+.preview-item-header {
+  flex-basis: 100%; // make it take up the whole width
+  line-height: 1;
+  width: 100%;
+  color: #fff;
+  padding: 6px 10px 0;
+  background-color: rgba(119, 121, 123, 0.5);;
+  background-repeat: no-repeat;
+  background-size: 25px;
+  background-position: 5% center;
+}
+.betterttv-preview-header {
+  padding: 11px 10px 3px 44px;
+  background-image: url(https://i.imgur.com/oTfAI0O.png);
+}
+.twitch-preview-header {
+  padding: 11px 10px 3px 44px;
+  background-image: url(https://i.imgur.com/FhzONPQ.png); 
+}
+
 
 // #autocomplete-preview li:focus {
 //   outline: none;

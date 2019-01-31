@@ -48,7 +48,7 @@ export default class AutocompleteEmoji extends Component {
 
   chatInput = document.getElementById("chat-txt-message");
 
-  navIndex = -1;
+  selectedItem = null;
 
   /**
    * check chat input for the beginning of an emoji at the very end
@@ -71,7 +71,7 @@ export default class AutocompleteEmoji extends Component {
     const lastPart = parts[parts.length - 1];
     const lastChar = lastPart.charAt(lastPart.length - 1);
 
-    // now we check if the last word in the input starts with the opening 
+    // now we check if the last word in the input starts with the opening
     // emoji colon but does not have the closing emoji colon
     if (lastPart.charAt(0) === ":" && lastPart.length > 3 && lastChar !== ":") {
       let new_matches = this.getMatches(lastPart);
@@ -108,9 +108,18 @@ export default class AutocompleteEmoji extends Component {
   getMatches(symbol) {
     symbol = symbol.replace(/^:/, "");
     let classic = emoji.find(symbol);
-    var twitchMatches = twitch.find(symbol);
+    if (classic.length > 0) {
+      classic.unshift({ header: "Emoji" });
+    }
     var bttvMatches = bttv.find(symbol);
-    return classic.concat(twitchMatches, bttvMatches);
+    if (bttvMatches.length > 0) {
+      bttvMatches.unshift({ header: "BetterTTV" });
+    }
+    var twitchMatches = twitch.find(symbol);
+    if (twitchMatches.length > 0) {
+      twitchMatches.unshift({ header: "Twitch" });
+    }
+    return classic.concat(bttvMatches, twitchMatches);
   }
 
   updateChatInput = (emote, focusBack = true) => {
@@ -126,56 +135,77 @@ export default class AutocompleteEmoji extends Component {
 
   closePreview() {
     this.setState({ matches: [] });
-    this.navIndex = -1;
-    this.previewList = [];
+    this.selectedItem = null;
   }
 
-  clearSelected() {
-    let selected = document.querySelector(".preview-item.selected");
-    if (selected) selected.classList.remove("selected");
-  }
-
-  isElementInView (el) {
-    var container = document.querySelector('#autocomplete-preview');
+  isElementInView(el) {
+    var container = document.querySelector("#autocomplete-preview");
     var rect = el.getBoundingClientRect();
     var outerRect = container.getBoundingClientRect();
     return rect.top >= outerRect.top && rect.bottom <= outerRect.bottom;
   }
 
   navDown() {
-    this.clearSelected();
-    this.navIndex++;
-    if (this.navIndex >= this.previewList.length) {
-      this.navIndex = 0;
+    let item;
+
+    if (this.selectedItem) {
+      this.selectedItem.classList.remove("selected");
+      item = this.selectedItem.nextSibling;
     }
-    let item = this.previewList[this.navIndex];
+
+    // go back to the first item
+    if (!item) {
+      item = document.querySelector(".preview-item");
+    }
+
+    // there should always be a nextSibling after a header so
+    // we don't need to check item again after this
+    if (item.classList.contains("preview-item-header")) {
+      item = item.nextSibling;
+    }
+
     item.classList.add("selected");
     if (!this.isElementInView(item)) {
       item.scrollIntoView(false);
     }
+
+    this.selectedItem = item;
     this.updateChatInput(item.dataset.name, false);
   }
 
   navUp() {
-    this.clearSelected();
-    this.navIndex--;
-    if (this.navIndex < 0) {
-      this.navIndex = this.previewList.length - 1;
+    let item;
+
+    if (this.selectedItem) {
+      this.selectedItem.classList.remove("selected");
+      item = this.selectedItem.previousSibling;
     }
-    let item = this.previewList[this.navIndex];
+
+    // get to the last item
+    if (!item) {
+      item = [].slice.call(document.querySelectorAll(".preview-item")).pop();
+    }
+
+    if (item.classList.contains("preview-item-header")) {
+      item = item.previousSibling;
+    }
+
+    // check again because the header
+    if (!item) {
+      item = [].slice.call(document.querySelectorAll(".preview-item")).pop();
+    }
+
     item.classList.add("selected");
     if (!this.isElementInView(item)) {
       item.scrollIntoView(true);
     }
+
+    this.selectedItem = item;
     this.updateChatInput(item.dataset.name, false);
   }
 
   keyboardNav = e => {
-    if (
-      this.state.matches.length === 0 ||
-      !this.previewList ||
-      this.previewList.length === 0
-    ) {
+    if (this.state.matches.length === 0) {
       return true;
     }
 
@@ -218,13 +248,6 @@ export default class AutocompleteEmoji extends Component {
     this.chatInput.removeEventListener("keydown", this.debouncedNav);
     this.chatInput.removeEventListener("keyup", this.debouncedCheckInput);
   };
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.isOn) {
-      this.previewList = document.querySelectorAll("#autocomplete-preview li");
-      console.log('previewList: ', this.previewList.length)
-    }
-  }
 
   render(props, { isOn, matches }) {
     return (

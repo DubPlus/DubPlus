@@ -9,10 +9,19 @@ TODO:
 */
 
 const PreviewListItem = ({ data, onSelect }) => {
+  if (data.header) {
+    return (
+      <li className={`preview-item-header ${data.header.toLowerCase()}-preview-header`}>
+        <span>{data.header}</span>
+      </li>
+    );
+  }
   return (
     <li
       className={`preview-item ${data.type}-previews`}
-      onClick={() => { onSelect(data.name) }}
+      onClick={() => {
+        onSelect(data.name);
+      }}
       data-name={data.name}
     >
       <div className="ac-image">
@@ -23,16 +32,16 @@ const PreviewListItem = ({ data, onSelect }) => {
   );
 };
 
-const AutocompletePreview = ({matches, onSelect}) => {
+const AutocompletePreview = ({ matches, onSelect }) => {
   if (matches.length === 0) {
-    return <ul id="autocomplete-preview"></ul>;
+    return <ul id="autocomplete-preview" />;
   }
 
   let list = matches.map((m, i) => {
     return (
       <PreviewListItem
         data={m}
-        key={`${m.type}-${m.name}`}
+        key={m.header ? `header-row-${m.header}` : `${m.type}-${m.name}`}
         onSelect={onSelect}
       />
     );
@@ -43,6 +52,6 @@ const AutocompletePreview = ({matches, onSelect}) => {
       {list}
     </ul>
   );
-}
+};
 
 export default AutocompletePreview;
