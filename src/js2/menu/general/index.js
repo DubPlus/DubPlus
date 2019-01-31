@@ -1,12 +1,8 @@
-/**
-  // General 
- */
+import { h } from 'preact';
+import { MenuSection } from "../../components/menuItems";
 
-import { h, Component } from 'preact';
-import SectionHeader from '../../components/section-header.js';
 import AFK from './afk.js'
 import Autovote from './autovote.js'
-import settings from '../../utils/UserSettings.js';
 import AutocompleteEmoji from './autocomplete-emoji.js';
 import Emotes from './emotes.js';
 import CustomMentions from './custom-mentions.js';
@@ -21,49 +17,26 @@ import DowndubInChat from './downdub-in-chat.js';
 import UpdubsInChat from './updubs-in-chat.js';
 import GrabsInChat from './grabs-in-chat.js';
 
-export default class GeneralSection extends Component {
-  state = {
-    section : settings.stored.menu.general || "open"
-  }
+const GeneralSection = () => {
+  return (
+    <MenuSection id="dubplus-general" title="General" settingsKey="general">
+      <Autovote />
+      <AFK />
+      <AutocompleteEmoji />
+      <Emotes />
+      <CustomMentions />
+      <ChatCleaner />
+      <ChatNotification />
+      <PMNotifications />
+      <DJNotification />
+      <ShowDubsOnHover />
+      <DowndubInChat />
+      <UpdubsInChat />
+      <GrabsInChat />
+      <SnowSwitch />
+      <RainSwitch />
+    </MenuSection>
+  );
+};
 
-  toggleSection = (e) => {
-    this.setState((prevState)=>{
-      let newState = prevState.section === "open" ? "closed" : "open";
-      settings.save('menu', 'general', newState);
-      return {section : newState}
-    });
-  }
-
-  render(props,state) {
-    let _cn = ['dubplus-menu-section'];
-    if (state.section === "closed") {
-      _cn.push('dubplus-menu-section-closed');
-    }
-    return (
-      <>
-        <SectionHeader 
-          onClick={this.toggleSection}
-          id="dubplus-general" 
-          category="General"
-          open={state.section} />
-        <ul className={_cn.join(' ')}>
-          <Autovote />
-          <AFK />
-          <AutocompleteEmoji />
-          <Emotes />
-          <CustomMentions />
-          <ChatCleaner />
-          <ChatNotification />
-          <PMNotifications />
-          <DJNotification />
-          <ShowDubsOnHover />
-          <DowndubInChat />
-          <UpdubsInChat />
-          <GrabsInChat />
-          <SnowSwitch />
-          <RainSwitch />
-        </ul>
-      </>
-    );
-  }
-}
+export default GeneralSection;

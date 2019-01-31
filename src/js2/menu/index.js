@@ -1,30 +1,29 @@
 /**
  * DubPlus Menu Container
  */
-import { h, Component } from 'preact';
-import snooze from '../components/snooze.js';
-import eta from '../components/eta.js';
-import GeneralSection from './general/index.js';
-import UISection from './ui/index.js';
+import { h } from "preact";
+import snooze from "../components/snooze";
+import eta from "../components/eta";
+import GeneralSection from "./general/index";
+import UISection from "./ui/index";
+import SettingsSection from "./settings/index";
 
-export default class DubPlusMenu extends Component {
-
-  componentDidMount() {
+const DubPlusMenu = function() {
+  setTimeout(() => {
     // load this async so it doesn't block the rest of the menu render
     // since these buttons are completely independent from the menu
-    setTimeout(()=>{
-      snooze();
-      eta();
-    }, 10);
-  }
+    snooze();
+    eta();
+  }, 10);
 
-  render(props,state) {
-    return (
-      <section className="dubplus-menu">
-        <p className="dubplus-menu-header">Dub+ Options</p>
-        <GeneralSection />
-        <UISection />
-      </section>
-    )
-  }
-}
+  return (
+    <section className="dubplus-menu">
+      <p className="dubplus-menu-header">Dub+ Options</p>
+      <GeneralSection />
+      <UISection />
+      <SettingsSection />
+    </section>
+  );
+};
+
+export default DubPlusMenu;

@@ -23,15 +23,16 @@ General
 - ~~Grabs in Chat~~
 - ~~Snow~~
 - ~~Rain~~
+Potential new feature:  Auto AFK.  Turns on AFK when away for more than X amount of time
 
 UI    
-- Fullscreen video
-- Split Chat
-- Hide Chat
-- Hide Video
-- Hide Avatars
-- Hide Background
-- Show Timestamps
+- ~~Fullscreen video~~
+- ~~Split Chat~~
+- ~~Hide Chat~~
+- ~~Hide Video~~
+- ~~Hide Avatars~~
+- ~~Hide Background~~
+- ~~Show Timestamps~~
 
 Settings    
 - Spacebar mute

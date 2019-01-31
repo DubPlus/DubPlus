@@ -1076,17 +1076,6 @@ var DubPlus = (function () {
     render(h(ETA, null), document.querySelector('.player_sharing'));
   }
 
-  function SectionHeader(props) {
-    var arrow = props.open === "open" ? 'down' : 'right';
-    return h("div", {
-      id: props.id,
-      onClick: props.onClick,
-      className: "dubplus-menu-section-header"
-    }, h("span", {
-      className: "fa fa-angle-".concat(arrow)
-    }), h("p", null, props.category));
-  }
-
   /**
    * global State handler
    */
@@ -1173,6 +1162,17 @@ var DubPlus = (function () {
   }();
 
   var userSettings = new UserSettings();
+
+  function SectionHeader(props) {
+    var arrow = props.open === "open" ? 'down' : 'right';
+    return h("div", {
+      id: props.id,
+      onClick: props.onClick,
+      className: "dubplus-menu-section-header"
+    }, h("span", {
+      className: "fa fa-angle-".concat(arrow)
+    }), h("p", null, props.category));
+  }
 
   /** Redirect rendering of descendants into the given CSS selector.
    *  @example
@@ -1422,6 +1422,71 @@ var DubPlus = (function () {
   var track = new GA('UA-116652541-1');
 
   /**
+   * Component to render a menu section.
+   * @param {object} props
+   * @param {string} props.id
+   * @param {string} props.title the name to display
+   * @param {string} props.settingsKey the key in the setting.stored.menu object
+   */
+
+  var MenuSection =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(MenuSection, _Component);
+
+    function MenuSection() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, MenuSection);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(MenuSection)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        section: userSettings.stored.menu[_this.props.settingsKey] || "open"
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleSection", function (e) {
+        _this.setState(function (prevState) {
+          var newState = prevState.section === "open" ? "closed" : "open";
+          userSettings.save("menu", _this.props.settingsKey, newState);
+          return {
+            section: newState
+          };
+        });
+      });
+
+      return _this;
+    }
+
+    _createClass(MenuSection, [{
+      key: "render",
+      value: function render$$1(props, state) {
+        var _cn = ["dubplus-menu-section"];
+
+        if (state.section === "closed") {
+          _cn.push("dubplus-menu-section-closed");
+        }
+
+        return h("span", null, h(SectionHeader, {
+          onClick: this.toggleSection,
+          id: props.id,
+          category: props.title,
+          open: state.section
+        }), h("ul", {
+          className: _cn.join(" ")
+        }, props.children));
+      }
+    }]);
+
+    return MenuSection;
+  }(Component);
+  /**
    * Component to render a simple row like the links in the contact section
    * or the fullscreen menu option
    * @param {object} props
@@ -1460,43 +1525,43 @@ var DubPlus = (function () {
 
   var MenuPencil =
   /*#__PURE__*/
-  function (_Component) {
-    _inherits(MenuPencil, _Component);
+  function (_Component2) {
+    _inherits(MenuPencil, _Component2);
 
     function MenuPencil() {
-      var _getPrototypeOf2;
+      var _getPrototypeOf3;
 
-      var _this;
+      var _this2;
 
       _classCallCheck(this, MenuPencil);
 
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
+      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
       }
 
-      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(MenuPencil)).call.apply(_getPrototypeOf2, [this].concat(args)));
+      _this2 = _possibleConstructorReturn(this, (_getPrototypeOf3 = _getPrototypeOf(MenuPencil)).call.apply(_getPrototypeOf3, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "state", {
         open: false
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadModal", function () {
-        _this.setState({
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "loadModal", function () {
+        _this2.setState({
           open: true
         });
 
-        track.menuClick(_this.props.section + " section", _this.props.id + " edit");
+        track.menuClick(_this2.props.section + " section", _this2.props.id + " edit");
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "closeModal", function () {
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "closeModal", function () {
         console.log("closing dub+ modal");
 
-        _this.setState({
+        _this2.setState({
           open: false
         });
       });
 
-      return _this;
+      return _this2;
     }
 
     _createClass(MenuPencil, [{
@@ -1521,63 +1586,63 @@ var DubPlus = (function () {
   }(Component);
   var MenuSwitch =
   /*#__PURE__*/
-  function (_Component2) {
-    _inherits(MenuSwitch, _Component2);
+  function (_Component3) {
+    _inherits(MenuSwitch, _Component3);
 
     function MenuSwitch() {
-      var _getPrototypeOf3;
+      var _getPrototypeOf4;
 
-      var _this2;
+      var _this3;
 
       _classCallCheck(this, MenuSwitch);
 
-      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        args[_key2] = arguments[_key2];
+      for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        args[_key3] = arguments[_key3];
       }
 
-      _this2 = _possibleConstructorReturn(this, (_getPrototypeOf3 = _getPrototypeOf(MenuSwitch)).call.apply(_getPrototypeOf3, [this].concat(args)));
+      _this3 = _possibleConstructorReturn(this, (_getPrototypeOf4 = _getPrototypeOf(MenuSwitch)).call.apply(_getPrototypeOf4, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "state", {
-        on: userSettings.stored.options[_this2.props.id] || false
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "state", {
+        on: userSettings.stored.options[_this3.props.id] || false
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "switchOn", function () {
-        _this2.props.turnOn();
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "switchOn", function () {
+        _this3.props.turnOn();
 
-        userSettings.save("options", _this2.props.id, true);
+        userSettings.save("options", _this3.props.id, true);
 
-        _this2.setState({
+        _this3.setState({
           on: true
         });
 
-        track.menuClick(_this2.props.section + " section", _this2.props.id + " on");
+        track.menuClick(_this3.props.section + " section", _this3.props.id + " on");
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "switchOff", function () {
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "switchOff", function () {
         var noTrack = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-        _this2.props.turnOff();
+        _this3.props.turnOff();
 
-        userSettings.save("options", _this2.props.id, false);
+        userSettings.save("options", _this3.props.id, false);
 
-        _this2.setState({
+        _this3.setState({
           on: false
         });
 
         if (!noTrack) {
-          track.menuClick(_this2.props.section + " section", _this2.props.id + " off");
+          track.menuClick(_this3.props.section + " section", _this3.props.id + " off");
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "toggleSwitch", function () {
-        if (_this2.state.on) {
-          _this2.switchOff();
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "toggleSwitch", function () {
+        if (_this3.state.on) {
+          _this3.switchOff();
         } else {
-          _this2.switchOn();
+          _this3.switchOn();
         }
       });
 
-      return _this2;
+      return _this3;
     }
 
     _createClass(MenuSwitch, [{
@@ -4467,63 +4532,13 @@ var DubPlus = (function () {
     return GrabsInChat;
   }(Component);
 
-  var GeneralSection =
-  /*#__PURE__*/
-  function (_Component) {
-    _inherits(GeneralSection, _Component);
-
-    function GeneralSection() {
-      var _getPrototypeOf2;
-
-      var _this;
-
-      _classCallCheck(this, GeneralSection);
-
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(GeneralSection)).call.apply(_getPrototypeOf2, [this].concat(args)));
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
-        section: userSettings.stored.menu.general || "open"
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleSection", function (e) {
-        _this.setState(function (prevState) {
-          var newState = prevState.section === "open" ? "closed" : "open";
-          userSettings.save('menu', 'general', newState);
-          return {
-            section: newState
-          };
-        });
-      });
-
-      return _this;
-    }
-
-    _createClass(GeneralSection, [{
-      key: "render",
-      value: function render$$1(props, state) {
-        var _cn = ['dubplus-menu-section'];
-
-        if (state.section === "closed") {
-          _cn.push('dubplus-menu-section-closed');
-        }
-
-        return h("span", null, h(SectionHeader, {
-          onClick: this.toggleSection,
-          id: "dubplus-general",
-          category: "General",
-          open: state.section
-        }), h("ul", {
-          className: _cn.join(' ')
-        }, h(Autovote, null), h(AFK, null), h(AutocompleteEmoji, null), h(Emotes, null), h(CustomMentions, null), h(ChatCleaner, null), h(ChatNotification, null), h(PMNotifications, null), h(DJNotification, null), h(ShowDubsOnHover, null), h(DowndubInChat, null), h(UpdubsInChat, null), h(GrabsInChat, null), h(SnowSwitch, null), h(RainSwitch, null)));
-      }
-    }]);
-
-    return GeneralSection;
-  }(Component);
+  var GeneralSection = function GeneralSection() {
+    return h(MenuSection, {
+      id: "dubplus-general",
+      title: "General",
+      settingsKey: "general"
+    }, h(Autovote, null), h(AFK, null), h(AutocompleteEmoji, null), h(Emotes, null), h(CustomMentions, null), h(ChatCleaner, null), h(ChatNotification, null), h(PMNotifications, null), h(DJNotification, null), h(ShowDubsOnHover, null), h(DowndubInChat, null), h(UpdubsInChat, null), h(GrabsInChat, null), h(SnowSwitch, null), h(RainSwitch, null));
+  };
 
   /**
    * Fullscreen Video
@@ -4688,98 +4703,39 @@ var DubPlus = (function () {
     });
   };
 
-  var UISection =
-  /*#__PURE__*/
-  function (_Component) {
-    _inherits(UISection, _Component);
+  var UISection = function UISection() {
+    return h(MenuSection, {
+      id: "dubplus-ui",
+      title: "UI",
+      settingsKey: "user-interface"
+    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(ShowTS, null));
+  };
 
-    function UISection() {
-      var _getPrototypeOf2;
+  var SettingsSection = function SettingsSection() {
+    return h(MenuSection, {
+      id: "dubplus-settings",
+      title: "Settings",
+      settingsKey: "settings"
+    });
+  };
 
-      var _this;
+  /**
+   * DubPlus Menu Container
+   */
 
-      _classCallCheck(this, UISection);
-
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(UISection)).call.apply(_getPrototypeOf2, [this].concat(args)));
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
-        section: userSettings.stored.menu['user-interface'] || "open"
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleSection", function (e) {
-        _this.setState(function (prevState) {
-          var newState = prevState.section === "open" ? "closed" : "open";
-          userSettings.save('menu', 'user-interface', newState);
-          return {
-            section: newState
-          };
-        });
-      });
-
-      return _this;
-    }
-
-    _createClass(UISection, [{
-      key: "render",
-      value: function render$$1(props, state) {
-        var _cn = ['dubplus-menu-section'];
-
-        if (state.section === "closed") {
-          _cn.push('dubplus-menu-section-closed');
-        }
-
-        return h("span", null, h(SectionHeader, {
-          onClick: this.toggleSection,
-          id: "dubplus-general",
-          category: "UI",
-          open: state.section
-        }), h("ul", {
-          className: _cn.join(' ')
-        }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(ShowTS, null)));
-      }
-    }]);
-
-    return UISection;
-  }(Component);
-
-  var DubPlusMenu =
-  /*#__PURE__*/
-  function (_Component) {
-    _inherits(DubPlusMenu, _Component);
-
-    function DubPlusMenu() {
-      _classCallCheck(this, DubPlusMenu);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(DubPlusMenu).apply(this, arguments));
-    }
-
-    _createClass(DubPlusMenu, [{
-      key: "componentDidMount",
-      value: function componentDidMount() {
-        // load this async so it doesn't block the rest of the menu render
-        // since these buttons are completely independent from the menu
-        setTimeout(function () {
-          snooze$1();
-          eta();
-        }, 10);
-      }
-    }, {
-      key: "render",
-      value: function render$$1(props, state) {
-        return h("section", {
-          className: "dubplus-menu"
-        }, h("p", {
-          className: "dubplus-menu-header"
-        }, "Dub+ Options"), h(GeneralSection, null), h(UISection, null));
-      }
-    }]);
-
-    return DubPlusMenu;
-  }(Component);
+  var DubPlusMenu = function DubPlusMenu() {
+    setTimeout(function () {
+      // load this async so it doesn't block the rest of the menu render
+      // since these buttons are completely independent from the menu
+      snooze$1();
+      eta();
+    }, 10);
+    return h("section", {
+      className: "dubplus-menu"
+    }, h("p", {
+      className: "dubplus-menu-header"
+    }, "Dub+ Options"), h(GeneralSection, null), h(UISection, null), h(SettingsSection, null));
+  };
 
   /**
    * Takes a string  representation of a variable or object and checks if it's
@@ -5028,7 +4984,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548906320189);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548909472802);
     document.head.appendChild(link);
   }
   /**

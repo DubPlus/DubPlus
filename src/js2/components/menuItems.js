@@ -1,7 +1,47 @@
 import { h, Component } from "preact";
 import settings from "../utils/UserSettings.js";
+import SectionHeader from "../components/section-header";
 import Modal from "./modal.js";
 import track from "../utils/analytics.js";
+
+/**
+ * Component to render a menu section.
+ * @param {object} props
+ * @param {string} props.id
+ * @param {string} props.title the name to display
+ * @param {string} props.settingsKey the key in the setting.stored.menu object
+ */
+export class MenuSection extends Component {
+  state = {
+    section: settings.stored.menu[this.props.settingsKey] || "open"
+  };
+
+  toggleSection = e => {
+    this.setState(prevState => {
+      let newState = prevState.section === "open" ? "closed" : "open";
+      settings.save("menu", this.props.settingsKey, newState);
+      return { section: newState };
+    });
+  };
+
+  render(props, state) {
+    let _cn = ["dubplus-menu-section"];
+    if (state.section === "closed") {
+      _cn.push("dubplus-menu-section-closed");
+    }
+    return (
+      <>
+        <SectionHeader
+          onClick={this.toggleSection}
+          id={props.id}
+          category={props.title}
+          open={state.section}
+        />
+        <ul className={_cn.join(" ")}>{props.children}</ul>
+      </>
+    );
+  }
+}
 
 /**
  * Component to render a simple row like the links in the contact section
