@@ -2100,7 +2100,7 @@ var DubPlus = (function () {
 
   /**
    * Handles loading emotes from api and storing them locally
-   * 
+   *
    * @class TwitchEmotes
    */
 
@@ -2117,7 +2117,7 @@ var DubPlus = (function () {
       _defineProperty(this, "emotes", {});
 
       _defineProperty(this, "sortedKeys", {
-        'nonAlpha': []
+        nonAlpha: []
       });
 
       _defineProperty(this, "loaded", false);
@@ -2145,8 +2145,9 @@ var DubPlus = (function () {
       value: function load() {
         var _this2 = this;
 
-        // if it doesn't exist in indexedDB or it's older than 5 days
+        console.time("twitch_load"); // if it doesn't exist in indexedDB or it's older than 5 days
         // grab it from the twitch API
+
         return shouldUpdateAPIs("twitch").then(function (update) {
           if (update) {
             return _this2.updateFromApi();
@@ -2163,12 +2164,13 @@ var DubPlus = (function () {
         return new Promise(function (resolve, reject) {
           try {
             ldb.get("twitch_api", function (data) {
+              console.timeEnd("twitch_load");
               console.log("dub+", "twitch", "loading from IndexedDB");
-              var savedData = JSON.parse(data);
+              var savedData = JSON.parse(data); // this.processEmotes(savedData);
 
-              _this3.processEmotes(savedData);
+              _this3.processViaWebWorker(savedData);
 
-              _this3.loaded = 'from db';
+              _this3.loaded = "from db";
               savedData = null; // clear the var from memory
 
               resolve();
@@ -2184,9 +2186,10 @@ var DubPlus = (function () {
         var _this4 = this;
 
         console.log("dub+", "twitch", "loading from api");
-        var corsEsc = 'https://cors-escape.herokuapp.com';
+        var corsEsc = "https://cors-escape.herokuapp.com";
         var twApi = getJSON("".concat(corsEsc, "/https://api.twitch.tv/kraken/chat/emoticon_images"));
         return twApi.then(function (json) {
+          console.timeEnd("twitch_load");
           var twitchEmotes = {};
           json.emoticons.forEach(function (e) {
             if (!twitchEmotes[e.code] || e.emoticon_set === null) {
@@ -2196,11 +2199,11 @@ var DubPlus = (function () {
             }
           });
           localStorage.setItem("twitch_api_timestamp", Date.now().toString());
-          ldb.set("twitch_api", JSON.stringify(twitchEmotes));
+          ldb.set("twitch_api", JSON.stringify(twitchEmotes)); // this.processEmotes(twitchEmotes);
 
-          _this4.processEmotes(twitchEmotes);
+          _this4.processViaWebWorker(twitchEmotes);
 
-          _this4.loaded = 'from api';
+          _this4.loaded = "from api";
         });
       }
     }, {
@@ -2236,6 +2239,8 @@ var DubPlus = (function () {
     }, {
       key: "processEmotes",
       value: function processEmotes(data) {
+        console.time("twitch_process");
+
         for (var code in data) {
           if (data.hasOwnProperty(code)) {
             var _key = code.toLowerCase(); // move twitch non-named emojis to their own array
@@ -2258,6 +2263,40 @@ var DubPlus = (function () {
             }
           }
         }
+
+        console.timeEnd("twitch_process");
+      }
+    }, {
+      key: "processViaWebWorker",
+      value: function processViaWebWorker(data) {
+        var _this6 = this;
+
+        // URL.createObjectURL
+        window.URL = window.URL || window.webkitURL;
+        var response = "\n      var emotes = {};\n      var sortedKeys = {\n        'nonAlpha' : []\n      };\n\n      function addKeyToSorted(key) {\n        let first = key.charAt(0);\n    \n        // all numbers and symbols get stored in one 'nonAlpha' array\n        if (!/[a-z]/i.test(first)) {\n          sortedKeys.nonAlpha.push(key);\n          return;\n        }\n    \n        if (!sortedKeys[first]) {\n          sortedKeys[first] = [key];\n          return\n        }\n    \n        sortedKeys[first].push(key);\n      }\n\n      self.addEventListener('message', function(e) {\n        var emojiNames = e.data.emojiNames;\n        var data = e.data.data;\n\n        for (var code in data) {\n          if (data.hasOwnProperty(code)) {\n            var _key = code.toLowerCase();\n      \n            // not doing anything with non-named emojis\n            if (/\\\\/g.test(code)) {\n              continue;\n            }\n      \n            if (emojiNames.indexOf(_key) >= 0) {\n              continue; // don't override regular emojis handled by emojify\n            }\n      \n            if (!emotes[_key]) {\n              // if emote doesn't exist, add it\n              emotes[_key] = data[code];\n              addKeyToSorted(_key);\n            }\n          }\n        }\n\n        self.postMessage({\n          emotes: emotes,\n          sortedKeys: sortedKeys\n        });\n      }, false);\n    ";
+        var blob;
+
+        try {
+          blob = new Blob([response], {
+            type: "application/javascript"
+          });
+        } catch (e) {
+          // Backwards-compatibility
+          window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
+          blob = new BlobBuilder();
+          blob.append(response);
+          blob = blob.getBlob();
+        }
+
+        var worker = new Worker(URL.createObjectURL(blob));
+        worker.addEventListener("message", function (e) {
+          _this6.emotes = e.data.emotes;
+          _this6.sortedKeys = e.data.sortedKeys;
+        });
+        worker.postMessage({
+          data: data,
+          emojiNames: emojify.emojiNames
+        });
       }
     }]);
 
@@ -2313,8 +2352,9 @@ var DubPlus = (function () {
       value: function load() {
         var _this2 = this;
 
-        // if it doesn't exist in localStorage or it's older than 5 days
+        console.time('bttv_load'); // if it doesn't exist in localStorage or it's older than 5 days
         // grab it from the bttv API
+
         return shouldUpdateAPIs("bttv").then(function (update) {
           if (update) {
             return _this2.updateFromAPI();
@@ -2331,6 +2371,7 @@ var DubPlus = (function () {
         return new Promise(function (resolve, reject) {
           try {
             ldb.get("bttv_api", function (data) {
+              console.timeEnd('bttv_load');
               console.log("dub+", "bttv", "loading from IndexedDB");
               var savedData = JSON.parse(data);
 
@@ -2353,6 +2394,7 @@ var DubPlus = (function () {
         console.log("dub+", "bttv", "loading from api");
         var bttvApi = getJSON("https://api.betterttv.net/2/emotes", this.headers);
         return bttvApi.then(function (json) {
+          console.timeEnd('bttv_load');
           var bttvEmotes = {};
           json.emotes.forEach(function (e) {
             if (!bttvEmotes[e.code]) {
@@ -2398,6 +2440,8 @@ var DubPlus = (function () {
     }, {
       key: "processEmotes",
       value: function processEmotes(data) {
+        console.time('bttv_process');
+
         for (var code in data) {
           if (data.hasOwnProperty(code)) {
             var _key = code.toLowerCase();
@@ -2420,6 +2464,7 @@ var DubPlus = (function () {
         }
 
         this.loaded = true;
+        console.timeEnd('bttv_process');
       }
     }]);
 
@@ -2480,14 +2525,17 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatInput", document.getElementById("chat-txt-message"));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "navIndex", 0);
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "navIndex", -1);
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "checkInput", function (e) {
+        // we want to ignore keyups that don't output anything
         var key = "which" in e ? e.which : e.keyCode;
 
         if (ignoreKeys.indexOf(key) >= 0) {
           return;
-        }
+        } // grab the input value and split into an array so we can easily grab the
+        // last element in it
+
 
         var parts = e.target.value.split(" ");
 
@@ -2496,7 +2544,8 @@ var DubPlus = (function () {
         }
 
         var lastPart = parts[parts.length - 1];
-        var lastChar = lastPart.charAt(lastPart.length - 1);
+        var lastChar = lastPart.charAt(lastPart.length - 1); // now we check if the last word in the input starts with the opening 
+        // emoji colon but does not have the closing emoji colon
 
         if (lastPart.charAt(0) === ":" && lastPart.length > 3 && lastChar !== ":") {
           var new_matches = _this.getMatches(lastPart);
@@ -2559,6 +2608,11 @@ var DubPlus = (function () {
 
             break;
 
+          case KEYS.enter:
+            _this.closePreview();
+
+            break;
+
           default:
             return true;
         }
@@ -2567,9 +2621,8 @@ var DubPlus = (function () {
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (e) {
         _this.setState({
           isOn: true
-        });
+        }); // relying on Dubtrack.fm's lodash being globally available
 
-        Dubtrack.room.chat.delegateEvents(_.omit(Dubtrack.room.chat.events, ["keydown #chat-txt-message"])); // relying on Dubtrack.fm's lodash being globally available
 
         _this.debouncedCheckInput = window._.debounce(_this.checkInput, 100);
         _this.debouncedNav = window._.debounce(_this.keyboardNav, 100);
@@ -2584,8 +2637,6 @@ var DubPlus = (function () {
           isOn: false
         });
 
-        Dubtrack.room.chat.delegateEvents(Dubtrack.room.chat.events);
-
         _this.chatInput.removeEventListener("keydown", _this.debouncedNav);
 
         _this.chatInput.removeEventListener("keyup", _this.debouncedCheckInput);
@@ -2596,6 +2647,8 @@ var DubPlus = (function () {
 
     _createClass(AutocompleteEmoji, [{
       key: "chunkLoadMatches",
+      // to speed up some of the DOM loading we only display the first 50 matches
+      // right away and then wait a bit to add the rest
       value: function chunkLoadMatches(matches) {
         var _this2 = this;
 
@@ -2647,6 +2700,14 @@ var DubPlus = (function () {
         if (selected) selected.classList.remove("selected");
       }
     }, {
+      key: "isElementInView",
+      value: function isElementInView(el) {
+        var container = document.querySelector('#autocomplete-preview');
+        var rect = el.getBoundingClientRect();
+        var outerRect = container.getBoundingClientRect();
+        return rect.top >= outerRect.top && rect.bottom <= outerRect.bottom;
+      }
+    }, {
       key: "navDown",
       value: function navDown() {
         this.clearSelected();
@@ -2656,11 +2717,13 @@ var DubPlus = (function () {
           this.navIndex = 0;
         }
 
-        console.log('down', this.navIndex);
         var item = this.previewList[this.navIndex];
-        console.log(item);
         item.classList.add("selected");
-        item.scrollIntoView();
+
+        if (!this.isElementInView(item)) {
+          item.scrollIntoView(false);
+        }
+
         this.updateChatInput(item.dataset.name, false);
       }
     }, {
@@ -2675,17 +2738,19 @@ var DubPlus = (function () {
 
         var item = this.previewList[this.navIndex];
         item.classList.add("selected");
-        item.scrollIntoView(true);
+
+        if (!this.isElementInView(item)) {
+          item.scrollIntoView(true);
+        }
+
         this.updateChatInput(item.dataset.name, false);
       }
     }, {
       key: "componentDidUpdate",
       value: function componentDidUpdate(prevProps, prevState) {
-        console.log('updated');
-
         if (this.state.isOn) {
           this.previewList = document.querySelectorAll("#autocomplete-preview li");
-          if (this.previewList[0]) console.log('new list', this.previewList[0].dataset.name);
+          console.log('previewList: ', this.previewList.length);
         }
       }
     }, {
@@ -4798,7 +4863,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548914006692);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548961270704);
     document.head.appendChild(link);
   }
   /**
@@ -4844,7 +4909,11 @@ var DubPlus = (function () {
   }
 
   function turnOff$8() {
-    document.querySelector(".dubplus-comm-theme").remove();
+    var css = document.querySelector(".dubplus-comm-theme");
+
+    if (css) {
+      css.remove();
+    }
   }
 
   var CommunityTheme = function CommunityTheme() {
@@ -5292,8 +5361,8 @@ var DubPlus = (function () {
   }(Component);
 
   render(h(DubPlusContainer, null), document.body);
-  var navWait = new WaitFor(".header-right-navigation", {
-    seconds: 30,
+  var navWait = new WaitFor(".header-right-navigation .user-messages", {
+    seconds: 60,
     isNode: true
   });
   navWait.then(function () {

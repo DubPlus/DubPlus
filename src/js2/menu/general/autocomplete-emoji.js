@@ -48,18 +48,21 @@ export default class AutocompleteEmoji extends Component {
 
   chatInput = document.getElementById("chat-txt-message");
 
-  navIndex = 0;
+  navIndex = -1;
 
   /**
    * check chat input for the beginning of an emoji at the very end
    * of the input string. Similar to how Dubtrack handles user autocomplete
    */
   checkInput = e => {
+    // we want to ignore keyups that don't output anything
     const key = "which" in e ? e.which : e.keyCode;
     if (ignoreKeys.indexOf(key) >= 0) {
       return;
     }
 
+    // grab the input value and split into an array so we can easily grab the
+    // last element in it
     const parts = e.target.value.split(" ");
     if (parts.length === 0) {
       return;
@@ -68,6 +71,8 @@ export default class AutocompleteEmoji extends Component {
     const lastPart = parts[parts.length - 1];
     const lastChar = lastPart.charAt(lastPart.length - 1);
 
+    // now we check if the last word in the input starts with the opening 
+    // emoji colon but does not have the closing emoji colon
     if (lastPart.charAt(0) === ":" && lastPart.length > 3 && lastChar !== ":") {
       let new_matches = this.getMatches(lastPart);
       this.chunkLoadMatches(new_matches);
@@ -79,6 +84,8 @@ export default class AutocompleteEmoji extends Component {
     }
   };
 
+  // to speed up some of the DOM loading we only display the first 50 matches
+  // right away and then wait a bit to add the rest
   chunkLoadMatches(matches) {
     let limit = 50;
     if (matches.length < limit + 1) {
@@ -128,17 +135,24 @@ export default class AutocompleteEmoji extends Component {
     if (selected) selected.classList.remove("selected");
   }
 
+  isElementInView (el) {
+    var container = document.querySelector('#autocomplete-preview');
+    var rect = el.getBoundingClientRect();
+    var outerRect = container.getBoundingClientRect();
+    return rect.top >= outerRect.top && rect.bottom <= outerRect.bottom;
+  }
+
   navDown() {
     this.clearSelected();
     this.navIndex++;
     if (this.navIndex >= this.previewList.length) {
       this.navIndex = 0;
     }
-    console.log('down', this.navIndex);
     let item = this.previewList[this.navIndex];
-    console.log(item);
     item.classList.add("selected");
-    item.scrollIntoView();
+    if (!this.isElementInView(item)) {
+      item.scrollIntoView(false);
+    }
     this.updateChatInput(item.dataset.name, false);
   }
 
@@ -150,7 +164,9 @@ export default class AutocompleteEmoji extends Component {
     }
     let item = this.previewList[this.navIndex];
     item.classList.add("selected");
-    item.scrollIntoView(true);
+    if (!this.isElementInView(item)) {
+      item.scrollIntoView(true);
+    }
     this.updateChatInput(item.dataset.name, false);
   }
 
@@ -180,6 +196,9 @@ export default class AutocompleteEmoji extends Component {
         this.closePreview();
         this.chatInput.focus();
         break;
+      case KEYS.enter:
+        this.closePreview();
+        break;
       default:
         return true;
     }
@@ -187,11 +206,6 @@ export default class AutocompleteEmoji extends Component {
 
   turnOn = e => {
     this.setState({ isOn: true });
-    
-    Dubtrack.room.chat.delegateEvents(
-      _.omit(Dubtrack.room.chat.events, ["keydown #chat-txt-message"])
-    );
-
     // relying on Dubtrack.fm's lodash being globally available
     this.debouncedCheckInput = window._.debounce(this.checkInput, 100);
     this.debouncedNav = window._.debounce(this.keyboardNav, 100);
@@ -201,16 +215,14 @@ export default class AutocompleteEmoji extends Component {
 
   turnOff = e => {
     this.setState({ isOn: false });
-    Dubtrack.room.chat.delegateEvents(Dubtrack.room.chat.events);
     this.chatInput.removeEventListener("keydown", this.debouncedNav);
     this.chatInput.removeEventListener("keyup", this.debouncedCheckInput);
   };
 
   componentDidUpdate(prevProps, prevState) {
-    console.log('updated');
     if (this.state.isOn) {
       this.previewList = document.querySelectorAll("#autocomplete-preview li");
-      if (this.previewList[0]) console.log('new list', this.previewList[0].dataset.name);
+      console.log('previewList: ', this.previewList.length)
     }
   }
 

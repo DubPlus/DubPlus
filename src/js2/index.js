@@ -109,7 +109,7 @@ class DubPlusContainer extends Component {
 
 render(<DubPlusContainer />, document.body);
 
-let navWait = new WaitFor(".header-right-navigation", { seconds: 30, isNode: true });
+let navWait = new WaitFor(".header-right-navigation .user-messages", { seconds: 60, isNode: true });
 navWait.then(()=>{
   render(<MenuIcon />, document.querySelector(".header-right-navigation"));
 });
