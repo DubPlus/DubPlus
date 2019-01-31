@@ -23,7 +23,7 @@ import GrabsInChat from './grabs-in-chat.js';
 
 export default class GeneralSection extends Component {
   state = {
-    section : settings.stored.general || "open"
+    section : settings.stored.menu.general || "open"
   }
 
   toggleSection = (e) => {

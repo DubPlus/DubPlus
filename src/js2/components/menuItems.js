@@ -11,6 +11,7 @@ import track from "../utils/analytics.js";
  * @param {string} props.desc description of the menu item used in the title attr
  * @param {string} props.icon icon to be used
  * @param {string} props.menuTitle text to display in the menu
+ * @param {Function} props.onClick text to display in the menu
  */
 export function MenuSimple(props) {
   let _cn = ["dubplus-menu-icon"];
@@ -20,7 +21,12 @@ export function MenuSimple(props) {
   }
 
   return (
-    <li id={props.id} title={props.desc} className={_cn.join(" ")}>
+    <li
+      id={props.id}
+      title={props.desc}
+      className={_cn.join(" ")}
+      onClick={props.onClick}
+    >
       <span className={`fa fa-${props.icon}`} />
       <span className="dubplus-menu-label">{props.menuTitle}</span>
     </li>

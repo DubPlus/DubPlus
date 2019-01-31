@@ -12,23 +12,44 @@ General
 - ~~AFK~~
 - ~~Emotes~~
 - AutoComplete Emoji
-- Custom Mentions
-- Chat Cleaner
-- Notifications on Mention
-- Notifications on PM
-- DJ Notifications
-- Show Dub on Hover
-- Downdubs in Chat (mods only)
-- Updubs in Chat
-- Grabs in Chat
-- Snow
-- Rain
+- ~~Custom Mentions~~
+- ~~Chat Cleaner~~
+- ~~Notifications on Mention~~
+- ~~Notifications on PM~~
+- ~~DJ Notifications~~
+- ~~Show Dub on Hover~~
+- ~~Downdubs in Chat (mods only)~~
+- ~~Updubs in Chat~~
+- ~~Grabs in Chat~~
+- ~~Snow~~
+- ~~Rain~~
+
 UI    
 - Fullscreen video
-- Spit Chat
+- Split Chat
 - Hide Chat
 - Hide Video
-- 
+- Hide Avatars
+- Hide Background
+- Show Timestamps
+
+Settings    
+- Spacebar mute
+- Warn on navigation
+
+Customize    
+- Community Theme
+- Custom CSS
+- Custom Background
+- Custom Notification Sound
+
+Contact    
+- Report bugs on Discord
+- Reddit
+- Facebook
+- Twitter
+
+
 
 -----
 

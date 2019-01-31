@@ -11,13 +11,18 @@ import track from "./utils/analytics.js";
 
 polyfills();
 
-// setTimeout(function() {
-//   // start the loading of the CSS asynchronously
-//   cssHelper.loadExternal(
-//     "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-//     );
-//   cssHelper.load("/css/dubplus.css");
-// }, 1);
+// the extension loads the CSS from the load script so we don't need to 
+// do it here. This is for people who load the script via bookmarklet or userscript
+let isExtension = document.getElementById("dubplus-script-ext");
+if (!isExtension) {
+  setTimeout(function() {
+    // start the loading of the CSS asynchronously
+    cssHelper.loadExternal(
+      "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      );
+    cssHelper.load("/css/dubplus.css");
+  }, 1);
+}
 
 class DubPlusContainer extends Component {
   state = {
@@ -103,6 +108,7 @@ class DubPlusContainer extends Component {
 }
 
 render(<DubPlusContainer />, document.body);
+
 let navWait = new WaitFor(".header-right-navigation", { seconds: 30, isNode: true });
 navWait.then(()=>{
   render(<MenuIcon />, document.querySelector(".header-right-navigation"));

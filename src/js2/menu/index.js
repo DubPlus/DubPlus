@@ -5,6 +5,7 @@ import { h, Component } from 'preact';
 import snooze from '../components/snooze.js';
 import eta from '../components/eta.js';
 import GeneralSection from './general/index.js';
+import UISection from './ui/index.js';
 
 export default class DubPlusMenu extends Component {
 
@@ -22,6 +23,7 @@ export default class DubPlusMenu extends Component {
       <section className="dubplus-menu">
         <p className="dubplus-menu-header">Dub+ Options</p>
         <GeneralSection />
+        <UISection />
       </section>
     )
   }

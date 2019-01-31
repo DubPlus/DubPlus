@@ -40,6 +40,7 @@
     "fake-indexeddb": "^2.0.4",
     "fs-extra": "^2.0.0",
     "git-repo-info": "^1.4.1",
+    "jest": "^22.4.4",
     "jsdom": "^11.12.0",
     "node-sass": "^4.11.0",
     "postcss": "^5.2.18",
@@ -58,7 +59,6 @@
     "sinon": "^4.5.0"
   },
   "dependencies": {
-    "jest": "^22.4.4",
     "preact": "^8.4.2",
     "preact-portal": "^1.1.3"
   }

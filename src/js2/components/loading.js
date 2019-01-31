@@ -15,7 +15,8 @@ var waitingStyles = {
   borderRadius : '5px',
   overflow : 'hidden',
   width : '230px',
-  transition : 'right 200ms'
+  transition : 'right 200ms',
+  cursor: 'pointer'
 };
 
 var dpIcon = {
@@ -44,6 +45,10 @@ export default class LoadingNotice extends Component {
   }
 
   componentWillUnmount() {
+    this.dismiss();
+  }
+
+  dismiss = () => {
     this.setState((prevState, props) => ({
       mainStyles: Object.assign({}, prevState.mainStyles, {right:'-250px'})
     }))
@@ -51,7 +56,7 @@ export default class LoadingNotice extends Component {
 
   render(props,state) {
     return (
-      <div style={state.mainStyles}>
+      <div style={state.mainStyles} onClick={this.dismiss}>
         <div style={dpIcon}>
           <img src={settings.srcRoot+'/images/dubplus.svg'} alt="DubPlus icon" />
         </div>

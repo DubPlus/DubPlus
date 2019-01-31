@@ -1422,6 +1422,35 @@ var DubPlus = (function () {
   var track = new GA('UA-116652541-1');
 
   /**
+   * Component to render a simple row like the links in the contact section
+   * or the fullscreen menu option
+   * @param {object} props
+   * @param {string} props.id the dom ID name, usually dubplus-*
+   * @param {string} props.desc description of the menu item used in the title attr
+   * @param {string} props.icon icon to be used
+   * @param {string} props.menuTitle text to display in the menu
+   * @param {Function} props.onClick text to display in the menu
+   */
+
+  function MenuSimple(props) {
+    var _cn = ["dubplus-menu-icon"]; // combine with ones that were passed through
+
+    if (props.className) {
+      _cn.push(props.className);
+    }
+
+    return h("li", {
+      id: props.id,
+      title: props.desc,
+      className: _cn.join(" "),
+      onClick: props.onClick
+    }, h("span", {
+      className: "fa fa-".concat(props.icon)
+    }), h("span", {
+      className: "dubplus-menu-label"
+    }, props.menuTitle));
+  }
+  /**
    * Component which brings up a modal box to allow user to
    * input and store a text value which will be used by the
    * parent menu item.
@@ -4457,7 +4486,7 @@ var DubPlus = (function () {
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(GeneralSection)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
-        section: userSettings.stored.general || "open"
+        section: userSettings.stored.menu.general || "open"
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleSection", function (e) {
@@ -4496,6 +4525,227 @@ var DubPlus = (function () {
     return GeneralSection;
   }(Component);
 
+  /**
+   * Fullscreen Video
+   */
+
+  function goFS() {
+    var elem = document.querySelector("#room-main-player-container");
+
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+      elem.msRequestFullscreen();
+    } else if (elem.mozRequestFullScreen) {
+      elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen();
+    }
+  }
+
+  var FullscreenVideo = function FullscreenVideo() {
+    return h(MenuSimple, {
+      id: "dubplus-fullscreen",
+      section: "User Interface",
+      menuTitle: "Fullscreen Video",
+      desc: "Toggle fullscreen video mode",
+      icon: "arrows-alt",
+      onClick: goFS
+    });
+  };
+
+  function turnOn() {
+    document.body.classList.add('dubplus-split-chat');
+  }
+
+  function turnOff() {
+    document.body.classList.remove('dubplus-split-chat');
+  }
+  /**
+   * Split Chat
+   */
+
+
+  var SplitChat = function SplitChat() {
+    return h(MenuSwitch, {
+      id: "dubplus-split-chat",
+      section: "User Interface",
+      menuTitle: "Split Chat",
+      desc: "Toggle Split Chat UI enhancement",
+      turnOn: turnOn,
+      turnOff: turnOff
+    });
+  };
+
+  function turnOn$1() {
+    document.body.classList.add('dubplus-video-only');
+  }
+
+  function turnOff$1() {
+    document.body.classList.remove('dubplus-video-only');
+  }
+  /**
+   * Hide Chat
+   */
+
+
+  var HideChat = function HideChat() {
+    return h(MenuSwitch, {
+      id: "dubplus-video-only",
+      section: "User Interface",
+      menuTitle: "Hide Chat",
+      desc: "Toggles hiding the chat box",
+      turnOn: turnOn$1,
+      turnOff: turnOff$1
+    });
+  };
+
+  function turnOn$2() {
+    document.body.classList.add('dubplus-chat-only');
+  }
+
+  function turnOff$2() {
+    document.body.classList.remove('dubplus-chat-only');
+  }
+  /**
+   * Hide Video
+   */
+
+
+  var HideVideo = function HideVideo() {
+    return h(MenuSwitch, {
+      id: "dubplus-chat-only",
+      section: "User Interface",
+      menuTitle: "Hide Video",
+      desc: "Toggles hiding the video box",
+      turnOn: turnOn$2,
+      turnOff: turnOff$2
+    });
+  };
+
+  function turnOn$3() {
+    document.body.classList.add('dubplus-hide-avatars');
+  }
+
+  function turnOff$3() {
+    document.body.classList.remove('dubplus-hide-avatars');
+  }
+  /**
+   * Hide Avatars
+   */
+
+
+  var HideAvatars = function HideAvatars() {
+    return h(MenuSwitch, {
+      id: "dubplus-hide-avatars",
+      section: "User Interface",
+      menuTitle: "Hide Avatars",
+      desc: "Toggle hiding user avatars in the chat box.",
+      turnOn: turnOn$3,
+      turnOff: turnOff$3
+    });
+  };
+
+  function turnOn$4() {
+    document.body.classList.add('dubplus-hide-bg');
+  }
+
+  function turnOff$4() {
+    document.body.classList.remove('dubplus-hide-bg');
+  }
+  /**
+   * Hide Background
+   */
+
+
+  var HideBackground = function HideBackground() {
+    return h(MenuSwitch, {
+      id: "dubplus-hide-bg",
+      section: "User Interface",
+      menuTitle: "Hide Background",
+      desc: "Toggle hiding background image.",
+      turnOn: turnOn$4,
+      turnOff: turnOff$4
+    });
+  };
+
+  function turnOn$5() {
+    document.body.classList.add('dubplus-show-timestamp');
+  }
+
+  function turnOff$5() {
+    document.body.classList.remove('dubplus-show-timestamp');
+  }
+
+  var ShowTS = function ShowTS() {
+    return h(MenuSwitch, {
+      id: "dubplus-show-timestamp",
+      section: "User Interface",
+      menuTitle: "Show Timestamps",
+      desc: "Toggle always showing chat message timestamps.",
+      turnOn: turnOn$5,
+      turnOff: turnOff$5
+    });
+  };
+
+  var UISection =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(UISection, _Component);
+
+    function UISection() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, UISection);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(UISection)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        section: userSettings.stored.menu['user-interface'] || "open"
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleSection", function (e) {
+        _this.setState(function (prevState) {
+          var newState = prevState.section === "open" ? "closed" : "open";
+          userSettings.save('menu', 'user-interface', newState);
+          return {
+            section: newState
+          };
+        });
+      });
+
+      return _this;
+    }
+
+    _createClass(UISection, [{
+      key: "render",
+      value: function render$$1(props, state) {
+        var _cn = ['dubplus-menu-section'];
+
+        if (state.section === "closed") {
+          _cn.push('dubplus-menu-section-closed');
+        }
+
+        return h("span", null, h(SectionHeader, {
+          onClick: this.toggleSection,
+          id: "dubplus-general",
+          category: "UI",
+          open: state.section
+        }), h("ul", {
+          className: _cn.join(' ')
+        }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(ShowTS, null)));
+      }
+    }]);
+
+    return UISection;
+  }(Component);
+
   var DubPlusMenu =
   /*#__PURE__*/
   function (_Component) {
@@ -4524,7 +4774,7 @@ var DubPlus = (function () {
           className: "dubplus-menu"
         }, h("p", {
           className: "dubplus-menu-header"
-        }, "Dub+ Options"), h(GeneralSection, null));
+        }, "Dub+ Options"), h(GeneralSection, null), h(UISection, null));
       }
     }]);
 
@@ -4666,7 +4916,8 @@ var DubPlus = (function () {
     borderRadius: '5px',
     overflow: 'hidden',
     width: '230px',
-    transition: 'right 200ms'
+    transition: 'right 200ms',
+    cursor: 'pointer'
   };
   var dpIcon = {
     float: 'left',
@@ -4701,6 +4952,16 @@ var DubPlus = (function () {
         mainStyles: waitingStyles
       });
 
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dismiss", function () {
+        _this.setState(function (prevState, props) {
+          return {
+            mainStyles: Object.assign({}, prevState.mainStyles, {
+              right: '-250px'
+            })
+          };
+        });
+      });
+
       return _this;
     }
 
@@ -4722,19 +4983,14 @@ var DubPlus = (function () {
     }, {
       key: "componentWillUnmount",
       value: function componentWillUnmount() {
-        this.setState(function (prevState, props) {
-          return {
-            mainStyles: Object.assign({}, prevState.mainStyles, {
-              right: '-250px'
-            })
-          };
-        });
+        this.dismiss();
       }
     }, {
       key: "render",
       value: function render$$1(props, state) {
         return h("div", {
-          style: state.mainStyles
+          style: state.mainStyles,
+          onClick: this.dismiss
         }, h("div", {
           style: dpIcon
         }, h("img", {
@@ -4748,6 +5004,53 @@ var DubPlus = (function () {
 
     return LoadingNotice;
   }(Component);
+
+  var makeLink = function makeLink(className, FileName) {
+    var link = document.createElement('link');
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    link.className = className || '';
+    link.href = FileName;
+    return link;
+  };
+  /**
+   * Loads a CSS file into <head>.  It concats settings.srcRoot with the first 
+   * argument (cssFile)
+   * @param {string} cssFile    the css file location
+   * @param {string} className  class name to give the <link> element
+   *
+   * example:  css.load("/options/show_timestamps.css", "show_timestamps_link");
+   */
+
+
+  function load(cssFile, className) {
+    if (!cssFile) {
+      return;
+    }
+
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548906320189);
+    document.head.appendChild(link);
+  }
+  /**
+   * Loads a css file from a full URL in the <head>
+   * @param  {String} cssFile   the full url location of a CSS file
+   * @param  {String} className a class name to give to the <link> element
+   */
+
+
+  function loadExternal(cssFile, className) {
+    if (!cssFile) {
+      return;
+    }
+
+    var link = makeLink(className, cssFile);
+    document.head.appendChild(link);
+  }
+
+  var cssHelper = {
+    load: load,
+    loadExternal: loadExternal
+  };
 
   var MenuIcon =
   /*#__PURE__*/
@@ -4808,13 +5111,18 @@ var DubPlus = (function () {
     return MenuIcon;
   }(Component);
 
-  polyfills(); // setTimeout(function() {
-  //   // start the loading of the CSS asynchronously
-  //   cssHelper.loadExternal(
-  //     "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-  //     );
-  //   cssHelper.load("/css/dubplus.css");
-  // }, 1);
+  polyfills(); // the extension loads the CSS from the load script so we don't need to 
+  // do it here. This is for people who load the script via bookmarklet or userscript
+
+  var isExtension = document.getElementById("dubplus-script-ext");
+
+  if (!isExtension) {
+    setTimeout(function () {
+      // start the loading of the CSS asynchronously
+      cssHelper.loadExternal("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+      cssHelper.load("/css/dubplus.css");
+    }, 1);
+  }
 
   var DubPlusContainer =
   /*#__PURE__*/
