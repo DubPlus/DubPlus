@@ -1,0 +1,37 @@
+.dp-emoji-picker-icon {
+  color: #fff;
+  margin-left: .5rem;
+  display: inline-block;
+  cursor: pointer;
+  font-size: 1.2em;
+}
+
+.dp-emoji-picker {
+  background-color: rgba(0,0,0,0.9);
+  position: absolute;
+  bottom: 56px;
+  width: 100%;
+  left: 0;
+  max-height: 0;
+  transition: max-height 0.4s;
+  overflow: hidden;
+
+  &.show {
+    max-height: 180px;
+    overflow-y: scroll;
+  }
+
+  span {
+    display: inline-block;
+    width: 24px;
+    height: 25px;
+    margin: 5px;
+    cursor: pointer;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
