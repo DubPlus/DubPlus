@@ -50,10 +50,7 @@ export default class AFK extends Component {
   }
 
   saveAFKmessage (val) {
-    if (val !== '') {
-      // TODO: save to global state
-      settings.save('custom', 'customAfkMessage', val);
-    }
+    settings.save('custom', 'customAfkMessage', val);
   };
 
   render(props,state){

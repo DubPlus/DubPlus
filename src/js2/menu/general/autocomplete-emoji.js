@@ -12,14 +12,6 @@ import { emoji } from "../../utils/emotes/prepEmoji.js";
  * pick emoji/emotes
  */
 
-/*
-TODO: 
- - if found:
-   - hijack arrow keys to make it move around the preview window
-   - moving around auto completes the text
-   - typing continues to filter
-*/
-
 const KEYS = {
   up: 38,
   down: 40,

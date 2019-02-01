@@ -23,10 +23,7 @@ export default class CustomMentions extends Component {
 
 
   saveCustomMentions = (val) => {
-    if (val !== '') {
-      // TODO: save to global state
-      settings.save('custom', 'custom_mentions', val);
-    }
+    settings.save('custom', 'custom_mentions', val);
   };
   
   turnOn(){

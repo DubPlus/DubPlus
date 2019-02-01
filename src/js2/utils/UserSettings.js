@@ -37,7 +37,8 @@ var defaults = {
   "custom": {
     "customAfkMessage": "",
     "dj_notification": 1,
-    "css": ""
+    "css": "",
+    "bg" : ""
   }
 };
 

@@ -1112,7 +1112,8 @@ var DubPlus = (function () {
     "custom": {
       "customAfkMessage": "",
       "dj_notification": 1,
-      "css": ""
+      "css": "",
+      "bg": ""
     }
   };
 
@@ -1571,7 +1572,7 @@ var DubPlus = (function () {
           onClick: this.loadModal,
           className: "fa fa-pencil extra-icon"
         }, h(Modal, {
-          open: state.open,
+          open: state.open || props.showModal || false,
           title: props.title || "Dub+ option",
           content: props.content || "Please enter a value",
           placeholder: props.placeholder || "in here",
@@ -1763,10 +1764,7 @@ var DubPlus = (function () {
     }, {
       key: "saveAFKmessage",
       value: function saveAFKmessage(val) {
-        if (val !== '') {
-          // TODO: save to global state
-          userSettings.save('custom', 'customAfkMessage', val);
-        }
+        userSettings.save('custom', 'customAfkMessage', val);
       }
     }, {
       key: "render",
@@ -2501,14 +2499,6 @@ var DubPlus = (function () {
    * pick emoji/emotes
    */
 
-  /*
-  TODO: 
-   - if found:
-     - hijack arrow keys to make it move around the preview window
-     - moving around auto completes the text
-     - typing continues to filter
-  */
-
   var KEYS = {
     up: 38,
     down: 40,
@@ -3165,10 +3155,7 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveCustomMentions", function (val) {
-        if (val !== '') {
-          // TODO: save to global state
-          userSettings.save('custom', 'custom_mentions', val);
-        }
+        userSettings.save('custom', 'custom_mentions', val);
       });
 
       return _this;
@@ -4923,7 +4910,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548976215478);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548979283440);
     document.head.appendChild(link);
   }
   /**
@@ -4987,15 +4974,200 @@ var DubPlus = (function () {
     });
   };
 
-  // import CustomBG from './custom-Background';
-  // import CustomNotificaton from './custom-notification-sound';
+  /**
+   * Custom CSS
+   */
+
+  var CustomCSS =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(CustomCSS, _Component);
+
+    function CustomCSS() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, CustomCSS);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(CustomCSS)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isOn", false);
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        showModal: false
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        _this.isOn = true;
+
+        if (userSettings.stored.custom.css) {
+          css$2.loadExternal(userSettings.stored.custom.css, 'dubplus-custom-css');
+        } else {
+          _this.setState({
+            showModal: true
+          });
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        _this.isOn = false;
+        document.querySelector('.dubplus-custom-css').remove();
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveCustomCSS", function (val) {
+        // TODO: save to global state
+        userSettings.save('custom', 'css', val);
+
+        if (_this.isOn && val !== '') {
+          css$2.loadExternal(userSettings.stored.custom.css, 'dubplus-custom-css');
+        }
+
+        _this.setState({
+          showModal: false
+        });
+      });
+
+      return _this;
+    }
+
+    _createClass(CustomCSS, [{
+      key: "render",
+      value: function render$$1(props, state) {
+        return h(MenuSwitch, {
+          id: "dubplus-custom-css",
+          section: "Customize",
+          menuTitle: "Custom CSS",
+          desc: "Add your own custom CSS.",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, h(MenuPencil, {
+          showModal: state.showModal,
+          title: "Custom CSS",
+          section: "Customize",
+          content: "Enter a url location for your custom css",
+          value: userSettings.stored.custom.css || '',
+          placeholder: "https://example.com/example.css",
+          maxlength: "500",
+          onConfirm: this.saveCustomCSS
+        }));
+      }
+    }]);
+
+    return CustomCSS;
+  }(Component);
+
+  /**
+   * Custom Background
+   */
+
+  var CustomBG =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(CustomBG, _Component);
+
+    function CustomBG() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, CustomBG);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(CustomBG)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isOn", false);
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        showModal: false
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        _this.isOn = true;
+
+        if (userSettings.stored.custom.bg) {
+          _this.addCustomBG(userSettings.stored.custom.bg);
+        } else {
+          _this.setState({
+            showModal: true
+          });
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        _this.isOn = false;
+
+        _this.revertBG();
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveCustomCSS", function (val) {
+        // TODO: save to global state
+        userSettings.save('custom', 'bg', val);
+
+        if (_this.isOn && val !== '') {
+          _this.addCustomBG(val);
+        }
+
+        _this.setState({
+          showModal: false
+        });
+      });
+
+      return _this;
+    }
+
+    _createClass(CustomBG, [{
+      key: "addCustomBG",
+      value: function addCustomBG(val) {
+        var elem = document.querySelector('.backstretch-item img');
+        this.saveSrc = elem.src;
+        elem.src = val;
+      }
+    }, {
+      key: "revertBG",
+      value: function revertBG() {
+        var elem = document.querySelector('.backstretch-item img');
+        elem.src = this.saveSrc;
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        return h(MenuSwitch, {
+          id: "dubplus-custom-bg",
+          section: "Customize",
+          menuTitle: "Custom Background",
+          desc: "Add your own custom Background.",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, h(MenuPencil, {
+          showModal: state.showModal,
+          title: "Custom CSS",
+          section: "Customize",
+          content: "Enter a url location for your custom css",
+          value: userSettings.stored.custom.bg || '',
+          placeholder: "https://example.com/example.css",
+          maxlength: "500",
+          onConfirm: this.saveCustomCSS
+        }));
+      }
+    }]);
+
+    return CustomBG;
+  }(Component);
 
   var CustomizeSection = function CustomizeSection() {
     return h(MenuSection, {
       id: "dubplus-customize",
       title: "Customize",
       settingsKey: "customize"
-    }, h(CommunityTheme, null));
+    }, h(CommunityTheme, null), h(CustomCSS, null), h(CustomBG, null));
   };
 
   /**

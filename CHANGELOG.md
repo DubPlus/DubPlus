@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0] - 2019-01-xx
+### Changes and Additions
+- A complete rewrite from the ground up in React! Really it's using Preact which is a 3kb alternative with 1 to 1 feature parity with React.  
+- switched to RollupJS for building
+- added some unit testing
+
+### Fixed
+- Fixed Twitch emotes not loading
+- Fixed Emote/Emoji Auto-complete not working 
+
+### Removed
+- Tasty emote support
+
 ## [0.2.0] - 2018-12-21
 ### Fixed
 - Fix autovote not voting

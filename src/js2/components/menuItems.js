@@ -99,7 +99,7 @@ export class MenuPencil extends Component {
     return (
       <span onClick={this.loadModal} className="fa fa-pencil extra-icon">
         <Modal
-          open={state.open}
+          open={state.open || (props.showModal || false)}
           title={props.title || "Dub+ option"}
           content={props.content || "Please enter a value"}
           placeholder={props.placeholder || "in here"}
