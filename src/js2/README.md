@@ -1,59 +1,3 @@
-TODO: to finish the new preact version
-
-~~Loading script~~    
-- ~~eta~~
-- ~~snooze~~
-- ~~loading indicator~~
-- ~~modal~~
-- ~~Section headers~~
-
-General    
-- ~~autovote~~
-- ~~AFK~~
-- ~~Emotes~~
-- AutoComplete Emoji
-- ~~Custom Mentions~~
-- ~~Chat Cleaner~~
-- ~~Notifications on Mention~~
-- ~~Notifications on PM~~
-- ~~DJ Notifications~~
-- ~~Show Dub on Hover~~
-- ~~Downdubs in Chat (mods only)~~
-- ~~Updubs in Chat~~
-- ~~Grabs in Chat~~
-- ~~Snow~~
-- ~~Rain~~
-Potential new feature:  Auto AFK.  Turns on AFK when away for more than X amount of time
-
-UI    
-- ~~Fullscreen video~~
-- ~~Split Chat~~
-- ~~Hide Chat~~
-- ~~Hide Video~~
-- ~~Hide Avatars~~
-- ~~Hide Background~~
-- ~~Show Timestamps~~
-
-Settings    
-- ~~Spacebar mute~~
-- ~~Warn on navigation~~
-
-Customize    
-- ~~Community Theme~~
-- ~~Custom CSS~~
-- ~~Custom Background~~
-- ~~Custom Notification Sound~~
-
-Contact    
-- Report bugs on Discord
-- Reddit
-- Facebook
-- Twitter
-
-
-
------
-
 # Javascript info Guidelines
 :warning: *this doc is a work in progress* :warning:
 
@@ -67,13 +11,10 @@ We're using Preact, because of its smaller size to React, so that we can bundle 
 
 `./utils/` - **I'll probably rename this.** Place all non-UI building logic and utilities here. 
 
-## Write tests for everything
+## Write tests for non-ui building logic as much as you can
 
 ### Unit Testing
 At least everything in the utils folder should be unit tested. 
-
-### Integration Testing
-We're using Puppetteer and Jest to login into Dubtrack.fm, load the script, and perform integration testing in the actual environment
 
 ## Creating new menu items
 

@@ -4,12 +4,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.0.0] - 2019-01-xx
 ### Changes and Additions
-- A complete rewrite from the ground up in React! Really it's using Preact which is a 3kb alternative with 1 to 1 feature parity with React.  
+- A complete rewrite from the ground up in React! Really it's using Preact which is a 3kb alternative with 1:1 feature parity with React.  
+- Emotes and Autocomplete have been completely revamped. Using a better system to replace emotes in chat and autocomplete has been redesigned and has an improved keyboard navigation. 
+  - one thing to note is that autocomplete can now only replace an emote/emoji at the end of the chat input
 - switched to RollupJS for building
 - added some unit testing
 
+### New!
+- a new emoji picker! look for the happy face in next to the mardown icon.
+
 ### Fixed
-- Fixed Twitch emotes not loading
+- Fixed Twitch emotes not loading. 
 - Fixed Emote/Emoji Auto-complete not working 
 
 ### Removed
