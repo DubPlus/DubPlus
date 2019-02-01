@@ -36,7 +36,7 @@ export default class CustomBG extends Component {
     this.revertBG();
   }
 
-  saveCustomCSS = (val) => {
+  save = (val) => {
     // TODO: save to global state
     settings.save('custom', 'bg', val);
     if (this.isOn && val !== '') {
@@ -50,19 +50,19 @@ export default class CustomBG extends Component {
       <MenuSwitch
         id="dubplus-custom-bg"
         section="Customize"
-        menuTitle="Custom Background"
+        menuTitle="Custom Background Image"
         desc="Add your own custom Background."
         turnOn={this.turnOn}
         turnOff={this.turnOff}>
         <MenuPencil 
           showModal={state.showModal}
-          title='Custom CSS'
+          title='Custom Background Image'
           section="Customize"
-          content='Enter a url location for your custom css'
+          content='Enter the full URL of an image. We recommend using a .jpg file. Leave blank to remove the current background image'
           value={settings.stored.custom.bg || ''}
-          placeholder='https://example.com/example.css'
+          placeholder='https://example.com/big-image.jpg'
           maxlength='500'
-          onConfirm={this.saveCustomCSS} />
+          onConfirm={this.save} />
       </MenuSwitch>
     )
   }

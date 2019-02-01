@@ -40,9 +40,7 @@ class TwitchEmotes {
   grabFromDb() {
     return new Promise((resolve, reject) => {
       try {
-        console.time("twitch load time:");
         ldb.get("twitch_api", data => {
-          console.timeEnd("twitch load time:");
           console.log("dub+", "twitch", "loading from IndexedDB");
           let savedData = JSON.parse(data);
           // this.processEmotes(savedData);
@@ -58,7 +56,6 @@ class TwitchEmotes {
   }
 
   updateFromApi() {
-    console.time("twitch load time:");
     console.log("dub+", "twitch", "loading from api");
 
     let corsEsc = "https://cors-escape.herokuapp.com";
@@ -67,7 +64,6 @@ class TwitchEmotes {
     );
 
     return twApi.then(json => {
-      console.timeEnd("twitch load time:");
       let twitchEmotes = {};
       json.emoticons.forEach(e => {
         if (!twitchEmotes[e.code] || e.emoticon_set === null) {
@@ -125,7 +121,6 @@ class TwitchEmotes {
   }
 
   processEmotes(data) {
-    console.time("twitch_process");
     for (var code in data) {
       if (data.hasOwnProperty(code)) {
         var _key = code.toLowerCase();
@@ -150,7 +145,6 @@ class TwitchEmotes {
     }
     this.loaded = true;
     this.doneCB();
-    console.timeEnd("twitch_process");
   }
 
   /**
@@ -230,13 +224,10 @@ class TwitchEmotes {
     }
     var worker = new Worker(URL.createObjectURL(blob));
 
-    console.time("twitch_web_worker_process");
-
     worker.addEventListener("message", e => {
       this.emotes = e.data.emotes;
       this.sortedKeys = e.data.sortedKeys;
       this.loaded = true;
-      console.timeEnd("twitch_web_worker_process");
       this.doneCB();
     });
 

@@ -27,7 +27,7 @@ export default class CustomCSS extends Component {
     document.querySelector('.dubplus-custom-css').remove();
   }
 
-  saveCustomCSS = (val) => {
+  save = (val) => {
     // TODO: save to global state
     settings.save('custom', 'css', val);
     if (this.isOn && val !== '') {
@@ -53,7 +53,7 @@ export default class CustomCSS extends Component {
           value={settings.stored.custom.css || ''}
           placeholder='https://example.com/example.css'
           maxlength='500'
-          onConfirm={this.saveCustomCSS} />
+          onConfirm={this.save} />
       </MenuSwitch>
     )
   }

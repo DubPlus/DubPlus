@@ -38,7 +38,8 @@ var defaults = {
     "customAfkMessage": "",
     "dj_notification": 1,
     "css": "",
-    "bg" : ""
+    "bg" : "",
+    "notificationSound": ""
   }
 };
 

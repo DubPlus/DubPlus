@@ -1113,7 +1113,8 @@ var DubPlus = (function () {
       "customAfkMessage": "",
       "dj_notification": 1,
       "css": "",
-      "bg": ""
+      "bg": "",
+      "notificationSound": ""
     }
   };
 
@@ -1560,6 +1561,10 @@ var DubPlus = (function () {
         _this2.setState({
           open: false
         });
+
+        if (typeof _this2.props.onCancel === 'function') {
+          _this2.props.onCancel();
+        }
       });
 
       return _this2;
@@ -2174,9 +2179,7 @@ var DubPlus = (function () {
 
         return new Promise(function (resolve, reject) {
           try {
-            console.time("twitch load time:");
             ldb.get("twitch_api", function (data) {
-              console.timeEnd("twitch load time:");
               console.log("dub+", "twitch", "loading from IndexedDB");
               var savedData = JSON.parse(data); // this.processEmotes(savedData);
 
@@ -2197,12 +2200,10 @@ var DubPlus = (function () {
       value: function updateFromApi() {
         var _this4 = this;
 
-        console.time("twitch load time:");
         console.log("dub+", "twitch", "loading from api");
         var corsEsc = "https://cors-escape.herokuapp.com";
         var twApi = getJSON("".concat(corsEsc, "/https://api.twitch.tv/kraken/chat/emoticon_images"));
         return twApi.then(function (json) {
-          console.timeEnd("twitch load time:");
           var twitchEmotes = {};
           json.emoticons.forEach(function (e) {
             if (!twitchEmotes[e.code] || e.emoticon_set === null) {
@@ -2252,8 +2253,6 @@ var DubPlus = (function () {
     }, {
       key: "processEmotes",
       value: function processEmotes(data) {
-        console.time("twitch_process");
-
         for (var code in data) {
           if (data.hasOwnProperty(code)) {
             var _key = code.toLowerCase(); // move twitch non-named emojis to their own array
@@ -2279,7 +2278,6 @@ var DubPlus = (function () {
 
         this.loaded = true;
         this.doneCB();
-        console.timeEnd("twitch_process");
       }
       /**
        * In order to speed up the initial load of the script I'm using a web worker
@@ -2310,12 +2308,10 @@ var DubPlus = (function () {
         }
 
         var worker = new Worker(URL.createObjectURL(blob));
-        console.time("twitch_web_worker_process");
         worker.addEventListener("message", function (e) {
           _this6.emotes = e.data.emotes;
           _this6.sortedKeys = e.data.sortedKeys;
           _this6.loaded = true;
-          console.timeEnd("twitch_web_worker_process");
 
           _this6.doneCB();
         });
@@ -4910,7 +4906,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548979283440);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548980898593);
     document.head.appendChild(link);
   }
   /**
@@ -5019,7 +5015,7 @@ var DubPlus = (function () {
         document.querySelector('.dubplus-custom-css').remove();
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveCustomCSS", function (val) {
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "save", function (val) {
         // TODO: save to global state
         userSettings.save('custom', 'css', val);
 
@@ -5053,7 +5049,7 @@ var DubPlus = (function () {
           value: userSettings.stored.custom.css || '',
           placeholder: "https://example.com/example.css",
           maxlength: "500",
-          onConfirm: this.saveCustomCSS
+          onConfirm: this.save
         }));
       }
     }]);
@@ -5107,7 +5103,7 @@ var DubPlus = (function () {
         _this.revertBG();
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveCustomCSS", function (val) {
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "save", function (val) {
         // TODO: save to global state
         userSettings.save('custom', 'bg', val);
 
@@ -5142,19 +5138,19 @@ var DubPlus = (function () {
         return h(MenuSwitch, {
           id: "dubplus-custom-bg",
           section: "Customize",
-          menuTitle: "Custom Background",
+          menuTitle: "Custom Background Image",
           desc: "Add your own custom Background.",
           turnOn: this.turnOn,
           turnOff: this.turnOff
         }, h(MenuPencil, {
           showModal: state.showModal,
-          title: "Custom CSS",
+          title: "Custom Background Image",
           section: "Customize",
-          content: "Enter a url location for your custom css",
+          content: "Enter the full URL of an image. We recommend using a .jpg file. Leave blank to remove the current background image",
           value: userSettings.stored.custom.bg || '',
-          placeholder: "https://example.com/example.css",
+          placeholder: "https://example.com/big-image.jpg",
           maxlength: "500",
-          onConfirm: this.saveCustomCSS
+          onConfirm: this.save
         }));
       }
     }]);
@@ -5162,12 +5158,123 @@ var DubPlus = (function () {
     return CustomBG;
   }(Component);
 
+  var DubtrackDefaultSound = "/assets/music/user_ping.mp3";
+  var modalMessage = "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to Dubtrack's default sound";
+  /**
+   * Custom Notification Sound
+   */
+
+  var CustomSound =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(CustomSound, _Component);
+
+    function CustomSound() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, CustomSound);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(CustomSound)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isOn", false);
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        showModal: false,
+        modalMessage: modalMessage
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        _this.isOn = true;
+
+        if (userSettings.stored.custom.notificationSound) {
+          Dubtrack.room.chat.mentionChatSound.url = userSettings.stored.custom.notificationSound;
+        } else {
+          _this.setState({
+            showModal: true,
+            modalMessage: modalMessage
+          });
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        _this.isOn = false;
+        Dubtrack.room.chat.mentionChatSound.url = DubtrackDefaultSound;
+
+        _this.setState({
+          showModal: false
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "save", function (val) {
+        // Check if valid sound url
+        if (soundManager.canPlayURL(val)) {
+          userSettings.save("custom", "notificationSound", val);
+        } else {
+          _this.setState({
+            modalMessage: "You've entered an invalid sound url! Please make sure you are entering the full, direct url to the file. IE: https://example.com/sweet-sound.mp3",
+            showModal: true
+          });
+
+          return;
+        }
+
+        if (_this.isOn) {
+          Dubtrack.room.chat.mentionChatSound.url = val;
+        }
+
+        _this.setState({
+          showModal: false
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "onCancel", function () {
+        if (!userSettings.stored.custom.notificationSound) {
+          _this.turnOff();
+        }
+      });
+
+      return _this;
+    }
+
+    _createClass(CustomSound, [{
+      key: "render",
+      value: function render$$1(props, state) {
+        return h(MenuSwitch, {
+          id: "dubplus-custom-notification-sound",
+          section: "Customize",
+          menuTitle: "Custom Notification Sound",
+          desc: "Change the notification sound to a custom one.",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, h(MenuPencil, {
+          showModal: state.showModal,
+          title: "Custom Notification Sound",
+          section: "Customize",
+          content: state.modalMessage,
+          value: userSettings.stored.custom.notificationSound || "",
+          placeholder: "https://example.com/sweet-sound.mp3",
+          maxlength: "500",
+          onConfirm: this.save,
+          onCancel: this.onCancel
+        }));
+      }
+    }]);
+
+    return CustomSound;
+  }(Component);
+
   var CustomizeSection = function CustomizeSection() {
     return h(MenuSection, {
       id: "dubplus-customize",
       title: "Customize",
       settingsKey: "customize"
-    }, h(CommunityTheme, null), h(CustomCSS, null), h(CustomBG, null));
+    }, h(CommunityTheme, null), h(CustomCSS, null), h(CustomBG, null), h(CustomSound, null));
   };
 
   /**

@@ -3,7 +3,7 @@ import { MenuSection } from "../../components/menuItems";
 import CommunityTheme from './community-theme';
 import CustomCSS from './custom-css';
 import CustomBG from './custom-background';
-// import CustomNotificaton from './custom-notification-sound';
+import CustomSound from './custom-notification-sound';
 
 const CustomizeSection = () => {
   return (
@@ -11,6 +11,7 @@ const CustomizeSection = () => {
       <CommunityTheme />
       <CustomCSS />
       <CustomBG />
+      <CustomSound />
     </MenuSection>
   );
 };

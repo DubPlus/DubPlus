@@ -93,6 +93,9 @@ export class MenuPencil extends Component {
   closeModal = () => {
     console.log("closing dub+ modal");
     this.setState({ open: false });
+    if (typeof this.props.onCancel === 'function') {
+      this.props.onCancel();
+    }
   };
 
   render(props, state) {
