@@ -2,10 +2,9 @@ import resolve from "rollup-plugin-node-resolve";
 import babel from "rollup-plugin-babel";
 import { uglify } from "rollup-plugin-uglify";
 import replace from "rollup-plugin-replace";
-var sassTasks = require(process.cwd() + "/tasks/sassbundle.js");
-// const extension = require(process.cwd() + '/tasks/extensions.js');
+import sassTasks from "./sassbundle.js";
 
-// const watchMode = process.env.ROLLUP_WATCH === "true";
+const watchMode = process.env.WATCH === "true";
 
 // our own custom module
 var gitInfo = require("./repoInfo.js");
@@ -24,19 +23,19 @@ const jsOutput = process.cwd() + "/dist/dubplus.js";
 
 const introBanner = `
 /*
-     /$$$$$$$            /$$                
-    | $$__  $$          | $$          /$$   
-    | $$  | $$ /$$   /$$| $$$$$$$    | $$   
+     /$$$$$$$            /$$
+    | $$__  $$          | $$          /$$
+    | $$  | $$ /$$   /$$| $$$$$$$    | $$
     | $$  | $$| $$  | $$| $$__  $$ /$$$$$$$$
     | $$  | $$| $$  | $$| $$  | $$|__  $$__/
-    | $$  | $$| $$  | $$| $$  | $$   | $$   
-    | $$$$$$$/|  $$$$$$/| $$$$$$$/   |__/   
-    |_______/  \______/ |_______/           
-                                            
-                                            
+    | $$  | $$| $$  | $$| $$  | $$   | $$
+    | $$$$$$$/|  $$$$$$/| $$$$$$$/   |__/
+    |_______/  \______/ |_______/
+
+
     https://github.com/DubPlus/DubPlus
 
-    This source code is licensed under the MIT license 
+    This source code is licensed under the MIT license
     found here: https://github.com/DubPlus/DubPlus/blob/master/LICENSE
 
     Copyright (c) 2017-present DubPlus

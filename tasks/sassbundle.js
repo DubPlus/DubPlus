@@ -6,7 +6,7 @@ const autoprefixer = require("autoprefixer");
 const prefixer = postcss([autoprefixer]);
 const log = require("./colored-console.js");
 
-function onError(err){
+function onError(err) {
   log.error(err);
 }
 
@@ -79,26 +79,28 @@ function watchingSASS() {
   );
 }
 
-
-function plugin () {
+function plugin() {
   return {
-    name: 'sass', // this name will show up in warnings and errors
+    name: "sass", // this name will show up in warnings and errors
     buildEnd() {
       compileSASS()
         .then(minifySASS)
-        .then(function(){ console.log('sass finished compiling & minifying');})
+        .then(function() {
+          console.log("sass finished compiling & minifying");
+        })
         .catch(onError);
     }
   };
 }
 
-module.exports = {
+export default {
   compile: compileSASS,
   watch: watchingSASS,
   minify: minifySASS,
   plugin: plugin
 };
 
+// if run directly via `node sassbundle.js` then we do this
 if (require.main === module) {
   compileSASS()
     .then(minifySASS)
