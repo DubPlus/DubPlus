@@ -23,7 +23,7 @@ class EmojiPicker extends Component {
 
   componentDidMount() {
     document.addEventListener("keyup", e => {
-      const key = "which" in e ? e.which : e.keyCode;
+      var key = "which" in e ? e.which : e.keyCode;
       if (this.state.show && key === 27) {
         this.setState({ show: false });
       }
@@ -56,7 +56,7 @@ class EmojiPicker extends Component {
       let name = e.replace(/^:|:$/g, '');
       return (
         <span key={`emoji-${name}`} onClick={() => this.fillChat(e)}>
-          <img src={emoji.template(name)} />
+          <img title={e} src={emoji.template(name)} />
         </span>
       );
     });

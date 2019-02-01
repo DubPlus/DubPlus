@@ -1423,6 +1423,7 @@ var DubPlus = (function () {
               return _this3.fillChat(e);
             }
           }, h("img", {
+            title: e,
             src: emoji.template(name)
           }));
         });
@@ -5028,7 +5029,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548993181097);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548993837141);
     document.head.appendChild(link);
   }
   /**
