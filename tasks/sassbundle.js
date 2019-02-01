@@ -82,7 +82,7 @@ function watchingSASS() {
 function plugin() {
   return {
     name: "sass", // this name will show up in warnings and errors
-    buildEnd() {
+    generateBundle() {
       compileSASS()
         .then(minifySASS)
         .then(function() {
@@ -93,7 +93,7 @@ function plugin() {
   };
 }
 
-export default {
+module.exports = {
   compile: compileSASS,
   watch: watchingSASS,
   minify: minifySASS,

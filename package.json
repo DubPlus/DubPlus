@@ -5,12 +5,12 @@
   "main": "dubplus.js",
   "scripts": {
     "sass": "node ./tasks/sassbundle",
-    "ext": "rollup --config tasks/rollup.config.js && node ./tasks/extensions",
+    "ext": "node tasks/rollup.config.js && node ./tasks/extensions",
     "ext-zip": "node ./tasks ext-zip",
     "ext-deploy": "node ./tasks ext-deploy",
     "test": "ENV=test jest -i ./tests --config ./tests/jest.config.js",
-    "rollup": "rollup --config tasks/rollup.config.js",
-    "start": "WATCH=true rollup --config tasks/rollup.config.js"
+    "rollup": "node tasks/rollup.config.js",
+    "start": "WATCH=true node tasks/rollup.config.js"
   },
   "repository": {
     "type": "git",
