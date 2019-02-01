@@ -1,7 +1,6 @@
 import getScript from "./getScript.js";
 
 export default function() {
-
   // Element.remove() polyfill
   // from:https://github.com/jserz/js_piece/blob/master/DOM/ChildNode/remove()/remove().md
   (function(arr) {
@@ -27,4 +26,7 @@ export default function() {
     );
   }
 
+  if (window.NodeList && !NodeList.prototype.forEach) {
+    NodeList.prototype.forEach = Array.prototype.forEach;
+  }
 }

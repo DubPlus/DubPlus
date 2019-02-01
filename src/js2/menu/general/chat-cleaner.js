@@ -8,7 +8,7 @@ import settings from "../../utils/UserSettings.js";
 export default class ChatCleaner extends Component {
   chatCleanerCheck = e => {
     let totalChats = Array.from(document.querySelectorAll("ul.chat-main > li"));
-    let max = parseInt(settings.stored.custom.chat_cleaner,10);
+    let max = parseInt(settings.stored.custom.chat_cleaner, 10);
 
     if (
       isNaN(totalChats.length) ||
@@ -20,18 +20,13 @@ export default class ChatCleaner extends Component {
     }
 
     let parentUL = totalChats[0].parentElement;
-    totalChats
-      .slice(0, max)
-      .forEach(function(li, i) {
-        parentUL.removeChild(li);
-      });
-
-    // Fix scroll bar
-    $(".chat-messages").perfectScrollbar("update");
+    totalChats.slice(0, max).forEach(function(li, i) {
+      parentUL.removeChild(li);
+    });
   };
 
   saveAmount = value => {
-    var chatItems = parseInt(value,10);
+    var chatItems = parseInt(value, 10);
     let amount = !isNaN(chatItems) ? chatItems : 500;
     settings.save("custom", "chat_cleaner", amount); // default to 500
   };
