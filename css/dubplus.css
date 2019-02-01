@@ -366,7 +366,7 @@
   width: 100%;
   left: 0;
   max-height: 0;
-  transition: max-height 0.4s;
+  transition: max-height 0.25s;
   overflow: hidden; }
   .dp-emoji-picker.show {
     max-height: 180px;
