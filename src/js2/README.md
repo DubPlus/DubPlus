@@ -39,10 +39,10 @@ Settings
 - ~~Warn on navigation~~
 
 Customize    
-- Community Theme
-- Custom CSS
-- Custom Background
-- Custom Notification Sound
+- ~~Community Theme~~
+- ~~Custom CSS~~
+- ~~Custom Background~~
+- ~~Custom Notification Sound~~
 
 Contact    
 - Report bugs on Discord

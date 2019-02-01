@@ -4906,7 +4906,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548980898593);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548981517930);
     document.head.appendChild(link);
   }
   /**
@@ -5292,7 +5292,43 @@ var DubPlus = (function () {
       className: "dubplus-menu"
     }, h("p", {
       className: "dubplus-menu-header"
-    }, "Dub+ Options"), h(GeneralSection, null), h(UISection, null), h(SettingsSection, null), h(CustomizeSection, null));
+    }, "Dub+ Options"), h(GeneralSection, null), h(UISection, null), h(SettingsSection, null), h(CustomizeSection, null), h(MenuSection, {
+      id: "dubplus-contacts",
+      title: "Contacts",
+      settingsKey: "contact"
+    }, h("li", {
+      class: "dubplus-menu-icon"
+    }, h("span", {
+      class: "fa fa-bug"
+    }), h("a", {
+      href: "https://discord.gg/XUkG3Qy",
+      class: "dubplus-menu-label",
+      target: "_blank"
+    }, "Report bugs on Discord")), h("li", {
+      class: "dubplus-menu-icon"
+    }, h("span", {
+      class: "fa fa-reddit-alien"
+    }), h("a", {
+      href: "https://www.reddit.com/r/DubPlus/",
+      class: "dubplus-menu-label",
+      target: "_blank"
+    }, "Reddit")), h("li", {
+      class: "dubplus-menu-icon"
+    }, h("span", {
+      class: "fa fa-facebook"
+    }), h("a", {
+      href: "https://facebook.com/DubPlusScript",
+      class: "dubplus-menu-label",
+      target: "_blank"
+    }, "Facebook")), h("li", {
+      class: "dubplus-menu-icon"
+    }, h("span", {
+      class: "fa fa-twitter"
+    }), h("a", {
+      href: "https://twitter.com/DubPlusScript",
+      class: "dubplus-menu-label",
+      target: "_blank"
+    }, "Twitter"))));
   };
 
   /**
