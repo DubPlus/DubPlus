@@ -352,6 +352,36 @@
   font-weight: 700 !important;
   color: #89BE6C !important; }
 
+.dp-emoji-picker-icon {
+  color: #fff;
+  margin-left: .5rem;
+  display: inline-block;
+  cursor: pointer;
+  font-size: 1.2em; }
+
+.dp-emoji-picker {
+  background-color: rgba(0, 0, 0, 0.9);
+  position: absolute;
+  bottom: 56px;
+  width: 100%;
+  left: 0;
+  max-height: 0;
+  transition: max-height 0.4s;
+  overflow: hidden; }
+  .dp-emoji-picker.show {
+    max-height: 180px;
+    overflow-y: scroll; }
+  .dp-emoji-picker span {
+    display: inline-block;
+    width: 24px;
+    height: 25px;
+    margin: 5px;
+    cursor: pointer; }
+  .dp-emoji-picker img {
+    display: block;
+    width: 100%;
+    height: auto; }
+
 .dubplus-split-chat .chat-main li:nth-child(2n) {
   background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
   box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
@@ -446,7 +476,7 @@
   border: 1px solid #202020;
   border-bottom: 1px solid #878c8e;
   max-height: 164px;
-  transition: 0.4s; }
+  transition: max-height 0.4s; }
 
 .twitch-emote.emoji,
 .bttv-emote.emoji {

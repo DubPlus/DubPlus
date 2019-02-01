@@ -105,11 +105,7 @@
   border: 1px solid #202020;
   border-bottom: 1px solid #878c8e;
   max-height: 164px;
-  -moz-transition: 0.4s;
-  -ms-transition: 0.4s;
-  -o-transition: 0.4s;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
+  transition: max-height 0.4s;
 }
 
 .twitch-emote.emoji,

@@ -4,6 +4,7 @@
 import { h } from "preact";
 import snooze from "../components/snooze";
 import eta from "../components/eta";
+import SetupEmojiPicker from '../components/emoji-picker';
 import GeneralSection from "./general/index";
 import UISection from "./ui/index";
 import SettingsSection from "./settings/index";
@@ -16,6 +17,7 @@ const DubPlusMenu = function() {
     // since these buttons are completely independent from the menu
     snooze();
     eta();
+    SetupEmojiPicker();
   }, 10);
 
   return (

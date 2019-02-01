@@ -1076,104 +1076,146 @@ var DubPlus = (function () {
     render(h(ETA, null), document.querySelector('.player_sharing'));
   }
 
-  /**
-   * global State handler
-   */
-  var defaults = {
-    "menu": {
-      "general": "open",
-      "user-interface": "open",
-      "settings": "open",
-      "customize": "open",
-      "contact": "open"
-    },
-    "options": {
-      "dubplus-autovote": false,
-      "dubplus-emotes": false,
-      "dubplus-autocomplete": false,
-      "mention_notifications": false,
-      "dubplus_pm_notifications": false,
-      "dj-notification": false,
-      "dubplus-dubs-hover": false,
-      "dubplus-downdubs": false,
-      "dubplus-grabschat": false,
-      "dubplus-split-chat": false,
-      "dubplus-show-timestamp": false,
-      "dubplus-hide-bg": false,
-      "dubplus-hide-avatars": false,
-      "dubplus-chat-only": false,
-      "dubplus-video-only": false,
-      "warn_redirect": false,
-      "dubplus-comm-theme": false,
-      "dubplus-afk": false,
-      "dubplus-snow": false,
-      "dubplus-custom-css": false
-    },
-    "custom": {
-      "customAfkMessage": "",
-      "dj_notification": 1,
-      "css": "",
-      "bg": "",
-      "notificationSound": ""
+  // IndexedDB wrapper for increased quota compared to localstorage (5mb to 50mb)
+  function IndexDBWrapper() {
+    var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+
+    if (!indexedDB) {
+      return console.error("indexDB not supported");
     }
-  };
+    var db;
+    var timeout = 50; // 50 * 100 = 5000ms = 5s
 
-  var UserSettings =
-  /*#__PURE__*/
-  function () {
-    function UserSettings() {
-      _classCallCheck(this, UserSettings);
+    /**
+     * Get item from indexedDB
+     * @param {string} item the db key name of what you want to retrieve
+     * @param {function} [cb] optional callback because it also returns a promise
+     * @returns {Promise}
+     */
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@preact-version");
-
-      var _savedSettings = localStorage.getItem('dubplusUserSettings');
-
-      if (_savedSettings) {
-        try {
-          var storedOpts = JSON.parse(_savedSettings);
-          this.stored = Object.assign({}, defaults, storedOpts);
-        } catch (err) {
-          this.stored = defaults;
-        }
-      } else {
-        this.stored = defaults;
+    function getItem(item, cb) {
+      // keep trying until db open request is established
+      if (!db && timeout >= 0) {
+        setTimeout(function () {
+          getItem(item, cb);
+        }, 100);
+        timeout--;
+        return;
       }
+
+      timeout = 30; // reset the dbrequest timeout counter
+
+      return db.transaction("s").objectStore("s").get(item).onsuccess = function (e) {
+        var t = e.target.result && e.target.result.v || null;
+        cb(t);
+      };
     }
     /**
-     * Save your settings value to memory and localStorage
-     * @param {String} type The section of the stored values. i.e. "menu", "options", "custom"
-     * @param {String} optionName the key name of the option to store
-     * @param {String|Boolean} value the new setting value to store
+     * Store a value in indexedDB
+     * @param {string} item key name for the value that will be stored
+     * @param {string} val value to be stored
      */
 
 
-    _createClass(UserSettings, [{
-      key: "save",
-      value: function save(type, optionName, value) {
-        this.stored[type][optionName] = value;
-
-        try {
-          localStorage.setItem('dubplusUserSettings', JSON.stringify(this.stored));
-        } catch (err) {
-          console.error("an error occured saving dubplus to localStorage", err);
-        }
+    function setItem(item, val) {
+      // keep trying until db open request is established
+      if (!db && timeout >= 0) {
+        setTimeout(function () {
+          setItem(item, val);
+        }, 100);
+        timeout--;
+        return;
       }
-    }]);
 
-    return UserSettings;
-  }();
+      timeout = 30; // reset the dbrequest timeout counter
 
-  var userSettings = new UserSettings();
+      var obj = {
+        k: item,
+        v: val
+      };
+      db.transaction("s", "readwrite").objectStore("s").put(obj);
+    }
 
-  function SectionHeader(props) {
-    var arrow = props.open === "open" ? 'down' : 'right';
-    return h("div", {
-      id: props.id,
-      onClick: props.onClick,
-      className: "dubplus-menu-section-header"
-    }, h("span", {
-      className: "fa fa-angle-".concat(arrow)
-    }), h("p", null, props.category));
+    var dbRequest = indexedDB.open("d2", 1);
+
+    dbRequest.onsuccess = function (e) {
+      db = this.result;
+    };
+
+    dbRequest.onerror = function (e) {
+      console.error("indexedDB request error", e);
+    };
+
+    dbRequest.onupgradeneeded = function (e) {
+      db = this.result;
+      var t = db.createObjectStore("s", {
+        keyPath: "k"
+      });
+
+      db.transaction.oncomplete = function (e) {
+        db = e.target.db;
+      };
+    };
+
+    return {
+      get: getItem,
+      set: setItem
+    };
+  }
+
+  var ldb = new IndexDBWrapper();
+
+  /* global  emojify */
+  var emoji = {
+    template: function template(id) {
+      return emojify.defaultConfig.img_dir + "/" + encodeURI(id) + ".png";
+    },
+    find: function find(symbol) {
+      var _this = this;
+
+      var found = emojify.emojiNames.filter(function (e) {
+        return e.indexOf(symbol) === 0;
+      });
+      return found.map(function (key) {
+        return {
+          type: "emojify",
+          src: _this.template(key),
+          name: key
+        };
+      });
+    }
+  };
+  function shouldUpdateAPIs(apiName) {
+    var day = 1000 * 60 * 60 * 24; // milliseconds in a day
+
+    return new Promise(function (resolve, reject) {
+      // if api returned an object with an error and we stored it 
+      // then we should try again
+      ldb.get(apiName + "_api", function (savedItem) {
+        if (savedItem) {
+          try {
+            var parsed = JSON.parse(savedItem);
+
+            if (typeof parsed.error !== "undefined") {
+              resolve(true); // yes we should refresh data from api
+            }
+          } catch (e) {
+            resolve(true); // data was corrupted, needs to be refreshed
+          }
+        } else {
+          resolve(true); // data doesn't exist, needs to be fetched
+        } // at this point we have good data without issues in IndexedDB
+        // so now we check how old it is to see if we should update it (7 days is the limit)
+
+
+        var today = Date.now();
+        var lastSaved = parseInt(localStorage.getItem(apiName + "_api_timestamp")); // Is the lastsaved not a number for some strange reason, then we should update 
+        // OR
+        // are we past 5 days from last update? then we should update
+
+        resolve(isNaN(lastSaved) || today - lastSaved > day * 7);
+      });
+    });
   }
 
   /** Redirect rendering of descendants into the given CSS selector.
@@ -1278,6 +1320,192 @@ var DubPlus = (function () {
 
     return PortalProxy;
   }(Component);
+
+  var EmojiPicker =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(EmojiPicker, _Component);
+
+    function EmojiPicker() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, EmojiPicker);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(EmojiPicker)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        show: false
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggle", function () {
+        _this.setState(function (prevState) {
+          return {
+            show: !prevState.show
+          };
+        });
+      });
+
+      return _this;
+    }
+
+    _createClass(EmojiPicker, [{
+      key: "fillChat",
+      value: function fillChat(val) {
+        document.getElementById("chat-txt-message").value += " " + val;
+      }
+    }, {
+      key: "componentDidMount",
+      value: function componentDidMount() {
+        var _this2 = this;
+
+        document.addEventListener('keyup', function (e) {
+          var key = "which" in e ? e.which : e.keyCode;
+
+          if (_this2.state.show && key === 27) {
+            _this2.setState({
+              show: false
+            });
+          }
+        });
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, _ref) {
+        var _this3 = this;
+
+        var show = _ref.show;
+        var list = emojify.emojiNames.map(function (e) {
+          return h("span", {
+            onClick: function onClick() {
+              return _this3.fillChat(":".concat(e, ":"));
+            }
+          }, h("img", {
+            src: emoji.template(e)
+          }));
+        });
+        return h("span", {
+          className: "dp-emoji-picker-icon fa fa-smile-o",
+          onClick: this.toggle
+        }, h(Portal, {
+          into: ".pusher-chat-widget-input"
+        }, h("div", {
+          className: "dp-emoji-picker ".concat(show ? 'show' : '')
+        }, list)));
+      }
+    }]);
+
+    return EmojiPicker;
+  }(Component);
+
+  function SetupEmojiPicker () {
+    render(h(EmojiPicker, null), document.querySelector(".chat-text-box-icons"));
+  }
+
+  /**
+   * global State handler
+   */
+  var defaults = {
+    "menu": {
+      "general": "open",
+      "user-interface": "open",
+      "settings": "open",
+      "customize": "open",
+      "contact": "open"
+    },
+    "options": {
+      "dubplus-autovote": false,
+      "dubplus-emotes": false,
+      "dubplus-autocomplete": false,
+      "mention_notifications": false,
+      "dubplus_pm_notifications": false,
+      "dj-notification": false,
+      "dubplus-dubs-hover": false,
+      "dubplus-downdubs": false,
+      "dubplus-grabschat": false,
+      "dubplus-split-chat": false,
+      "dubplus-show-timestamp": false,
+      "dubplus-hide-bg": false,
+      "dubplus-hide-avatars": false,
+      "dubplus-chat-only": false,
+      "dubplus-video-only": false,
+      "warn_redirect": false,
+      "dubplus-comm-theme": false,
+      "dubplus-afk": false,
+      "dubplus-snow": false,
+      "dubplus-custom-css": false
+    },
+    "custom": {
+      "customAfkMessage": "",
+      "dj_notification": 1,
+      "css": "",
+      "bg": "",
+      "notificationSound": ""
+    }
+  };
+
+  var UserSettings =
+  /*#__PURE__*/
+  function () {
+    function UserSettings() {
+      _classCallCheck(this, UserSettings);
+
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@preact-version");
+
+      var _savedSettings = localStorage.getItem('dubplusUserSettings');
+
+      if (_savedSettings) {
+        try {
+          var storedOpts = JSON.parse(_savedSettings);
+          this.stored = Object.assign({}, defaults, storedOpts);
+        } catch (err) {
+          this.stored = defaults;
+        }
+      } else {
+        this.stored = defaults;
+      }
+    }
+    /**
+     * Save your settings value to memory and localStorage
+     * @param {String} type The section of the stored values. i.e. "menu", "options", "custom"
+     * @param {String} optionName the key name of the option to store
+     * @param {String|Boolean} value the new setting value to store
+     */
+
+
+    _createClass(UserSettings, [{
+      key: "save",
+      value: function save(type, optionName, value) {
+        this.stored[type][optionName] = value;
+
+        try {
+          localStorage.setItem('dubplusUserSettings', JSON.stringify(this.stored));
+        } catch (err) {
+          console.error("an error occured saving dubplus to localStorage", err);
+        }
+      }
+    }]);
+
+    return UserSettings;
+  }();
+
+  var userSettings = new UserSettings();
+
+  function SectionHeader(props) {
+    var arrow = props.open === "open" ? 'down' : 'right';
+    return h("div", {
+      id: props.id,
+      onClick: props.onClick,
+      className: "dubplus-menu-section-header"
+    }, h("span", {
+      className: "fa fa-angle-".concat(arrow)
+    }), h("p", null, props.category));
+  }
 
   /**
    * Modal used to display messages and also capture data
@@ -1489,8 +1717,7 @@ var DubPlus = (function () {
     return MenuSection;
   }(Component);
   /**
-   * Component to render a simple row like the links in the contact section
-   * or the fullscreen menu option
+   * Component to render a simple row like the fullscreen menu option
    * @param {object} props
    * @param {string} props.id the dom ID name, usually dubplus-*
    * @param {string} props.desc description of the menu item used in the title attr
@@ -1961,148 +2188,6 @@ var DubPlus = (function () {
 
       xhr.open('GET', url);
       xhr.send();
-    });
-  }
-
-  // IndexedDB wrapper for increased quota compared to localstorage (5mb to 50mb)
-  function IndexDBWrapper() {
-    var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-
-    if (!indexedDB) {
-      return console.error("indexDB not supported");
-    }
-    var db;
-    var timeout = 50; // 50 * 100 = 5000ms = 5s
-
-    /**
-     * Get item from indexedDB
-     * @param {string} item the db key name of what you want to retrieve
-     * @param {function} [cb] optional callback because it also returns a promise
-     * @returns {Promise}
-     */
-
-    function getItem(item, cb) {
-      // keep trying until db open request is established
-      if (!db && timeout >= 0) {
-        setTimeout(function () {
-          getItem(item, cb);
-        }, 100);
-        timeout--;
-        return;
-      }
-
-      timeout = 30; // reset the dbrequest timeout counter
-
-      return db.transaction("s").objectStore("s").get(item).onsuccess = function (e) {
-        var t = e.target.result && e.target.result.v || null;
-        cb(t);
-      };
-    }
-    /**
-     * Store a value in indexedDB
-     * @param {string} item key name for the value that will be stored
-     * @param {string} val value to be stored
-     */
-
-
-    function setItem(item, val) {
-      // keep trying until db open request is established
-      if (!db && timeout >= 0) {
-        setTimeout(function () {
-          setItem(item, val);
-        }, 100);
-        timeout--;
-        return;
-      }
-
-      timeout = 30; // reset the dbrequest timeout counter
-
-      var obj = {
-        k: item,
-        v: val
-      };
-      db.transaction("s", "readwrite").objectStore("s").put(obj);
-    }
-
-    var dbRequest = indexedDB.open("d2", 1);
-
-    dbRequest.onsuccess = function (e) {
-      db = this.result;
-    };
-
-    dbRequest.onerror = function (e) {
-      console.error("indexedDB request error", e);
-    };
-
-    dbRequest.onupgradeneeded = function (e) {
-      db = this.result;
-      var t = db.createObjectStore("s", {
-        keyPath: "k"
-      });
-
-      db.transaction.oncomplete = function (e) {
-        db = e.target.db;
-      };
-    };
-
-    return {
-      get: getItem,
-      set: setItem
-    };
-  }
-
-  var ldb = new IndexDBWrapper();
-
-  /* global  emojify */
-  var emoji = {
-    template: function template(id) {
-      return emojify.defaultConfig.img_dir + "/" + encodeURI(id) + ".png";
-    },
-    find: function find(symbol) {
-      var _this = this;
-
-      var found = emojify.emojiNames.filter(function (e) {
-        return e.indexOf(symbol) === 0;
-      });
-      return found.map(function (key) {
-        return {
-          type: "emojify",
-          src: _this.template(key),
-          name: key
-        };
-      });
-    }
-  };
-  function shouldUpdateAPIs(apiName) {
-    var day = 1000 * 60 * 60 * 24; // milliseconds in a day
-
-    return new Promise(function (resolve, reject) {
-      // if api returned an object with an error and we stored it 
-      // then we should try again
-      ldb.get(apiName + "_api", function (savedItem) {
-        if (savedItem) {
-          try {
-            var parsed = JSON.parse(savedItem);
-
-            if (typeof parsed.error !== "undefined") {
-              resolve(true); // yes we should refresh data from api
-            }
-          } catch (e) {
-            resolve(true); // data was corrupted, needs to be refreshed
-          }
-        } else {
-          resolve(true); // data doesn't exist, needs to be fetched
-        } // at this point we have good data without issues in IndexedDB
-        // so now we check how old it is to see if we should update it (7 days is the limit)
-
-
-        var today = Date.now();
-        var lastSaved = parseInt(localStorage.getItem(apiName + "_api_timestamp")); // Is the lastsaved not a number for some strange reason, then we should update 
-        // OR
-        // are we past 5 days from last update? then we should update
-
-        resolve(isNaN(lastSaved) || today - lastSaved > day * 7);
-      });
     });
   }
 
@@ -4906,7 +4991,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548981517930);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548989482076);
     document.head.appendChild(link);
   }
   /**
@@ -5287,6 +5372,7 @@ var DubPlus = (function () {
       // since these buttons are completely independent from the menu
       snooze$1();
       eta();
+      SetupEmojiPicker();
     }, 10);
     return h("section", {
       className: "dubplus-menu"

@@ -44,8 +44,7 @@ export class MenuSection extends Component {
 }
 
 /**
- * Component to render a simple row like the links in the contact section
- * or the fullscreen menu option
+ * Component to render a simple row like the fullscreen menu option
  * @param {object} props
  * @param {string} props.id the dom ID name, usually dubplus-*
  * @param {string} props.desc description of the menu item used in the title attr
