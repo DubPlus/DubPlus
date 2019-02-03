@@ -11,7 +11,9 @@ function MyStorage() {
 }
 MyStorage.prototype = {
   getItem: function(key) {
-    if (this[key]) { return this[key];}
+    if (this[key]) {
+      return this[key];
+    }
     return null;
   },
   setItem: function(key, value) {
@@ -24,78 +26,78 @@ MyStorage.prototype = {
       this.length--;
     }
   },
-  clear : function() {
+  clear: function() {
     for (let key in this) {
-      if (this.hasOwnProperty(key)) { delete this[key]; }
+      if (this.hasOwnProperty(key)) {
+        delete this[key];
+      }
     }
     this.length = 0;
   }
-}
+};
 
-Object.defineProperty(window, 'localStorage', {
+Object.defineProperty(window, "localStorage", {
   value: new MyStorage()
-}); 
+});
 
 /**************************************************************
  * indexedDB in-memory replacement
  */
 
 const indexedDB = require("fake-indexeddb");
-Object.defineProperty(window, 'indexedDB', {
+Object.defineProperty(window, "indexedDB", {
   value: indexedDB
-}); 
+});
 
 /**************************************************************
  * custom variables on the global window object
  */
 
 // var gitInfo = require('../../tasks/repoInfo.js');
-Object.defineProperty(window, '_RESOURCE_SRC_', {
+Object.defineProperty(window, "_RESOURCE_SRC_", {
   // value: gitInfo.resourceSrc
-  value: '/test/'
-}); 
+  value: "/test/"
+});
 
-import emojify from './emojify.js';
-Object.defineProperty(window, 'emojify', {
+import emojify from "./emojify.js";
+Object.defineProperty(window, "emojify", {
   value: emojify
-}); 
-
+});
 
 /**************************************************************
  * XHR replacement
  */
 
-import request from 'request';
+import request from "request";
 
-class MockXHR {
-  responseText = null;
-  options = {}
-
-  open (method, url) {
+function MockXHR() {
+  this.responseText = null;
+  this.options = {};
+}
+MockXHR.prototype = {
+  open: function(method, url) {
     // method ignored, we're only doing GET
     this.options.url = url;
-  }
-  
-  send ()  {
+  },
+
+  send: function() {
     this.onerror = this.onerror.bind(this);
     this.onload = this.onload.bind(this);
-    request(this.options, (error, response, body) =>{
+    request(this.options, (error, response, body) => {
       if (error) {
-        this.onerror(error)
+        this.onerror(error);
         return;
       }
       this.responseText = body;
       this.onload();
-    })
-  }
+    });
+  },
 
-  setRequestHeader (h, val)  {
+  setRequestHeader: function(h, val) {
     this.options.headers = this.options.headers || {};
     this.options.headers[h] = val;
-  };
-}
-Object.defineProperty(window, 'XMLHttpRequest', {
+  }
+};
+Object.defineProperty(window, "XMLHttpRequest", {
   value: MockXHR
-}); 
-
-
+});

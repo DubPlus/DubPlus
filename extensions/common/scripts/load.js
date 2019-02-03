@@ -27,7 +27,7 @@ script.src = chrome.runtime.getURL("scripts/dubplus.js");
 script.id = "dubplus-script-ext";
 
 script.onerror = function(err) {
-  console.log(err);
+  console.error('error loading dub+ extension script:', err.message);
 };
 
 document.body.appendChild(script);
