@@ -1,22 +1,6 @@
 /* global  emojify */
 import ldb from '../indexedDB.js';
 
-export const emoji = {
-  template: function(id) {
-    return emojify.defaultConfig.img_dir + "/" + encodeURI(id) + ".png";
-  },
-  find(symbol) {
-    let found = emojify.emojiNames.filter(e => e.indexOf(symbol) === 0);
-    return found.map(key => {
-      return {
-        type: "emojify",
-        src: this.template(key),
-        name: key
-      }
-    });
-  }
-}
-
 export function shouldUpdateAPIs(apiName) {
   var day = 1000 * 60 * 60 * 24; // milliseconds in a day
 
@@ -47,6 +31,3 @@ export function shouldUpdateAPIs(apiName) {
     });
   })
 }
-
-
-

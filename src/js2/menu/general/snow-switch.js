@@ -1,47 +1,43 @@
 import { h, Component } from "preact";
 import { MenuSwitch } from "../../components/menuItems.js";
-import getScript from "../../utils/getScript.js";
+import snowFall from "../../utils/snowfall";
 
-/**
- * Menu item for Rain
- */
+const options = {
+  round: true,
+  shadow: true,
+  flakeCount: 50,
+  minSize: 1,
+  maxSize: 5,
+  minSpeed: 5,
+  maxSpeed: 5
+};
+
 export default class SnowSwitch extends Component {
-  doSnow() {
-    $(document).snowfall({
-      round: true,
-      shadow: true,
-      flakeCount: 50,
-      minSize: 1,
-      maxSize: 5,
-      minSpeed: 5,
-      maxSpeed: 5
-    });
+  makeContainer() {
+    let snowdiv = document.createElement('div');
+    snowdiv.id = 'snow-container';
+    snowdiv.style.cssText = `
+      position:absolute;
+      top:0;
+      left:0;
+      width: 100%;
+      height: 100%;
+    `;
+    document.body.appendChild(snowdiv);
   }
 
   turnOn = () => {
-    if (!$.snowfall) {
-      // only pull in the script once if it doesn't exist 
-      getScript(
-        "https://cdn.jsdelivr.net/gh/loktar00/JQuery-Snowfall/src/snowfall.jquery.js" ,
-        err => {
-          if (err) {
-            this.switchRef.switchOff(true);
-            console.error("Could not load snowfall jquery plugin", err);
-            return;
-          }
-          this.doSnow();
-        }
-      );
-    } else {
-      this.doSnow();
+    let target = document.getElementById('snow-container');
+    if (!target) {
+      this.makeContainer();
     }
+    snowFall.snow(target, options);
   };
 
-  turnOff() {
-    if ($.snowfall) {
-      // checking to avoid errors if you quickly switch it on/off before plugin
-      // is loaded in the turnOn function
-      $(document).snowfall("clear");
+  turnOff = () => {
+    let target = document.getElementById('snow-container');
+    if (target) {
+      target.remove();
     }
   }
 

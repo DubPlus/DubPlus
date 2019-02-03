@@ -1,18 +1,18 @@
 import { h, Component } from "preact";
 import { MenuSwitch } from "../../components/menuItems.js";
 
-function chatMessage (username, song) {
-  var li = document.createElement('li');
+function chatMessage(username, song) {
+  var li = document.createElement("li");
   li.className = "dubplus-chat-system dubplus-chat-system-updub";
 
-  var div = document.createElement('div');
+  var div = document.createElement("div");
   div.className = "chatDelete";
   div.onclick = e => e.currentTarget.parentElement.remove();
 
-  var span = document.createElement('span');
+  var span = document.createElement("span");
   span.className = "icon-close";
 
-  var text = document.createElement('div');
+  var text = document.createElement("div");
   text.className = "text";
   text.textContent = `@${username} has updubbed your song ${song}`;
 
@@ -21,7 +21,7 @@ function chatMessage (username, song) {
   li.appendChild(text);
 
   return li;
-};
+}
 
 export default class UpdubsInChat extends Component {
   turnOn() {
@@ -39,10 +39,13 @@ export default class UpdubsInChat extends Component {
     }).attributes._user.username;
 
     if (user === currentDj && e.dubtype === "updub") {
-      let newChat = chatMessage(e.user.username, Dubtrack.room.player.activeSong.attributes.songInfo.name);
+      let newChat = chatMessage(
+        e.user.username,
+        Dubtrack.room.player.activeSong.attributes.songInfo.name
+      );
       document.querySelector("ul.chat-main").appendChild(newChat);
     }
-  };
+  }
 
   render() {
     return (

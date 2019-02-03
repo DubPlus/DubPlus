@@ -1,6 +1,5 @@
 import {h, Component} from 'preact';
 import {MenuSwitch} from '../../components/menuItems.js';
-import settings from '../../utils/UserSettings.js';
 
 /**
  * Menu item for Autovote

@@ -20,9 +20,12 @@ export default class ChatCleaner extends Component {
     }
 
     let parentUL = totalChats[0].parentElement;
-    totalChats.slice(0, max).forEach(function(li, i) {
-      parentUL.removeChild(li);
-    });
+    let min = totalChats.length - max;
+    if (min > 0) {
+      totalChats.splice(0, min).forEach(function(li) {
+        parentUL.removeChild(li);
+      });
+    }
   };
 
   saveAmount = value => {

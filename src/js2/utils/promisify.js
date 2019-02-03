@@ -1,7 +1,6 @@
 /**
  * Apparently native ES6 promises are really slow: https://softwareengineering.stackexchange.com/a/279003
  * so implementing my own super basic version of it that does not need the "new" operator
- * which causes a lot of the slowdown
  *
  * @param {function} asyncFunction the function to promisify. This function must accept a callback as the last argument
  * @returns {function} a wrapped function which will work like a promise. The function will return an object containing

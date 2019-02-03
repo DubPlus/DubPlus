@@ -3,7 +3,7 @@ import ldb from "../indexedDB.js";
 import settings from '../UserSettings.js';
 import {
   shouldUpdateAPIs
-} from './prepEmoji.js';
+} from './updateCheck.js';
 
 class TastyEmotes {
   emotes = {};

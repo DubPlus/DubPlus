@@ -1,6 +1,5 @@
 import { h, render, Component } from "preact";
-import { emoji } from "../utils/emotes/prepEmoji";
-import emojis from '../utils/emotes/emoji';
+import { emoji, emojiNames } from '../utils/emotes/emoji';
 import Portal from "preact-portal/src/preact-portal";
 
 class EmojiPicker extends Component {
@@ -36,8 +35,8 @@ class EmojiPicker extends Component {
       this.isLoading = true;
       this.setState((prevState)=>{
         let next = prevState.emojiLoad + 70;
-        if (next >= emojis.length) { 
-          next = emojis.length;
+        if (next >= emojiNames.length) { 
+          next = emojiNames.length;
           document.querySelector('.dp-emoji-picker').removeEventListener('scroll', this.onScroll);
         }
         return { emojiLoad: next }
@@ -52,7 +51,7 @@ class EmojiPicker extends Component {
   }
 
   render(props, { show, emojiLoad }) {
-    let list = emojis.slice(0, emojiLoad).map(e => {
+    let list = emojiNames.slice(0, emojiLoad).map(e => {
       let name = e.replace(/^:|:$/g, '');
       return (
         <span key={`emoji-${name}`} onClick={() => this.fillChat(e)}>

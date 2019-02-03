@@ -4,7 +4,7 @@
  */
 import getJSON from "../getJSON.js";
 import ldb from "../indexedDB.js";
-import { shouldUpdateAPIs } from "./prepEmoji.js";
+import { shouldUpdateAPIs } from "./updateCheck.js";
 /* global  emojify */
 
 /**
