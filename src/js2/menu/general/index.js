@@ -1,21 +1,21 @@
 import { h } from 'preact';
-import { MenuSection } from "../../components/menuItems";
+import { MenuSection } from "@/components/menuItems";
 
-import AFK from './afk.js'
-import Autovote from './autovote.js'
-import AutocompleteEmoji from './autocomplete-emoji.js';
-import Emotes from './emotes.js';
-import CustomMentions from './custom-mentions.js';
-import ChatCleaner from './chat-cleaner.js';
-import ChatNotification from './chat-notifications.js';
-import PMNotifications from './pm-notifications.js';
-import DJNotification from './dj-notification.js';
-import SnowSwitch from './snow-switch.js';
-import RainSwitch from './rain-switch.js';
-import ShowDubsOnHover from './show-dubs-on-hover.js';
-import DowndubInChat from './downdub-in-chat.js';
-import UpdubsInChat from './updubs-in-chat.js';
-import GrabsInChat from './grabs-in-chat.js';
+import AFK from '@/menu/general/afk.js'
+import Autovote from '@/menu/general/autovote.js'
+import AutocompleteEmoji from '@/menu/general/autocomplete-emoji.js';
+import Emotes from '@/menu/general/emotes.js';
+import CustomMentions from '@/menu/general/custom-mentions.js';
+import ChatCleaner from '@/menu/general/chat-cleaner.js';
+import ChatNotification from '@/menu/general/chat-notifications.js';
+import PMNotifications from '@/menu/general/pm-notifications.js';
+import DJNotification from '@/menu/general/dj-notification.js';
+import SnowSwitch from '@/menu/general/snow-switch.js';
+import RainSwitch from '@/menu/general/rain-switch.js';
+import ShowDubsOnHover from '@/menu/general/show-dubs-on-hover.js';
+import DowndubInChat from '@/menu/general/downdub-in-chat.js';
+import UpdubsInChat from '@/menu/general/updubs-in-chat.js';
+import GrabsInChat from '@/menu/general/grabs-in-chat.js';
 
 const GeneralSection = () => {
   return (

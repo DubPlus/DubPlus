@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
-import { MenuSwitch } from "../../components/menuItems.js";
-import snowFall from "../../utils/snowfall";
+import { MenuSwitch } from "@/components/menuItems.js";
+import snowFall from "@/utils/snowfall";
 
 const options = {
   round: true,
@@ -31,7 +31,7 @@ export default class SnowSwitch extends Component {
     if (!target) {
       this.makeContainer();
     }
-    snowFall.snow(target, options);
+    snowFall.snow(document.getElementById('snow-container'), options);
   };
 
   turnOff = () => {

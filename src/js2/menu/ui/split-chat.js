@@ -1,5 +1,5 @@
 import {h} from 'preact';
-import {MenuSwitch} from '../../components/menuItems.js';
+import {MenuSwitch} from '@/components/menuItems.js';
 
 function turnOn() {
   document.body.classList.add('dubplus-split-chat');

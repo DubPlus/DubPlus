@@ -41,7 +41,36 @@ const introBanner = `
     more info at https://dub.plus
 */`;
 
+/**
+ * This custom import alias allows you to replace a '@' in an import statement
+ * with your src dir so you can have cleaner import statements
+ * instead of:
+ *    '../../utils/something'
+ *    process.cwd() + '/utils/something'
+ * you can just do:
+ *   '@/utils/something'
+ */
+function customAlias() {
+  let src = process.cwd() + "/src/js2";
+  function fixExt(id) {
+    if (/\.js$/.test(id)) {
+      return id;
+    }
+    return id + ".js";
+  }
+  return {
+    name: "customAlias",
+    resolveId(importee) {
+      if (importee.charAt(0) === "@") {
+        return fixExt(importee.replace(/^@/, src));
+      }
+      return null;
+    }
+  };
+}
+
 const defaultPlugins = [
+  customAlias(),
   resolve(),
   replace({
     // so that we can point to the proper branch during testing or production
@@ -85,6 +114,7 @@ const inputOptions = {
   plugins: [...defaultPlugins, sassTasks.plugin()]
 };
 
+
 const outputOptions = {
   banner: introBanner,
   file: process.cwd() + "/dist/dubplus.js",
@@ -95,41 +125,46 @@ const outputOptions = {
 /***********************************************
  * This builds the regular version
  */
-async function build() {
+async function build(inOpts, outOpts) {
+  console.log('building dub+');
+  let _in = Object.assign({}, inOpts);
+  let _out = Object.assign({}, outOpts);
   try {
     // create a bundle
-    const bundle = await rollup.rollup(inputOptions);
-    // or write the bundle to disk
-    await bundle.write(outputOptions);
+    const bundle = await rollup.rollup(_in);
+    await bundle.write(_out);
   } catch (e) {
     console.log(e);
   }
 }
-build();
+build(inputOptions, outputOptions);
 
 /***********************************************
  * This builds the minified version
  * note: no need to build sass again
  */
+
 inputOptions.plugins = [
   ...defaultPlugins,
-  uglify({
-    output: {
-      preamble: introBanner
-    }
-  })
+    uglify({
+      output: {
+        preamble: introBanner
+      }
+    })
 ];
 
 outputOptions.file = process.cwd() + "/dist/dubplus.min.js";
-async function buildMin() {
+
+async function buildMin(inOpts, outOpts) {
+  console.log('building minified dub+');
+  let _in = Object.assign({}, inOpts);
+  let _out = Object.assign({}, outOpts);
   try {
-    // create a bundle
-    const bundle = await rollup.rollup(inputOptions);
-    // or write the bundle to disk
-    await bundle.write(outputOptions);
+    const bundle = await rollup.rollup(_in);
+    await bundle.write(_out);
   } catch (e) {
     console.log("error during minify build");
     console.log(e);
   }
 }
-buildMin();
+buildMin(inputOptions, outputOptions);

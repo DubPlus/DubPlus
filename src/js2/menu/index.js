@@ -2,14 +2,14 @@
  * DubPlus Menu Container
  */
 import { h } from "preact";
-import snooze from "../components/snooze";
-import eta from "../components/eta";
-import SetupEmojiPicker from '../components/emoji-picker';
-import GeneralSection from "./general/index";
-import UISection from "./ui/index";
-import SettingsSection from "./settings/index";
-import CustomizeSection from "./customize/index";
-import { MenuSection } from "../components/menuItems";
+import snooze from "@/components/snooze";
+import eta from "@/components/eta";
+import SetupEmojiPicker from '@/components/emoji-picker';
+import GeneralSection from "@/menu/general/index";
+import UISection from "@/menu/ui/index";
+import SettingsSection from "@/menu/settings/index";
+import CustomizeSection from "@/menu/customize/index";
+import { MenuSection } from "@/components/menuItems";
 
 const DubPlusMenu = function() {
   setTimeout(() => {

@@ -1,5 +1,5 @@
 import {h, Component} from 'preact';
-import settings from '../utils/UserSettings.js';
+import settings from '@/utils/UserSettings.js';
 
 class MenuIcon extends Component {
   state = {

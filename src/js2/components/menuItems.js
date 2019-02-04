@@ -1,8 +1,8 @@
 import { h, Component } from "preact";
-import settings from "../utils/UserSettings.js";
-import SectionHeader from "../components/section-header";
-import Modal from "./modal.js";
-import track from "../utils/analytics.js";
+import settings from "@/utils/UserSettings.js";
+import SectionHeader from "@/components/section-header";
+import Modal from "@/components/modal.js";
+import track from "@/utils/analytics.js";
 
 /**
  * Component to render a menu section.

@@ -1,5 +1,5 @@
 import { h } from "preact";
-import { MenuSimple } from "../../components/menuItems.js";
+import { MenuSimple } from "@/components/menuItems.js";
 
 /**
  * Fullscreen Video

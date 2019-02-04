@@ -1,5 +1,5 @@
 import { h, Component } from 'preact';
-import settings from '../utils/UserSettings.js';
+import settings from '@/utils/UserSettings.js';
 
 var waitingStyles = {
   fontFamily : "'Trebuchet MS', Helvetica, sans-serif",

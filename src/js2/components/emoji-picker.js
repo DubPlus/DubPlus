@@ -1,5 +1,5 @@
 import { h, render, Component } from "preact";
-import { emoji, emojiNames } from '../utils/emotes/emoji';
+import { emoji, emojiNames } from '@/utils/emotes/emoji';
 import Portal from "preact-portal/src/preact-portal";
 
 class EmojiPicker extends Component {

@@ -1,6 +1,6 @@
 import {h, Component} from 'preact';
-import {MenuSwitch, MenuPencil} from '../../components/menuItems.js';
-import settings from '../../utils/UserSettings.js';
+import {MenuSwitch, MenuPencil} from '@/components/menuItems.js';
+import settings from '@/utils/UserSettings.js';
 
 /**
  * Custom mentions

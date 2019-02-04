@@ -1,4 +1,4 @@
-import getScript from "./getScript.js";
+import getScript from "@/utils/getScript.js";
 
 export default function() {
   // Element.remove() polyfill

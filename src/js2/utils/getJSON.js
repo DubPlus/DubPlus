@@ -10,13 +10,7 @@
 function getJSON(url, headers={}) {
   return new Promise(function(resolve, reject){
     let xhr = new XMLHttpRequest();
-
-    for (let property in headers) {
-      if (headers.hasOwnProperty(property)) {
-        xhr.setRequestHeader(property, headers[property]);
-      }
-    }
-    
+  
     xhr.onload = function() {
       try {
         let resp = JSON.parse(xhr.responseText);
@@ -31,6 +25,12 @@ function getJSON(url, headers={}) {
     }
     
     xhr.open('GET', url);
+
+    for (let property in headers) {
+      if (headers.hasOwnProperty(property)) {
+        xhr.setRequestHeader(property, headers[property]);
+      }
+    }
   
     xhr.send();
   });

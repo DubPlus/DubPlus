@@ -1,13 +1,13 @@
 import { h } from 'preact';
-import { MenuSection } from "../../components/menuItems";
+import { MenuSection } from "@/components/menuItems";
 
-import FullscreenVideo from './fullscreen-video';
-import SplitChat from './split-chat';
-import HideChat from './hide-chat';
-import HideVideo from './hide-video';
-import HideAvatars from './hide-avatars';
-import HideBackground from './hide-background';
-import ShowTimestamps from './show-timestamps';
+import FullscreenVideo from '@/menu/ui/fullscreen-video';
+import SplitChat from '@/menu/ui/split-chat';
+import HideChat from '@/menu/ui/hide-chat';
+import HideVideo from '@/menu/ui/hide-video';
+import HideAvatars from '@/menu/ui/hide-avatars';
+import HideBackground from '@/menu/ui/hide-background';
+import ShowTimestamps from '@/menu/ui/show-timestamps';
 
 const UISection = () => {
   return (

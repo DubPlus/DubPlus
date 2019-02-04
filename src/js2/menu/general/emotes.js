@@ -1,9 +1,9 @@
 import {h, Component} from 'preact';
-import {MenuSwitch} from '../../components/menuItems.js';
-import chatReplace from '../../utils/emotes/chat-replace.js';
+import {MenuSwitch} from '@/components/menuItems.js';
+import chatReplace from '@/utils/emotes/chat-replace.js';
 
-import twitchEmotes from '../../utils/emotes/twitch.js';
-import bttvEmotes from '../../utils/emotes/bttv.js';
+import twitchEmotes from '@/utils/emotes/twitch.js';
+import bttvEmotes from '@/utils/emotes/bttv.js';
 
 /**********************************************************************
  * handles replacing twitch emotes in the chat box with the images
@@ -12,14 +12,18 @@ import bttvEmotes from '../../utils/emotes/bttv.js';
 export default class Emotes extends Component {
 
   turnOn = () => {
-    // only needs to load twitch emotes into memory once per page load
-    if (!twitchEmotes.loaded) {
-      // spin logo to indicate emotes are still loading
-      document.body.classList.add('dubplus-icon-spinning');
-      // bttv emotes load in a few ms
+    // spin logo to indicate emotes are still loading
+    document.body.classList.add('dubplus-icon-spinning');
+
+    // these load super fast
+    if (!bttvEmotes.loaded) {
       bttvEmotes.load();
-      // there are thousands upon thousands of twitch emotes so they
-      // take a lot longer to load.
+    }
+
+    // these load super slow
+    if (!twitchEmotes.loaded) {
+      // if this one errors out then we still want to turn this on
+      twitchEmotes.error(this.begin);
       twitchEmotes.done(this.begin);
       twitchEmotes.load();
       return;

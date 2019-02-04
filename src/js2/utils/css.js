@@ -1,4 +1,4 @@
-import settings from './UserSettings.js';
+import settings from '@/utils/UserSettings.js';
 
 var makeLink = function(className, FileName){
   var link = document.createElement('link');

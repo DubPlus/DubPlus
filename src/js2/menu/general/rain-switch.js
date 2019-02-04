@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
-import { MenuSwitch } from "../../components/menuItems.js";
-import rain from "../../utils/rain.js";
+import { MenuSwitch } from "@/components/menuItems.js";
+import rain from "@/utils/rain.js";
 
 /**
  * Menu item for Rain

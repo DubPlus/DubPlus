@@ -1,6 +1,6 @@
-import getJSON from "../getJSON.js";
-import ldb from "../indexedDB.js";
-import { shouldUpdateAPIs } from './updateCheck.js';
+import getJSON from "@/utils/getJSON.js";
+import ldb from "@/utils/indexedDB.js";
+import { shouldUpdateAPIs } from '@/utils/emotes/updateCheck.js';
 /* global  emojify */
 
 class BTTVemotes {

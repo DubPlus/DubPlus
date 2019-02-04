@@ -1,8 +1,8 @@
 import { h, Component } from "preact";
-import { MenuSwitch } from "../../components/menuItems.js";
-import Modal from "../../components/modal";
-import getJSON from "../../utils/getJSON.js";
-import userIsAtLeastMod from "../../utils/modcheck.js";
+import { MenuSwitch } from "@/components/menuItems.js";
+import Modal from "@/components/modal";
+import getJSON from "@/utils/getJSON.js";
+import userIsAtLeastMod from "@/utils/modcheck.js";
 import DubsInfo from "./show-dubs-info";
 import Portal from "preact-portal/src/preact-portal";
 

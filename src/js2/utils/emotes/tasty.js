@@ -1,9 +1,9 @@
-import getJSON from "../getJSON.js";
-import ldb from "../indexedDB.js";
-import settings from '../UserSettings.js';
+import getJSON from "@/utils/getJSON.js";
+import ldb from "@/utils/indexedDB.js";
+import settings from '@/utils/UserSettings.js';
 import {
   shouldUpdateAPIs
-} from './updateCheck.js';
+} from '@/utils/emotes/updateCheck.js';
 
 class TastyEmotes {
   emotes = {};

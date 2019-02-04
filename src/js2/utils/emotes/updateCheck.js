@@ -1,5 +1,5 @@
 /* global  emojify */
-import ldb from '../indexedDB.js';
+import ldb from '@/utils/indexedDB.js';
 
 export function shouldUpdateAPIs(apiName) {
   var day = 1000 * 60 * 60 * 24; // milliseconds in a day
@@ -7,7 +7,11 @@ export function shouldUpdateAPIs(apiName) {
   return new Promise(function(resolve, reject){
     // if api returned an object with an error and we stored it 
     // then we should try again
-    ldb.get(apiName + "_api", function(savedItem) {
+    ldb.get(apiName + "_api", function(savedItem, err) {
+      if (err) {
+        return reject(err);
+      }
+
       if (savedItem) {
         try {
           var parsed = JSON.parse(savedItem);

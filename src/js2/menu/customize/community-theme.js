@@ -1,7 +1,7 @@
 import { h } from "preact";
-import { MenuSwitch } from "../../components/menuItems.js";
-import css from "../../utils/css";
-import getJSON from "../../utils/getJSON";
+import { MenuSwitch } from "@/components/menuItems.js";
+import css from "@/utils/css";
+import getJSON from "@/utils/getJSON";
 
 function turnOn() {
   var location = Dubtrack.room.model.get("roomUrl");

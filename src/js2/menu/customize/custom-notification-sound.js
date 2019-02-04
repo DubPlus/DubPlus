@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
-import { MenuSwitch, MenuPencil } from "../../components/menuItems.js";
-import settings from "../../utils/UserSettings.js";
+import { MenuSwitch, MenuPencil } from "@/components/menuItems.js";
+import settings from "@/utils/UserSettings.js";
 
 const DubtrackDefaultSound = "/assets/music/user_ping.mp3";
 const modalMessage = "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to Dubtrack's default sound";

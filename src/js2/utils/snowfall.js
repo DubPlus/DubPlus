@@ -269,7 +269,7 @@ var snowFall = (function() {
         );
 
         // initialize the flakes
-        for (i = 0; i < defaults.flakeCount; i += 1) {
+        for (let i = 0; i < defaults.flakeCount; i += 1) {
           flakes.push(
             new flake(
               element,

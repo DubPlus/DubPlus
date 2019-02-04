@@ -1,10 +1,12 @@
 /**************************************************************************
  * Loads the twitch emotes from the api.
  * http://api.twitch.tv/kraken/chat/emoticon_images
+ * 
+ * TODO:  use different API because the official one keeps blocking Dubtrack
  */
-import getJSON from "../getJSON.js";
-import ldb from "../indexedDB.js";
-import { shouldUpdateAPIs } from "./updateCheck.js";
+import getJSON from "@/utils/getJSON.js";
+import ldb from "@/utils/indexedDB.js";
+import { shouldUpdateAPIs } from "@/utils/emotes/updateCheck.js";
 /* global  emojify */
 
 /**
@@ -30,11 +32,18 @@ class TwitchEmotes {
         }
         return this.grabFromDb();
       })
-      .catch(e => console.error(e.message));
+      .catch(e => {
+        console.error(e);
+        this.updateFromApi();
+      });
   }
 
   done(cb) {
     this.doneCB = cb;
+  }
+
+  error(cb) {
+    this.errorCB = cb;
   }
 
   grabFromDb() {
@@ -59,25 +68,32 @@ class TwitchEmotes {
     console.log("dub+", "twitch", "loading from api");
 
     let corsEsc = "https://cors-escape.herokuapp.com";
-    let twApi = getJSON(
-      `${corsEsc}/https://api.twitch.tv/kraken/chat/emoticon_images`
-    );
+    let twApi = getJSON("https://api.twitch.tv/kraken/chat/emoticon_images", {
+      Accept: "application/vnd.twitchtv.v5+json",
+      "Client-ID": "z5bpa7x6y717dsw28qnmcooolzm2js"
+    });
 
-    return twApi.then(json => {
-      let twitchEmotes = {};
-      json.emoticons.forEach(e => {
-        if (!twitchEmotes[e.code] || e.emoticon_set === null) {
-          // if emote doesn't exist OR
-          // override if it's a global emote (null set = global emote)
-          twitchEmotes[e.code] = e.id;
+    return twApi
+      .then(json => {
+        let twitchEmotes = {};
+        json.emoticons.forEach(e => {
+          if (!twitchEmotes[e.code] || e.emoticon_set === null) {
+            // if emote doesn't exist OR
+            // override if it's a global emote (null set = global emote)
+            twitchEmotes[e.code] = e.id;
+          }
+        });
+        localStorage.setItem("twitch_api_timestamp", Date.now().toString());
+        ldb.set("twitch_api", JSON.stringify(twitchEmotes));
+        // this.processEmotes(twitchEmotes);
+        this.processViaWebWorker(twitchEmotes);
+        this.loaded = "from api";
+      })
+      .catch((e)=>{
+        if (typeof this.errorCB === 'function') {
+          this.errorCB(e);
         }
       });
-      localStorage.setItem("twitch_api_timestamp", Date.now().toString());
-      ldb.set("twitch_api", JSON.stringify(twitchEmotes));
-      // this.processEmotes(twitchEmotes);
-      this.processViaWebWorker(twitchEmotes);
-      this.loaded = "from api";
-    });
   }
 
   template(id) {

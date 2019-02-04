@@ -1,18 +1,18 @@
 
 /*
-     /$$$$$$$            /$$                
-    | $$__  $$          | $$          /$$   
-    | $$  | $$ /$$   /$$| $$$$$$$    | $$   
+     /$$$$$$$            /$$
+    | $$__  $$          | $$          /$$
+    | $$  | $$ /$$   /$$| $$$$$$$    | $$
     | $$  | $$| $$  | $$| $$__  $$ /$$$$$$$$
     | $$  | $$| $$  | $$| $$  | $$|__  $$__/
-    | $$  | $$| $$  | $$| $$  | $$   | $$   
-    | $$$$$$$/|  $$$$$$/| $$$$$$$/   |__/   
-    |_______/  ______/ |_______/           
-                                            
-                                            
+    | $$  | $$| $$  | $$| $$  | $$   | $$
+    | $$$$$$$/|  $$$$$$/| $$$$$$$/   |__/
+    |_______/  ______/ |_______/
+
+
     https://github.com/DubPlus/DubPlus
 
-    This source code is licensed under the MIT license 
+    This source code is licensed under the MIT license
     found here: https://github.com/DubPlus/DubPlus/blob/master/LICENSE
 
     Copyright (c) 2017-present DubPlus
@@ -877,6 +877,10 @@ var DubPlus = (function () {
       // load Promise polyfill for IE because we are still supporting it
       getScript("https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js");
     }
+
+    if (window.NodeList && !NodeList.prototype.forEach) {
+      NodeList.prototype.forEach = Array.prototype.forEach;
+    }
   }
 
   /*global Dubtrack*/
@@ -1076,96 +1080,6 @@ var DubPlus = (function () {
     render(h(ETA, null), document.querySelector('.player_sharing'));
   }
 
-  // IndexedDB wrapper for increased quota compared to localstorage (5mb to 50mb)
-  function IndexDBWrapper() {
-    var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-
-    if (!indexedDB) {
-      return console.error("indexDB not supported");
-    }
-    var db;
-    var timeout = 50; // 50 * 100 = 5000ms = 5s
-
-    /**
-     * Get item from indexedDB
-     * @param {string} item the db key name of what you want to retrieve
-     * @param {function} [cb] optional callback because it also returns a promise
-     * @returns {Promise}
-     */
-
-    function getItem(item, cb) {
-      // keep trying until db open request is established
-      if (!db && timeout >= 0) {
-        setTimeout(function () {
-          getItem(item, cb);
-        }, 100);
-        timeout--;
-        return;
-      }
-
-      timeout = 30; // reset the dbrequest timeout counter
-
-      return db.transaction("s").objectStore("s").get(item).onsuccess = function (e) {
-        var t = e.target.result && e.target.result.v || null;
-        cb(t);
-      };
-    }
-    /**
-     * Store a value in indexedDB
-     * @param {string} item key name for the value that will be stored
-     * @param {string} val value to be stored
-     */
-
-
-    function setItem(item, val) {
-      // keep trying until db open request is established
-      if (!db && timeout >= 0) {
-        setTimeout(function () {
-          setItem(item, val);
-        }, 100);
-        timeout--;
-        return;
-      }
-
-      timeout = 30; // reset the dbrequest timeout counter
-
-      var obj = {
-        k: item,
-        v: val
-      };
-      db.transaction("s", "readwrite").objectStore("s").put(obj);
-    }
-
-    var dbRequest = indexedDB.open("d2", 1);
-
-    dbRequest.onsuccess = function (e) {
-      db = this.result;
-    };
-
-    dbRequest.onerror = function (e) {
-      console.error("indexedDB request error", e);
-    };
-
-    dbRequest.onupgradeneeded = function (e) {
-      db = this.result;
-      var t = db.createObjectStore("s", {
-        keyPath: "k"
-      });
-
-      db.transaction.oncomplete = function (e) {
-        db = e.target.db;
-      };
-    };
-
-    return {
-      get: getItem,
-      set: setItem
-    };
-  }
-
-  var ldb = new IndexDBWrapper();
-
-  /* global  emojify */
   var emoji = {
     template: function template(id) {
       return emojify.defaultConfig.img_dir + "/" + encodeURI(id) + ".png";
@@ -1184,42 +1098,9 @@ var DubPlus = (function () {
         };
       });
     }
-  };
-  function shouldUpdateAPIs(apiName) {
-    var day = 1000 * 60 * 60 * 24; // milliseconds in a day
+  }; // found a gist on github that grouped the emoji in the right order. 
 
-    return new Promise(function (resolve, reject) {
-      // if api returned an object with an error and we stored it 
-      // then we should try again
-      ldb.get(apiName + "_api", function (savedItem) {
-        if (savedItem) {
-          try {
-            var parsed = JSON.parse(savedItem);
-
-            if (typeof parsed.error !== "undefined") {
-              resolve(true); // yes we should refresh data from api
-            }
-          } catch (e) {
-            resolve(true); // data was corrupted, needs to be refreshed
-          }
-        } else {
-          resolve(true); // data doesn't exist, needs to be fetched
-        } // at this point we have good data without issues in IndexedDB
-        // so now we check how old it is to see if we should update it (7 days is the limit)
-
-
-        var today = Date.now();
-        var lastSaved = parseInt(localStorage.getItem(apiName + "_api_timestamp")); // Is the lastsaved not a number for some strange reason, then we should update 
-        // OR
-        // are we past 5 days from last update? then we should update
-
-        resolve(isNaN(lastSaved) || today - lastSaved > day * 7);
-      });
-    });
-  }
-
-  // found a gist on github that grouped the emoji in the right order. 
-  var emojis = [':bowtie:', ':smile:', ':laughing:', ':blush:', ':smiley:', ':relaxed:', ':smirk:', ':heart_eyes:', ':kissing_heart:', ':kissing_closed_eyes:', ':flushed:', ':relieved:', ':satisfied:', ':grin:', ':wink:', ':stuck_out_tongue_winking_eye:', ':stuck_out_tongue_closed_eyes:', ':grinning:', ':kissing:', ':kissing_smiling_eyes:', ':stuck_out_tongue:', ':sleeping:', ':worried:', ':frowning:', ':anguished:', ':open_mouth:', ':grimacing:', ':confused:', ':hushed:', ':expressionless:', ':unamused:', ':sweat_smile:', ':sweat:', ':disappointed_relieved:', ':weary:', ':pensive:', ':disappointed:', ':confounded:', ':fearful:', ':cold_sweat:', ':persevere:', ':cry:', ':sob:', ':joy:', ':astonished:', ':scream:', ':neckbeard:', ':tired_face:', ':angry:', ':rage:', ':triumph:', ':sleepy:', ':yum:', ':mask:', ':sunglasses:', ':dizzy_face:', ':imp:', ':smiling_imp:', ':neutral_face:', ':no_mouth:', ':innocent:', ':alien:', ':yellow_heart:', ':blue_heart:', ':purple_heart:', ':heart:', ':green_heart:', ':broken_heart:', ':heartbeat:', ':heartpulse:', ':two_hearts:', ':revolving_hearts:', ':cupid:', ':sparkling_heart:', ':sparkles:', ':star:', ':star2:', ':dizzy:', ':boom:', ':collision:', ':anger:', ':exclamation:', ':question:', ':grey_exclamation:', ':grey_question:', ':zzz:', ':dash:', ':sweat_drops:', ':notes:', ':musical_note:', ':fire:', ':hankey:', ':poop:', ':shit:', ':thumbsup:', ':-1:', ':thumbsdown:', ':ok_hand:', ':punch:', ':facepunch:', ':fist:', ':v:', ':wave:', ':hand:', ':raised_hand:', ':open_hands:', ':point_up:', ':point_down:', ':point_left:', ':point_right:', ':raised_hands:', ':pray:', ':point_up_2:', ':clap:', ':muscle:', ':metal:', ':fu:', ':runner:', ':running:', ':couple:', ':family:', ':two_men_holding_hands:', ':two_women_holding_hands:', ':dancer:', ':dancers:', ':ok_woman:', ':no_good:', ':information_desk_person:', ':raising_hand:', ':bride_with_veil:', ':person_with_pouting_face:', ':person_frowning:', ':bow:', ':couplekiss:', ':couple_with_heart:', ':massage:', ':haircut:', ':nail_care:', ':boy:', ':girl:', ':woman:', ':man:', ':baby:', ':older_woman:', ':older_man:', ':person_with_blond_hair:', ':man_with_gua_pi_mao:', ':man_with_turban:', ':construction_worker:', ':cop:', ':angel:', ':princess:', ':smiley_cat:', ':smile_cat:', ':heart_eyes_cat:', ':kissing_cat:', ':smirk_cat:', ':scream_cat:', ':crying_cat_face:', ':joy_cat:', ':pouting_cat:', ':japanese_ogre:', ':japanese_goblin:', ':see_no_evil:', ':hear_no_evil:', ':speak_no_evil:', ':guardsman:', ':skull:', ':feet:', ':lips:', ':kiss:', ':droplet:', ':ear:', ':eyes:', ':nose:', ':tongue:', ':love_letter:', ':bust_in_silhouette:', ':busts_in_silhouette:', ':speech_balloon:', ':thought_balloon:', ':feelsgood:', ':finnadie:', ':goberserk:', ':godmode:', ':hurtrealbad:', ':rage1:', ':rage2:', ':rage3:', ':rage4:', ':suspect:', ':trollface:', ':sunny:', ':umbrella:', ':cloud:', ':snowflake:', ':snowman:', ':zap:', ':cyclone:', ':foggy:', ':ocean:', ':cat:', ':dog:', ':mouse:', ':hamster:', ':rabbit:', ':wolf:', ':frog:', ':tiger:', ':koala:', ':bear:', ':pig:', ':pig_nose:', ':cow:', ':boar:', ':monkey_face:', ':monkey:', ':horse:', ':racehorse:', ':camel:', ':sheep:', ':elephant:', ':panda_face:', ':snake:', ':bird:', ':baby_chick:', ':hatched_chick:', ':hatching_chick:', ':chicken:', ':penguin:', ':turtle:', ':bug:', ':honeybee:', ':ant:', ':beetle:', ':snail:', ':octopus:', ':tropical_fish:', ':fish:', ':whale:', ':whale2:', ':dolphin:', ':cow2:', ':ram:', ':rat:', ':water_buffalo:', ':tiger2:', ':rabbit2:', ':dragon:', ':goat:', ':rooster:', ':dog2:', ':pig2:', ':mouse2:', ':ox:', ':dragon_face:', ':blowfish:', ':crocodile:', ':dromedary_camel:', ':leopard:', ':cat2:', ':poodle:', ':paw_prints:', ':bouquet:', ':cherry_blossom:', ':tulip:', ':four_leaf_clover:', ':rose:', ':sunflower:', ':hibiscus:', ':maple_leaf:', ':leaves:', ':fallen_leaf:', ':herb:', ':mushroom:', ':cactus:', ':palm_tree:', ':evergreen_tree:', ':deciduous_tree:', ':chestnut:', ':seedling:', ':blossom:', ':ear_of_rice:', ':shell:', ':globe_with_meridians:', ':sun_with_face:', ':full_moon_with_face:', ':new_moon_with_face:', ':new_moon:', ':waxing_crescent_moon:', ':first_quarter_moon:', ':waxing_gibbous_moon:', ':full_moon:', ':waning_gibbous_moon:', ':last_quarter_moon:', ':waning_crescent_moon:', ':last_quarter_moon_with_face:', ':first_quarter_moon_with_face:', ':crescent_moon:', ':earth_africa:', ':earth_americas:', ':earth_asia:', ':volcano:', ':milky_way:', ':partly_sunny:', ':octocat:', ':squirrel:', ':bamboo:', ':gift_heart:', ':dolls:', ':school_satchel:', ':mortar_board:', ':flags:', ':fireworks:', ':sparkler:', ':wind_chime:', ':rice_scene:', ':jack_o_lantern:', ':ghost:', ':santa:', ':christmas_tree:', ':gift:', ':bell:', ':no_bell:', ':tanabata_tree:', ':tada:', ':confetti_ball:', ':balloon:', ':crystal_ball:', ':cd:', ':dvd:', ':floppy_disk:', ':camera:', ':video_camera:', ':movie_camera:', ':computer:', ':tv:', ':iphone:', ':phone:', ':telephone:', ':telephone_receiver:', ':pager:', ':fax:', ':minidisc:', ':vhs:', ':sound:', ':speaker:', ':mute:', ':loudspeaker:', ':mega:', ':hourglass:', ':hourglass_flowing_sand:', ':alarm_clock:', ':watch:', ':radio:', ':satellite:', ':loop:', ':mag:', ':mag_right:', ':unlock:', ':lock:', ':lock_with_ink_pen:', ':closed_lock_with_key:', ':key:', ':bulb:', ':flashlight:', ':high_brightness:', ':low_brightness:', ':electric_plug:', ':battery:', ':calling:', ':email:', ':mailbox:', ':postbox:', ':bath:', ':bathtub:', ':shower:', ':toilet:', ':wrench:', ':nut_and_bolt:', ':hammer:', ':seat:', ':moneybag:', ':yen:', ':dollar:', ':pound:', ':euro:', ':credit_card:', ':money_with_wings:', ':e-mail:', ':inbox_tray:', ':outbox_tray:', ':envelope:', ':incoming_envelope:', ':postal_horn:', ':mailbox_closed:', ':mailbox_with_mail:', ':mailbox_with_no_mail:', ':package:', ':door:', ':smoking:', ':bomb:', ':gun:', ':hocho:', ':pill:', ':syringe:', ':page_facing_up:', ':page_with_curl:', ':bookmark_tabs:', ':bar_chart:', ':chart_with_upwards_trend:', ':chart_with_downwards_trend:', ':scroll:', ':clipboard:', ':calendar:', ':date:', ':card_index:', ':file_folder:', ':open_file_folder:', ':scissors:', ':pushpin:', ':paperclip:', ':black_nib:', ':pencil2:', ':straight_ruler:', ':triangular_ruler:', ':closed_book:', ':green_book:', ':blue_book:', ':orange_book:', ':notebook:', ':notebook_with_decorative_cover:', ':ledger:', ':books:', ':bookmark:', ':name_badge:', ':microscope:', ':telescope:', ':newspaper:', ':football:', ':basketball:', ':soccer:', ':baseball:', ':tennis:', ':8ball:', ':rugby_football:', ':bowling:', ':golf:', ':mountain_bicyclist:', ':bicyclist:', ':horse_racing:', ':snowboarder:', ':swimmer:', ':surfer:', ':ski:', ':spades:', ':hearts:', ':clubs:', ':diamonds:', ':gem:', ':ring:', ':trophy:', ':musical_score:', ':musical_keyboard:', ':violin:', ':space_invader:', ':video_game:', ':black_joker:', ':flower_playing_cards:', ':game_die:', ':dart:', ':mahjong:', ':clapper:', ':memo:', ':pencil:', ':book:', ':art:', ':microphone:', ':headphones:', ':trumpet:', ':saxophone:', ':guitar:', ':shoe:', ':sandal:', ':high_heel:', ':lipstick:', ':boot:', ':shirt:', ':tshirt:', ':necktie:', ':womans_clothes:', ':dress:', ':running_shirt_with_sash:', ':jeans:', ':kimono:', ':bikini:', ':ribbon:', ':tophat:', ':crown:', ':womans_hat:', ':mans_shoe:', ':closed_umbrella:', ':briefcase:', ':handbag:', ':pouch:', ':purse:', ':eyeglasses:', ':fishing_pole_and_fish:', ':coffee:', ':tea:', ':sake:', ':baby_bottle:', ':beer:', ':beers:', ':cocktail:', ':tropical_drink:', ':wine_glass:', ':fork_and_knife:', ':pizza:', ':hamburger:', ':fries:', ':poultry_leg:', ':meat_on_bone:', ':spaghetti:', ':curry:', ':fried_shrimp:', ':bento:', ':sushi:', ':fish_cake:', ':rice_ball:', ':rice_cracker:', ':rice:', ':ramen:', ':stew:', ':oden:', ':dango:', ':egg:', ':bread:', ':doughnut:', ':custard:', ':icecream:', ':ice_cream:', ':shaved_ice:', ':birthday:', ':cake:', ':cookie:', ':chocolate_bar:', ':candy:', ':lollipop:', ':honey_pot:', ':apple:', ':green_apple:', ':tangerine:', ':lemon:', ':cherries:', ':grapes:', ':watermelon:', ':strawberry:', ':peach:', ':melon:', ':banana:', ':pear:', ':pineapple:', ':sweet_potato:', ':eggplant:', ':tomato:', ':corn:', ':house:', ':house_with_garden:', ':school:', ':office:', ':post_office:', ':hospital:', ':bank:', ':convenience_store:', ':love_hotel:', ':hotel:', ':wedding:', ':church:', ':department_store:', ':european_post_office:', ':city_sunrise:', ':city_sunset:', ':japanese_castle:', ':european_castle:', ':tent:', ':factory:', ':tokyo_tower:', ':japan:', ':mount_fuji:', ':sunrise_over_mountains:', ':sunrise:', ':stars:', ':statue_of_liberty:', ':bridge_at_night:', ':carousel_horse:', ':rainbow:', ':ferris_wheel:', ':fountain:', ':roller_coaster:', ':ship:', ':speedboat:', ':boat:', ':sailboat:', ':rowboat:', ':anchor:', ':rocket:', ':airplane:', ':helicopter:', ':steam_locomotive:', ':tram:', ':mountain_railway:', ':bike:', ':aerial_tramway:', ':suspension_railway:', ':mountain_cableway:', ':tractor:', ':blue_car:', ':oncoming_automobile:', ':car:', ':red_car:', ':taxi:', ':oncoming_taxi:', ':articulated_lorry:', ':bus:', ':oncoming_bus:', ':rotating_light:', ':police_car:', ':oncoming_police_car:', ':fire_engine:', ':ambulance:', ':minibus:', ':truck:', ':train:', ':station:', ':train2:', ':bullettrain_front:', ':bullettrain_side:', ':light_rail:', ':monorail:', ':railway_car:', ':trolleybus:', ':ticket:', ':fuelpump:', ':vertical_traffic_light:', ':traffic_light:', ':warning:', ':construction:', ':beginner:', ':atm:', ':slot_machine:', ':busstop:', ':barber:', ':hotsprings:', ':checkered_flag:', ':crossed_flags:', ':izakaya_lantern:', ':moyai:', ':circus_tent:', ':performing_arts:', ':round_pushpin:', ':triangular_flag_on_post:', ':jp:', ':kr:', ':cn:', ':us:', ':fr:', ':es:', ':it:', ':ru:', ':gb:', ':uk:', ':de:', ':one:', ':two:', ':three:', ':four:', ':five:', ':six:', ':seven:', ':eight:', ':nine:', ':keycap_ten:', ':1234:', ':zero:', ':hash:', ':symbols:', ':arrow_backward:', ':arrow_down:', ':arrow_forward:', ':arrow_left:', ':capital_abcd:', ':abcd:', ':abc:', ':arrow_lower_left:', ':arrow_lower_right:', ':arrow_right:', ':arrow_up:', ':arrow_upper_left:', ':arrow_upper_right:', ':arrow_double_down:', ':arrow_double_up:', ':arrow_down_small:', ':arrow_heading_down:', ':arrow_heading_up:', ':leftwards_arrow_with_hook:', ':arrow_right_hook:', ':left_right_arrow:', ':arrow_up_down:', ':arrow_up_small:', ':arrows_clockwise:', ':arrows_counterclockwise:', ':rewind:', ':fast_forward:', ':information_source:', ':ok:', ':twisted_rightwards_arrows:', ':repeat:', ':repeat_one:', ':new:', ':top:', ':up:', ':cool:', ':free:', ':ng:', ':cinema:', ':koko:', ':signal_strength:', ':u5272:', ':u5408:', ':u55b6:', ':u6307:', ':u6708:', ':u6709:', ':u6e80:', ':u7121:', ':u7533:', ':u7a7a:', ':u7981:', ':sa:', ':restroom:', ':mens:', ':womens:', ':baby_symbol:', ':no_smoking:', ':parking:', ':wheelchair:', ':metro:', ':baggage_claim:', ':accept:', ':wc:', ':potable_water:', ':put_litter_in_its_place:', ':secret:', ':congratulations:', ':m:', ':passport_control:', ':left_luggage:', ':customs:', ':ideograph_advantage:', ':cl:', ':sos:', ':id:', ':no_entry_sign:', ':underage:', ':no_mobile_phones:', ':do_not_litter:', ':non-potable_water:', ':no_bicycles:', ':no_pedestrians:', ':children_crossing:', ':no_entry:', ':eight_spoked_asterisk:', ':sparkle:', ':eight_pointed_black_star:', ':heart_decoration:', ':vs:', ':vibration_mode:', ':mobile_phone_off:', ':chart:', ':currency_exchange:', ':aries:', ':taurus:', ':gemini:', ':cancer:', ':leo:', ':virgo:', ':libra:', ':scorpius:', ':sagittarius:', ':capricorn:', ':aquarius:', ':pisces:', ':ophiuchus:', ':six_pointed_star:', ':negative_squared_cross_mark:', ':a:', ':b:', ':ab:', ':o2:', ':diamond_shape_with_a_dot_inside:', ':recycle:', ':end:', ':back:', ':on:', ':soon:', ':clock1:', ':clock130:', ':clock10:', ':clock1030:', ':clock11:', ':clock1130:', ':clock12:', ':clock1230:', ':clock2:', ':clock230:', ':clock3:', ':clock330:', ':clock4:', ':clock430:', ':clock5:', ':clock530:', ':clock6:', ':clock630:', ':clock7:', ':clock730:', ':clock8:', ':clock830:', ':clock9:', ':clock930:', ':heavy_dollar_sign:', ':copyright:', ':registered:', ':tm:', ':x:', ':heavy_exclamation_mark:', ':bangbang:', ':interrobang:', ':o:', ':heavy_multiplication_x:', ':heavy_plus_sign:', ':heavy_minus_sign:', ':heavy_division_sign:', ':white_flower:', ':100:', ':heavy_check_mark:', ':ballot_box_with_check:', ':radio_button:', ':link:', ':curly_loop:', ':wavy_dash:', ':part_alternation_mark:', ':trident:', ':black_small_square:', ':white_small_square:', ':black_medium_small_square:', ':white_medium_small_square:', ':black_medium_square:', ':white_medium_square:', ':white_large_square:', ':white_check_mark:', ':black_square_button:', ':white_square_button:', ':black_circle:', ':white_circle:', ':red_circle:', ':large_blue_circle:', ':large_blue_diamond:', ':large_orange_diamond:', ':small_blue_diamond:', ':small_orange_diamond:', ':small_red_triangle:', ':small_red_triangle_down:', ':shipit:'];
+  var emojiNames = [':bowtie:', ':smile:', ':laughing:', ':blush:', ':smiley:', ':relaxed:', ':smirk:', ':heart_eyes:', ':kissing_heart:', ':kissing_closed_eyes:', ':flushed:', ':relieved:', ':satisfied:', ':grin:', ':wink:', ':stuck_out_tongue_winking_eye:', ':stuck_out_tongue_closed_eyes:', ':grinning:', ':kissing:', ':kissing_smiling_eyes:', ':stuck_out_tongue:', ':sleeping:', ':worried:', ':frowning:', ':anguished:', ':open_mouth:', ':grimacing:', ':confused:', ':hushed:', ':expressionless:', ':unamused:', ':sweat_smile:', ':sweat:', ':disappointed_relieved:', ':weary:', ':pensive:', ':disappointed:', ':confounded:', ':fearful:', ':cold_sweat:', ':persevere:', ':cry:', ':sob:', ':joy:', ':astonished:', ':scream:', ':neckbeard:', ':tired_face:', ':angry:', ':rage:', ':triumph:', ':sleepy:', ':yum:', ':mask:', ':sunglasses:', ':dizzy_face:', ':imp:', ':smiling_imp:', ':neutral_face:', ':no_mouth:', ':innocent:', ':alien:', ':yellow_heart:', ':blue_heart:', ':purple_heart:', ':heart:', ':green_heart:', ':broken_heart:', ':heartbeat:', ':heartpulse:', ':two_hearts:', ':revolving_hearts:', ':cupid:', ':sparkling_heart:', ':sparkles:', ':star:', ':star2:', ':dizzy:', ':boom:', ':collision:', ':anger:', ':exclamation:', ':question:', ':grey_exclamation:', ':grey_question:', ':zzz:', ':dash:', ':sweat_drops:', ':notes:', ':musical_note:', ':fire:', ':hankey:', ':poop:', ':shit:', ':thumbsup:', ':-1:', ':thumbsdown:', ':ok_hand:', ':punch:', ':facepunch:', ':fist:', ':v:', ':wave:', ':hand:', ':raised_hand:', ':open_hands:', ':point_up:', ':point_down:', ':point_left:', ':point_right:', ':raised_hands:', ':pray:', ':point_up_2:', ':clap:', ':muscle:', ':metal:', ':fu:', ':runner:', ':running:', ':couple:', ':family:', ':two_men_holding_hands:', ':two_women_holding_hands:', ':dancer:', ':dancers:', ':ok_woman:', ':no_good:', ':information_desk_person:', ':raising_hand:', ':bride_with_veil:', ':person_with_pouting_face:', ':person_frowning:', ':bow:', ':couplekiss:', ':couple_with_heart:', ':massage:', ':haircut:', ':nail_care:', ':boy:', ':girl:', ':woman:', ':man:', ':baby:', ':older_woman:', ':older_man:', ':person_with_blond_hair:', ':man_with_gua_pi_mao:', ':man_with_turban:', ':construction_worker:', ':cop:', ':angel:', ':princess:', ':smiley_cat:', ':smile_cat:', ':heart_eyes_cat:', ':kissing_cat:', ':smirk_cat:', ':scream_cat:', ':crying_cat_face:', ':joy_cat:', ':pouting_cat:', ':japanese_ogre:', ':japanese_goblin:', ':see_no_evil:', ':hear_no_evil:', ':speak_no_evil:', ':guardsman:', ':skull:', ':feet:', ':lips:', ':kiss:', ':droplet:', ':ear:', ':eyes:', ':nose:', ':tongue:', ':love_letter:', ':bust_in_silhouette:', ':busts_in_silhouette:', ':speech_balloon:', ':thought_balloon:', ':feelsgood:', ':finnadie:', ':goberserk:', ':godmode:', ':hurtrealbad:', ':rage1:', ':rage2:', ':rage3:', ':rage4:', ':suspect:', ':trollface:', ':sunny:', ':umbrella:', ':cloud:', ':snowflake:', ':snowman:', ':zap:', ':cyclone:', ':foggy:', ':ocean:', ':cat:', ':dog:', ':mouse:', ':hamster:', ':rabbit:', ':wolf:', ':frog:', ':tiger:', ':koala:', ':bear:', ':pig:', ':pig_nose:', ':cow:', ':boar:', ':monkey_face:', ':monkey:', ':horse:', ':racehorse:', ':camel:', ':sheep:', ':elephant:', ':panda_face:', ':snake:', ':bird:', ':baby_chick:', ':hatched_chick:', ':hatching_chick:', ':chicken:', ':penguin:', ':turtle:', ':bug:', ':honeybee:', ':ant:', ':beetle:', ':snail:', ':octopus:', ':tropical_fish:', ':fish:', ':whale:', ':whale2:', ':dolphin:', ':cow2:', ':ram:', ':rat:', ':water_buffalo:', ':tiger2:', ':rabbit2:', ':dragon:', ':goat:', ':rooster:', ':dog2:', ':pig2:', ':mouse2:', ':ox:', ':dragon_face:', ':blowfish:', ':crocodile:', ':dromedary_camel:', ':leopard:', ':cat2:', ':poodle:', ':paw_prints:', ':bouquet:', ':cherry_blossom:', ':tulip:', ':four_leaf_clover:', ':rose:', ':sunflower:', ':hibiscus:', ':maple_leaf:', ':leaves:', ':fallen_leaf:', ':herb:', ':mushroom:', ':cactus:', ':palm_tree:', ':evergreen_tree:', ':deciduous_tree:', ':chestnut:', ':seedling:', ':blossom:', ':ear_of_rice:', ':shell:', ':globe_with_meridians:', ':sun_with_face:', ':full_moon_with_face:', ':new_moon_with_face:', ':new_moon:', ':waxing_crescent_moon:', ':first_quarter_moon:', ':waxing_gibbous_moon:', ':full_moon:', ':waning_gibbous_moon:', ':last_quarter_moon:', ':waning_crescent_moon:', ':last_quarter_moon_with_face:', ':first_quarter_moon_with_face:', ':crescent_moon:', ':earth_africa:', ':earth_americas:', ':earth_asia:', ':volcano:', ':milky_way:', ':partly_sunny:', ':octocat:', ':squirrel:', ':bamboo:', ':gift_heart:', ':dolls:', ':school_satchel:', ':mortar_board:', ':flags:', ':fireworks:', ':sparkler:', ':wind_chime:', ':rice_scene:', ':jack_o_lantern:', ':ghost:', ':santa:', ':christmas_tree:', ':gift:', ':bell:', ':no_bell:', ':tanabata_tree:', ':tada:', ':confetti_ball:', ':balloon:', ':crystal_ball:', ':cd:', ':dvd:', ':floppy_disk:', ':camera:', ':video_camera:', ':movie_camera:', ':computer:', ':tv:', ':iphone:', ':phone:', ':telephone:', ':telephone_receiver:', ':pager:', ':fax:', ':minidisc:', ':vhs:', ':sound:', ':speaker:', ':mute:', ':loudspeaker:', ':mega:', ':hourglass:', ':hourglass_flowing_sand:', ':alarm_clock:', ':watch:', ':radio:', ':satellite:', ':loop:', ':mag:', ':mag_right:', ':unlock:', ':lock:', ':lock_with_ink_pen:', ':closed_lock_with_key:', ':key:', ':bulb:', ':flashlight:', ':high_brightness:', ':low_brightness:', ':electric_plug:', ':battery:', ':calling:', ':email:', ':mailbox:', ':postbox:', ':bath:', ':bathtub:', ':shower:', ':toilet:', ':wrench:', ':nut_and_bolt:', ':hammer:', ':seat:', ':moneybag:', ':yen:', ':dollar:', ':pound:', ':euro:', ':credit_card:', ':money_with_wings:', ':e-mail:', ':inbox_tray:', ':outbox_tray:', ':envelope:', ':incoming_envelope:', ':postal_horn:', ':mailbox_closed:', ':mailbox_with_mail:', ':mailbox_with_no_mail:', ':package:', ':door:', ':smoking:', ':bomb:', ':gun:', ':hocho:', ':pill:', ':syringe:', ':page_facing_up:', ':page_with_curl:', ':bookmark_tabs:', ':bar_chart:', ':chart_with_upwards_trend:', ':chart_with_downwards_trend:', ':scroll:', ':clipboard:', ':calendar:', ':date:', ':card_index:', ':file_folder:', ':open_file_folder:', ':scissors:', ':pushpin:', ':paperclip:', ':black_nib:', ':pencil2:', ':straight_ruler:', ':triangular_ruler:', ':closed_book:', ':green_book:', ':blue_book:', ':orange_book:', ':notebook:', ':notebook_with_decorative_cover:', ':ledger:', ':books:', ':bookmark:', ':name_badge:', ':microscope:', ':telescope:', ':newspaper:', ':football:', ':basketball:', ':soccer:', ':baseball:', ':tennis:', ':8ball:', ':rugby_football:', ':bowling:', ':golf:', ':mountain_bicyclist:', ':bicyclist:', ':horse_racing:', ':snowboarder:', ':swimmer:', ':surfer:', ':ski:', ':spades:', ':hearts:', ':clubs:', ':diamonds:', ':gem:', ':ring:', ':trophy:', ':musical_score:', ':musical_keyboard:', ':violin:', ':space_invader:', ':video_game:', ':black_joker:', ':flower_playing_cards:', ':game_die:', ':dart:', ':mahjong:', ':clapper:', ':memo:', ':pencil:', ':book:', ':art:', ':microphone:', ':headphones:', ':trumpet:', ':saxophone:', ':guitar:', ':shoe:', ':sandal:', ':high_heel:', ':lipstick:', ':boot:', ':shirt:', ':tshirt:', ':necktie:', ':womans_clothes:', ':dress:', ':running_shirt_with_sash:', ':jeans:', ':kimono:', ':bikini:', ':ribbon:', ':tophat:', ':crown:', ':womans_hat:', ':mans_shoe:', ':closed_umbrella:', ':briefcase:', ':handbag:', ':pouch:', ':purse:', ':eyeglasses:', ':fishing_pole_and_fish:', ':coffee:', ':tea:', ':sake:', ':baby_bottle:', ':beer:', ':beers:', ':cocktail:', ':tropical_drink:', ':wine_glass:', ':fork_and_knife:', ':pizza:', ':hamburger:', ':fries:', ':poultry_leg:', ':meat_on_bone:', ':spaghetti:', ':curry:', ':fried_shrimp:', ':bento:', ':sushi:', ':fish_cake:', ':rice_ball:', ':rice_cracker:', ':rice:', ':ramen:', ':stew:', ':oden:', ':dango:', ':egg:', ':bread:', ':doughnut:', ':custard:', ':icecream:', ':ice_cream:', ':shaved_ice:', ':birthday:', ':cake:', ':cookie:', ':chocolate_bar:', ':candy:', ':lollipop:', ':honey_pot:', ':apple:', ':green_apple:', ':tangerine:', ':lemon:', ':cherries:', ':grapes:', ':watermelon:', ':strawberry:', ':peach:', ':melon:', ':banana:', ':pear:', ':pineapple:', ':sweet_potato:', ':eggplant:', ':tomato:', ':corn:', ':house:', ':house_with_garden:', ':school:', ':office:', ':post_office:', ':hospital:', ':bank:', ':convenience_store:', ':love_hotel:', ':hotel:', ':wedding:', ':church:', ':department_store:', ':european_post_office:', ':city_sunrise:', ':city_sunset:', ':japanese_castle:', ':european_castle:', ':tent:', ':factory:', ':tokyo_tower:', ':japan:', ':mount_fuji:', ':sunrise_over_mountains:', ':sunrise:', ':stars:', ':statue_of_liberty:', ':bridge_at_night:', ':carousel_horse:', ':rainbow:', ':ferris_wheel:', ':fountain:', ':roller_coaster:', ':ship:', ':speedboat:', ':boat:', ':sailboat:', ':rowboat:', ':anchor:', ':rocket:', ':airplane:', ':helicopter:', ':steam_locomotive:', ':tram:', ':mountain_railway:', ':bike:', ':aerial_tramway:', ':suspension_railway:', ':mountain_cableway:', ':tractor:', ':blue_car:', ':oncoming_automobile:', ':car:', ':red_car:', ':taxi:', ':oncoming_taxi:', ':articulated_lorry:', ':bus:', ':oncoming_bus:', ':rotating_light:', ':police_car:', ':oncoming_police_car:', ':fire_engine:', ':ambulance:', ':minibus:', ':truck:', ':train:', ':station:', ':train2:', ':bullettrain_front:', ':bullettrain_side:', ':light_rail:', ':monorail:', ':railway_car:', ':trolleybus:', ':ticket:', ':fuelpump:', ':vertical_traffic_light:', ':traffic_light:', ':warning:', ':construction:', ':beginner:', ':atm:', ':slot_machine:', ':busstop:', ':barber:', ':hotsprings:', ':checkered_flag:', ':crossed_flags:', ':izakaya_lantern:', ':moyai:', ':circus_tent:', ':performing_arts:', ':round_pushpin:', ':triangular_flag_on_post:', ':jp:', ':kr:', ':cn:', ':us:', ':fr:', ':es:', ':it:', ':ru:', ':gb:', ':uk:', ':de:', ':one:', ':two:', ':three:', ':four:', ':five:', ':six:', ':seven:', ':eight:', ':nine:', ':keycap_ten:', ':1234:', ':zero:', ':hash:', ':symbols:', ':arrow_backward:', ':arrow_down:', ':arrow_forward:', ':arrow_left:', ':capital_abcd:', ':abcd:', ':abc:', ':arrow_lower_left:', ':arrow_lower_right:', ':arrow_right:', ':arrow_up:', ':arrow_upper_left:', ':arrow_upper_right:', ':arrow_double_down:', ':arrow_double_up:', ':arrow_down_small:', ':arrow_heading_down:', ':arrow_heading_up:', ':leftwards_arrow_with_hook:', ':arrow_right_hook:', ':left_right_arrow:', ':arrow_up_down:', ':arrow_up_small:', ':arrows_clockwise:', ':arrows_counterclockwise:', ':rewind:', ':fast_forward:', ':information_source:', ':ok:', ':twisted_rightwards_arrows:', ':repeat:', ':repeat_one:', ':new:', ':top:', ':up:', ':cool:', ':free:', ':ng:', ':cinema:', ':koko:', ':signal_strength:', ':u5272:', ':u5408:', ':u55b6:', ':u6307:', ':u6708:', ':u6709:', ':u6e80:', ':u7121:', ':u7533:', ':u7a7a:', ':u7981:', ':sa:', ':restroom:', ':mens:', ':womens:', ':baby_symbol:', ':no_smoking:', ':parking:', ':wheelchair:', ':metro:', ':baggage_claim:', ':accept:', ':wc:', ':potable_water:', ':put_litter_in_its_place:', ':secret:', ':congratulations:', ':m:', ':passport_control:', ':left_luggage:', ':customs:', ':ideograph_advantage:', ':cl:', ':sos:', ':id:', ':no_entry_sign:', ':underage:', ':no_mobile_phones:', ':do_not_litter:', ':non-potable_water:', ':no_bicycles:', ':no_pedestrians:', ':children_crossing:', ':no_entry:', ':eight_spoked_asterisk:', ':sparkle:', ':eight_pointed_black_star:', ':heart_decoration:', ':vs:', ':vibration_mode:', ':mobile_phone_off:', ':chart:', ':currency_exchange:', ':aries:', ':taurus:', ':gemini:', ':cancer:', ':leo:', ':virgo:', ':libra:', ':scorpius:', ':sagittarius:', ':capricorn:', ':aquarius:', ':pisces:', ':ophiuchus:', ':six_pointed_star:', ':negative_squared_cross_mark:', ':a:', ':b:', ':ab:', ':o2:', ':diamond_shape_with_a_dot_inside:', ':recycle:', ':end:', ':back:', ':on:', ':soon:', ':clock1:', ':clock130:', ':clock10:', ':clock1030:', ':clock11:', ':clock1130:', ':clock12:', ':clock1230:', ':clock2:', ':clock230:', ':clock3:', ':clock330:', ':clock4:', ':clock430:', ':clock5:', ':clock530:', ':clock6:', ':clock630:', ':clock7:', ':clock730:', ':clock8:', ':clock830:', ':clock9:', ':clock930:', ':heavy_dollar_sign:', ':copyright:', ':registered:', ':tm:', ':x:', ':heavy_exclamation_mark:', ':bangbang:', ':interrobang:', ':o:', ':heavy_multiplication_x:', ':heavy_plus_sign:', ':heavy_minus_sign:', ':heavy_division_sign:', ':white_flower:', ':100:', ':heavy_check_mark:', ':ballot_box_with_check:', ':radio_button:', ':link:', ':curly_loop:', ':wavy_dash:', ':part_alternation_mark:', ':trident:', ':black_small_square:', ':white_small_square:', ':black_medium_small_square:', ':white_medium_small_square:', ':black_medium_square:', ':white_medium_square:', ':white_large_square:', ':white_check_mark:', ':black_square_button:', ':white_square_button:', ':black_circle:', ':white_circle:', ':red_circle:', ':large_blue_circle:', ':large_blue_diamond:', ':large_orange_diamond:', ':small_blue_diamond:', ':small_orange_diamond:', ':small_red_triangle:', ':small_red_triangle_down:', ':shipit:'];
 
   /** Redirect rendering of descendants into the given CSS selector.
    *  @example
@@ -1366,8 +1247,8 @@ var DubPlus = (function () {
           _this.setState(function (prevState) {
             var next = prevState.emojiLoad + 70;
 
-            if (next >= emojis.length) {
-              next = emojis.length;
+            if (next >= emojiNames.length) {
+              next = emojiNames.length;
               document.querySelector('.dp-emoji-picker').removeEventListener('scroll', _this.onScroll);
             }
 
@@ -1415,7 +1296,7 @@ var DubPlus = (function () {
 
         var show = _ref.show,
             emojiLoad = _ref.emojiLoad;
-        var list = emojis.slice(0, emojiLoad).map(function (e) {
+        var list = emojiNames.slice(0, emojiLoad).map(function (e) {
           var name = e.replace(/^:|:$/g, '');
           return h("span", {
             key: "emoji-".concat(name),
@@ -2205,12 +2086,6 @@ var DubPlus = (function () {
     return new Promise(function (resolve, reject) {
       var xhr = new XMLHttpRequest();
 
-      for (var property in headers) {
-        if (headers.hasOwnProperty(property)) {
-          xhr.setRequestHeader(property, headers[property]);
-        }
-      }
-
       xhr.onload = function () {
         try {
           var resp = JSON.parse(xhr.responseText);
@@ -2225,7 +2100,164 @@ var DubPlus = (function () {
       };
 
       xhr.open('GET', url);
+
+      for (var property in headers) {
+        if (headers.hasOwnProperty(property)) {
+          xhr.setRequestHeader(property, headers[property]);
+        }
+      }
+
       xhr.send();
+    });
+  }
+
+  // IndexedDB wrapper for increased quota compared to localstorage (5mb to 50mb)
+  function IndexDBWrapper() {
+    var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+
+    if (!indexedDB) {
+      return console.error("indexDB not supported");
+    }
+
+    var db;
+    var timeout = 50; // 50 * 100 = 5000ms = 5s
+
+    /**
+     * Get item from indexedDB
+     * @param {string} item the db key name of what you want to retrieve
+     * @param {function} [cb] optional callback because it also returns a promise
+     * @returns {Promise}
+     */
+
+    function getItem(item, cb) {
+      // keep trying until db open request is established
+      if (!db && timeout >= 0) {
+        setTimeout(function () {
+          getItem(item, cb);
+        }, 100);
+        timeout--;
+        return;
+      }
+
+      timeout = 30; // reset the dbrequest timeout counter
+
+      try {
+        var transaction = db.transaction("s");
+
+        transaction.onerror = function (event) {
+          cb(null, event);
+        };
+
+        var dbItemStore = transaction.objectStore("s");
+
+        dbItemStore.onerror = function (event) {
+          cb(null, event);
+        };
+
+        var dbItemStoreGet = dbItemStore.get(item);
+
+        dbItemStoreGet.onsuccess = function (e) {
+          var t = e.target.result && e.target.result.v || null;
+          cb(t);
+        };
+
+        dbItemStoreGet.onerror = function (event) {
+          cb(null, event);
+        };
+      } catch (e) {
+        cb(null, e.message);
+      }
+    }
+    /**
+     * Store a value in indexedDB
+     * @param {string} item key name for the value that will be stored
+     * @param {string} val value to be stored
+     */
+
+
+    function setItem(item, val) {
+      // keep trying until db open request is established
+      if (!db && timeout >= 0) {
+        setTimeout(function () {
+          setItem(item, val);
+        }, 100);
+        timeout--;
+        return;
+      }
+
+      timeout = 30; // reset the dbrequest timeout counter
+
+      var obj = {
+        k: item,
+        v: val
+      };
+      db.transaction("s", "readwrite").objectStore("s").put(obj);
+    }
+
+    var dbRequest = indexedDB.open("d2", 1);
+
+    dbRequest.onsuccess = function (e) {
+      db = this.result;
+    };
+
+    dbRequest.onerror = function (e) {
+      console.error("indexedDB request error", e);
+    };
+
+    dbRequest.onupgradeneeded = function (e) {
+      db = this.result;
+      var t = db.createObjectStore("s", {
+        keyPath: "k"
+      });
+
+      db.transaction.oncomplete = function (e) {
+        db = e.target.db;
+      };
+    };
+
+    return {
+      get: getItem,
+      set: setItem
+    };
+  }
+
+  var ldb = new IndexDBWrapper();
+
+  /* global  emojify */
+  function shouldUpdateAPIs(apiName) {
+    var day = 1000 * 60 * 60 * 24; // milliseconds in a day
+
+    return new Promise(function (resolve, reject) {
+      // if api returned an object with an error and we stored it 
+      // then we should try again
+      ldb.get(apiName + "_api", function (savedItem, err) {
+        if (err) {
+          return reject(err);
+        }
+
+        if (savedItem) {
+          try {
+            var parsed = JSON.parse(savedItem);
+
+            if (typeof parsed.error !== "undefined") {
+              resolve(true); // yes we should refresh data from api
+            }
+          } catch (e) {
+            resolve(true); // data was corrupted, needs to be refreshed
+          }
+        } else {
+          resolve(true); // data doesn't exist, needs to be fetched
+        } // at this point we have good data without issues in IndexedDB
+        // so now we check how old it is to see if we should update it (7 days is the limit)
+
+
+        var today = Date.now();
+        var lastSaved = parseInt(localStorage.getItem(apiName + "_api_timestamp")); // Is the lastsaved not a number for some strange reason, then we should update 
+        // OR
+        // are we past 5 days from last update? then we should update
+
+        resolve(isNaN(lastSaved) || today - lastSaved > day * 7);
+      });
     });
   }
 
@@ -2287,13 +2319,20 @@ var DubPlus = (function () {
 
           return _this2.grabFromDb();
         }).catch(function (e) {
-          return console.error(e.message);
+          console.error(e);
+
+          _this2.updateFromApi();
         });
       }
     }, {
       key: "done",
       value: function done(cb) {
         this.doneCB = cb;
+      }
+    }, {
+      key: "error",
+      value: function error(cb) {
+        this.errorCB = cb;
       }
     }, {
       key: "grabFromDb",
@@ -2324,8 +2363,10 @@ var DubPlus = (function () {
         var _this4 = this;
 
         console.log("dub+", "twitch", "loading from api");
-        var corsEsc = "https://cors-escape.herokuapp.com";
-        var twApi = getJSON("".concat(corsEsc, "/https://api.twitch.tv/kraken/chat/emoticon_images"));
+        var twApi = getJSON("https://api.twitch.tv/kraken/chat/emoticon_images", {
+          Accept: "application/vnd.twitchtv.v5+json",
+          "Client-ID": "z5bpa7x6y717dsw28qnmcooolzm2js"
+        });
         return twApi.then(function (json) {
           var twitchEmotes = {};
           json.emoticons.forEach(function (e) {
@@ -2341,6 +2382,10 @@ var DubPlus = (function () {
           _this4.processViaWebWorker(twitchEmotes);
 
           _this4.loaded = "from api";
+        }).catch(function (e) {
+          if (typeof _this4.errorCB === 'function') {
+            _this4.errorCB(e);
+          }
         });
       }
     }, {
@@ -3186,14 +3231,17 @@ var DubPlus = (function () {
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Emotes)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        // only needs to load twitch emotes into memory once per page load
+        // spin logo to indicate emotes are still loading
+        document.body.classList.add('dubplus-icon-spinning'); // these load super fast
+
+        if (!bttv.loaded) {
+          bttv.load();
+        } // these load super slow
+
+
         if (!twitch.loaded) {
-          // spin logo to indicate emotes are still loading
-          document.body.classList.add('dubplus-icon-spinning'); // bttv emotes load in a few ms
-
-          bttv.load(); // there are thousands upon thousands of twitch emotes so they
-          // take a lot longer to load.
-
+          // if this one errors out then we still want to turn this on
+          twitch.error(_this.begin);
           twitch.done(_this.begin);
           twitch.load();
           return;
@@ -3346,11 +3394,13 @@ var DubPlus = (function () {
         }
 
         var parentUL = totalChats[0].parentElement;
-        totalChats.slice(0, max).forEach(function (li, i) {
-          parentUL.removeChild(li);
-        }); // Fix scroll bar
+        var min = totalChats.length - max;
 
-        $(".chat-messages").perfectScrollbar("update");
+        if (min > 0) {
+          totalChats.splice(0, min).forEach(function (li) {
+            parentUL.removeChild(li);
+          });
+        }
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveAmount", function (value) {
@@ -3778,9 +3828,319 @@ var DubPlus = (function () {
     return DJNotification;
   }(Component);
 
-  /**
-   * Menu item for Rain
-   */
+  /*  Snowfall pure js
+      https://github.com/loktar00/JQuery-Snowfall/blob/master/src/snowfall.js
+      ====================================================================
+      LICENSE
+      ====================================================================
+      Licensed under the Apache License, Version 2.0 (the "License");
+      you may not use this file except in compliance with the License.
+      You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+         Unless required by applicable law or agreed to in writing, software
+         distributed under the License is distributed on an "AS IS" BASIS,
+         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+         See the License for the specific language governing permissions and
+         limitations under the License.
+      ====================================================================
+      
+      1.0
+      Wanted to rewrite my snow plugin to use pure JS so you werent necessarily tied to using a framework.
+      Does not include a selector engine or anything, just pass elements to it using standard JS selectors.
+      
+      Does not clear snow currently. Collection portion removed just for ease of testing will add back in next version
+      
+      Theres a few ways to call the snow you could do it the following way by directly passing the selector,
+      
+          snowFall.snow(document.getElementsByTagName("body"), {options});
+      
+      or you could save the selector results to a variable, and then call it
+          
+          var elements = document.getElementsByClassName('yourclass');
+          snowFall.snow(elements, {options});
+          
+      Options are all the same as the plugin except clear, and collection
+      
+      values for snow options are
+      
+      flakeCount,
+      flakeColor,
+      flakeIndex,
+      flakePosition,
+      minSize,
+      maxSize,
+      minSpeed,
+      maxSpeed,
+      round,      true or false, makes the snowflakes rounded if the browser supports it.
+      shadow      true or false, gives the snowflakes a shadow if the browser supports it.
+          
+  */
+  // requestAnimationFrame polyfill from https://github.com/darius/requestAnimationFrame
+  if (!Date.now) Date.now = function () {
+    return new Date().getTime();
+  };
+
+  (function () {
+
+    var vendors = ["webkit", "moz"];
+
+    for (var i = 0; i < vendors.length && !window.requestAnimationFrame; ++i) {
+      var vp = vendors[i];
+      window.requestAnimationFrame = window[vp + "RequestAnimationFrame"];
+      window.cancelAnimationFrame = window[vp + "CancelAnimationFrame"] || window[vp + "CancelRequestAnimationFrame"];
+    }
+
+    if (/iP(ad|hone|od).*OS 6/.test(window.navigator.userAgent) || // iOS6 is buggy
+    !window.requestAnimationFrame || !window.cancelAnimationFrame) {
+      var lastTime = 0;
+
+      window.requestAnimationFrame = function (callback) {
+        var now = Date.now();
+        var nextTime = Math.max(lastTime + 16, now);
+        return setTimeout(function () {
+          callback(lastTime = nextTime);
+        }, nextTime - now);
+      };
+
+      window.cancelAnimationFrame = clearTimeout;
+    }
+  })();
+
+  var snowFall = function () {
+    function jSnow() {
+      // local methods
+      var defaults = {
+        flakeCount: 35,
+        flakeColor: "#ffffff",
+        flakeIndex: 999999,
+        flakePosition: "absolute",
+        minSize: 1,
+        maxSize: 2,
+        minSpeed: 1,
+        maxSpeed: 5,
+        round: false,
+        shadow: false,
+        collection: false,
+        image: false,
+        collectionHeight: 40
+      },
+          flakes = [],
+          element = {},
+          elHeight = 0,
+          elWidth = 0,
+          widthOffset = 0,
+          snowTimeout = 0,
+          // For extending the default object with properties
+      extend = function extend(obj, extObj) {
+        for (var i in extObj) {
+          if (obj.hasOwnProperty(i)) {
+            obj[i] = extObj[i];
+          }
+        }
+      },
+          // For setting CSS3 transform styles
+      transform = function transform(el, styles) {
+        el.style.webkitTransform = styles;
+        el.style.MozTransform = styles;
+        el.style.msTransform = styles;
+        el.style.OTransform = styles;
+        el.style.transform = styles;
+      },
+          // random between range
+      random = function random(min, max) {
+        return Math.round(min + Math.random() * (max - min));
+      },
+          // Set multiple styles at once.
+      setStyle = function setStyle(element, props) {
+        for (var property in props) {
+          element.style[property] = props[property] + (property == "width" || property == "height" ? "px" : "");
+        }
+      },
+          // snowflake
+      flake = function flake(_el, _size, _speed) {
+        // Flake properties
+        this.x = random(widthOffset, elWidth - widthOffset);
+        this.y = random(0, elHeight);
+        this.size = _size;
+        this.speed = _speed;
+        this.step = 0;
+        this.stepSize = random(1, 10) / 100;
+
+        if (defaults.collection) {
+          this.target = canvasCollection[random(0, canvasCollection.length - 1)];
+        }
+
+        var flakeObj = null;
+
+        if (defaults.image) {
+          flakeObj = new Image();
+          flakeObj.src = defaults.image;
+        } else {
+          flakeObj = document.createElement("div");
+          setStyle(flakeObj, {
+            background: defaults.flakeColor
+          });
+        }
+
+        flakeObj.className = "snowfall-flakes";
+        setStyle(flakeObj, {
+          width: this.size,
+          height: this.size,
+          position: defaults.flakePosition,
+          top: 0,
+          left: 0,
+          "will-change": "transform",
+          fontSize: 0,
+          zIndex: defaults.flakeIndex
+        }); // This adds the style to make the snowflakes round via border radius property
+
+        if (defaults.round) {
+          setStyle(flakeObj, {
+            "-moz-border-radius": ~~defaults.maxSize + "px",
+            "-webkit-border-radius": ~~defaults.maxSize + "px",
+            borderRadius: ~~defaults.maxSize + "px"
+          });
+        } // This adds shadows just below the snowflake so they pop a bit on lighter colored web pages
+
+
+        if (defaults.shadow) {
+          setStyle(flakeObj, {
+            "-moz-box-shadow": "1px 1px 1px #555",
+            "-webkit-box-shadow": "1px 1px 1px #555",
+            boxShadow: "1px 1px 1px #555"
+          });
+        }
+
+        if (_el.tagName === document.body.tagName) {
+          document.body.appendChild(flakeObj);
+        } else {
+          _el.appendChild(flakeObj);
+        }
+
+        this.element = flakeObj; // Update function, used to update the snow flakes, and checks current snowflake against bounds
+
+        this.update = function () {
+          this.y += this.speed;
+
+          if (this.y > elHeight - (this.size + 6)) {
+            this.reset();
+          }
+
+          transform(this.element, "translateY(" + this.y + "px) translateX(" + this.x + "px)");
+          this.step += this.stepSize;
+          this.x += Math.cos(this.step);
+
+          if (this.x + this.size > elWidth - widthOffset || this.x < widthOffset) {
+            this.reset();
+          }
+        }; // Resets the snowflake once it reaches one of the bounds set
+
+
+        this.reset = function () {
+          this.y = 0;
+          this.x = random(widthOffset, elWidth - widthOffset);
+          this.stepSize = random(1, 10) / 100;
+          this.size = random(defaults.minSize * 100, defaults.maxSize * 100) / 100;
+          this.element.style.width = this.size + "px";
+          this.element.style.height = this.size + "px";
+          this.speed = random(defaults.minSpeed, defaults.maxSpeed);
+        };
+      },
+          // this controls flow of the updating snow
+      animateSnow = function animateSnow() {
+        for (var i = 0; i < flakes.length; i += 1) {
+          flakes[i].update();
+        }
+
+        snowTimeout = requestAnimationFrame(function () {
+          animateSnow();
+        });
+      };
+
+      return {
+        snow: function snow(_element, _options) {
+          extend(defaults, _options); //init the element vars
+
+          element = _element;
+          elHeight = element.offsetHeight;
+          elWidth = element.offsetWidth;
+          element.snow = this; // if this is the body the offset is a little different
+
+          if (element.tagName.toLowerCase() === "body") {
+            widthOffset = 25;
+          } // Bind the window resize event so we can get the innerHeight again
+
+
+          window.addEventListener("resize", function () {
+            elHeight = element.clientHeight;
+            elWidth = element.offsetWidth;
+          }, true); // initialize the flakes
+
+          for (var i = 0; i < defaults.flakeCount; i += 1) {
+            flakes.push(new flake(element, random(defaults.minSize * 100, defaults.maxSize * 100) / 100, random(defaults.minSpeed, defaults.maxSpeed)));
+          } // start the snow
+
+
+          animateSnow();
+        },
+        clear: function clear() {
+          var flakeChildren = null;
+
+          if (!element.getElementsByClassName) {
+            flakeChildren = element.querySelectorAll(".snowfall-flakes");
+          } else {
+            flakeChildren = element.getElementsByClassName("snowfall-flakes");
+          }
+
+          var flakeChilLen = flakeChildren.length;
+
+          while (flakeChilLen--) {
+            if (flakeChildren[flakeChilLen].parentNode === element) {
+              element.removeChild(flakeChildren[flakeChilLen]);
+            }
+          }
+
+          cancelAnimationFrame(snowTimeout);
+        }
+      };
+    }
+
+    return {
+      snow: function snow(elements, options) {
+        if (typeof options == "string") {
+          if (elements.length > 0) {
+            for (var i = 0; i < elements.length; i++) {
+              if (elements[i].snow) {
+                elements[i].snow.clear();
+              }
+            }
+          } else {
+            elements.snow.clear();
+          }
+        } else {
+          if (elements.length > 0) {
+            for (var i = 0; i < elements.length; i++) {
+              new jSnow().snow(elements[i], options);
+            }
+          } else {
+            new jSnow().snow(elements, options);
+          }
+        }
+      }
+    };
+  }();
+
+  var options$1 = {
+    round: true,
+    shadow: true,
+    flakeCount: 50,
+    minSize: 1,
+    maxSize: 5,
+    minSpeed: 5,
+    maxSpeed: 5
+  };
 
   var SnowSwitch =
   /*#__PURE__*/
@@ -3801,20 +4161,20 @@ var DubPlus = (function () {
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(SnowSwitch)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        if (!$.snowfall) {
-          // only pull in the script once if it doesn't exist 
-          getScript("https://cdn.jsdelivr.net/gh/loktar00/JQuery-Snowfall/src/snowfall.jquery.js", function (err) {
-            if (err) {
-              _this.switchRef.switchOff(true);
+        var target = document.getElementById('snow-container');
 
-              console.error("Could not load snowfall jquery plugin", err);
-              return;
-            }
+        if (!target) {
+          _this.makeContainer();
+        }
 
-            _this.doSnow();
-          });
-        } else {
-          _this.doSnow();
+        snowFall.snow(document.getElementById('snow-container'), options$1);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        var target = document.getElementById('snow-container');
+
+        if (target) {
+          target.remove();
         }
       });
 
@@ -3822,26 +4182,12 @@ var DubPlus = (function () {
     }
 
     _createClass(SnowSwitch, [{
-      key: "doSnow",
-      value: function doSnow() {
-        $(document).snowfall({
-          round: true,
-          shadow: true,
-          flakeCount: 50,
-          minSize: 1,
-          maxSize: 5,
-          minSpeed: 5,
-          maxSpeed: 5
-        });
-      }
-    }, {
-      key: "turnOff",
-      value: function turnOff() {
-        if ($.snowfall) {
-          // checking to avoid errors if you quickly switch it on/off before plugin
-          // is loaded in the turnOn function
-          $(document).snowfall("clear");
-        }
+      key: "makeContainer",
+      value: function makeContainer() {
+        var snowdiv = document.createElement('div');
+        snowdiv.id = 'snow-container';
+        snowdiv.style.cssText = "\n      position:absolute;\n      top:0;\n      left:0;\n      width: 100%;\n      height: 100%;\n    ";
+        document.body.appendChild(snowdiv);
       }
     }, {
       key: "render",
@@ -4618,18 +4964,18 @@ var DubPlus = (function () {
   }(Component);
 
   function chatMessage$1(username, song) {
-    var li = document.createElement('li');
+    var li = document.createElement("li");
     li.className = "dubplus-chat-system dubplus-chat-system-updub";
-    var div = document.createElement('div');
+    var div = document.createElement("div");
     div.className = "chatDelete";
 
     div.onclick = function (e) {
       return e.currentTarget.parentElement.remove();
     };
 
-    var span = document.createElement('span');
+    var span = document.createElement("span");
     span.className = "icon-close";
-    var text = document.createElement('div');
+    var text = document.createElement("div");
     text.className = "text";
     text.textContent = "@".concat(username, " has updubbed your song ").concat(song);
     div.appendChild(span);
@@ -5029,7 +5375,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1548993837141);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549259949741);
     document.head.appendChild(link);
   }
   /**

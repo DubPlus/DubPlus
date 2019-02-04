@@ -1,13 +1,13 @@
 "use strict";
 import { h, render, Component } from "preact";
-import polyfills from "./utils/polyfills";
-import DubPlusMenu from "./menu/index.js";
-import Modal from "./components/modal.js";
-import WaitFor from "./utils/waitFor.js";
-import Loading from "./components/loading.js";
-import cssHelper from "./utils/css.js";
-import MenuIcon from "./components/MenuIcon.js";
-import track from "./utils/analytics.js";
+import polyfills from "@/utils/polyfills";
+import DubPlusMenu from "@/menu/index.js";
+import Modal from "@/components/modal.js";
+import WaitFor from "@/utils/waitFor.js";
+import Loading from "@/components/loading.js";
+import cssHelper from "@/utils/css.js";
+import MenuIcon from "@/components/MenuIcon.js";
+import track from "@/utils/analytics.js";
 
 polyfills();
 

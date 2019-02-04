@@ -1,10 +1,10 @@
 import { h, Component } from "preact";
-import { MenuSwitch } from "../../components/menuItems.js";
+import { MenuSwitch } from "@/components/menuItems.js";
 import Portal from "preact-portal/src/preact-portal";
 import AutocompletePreview from "./autocomplete-preview";
-import twitch from "../../utils/emotes/twitch.js";
-import bttv from "../../utils/emotes/bttv.js";
-import { emoji } from "../../utils/emotes/emoji.js";
+import twitch from "@/utils/emotes/twitch.js";
+import bttv from "@/utils/emotes/bttv.js";
+import { emoji } from "@/utils/emotes/emoji.js";
 
 /**********************************************************************
  * Autocomplete Emoji / Emotes

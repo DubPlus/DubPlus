@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
-import { MenuSwitch, MenuPencil } from "../../components/menuItems.js";
-import settings from "../../utils/UserSettings.js";
-import { notifyCheckPermission, showNotification } from "../../utils/notify.js";
+import { MenuSwitch, MenuPencil } from "@/components/menuItems.js";
+import settings from "@/utils/UserSettings.js";
+import { notifyCheckPermission, showNotification } from "@/utils/notify.js";
 
 export default class DJNotification extends Component {
   state = {

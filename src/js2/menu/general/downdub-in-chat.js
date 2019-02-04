@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
-import { MenuSwitch } from "../../components/menuItems.js";
-import userIsAtLeastMod from "../../utils/modcheck.js";
+import { MenuSwitch } from "@/components/menuItems.js";
+import userIsAtLeastMod from "@/utils/modcheck.js";
 
 function chatMessage (username, song) {
   var li = document.createElement('li');

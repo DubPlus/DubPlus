@@ -7,9 +7,9 @@
  * existing emoji in image tag titles/alt attributes
  */
 
-import twitch from "./twitch.js";
-import bttv from "./bttv.js";
-import parser from "./parser.js";
+import twitch from "@/utils/emotes/twitch.js";
+import bttv from "@/utils/emotes/bttv.js";
+import parser from "@/utils/emotes/parser.js";
 
 /**
  * return the last chat item in the chat area

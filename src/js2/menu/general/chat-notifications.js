@@ -1,8 +1,8 @@
 import { h, Component } from "preact";
-import { MenuSwitch } from "../../components/menuItems.js";
-import settings from "../../utils/UserSettings.js";
-import { notifyCheckPermission, showNotification } from "../../utils/notify.js";
-import Modal from "../../components/modal";
+import { MenuSwitch } from "@/components/menuItems.js";
+import settings from "@/utils/UserSettings.js";
+import { notifyCheckPermission, showNotification } from "@/utils/notify.js";
+import Modal from "@/components/modal";
 
 export default class ChatNotification extends Component {
   state = {
