@@ -373,14 +373,16 @@
     overflow-y: scroll; }
   .dp-emoji-picker span {
     display: inline-block;
-    width: 24px;
-    height: 25px;
-    margin: 5px;
-    cursor: pointer; }
-  .dp-emoji-picker img {
-    display: block;
-    width: 100%;
-    height: auto; }
+    padding: 5px;
+    width: 30px;
+    height: 30px;
+    border-radius: 3px;
+    cursor: pointer;
+    background-image: url(https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@preact-version/images/emoji-spritesheet.png);
+    background-repeat: no-repeat;
+    background-size: 3017% 2917%; }
+    .dp-emoji-picker span:hover {
+      background-color: rgba(255, 255, 255, 0.3); }
 
 .dubplus-split-chat .chat-main li:nth-child(2n) {
   background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);

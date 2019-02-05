@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - removed any use or dependency of jQuery
 - A complete rewrite from the ground up in Preact, which is a 3kb alternative with 1:1 feature parity with React.  
 - Emotes and Autocomplete Emoji have been completely revamped. Using a better system to replace emotes in chat and autocomplete has been redesigned and has an improved keyboard navigation. 
-  - one thing to note is that autocomplete can now only replace an emote/emoji at the end of the chat input
+  - one thing to note is that autocomplete can now only replace an emote/emoji at the end of the chat input and not in the middle, this is how Dubtrack's user autocomplete works and it simplified and stabilized the code for this feature 
 - switched to RollupJS for building
 
 ### New!

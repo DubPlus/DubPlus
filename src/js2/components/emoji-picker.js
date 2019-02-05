@@ -1,17 +1,14 @@
 import { h, render, Component } from "preact";
-import { emoji, emojiNames } from '@/utils/emotes/emoji';
+import { emojiNames } from "@/utils/emotes/emoji";
 import Portal from "preact-portal/src/preact-portal";
 
 class EmojiPicker extends Component {
   state = {
-    show: false,
-    emojiLoad: 70
+    show: false
   };
 
-  isLoading = false
-
   fillChat(val) {
-    document.getElementById("chat-txt-message").value += " " + val;
+    document.getElementById("chat-txt-message").value += ` :${val}:`;
   }
 
   toggle = () => {
@@ -20,43 +17,30 @@ class EmojiPicker extends Component {
     });
   };
 
-  componentDidMount() {
-    document.addEventListener("keyup", e => {
-      var key = "which" in e ? e.which : e.keyCode;
-      if (this.state.show && key === 27) {
-        this.setState({ show: false });
-      }
-    });
-  }
-
-  onScroll = (e) => {
-    const el = e.target;
-    if (el.scrollTop + el.clientHeight > (el.scrollHeight - 25) && !this.isLoading ) {
-      this.isLoading = true;
-      this.setState((prevState)=>{
-        let next = prevState.emojiLoad + 70;
-        if (next >= emojiNames.length) { 
-          next = emojiNames.length;
-          document.querySelector('.dp-emoji-picker').removeEventListener('scroll', this.onScroll);
-        }
-        return { emojiLoad: next }
-      }, ()=>{
-        this.isLoading = false;
-      })
+  handleKeyup = e => {
+    var key = "which" in e ? e.which : e.keyCode;
+    if (this.state.show && key === 27) {
+      this.setState({ show: false });
     }
   }
 
   componentDidMount() {
-    document.querySelector('.dp-emoji-picker').addEventListener('scroll', this.onScroll);
+    document.addEventListener("keyup", this.handleKeyup);
   }
 
-  render(props, { show, emojiLoad }) {
-    let list = emojiNames.slice(0, emojiLoad).map(e => {
-      let name = e.replace(/^:|:$/g, '');
+  render(props, { show }) {
+    let list = Object.keys(emojiNames).map(id => {
+      let data = emojiNames[id];
+      let x = data.x * 0.46875;
+      let y = data.y * 0.46875;
+      let css = { backgroundPosition: `-${x}px -${y}px` };
       return (
-        <span key={`emoji-${name}`} onClick={() => this.fillChat(e)}>
-          <img title={e} src={emoji.template(name)} />
-        </span>
+        <span
+          key={`emoji-${id}`}
+          style={css}
+          title={id}
+          onClick={() => this.fillChat(id)}
+        />
       );
     });
 
@@ -66,9 +50,7 @@ class EmojiPicker extends Component {
         onClick={this.toggle}
       >
         <Portal into=".pusher-chat-widget-input">
-          <div className={`dp-emoji-picker ${show ? "show" : ""}`}>
-            {list}
-          </div>
+          <div className={`dp-emoji-picker ${show ? "show" : ""}`}>{list}</div>
         </Portal>
       </span>
     );

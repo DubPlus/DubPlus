@@ -23,15 +23,27 @@
 
   span {
     display: inline-block;
-    width: 24px;
-    height: 25px;
-    margin: 5px;
+    
+    $dim: 30;
+    padding: 5px;
+    width: $dim + px;
+    height: $dim + px;
+    border-radius: 3px;
     cursor: pointer;
-  }
+    background-image: url(#{$resourceSrc}/images/emoji-spritesheet.png);
+    background-repeat: no-repeat;
+    
+    // this is the dimensions of the spritesheet
+    // the 39% is because I'm reducing the size of the sprites 
+    // which where created at 64px
+    // but I want them at 25px
+    $perc: (($dim*100)/64) / 100;
+    $w: 1931 * $perc;
+    $h: 1867 * $perc;
+    background-size: #{floor( ($w*100)/$dim ) + '%'} #{floor( ($h*100)/$dim ) + '%'};
 
-  img {
-    display: block;
-    width: 100%;
-    height: auto;
+    &:hover {
+      background-color: rgba(255,255,255,0.3);
+    }
   }
 }
