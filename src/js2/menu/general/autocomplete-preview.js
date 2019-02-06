@@ -1,21 +1,36 @@
 import { h } from "preact";
 
-/*
-TODO: 
- - if found:
-   - hijack arrow keys to make it move around the preview window
-   - moving around auto completes the text
-   - typing continues to filter
-*/
-
 const PreviewListItem = ({ data, onSelect }) => {
   if (data.header) {
     return (
-      <li className={`preview-item-header ${data.header.toLowerCase()}-preview-header`}>
+      <li
+        className={`preview-item-header ${data.header.toLowerCase()}-preview-header`}
+      >
         <span>{data.header}</span>
       </li>
     );
   }
+
+  if (data.type === "twitch") {
+    let css = {
+      backgroundPosition: `-${data.x}px -${data.y}px`,
+      width: `${data.width}px`,
+      height: `${data.height}px`
+    }
+    return (
+      <li
+        className={`preview-item twitch-previews`}
+        onClick={() => {
+          onSelect(data.name);
+        }}
+        data-name={data.name}
+      >
+        <span className="ac-image" style={css} title={data.name} />
+        <span className="ac-text">{data.name}</span>
+      </li>
+    );
+  }
+
   return (
     <li
       className={`preview-item ${data.type}-previews`}

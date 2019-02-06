@@ -113,13 +113,3 @@
   max-width: 1.75rem !important;
   height: auto !important;
 }
-
-/* 
-  tasty emotes get a specific Width and Height from the API 
-  The max width is 75px
-*/
-.tasty-emote.emoji {
-  max-width: 75px !important;
-  width: auto !important;
-  height: auto !important;
-}

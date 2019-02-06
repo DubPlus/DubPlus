@@ -1,8 +1,6 @@
 import {h, Component} from 'preact';
 import {MenuSwitch} from '@/components/menuItems.js';
 import chatReplace from '@/utils/emotes/chat-replace.js';
-
-import twitchEmotes from '@/utils/emotes/twitch.js';
 import bttvEmotes from '@/utils/emotes/bttv.js';
 
 /**********************************************************************
@@ -18,15 +16,6 @@ export default class Emotes extends Component {
     // these load super fast
     if (!bttvEmotes.loaded) {
       bttvEmotes.load();
-    }
-
-    // these load super slow
-    if (!twitchEmotes.loaded) {
-      // if this one errors out then we still want to turn this on
-      twitchEmotes.error(this.begin);
-      twitchEmotes.done(this.begin);
-      twitchEmotes.load();
-      return;
     }
 
     this.begin();
