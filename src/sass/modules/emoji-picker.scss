@@ -23,17 +23,16 @@
 
   span {
     display: inline-block;
-    box-sizing: content-box; // I dont want to the padding included in the size
     padding: 5px;
     border-radius: 3px;
     cursor: pointer;
     background-image: url(#{$resourceSrc}/images/emoji-spritesheet.png);
     background-repeat: no-repeat;
 
-    $dim: 25; // our desired width and height of the icon
+    $dim: 30; // our desired width and height of the icon
     width: $dim + px;
     height: $dim + px;
-    $perc: $dim/64; // 64px is the original size of each icon in the spritesheet but we want to reduce them to 25 without altering the spritesheet
+    $perc: $dim/64 ; // 64px is the original size of each icon in the spritesheet but we want to reduce them to 25 without altering the spritesheet
     $w: 1931 * $perc; // 1931 is the total width of the spritesheet png
     $h: 1867 * $perc; // 1867 is the total height of the spritesheet png
     // in order to use the background image we need to increase the bg size of the spritesheet by a large percent

@@ -373,13 +373,14 @@
     overflow-y: scroll; }
   .dp-emoji-picker span {
     display: inline-block;
+    box-sizing: content-box;
     padding: 5px;
-    width: 30px;
-    height: 30px;
     border-radius: 3px;
     cursor: pointer;
     background-image: url(https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@preact-version/images/emoji-spritesheet.png);
     background-repeat: no-repeat;
+    width: 30px;
+    height: 30px;
     background-size: 3017% 2917%; }
     .dp-emoji-picker span:hover {
       background-color: rgba(255, 255, 255, 0.3); }
@@ -483,15 +484,6 @@
 .twitch-emote.emoji,
 .bttv-emote.emoji {
   max-width: 1.75rem !important;
-  height: auto !important; }
-
-/* 
-  tasty emotes get a specific Width and Height from the API 
-  The max width is 75px
-*/
-.tasty-emote.emoji {
-  max-width: 75px !important;
-  width: auto !important;
   height: auto !important; }
 
 .dubplus-chat-only .left_section {

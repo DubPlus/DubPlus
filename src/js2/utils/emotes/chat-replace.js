@@ -7,7 +7,7 @@
  * existing emoji in image tag titles/alt attributes
  */
 
-import twitch from "@/utils/emotes/twitch.js";
+import twitch from "@/utils/emotes/twitch-local.js";
 import bttv from "@/utils/emotes/bttv.js";
 import parser from "@/utils/emotes/parser.js";
 
@@ -67,7 +67,7 @@ export function getImageDataForEmote(emote) {
   if (twitch.emotes[key]) {
     return {
       type: "twitch",
-      src: twitch.template(twitch.emotes[key]),
+      src: twitch.template(twitch.emotes[key].id),
       name: key
     };
   }

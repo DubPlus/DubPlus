@@ -12,6 +12,8 @@ import twitchSpriteSheet from './twitch-spritesheet';
 
 const twitch =  {
 
+  emotes : twitchSpriteSheet,
+
   template(id) {
     return `//static-cdn.jtvnw.net/emoticons/v1/${id}/1.0`;
   },
