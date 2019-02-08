@@ -1,6 +1,7 @@
 # TODO
 - double-check or add data validation all inputs
 - plan out CI possibilities
+- create Dubplus object proxy/bridge/middle
 
 # Javascript info Guidelines
 :warning: *this doc is a work in progress* :warning:
