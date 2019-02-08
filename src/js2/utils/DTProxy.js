@@ -84,7 +84,14 @@ class DTProxy {
     }).attributes._user.username;
   }
 
-  // EVENTS
+  /******************************************************************
+   * Dubtrack Events
+   */
+
+  /**
+   * When the room's current song changes and a new song comes on
+   * @param {function} cb callback function to bind to playlist-update
+   */
   onPlaylistUpdate(cb) {
     Dubtrack.Events.bind("realtime:room_playlist-update", cb);
   }
@@ -112,4 +119,32 @@ class DTProxy {
   offSongGrab(cb) {
     Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", cb);
   }
+
+  /******************************************************************
+   * DOM elements that are created by Dubtrack
+   * - not ones this library creates
+   */
+
+  chatInput() {
+    return document.getElementById("chat-txt-message");
+  }
+
+  /*
+  var current_time = parseInt(document.querySelector('#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min').textContent);
+  var booth_duration = parseInt(document.querySelector('.queue-position').textContent);
+  document.querySelector('.player_sharing')
+  document.querySelector(".chat-text-box-icons")
+document.querySelector(".header-right-navigation")
+document.querySelector('.backstretch-item img');
+document.querySelector(".pusher-chat-widget-input");
+this.dubup = document.querySelector('.dubup');
+    this.dubdown = document.querySelector('.dubdown');
+    document.querySelector(".add-to-playlist-button")
+    document.querySelectorAll("ul.chat-main > li")
+    document.querySelector("ul.chat-main")
+    document.querySelector(".queue-position").textContent;
+    document.querySelector(".user-messages")
+    document.querySelector(`.message-item[data-messageid="${e.messageid}"]`)
+    document.querySelector("#room-main-player-container");
+   */
 }
