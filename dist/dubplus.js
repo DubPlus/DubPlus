@@ -4781,10 +4781,6 @@ var DubPlus = (function () {
     return EmojiPicker;
   }(Component);
 
-  function SetupEmojiPicker () {
-    render(h(EmojiPicker, null), document.querySelector(".chat-text-box-icons"));
-  }
-
   var twitchSpriteSheet = {
     "\\:-?\\)": {
       "x": 387,
@@ -10494,13 +10490,24 @@ var DubPlus = (function () {
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(TwitchPicker)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
-        show: false
+        emojiShow: false,
+        twitchShow: false
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggle", function () {
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleEmoji", function () {
         _this.setState(function (prevState) {
           return {
-            show: !prevState.show
+            emojiShow: !prevState.emojiShow,
+            twitchShow: false
+          };
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleTwitch", function () {
+        _this.setState(function (prevState) {
+          return {
+            emojiShow: false,
+            twitchShow: !prevState.twitchShow
           };
         });
       });
@@ -10508,9 +10515,10 @@ var DubPlus = (function () {
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleKeyup", function (e) {
         var key = "which" in e ? e.which : e.keyCode;
 
-        if (_this.state.show && key === 27) {
+        if ((_this.state.emojiShow || _this.state.twitchShow) && key === 27) {
           _this.setState({
-            show: false
+            emojiShow: false,
+            twitchShow: false
           });
         }
       });
@@ -10523,7 +10531,8 @@ var DubPlus = (function () {
       value: function fillChat(val) {
         document.getElementById("chat-txt-message").value += " :".concat(val, ":");
         this.setState({
-          show: false
+          emojiShow: false,
+          twitchShow: false
         });
       }
     }, {
@@ -10532,11 +10541,33 @@ var DubPlus = (function () {
         document.addEventListener("keyup", this.handleKeyup);
       }
     }, {
-      key: "render",
-      value: function render$$1(props, _ref) {
+      key: "emojiList",
+      value: function emojiList() {
         var _this2 = this;
 
-        var show = _ref.show;
+        var list = Object.keys(emojiNames).map(function (id) {
+          var data = emojiNames[id];
+          var x = data.x * 0.546875;
+          var y = data.y * 0.546875;
+          var css = {
+            backgroundPosition: "-".concat(x, "px -").concat(y, "px")
+          };
+          return h("span", {
+            key: "emoji-".concat(id),
+            style: css,
+            title: id,
+            onClick: function onClick() {
+              return _this2.fillChat(id);
+            }
+          });
+        });
+        return list;
+      }
+    }, {
+      key: "twitchList",
+      value: function twitchList() {
+        var _this3 = this;
+
         var list = Object.keys(twitchSpriteSheet).map(function (name) {
           var data = twitchSpriteSheet[name];
           var x = TWITCH_SS_W * 100 / data.width;
@@ -10552,18 +10583,34 @@ var DubPlus = (function () {
             style: css,
             title: name,
             onClick: function onClick() {
-              return _this2.fillChat(name);
+              return _this3.fillChat(name);
             }
           });
         });
-        return h("span", {
-          className: "dp-twitch-picker-icon",
-          onClick: this.toggle
+        return list;
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, _ref) {
+        var emojiShow = _ref.emojiShow,
+            twitchShow = _ref.twitchShow;
+        return h("div", {
+          style: "display: inline;"
+        }, h("span", {
+          className: "dp-emoji-picker-icon fa fa-smile-o",
+          onClick: this.toggleEmoji
         }, h(Portal, {
           into: ".pusher-chat-widget-input"
         }, h("div", {
-          className: "dp-emoji-picker twitch-picker ".concat(show ? "show" : "")
-        }, list)));
+          className: "dp-emoji-picker ".concat(emojiShow ? "show" : "")
+        }, this.emojiList()))), h("span", {
+          className: "dp-twitch-picker-icon",
+          onClick: this.toggleTwitch
+        }, h(Portal, {
+          into: ".pusher-chat-widget-input"
+        }, h("div", {
+          className: "dp-emoji-picker twitch-picker ".concat(twitchShow ? "show" : "")
+        }, this.twitchList()))));
       }
     }]);
 
@@ -14412,7 +14459,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549599700545);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549601572537);
     document.head.appendChild(link);
   }
   /**
@@ -14792,8 +14839,8 @@ var DubPlus = (function () {
       // load this async so it doesn't block the rest of the menu render
       // since these buttons are completely independent from the menu
       snooze$1();
-      eta();
-      SetupEmojiPicker();
+      eta(); // SetupEmojiPicker();
+
       SetupTwitchPicker();
     }, 10);
     return h("section", {

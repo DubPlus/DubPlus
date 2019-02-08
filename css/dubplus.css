@@ -358,7 +358,9 @@
   background-size: contain;
   display: inline-block;
   width: 19px;
-  height: 19px; }
+  height: 21px;
+  -webkit-transform: translateY(4px);
+          transform: translateY(4px); }
 
 .dp-emoji-picker-icon {
   color: #fff;
