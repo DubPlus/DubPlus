@@ -4736,6 +4736,9 @@ var DubPlus = (function () {
       key: "fillChat",
       value: function fillChat(val) {
         document.getElementById("chat-txt-message").value += " :".concat(val, ":");
+        this.setState({
+          show: false
+        });
       }
     }, {
       key: "componentDidMount",
@@ -4750,8 +4753,8 @@ var DubPlus = (function () {
         var show = _ref.show;
         var list = Object.keys(emojiNames).map(function (id) {
           var data = emojiNames[id];
-          var x = data.x * 0.46875;
-          var y = data.y * 0.46875;
+          var x = data.x * 0.546875;
+          var y = data.y * 0.546875;
           var css = {
             backgroundPosition: "-".concat(x, "px -").concat(y, "px")
           };
@@ -4781,765 +4784,6 @@ var DubPlus = (function () {
   function SetupEmojiPicker () {
     render(h(EmojiPicker, null), document.querySelector(".chat-text-box-icons"));
   }
-
-  /**
-   * global State handler
-   */
-  var defaults = {
-    "menu": {
-      "general": "open",
-      "user-interface": "open",
-      "settings": "open",
-      "customize": "open",
-      "contact": "open"
-    },
-    "options": {
-      "dubplus-autovote": false,
-      "dubplus-emotes": false,
-      "dubplus-autocomplete": false,
-      "mention_notifications": false,
-      "dubplus_pm_notifications": false,
-      "dj-notification": false,
-      "dubplus-dubs-hover": false,
-      "dubplus-downdubs": false,
-      "dubplus-grabschat": false,
-      "dubplus-split-chat": false,
-      "dubplus-show-timestamp": false,
-      "dubplus-hide-bg": false,
-      "dubplus-hide-avatars": false,
-      "dubplus-chat-only": false,
-      "dubplus-video-only": false,
-      "warn_redirect": false,
-      "dubplus-comm-theme": false,
-      "dubplus-afk": false,
-      "dubplus-snow": false,
-      "dubplus-custom-css": false
-    },
-    "custom": {
-      "customAfkMessage": "",
-      "dj_notification": 1,
-      "css": "",
-      "bg": "",
-      "notificationSound": ""
-    }
-  };
-
-  var UserSettings =
-  /*#__PURE__*/
-  function () {
-    function UserSettings() {
-      _classCallCheck(this, UserSettings);
-
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@preact-version");
-
-      var _savedSettings = localStorage.getItem('dubplusUserSettings');
-
-      if (_savedSettings) {
-        try {
-          var storedOpts = JSON.parse(_savedSettings);
-          this.stored = Object.assign({}, defaults, storedOpts);
-        } catch (err) {
-          this.stored = defaults;
-        }
-      } else {
-        this.stored = defaults;
-      }
-    }
-    /**
-     * Save your settings value to memory and localStorage
-     * @param {String} type The section of the stored values. i.e. "menu", "options", "custom"
-     * @param {String} optionName the key name of the option to store
-     * @param {String|Boolean} value the new setting value to store
-     */
-
-
-    _createClass(UserSettings, [{
-      key: "save",
-      value: function save(type, optionName, value) {
-        this.stored[type][optionName] = value;
-
-        try {
-          localStorage.setItem('dubplusUserSettings', JSON.stringify(this.stored));
-        } catch (err) {
-          console.error("an error occured saving dubplus to localStorage", err);
-        }
-      }
-    }]);
-
-    return UserSettings;
-  }();
-
-  var userSettings = new UserSettings();
-
-  function SectionHeader(props) {
-    var arrow = props.open === "open" ? 'down' : 'right';
-    return h("div", {
-      id: props.id,
-      onClick: props.onClick,
-      className: "dubplus-menu-section-header"
-    }, h("span", {
-      className: "fa fa-angle-".concat(arrow)
-    }), h("p", null, props.category));
-  }
-
-  /**
-   * Modal used to display messages and also capture data
-   *
-   * @prop  {string} title       title that shows at the top of the modal
-   * @prop  {string} content     A descriptive message on what the modal is for
-   * @prop  {string} placeholder placeholder for the textarea
-   * @prop  {function} onConfirm  runs when user clicks confirm button.
-   * @prop  {function} onClose  runs when user clicks close button
-   * @prop  {number} maxlength   for the textarea maxlength attribute
-   */
-
-  var Modal =
-  /*#__PURE__*/
-  function (_Component) {
-    _inherits(Modal, _Component);
-
-    function Modal() {
-      var _getPrototypeOf2;
-
-      var _this;
-
-      _classCallCheck(this, Modal);
-
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Modal)).call.apply(_getPrototypeOf2, [this].concat(args)));
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "keyUpHandler", function (e) {
-        // save and close when user presses enter
-        // considering removing this though
-        if (e.keyCode === 13) {
-          _this.props.onConfirm(_this.textarea.value);
-
-          _this.props.onClose();
-        } // close modal when user hits the esc key
-
-
-        if (e.keyCode === 27) {
-          _this.props.onClose();
-        }
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "confirmClick", function () {
-        _this.props.onConfirm(_this.textarea.value);
-
-        _this.props.onClose();
-      });
-
-      return _this;
-    }
-
-    _createClass(Modal, [{
-      key: "componentWillUnmount",
-      value: function componentWillUnmount() {
-        document.removeEventListener("keyup", this.keyUpHandler);
-      }
-    }, {
-      key: "componentDidUpdate",
-      value: function componentDidUpdate() {
-        if (this.props.open) {
-          document.addEventListener("keyup", this.keyUpHandler);
-        } else {
-          document.removeEventListener("keyup", this.keyUpHandler);
-        }
-      }
-    }, {
-      key: "render",
-      value: function render$$1(props) {
-        var _this2 = this;
-
-        var closeButtonText = !props.onConfirm ? "close" : "cancel";
-        return props.open ? h(Portal, {
-          into: "body"
-        }, h("div", {
-          className: "dp-modal"
-        }, h("aside", {
-          className: "container"
-        }, h("div", {
-          className: "title"
-        }, h("h1", null, " ", props.title || "Dub+")), h("div", {
-          className: "content"
-        }, h("p", null, props.content || ""), props.placeholder && h("textarea", {
-          ref: function ref(c) {
-            return _this2.textarea = c;
-          },
-          placeholder: props.placeholder,
-          maxlength: props.maxlength || 999
-        }, props.value || "")), h("div", {
-          className: "dp-modal-buttons"
-        }, h("button", {
-          id: "dp-modal-cancel",
-          onClick: props.onClose
-        }, closeButtonText), props.onConfirm && h("button", {
-          id: "dp-modal-confirm",
-          onClick: this.confirmClick
-        }, "okay"))))) : null;
-      }
-    }]);
-
-    return Modal;
-  }(Component);
-
-  /**
-   * Class wrapper for Google Analytics
-   */
-  // shim just in case blocked by an adblocker or something
-  var ga = window.ga || function () {};
-
-  var GA =
-  /*#__PURE__*/
-  function () {
-    function GA(uid) {
-      _classCallCheck(this, GA);
-
-      ga('create', uid, 'auto', 'dubplusTracker');
-    } // https://developers.google.com/analytics/devguides/collection/analyticsjs/events
-
-
-    _createClass(GA, [{
-      key: "event",
-      value: function event(eventCategory, eventAction, eventLabel, eventValue) {
-        ga('dubplusTracker.send', 'event', eventCategory, eventAction, eventLabel, eventValue);
-      }
-      /**
-       * Use this method to track clicking on a menu item
-       * @param {String} menuSection The menu section's title will be used for the event Category
-       * @param {String} menuItem The ID of the menu item will be used for the event label
-       * @param {Number} [onOff] optional - should be 1 or 0 representing on or off state of the menu item
-       */
-
-    }, {
-      key: "menuClick",
-      value: function menuClick(menuSection, menuItem, onOff) {
-        this.event(menuSection, 'click', menuItem, onOff);
-      }
-    }]);
-
-    return GA;
-  }();
-
-  var track = new GA('UA-116652541-1');
-
-  /**
-   * Component to render a menu section.
-   * @param {object} props
-   * @param {string} props.id
-   * @param {string} props.title the name to display
-   * @param {string} props.settingsKey the key in the setting.stored.menu object
-   */
-
-  var MenuSection =
-  /*#__PURE__*/
-  function (_Component) {
-    _inherits(MenuSection, _Component);
-
-    function MenuSection() {
-      var _getPrototypeOf2;
-
-      var _this;
-
-      _classCallCheck(this, MenuSection);
-
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(MenuSection)).call.apply(_getPrototypeOf2, [this].concat(args)));
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
-        section: userSettings.stored.menu[_this.props.settingsKey] || "open"
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleSection", function (e) {
-        _this.setState(function (prevState) {
-          var newState = prevState.section === "open" ? "closed" : "open";
-          userSettings.save("menu", _this.props.settingsKey, newState);
-          return {
-            section: newState
-          };
-        });
-      });
-
-      return _this;
-    }
-
-    _createClass(MenuSection, [{
-      key: "render",
-      value: function render$$1(props, state) {
-        var _cn = ["dubplus-menu-section"];
-
-        if (state.section === "closed") {
-          _cn.push("dubplus-menu-section-closed");
-        }
-
-        return h("span", null, h(SectionHeader, {
-          onClick: this.toggleSection,
-          id: props.id,
-          category: props.title,
-          open: state.section
-        }), h("ul", {
-          className: _cn.join(" ")
-        }, props.children));
-      }
-    }]);
-
-    return MenuSection;
-  }(Component);
-  /**
-   * Component to render a simple row like the fullscreen menu option
-   * @param {object} props
-   * @param {string} props.id the dom ID name, usually dubplus-*
-   * @param {string} props.desc description of the menu item used in the title attr
-   * @param {string} props.icon icon to be used
-   * @param {string} props.menuTitle text to display in the menu
-   * @param {Function} props.onClick text to display in the menu
-   */
-
-  function MenuSimple(props) {
-    var _cn = ["dubplus-menu-icon"]; // combine with ones that were passed through
-
-    if (props.className) {
-      _cn.push(props.className);
-    }
-
-    return h("li", {
-      id: props.id,
-      title: props.desc,
-      className: _cn.join(" "),
-      onClick: props.onClick
-    }, h("span", {
-      className: "fa fa-".concat(props.icon)
-    }), h("span", {
-      className: "dubplus-menu-label"
-    }, props.menuTitle));
-  }
-  /**
-   * Component which brings up a modal box to allow user to
-   * input and store a text value which will be used by the
-   * parent menu item.
-   *
-   * MenuPencil must always by a child of MenuSwitch.
-   */
-
-  var MenuPencil =
-  /*#__PURE__*/
-  function (_Component2) {
-    _inherits(MenuPencil, _Component2);
-
-    function MenuPencil() {
-      var _getPrototypeOf3;
-
-      var _this2;
-
-      _classCallCheck(this, MenuPencil);
-
-      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        args[_key2] = arguments[_key2];
-      }
-
-      _this2 = _possibleConstructorReturn(this, (_getPrototypeOf3 = _getPrototypeOf(MenuPencil)).call.apply(_getPrototypeOf3, [this].concat(args)));
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "state", {
-        open: false
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "loadModal", function () {
-        _this2.setState({
-          open: true
-        });
-
-        track.menuClick(_this2.props.section + " section", _this2.props.id + " edit");
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "closeModal", function () {
-        console.log("closing dub+ modal");
-
-        _this2.setState({
-          open: false
-        });
-
-        if (typeof _this2.props.onCancel === 'function') {
-          _this2.props.onCancel();
-        }
-      });
-
-      return _this2;
-    }
-
-    _createClass(MenuPencil, [{
-      key: "render",
-      value: function render$$1(props, state) {
-        return h("span", {
-          onClick: this.loadModal,
-          className: "fa fa-pencil extra-icon"
-        }, h(Modal, {
-          open: state.open || props.showModal || false,
-          title: props.title || "Dub+ option",
-          content: props.content || "Please enter a value",
-          placeholder: props.placeholder || "in here",
-          value: props.value,
-          onConfirm: props.onConfirm,
-          onClose: this.closeModal
-        }));
-      }
-    }]);
-
-    return MenuPencil;
-  }(Component);
-  var MenuSwitch =
-  /*#__PURE__*/
-  function (_Component3) {
-    _inherits(MenuSwitch, _Component3);
-
-    function MenuSwitch() {
-      var _getPrototypeOf4;
-
-      var _this3;
-
-      _classCallCheck(this, MenuSwitch);
-
-      for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-        args[_key3] = arguments[_key3];
-      }
-
-      _this3 = _possibleConstructorReturn(this, (_getPrototypeOf4 = _getPrototypeOf(MenuSwitch)).call.apply(_getPrototypeOf4, [this].concat(args)));
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "state", {
-        on: userSettings.stored.options[_this3.props.id] || false
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "switchOn", function () {
-        _this3.props.turnOn();
-
-        userSettings.save("options", _this3.props.id, true);
-
-        _this3.setState({
-          on: true
-        });
-
-        track.menuClick(_this3.props.section + " section", _this3.props.id + " on");
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "switchOff", function () {
-        var noTrack = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-        _this3.props.turnOff();
-
-        userSettings.save("options", _this3.props.id, false);
-
-        _this3.setState({
-          on: false
-        });
-
-        if (!noTrack) {
-          track.menuClick(_this3.props.section + " section", _this3.props.id + " off");
-        }
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "toggleSwitch", function () {
-        if (_this3.state.on) {
-          _this3.switchOff();
-        } else {
-          _this3.switchOn();
-        }
-      });
-
-      return _this3;
-    }
-
-    _createClass(MenuSwitch, [{
-      key: "componentDidMount",
-      value: function componentDidMount() {
-        if (this.state.on) {
-          this.props.turnOn();
-        }
-      }
-    }, {
-      key: "render",
-      value: function render$$1(props, state) {
-        var _cn = ["dubplus-switch"];
-
-        if (state.on) {
-          _cn.push("dubplus-switch-on");
-        } // combine with ones that were passed through
-
-
-        if (props.className) {
-          _cn.push(props.className);
-        }
-
-        return h("li", {
-          id: props.id,
-          title: props.desc,
-          className: _cn.join(" ")
-        }, props.children || null, h("div", {
-          onClick: this.toggleSwitch,
-          className: "dubplus-form-control"
-        }, h("div", {
-          className: "dubplus-switch-bg"
-        }, h("div", {
-          className: "dubplus-switcher"
-        })), h("span", {
-          className: "dubplus-menu-label"
-        }, props.menuTitle)));
-      }
-    }]);
-
-    return MenuSwitch;
-  }(Component);
-
-  /**
-   * 
-   * Away From Keyboard autoresponder
-   * 
-   * TODO: setup global state manager
-   */
-
-  var AFK =
-  /*#__PURE__*/
-  function (_Component) {
-    _inherits(AFK, _Component);
-
-    function AFK() {
-      var _getPrototypeOf2;
-
-      var _this;
-
-      _classCallCheck(this, AFK);
-
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(AFK)).call.apply(_getPrototypeOf2, [this].concat(args)));
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
-        canSend: true
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "afk_chat_respond", function (e) {
-        if (!_this.state.canSend) {
-          return; // do nothing until it's back to true
-        }
-
-        var content = e.message;
-        var user = Dubtrack.session.get('username');
-
-        if (content.indexOf('@' + user) > -1 && Dubtrack.session.id !== e.user.userInfo.userid) {
-          var chatInput = document.getElementById('chat-txt-message');
-
-          if (userSettings.stored.custom.customAfkMessage) {
-            chatInput.value = '[AFK] ' + userSettings.stored.custom.customAfkMessage;
-          } else {
-            chatInput.value = "[AFK] I'm not here right now.";
-          }
-
-          Dubtrack.room.chat.sendMessage(); // so we don't spam chat, we pause the auto respond for 30sec
-
-          _this.setState({
-            canSend: false
-          }); // allow AFK responses after 30sec
-
-
-          setTimeout(function () {
-            _this.setState({
-              canSend: true
-            });
-          }, 30000);
-        }
-      });
-
-      return _this;
-    }
-
-    _createClass(AFK, [{
-      key: "turnOn",
-      value: function turnOn() {
-        Dubtrack.Events.bind("realtime:chat-message", this.afk_chat_respond);
-      }
-    }, {
-      key: "turnOff",
-      value: function turnOff() {
-        Dubtrack.Events.unbind("realtime:chat-message", this.afk_chat_respond);
-      }
-    }, {
-      key: "saveAFKmessage",
-      value: function saveAFKmessage(val) {
-        userSettings.save('custom', 'customAfkMessage', val);
-      }
-    }, {
-      key: "render",
-      value: function render$$1(props, state) {
-        return h(MenuSwitch, {
-          id: "dubplus-afk",
-          section: "General",
-          menuTitle: "AFK Auto-respond",
-          desc: "Toggle Away from Keyboard and customize AFK message.",
-          turnOn: this.turnOn,
-          turnOff: this.turnOff
-        }, h(MenuPencil, {
-          title: "Custom AFK Message",
-          section: "General",
-          content: "Enter a custom Away From Keyboard [AFK] message here",
-          value: userSettings.stored.custom.customAfkMessage || '',
-          placeholder: "Be right back!",
-          maxlength: "255",
-          onConfirm: this.saveAFKmessage
-        }));
-      }
-    }]);
-
-    return AFK;
-  }(Component);
-
-  /**
-   * Menu item for Autovote
-   */
-
-  var Autovote =
-  /*#__PURE__*/
-  function (_Component) {
-    _inherits(Autovote, _Component);
-
-    function Autovote() {
-      var _this;
-
-      _classCallCheck(this, Autovote);
-
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(Autovote).call(this));
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "advance_vote", function () {
-        var event = document.createEvent('HTMLEvents');
-        event.initEvent('click', true, false);
-
-        _this.dubup.dispatchEvent(event);
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "voteCheck", function (obj) {
-        if (obj.startTime < 2) {
-          _this.advance_vote();
-        }
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (e) {
-        var song = Dubtrack.room.player.activeSong.get('song');
-        var dubCookie = Dubtrack.helpers.cookie.get('dub-' + Dubtrack.room.model.get("_id"));
-        var dubsong = Dubtrack.helpers.cookie.get('dub-song');
-
-        if (!Dubtrack.room || !song || song.songid !== dubsong) {
-          dubCookie = false;
-        } // Only cast the vote if user hasn't already voted
-
-
-        if (!_this.dubup.classList.contains('voted') && !_this.dubdown.classList.contains('voted') && !dubCookie) {
-          _this.advance_vote();
-        }
-
-        Dubtrack.Events.bind("realtime:room_playlist-update", _this.voteCheck);
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function (e) {
-        Dubtrack.Events.unbind("realtime:room_playlist-update", _this.voteCheck);
-      });
-
-      _this.dubup = document.querySelector('.dubup');
-      _this.dubdown = document.querySelector('.dubdown');
-      return _this;
-    }
-
-    _createClass(Autovote, [{
-      key: "render",
-      value: function render$$1(props, state) {
-        return h(MenuSwitch, {
-          id: "dubplus-autovote",
-          section: "General",
-          menuTitle: "Autovote",
-          desc: "Toggles auto upvoting for every song",
-          turnOn: this.turnOn,
-          turnOff: this.turnOff
-        });
-      }
-    }]);
-
-    return Autovote;
-  }(Component);
-
-  var PreviewListItem = function PreviewListItem(_ref) {
-    var data = _ref.data,
-        onSelect = _ref.onSelect;
-
-    if (data.header) {
-      return h("li", {
-        className: "preview-item-header ".concat(data.header.toLowerCase(), "-preview-header")
-      }, h("span", null, data.header));
-    }
-
-    if (data.type === "twitch") {
-      var css = {
-        backgroundPosition: "-".concat(data.x, "px -").concat(data.y, "px"),
-        width: "".concat(data.width, "px"),
-        height: "".concat(data.height, "px")
-      };
-      return h("li", {
-        className: "preview-item twitch-previews",
-        onClick: function onClick() {
-          onSelect(data.name);
-        },
-        "data-name": data.name
-      }, h("span", {
-        className: "ac-image",
-        style: css,
-        title: data.name
-      }), h("span", {
-        className: "ac-text"
-      }, data.name));
-    }
-
-    return h("li", {
-      className: "preview-item ".concat(data.type, "-previews"),
-      onClick: function onClick() {
-        onSelect(data.name);
-      },
-      "data-name": data.name
-    }, h("div", {
-      className: "ac-image"
-    }, h("img", {
-      src: data.src,
-      alt: data.name,
-      title: data.name
-    })), h("span", {
-      className: "ac-text"
-    }, data.name));
-  };
-
-  var AutocompletePreview = function AutocompletePreview(_ref2) {
-    var matches = _ref2.matches,
-        onSelect = _ref2.onSelect;
-
-    if (matches.length === 0) {
-      return h("ul", {
-        id: "autocomplete-preview"
-      });
-    }
-
-    var list = matches.map(function (m, i) {
-      return h(PreviewListItem, {
-        data: m,
-        key: m.header ? "header-row-".concat(m.header) : "".concat(m.type, "-").concat(m.name),
-        onSelect: onSelect
-      });
-    });
-    return h("ul", {
-      id: "autocomplete-preview",
-      className: "ac-show"
-    }, list);
-  };
 
   var twitchSpriteSheet = {
     "\\:-?\\)": {
@@ -11228,6 +10472,873 @@ var DubPlus = (function () {
     }
   };
 
+  var TWITCH_SS_W = 837;
+  var TWITCH_SS_H = 819;
+
+  var TwitchPicker =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(TwitchPicker, _Component);
+
+    function TwitchPicker() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, TwitchPicker);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(TwitchPicker)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        show: false
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggle", function () {
+        _this.setState(function (prevState) {
+          return {
+            show: !prevState.show
+          };
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleKeyup", function (e) {
+        var key = "which" in e ? e.which : e.keyCode;
+
+        if (_this.state.show && key === 27) {
+          _this.setState({
+            show: false
+          });
+        }
+      });
+
+      return _this;
+    }
+
+    _createClass(TwitchPicker, [{
+      key: "fillChat",
+      value: function fillChat(val) {
+        document.getElementById("chat-txt-message").value += " :".concat(val, ":");
+        this.setState({
+          show: false
+        });
+      }
+    }, {
+      key: "componentDidMount",
+      value: function componentDidMount() {
+        document.addEventListener("keyup", this.handleKeyup);
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, _ref) {
+        var _this2 = this;
+
+        var show = _ref.show;
+        var list = Object.keys(twitchSpriteSheet).map(function (name) {
+          var data = twitchSpriteSheet[name];
+          var x = TWITCH_SS_W * 100 / data.width;
+          var y = TWITCH_SS_H * 100 / data.height;
+          var css = {
+            backgroundPosition: "-".concat(data.x, "px -").concat(data.y, "px"),
+            width: "".concat(data.width, "px"),
+            height: "".concat(data.height, "px"),
+            backgroundSize: "".concat(x, "% ").concat(y, "%")
+          };
+          return h("span", {
+            key: "twitch-".concat(name),
+            style: css,
+            title: name,
+            onClick: function onClick() {
+              return _this2.fillChat(name);
+            }
+          });
+        });
+        return h("span", {
+          className: "dp-twitch-picker-icon",
+          onClick: this.toggle
+        }, h(Portal, {
+          into: ".pusher-chat-widget-input"
+        }, h("div", {
+          className: "dp-emoji-picker twitch-picker ".concat(show ? "show" : "")
+        }, list)));
+      }
+    }]);
+
+    return TwitchPicker;
+  }(Component);
+
+  function SetupTwitchPicker () {
+    render(h(TwitchPicker, null), document.querySelector(".chat-text-box-icons"));
+  }
+
+  /**
+   * global State handler
+   */
+  var defaults = {
+    "menu": {
+      "general": "open",
+      "user-interface": "open",
+      "settings": "open",
+      "customize": "open",
+      "contact": "open"
+    },
+    "options": {
+      "dubplus-autovote": false,
+      "dubplus-emotes": false,
+      "dubplus-autocomplete": false,
+      "mention_notifications": false,
+      "dubplus_pm_notifications": false,
+      "dj-notification": false,
+      "dubplus-dubs-hover": false,
+      "dubplus-downdubs": false,
+      "dubplus-grabschat": false,
+      "dubplus-split-chat": false,
+      "dubplus-show-timestamp": false,
+      "dubplus-hide-bg": false,
+      "dubplus-hide-avatars": false,
+      "dubplus-chat-only": false,
+      "dubplus-video-only": false,
+      "warn_redirect": false,
+      "dubplus-comm-theme": false,
+      "dubplus-afk": false,
+      "dubplus-snow": false,
+      "dubplus-custom-css": false
+    },
+    "custom": {
+      "customAfkMessage": "",
+      "dj_notification": 1,
+      "css": "",
+      "bg": "",
+      "notificationSound": ""
+    }
+  };
+
+  var UserSettings =
+  /*#__PURE__*/
+  function () {
+    function UserSettings() {
+      _classCallCheck(this, UserSettings);
+
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@preact-version");
+
+      var _savedSettings = localStorage.getItem('dubplusUserSettings');
+
+      if (_savedSettings) {
+        try {
+          var storedOpts = JSON.parse(_savedSettings);
+          this.stored = Object.assign({}, defaults, storedOpts);
+        } catch (err) {
+          this.stored = defaults;
+        }
+      } else {
+        this.stored = defaults;
+      }
+    }
+    /**
+     * Save your settings value to memory and localStorage
+     * @param {String} type The section of the stored values. i.e. "menu", "options", "custom"
+     * @param {String} optionName the key name of the option to store
+     * @param {String|Boolean} value the new setting value to store
+     */
+
+
+    _createClass(UserSettings, [{
+      key: "save",
+      value: function save(type, optionName, value) {
+        this.stored[type][optionName] = value;
+
+        try {
+          localStorage.setItem('dubplusUserSettings', JSON.stringify(this.stored));
+        } catch (err) {
+          console.error("an error occured saving dubplus to localStorage", err);
+        }
+      }
+    }]);
+
+    return UserSettings;
+  }();
+
+  var userSettings = new UserSettings();
+
+  function SectionHeader(props) {
+    var arrow = props.open === "open" ? 'down' : 'right';
+    return h("div", {
+      id: props.id,
+      onClick: props.onClick,
+      className: "dubplus-menu-section-header"
+    }, h("span", {
+      className: "fa fa-angle-".concat(arrow)
+    }), h("p", null, props.category));
+  }
+
+  /**
+   * Modal used to display messages and also capture data
+   *
+   * @prop  {string} title       title that shows at the top of the modal
+   * @prop  {string} content     A descriptive message on what the modal is for
+   * @prop  {string} placeholder placeholder for the textarea
+   * @prop  {function} onConfirm  runs when user clicks confirm button.
+   * @prop  {function} onClose  runs when user clicks close button
+   * @prop  {number} maxlength   for the textarea maxlength attribute
+   */
+
+  var Modal =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(Modal, _Component);
+
+    function Modal() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, Modal);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Modal)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "keyUpHandler", function (e) {
+        // save and close when user presses enter
+        // considering removing this though
+        if (e.keyCode === 13) {
+          _this.props.onConfirm(_this.textarea.value);
+
+          _this.props.onClose();
+        } // close modal when user hits the esc key
+
+
+        if (e.keyCode === 27) {
+          _this.props.onClose();
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "confirmClick", function () {
+        _this.props.onConfirm(_this.textarea.value);
+
+        _this.props.onClose();
+      });
+
+      return _this;
+    }
+
+    _createClass(Modal, [{
+      key: "componentWillUnmount",
+      value: function componentWillUnmount() {
+        document.removeEventListener("keyup", this.keyUpHandler);
+      }
+    }, {
+      key: "componentDidUpdate",
+      value: function componentDidUpdate() {
+        if (this.props.open) {
+          document.addEventListener("keyup", this.keyUpHandler);
+        } else {
+          document.removeEventListener("keyup", this.keyUpHandler);
+        }
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props) {
+        var _this2 = this;
+
+        var closeButtonText = !props.onConfirm ? "close" : "cancel";
+        return props.open ? h(Portal, {
+          into: "body"
+        }, h("div", {
+          className: "dp-modal"
+        }, h("aside", {
+          className: "container"
+        }, h("div", {
+          className: "title"
+        }, h("h1", null, " ", props.title || "Dub+")), h("div", {
+          className: "content"
+        }, h("p", null, props.content || ""), props.placeholder && h("textarea", {
+          ref: function ref(c) {
+            return _this2.textarea = c;
+          },
+          placeholder: props.placeholder,
+          maxlength: props.maxlength || 999
+        }, props.value || "")), h("div", {
+          className: "dp-modal-buttons"
+        }, h("button", {
+          id: "dp-modal-cancel",
+          onClick: props.onClose
+        }, closeButtonText), props.onConfirm && h("button", {
+          id: "dp-modal-confirm",
+          onClick: this.confirmClick
+        }, "okay"))))) : null;
+      }
+    }]);
+
+    return Modal;
+  }(Component);
+
+  /**
+   * Class wrapper for Google Analytics
+   */
+  // shim just in case blocked by an adblocker or something
+  var ga = window.ga || function () {};
+
+  var GA =
+  /*#__PURE__*/
+  function () {
+    function GA(uid) {
+      _classCallCheck(this, GA);
+
+      ga('create', uid, 'auto', 'dubplusTracker');
+    } // https://developers.google.com/analytics/devguides/collection/analyticsjs/events
+
+
+    _createClass(GA, [{
+      key: "event",
+      value: function event(eventCategory, eventAction, eventLabel, eventValue) {
+        ga('dubplusTracker.send', 'event', eventCategory, eventAction, eventLabel, eventValue);
+      }
+      /**
+       * Use this method to track clicking on a menu item
+       * @param {String} menuSection The menu section's title will be used for the event Category
+       * @param {String} menuItem The ID of the menu item will be used for the event label
+       * @param {Number} [onOff] optional - should be 1 or 0 representing on or off state of the menu item
+       */
+
+    }, {
+      key: "menuClick",
+      value: function menuClick(menuSection, menuItem, onOff) {
+        this.event(menuSection, 'click', menuItem, onOff);
+      }
+    }]);
+
+    return GA;
+  }();
+
+  var track = new GA('UA-116652541-1');
+
+  /**
+   * Component to render a menu section.
+   * @param {object} props
+   * @param {string} props.id
+   * @param {string} props.title the name to display
+   * @param {string} props.settingsKey the key in the setting.stored.menu object
+   */
+
+  var MenuSection =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(MenuSection, _Component);
+
+    function MenuSection() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, MenuSection);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(MenuSection)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        section: userSettings.stored.menu[_this.props.settingsKey] || "open"
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleSection", function (e) {
+        _this.setState(function (prevState) {
+          var newState = prevState.section === "open" ? "closed" : "open";
+          userSettings.save("menu", _this.props.settingsKey, newState);
+          return {
+            section: newState
+          };
+        });
+      });
+
+      return _this;
+    }
+
+    _createClass(MenuSection, [{
+      key: "render",
+      value: function render$$1(props, state) {
+        var _cn = ["dubplus-menu-section"];
+
+        if (state.section === "closed") {
+          _cn.push("dubplus-menu-section-closed");
+        }
+
+        return h("span", null, h(SectionHeader, {
+          onClick: this.toggleSection,
+          id: props.id,
+          category: props.title,
+          open: state.section
+        }), h("ul", {
+          className: _cn.join(" ")
+        }, props.children));
+      }
+    }]);
+
+    return MenuSection;
+  }(Component);
+  /**
+   * Component to render a simple row like the fullscreen menu option
+   * @param {object} props
+   * @param {string} props.id the dom ID name, usually dubplus-*
+   * @param {string} props.desc description of the menu item used in the title attr
+   * @param {string} props.icon icon to be used
+   * @param {string} props.menuTitle text to display in the menu
+   * @param {Function} props.onClick text to display in the menu
+   */
+
+  function MenuSimple(props) {
+    var _cn = ["dubplus-menu-icon"]; // combine with ones that were passed through
+
+    if (props.className) {
+      _cn.push(props.className);
+    }
+
+    return h("li", {
+      id: props.id,
+      title: props.desc,
+      className: _cn.join(" "),
+      onClick: props.onClick
+    }, h("span", {
+      className: "fa fa-".concat(props.icon)
+    }), h("span", {
+      className: "dubplus-menu-label"
+    }, props.menuTitle));
+  }
+  /**
+   * Component which brings up a modal box to allow user to
+   * input and store a text value which will be used by the
+   * parent menu item.
+   *
+   * MenuPencil must always by a child of MenuSwitch.
+   */
+
+  var MenuPencil =
+  /*#__PURE__*/
+  function (_Component2) {
+    _inherits(MenuPencil, _Component2);
+
+    function MenuPencil() {
+      var _getPrototypeOf3;
+
+      var _this2;
+
+      _classCallCheck(this, MenuPencil);
+
+      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+      }
+
+      _this2 = _possibleConstructorReturn(this, (_getPrototypeOf3 = _getPrototypeOf(MenuPencil)).call.apply(_getPrototypeOf3, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "state", {
+        open: false
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "loadModal", function () {
+        _this2.setState({
+          open: true
+        });
+
+        track.menuClick(_this2.props.section + " section", _this2.props.id + " edit");
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "closeModal", function () {
+        console.log("closing dub+ modal");
+
+        _this2.setState({
+          open: false
+        });
+
+        if (typeof _this2.props.onCancel === 'function') {
+          _this2.props.onCancel();
+        }
+      });
+
+      return _this2;
+    }
+
+    _createClass(MenuPencil, [{
+      key: "render",
+      value: function render$$1(props, state) {
+        return h("span", {
+          onClick: this.loadModal,
+          className: "fa fa-pencil extra-icon"
+        }, h(Modal, {
+          open: state.open || props.showModal || false,
+          title: props.title || "Dub+ option",
+          content: props.content || "Please enter a value",
+          placeholder: props.placeholder || "in here",
+          value: props.value,
+          onConfirm: props.onConfirm,
+          onClose: this.closeModal
+        }));
+      }
+    }]);
+
+    return MenuPencil;
+  }(Component);
+  var MenuSwitch =
+  /*#__PURE__*/
+  function (_Component3) {
+    _inherits(MenuSwitch, _Component3);
+
+    function MenuSwitch() {
+      var _getPrototypeOf4;
+
+      var _this3;
+
+      _classCallCheck(this, MenuSwitch);
+
+      for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        args[_key3] = arguments[_key3];
+      }
+
+      _this3 = _possibleConstructorReturn(this, (_getPrototypeOf4 = _getPrototypeOf(MenuSwitch)).call.apply(_getPrototypeOf4, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "state", {
+        on: userSettings.stored.options[_this3.props.id] || false
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "switchOn", function () {
+        _this3.props.turnOn();
+
+        userSettings.save("options", _this3.props.id, true);
+
+        _this3.setState({
+          on: true
+        });
+
+        track.menuClick(_this3.props.section + " section", _this3.props.id + " on");
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "switchOff", function () {
+        var noTrack = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+        _this3.props.turnOff();
+
+        userSettings.save("options", _this3.props.id, false);
+
+        _this3.setState({
+          on: false
+        });
+
+        if (!noTrack) {
+          track.menuClick(_this3.props.section + " section", _this3.props.id + " off");
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "toggleSwitch", function () {
+        if (_this3.state.on) {
+          _this3.switchOff();
+        } else {
+          _this3.switchOn();
+        }
+      });
+
+      return _this3;
+    }
+
+    _createClass(MenuSwitch, [{
+      key: "componentDidMount",
+      value: function componentDidMount() {
+        if (this.state.on) {
+          this.props.turnOn();
+        }
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        var _cn = ["dubplus-switch"];
+
+        if (state.on) {
+          _cn.push("dubplus-switch-on");
+        } // combine with ones that were passed through
+
+
+        if (props.className) {
+          _cn.push(props.className);
+        }
+
+        return h("li", {
+          id: props.id,
+          title: props.desc,
+          className: _cn.join(" ")
+        }, props.children || null, h("div", {
+          onClick: this.toggleSwitch,
+          className: "dubplus-form-control"
+        }, h("div", {
+          className: "dubplus-switch-bg"
+        }, h("div", {
+          className: "dubplus-switcher"
+        })), h("span", {
+          className: "dubplus-menu-label"
+        }, props.menuTitle)));
+      }
+    }]);
+
+    return MenuSwitch;
+  }(Component);
+
+  /**
+   * 
+   * Away From Keyboard autoresponder
+   * 
+   * TODO: setup global state manager
+   */
+
+  var AFK =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(AFK, _Component);
+
+    function AFK() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, AFK);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(AFK)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        canSend: true
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "afk_chat_respond", function (e) {
+        if (!_this.state.canSend) {
+          return; // do nothing until it's back to true
+        }
+
+        var content = e.message;
+        var user = Dubtrack.session.get('username');
+
+        if (content.indexOf('@' + user) > -1 && Dubtrack.session.id !== e.user.userInfo.userid) {
+          var chatInput = document.getElementById('chat-txt-message');
+
+          if (userSettings.stored.custom.customAfkMessage) {
+            chatInput.value = '[AFK] ' + userSettings.stored.custom.customAfkMessage;
+          } else {
+            chatInput.value = "[AFK] I'm not here right now.";
+          }
+
+          Dubtrack.room.chat.sendMessage(); // so we don't spam chat, we pause the auto respond for 30sec
+
+          _this.setState({
+            canSend: false
+          }); // allow AFK responses after 30sec
+
+
+          setTimeout(function () {
+            _this.setState({
+              canSend: true
+            });
+          }, 30000);
+        }
+      });
+
+      return _this;
+    }
+
+    _createClass(AFK, [{
+      key: "turnOn",
+      value: function turnOn() {
+        Dubtrack.Events.bind("realtime:chat-message", this.afk_chat_respond);
+      }
+    }, {
+      key: "turnOff",
+      value: function turnOff() {
+        Dubtrack.Events.unbind("realtime:chat-message", this.afk_chat_respond);
+      }
+    }, {
+      key: "saveAFKmessage",
+      value: function saveAFKmessage(val) {
+        userSettings.save('custom', 'customAfkMessage', val);
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, state) {
+        return h(MenuSwitch, {
+          id: "dubplus-afk",
+          section: "General",
+          menuTitle: "AFK Auto-respond",
+          desc: "Toggle Away from Keyboard and customize AFK message.",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, h(MenuPencil, {
+          title: "Custom AFK Message",
+          section: "General",
+          content: "Enter a custom Away From Keyboard [AFK] message here",
+          value: userSettings.stored.custom.customAfkMessage || '',
+          placeholder: "Be right back!",
+          maxlength: "255",
+          onConfirm: this.saveAFKmessage
+        }));
+      }
+    }]);
+
+    return AFK;
+  }(Component);
+
+  /**
+   * Menu item for Autovote
+   */
+
+  var Autovote =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(Autovote, _Component);
+
+    function Autovote() {
+      var _this;
+
+      _classCallCheck(this, Autovote);
+
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(Autovote).call(this));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "advance_vote", function () {
+        var event = document.createEvent('HTMLEvents');
+        event.initEvent('click', true, false);
+
+        _this.dubup.dispatchEvent(event);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "voteCheck", function (obj) {
+        if (obj.startTime < 2) {
+          _this.advance_vote();
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (e) {
+        var song = Dubtrack.room.player.activeSong.get('song');
+        var dubCookie = Dubtrack.helpers.cookie.get('dub-' + Dubtrack.room.model.get("_id"));
+        var dubsong = Dubtrack.helpers.cookie.get('dub-song');
+
+        if (!Dubtrack.room || !song || song.songid !== dubsong) {
+          dubCookie = false;
+        } // Only cast the vote if user hasn't already voted
+
+
+        if (!_this.dubup.classList.contains('voted') && !_this.dubdown.classList.contains('voted') && !dubCookie) {
+          _this.advance_vote();
+        }
+
+        Dubtrack.Events.bind("realtime:room_playlist-update", _this.voteCheck);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function (e) {
+        Dubtrack.Events.unbind("realtime:room_playlist-update", _this.voteCheck);
+      });
+
+      _this.dubup = document.querySelector('.dubup');
+      _this.dubdown = document.querySelector('.dubdown');
+      return _this;
+    }
+
+    _createClass(Autovote, [{
+      key: "render",
+      value: function render$$1(props, state) {
+        return h(MenuSwitch, {
+          id: "dubplus-autovote",
+          section: "General",
+          menuTitle: "Autovote",
+          desc: "Toggles auto upvoting for every song",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        });
+      }
+    }]);
+
+    return Autovote;
+  }(Component);
+
+  var TWITCH_SS_W$1 = 837;
+  var TWITCH_SS_H$1 = 819;
+
+  var PreviewListItem = function PreviewListItem(_ref) {
+    var data = _ref.data,
+        onSelect = _ref.onSelect;
+
+    if (data.header) {
+      return h("li", {
+        className: "preview-item-header ".concat(data.header.toLowerCase(), "-preview-header")
+      }, h("span", null, data.header));
+    }
+
+    if (data.type === "twitch") {
+      var x = TWITCH_SS_W$1 * 100 / data.width;
+      var y = TWITCH_SS_H$1 * 100 / data.height;
+      var css = {
+        backgroundPosition: "-".concat(data.x, "px -").concat(data.y, "px"),
+        width: "".concat(data.width, "px"),
+        height: "".concat(data.height, "px"),
+        backgroundSize: "".concat(x, "% ").concat(y, "%")
+      };
+      return h("li", {
+        className: "preview-item twitch-previews",
+        onClick: function onClick() {
+          onSelect(data.name);
+        },
+        "data-name": data.name
+      }, h("span", {
+        className: "ac-image",
+        style: css,
+        title: data.name
+      }), h("span", {
+        className: "ac-text"
+      }, data.name));
+    }
+
+    return h("li", {
+      className: "preview-item ".concat(data.type, "-previews"),
+      onClick: function onClick() {
+        onSelect(data.name);
+      },
+      "data-name": data.name
+    }, h("div", {
+      className: "ac-image"
+    }, h("img", {
+      src: data.src,
+      alt: data.name,
+      title: data.name
+    })), h("span", {
+      className: "ac-text"
+    }, data.name));
+  };
+
+  var AutocompletePreview = function AutocompletePreview(_ref2) {
+    var matches = _ref2.matches,
+        onSelect = _ref2.onSelect;
+
+    if (matches.length === 0) {
+      return h("ul", {
+        id: "autocomplete-preview"
+      });
+    }
+
+    var list = matches.map(function (m, i) {
+      return h(PreviewListItem, {
+        data: m,
+        key: m.header ? "header-row-".concat(m.header) : "".concat(m.type, "-").concat(m.name),
+        onSelect: onSelect
+      });
+    });
+    return h("ul", {
+      id: "autocomplete-preview",
+      className: "ac-show"
+    }, list);
+  };
+
   /**
    * Twitch emotes
    * 
@@ -11239,7 +11350,15 @@ var DubPlus = (function () {
    * [1] https://github.com/FranciscoG/emoji-spritesheet/blob/master/lib/downloadTwitch.js 
    */
   var twitch = {
-    emotes: twitchSpriteSheet,
+    get: function get(name) {
+      var emoteData = twitchSpriteSheet[name];
+
+      if (emoteData) {
+        return this.template(emoteData.id);
+      }
+
+      return null;
+    },
     template: function template(id) {
       return "//static-cdn.jtvnw.net/emoticons/v1/".concat(id, "/1.0");
     },
@@ -11250,10 +11369,11 @@ var DubPlus = (function () {
      */
     find: function find(symbol) {
       return Object.keys(twitchSpriteSheet).filter(function (key) {
-        return key.indexOf(symbol) === 0;
-      }).map(function (id) {
-        var obj = twitchSpriteSheet[id];
-        obj.name = id;
+        return key.toLowerCase().indexOf(symbol.toLowerCase()) === 0;
+      }).map(function (name) {
+        var obj = twitchSpriteSheet[name];
+        obj.name = name;
+        obj.type = "twitch";
         return obj;
       });
     }
@@ -11679,7 +11799,9 @@ var DubPlus = (function () {
         if (lastPart.charAt(0) === ":" && lastPart.length > 3 && lastChar !== ":") {
           var new_matches = _this.getMatches(lastPart);
 
-          _this.chunkLoadMatches(new_matches);
+          _this.setState({
+            matches: new_matches
+          });
 
           return;
         }
@@ -11775,36 +11897,6 @@ var DubPlus = (function () {
     }
 
     _createClass(AutocompleteEmoji, [{
-      key: "chunkLoadMatches",
-      // to speed up some of the DOM loading we only display the first 50 matches
-      // right away and then wait a bit to add the rest
-      value: function chunkLoadMatches(matches) {
-        var _this2 = this;
-
-        var limit = 50;
-
-        if (matches.length < limit + 1) {
-          this.setState({
-            matches: matches
-          });
-          return;
-        } // render the first 50 matches
-
-
-        var startingArray = matches.slice(0, limit);
-        this.setState({
-          matches: startingArray
-        }); // then render the full list after given time
-        // dom diffing should leave the first in place and just add the
-        // remaining matches
-
-        setTimeout(function () {
-          _this2.setState({
-            matches: matches
-          });
-        }, 250);
-      }
-    }, {
       key: "getMatches",
       value: function getMatches(symbol) {
         symbol = symbol.replace(/^:/, "");
@@ -12077,11 +12169,12 @@ var DubPlus = (function () {
   function getImageDataForEmote(emote) {
     // search emotes in order of preference
     var key = emote.replace(/^:|:$/g, "");
+    var twitchImg = twitch.get(key);
 
-    if (twitch.emotes[key]) {
+    if (twitchImg) {
       return {
         type: "twitch",
-        src: twitch.template(twitch.emotes[key].id),
+        src: twitchImg,
         name: key
       };
     }
@@ -14319,7 +14412,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549518077291);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549599700545);
     document.head.appendChild(link);
   }
   /**
@@ -14701,6 +14794,7 @@ var DubPlus = (function () {
       snooze$1();
       eta();
       SetupEmojiPicker();
+      SetupTwitchPicker();
     }, 10);
     return h("section", {
       className: "dubplus-menu"

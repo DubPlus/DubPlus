@@ -64,10 +64,11 @@ export function getImageDataForEmote(emote) {
   // search emotes in order of preference
   let key = emote.replace(/^:|:$/g, "");
 
-  if (twitch.emotes[key]) {
+  let twitchImg = twitch.get(key);
+  if (twitchImg) {
     return {
       type: "twitch",
-      src: twitch.template(twitch.emotes[key].id),
+      src: twitchImg,
       name: key
     };
   }

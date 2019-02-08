@@ -1,8 +1,11 @@
 import { h, render, Component } from "preact";
-import { emojiNames } from "@/utils/emotes/emoji";
+import twitchSpriteSheet from "@/utils/emotes/twitch-spritesheet";
 import Portal from "preact-portal/src/preact-portal";
 
-class EmojiPicker extends Component {
+const TWITCH_SS_W = 837;
+const TWITCH_SS_H = 819;
+
+class TwitchPicker extends Component {
   state = {
     show: false
   };
@@ -23,35 +26,40 @@ class EmojiPicker extends Component {
     if (this.state.show && key === 27) {
       this.setState({ show: false });
     }
-  }
+  };
 
   componentDidMount() {
     document.addEventListener("keyup", this.handleKeyup);
   }
 
   render(props, { show }) {
-    let list = Object.keys(emojiNames).map(id => {
-      let data = emojiNames[id];
-      let x = data.x * 0.546875;
-      let y = data.y * 0.546875;
-      let css = { backgroundPosition: `-${x}px -${y}px` };
+    let list = Object.keys(twitchSpriteSheet).map(name => {
+      let data = twitchSpriteSheet[name];
+      let x = (TWITCH_SS_W * 100) / data.width;
+      let y = (TWITCH_SS_H * 100) / data.height;
+      let css = {
+        backgroundPosition: `-${data.x}px -${data.y}px`,
+        width: `${data.width}px`,
+        height: `${data.height}px`,
+        backgroundSize: `${x}% ${y}%`
+      };
       return (
         <span
-          key={`emoji-${id}`}
+          key={`twitch-${name}`}
           style={css}
-          title={id}
-          onClick={() => this.fillChat(id)}
+          title={name}
+          onClick={() => this.fillChat(name)}
         />
       );
     });
 
     return (
       <span
-        className="dp-emoji-picker-icon fa fa-smile-o"
+        className="dp-twitch-picker-icon"
         onClick={this.toggle}
       >
         <Portal into=".pusher-chat-widget-input">
-          <div className={`dp-emoji-picker ${show ? "show" : ""}`}>{list}</div>
+          <div className={`dp-emoji-picker twitch-picker ${show ? "show" : ""}`}>{list}</div>
         </Portal>
       </span>
     );
@@ -59,5 +67,5 @@ class EmojiPicker extends Component {
 }
 
 export default function() {
-  render(<EmojiPicker />, document.querySelector(".chat-text-box-icons"));
+  render(<TwitchPicker />, document.querySelector(".chat-text-box-icons"));
 }

@@ -1,5 +1,8 @@
 import { h } from "preact";
 
+const TWITCH_SS_W = 837;
+const TWITCH_SS_H = 819;
+
 const PreviewListItem = ({ data, onSelect }) => {
   if (data.header) {
     return (
@@ -12,11 +15,14 @@ const PreviewListItem = ({ data, onSelect }) => {
   }
 
   if (data.type === "twitch") {
+    let x = (TWITCH_SS_W * 100) / data.width;
+    let y = (TWITCH_SS_H * 100) / data.height;
     let css = {
       backgroundPosition: `-${data.x}px -${data.y}px`,
       width: `${data.width}px`,
-      height: `${data.height}px`
-    }
+      height: `${data.height}px`,
+      backgroundSize: `${x}% ${y}%`
+    };
     return (
       <li
         className={`preview-item twitch-previews`}

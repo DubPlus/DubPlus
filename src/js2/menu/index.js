@@ -5,6 +5,7 @@ import { h } from "preact";
 import snooze from "@/components/snooze";
 import eta from "@/components/eta";
 import SetupEmojiPicker from '@/components/emoji-picker';
+import SetupTwitchPicker from '@/components/twitch-picker';
 import GeneralSection from "@/menu/general/index";
 import UISection from "@/menu/ui/index";
 import SettingsSection from "@/menu/settings/index";
@@ -18,6 +19,7 @@ const DubPlusMenu = function() {
     snooze();
     eta();
     SetupEmojiPicker();
+    SetupTwitchPicker();
   }, 10);
 
   return (

@@ -67,7 +67,7 @@ export default class AutocompleteEmoji extends Component {
     // emoji colon but does not have the closing emoji colon
     if (lastPart.charAt(0) === ":" && lastPart.length > 3 && lastChar !== ":") {
       let new_matches = this.getMatches(lastPart);
-      this.chunkLoadMatches(new_matches);
+      this.setState({ matches: new_matches });
       return;
     }
 
@@ -75,27 +75,6 @@ export default class AutocompleteEmoji extends Component {
       this.closePreview();
     }
   };
-
-  // to speed up some of the DOM loading we only display the first 50 matches
-  // right away and then wait a bit to add the rest
-  chunkLoadMatches(matches) {
-    let limit = 50;
-    if (matches.length < limit + 1) {
-      this.setState({ matches: matches });
-      return;
-    }
-
-    // render the first 50 matches
-    let startingArray = matches.slice(0, limit);
-    this.setState({ matches: startingArray });
-
-    // then render the full list after given time
-    // dom diffing should leave the first in place and just add the
-    // remaining matches
-    setTimeout(() => {
-      this.setState({ matches: matches });
-    }, 250);
-  }
 
   getMatches(symbol) {
     symbol = symbol.replace(/^:/, "");

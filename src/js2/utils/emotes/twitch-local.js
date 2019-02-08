@@ -12,7 +12,13 @@ import twitchSpriteSheet from './twitch-spritesheet';
 
 const twitch =  {
 
-  emotes : twitchSpriteSheet,
+  get(name) {
+    let emoteData = twitchSpriteSheet[name];
+    if (emoteData) {
+      return this.template(emoteData.id);
+    }
+    return null;
+  },
 
   template(id) {
     return `//static-cdn.jtvnw.net/emoticons/v1/${id}/1.0`;
@@ -24,10 +30,11 @@ const twitch =  {
    */
   find(symbol) {
     return Object.keys(twitchSpriteSheet)
-      .filter(key => key.indexOf(symbol) === 0)
-      .map(id => {
-        let obj = twitchSpriteSheet[id];
-        obj.name = id;
+      .filter(key => key.toLowerCase().indexOf(symbol.toLowerCase()) === 0)
+      .map(name => {
+        let obj = twitchSpriteSheet[name];
+        obj.name = name;
+        obj.type = "twitch";
         return obj;
       });
   }
