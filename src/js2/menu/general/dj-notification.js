@@ -2,6 +2,7 @@ import { h, Component } from "preact";
 import { MenuSwitch, MenuPencil } from "@/components/menuItems.js";
 import settings from "@/utils/UserSettings.js";
 import { notifyCheckPermission, showNotification } from "@/utils/notify.js";
+import dtproxy from "@/utils/DTProxy.js";
 
 export default class DJNotification extends Component {
   state = {
@@ -17,7 +18,7 @@ export default class DJNotification extends Component {
   djNotificationCheck = e => {
     if (e.startTime > 2) return;
 
-    let queuePos = document.querySelector(".queue-position").textContent;
+    let queuePos = dtproxy.getQueuePosition();
     var positionParse = parseInt(queuePos, 10);
     var position =
       e.startTime < 0 && !isNaN(positionParse)
@@ -37,7 +38,7 @@ export default class DJNotification extends Component {
         wait: 10000
       });
     }
-    Dubtrack.room.chat.mentionChatSound.play();
+    dtproxy.playChatSound();
   };
 
   turnOn = () => {
@@ -46,17 +47,11 @@ export default class DJNotification extends Component {
         this.setState({ canNotify: true });
       }
     });
-    Dubtrack.Events.bind(
-      "realtime:room_playlist-update",
-      this.djNotificationCheck
-    );
+    dtproxy.onPlaylistUpdate(this.djNotificationCheck);
   };
 
   turnOff = () => {
-    Dubtrack.Events.unbind(
-      "realtime:room_playlist-update",
-      this.djNotificationCheck
-    );
+    dtproxy.offPlaylistUpdate(this.djNotificationCheck);
   };
 
   render(props, state) {

@@ -1,5 +1,6 @@
 import {h, Component} from 'preact';
 import {MenuSwitch} from '@/components/menuItems.js';
+import dtproxy from "@/utils/DTProxy.js";
 
 /**
  * Menu item for Autovote
@@ -25,11 +26,11 @@ export default class Autovote extends Component {
   }
 
   turnOn = (e) => {
-    var song = Dubtrack.room.player.activeSong.get('song');
-    var dubCookie = Dubtrack.helpers.cookie.get('dub-' + Dubtrack.room.model.get("_id"));
-    var dubsong = Dubtrack.helpers.cookie.get('dub-song');
+    var song = dtproxy.getActiveSong();
+    var dubCookie = dtproxy.getVoteType();
+    var dubsong = dtproxy.getDubSong();
   
-    if (!Dubtrack.room || !song || song.songid !== dubsong) {
+    if (!song || song.songid !== dubsong) {
       dubCookie = false;
     }
     
@@ -39,12 +40,12 @@ export default class Autovote extends Component {
         !dubCookie) {
       this.advance_vote();
     }
-  
-    Dubtrack.Events.bind("realtime:room_playlist-update", this.voteCheck);
+    
+    dtproxy.onPlaylistUpdate(this.voteCheck);
   }
   
   turnOff = (e) => {
-    Dubtrack.Events.unbind("realtime:room_playlist-update", this.voteCheck);
+    dtproxy.offPlaylistUpdate(this.voteCheck);
   }
 
 

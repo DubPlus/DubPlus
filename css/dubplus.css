@@ -10,7 +10,8 @@
   position: relative;
   display: inline-block;
   vertical-align: bottom;
-  margin-left: 1rem; }
+  margin-left: 1rem;
+  font-size: small; }
 
 .dubplus-icon-spinning .dubplus-icon img {
   -webkit-animation-name: spin;

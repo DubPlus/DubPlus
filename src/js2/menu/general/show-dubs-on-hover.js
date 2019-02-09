@@ -128,7 +128,7 @@ export default class ShowDubsOnHover extends Component {
    */
   handleReset() {
     // get the current active dubs in the room via api
-    const dubsURL = `https://api.dubtrack.fm/room/${dtproxy.getRoomId}/playlist/active/dubs`;
+    const dubsURL = `https://api.dubtrack.fm/room/${dtproxy.getRoomId()}/playlist/active/dubs`;
 
     const roomDubs = getJSON(dubsURL);
 
@@ -218,6 +218,8 @@ export default class ShowDubsOnHover extends Component {
           }
         });
       }
+    }).catch(function(err){
+      console.error(err);
     });
   };
 

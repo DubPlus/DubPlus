@@ -2,6 +2,7 @@ import {h, Component} from 'preact';
 import {MenuSwitch} from '@/components/menuItems.js';
 import chatReplace from '@/utils/emotes/chat-replace.js';
 import bttvEmotes from '@/utils/emotes/bttv.js';
+import dtproxy from "@/utils/DTProxy.js";
 
 /**********************************************************************
  * handles replacing twitch emotes in the chat box with the images
@@ -24,13 +25,13 @@ export default class Emotes extends Component {
   begin() {
     document.body.classList.remove('dubplus-icon-spinning');
     // when first turning it on, it replaces ALL of the emotes in chat history
-    chatReplace(document.querySelector('.chat-main'));
+    chatReplace(dtproxy.chatList());
     // then it sets up replacing emotes on new chat messages
-    Dubtrack.Events.bind("realtime:chat-message", chatReplace);
+    dtproxy.onChatMessage(chatReplace);
   }
   
   turnOff = (e) => {
-    Dubtrack.Events.unbind("realtime:chat-message", chatReplace);
+    dtproxy.offChatMessage(chatReplace);
   }
 
 

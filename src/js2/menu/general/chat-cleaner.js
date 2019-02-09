@@ -1,13 +1,14 @@
 import { h, Component } from "preact";
 import { MenuSwitch, MenuPencil } from "@/components/menuItems.js";
 import settings from "@/utils/UserSettings.js";
+import dtproxy from "@/utils/DTProxy.js";
 
 /**
  * Menu item for ChatCleaner
  */
 export default class ChatCleaner extends Component {
   chatCleanerCheck = e => {
-    let totalChats = Array.from(document.querySelectorAll("ul.chat-main > li"));
+    let totalChats = Array.from(dtproxy.chatList().children);
     let max = parseInt(settings.stored.custom.chat_cleaner, 10);
 
     if (
@@ -25,6 +26,7 @@ export default class ChatCleaner extends Component {
       totalChats.splice(0, min).forEach(function(li) {
         parentUL.removeChild(li);
       });
+      totalChats[totalChats.length - 1].scrollIntoView(false);
     }
   };
 
@@ -35,11 +37,11 @@ export default class ChatCleaner extends Component {
   };
 
   turnOn = () => {
-    Dubtrack.Events.bind("realtime:chat-message", this.chatCleanerCheck);
+    dtproxy.onChatMessage(this.chatCleanerCheck);
   };
 
   turnOff = () => {
-    Dubtrack.Events.unbind("realtime:chat-message", this.chatCleanerCheck);
+    dtproxy.offChatMessage(this.chatCleanerCheck);
   };
 
   render() {

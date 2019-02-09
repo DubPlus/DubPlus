@@ -2,6 +2,7 @@ import { h, Component } from "preact";
 import { MenuSwitch } from "@/components/menuItems.js";
 import { notifyCheckPermission, showNotification } from "@/utils/notify.js";
 import Modal from "@/components/modal";
+import dtproxy from "@/utils/DTProxy.js";
 
 const statuses = {
   denyDismiss: {
@@ -24,7 +25,7 @@ export default class PMNotifications extends Component {
   };
 
   notify(e) {
-    var userid = Dubtrack.session.get("_id");
+    var userid = dtproxy.getSessionId();
     if (userid === e.userid) {
       return;
     }
@@ -44,7 +45,7 @@ export default class PMNotifications extends Component {
   turnOn = () => {
     notifyCheckPermission((status, reason) => {
       if (status === true) {
-        Dubtrack.Events.bind("realtime:new-message", this.notify);
+        dtproxy.onNewPM(this.notify);
       } else {
         // call MenuSwitch's switchOff with noTrack=true argument
         this.switchRef.switchOff(true);
@@ -62,7 +63,7 @@ export default class PMNotifications extends Component {
   };
 
   turnOff = () => {
-    Dubtrack.Events.unbind("realtime:new-message", this.notify);
+    dtproxy.offNewPM(this.notify);
   };
 
   render(props, state) {

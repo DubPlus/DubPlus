@@ -883,6 +883,389 @@ var DubPlus = (function () {
     }
   }
 
+  /**
+   * Takes a string  representation of a variable or object and checks if it's
+   * definied starting at provided scope or default to global window scope.
+   * @param  {string} dottedString  the item you are looking for
+   * @param  {var}    startingScope where to start looking
+   * @return {boolean}              if it is defined or not
+   */
+  function deepCheck(dottedString, startingScope) {
+    var _vars = dottedString.split('.');
+
+    var len = _vars.length;
+    var depth = startingScope || window;
+
+    for (var i = 0; i < len; i++) {
+      if (typeof depth[_vars[i]] === 'undefined') {
+        return false;
+      }
+
+      depth = depth[_vars[i]];
+    }
+
+    return true;
+  }
+
+  function arrayDeepCheck(arr, startingScope) {
+    var len = arr.length;
+    var scope = startingScope || window;
+
+    for (var i = 0; i < len; i++) {
+      if (!deepCheck(arr[i], scope)) {
+        console.log(arr[i], 'is not found yet');
+        return false;
+      }
+    }
+
+    return true;
+  }
+  /**
+   * pings for the existence of var/function for # seconds until it's defined
+   * runs callback once found and stops pinging
+   * @param {string|array} waitingFor          what you are waiting for
+   * @param {object}       options             optional options to pass
+   *                       options.interval    how often to ping
+   *                       options.seconds     how long to ping for
+   *                       options.isNode      switches to checking if node exists
+   *                       
+   * @return {object}                    2 functions:
+   *                  .then(fn)          will run fn only when item successfully found.  This also starts the ping process
+   *                  .fail(fn)          will run fn only when is never found in the time given
+   */
+
+
+  function WaitFor(waitingFor, options) {
+    if (typeof waitingFor !== "string" && !Array.isArray(waitingFor)) {
+      console.warn('WaitFor: invalid first argument');
+      return;
+    }
+
+    var defaults = {
+      interval: 500,
+      // every XX ms we check to see if waitingFor is defined
+      seconds: 15,
+      // how many total seconds we wish to continue pinging
+      isNode: false
+    };
+    var opts = Object.assign({}, defaults, options);
+    var checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
+
+    if (opts.isNode) {
+      checkFunc = function checkFunc(selector) {
+        return typeof document.querySelector(selector) !== null;
+      };
+    }
+
+    var tryCount = 0;
+    var tryLimit = opts.seconds * 1000 / opts.interval; // how many intervals
+
+    return new Promise(function (resolve, reject) {
+      var check = function check() {
+        tryCount++;
+
+        var _test = checkFunc(waitingFor);
+
+        if (_test) {
+          resolve();
+          return;
+        }
+
+        if (tryCount < tryLimit) {
+          window.setTimeout(check, opts.interval);
+          return;
+        } // passed our limit, stop checking
+
+
+        reject();
+      };
+
+      window.setTimeout(check, opts.interval);
+    });
+  }
+
+  var DTProxy =
+  /*#__PURE__*/
+  function () {
+    function DTProxy() {
+      _classCallCheck(this, DTProxy);
+    }
+
+    _createClass(DTProxy, [{
+      key: "loadCheck",
+      value: function loadCheck() {
+        var checkList = ["Dubtrack.session.id", "Dubtrack.room.chat", "Dubtrack.Events", "Dubtrack.room.player", "Dubtrack.helpers.cookie", "Dubtrack.room.model", "Dubtrack.room.users"];
+        return new WaitFor(checkList, {
+          seconds: 120
+        });
+      }
+    }, {
+      key: "getSessionId",
+      value: function getSessionId() {
+        return Dubtrack.session.id;
+      }
+      /**
+       * get the current logged in user name
+       */
+
+    }, {
+      key: "getUserName",
+      value: function getUserName() {
+        return Dubtrack.session.get("username");
+      }
+    }, {
+      key: "getRoomUrl",
+      value: function getRoomUrl() {
+        return Dubtrack.room.model.get("roomUrl");
+      }
+    }, {
+      key: "getRoomId",
+      value: function getRoomId() {
+        return Dubtrack.room.model.id;
+      }
+    }, {
+      key: "setVolume",
+      value: function setVolume(vol) {
+        Dubtrack.room.player.setVolume(vol);
+        Dubtrack.room.player.updateVolumeBar();
+      }
+    }, {
+      key: "getVolume",
+      value: function getVolume() {
+        return Dubtrack.playerController.volume;
+      }
+    }, {
+      key: "isMuted",
+      value: function isMuted() {
+        return Dubtrack.room.player.muted_player;
+      }
+    }, {
+      key: "mutePlayer",
+      value: function mutePlayer() {
+        Dubtrack.room.player.mutePlayer();
+      }
+    }, {
+      key: "getChatSoundUrl",
+      value: function getChatSoundUrl() {
+        return Dubtrack.room.chat.mentionChatSound.url;
+      }
+    }, {
+      key: "setChatSoundUrl",
+      value: function setChatSoundUrl(url) {
+        Dubtrack.room.chat.mentionChatSound.url = url;
+      }
+    }, {
+      key: "playChatSound",
+      value: function playChatSound() {
+        Dubtrack.room.chat.mentionChatSound.play();
+      }
+    }, {
+      key: "sendChatMessage",
+      value: function sendChatMessage() {
+        Dubtrack.room.chat.sendMessage();
+      }
+    }, {
+      key: "modCheck",
+      value: function modCheck() {
+        var userid = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Dubtrack.session.id;
+        return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
+      }
+    }, {
+      key: "displayUserGrab",
+      value: function displayUserGrab() {
+        return Dubtrack.room.model.get("displayUserGrab");
+      }
+    }, {
+      key: "getSongName",
+      value: function getSongName() {
+        return Dubtrack.room.player.activeSong.attributes.songInfo.name;
+      }
+      /**
+       * Get the Dubtrack ID for current song.
+       */
+
+    }, {
+      key: "getDubSong",
+      value: function getDubSong() {
+        return Dubtrack.helpers.cookie.get("dub-song");
+      }
+      /**
+       * Get song data for the current song
+       */
+
+    }, {
+      key: "getActiveSong",
+      value: function getActiveSong() {
+        return Dubtrack.room.player.activeSong.get("song");
+      }
+      /**
+       * returns wether user has "updub" or "downdub" current song
+       */
+
+    }, {
+      key: "getVoteType",
+      value: function getVoteType() {
+        return Dubtrack.helpers.cookie.get("dub-" + Dubtrack.room.model.id);
+      }
+      /**
+       *
+       */
+
+    }, {
+      key: "getCurrentDJ",
+      value: function getCurrentDJ() {
+        return Dubtrack.room.users.collection.findWhere({
+          userid: Dubtrack.room.player.activeSong.attributes.song.userid
+        }).attributes._user.username;
+      }
+    }, {
+      key: "getUserInfo",
+      value: function getUserInfo(userid) {
+        return Dubtrack.room.users.collection.findWhere({
+          userid: userid
+        });
+      }
+      /******************************************************************
+       * Dubtrack Events
+       */
+
+      /**
+       * When the room's current song changes and a new song comes on
+       * @param {function} cb callback function to bind to playlist-update
+       */
+
+    }, {
+      key: "onPlaylistUpdate",
+      value: function onPlaylistUpdate(cb) {
+        Dubtrack.Events.bind("realtime:room_playlist-update", cb);
+      }
+    }, {
+      key: "offPlaylistUpdate",
+      value: function offPlaylistUpdate(cb) {
+        Dubtrack.Events.unbind("realtime:room_playlist-update", cb);
+      }
+      /**
+       * When a user up/down votes (aka dub) a song
+       */
+
+    }, {
+      key: "onSongVote",
+      value: function onSongVote(cb) {
+        Dubtrack.Events.bind("realtime:room_playlist-dub", cb);
+      }
+    }, {
+      key: "offSongVote",
+      value: function offSongVote(cb) {
+        Dubtrack.Events.unbind("realtime:room_playlist-dub", cb);
+      }
+      /**
+       * When a new chat message comes in
+       */
+
+    }, {
+      key: "onChatMessage",
+      value: function onChatMessage(cb) {
+        Dubtrack.Events.bind("realtime:chat-message", cb);
+      }
+    }, {
+      key: "offChatMessage",
+      value: function offChatMessage(cb) {
+        Dubtrack.Events.unbind("realtime:chat-message", cb);
+      }
+      /**
+       * When any user in the room grabs a song
+       */
+
+    }, {
+      key: "onSongGrab",
+      value: function onSongGrab(cb) {
+        Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", cb);
+      }
+    }, {
+      key: "offSongGrab",
+      value: function offSongGrab(cb) {
+        Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", cb);
+      }
+    }, {
+      key: "onUserLeave",
+      value: function onUserLeave(cb) {
+        Dubtrack.Events.bind("realtime:user-leave", cb);
+      }
+    }, {
+      key: "offUserLeave",
+      value: function offUserLeave(cb) {
+        Dubtrack.Events.unbind("realtime:user-leave", cb);
+      }
+    }, {
+      key: "onNewPM",
+      value: function onNewPM(cb) {
+        Dubtrack.Events.bind("realtime:new-message", cb);
+      }
+    }, {
+      key: "offNewPM",
+      value: function offNewPM(cb) {
+        Dubtrack.Events.unbind("realtime:new-message", cb);
+      }
+      /******************************************************************
+       * Functions that depend on, or return, DOM elements
+       */
+
+    }, {
+      key: "chatInput",
+      value: function chatInput() {
+        return document.getElementById("chat-txt-message");
+      }
+    }, {
+      key: "chatList",
+      value: function chatList() {
+        return document.querySelector("ul.chat-main");
+      }
+      /**
+       * Get the current minutes remaining of the song playing
+       */
+
+    }, {
+      key: "getRemainingTime",
+      value: function getRemainingTime() {
+        return parseInt(document.querySelector("#player-controller .currentTime span.min").textContent);
+      } // booth duration?
+
+    }, {
+      key: "getQueuePosition",
+      value: function getQueuePosition() {
+        return parseInt(this.getQueuePositionElem().textContent);
+      } // booth duration?
+
+    }, {
+      key: "getQueuePositionElem",
+      value: function getQueuePositionElem() {
+        return document.querySelector(".queue-position");
+      }
+    }, {
+      key: "getPMmsg",
+      value: function getPMmsg(messageid) {
+        return document.querySelector(".message-item[data-messageid=\"".concat(messageid, "\"]"));
+      }
+      /*
+        document.querySelector('.player_sharing')
+        document.querySelector(".chat-text-box-icons")
+        document.querySelector(".header-right-navigation")
+        document.querySelector('.backstretch-item img');
+        document.querySelector(".pusher-chat-widget-input");
+        document.querySelector('.dubup');
+        document.querySelector('.dubdown');
+        document.querySelector(".add-to-playlist-button")
+        document.querySelector(".user-messages")
+        document.querySelector("#room-main-player-container");
+       */
+
+    }]);
+
+    return DTProxy;
+  }();
+
+  var proxy = new DTProxy();
+
   /*global Dubtrack*/
 
   var eventUtils = {
@@ -893,7 +1276,7 @@ var DubPlus = (function () {
   var eventSongAdvance = function eventSongAdvance(e) {
     if (e.startTime < 2) {
       if (eventUtils.snoozed) {
-        Dubtrack.room.player.setVolume(eventUtils.currentVol);
+        proxy.setVolume(eventUtils.currentVol);
         eventUtils.snoozed = false;
       }
 
@@ -902,34 +1285,33 @@ var DubPlus = (function () {
   };
 
   var snooze = function snooze() {
-    if (!eventUtils.snoozed && !Dubtrack.room.player.muted_player && Dubtrack.playerController.volume > 2) {
-      eventUtils.currentVol = Dubtrack.playerController.volume;
-      Dubtrack.room.player.mutePlayer();
+    if (!eventUtils.snoozed && !proxy.isMuted() && proxy.getVolume() > 2) {
+      eventUtils.currentVol = proxy.getVolume();
+      proxy.mutePlayer();
       eventUtils.snoozed = true;
-      Dubtrack.Events.bind("realtime:room_playlist-update", eventSongAdvance);
+      proxy.onPlaylistUpdate(eventSongAdvance);
     } else if (eventUtils.snoozed) {
-      Dubtrack.room.player.setVolume(eventUtils.currentVol);
-      Dubtrack.room.player.updateVolumeBar();
+      proxy.setVolume(eventUtils.currentVol);
       eventUtils.snoozed = false;
     }
   };
 
   var css = {
-    position: 'absolute',
-    font: '1rem/1.5 proxima-nova,sans-serif',
-    display: 'block',
-    left: '-33px',
-    cursor: 'pointer',
-    borderRadius: '1.5rem',
-    padding: '8px 16px',
-    background: '#fff',
-    fontWeight: '700',
-    fontSize: '13.6px',
-    textTransform: 'uppercase',
-    color: '#000',
-    opacity: '0.8',
-    textAlign: 'center',
-    zIndex: '9'
+    position: "absolute",
+    font: "1rem/1.5 proxima-nova,sans-serif",
+    display: "block",
+    left: "-33px",
+    cursor: "pointer",
+    borderRadius: "1.5rem",
+    padding: "8px 16px",
+    background: "#fff",
+    fontWeight: "700",
+    fontSize: "13.6px",
+    textTransform: "uppercase",
+    color: "#000",
+    opacity: "0.8",
+    textAlign: "center",
+    zIndex: "9"
   };
 
   var Snooze =
@@ -988,7 +1370,7 @@ var DubPlus = (function () {
   }(Component);
 
   function snooze$1 () {
-    render(h(Snooze, null), document.querySelector('.player_sharing'));
+    render(h(Snooze, null), document.querySelector(".player_sharing"));
   }
 
   var css$1 = {
@@ -1079,3707 +1461,6 @@ var DubPlus = (function () {
   function eta () {
     render(h(ETA, null), document.querySelector('.player_sharing'));
   }
-
-  var emoji = {
-    template: function template(id) {
-      id = id.replace(/^:|:$/g, "");
-      return emojify.defaultConfig.img_dir + "/" + encodeURI(id) + ".png";
-    },
-    find: function find(symbol) {
-      var _this = this;
-
-      var found = emojify.emojiNames.filter(function (e) {
-        return e.indexOf(symbol) === 0;
-      });
-      return found.map(function (key) {
-        return {
-          type: "emojify",
-          src: _this.template(key),
-          name: key
-        };
-      });
-    }
-  };
-
-  var emojiNames = {
-    bowtie: {
-      x: 1099,
-      y: 896
-    },
-    smile: {
-      x: 960,
-      y: 1291
-    },
-    laughing: {
-      x: 0,
-      y: 75
-    },
-    blush: {
-      x: 64,
-      y: 75
-    },
-    smiley: {
-      x: 139,
-      y: 0
-    },
-    relaxed: {
-      x: 139,
-      y: 64
-    },
-    smirk: {
-      x: 0,
-      y: 139
-    },
-    heart_eyes: {
-      x: 64,
-      y: 139
-    },
-    kissing_heart: {
-      x: 128,
-      y: 139
-    },
-    kissing_closed_eyes: {
-      x: 203,
-      y: 0
-    },
-    flushed: {
-      x: 203,
-      y: 64
-    },
-    relieved: {
-      x: 203,
-      y: 128
-    },
-    satisfied: {
-      x: 0,
-      y: 203
-    },
-    grin: {
-      x: 64,
-      y: 203
-    },
-    wink: {
-      x: 128,
-      y: 203
-    },
-    stuck_out_tongue_winking_eye: {
-      x: 192,
-      y: 203
-    },
-    stuck_out_tongue_closed_eyes: {
-      x: 267,
-      y: 0
-    },
-    grinning: {
-      x: 267,
-      y: 64
-    },
-    kissing: {
-      x: 267,
-      y: 128
-    },
-    kissing_smiling_eyes: {
-      x: 267,
-      y: 192
-    },
-    stuck_out_tongue: {
-      x: 0,
-      y: 267
-    },
-    sleeping: {
-      x: 64,
-      y: 267
-    },
-    worried: {
-      x: 128,
-      y: 267
-    },
-    frowning: {
-      x: 192,
-      y: 267
-    },
-    anguished: {
-      x: 256,
-      y: 267
-    },
-    open_mouth: {
-      x: 331,
-      y: 0
-    },
-    grimacing: {
-      x: 331,
-      y: 64
-    },
-    confused: {
-      x: 331,
-      y: 128
-    },
-    hushed: {
-      x: 331,
-      y: 192
-    },
-    expressionless: {
-      x: 331,
-      y: 256
-    },
-    unamused: {
-      x: 0,
-      y: 331
-    },
-    sweat_smile: {
-      x: 64,
-      y: 331
-    },
-    sweat: {
-      x: 128,
-      y: 331
-    },
-    disappointed_relieved: {
-      x: 192,
-      y: 331
-    },
-    weary: {
-      x: 256,
-      y: 331
-    },
-    pensive: {
-      x: 320,
-      y: 331
-    },
-    disappointed: {
-      x: 395,
-      y: 0
-    },
-    confounded: {
-      x: 395,
-      y: 64
-    },
-    fearful: {
-      x: 395,
-      y: 128
-    },
-    cold_sweat: {
-      x: 395,
-      y: 192
-    },
-    persevere: {
-      x: 395,
-      y: 256
-    },
-    cry: {
-      x: 395,
-      y: 320
-    },
-    sob: {
-      x: 0,
-      y: 395
-    },
-    joy: {
-      x: 64,
-      y: 395
-    },
-    astonished: {
-      x: 128,
-      y: 395
-    },
-    scream: {
-      x: 192,
-      y: 395
-    },
-    neckbeard: {
-      x: 256,
-      y: 395
-    },
-    tired_face: {
-      x: 320,
-      y: 395
-    },
-    angry: {
-      x: 384,
-      y: 395
-    },
-    rage: {
-      x: 459,
-      y: 0
-    },
-    triumph: {
-      x: 459,
-      y: 64
-    },
-    sleepy: {
-      x: 459,
-      y: 128
-    },
-    yum: {
-      x: 459,
-      y: 192
-    },
-    mask: {
-      x: 459,
-      y: 256
-    },
-    sunglasses: {
-      x: 459,
-      y: 320
-    },
-    dizzy_face: {
-      x: 459,
-      y: 384
-    },
-    imp: {
-      x: 0,
-      y: 459
-    },
-    smiling_imp: {
-      x: 64,
-      y: 459
-    },
-    neutral_face: {
-      x: 128,
-      y: 459
-    },
-    no_mouth: {
-      x: 192,
-      y: 459
-    },
-    innocent: {
-      x: 256,
-      y: 459
-    },
-    alien: {
-      x: 320,
-      y: 459
-    },
-    yellow_heart: {
-      x: 384,
-      y: 459
-    },
-    blue_heart: {
-      x: 448,
-      y: 459
-    },
-    purple_heart: {
-      x: 523,
-      y: 0
-    },
-    heart: {
-      x: 523,
-      y: 64
-    },
-    green_heart: {
-      x: 523,
-      y: 128
-    },
-    broken_heart: {
-      x: 523,
-      y: 192
-    },
-    heartbeat: {
-      x: 523,
-      y: 256
-    },
-    heartpulse: {
-      x: 523,
-      y: 320
-    },
-    two_hearts: {
-      x: 523,
-      y: 384
-    },
-    revolving_hearts: {
-      x: 523,
-      y: 448
-    },
-    cupid: {
-      x: 0,
-      y: 523
-    },
-    sparkling_heart: {
-      x: 64,
-      y: 523
-    },
-    sparkles: {
-      x: 128,
-      y: 523
-    },
-    star: {
-      x: 192,
-      y: 523
-    },
-    star2: {
-      x: 256,
-      y: 523
-    },
-    dizzy: {
-      x: 320,
-      y: 523
-    },
-    boom: {
-      x: 384,
-      y: 523
-    },
-    collision: {
-      x: 448,
-      y: 523
-    },
-    anger: {
-      x: 512,
-      y: 523
-    },
-    exclamation: {
-      x: 587,
-      y: 0
-    },
-    question: {
-      x: 587,
-      y: 64
-    },
-    grey_exclamation: {
-      x: 587,
-      y: 128
-    },
-    grey_question: {
-      x: 587,
-      y: 192
-    },
-    zzz: {
-      x: 587,
-      y: 256
-    },
-    dash: {
-      x: 587,
-      y: 320
-    },
-    sweat_drops: {
-      x: 587,
-      y: 384
-    },
-    notes: {
-      x: 587,
-      y: 448
-    },
-    musical_note: {
-      x: 587,
-      y: 512
-    },
-    fire: {
-      x: 0,
-      y: 587
-    },
-    poop: {
-      x: 64,
-      y: 587
-    },
-    thumbsup: {
-      x: 128,
-      y: 587
-    },
-    thumbsdown: {
-      x: 192,
-      y: 587
-    },
-    ok_hand: {
-      x: 256,
-      y: 587
-    },
-    punch: {
-      x: 320,
-      y: 587
-    },
-    facepunch: {
-      x: 384,
-      y: 587
-    },
-    fist: {
-      x: 448,
-      y: 587
-    },
-    v: {
-      x: 512,
-      y: 587
-    },
-    wave: {
-      x: 576,
-      y: 587
-    },
-    hand: {
-      x: 651,
-      y: 0
-    },
-    raised_hand: {
-      x: 651,
-      y: 64
-    },
-    open_hands: {
-      x: 651,
-      y: 128
-    },
-    point_up: {
-      x: 651,
-      y: 192
-    },
-    point_down: {
-      x: 651,
-      y: 256
-    },
-    point_left: {
-      x: 651,
-      y: 320
-    },
-    point_right: {
-      x: 651,
-      y: 384
-    },
-    raised_hands: {
-      x: 651,
-      y: 448
-    },
-    pray: {
-      x: 651,
-      y: 512
-    },
-    point_up_2: {
-      x: 651,
-      y: 576
-    },
-    clap: {
-      x: 0,
-      y: 651
-    },
-    muscle: {
-      x: 64,
-      y: 651
-    },
-    metal: {
-      x: 128,
-      y: 651
-    },
-    fu: {
-      x: 192,
-      y: 651
-    },
-    runner: {
-      x: 256,
-      y: 651
-    },
-    running: {
-      x: 320,
-      y: 651
-    },
-    couple: {
-      x: 384,
-      y: 651
-    },
-    family: {
-      x: 448,
-      y: 651
-    },
-    two_men_holding_hands: {
-      x: 512,
-      y: 651
-    },
-    two_women_holding_hands: {
-      x: 576,
-      y: 651
-    },
-    dancer: {
-      x: 640,
-      y: 651
-    },
-    dancers: {
-      x: 715,
-      y: 0
-    },
-    ok_woman: {
-      x: 715,
-      y: 64
-    },
-    no_good: {
-      x: 715,
-      y: 128
-    },
-    information_desk_person: {
-      x: 715,
-      y: 192
-    },
-    raising_hand: {
-      x: 715,
-      y: 256
-    },
-    bride_with_veil: {
-      x: 715,
-      y: 320
-    },
-    person_with_pouting_face: {
-      x: 715,
-      y: 384
-    },
-    person_frowning: {
-      x: 715,
-      y: 448
-    },
-    bow: {
-      x: 715,
-      y: 512
-    },
-    couplekiss: {
-      x: 715,
-      y: 576
-    },
-    couple_with_heart: {
-      x: 715,
-      y: 640
-    },
-    massage: {
-      x: 0,
-      y: 715
-    },
-    haircut: {
-      x: 64,
-      y: 715
-    },
-    nail_care: {
-      x: 128,
-      y: 715
-    },
-    boy: {
-      x: 192,
-      y: 715
-    },
-    girl: {
-      x: 256,
-      y: 715
-    },
-    woman: {
-      x: 320,
-      y: 715
-    },
-    man: {
-      x: 384,
-      y: 715
-    },
-    baby: {
-      x: 448,
-      y: 715
-    },
-    older_woman: {
-      x: 512,
-      y: 715
-    },
-    older_man: {
-      x: 576,
-      y: 715
-    },
-    person_with_blond_hair: {
-      x: 640,
-      y: 715
-    },
-    man_with_gua_pi_mao: {
-      x: 704,
-      y: 715
-    },
-    man_with_turban: {
-      x: 779,
-      y: 0
-    },
-    construction_worker: {
-      x: 779,
-      y: 64
-    },
-    cop: {
-      x: 779,
-      y: 128
-    },
-    angel: {
-      x: 779,
-      y: 192
-    },
-    princess: {
-      x: 779,
-      y: 256
-    },
-    smiley_cat: {
-      x: 779,
-      y: 320
-    },
-    smile_cat: {
-      x: 779,
-      y: 384
-    },
-    heart_eyes_cat: {
-      x: 779,
-      y: 448
-    },
-    kissing_cat: {
-      x: 779,
-      y: 512
-    },
-    smirk_cat: {
-      x: 779,
-      y: 576
-    },
-    scream_cat: {
-      x: 779,
-      y: 640
-    },
-    crying_cat_face: {
-      x: 779,
-      y: 704
-    },
-    joy_cat: {
-      x: 0,
-      y: 779
-    },
-    pouting_cat: {
-      x: 64,
-      y: 779
-    },
-    japanese_ogre: {
-      x: 128,
-      y: 779
-    },
-    japanese_goblin: {
-      x: 192,
-      y: 779
-    },
-    see_no_evil: {
-      x: 256,
-      y: 779
-    },
-    hear_no_evil: {
-      x: 320,
-      y: 779
-    },
-    speak_no_evil: {
-      x: 384,
-      y: 779
-    },
-    guardsman: {
-      x: 448,
-      y: 779
-    },
-    skull: {
-      x: 512,
-      y: 779
-    },
-    feet: {
-      x: 576,
-      y: 779
-    },
-    lips: {
-      x: 640,
-      y: 779
-    },
-    kiss: {
-      x: 704,
-      y: 779
-    },
-    droplet: {
-      x: 768,
-      y: 779
-    },
-    ear: {
-      x: 843,
-      y: 0
-    },
-    eyes: {
-      x: 843,
-      y: 64
-    },
-    nose: {
-      x: 843,
-      y: 128
-    },
-    tongue: {
-      x: 843,
-      y: 192
-    },
-    love_letter: {
-      x: 843,
-      y: 256
-    },
-    bust_in_silhouette: {
-      x: 843,
-      y: 320
-    },
-    busts_in_silhouette: {
-      x: 843,
-      y: 384
-    },
-    speech_balloon: {
-      x: 843,
-      y: 448
-    },
-    thought_balloon: {
-      x: 843,
-      y: 512
-    },
-    feelsgood: {
-      x: 843,
-      y: 576
-    },
-    finnadie: {
-      x: 843,
-      y: 640
-    },
-    goberserk: {
-      x: 843,
-      y: 704
-    },
-    godmode: {
-      x: 843,
-      y: 768
-    },
-    hurtrealbad: {
-      x: 0,
-      y: 843
-    },
-    rage1: {
-      x: 64,
-      y: 843
-    },
-    rage2: {
-      x: 128,
-      y: 843
-    },
-    rage3: {
-      x: 192,
-      y: 843
-    },
-    rage4: {
-      x: 256,
-      y: 843
-    },
-    suspect: {
-      x: 320,
-      y: 843
-    },
-    trollface: {
-      x: 384,
-      y: 843
-    },
-    sunny: {
-      x: 448,
-      y: 843
-    },
-    umbrella: {
-      x: 512,
-      y: 843
-    },
-    cloud: {
-      x: 576,
-      y: 843
-    },
-    snowflake: {
-      x: 640,
-      y: 843
-    },
-    snowman: {
-      x: 704,
-      y: 843
-    },
-    zap: {
-      x: 768,
-      y: 843
-    },
-    cyclone: {
-      x: 832,
-      y: 843
-    },
-    foggy: {
-      x: 907,
-      y: 0
-    },
-    ocean: {
-      x: 907,
-      y: 64
-    },
-    cat: {
-      x: 907,
-      y: 128
-    },
-    dog: {
-      x: 907,
-      y: 192
-    },
-    mouse: {
-      x: 907,
-      y: 256
-    },
-    hamster: {
-      x: 907,
-      y: 320
-    },
-    rabbit: {
-      x: 907,
-      y: 384
-    },
-    wolf: {
-      x: 907,
-      y: 448
-    },
-    frog: {
-      x: 907,
-      y: 512
-    },
-    tiger: {
-      x: 907,
-      y: 576
-    },
-    koala: {
-      x: 907,
-      y: 640
-    },
-    bear: {
-      x: 907,
-      y: 704
-    },
-    pig: {
-      x: 907,
-      y: 768
-    },
-    pig_nose: {
-      x: 907,
-      y: 832
-    },
-    cow: {
-      x: 0,
-      y: 907
-    },
-    boar: {
-      x: 64,
-      y: 907
-    },
-    monkey_face: {
-      x: 128,
-      y: 907
-    },
-    monkey: {
-      x: 192,
-      y: 907
-    },
-    horse: {
-      x: 256,
-      y: 907
-    },
-    racehorse: {
-      x: 320,
-      y: 907
-    },
-    camel: {
-      x: 384,
-      y: 907
-    },
-    sheep: {
-      x: 448,
-      y: 907
-    },
-    elephant: {
-      x: 512,
-      y: 907
-    },
-    panda_face: {
-      x: 576,
-      y: 907
-    },
-    snake: {
-      x: 640,
-      y: 907
-    },
-    bird: {
-      x: 704,
-      y: 907
-    },
-    baby_chick: {
-      x: 768,
-      y: 907
-    },
-    hatched_chick: {
-      x: 832,
-      y: 907
-    },
-    hatching_chick: {
-      x: 896,
-      y: 907
-    },
-    chicken: {
-      x: 971,
-      y: 0
-    },
-    penguin: {
-      x: 971,
-      y: 64
-    },
-    turtle: {
-      x: 971,
-      y: 128
-    },
-    bug: {
-      x: 971,
-      y: 192
-    },
-    honeybee: {
-      x: 971,
-      y: 256
-    },
-    ant: {
-      x: 971,
-      y: 320
-    },
-    beetle: {
-      x: 971,
-      y: 384
-    },
-    snail: {
-      x: 971,
-      y: 448
-    },
-    octopus: {
-      x: 971,
-      y: 512
-    },
-    tropical_fish: {
-      x: 971,
-      y: 576
-    },
-    fish: {
-      x: 971,
-      y: 640
-    },
-    whale: {
-      x: 971,
-      y: 704
-    },
-    whale2: {
-      x: 971,
-      y: 768
-    },
-    dolphin: {
-      x: 971,
-      y: 832
-    },
-    cow2: {
-      x: 971,
-      y: 896
-    },
-    ram: {
-      x: 0,
-      y: 971
-    },
-    rat: {
-      x: 64,
-      y: 971
-    },
-    water_buffalo: {
-      x: 128,
-      y: 971
-    },
-    tiger2: {
-      x: 192,
-      y: 971
-    },
-    rabbit2: {
-      x: 256,
-      y: 971
-    },
-    dragon: {
-      x: 320,
-      y: 971
-    },
-    goat: {
-      x: 384,
-      y: 971
-    },
-    rooster: {
-      x: 448,
-      y: 971
-    },
-    dog2: {
-      x: 512,
-      y: 971
-    },
-    pig2: {
-      x: 576,
-      y: 971
-    },
-    mouse2: {
-      x: 640,
-      y: 971
-    },
-    ox: {
-      x: 704,
-      y: 971
-    },
-    dragon_face: {
-      x: 768,
-      y: 971
-    },
-    blowfish: {
-      x: 832,
-      y: 971
-    },
-    crocodile: {
-      x: 896,
-      y: 971
-    },
-    dromedary_camel: {
-      x: 960,
-      y: 971
-    },
-    leopard: {
-      x: 1035,
-      y: 0
-    },
-    cat2: {
-      x: 1035,
-      y: 64
-    },
-    poodle: {
-      x: 1035,
-      y: 128
-    },
-    paw_prints: {
-      x: 1035,
-      y: 192
-    },
-    bouquet: {
-      x: 1035,
-      y: 256
-    },
-    cherry_blossom: {
-      x: 1035,
-      y: 320
-    },
-    tulip: {
-      x: 1035,
-      y: 384
-    },
-    four_leaf_clover: {
-      x: 1035,
-      y: 448
-    },
-    rose: {
-      x: 1035,
-      y: 512
-    },
-    sunflower: {
-      x: 1035,
-      y: 576
-    },
-    hibiscus: {
-      x: 1035,
-      y: 640
-    },
-    maple_leaf: {
-      x: 1035,
-      y: 704
-    },
-    leaves: {
-      x: 1035,
-      y: 768
-    },
-    fallen_leaf: {
-      x: 1035,
-      y: 832
-    },
-    herb: {
-      x: 1035,
-      y: 896
-    },
-    mushroom: {
-      x: 1035,
-      y: 960
-    },
-    cactus: {
-      x: 0,
-      y: 1035
-    },
-    palm_tree: {
-      x: 64,
-      y: 1035
-    },
-    evergreen_tree: {
-      x: 128,
-      y: 1035
-    },
-    deciduous_tree: {
-      x: 192,
-      y: 1035
-    },
-    chestnut: {
-      x: 256,
-      y: 1035
-    },
-    seedling: {
-      x: 320,
-      y: 1035
-    },
-    blossom: {
-      x: 384,
-      y: 1035
-    },
-    ear_of_rice: {
-      x: 448,
-      y: 1035
-    },
-    shell: {
-      x: 512,
-      y: 1035
-    },
-    globe_with_meridians: {
-      x: 576,
-      y: 1035
-    },
-    sun_with_face: {
-      x: 640,
-      y: 1035
-    },
-    full_moon_with_face: {
-      x: 704,
-      y: 1035
-    },
-    new_moon_with_face: {
-      x: 768,
-      y: 1035
-    },
-    new_moon: {
-      x: 832,
-      y: 1035
-    },
-    waxing_crescent_moon: {
-      x: 896,
-      y: 1035
-    },
-    first_quarter_moon: {
-      x: 960,
-      y: 1035
-    },
-    waxing_gibbous_moon: {
-      x: 1024,
-      y: 1035
-    },
-    full_moon: {
-      x: 1099,
-      y: 0
-    },
-    waning_gibbous_moon: {
-      x: 1099,
-      y: 64
-    },
-    last_quarter_moon: {
-      x: 1099,
-      y: 128
-    },
-    waning_crescent_moon: {
-      x: 1099,
-      y: 192
-    },
-    last_quarter_moon_with_face: {
-      x: 1099,
-      y: 256
-    },
-    first_quarter_moon_with_face: {
-      x: 1099,
-      y: 320
-    },
-    crescent_moon: {
-      x: 1099,
-      y: 384
-    },
-    earth_africa: {
-      x: 1099,
-      y: 448
-    },
-    earth_americas: {
-      x: 1099,
-      y: 512
-    },
-    earth_asia: {
-      x: 1099,
-      y: 576
-    },
-    volcano: {
-      x: 1099,
-      y: 640
-    },
-    milky_way: {
-      x: 1099,
-      y: 704
-    },
-    partly_sunny: {
-      x: 1099,
-      y: 768
-    },
-    octocat: {
-      x: 1099,
-      y: 832
-    },
-    squirrel: {
-      x: 0,
-      y: 0,
-      width: 75,
-      height: 75
-    },
-    bamboo: {
-      x: 1099,
-      y: 960
-    },
-    gift_heart: {
-      x: 1099,
-      y: 1024
-    },
-    dolls: {
-      x: 0,
-      y: 1099
-    },
-    school_satchel: {
-      x: 64,
-      y: 1099
-    },
-    mortar_board: {
-      x: 128,
-      y: 1099
-    },
-    flags: {
-      x: 192,
-      y: 1099
-    },
-    fireworks: {
-      x: 256,
-      y: 1099
-    },
-    sparkler: {
-      x: 320,
-      y: 1099
-    },
-    wind_chime: {
-      x: 384,
-      y: 1099
-    },
-    rice_scene: {
-      x: 448,
-      y: 1099
-    },
-    jack_o_lantern: {
-      x: 512,
-      y: 1099
-    },
-    ghost: {
-      x: 576,
-      y: 1099
-    },
-    santa: {
-      x: 640,
-      y: 1099
-    },
-    christmas_tree: {
-      x: 704,
-      y: 1099
-    },
-    gift: {
-      x: 768,
-      y: 1099
-    },
-    bell: {
-      x: 832,
-      y: 1099
-    },
-    no_bell: {
-      x: 896,
-      y: 1099
-    },
-    tanabata_tree: {
-      x: 960,
-      y: 1099
-    },
-    tada: {
-      x: 1024,
-      y: 1099
-    },
-    confetti_ball: {
-      x: 1088,
-      y: 1099
-    },
-    balloon: {
-      x: 1163,
-      y: 0
-    },
-    crystal_ball: {
-      x: 1163,
-      y: 64
-    },
-    cd: {
-      x: 1163,
-      y: 128
-    },
-    dvd: {
-      x: 1163,
-      y: 192
-    },
-    floppy_disk: {
-      x: 1163,
-      y: 256
-    },
-    camera: {
-      x: 1163,
-      y: 320
-    },
-    video_camera: {
-      x: 1163,
-      y: 384
-    },
-    movie_camera: {
-      x: 1163,
-      y: 448
-    },
-    computer: {
-      x: 1163,
-      y: 512
-    },
-    tv: {
-      x: 1163,
-      y: 576
-    },
-    iphone: {
-      x: 1163,
-      y: 640
-    },
-    phone: {
-      x: 1163,
-      y: 704
-    },
-    telephone: {
-      x: 1163,
-      y: 768
-    },
-    telephone_receiver: {
-      x: 1163,
-      y: 832
-    },
-    pager: {
-      x: 1163,
-      y: 896
-    },
-    fax: {
-      x: 1163,
-      y: 960
-    },
-    minidisc: {
-      x: 1163,
-      y: 1024
-    },
-    vhs: {
-      x: 1163,
-      y: 1088
-    },
-    sound: {
-      x: 0,
-      y: 1163
-    },
-    speaker: {
-      x: 64,
-      y: 1163
-    },
-    mute: {
-      x: 128,
-      y: 1163
-    },
-    loudspeaker: {
-      x: 192,
-      y: 1163
-    },
-    mega: {
-      x: 256,
-      y: 1163
-    },
-    hourglass: {
-      x: 320,
-      y: 1163
-    },
-    hourglass_flowing_sand: {
-      x: 384,
-      y: 1163
-    },
-    alarm_clock: {
-      x: 448,
-      y: 1163
-    },
-    watch: {
-      x: 512,
-      y: 1163
-    },
-    radio: {
-      x: 576,
-      y: 1163
-    },
-    satellite: {
-      x: 640,
-      y: 1163
-    },
-    loop: {
-      x: 704,
-      y: 1163
-    },
-    mag: {
-      x: 768,
-      y: 1163
-    },
-    mag_right: {
-      x: 832,
-      y: 1163
-    },
-    unlock: {
-      x: 896,
-      y: 1163
-    },
-    lock: {
-      x: 960,
-      y: 1163
-    },
-    lock_with_ink_pen: {
-      x: 1024,
-      y: 1163
-    },
-    closed_lock_with_key: {
-      x: 1088,
-      y: 1163
-    },
-    key: {
-      x: 1152,
-      y: 1163
-    },
-    bulb: {
-      x: 1227,
-      y: 0
-    },
-    flashlight: {
-      x: 1227,
-      y: 64
-    },
-    high_brightness: {
-      x: 1227,
-      y: 128
-    },
-    low_brightness: {
-      x: 1227,
-      y: 192
-    },
-    electric_plug: {
-      x: 1227,
-      y: 256
-    },
-    battery: {
-      x: 1227,
-      y: 320
-    },
-    calling: {
-      x: 1227,
-      y: 384
-    },
-    email: {
-      x: 1227,
-      y: 448
-    },
-    mailbox: {
-      x: 1227,
-      y: 512
-    },
-    postbox: {
-      x: 1227,
-      y: 576
-    },
-    bath: {
-      x: 1227,
-      y: 640
-    },
-    bathtub: {
-      x: 1227,
-      y: 704
-    },
-    shower: {
-      x: 1227,
-      y: 768
-    },
-    toilet: {
-      x: 1227,
-      y: 832
-    },
-    wrench: {
-      x: 1227,
-      y: 896
-    },
-    nut_and_bolt: {
-      x: 1227,
-      y: 960
-    },
-    hammer: {
-      x: 1227,
-      y: 1024
-    },
-    seat: {
-      x: 1227,
-      y: 1088
-    },
-    moneybag: {
-      x: 1227,
-      y: 1152
-    },
-    yen: {
-      x: 0,
-      y: 1227
-    },
-    dollar: {
-      x: 64,
-      y: 1227
-    },
-    pound: {
-      x: 128,
-      y: 1227
-    },
-    euro: {
-      x: 192,
-      y: 1227
-    },
-    credit_card: {
-      x: 256,
-      y: 1227
-    },
-    money_with_wings: {
-      x: 320,
-      y: 1227
-    },
-    "e-mail": {
-      x: 384,
-      y: 1227
-    },
-    inbox_tray: {
-      x: 448,
-      y: 1227
-    },
-    outbox_tray: {
-      x: 512,
-      y: 1227
-    },
-    envelope: {
-      x: 576,
-      y: 1227
-    },
-    incoming_envelope: {
-      x: 640,
-      y: 1227
-    },
-    postal_horn: {
-      x: 704,
-      y: 1227
-    },
-    mailbox_closed: {
-      x: 768,
-      y: 1227
-    },
-    mailbox_with_mail: {
-      x: 832,
-      y: 1227
-    },
-    mailbox_with_no_mail: {
-      x: 896,
-      y: 1227
-    },
-    package: {
-      x: 960,
-      y: 1227
-    },
-    door: {
-      x: 1024,
-      y: 1227
-    },
-    smoking: {
-      x: 1088,
-      y: 1227
-    },
-    bomb: {
-      x: 1152,
-      y: 1227
-    },
-    gun: {
-      x: 1216,
-      y: 1227
-    },
-    hocho: {
-      x: 1291,
-      y: 0
-    },
-    pill: {
-      x: 1291,
-      y: 64
-    },
-    syringe: {
-      x: 1291,
-      y: 128
-    },
-    page_facing_up: {
-      x: 1291,
-      y: 192
-    },
-    page_with_curl: {
-      x: 1291,
-      y: 256
-    },
-    bookmark_tabs: {
-      x: 1291,
-      y: 320
-    },
-    bar_chart: {
-      x: 1291,
-      y: 384
-    },
-    chart_with_upwards_trend: {
-      x: 1291,
-      y: 448
-    },
-    chart_with_downwards_trend: {
-      x: 1291,
-      y: 512
-    },
-    scroll: {
-      x: 1291,
-      y: 576
-    },
-    clipboard: {
-      x: 1291,
-      y: 640
-    },
-    calendar: {
-      x: 1291,
-      y: 704
-    },
-    date: {
-      x: 1291,
-      y: 768
-    },
-    card_index: {
-      x: 1291,
-      y: 832
-    },
-    file_folder: {
-      x: 1291,
-      y: 896
-    },
-    open_file_folder: {
-      x: 1291,
-      y: 960
-    },
-    scissors: {
-      x: 1291,
-      y: 1024
-    },
-    pushpin: {
-      x: 1291,
-      y: 1088
-    },
-    paperclip: {
-      x: 1291,
-      y: 1152
-    },
-    black_nib: {
-      x: 1291,
-      y: 1216
-    },
-    pencil2: {
-      x: 0,
-      y: 1291
-    },
-    straight_ruler: {
-      x: 64,
-      y: 1291
-    },
-    triangular_ruler: {
-      x: 128,
-      y: 1291
-    },
-    closed_book: {
-      x: 192,
-      y: 1291
-    },
-    green_book: {
-      x: 256,
-      y: 1291
-    },
-    blue_book: {
-      x: 320,
-      y: 1291
-    },
-    orange_book: {
-      x: 384,
-      y: 1291
-    },
-    notebook: {
-      x: 448,
-      y: 1291
-    },
-    notebook_with_decorative_cover: {
-      x: 512,
-      y: 1291
-    },
-    ledger: {
-      x: 576,
-      y: 1291
-    },
-    books: {
-      x: 640,
-      y: 1291
-    },
-    bookmark: {
-      x: 704,
-      y: 1291
-    },
-    name_badge: {
-      x: 768,
-      y: 1291
-    },
-    microscope: {
-      x: 832,
-      y: 1291
-    },
-    telescope: {
-      x: 896,
-      y: 1291
-    },
-    newspaper: {
-      x: 75,
-      y: 0
-    },
-    football: {
-      x: 1024,
-      y: 1291
-    },
-    basketball: {
-      x: 1088,
-      y: 1291
-    },
-    soccer: {
-      x: 1152,
-      y: 1291
-    },
-    baseball: {
-      x: 1216,
-      y: 1291
-    },
-    tennis: {
-      x: 1280,
-      y: 1291
-    },
-    "8ball": {
-      x: 1355,
-      y: 0
-    },
-    rugby_football: {
-      x: 1355,
-      y: 64
-    },
-    bowling: {
-      x: 1355,
-      y: 128
-    },
-    golf: {
-      x: 1355,
-      y: 192
-    },
-    mountain_bicyclist: {
-      x: 1355,
-      y: 256
-    },
-    bicyclist: {
-      x: 1355,
-      y: 320
-    },
-    horse_racing: {
-      x: 1355,
-      y: 384
-    },
-    snowboarder: {
-      x: 1355,
-      y: 448
-    },
-    swimmer: {
-      x: 1355,
-      y: 512
-    },
-    surfer: {
-      x: 1355,
-      y: 576
-    },
-    ski: {
-      x: 1355,
-      y: 640
-    },
-    spades: {
-      x: 1355,
-      y: 704
-    },
-    hearts: {
-      x: 1355,
-      y: 768
-    },
-    clubs: {
-      x: 1355,
-      y: 832
-    },
-    diamonds: {
-      x: 1355,
-      y: 896
-    },
-    gem: {
-      x: 1355,
-      y: 960
-    },
-    ring: {
-      x: 1355,
-      y: 1024
-    },
-    trophy: {
-      x: 1355,
-      y: 1088
-    },
-    musical_score: {
-      x: 1355,
-      y: 1152
-    },
-    musical_keyboard: {
-      x: 1355,
-      y: 1216
-    },
-    violin: {
-      x: 1355,
-      y: 1280
-    },
-    space_invader: {
-      x: 0,
-      y: 1355
-    },
-    video_game: {
-      x: 64,
-      y: 1355
-    },
-    black_joker: {
-      x: 128,
-      y: 1355
-    },
-    flower_playing_cards: {
-      x: 192,
-      y: 1355
-    },
-    game_die: {
-      x: 256,
-      y: 1355
-    },
-    dart: {
-      x: 320,
-      y: 1355
-    },
-    mahjong: {
-      x: 384,
-      y: 1355
-    },
-    clapper: {
-      x: 448,
-      y: 1355
-    },
-    memo: {
-      x: 512,
-      y: 1355
-    },
-    pencil: {
-      x: 576,
-      y: 1355
-    },
-    book: {
-      x: 640,
-      y: 1355
-    },
-    art: {
-      x: 704,
-      y: 1355
-    },
-    microphone: {
-      x: 768,
-      y: 1355
-    },
-    headphones: {
-      x: 832,
-      y: 1355
-    },
-    trumpet: {
-      x: 896,
-      y: 1355
-    },
-    saxophone: {
-      x: 960,
-      y: 1355
-    },
-    guitar: {
-      x: 1024,
-      y: 1355
-    },
-    shoe: {
-      x: 1088,
-      y: 1355
-    },
-    sandal: {
-      x: 1152,
-      y: 1355
-    },
-    high_heel: {
-      x: 1216,
-      y: 1355
-    },
-    lipstick: {
-      x: 1280,
-      y: 1355
-    },
-    boot: {
-      x: 1344,
-      y: 1355
-    },
-    shirt: {
-      x: 1419,
-      y: 0
-    },
-    tshirt: {
-      x: 1419,
-      y: 64
-    },
-    necktie: {
-      x: 1419,
-      y: 128
-    },
-    womans_clothes: {
-      x: 1419,
-      y: 192
-    },
-    dress: {
-      x: 1419,
-      y: 256
-    },
-    running_shirt_with_sash: {
-      x: 1419,
-      y: 320
-    },
-    jeans: {
-      x: 1419,
-      y: 384
-    },
-    kimono: {
-      x: 1419,
-      y: 448
-    },
-    bikini: {
-      x: 1419,
-      y: 512
-    },
-    ribbon: {
-      x: 1419,
-      y: 576
-    },
-    tophat: {
-      x: 1419,
-      y: 640
-    },
-    crown: {
-      x: 1419,
-      y: 704
-    },
-    womans_hat: {
-      x: 1419,
-      y: 768
-    },
-    mans_shoe: {
-      x: 1419,
-      y: 832
-    },
-    closed_umbrella: {
-      x: 1419,
-      y: 896
-    },
-    briefcase: {
-      x: 1419,
-      y: 960
-    },
-    handbag: {
-      x: 1419,
-      y: 1024
-    },
-    pouch: {
-      x: 1419,
-      y: 1088
-    },
-    purse: {
-      x: 1419,
-      y: 1152
-    },
-    eyeglasses: {
-      x: 1419,
-      y: 1216
-    },
-    fishing_pole_and_fish: {
-      x: 1419,
-      y: 1280
-    },
-    coffee: {
-      x: 1419,
-      y: 1344
-    },
-    tea: {
-      x: 0,
-      y: 1419
-    },
-    sake: {
-      x: 64,
-      y: 1419
-    },
-    baby_bottle: {
-      x: 128,
-      y: 1419
-    },
-    beer: {
-      x: 192,
-      y: 1419
-    },
-    beers: {
-      x: 256,
-      y: 1419
-    },
-    cocktail: {
-      x: 320,
-      y: 1419
-    },
-    tropical_drink: {
-      x: 384,
-      y: 1419
-    },
-    wine_glass: {
-      x: 448,
-      y: 1419
-    },
-    fork_and_knife: {
-      x: 512,
-      y: 1419
-    },
-    pizza: {
-      x: 576,
-      y: 1419
-    },
-    hamburger: {
-      x: 640,
-      y: 1419
-    },
-    fries: {
-      x: 704,
-      y: 1419
-    },
-    poultry_leg: {
-      x: 768,
-      y: 1419
-    },
-    meat_on_bone: {
-      x: 832,
-      y: 1419
-    },
-    spaghetti: {
-      x: 896,
-      y: 1419
-    },
-    curry: {
-      x: 960,
-      y: 1419
-    },
-    fried_shrimp: {
-      x: 1024,
-      y: 1419
-    },
-    bento: {
-      x: 1088,
-      y: 1419
-    },
-    sushi: {
-      x: 1152,
-      y: 1419
-    },
-    fish_cake: {
-      x: 1216,
-      y: 1419
-    },
-    rice_ball: {
-      x: 1280,
-      y: 1419
-    },
-    rice_cracker: {
-      x: 1344,
-      y: 1419
-    },
-    rice: {
-      x: 1408,
-      y: 1419
-    },
-    ramen: {
-      x: 1483,
-      y: 0
-    },
-    stew: {
-      x: 1483,
-      y: 64
-    },
-    oden: {
-      x: 1483,
-      y: 128
-    },
-    dango: {
-      x: 1483,
-      y: 192
-    },
-    egg: {
-      x: 1483,
-      y: 256
-    },
-    bread: {
-      x: 1483,
-      y: 320
-    },
-    doughnut: {
-      x: 1483,
-      y: 384
-    },
-    custard: {
-      x: 1483,
-      y: 448
-    },
-    icecream: {
-      x: 1483,
-      y: 512
-    },
-    ice_cream: {
-      x: 1483,
-      y: 576
-    },
-    shaved_ice: {
-      x: 1483,
-      y: 640
-    },
-    birthday: {
-      x: 1483,
-      y: 704
-    },
-    cake: {
-      x: 1483,
-      y: 768
-    },
-    cookie: {
-      x: 1483,
-      y: 832
-    },
-    chocolate_bar: {
-      x: 1483,
-      y: 896
-    },
-    candy: {
-      x: 1483,
-      y: 960
-    },
-    lollipop: {
-      x: 1483,
-      y: 1024
-    },
-    honey_pot: {
-      x: 1483,
-      y: 1088
-    },
-    apple: {
-      x: 1483,
-      y: 1152
-    },
-    green_apple: {
-      x: 1483,
-      y: 1216
-    },
-    tangerine: {
-      x: 1483,
-      y: 1280
-    },
-    lemon: {
-      x: 1483,
-      y: 1344
-    },
-    cherries: {
-      x: 1483,
-      y: 1408
-    },
-    grapes: {
-      x: 0,
-      y: 1483
-    },
-    watermelon: {
-      x: 64,
-      y: 1483
-    },
-    strawberry: {
-      x: 128,
-      y: 1483
-    },
-    peach: {
-      x: 192,
-      y: 1483
-    },
-    melon: {
-      x: 256,
-      y: 1483
-    },
-    banana: {
-      x: 320,
-      y: 1483
-    },
-    pear: {
-      x: 384,
-      y: 1483
-    },
-    pineapple: {
-      x: 448,
-      y: 1483
-    },
-    sweet_potato: {
-      x: 512,
-      y: 1483
-    },
-    eggplant: {
-      x: 576,
-      y: 1483
-    },
-    tomato: {
-      x: 640,
-      y: 1483
-    },
-    corn: {
-      x: 704,
-      y: 1483
-    },
-    house: {
-      x: 768,
-      y: 1483
-    },
-    house_with_garden: {
-      x: 832,
-      y: 1483
-    },
-    school: {
-      x: 896,
-      y: 1483
-    },
-    office: {
-      x: 960,
-      y: 1483
-    },
-    post_office: {
-      x: 1024,
-      y: 1483
-    },
-    hospital: {
-      x: 1088,
-      y: 1483
-    },
-    bank: {
-      x: 1152,
-      y: 1483
-    },
-    convenience_store: {
-      x: 1216,
-      y: 1483
-    },
-    love_hotel: {
-      x: 1280,
-      y: 1483
-    },
-    hotel: {
-      x: 1344,
-      y: 1483
-    },
-    wedding: {
-      x: 1408,
-      y: 1483
-    },
-    church: {
-      x: 1472,
-      y: 1483
-    },
-    department_store: {
-      x: 1547,
-      y: 0
-    },
-    european_post_office: {
-      x: 1547,
-      y: 64
-    },
-    city_sunrise: {
-      x: 1547,
-      y: 128
-    },
-    city_sunset: {
-      x: 1547,
-      y: 192
-    },
-    japanese_castle: {
-      x: 1547,
-      y: 256
-    },
-    european_castle: {
-      x: 1547,
-      y: 320
-    },
-    tent: {
-      x: 1547,
-      y: 384
-    },
-    factory: {
-      x: 1547,
-      y: 448
-    },
-    tokyo_tower: {
-      x: 1547,
-      y: 512
-    },
-    japan: {
-      x: 1547,
-      y: 576
-    },
-    mount_fuji: {
-      x: 1547,
-      y: 640
-    },
-    sunrise_over_mountains: {
-      x: 1547,
-      y: 704
-    },
-    sunrise: {
-      x: 1547,
-      y: 768
-    },
-    stars: {
-      x: 1547,
-      y: 832
-    },
-    statue_of_liberty: {
-      x: 1547,
-      y: 896
-    },
-    bridge_at_night: {
-      x: 1547,
-      y: 960
-    },
-    carousel_horse: {
-      x: 1547,
-      y: 1024
-    },
-    rainbow: {
-      x: 1547,
-      y: 1088
-    },
-    ferris_wheel: {
-      x: 1547,
-      y: 1152
-    },
-    fountain: {
-      x: 1547,
-      y: 1216
-    },
-    roller_coaster: {
-      x: 1547,
-      y: 1280
-    },
-    ship: {
-      x: 1547,
-      y: 1344
-    },
-    speedboat: {
-      x: 1547,
-      y: 1408
-    },
-    boat: {
-      x: 1547,
-      y: 1472
-    },
-    sailboat: {
-      x: 0,
-      y: 1547
-    },
-    rowboat: {
-      x: 64,
-      y: 1547
-    },
-    anchor: {
-      x: 128,
-      y: 1547
-    },
-    rocket: {
-      x: 192,
-      y: 1547
-    },
-    airplane: {
-      x: 256,
-      y: 1547
-    },
-    helicopter: {
-      x: 320,
-      y: 1547
-    },
-    steam_locomotive: {
-      x: 384,
-      y: 1547
-    },
-    tram: {
-      x: 448,
-      y: 1547
-    },
-    mountain_railway: {
-      x: 512,
-      y: 1547
-    },
-    bike: {
-      x: 576,
-      y: 1547
-    },
-    aerial_tramway: {
-      x: 640,
-      y: 1547
-    },
-    suspension_railway: {
-      x: 704,
-      y: 1547
-    },
-    mountain_cableway: {
-      x: 768,
-      y: 1547
-    },
-    tractor: {
-      x: 832,
-      y: 1547
-    },
-    blue_car: {
-      x: 896,
-      y: 1547
-    },
-    oncoming_automobile: {
-      x: 960,
-      y: 1547
-    },
-    car: {
-      x: 1024,
-      y: 1547
-    },
-    red_car: {
-      x: 1088,
-      y: 1547
-    },
-    taxi: {
-      x: 1152,
-      y: 1547
-    },
-    oncoming_taxi: {
-      x: 1216,
-      y: 1547
-    },
-    articulated_lorry: {
-      x: 1280,
-      y: 1547
-    },
-    bus: {
-      x: 1344,
-      y: 1547
-    },
-    oncoming_bus: {
-      x: 1408,
-      y: 1547
-    },
-    rotating_light: {
-      x: 1472,
-      y: 1547
-    },
-    police_car: {
-      x: 1536,
-      y: 1547
-    },
-    oncoming_police_car: {
-      x: 1611,
-      y: 0
-    },
-    fire_engine: {
-      x: 1611,
-      y: 64
-    },
-    ambulance: {
-      x: 1611,
-      y: 128
-    },
-    minibus: {
-      x: 1611,
-      y: 192
-    },
-    truck: {
-      x: 1611,
-      y: 256
-    },
-    train: {
-      x: 1611,
-      y: 320
-    },
-    station: {
-      x: 1611,
-      y: 384
-    },
-    train2: {
-      x: 1611,
-      y: 448
-    },
-    bullettrain_front: {
-      x: 1611,
-      y: 512
-    },
-    bullettrain_side: {
-      x: 1611,
-      y: 576
-    },
-    light_rail: {
-      x: 1611,
-      y: 640
-    },
-    monorail: {
-      x: 1611,
-      y: 704
-    },
-    railway_car: {
-      x: 1611,
-      y: 768
-    },
-    trolleybus: {
-      x: 1611,
-      y: 832
-    },
-    ticket: {
-      x: 1611,
-      y: 896
-    },
-    fuelpump: {
-      x: 1611,
-      y: 960
-    },
-    vertical_traffic_light: {
-      x: 1611,
-      y: 1024
-    },
-    traffic_light: {
-      x: 1611,
-      y: 1088
-    },
-    warning: {
-      x: 1611,
-      y: 1152
-    },
-    construction: {
-      x: 1611,
-      y: 1216
-    },
-    beginner: {
-      x: 1611,
-      y: 1280
-    },
-    atm: {
-      x: 1611,
-      y: 1344
-    },
-    slot_machine: {
-      x: 1611,
-      y: 1408
-    },
-    busstop: {
-      x: 1611,
-      y: 1472
-    },
-    barber: {
-      x: 1611,
-      y: 1536
-    },
-    hotsprings: {
-      x: 0,
-      y: 1611
-    },
-    checkered_flag: {
-      x: 64,
-      y: 1611
-    },
-    crossed_flags: {
-      x: 128,
-      y: 1611
-    },
-    izakaya_lantern: {
-      x: 192,
-      y: 1611
-    },
-    moyai: {
-      x: 256,
-      y: 1611
-    },
-    circus_tent: {
-      x: 320,
-      y: 1611
-    },
-    performing_arts: {
-      x: 384,
-      y: 1611
-    },
-    round_pushpin: {
-      x: 448,
-      y: 1611
-    },
-    triangular_flag_on_post: {
-      x: 512,
-      y: 1611
-    },
-    jp: {
-      x: 576,
-      y: 1611
-    },
-    kr: {
-      x: 640,
-      y: 1611
-    },
-    cn: {
-      x: 704,
-      y: 1611
-    },
-    us: {
-      x: 768,
-      y: 1611
-    },
-    fr: {
-      x: 832,
-      y: 1611
-    },
-    es: {
-      x: 896,
-      y: 1611
-    },
-    it: {
-      x: 960,
-      y: 1611
-    },
-    ru: {
-      x: 1024,
-      y: 1611
-    },
-    gb: {
-      x: 1088,
-      y: 1611
-    },
-    uk: {
-      x: 1152,
-      y: 1611
-    },
-    de: {
-      x: 1216,
-      y: 1611
-    },
-    one: {
-      x: 1280,
-      y: 1611
-    },
-    two: {
-      x: 1344,
-      y: 1611
-    },
-    three: {
-      x: 1408,
-      y: 1611
-    },
-    four: {
-      x: 1472,
-      y: 1611
-    },
-    five: {
-      x: 1536,
-      y: 1611
-    },
-    six: {
-      x: 1600,
-      y: 1611
-    },
-    seven: {
-      x: 1675,
-      y: 0
-    },
-    eight: {
-      x: 1675,
-      y: 64
-    },
-    nine: {
-      x: 1675,
-      y: 128
-    },
-    keycap_ten: {
-      x: 1675,
-      y: 192
-    },
-    "1234": {
-      x: 1675,
-      y: 256
-    },
-    zero: {
-      x: 1675,
-      y: 320
-    },
-    hash: {
-      x: 1675,
-      y: 384
-    },
-    symbols: {
-      x: 1675,
-      y: 448
-    },
-    arrow_backward: {
-      x: 1675,
-      y: 512
-    },
-    arrow_down: {
-      x: 1675,
-      y: 576
-    },
-    arrow_forward: {
-      x: 1675,
-      y: 640
-    },
-    arrow_left: {
-      x: 1675,
-      y: 704
-    },
-    capital_abcd: {
-      x: 1675,
-      y: 768
-    },
-    abcd: {
-      x: 1675,
-      y: 832
-    },
-    abc: {
-      x: 1675,
-      y: 896
-    },
-    arrow_lower_left: {
-      x: 1675,
-      y: 960
-    },
-    arrow_lower_right: {
-      x: 1675,
-      y: 1024
-    },
-    arrow_right: {
-      x: 1675,
-      y: 1088
-    },
-    arrow_up: {
-      x: 1675,
-      y: 1152
-    },
-    arrow_upper_left: {
-      x: 1675,
-      y: 1216
-    },
-    arrow_upper_right: {
-      x: 1675,
-      y: 1280
-    },
-    arrow_double_down: {
-      x: 1675,
-      y: 1344
-    },
-    arrow_double_up: {
-      x: 1675,
-      y: 1408
-    },
-    arrow_down_small: {
-      x: 1675,
-      y: 1472
-    },
-    arrow_heading_down: {
-      x: 1675,
-      y: 1536
-    },
-    arrow_heading_up: {
-      x: 1675,
-      y: 1600
-    },
-    leftwards_arrow_with_hook: {
-      x: 0,
-      y: 1675
-    },
-    arrow_right_hook: {
-      x: 64,
-      y: 1675
-    },
-    left_right_arrow: {
-      x: 128,
-      y: 1675
-    },
-    arrow_up_down: {
-      x: 192,
-      y: 1675
-    },
-    arrow_up_small: {
-      x: 256,
-      y: 1675
-    },
-    arrows_clockwise: {
-      x: 320,
-      y: 1675
-    },
-    arrows_counterclockwise: {
-      x: 384,
-      y: 1675
-    },
-    rewind: {
-      x: 448,
-      y: 1675
-    },
-    fast_forward: {
-      x: 512,
-      y: 1675
-    },
-    information_source: {
-      x: 576,
-      y: 1675
-    },
-    ok: {
-      x: 640,
-      y: 1675
-    },
-    twisted_rightwards_arrows: {
-      x: 704,
-      y: 1675
-    },
-    repeat: {
-      x: 768,
-      y: 1675
-    },
-    repeat_one: {
-      x: 832,
-      y: 1675
-    },
-    new: {
-      x: 896,
-      y: 1675
-    },
-    top: {
-      x: 960,
-      y: 1675
-    },
-    up: {
-      x: 1024,
-      y: 1675
-    },
-    cool: {
-      x: 1088,
-      y: 1675
-    },
-    free: {
-      x: 1152,
-      y: 1675
-    },
-    ng: {
-      x: 1216,
-      y: 1675
-    },
-    cinema: {
-      x: 1280,
-      y: 1675
-    },
-    koko: {
-      x: 1344,
-      y: 1675
-    },
-    signal_strength: {
-      x: 1408,
-      y: 1675
-    },
-    u5272: {
-      x: 1472,
-      y: 1675
-    },
-    u5408: {
-      x: 1536,
-      y: 1675
-    },
-    u55b6: {
-      x: 1600,
-      y: 1675
-    },
-    u6307: {
-      x: 1664,
-      y: 1675
-    },
-    u6708: {
-      x: 1739,
-      y: 0
-    },
-    u6709: {
-      x: 1739,
-      y: 64
-    },
-    u6e80: {
-      x: 1739,
-      y: 128
-    },
-    u7121: {
-      x: 1739,
-      y: 192
-    },
-    u7533: {
-      x: 1739,
-      y: 256
-    },
-    u7a7a: {
-      x: 1739,
-      y: 320
-    },
-    u7981: {
-      x: 1739,
-      y: 384
-    },
-    sa: {
-      x: 1739,
-      y: 448
-    },
-    restroom: {
-      x: 1739,
-      y: 512
-    },
-    mens: {
-      x: 1739,
-      y: 576
-    },
-    womens: {
-      x: 1739,
-      y: 640
-    },
-    baby_symbol: {
-      x: 1739,
-      y: 704
-    },
-    no_smoking: {
-      x: 1739,
-      y: 768
-    },
-    parking: {
-      x: 1739,
-      y: 832
-    },
-    wheelchair: {
-      x: 1739,
-      y: 896
-    },
-    metro: {
-      x: 1739,
-      y: 960
-    },
-    baggage_claim: {
-      x: 1739,
-      y: 1024
-    },
-    accept: {
-      x: 1739,
-      y: 1088
-    },
-    wc: {
-      x: 1739,
-      y: 1152
-    },
-    potable_water: {
-      x: 1739,
-      y: 1216
-    },
-    put_litter_in_its_place: {
-      x: 1739,
-      y: 1280
-    },
-    secret: {
-      x: 1739,
-      y: 1344
-    },
-    congratulations: {
-      x: 1739,
-      y: 1408
-    },
-    m: {
-      x: 1739,
-      y: 1472
-    },
-    passport_control: {
-      x: 1739,
-      y: 1536
-    },
-    left_luggage: {
-      x: 1739,
-      y: 1600
-    },
-    customs: {
-      x: 1739,
-      y: 1664
-    },
-    ideograph_advantage: {
-      x: 0,
-      y: 1739
-    },
-    cl: {
-      x: 64,
-      y: 1739
-    },
-    sos: {
-      x: 128,
-      y: 1739
-    },
-    id: {
-      x: 192,
-      y: 1739
-    },
-    no_entry_sign: {
-      x: 256,
-      y: 1739
-    },
-    underage: {
-      x: 320,
-      y: 1739
-    },
-    no_mobile_phones: {
-      x: 384,
-      y: 1739
-    },
-    do_not_litter: {
-      x: 448,
-      y: 1739
-    },
-    "non-potable_water": {
-      x: 512,
-      y: 1739
-    },
-    no_bicycles: {
-      x: 576,
-      y: 1739
-    },
-    no_pedestrians: {
-      x: 640,
-      y: 1739
-    },
-    children_crossing: {
-      x: 704,
-      y: 1739
-    },
-    no_entry: {
-      x: 768,
-      y: 1739
-    },
-    eight_spoked_asterisk: {
-      x: 832,
-      y: 1739
-    },
-    sparkle: {
-      x: 896,
-      y: 1739
-    },
-    eight_pointed_black_star: {
-      x: 960,
-      y: 1739
-    },
-    heart_decoration: {
-      x: 1024,
-      y: 1739
-    },
-    vs: {
-      x: 1088,
-      y: 1739
-    },
-    vibration_mode: {
-      x: 1152,
-      y: 1739
-    },
-    mobile_phone_off: {
-      x: 1216,
-      y: 1739
-    },
-    chart: {
-      x: 1280,
-      y: 1739
-    },
-    currency_exchange: {
-      x: 1344,
-      y: 1739
-    },
-    aries: {
-      x: 1408,
-      y: 1739
-    },
-    taurus: {
-      x: 1472,
-      y: 1739
-    },
-    gemini: {
-      x: 1536,
-      y: 1739
-    },
-    cancer: {
-      x: 1600,
-      y: 1739
-    },
-    leo: {
-      x: 1664,
-      y: 1739
-    },
-    virgo: {
-      x: 1728,
-      y: 1739
-    },
-    libra: {
-      x: 1803,
-      y: 0
-    },
-    scorpius: {
-      x: 1803,
-      y: 64
-    },
-    sagittarius: {
-      x: 1803,
-      y: 128
-    },
-    capricorn: {
-      x: 1803,
-      y: 192
-    },
-    aquarius: {
-      x: 1803,
-      y: 256
-    },
-    pisces: {
-      x: 1803,
-      y: 320
-    },
-    ophiuchus: {
-      x: 1803,
-      y: 384
-    },
-    six_pointed_star: {
-      x: 1803,
-      y: 448
-    },
-    negative_squared_cross_mark: {
-      x: 1803,
-      y: 512
-    },
-    a: {
-      x: 1803,
-      y: 576
-    },
-    b: {
-      x: 1803,
-      y: 640
-    },
-    ab: {
-      x: 1803,
-      y: 704
-    },
-    o2: {
-      x: 1803,
-      y: 768
-    },
-    diamond_shape_with_a_dot_inside: {
-      x: 1803,
-      y: 832
-    },
-    recycle: {
-      x: 1803,
-      y: 896
-    },
-    end: {
-      x: 1803,
-      y: 960
-    },
-    back: {
-      x: 1803,
-      y: 1024
-    },
-    on: {
-      x: 1803,
-      y: 1088
-    },
-    soon: {
-      x: 1803,
-      y: 1152
-    },
-    clock1: {
-      x: 1803,
-      y: 1216
-    },
-    clock130: {
-      x: 1803,
-      y: 1280
-    },
-    clock10: {
-      x: 1803,
-      y: 1344
-    },
-    clock1030: {
-      x: 1803,
-      y: 1408
-    },
-    clock11: {
-      x: 1803,
-      y: 1472
-    },
-    clock1130: {
-      x: 1803,
-      y: 1536
-    },
-    clock12: {
-      x: 1803,
-      y: 1600
-    },
-    clock1230: {
-      x: 1803,
-      y: 1664
-    },
-    clock2: {
-      x: 1803,
-      y: 1728
-    },
-    clock230: {
-      x: 0,
-      y: 1803
-    },
-    clock3: {
-      x: 64,
-      y: 1803
-    },
-    clock330: {
-      x: 128,
-      y: 1803
-    },
-    clock4: {
-      x: 192,
-      y: 1803
-    },
-    clock430: {
-      x: 256,
-      y: 1803
-    },
-    clock5: {
-      x: 320,
-      y: 1803
-    },
-    clock530: {
-      x: 384,
-      y: 1803
-    },
-    clock6: {
-      x: 448,
-      y: 1803
-    },
-    clock630: {
-      x: 512,
-      y: 1803
-    },
-    clock7: {
-      x: 576,
-      y: 1803
-    },
-    clock730: {
-      x: 640,
-      y: 1803
-    },
-    clock8: {
-      x: 704,
-      y: 1803
-    },
-    clock830: {
-      x: 768,
-      y: 1803
-    },
-    clock9: {
-      x: 832,
-      y: 1803
-    },
-    clock930: {
-      x: 896,
-      y: 1803
-    },
-    heavy_dollar_sign: {
-      x: 960,
-      y: 1803
-    },
-    copyright: {
-      x: 1024,
-      y: 1803
-    },
-    registered: {
-      x: 1088,
-      y: 1803
-    },
-    tm: {
-      x: 1152,
-      y: 1803
-    },
-    x: {
-      x: 1216,
-      y: 1803
-    },
-    heavy_exclamation_mark: {
-      x: 1280,
-      y: 1803
-    },
-    bangbang: {
-      x: 1344,
-      y: 1803
-    },
-    interrobang: {
-      x: 1408,
-      y: 1803
-    },
-    o: {
-      x: 1472,
-      y: 1803
-    },
-    heavy_multiplication_x: {
-      x: 1536,
-      y: 1803
-    },
-    heavy_plus_sign: {
-      x: 1600,
-      y: 1803
-    },
-    heavy_minus_sign: {
-      x: 1664,
-      y: 1803
-    },
-    heavy_division_sign: {
-      x: 1728,
-      y: 1803
-    },
-    white_flower: {
-      x: 1792,
-      y: 1803
-    },
-    "100": {
-      x: 1867,
-      y: 0
-    },
-    heavy_check_mark: {
-      x: 1867,
-      y: 64
-    },
-    ballot_box_with_check: {
-      x: 1867,
-      y: 128
-    },
-    radio_button: {
-      x: 1867,
-      y: 192
-    },
-    link: {
-      x: 1867,
-      y: 256
-    },
-    curly_loop: {
-      x: 1867,
-      y: 320
-    },
-    wavy_dash: {
-      x: 1867,
-      y: 384
-    },
-    part_alternation_mark: {
-      x: 1867,
-      y: 448
-    },
-    trident: {
-      x: 1867,
-      y: 512
-    },
-    black_small_square: {
-      x: 1867,
-      y: 576
-    },
-    white_small_square: {
-      x: 1867,
-      y: 640
-    },
-    black_medium_small_square: {
-      x: 1867,
-      y: 704
-    },
-    white_medium_small_square: {
-      x: 1867,
-      y: 768
-    },
-    black_medium_square: {
-      x: 1867,
-      y: 832
-    },
-    white_medium_square: {
-      x: 1867,
-      y: 896
-    },
-    white_large_square: {
-      x: 1867,
-      y: 960
-    },
-    white_check_mark: {
-      x: 1867,
-      y: 1024
-    },
-    black_square_button: {
-      x: 1867,
-      y: 1088
-    },
-    white_square_button: {
-      x: 1867,
-      y: 1152
-    },
-    black_circle: {
-      x: 1867,
-      y: 1216
-    },
-    white_circle: {
-      x: 1867,
-      y: 1280
-    },
-    red_circle: {
-      x: 1867,
-      y: 1344
-    },
-    large_blue_circle: {
-      x: 1867,
-      y: 1408
-    },
-    large_blue_diamond: {
-      x: 1867,
-      y: 1472
-    },
-    large_orange_diamond: {
-      x: 1867,
-      y: 1536
-    },
-    small_blue_diamond: {
-      x: 1867,
-      y: 1600
-    },
-    small_orange_diamond: {
-      x: 1867,
-      y: 1664
-    },
-    small_red_triangle: {
-      x: 1867,
-      y: 1728
-    },
-    small_red_triangle_down: {
-      x: 1867,
-      y: 1792
-    }
-  };
-
-  /** Redirect rendering of descendants into the given CSS selector.
-   *  @example
-   *    <Portal into="body">
-   *      <div>I am rendered into document.body</div>
-   *    </Portal>
-   */
-
-  var Portal =
-  /*#__PURE__*/
-  function (_Component) {
-    _inherits(Portal, _Component);
-
-    function Portal() {
-      _classCallCheck(this, Portal);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(Portal).apply(this, arguments));
-    }
-
-    _createClass(Portal, [{
-      key: "componentDidUpdate",
-      value: function componentDidUpdate(props) {
-        for (var i in props) {
-          if (props[i] !== this.props[i]) {
-            return setTimeout(this.renderLayer);
-          }
-        }
-      }
-    }, {
-      key: "componentDidMount",
-      value: function componentDidMount() {
-        this.isMounted = true;
-        this.renderLayer = this.renderLayer.bind(this);
-        this.renderLayer();
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function componentWillUnmount() {
-        this.renderLayer(false);
-        this.isMounted = false;
-        if (this.remote) this.remote.parentNode.removeChild(this.remote);
-      }
-    }, {
-      key: "findNode",
-      value: function findNode(node) {
-        return typeof node === 'string' ? document.querySelector(node) : node;
-      }
-    }, {
-      key: "renderLayer",
-      value: function renderLayer() {
-        var show = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-        if (!this.isMounted) return; // clean up old node if moving bases:
-
-        if (this.props.into !== this.intoPointer) {
-          this.intoPointer = this.props.into;
-
-          if (this.into && this.remote) {
-            this.remote = render(h(PortalProxy, null), this.into, this.remote);
-          }
-
-          this.into = this.findNode(this.props.into);
-        }
-
-        this.remote = render(h(PortalProxy, {
-          context: this.context
-        }, show && this.props.children || null), this.into, this.remote);
-      }
-    }, {
-      key: "render",
-      value: function render$$1() {
-        return null;
-      }
-    }]);
-
-    return Portal;
-  }(Component); // high-order component that renders its first child if it exists.
-
-  var PortalProxy =
-  /*#__PURE__*/
-  function (_Component2) {
-    _inherits(PortalProxy, _Component2);
-
-    function PortalProxy() {
-      _classCallCheck(this, PortalProxy);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(PortalProxy).apply(this, arguments));
-    }
-
-    _createClass(PortalProxy, [{
-      key: "getChildContext",
-      value: function getChildContext() {
-        return this.props.context;
-      }
-    }, {
-      key: "render",
-      value: function render$$1(_ref) {
-        var children = _ref.children;
-        return children && children[0] || null;
-      }
-    }]);
-
-    return PortalProxy;
-  }(Component);
-
-  var EmojiPicker =
-  /*#__PURE__*/
-  function (_Component) {
-    _inherits(EmojiPicker, _Component);
-
-    function EmojiPicker() {
-      var _getPrototypeOf2;
-
-      var _this;
-
-      _classCallCheck(this, EmojiPicker);
-
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(EmojiPicker)).call.apply(_getPrototypeOf2, [this].concat(args)));
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
-        show: false
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggle", function () {
-        _this.setState(function (prevState) {
-          return {
-            show: !prevState.show
-          };
-        });
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleKeyup", function (e) {
-        var key = "which" in e ? e.which : e.keyCode;
-
-        if (_this.state.show && key === 27) {
-          _this.setState({
-            show: false
-          });
-        }
-      });
-
-      return _this;
-    }
-
-    _createClass(EmojiPicker, [{
-      key: "fillChat",
-      value: function fillChat(val) {
-        document.getElementById("chat-txt-message").value += " :".concat(val, ":");
-        this.setState({
-          show: false
-        });
-      }
-    }, {
-      key: "componentDidMount",
-      value: function componentDidMount() {
-        document.addEventListener("keyup", this.handleKeyup);
-      }
-    }, {
-      key: "render",
-      value: function render$$1(props, _ref) {
-        var _this2 = this;
-
-        var show = _ref.show;
-        var list = Object.keys(emojiNames).map(function (id) {
-          var data = emojiNames[id];
-          var x = data.x * 0.546875;
-          var y = data.y * 0.546875;
-          var css = {
-            backgroundPosition: "-".concat(x, "px -").concat(y, "px")
-          };
-          return h("span", {
-            key: "emoji-".concat(id),
-            style: css,
-            title: id,
-            onClick: function onClick() {
-              return _this2.fillChat(id);
-            }
-          });
-        });
-        return h("span", {
-          className: "dp-emoji-picker-icon fa fa-smile-o",
-          onClick: this.toggle
-        }, h(Portal, {
-          into: ".pusher-chat-widget-input"
-        }, h("div", {
-          className: "dp-emoji-picker ".concat(show ? "show" : "")
-        }, list)));
-      }
-    }]);
-
-    return EmojiPicker;
-  }(Component);
 
   var twitchSpriteSheet = {
     "\\:-?\\)": {
@@ -10468,26 +7149,3635 @@ var DubPlus = (function () {
     }
   };
 
+  var emoji = {
+    template: function template(id) {
+      id = id.replace(/^:|:$/g, "");
+      return emojify.defaultConfig.img_dir + "/" + encodeURI(id) + ".png";
+    },
+    find: function find(symbol) {
+      var _this = this;
+
+      var found = emojify.emojiNames.filter(function (e) {
+        return e.indexOf(symbol) === 0;
+      });
+      return found.map(function (key) {
+        return {
+          type: "emojify",
+          src: _this.template(key),
+          name: key
+        };
+      });
+    }
+  };
+
+  var emojiNames = {
+    bowtie: {
+      x: 1099,
+      y: 896
+    },
+    smile: {
+      x: 960,
+      y: 1291
+    },
+    laughing: {
+      x: 0,
+      y: 75
+    },
+    blush: {
+      x: 64,
+      y: 75
+    },
+    smiley: {
+      x: 139,
+      y: 0
+    },
+    relaxed: {
+      x: 139,
+      y: 64
+    },
+    smirk: {
+      x: 0,
+      y: 139
+    },
+    heart_eyes: {
+      x: 64,
+      y: 139
+    },
+    kissing_heart: {
+      x: 128,
+      y: 139
+    },
+    kissing_closed_eyes: {
+      x: 203,
+      y: 0
+    },
+    flushed: {
+      x: 203,
+      y: 64
+    },
+    relieved: {
+      x: 203,
+      y: 128
+    },
+    satisfied: {
+      x: 0,
+      y: 203
+    },
+    grin: {
+      x: 64,
+      y: 203
+    },
+    wink: {
+      x: 128,
+      y: 203
+    },
+    stuck_out_tongue_winking_eye: {
+      x: 192,
+      y: 203
+    },
+    stuck_out_tongue_closed_eyes: {
+      x: 267,
+      y: 0
+    },
+    grinning: {
+      x: 267,
+      y: 64
+    },
+    kissing: {
+      x: 267,
+      y: 128
+    },
+    kissing_smiling_eyes: {
+      x: 267,
+      y: 192
+    },
+    stuck_out_tongue: {
+      x: 0,
+      y: 267
+    },
+    sleeping: {
+      x: 64,
+      y: 267
+    },
+    worried: {
+      x: 128,
+      y: 267
+    },
+    frowning: {
+      x: 192,
+      y: 267
+    },
+    anguished: {
+      x: 256,
+      y: 267
+    },
+    open_mouth: {
+      x: 331,
+      y: 0
+    },
+    grimacing: {
+      x: 331,
+      y: 64
+    },
+    confused: {
+      x: 331,
+      y: 128
+    },
+    hushed: {
+      x: 331,
+      y: 192
+    },
+    expressionless: {
+      x: 331,
+      y: 256
+    },
+    unamused: {
+      x: 0,
+      y: 331
+    },
+    sweat_smile: {
+      x: 64,
+      y: 331
+    },
+    sweat: {
+      x: 128,
+      y: 331
+    },
+    disappointed_relieved: {
+      x: 192,
+      y: 331
+    },
+    weary: {
+      x: 256,
+      y: 331
+    },
+    pensive: {
+      x: 320,
+      y: 331
+    },
+    disappointed: {
+      x: 395,
+      y: 0
+    },
+    confounded: {
+      x: 395,
+      y: 64
+    },
+    fearful: {
+      x: 395,
+      y: 128
+    },
+    cold_sweat: {
+      x: 395,
+      y: 192
+    },
+    persevere: {
+      x: 395,
+      y: 256
+    },
+    cry: {
+      x: 395,
+      y: 320
+    },
+    sob: {
+      x: 0,
+      y: 395
+    },
+    joy: {
+      x: 64,
+      y: 395
+    },
+    astonished: {
+      x: 128,
+      y: 395
+    },
+    scream: {
+      x: 192,
+      y: 395
+    },
+    neckbeard: {
+      x: 256,
+      y: 395
+    },
+    tired_face: {
+      x: 320,
+      y: 395
+    },
+    angry: {
+      x: 384,
+      y: 395
+    },
+    rage: {
+      x: 459,
+      y: 0
+    },
+    triumph: {
+      x: 459,
+      y: 64
+    },
+    sleepy: {
+      x: 459,
+      y: 128
+    },
+    yum: {
+      x: 459,
+      y: 192
+    },
+    mask: {
+      x: 459,
+      y: 256
+    },
+    sunglasses: {
+      x: 459,
+      y: 320
+    },
+    dizzy_face: {
+      x: 459,
+      y: 384
+    },
+    imp: {
+      x: 0,
+      y: 459
+    },
+    smiling_imp: {
+      x: 64,
+      y: 459
+    },
+    neutral_face: {
+      x: 128,
+      y: 459
+    },
+    no_mouth: {
+      x: 192,
+      y: 459
+    },
+    innocent: {
+      x: 256,
+      y: 459
+    },
+    alien: {
+      x: 320,
+      y: 459
+    },
+    yellow_heart: {
+      x: 384,
+      y: 459
+    },
+    blue_heart: {
+      x: 448,
+      y: 459
+    },
+    purple_heart: {
+      x: 523,
+      y: 0
+    },
+    heart: {
+      x: 523,
+      y: 64
+    },
+    green_heart: {
+      x: 523,
+      y: 128
+    },
+    broken_heart: {
+      x: 523,
+      y: 192
+    },
+    heartbeat: {
+      x: 523,
+      y: 256
+    },
+    heartpulse: {
+      x: 523,
+      y: 320
+    },
+    two_hearts: {
+      x: 523,
+      y: 384
+    },
+    revolving_hearts: {
+      x: 523,
+      y: 448
+    },
+    cupid: {
+      x: 0,
+      y: 523
+    },
+    sparkling_heart: {
+      x: 64,
+      y: 523
+    },
+    sparkles: {
+      x: 128,
+      y: 523
+    },
+    star: {
+      x: 192,
+      y: 523
+    },
+    star2: {
+      x: 256,
+      y: 523
+    },
+    dizzy: {
+      x: 320,
+      y: 523
+    },
+    boom: {
+      x: 384,
+      y: 523
+    },
+    collision: {
+      x: 448,
+      y: 523
+    },
+    anger: {
+      x: 512,
+      y: 523
+    },
+    exclamation: {
+      x: 587,
+      y: 0
+    },
+    question: {
+      x: 587,
+      y: 64
+    },
+    grey_exclamation: {
+      x: 587,
+      y: 128
+    },
+    grey_question: {
+      x: 587,
+      y: 192
+    },
+    zzz: {
+      x: 587,
+      y: 256
+    },
+    dash: {
+      x: 587,
+      y: 320
+    },
+    sweat_drops: {
+      x: 587,
+      y: 384
+    },
+    notes: {
+      x: 587,
+      y: 448
+    },
+    musical_note: {
+      x: 587,
+      y: 512
+    },
+    fire: {
+      x: 0,
+      y: 587
+    },
+    poop: {
+      x: 64,
+      y: 587
+    },
+    thumbsup: {
+      x: 128,
+      y: 587
+    },
+    thumbsdown: {
+      x: 192,
+      y: 587
+    },
+    ok_hand: {
+      x: 256,
+      y: 587
+    },
+    punch: {
+      x: 320,
+      y: 587
+    },
+    facepunch: {
+      x: 384,
+      y: 587
+    },
+    fist: {
+      x: 448,
+      y: 587
+    },
+    v: {
+      x: 512,
+      y: 587
+    },
+    wave: {
+      x: 576,
+      y: 587
+    },
+    hand: {
+      x: 651,
+      y: 0
+    },
+    raised_hand: {
+      x: 651,
+      y: 64
+    },
+    open_hands: {
+      x: 651,
+      y: 128
+    },
+    point_up: {
+      x: 651,
+      y: 192
+    },
+    point_down: {
+      x: 651,
+      y: 256
+    },
+    point_left: {
+      x: 651,
+      y: 320
+    },
+    point_right: {
+      x: 651,
+      y: 384
+    },
+    raised_hands: {
+      x: 651,
+      y: 448
+    },
+    pray: {
+      x: 651,
+      y: 512
+    },
+    point_up_2: {
+      x: 651,
+      y: 576
+    },
+    clap: {
+      x: 0,
+      y: 651
+    },
+    muscle: {
+      x: 64,
+      y: 651
+    },
+    metal: {
+      x: 128,
+      y: 651
+    },
+    fu: {
+      x: 192,
+      y: 651
+    },
+    runner: {
+      x: 256,
+      y: 651
+    },
+    running: {
+      x: 320,
+      y: 651
+    },
+    couple: {
+      x: 384,
+      y: 651
+    },
+    family: {
+      x: 448,
+      y: 651
+    },
+    two_men_holding_hands: {
+      x: 512,
+      y: 651
+    },
+    two_women_holding_hands: {
+      x: 576,
+      y: 651
+    },
+    dancer: {
+      x: 640,
+      y: 651
+    },
+    dancers: {
+      x: 715,
+      y: 0
+    },
+    ok_woman: {
+      x: 715,
+      y: 64
+    },
+    no_good: {
+      x: 715,
+      y: 128
+    },
+    information_desk_person: {
+      x: 715,
+      y: 192
+    },
+    raising_hand: {
+      x: 715,
+      y: 256
+    },
+    bride_with_veil: {
+      x: 715,
+      y: 320
+    },
+    person_with_pouting_face: {
+      x: 715,
+      y: 384
+    },
+    person_frowning: {
+      x: 715,
+      y: 448
+    },
+    bow: {
+      x: 715,
+      y: 512
+    },
+    couplekiss: {
+      x: 715,
+      y: 576
+    },
+    couple_with_heart: {
+      x: 715,
+      y: 640
+    },
+    massage: {
+      x: 0,
+      y: 715
+    },
+    haircut: {
+      x: 64,
+      y: 715
+    },
+    nail_care: {
+      x: 128,
+      y: 715
+    },
+    boy: {
+      x: 192,
+      y: 715
+    },
+    girl: {
+      x: 256,
+      y: 715
+    },
+    woman: {
+      x: 320,
+      y: 715
+    },
+    man: {
+      x: 384,
+      y: 715
+    },
+    baby: {
+      x: 448,
+      y: 715
+    },
+    older_woman: {
+      x: 512,
+      y: 715
+    },
+    older_man: {
+      x: 576,
+      y: 715
+    },
+    person_with_blond_hair: {
+      x: 640,
+      y: 715
+    },
+    man_with_gua_pi_mao: {
+      x: 704,
+      y: 715
+    },
+    man_with_turban: {
+      x: 779,
+      y: 0
+    },
+    construction_worker: {
+      x: 779,
+      y: 64
+    },
+    cop: {
+      x: 779,
+      y: 128
+    },
+    angel: {
+      x: 779,
+      y: 192
+    },
+    princess: {
+      x: 779,
+      y: 256
+    },
+    smiley_cat: {
+      x: 779,
+      y: 320
+    },
+    smile_cat: {
+      x: 779,
+      y: 384
+    },
+    heart_eyes_cat: {
+      x: 779,
+      y: 448
+    },
+    kissing_cat: {
+      x: 779,
+      y: 512
+    },
+    smirk_cat: {
+      x: 779,
+      y: 576
+    },
+    scream_cat: {
+      x: 779,
+      y: 640
+    },
+    crying_cat_face: {
+      x: 779,
+      y: 704
+    },
+    joy_cat: {
+      x: 0,
+      y: 779
+    },
+    pouting_cat: {
+      x: 64,
+      y: 779
+    },
+    japanese_ogre: {
+      x: 128,
+      y: 779
+    },
+    japanese_goblin: {
+      x: 192,
+      y: 779
+    },
+    see_no_evil: {
+      x: 256,
+      y: 779
+    },
+    hear_no_evil: {
+      x: 320,
+      y: 779
+    },
+    speak_no_evil: {
+      x: 384,
+      y: 779
+    },
+    guardsman: {
+      x: 448,
+      y: 779
+    },
+    skull: {
+      x: 512,
+      y: 779
+    },
+    feet: {
+      x: 576,
+      y: 779
+    },
+    lips: {
+      x: 640,
+      y: 779
+    },
+    kiss: {
+      x: 704,
+      y: 779
+    },
+    droplet: {
+      x: 768,
+      y: 779
+    },
+    ear: {
+      x: 843,
+      y: 0
+    },
+    eyes: {
+      x: 843,
+      y: 64
+    },
+    nose: {
+      x: 843,
+      y: 128
+    },
+    tongue: {
+      x: 843,
+      y: 192
+    },
+    love_letter: {
+      x: 843,
+      y: 256
+    },
+    bust_in_silhouette: {
+      x: 843,
+      y: 320
+    },
+    busts_in_silhouette: {
+      x: 843,
+      y: 384
+    },
+    speech_balloon: {
+      x: 843,
+      y: 448
+    },
+    thought_balloon: {
+      x: 843,
+      y: 512
+    },
+    feelsgood: {
+      x: 843,
+      y: 576
+    },
+    finnadie: {
+      x: 843,
+      y: 640
+    },
+    goberserk: {
+      x: 843,
+      y: 704
+    },
+    godmode: {
+      x: 843,
+      y: 768
+    },
+    hurtrealbad: {
+      x: 0,
+      y: 843
+    },
+    rage1: {
+      x: 64,
+      y: 843
+    },
+    rage2: {
+      x: 128,
+      y: 843
+    },
+    rage3: {
+      x: 192,
+      y: 843
+    },
+    rage4: {
+      x: 256,
+      y: 843
+    },
+    suspect: {
+      x: 320,
+      y: 843
+    },
+    trollface: {
+      x: 384,
+      y: 843
+    },
+    sunny: {
+      x: 448,
+      y: 843
+    },
+    umbrella: {
+      x: 512,
+      y: 843
+    },
+    cloud: {
+      x: 576,
+      y: 843
+    },
+    snowflake: {
+      x: 640,
+      y: 843
+    },
+    snowman: {
+      x: 704,
+      y: 843
+    },
+    zap: {
+      x: 768,
+      y: 843
+    },
+    cyclone: {
+      x: 832,
+      y: 843
+    },
+    foggy: {
+      x: 907,
+      y: 0
+    },
+    ocean: {
+      x: 907,
+      y: 64
+    },
+    cat: {
+      x: 907,
+      y: 128
+    },
+    dog: {
+      x: 907,
+      y: 192
+    },
+    mouse: {
+      x: 907,
+      y: 256
+    },
+    hamster: {
+      x: 907,
+      y: 320
+    },
+    rabbit: {
+      x: 907,
+      y: 384
+    },
+    wolf: {
+      x: 907,
+      y: 448
+    },
+    frog: {
+      x: 907,
+      y: 512
+    },
+    tiger: {
+      x: 907,
+      y: 576
+    },
+    koala: {
+      x: 907,
+      y: 640
+    },
+    bear: {
+      x: 907,
+      y: 704
+    },
+    pig: {
+      x: 907,
+      y: 768
+    },
+    pig_nose: {
+      x: 907,
+      y: 832
+    },
+    cow: {
+      x: 0,
+      y: 907
+    },
+    boar: {
+      x: 64,
+      y: 907
+    },
+    monkey_face: {
+      x: 128,
+      y: 907
+    },
+    monkey: {
+      x: 192,
+      y: 907
+    },
+    horse: {
+      x: 256,
+      y: 907
+    },
+    racehorse: {
+      x: 320,
+      y: 907
+    },
+    camel: {
+      x: 384,
+      y: 907
+    },
+    sheep: {
+      x: 448,
+      y: 907
+    },
+    elephant: {
+      x: 512,
+      y: 907
+    },
+    panda_face: {
+      x: 576,
+      y: 907
+    },
+    snake: {
+      x: 640,
+      y: 907
+    },
+    bird: {
+      x: 704,
+      y: 907
+    },
+    baby_chick: {
+      x: 768,
+      y: 907
+    },
+    hatched_chick: {
+      x: 832,
+      y: 907
+    },
+    hatching_chick: {
+      x: 896,
+      y: 907
+    },
+    chicken: {
+      x: 971,
+      y: 0
+    },
+    penguin: {
+      x: 971,
+      y: 64
+    },
+    turtle: {
+      x: 971,
+      y: 128
+    },
+    bug: {
+      x: 971,
+      y: 192
+    },
+    honeybee: {
+      x: 971,
+      y: 256
+    },
+    ant: {
+      x: 971,
+      y: 320
+    },
+    beetle: {
+      x: 971,
+      y: 384
+    },
+    snail: {
+      x: 971,
+      y: 448
+    },
+    octopus: {
+      x: 971,
+      y: 512
+    },
+    tropical_fish: {
+      x: 971,
+      y: 576
+    },
+    fish: {
+      x: 971,
+      y: 640
+    },
+    whale: {
+      x: 971,
+      y: 704
+    },
+    whale2: {
+      x: 971,
+      y: 768
+    },
+    dolphin: {
+      x: 971,
+      y: 832
+    },
+    cow2: {
+      x: 971,
+      y: 896
+    },
+    ram: {
+      x: 0,
+      y: 971
+    },
+    rat: {
+      x: 64,
+      y: 971
+    },
+    water_buffalo: {
+      x: 128,
+      y: 971
+    },
+    tiger2: {
+      x: 192,
+      y: 971
+    },
+    rabbit2: {
+      x: 256,
+      y: 971
+    },
+    dragon: {
+      x: 320,
+      y: 971
+    },
+    goat: {
+      x: 384,
+      y: 971
+    },
+    rooster: {
+      x: 448,
+      y: 971
+    },
+    dog2: {
+      x: 512,
+      y: 971
+    },
+    pig2: {
+      x: 576,
+      y: 971
+    },
+    mouse2: {
+      x: 640,
+      y: 971
+    },
+    ox: {
+      x: 704,
+      y: 971
+    },
+    dragon_face: {
+      x: 768,
+      y: 971
+    },
+    blowfish: {
+      x: 832,
+      y: 971
+    },
+    crocodile: {
+      x: 896,
+      y: 971
+    },
+    dromedary_camel: {
+      x: 960,
+      y: 971
+    },
+    leopard: {
+      x: 1035,
+      y: 0
+    },
+    cat2: {
+      x: 1035,
+      y: 64
+    },
+    poodle: {
+      x: 1035,
+      y: 128
+    },
+    paw_prints: {
+      x: 1035,
+      y: 192
+    },
+    bouquet: {
+      x: 1035,
+      y: 256
+    },
+    cherry_blossom: {
+      x: 1035,
+      y: 320
+    },
+    tulip: {
+      x: 1035,
+      y: 384
+    },
+    four_leaf_clover: {
+      x: 1035,
+      y: 448
+    },
+    rose: {
+      x: 1035,
+      y: 512
+    },
+    sunflower: {
+      x: 1035,
+      y: 576
+    },
+    hibiscus: {
+      x: 1035,
+      y: 640
+    },
+    maple_leaf: {
+      x: 1035,
+      y: 704
+    },
+    leaves: {
+      x: 1035,
+      y: 768
+    },
+    fallen_leaf: {
+      x: 1035,
+      y: 832
+    },
+    herb: {
+      x: 1035,
+      y: 896
+    },
+    mushroom: {
+      x: 1035,
+      y: 960
+    },
+    cactus: {
+      x: 0,
+      y: 1035
+    },
+    palm_tree: {
+      x: 64,
+      y: 1035
+    },
+    evergreen_tree: {
+      x: 128,
+      y: 1035
+    },
+    deciduous_tree: {
+      x: 192,
+      y: 1035
+    },
+    chestnut: {
+      x: 256,
+      y: 1035
+    },
+    seedling: {
+      x: 320,
+      y: 1035
+    },
+    blossom: {
+      x: 384,
+      y: 1035
+    },
+    ear_of_rice: {
+      x: 448,
+      y: 1035
+    },
+    shell: {
+      x: 512,
+      y: 1035
+    },
+    globe_with_meridians: {
+      x: 576,
+      y: 1035
+    },
+    sun_with_face: {
+      x: 640,
+      y: 1035
+    },
+    full_moon_with_face: {
+      x: 704,
+      y: 1035
+    },
+    new_moon_with_face: {
+      x: 768,
+      y: 1035
+    },
+    new_moon: {
+      x: 832,
+      y: 1035
+    },
+    waxing_crescent_moon: {
+      x: 896,
+      y: 1035
+    },
+    first_quarter_moon: {
+      x: 960,
+      y: 1035
+    },
+    waxing_gibbous_moon: {
+      x: 1024,
+      y: 1035
+    },
+    full_moon: {
+      x: 1099,
+      y: 0
+    },
+    waning_gibbous_moon: {
+      x: 1099,
+      y: 64
+    },
+    last_quarter_moon: {
+      x: 1099,
+      y: 128
+    },
+    waning_crescent_moon: {
+      x: 1099,
+      y: 192
+    },
+    last_quarter_moon_with_face: {
+      x: 1099,
+      y: 256
+    },
+    first_quarter_moon_with_face: {
+      x: 1099,
+      y: 320
+    },
+    crescent_moon: {
+      x: 1099,
+      y: 384
+    },
+    earth_africa: {
+      x: 1099,
+      y: 448
+    },
+    earth_americas: {
+      x: 1099,
+      y: 512
+    },
+    earth_asia: {
+      x: 1099,
+      y: 576
+    },
+    volcano: {
+      x: 1099,
+      y: 640
+    },
+    milky_way: {
+      x: 1099,
+      y: 704
+    },
+    partly_sunny: {
+      x: 1099,
+      y: 768
+    },
+    octocat: {
+      x: 1099,
+      y: 832
+    },
+    squirrel: {
+      x: 0,
+      y: 0,
+      width: 75,
+      height: 75
+    },
+    bamboo: {
+      x: 1099,
+      y: 960
+    },
+    gift_heart: {
+      x: 1099,
+      y: 1024
+    },
+    dolls: {
+      x: 0,
+      y: 1099
+    },
+    school_satchel: {
+      x: 64,
+      y: 1099
+    },
+    mortar_board: {
+      x: 128,
+      y: 1099
+    },
+    flags: {
+      x: 192,
+      y: 1099
+    },
+    fireworks: {
+      x: 256,
+      y: 1099
+    },
+    sparkler: {
+      x: 320,
+      y: 1099
+    },
+    wind_chime: {
+      x: 384,
+      y: 1099
+    },
+    rice_scene: {
+      x: 448,
+      y: 1099
+    },
+    jack_o_lantern: {
+      x: 512,
+      y: 1099
+    },
+    ghost: {
+      x: 576,
+      y: 1099
+    },
+    santa: {
+      x: 640,
+      y: 1099
+    },
+    christmas_tree: {
+      x: 704,
+      y: 1099
+    },
+    gift: {
+      x: 768,
+      y: 1099
+    },
+    bell: {
+      x: 832,
+      y: 1099
+    },
+    no_bell: {
+      x: 896,
+      y: 1099
+    },
+    tanabata_tree: {
+      x: 960,
+      y: 1099
+    },
+    tada: {
+      x: 1024,
+      y: 1099
+    },
+    confetti_ball: {
+      x: 1088,
+      y: 1099
+    },
+    balloon: {
+      x: 1163,
+      y: 0
+    },
+    crystal_ball: {
+      x: 1163,
+      y: 64
+    },
+    cd: {
+      x: 1163,
+      y: 128
+    },
+    dvd: {
+      x: 1163,
+      y: 192
+    },
+    floppy_disk: {
+      x: 1163,
+      y: 256
+    },
+    camera: {
+      x: 1163,
+      y: 320
+    },
+    video_camera: {
+      x: 1163,
+      y: 384
+    },
+    movie_camera: {
+      x: 1163,
+      y: 448
+    },
+    computer: {
+      x: 1163,
+      y: 512
+    },
+    tv: {
+      x: 1163,
+      y: 576
+    },
+    iphone: {
+      x: 1163,
+      y: 640
+    },
+    phone: {
+      x: 1163,
+      y: 704
+    },
+    telephone: {
+      x: 1163,
+      y: 768
+    },
+    telephone_receiver: {
+      x: 1163,
+      y: 832
+    },
+    pager: {
+      x: 1163,
+      y: 896
+    },
+    fax: {
+      x: 1163,
+      y: 960
+    },
+    minidisc: {
+      x: 1163,
+      y: 1024
+    },
+    vhs: {
+      x: 1163,
+      y: 1088
+    },
+    sound: {
+      x: 0,
+      y: 1163
+    },
+    speaker: {
+      x: 64,
+      y: 1163
+    },
+    mute: {
+      x: 128,
+      y: 1163
+    },
+    loudspeaker: {
+      x: 192,
+      y: 1163
+    },
+    mega: {
+      x: 256,
+      y: 1163
+    },
+    hourglass: {
+      x: 320,
+      y: 1163
+    },
+    hourglass_flowing_sand: {
+      x: 384,
+      y: 1163
+    },
+    alarm_clock: {
+      x: 448,
+      y: 1163
+    },
+    watch: {
+      x: 512,
+      y: 1163
+    },
+    radio: {
+      x: 576,
+      y: 1163
+    },
+    satellite: {
+      x: 640,
+      y: 1163
+    },
+    loop: {
+      x: 704,
+      y: 1163
+    },
+    mag: {
+      x: 768,
+      y: 1163
+    },
+    mag_right: {
+      x: 832,
+      y: 1163
+    },
+    unlock: {
+      x: 896,
+      y: 1163
+    },
+    lock: {
+      x: 960,
+      y: 1163
+    },
+    lock_with_ink_pen: {
+      x: 1024,
+      y: 1163
+    },
+    closed_lock_with_key: {
+      x: 1088,
+      y: 1163
+    },
+    key: {
+      x: 1152,
+      y: 1163
+    },
+    bulb: {
+      x: 1227,
+      y: 0
+    },
+    flashlight: {
+      x: 1227,
+      y: 64
+    },
+    high_brightness: {
+      x: 1227,
+      y: 128
+    },
+    low_brightness: {
+      x: 1227,
+      y: 192
+    },
+    electric_plug: {
+      x: 1227,
+      y: 256
+    },
+    battery: {
+      x: 1227,
+      y: 320
+    },
+    calling: {
+      x: 1227,
+      y: 384
+    },
+    email: {
+      x: 1227,
+      y: 448
+    },
+    mailbox: {
+      x: 1227,
+      y: 512
+    },
+    postbox: {
+      x: 1227,
+      y: 576
+    },
+    bath: {
+      x: 1227,
+      y: 640
+    },
+    bathtub: {
+      x: 1227,
+      y: 704
+    },
+    shower: {
+      x: 1227,
+      y: 768
+    },
+    toilet: {
+      x: 1227,
+      y: 832
+    },
+    wrench: {
+      x: 1227,
+      y: 896
+    },
+    nut_and_bolt: {
+      x: 1227,
+      y: 960
+    },
+    hammer: {
+      x: 1227,
+      y: 1024
+    },
+    seat: {
+      x: 1227,
+      y: 1088
+    },
+    moneybag: {
+      x: 1227,
+      y: 1152
+    },
+    yen: {
+      x: 0,
+      y: 1227
+    },
+    dollar: {
+      x: 64,
+      y: 1227
+    },
+    pound: {
+      x: 128,
+      y: 1227
+    },
+    euro: {
+      x: 192,
+      y: 1227
+    },
+    credit_card: {
+      x: 256,
+      y: 1227
+    },
+    money_with_wings: {
+      x: 320,
+      y: 1227
+    },
+    "e-mail": {
+      x: 384,
+      y: 1227
+    },
+    inbox_tray: {
+      x: 448,
+      y: 1227
+    },
+    outbox_tray: {
+      x: 512,
+      y: 1227
+    },
+    envelope: {
+      x: 576,
+      y: 1227
+    },
+    incoming_envelope: {
+      x: 640,
+      y: 1227
+    },
+    postal_horn: {
+      x: 704,
+      y: 1227
+    },
+    mailbox_closed: {
+      x: 768,
+      y: 1227
+    },
+    mailbox_with_mail: {
+      x: 832,
+      y: 1227
+    },
+    mailbox_with_no_mail: {
+      x: 896,
+      y: 1227
+    },
+    package: {
+      x: 960,
+      y: 1227
+    },
+    door: {
+      x: 1024,
+      y: 1227
+    },
+    smoking: {
+      x: 1088,
+      y: 1227
+    },
+    bomb: {
+      x: 1152,
+      y: 1227
+    },
+    gun: {
+      x: 1216,
+      y: 1227
+    },
+    hocho: {
+      x: 1291,
+      y: 0
+    },
+    pill: {
+      x: 1291,
+      y: 64
+    },
+    syringe: {
+      x: 1291,
+      y: 128
+    },
+    page_facing_up: {
+      x: 1291,
+      y: 192
+    },
+    page_with_curl: {
+      x: 1291,
+      y: 256
+    },
+    bookmark_tabs: {
+      x: 1291,
+      y: 320
+    },
+    bar_chart: {
+      x: 1291,
+      y: 384
+    },
+    chart_with_upwards_trend: {
+      x: 1291,
+      y: 448
+    },
+    chart_with_downwards_trend: {
+      x: 1291,
+      y: 512
+    },
+    scroll: {
+      x: 1291,
+      y: 576
+    },
+    clipboard: {
+      x: 1291,
+      y: 640
+    },
+    calendar: {
+      x: 1291,
+      y: 704
+    },
+    date: {
+      x: 1291,
+      y: 768
+    },
+    card_index: {
+      x: 1291,
+      y: 832
+    },
+    file_folder: {
+      x: 1291,
+      y: 896
+    },
+    open_file_folder: {
+      x: 1291,
+      y: 960
+    },
+    scissors: {
+      x: 1291,
+      y: 1024
+    },
+    pushpin: {
+      x: 1291,
+      y: 1088
+    },
+    paperclip: {
+      x: 1291,
+      y: 1152
+    },
+    black_nib: {
+      x: 1291,
+      y: 1216
+    },
+    pencil2: {
+      x: 0,
+      y: 1291
+    },
+    straight_ruler: {
+      x: 64,
+      y: 1291
+    },
+    triangular_ruler: {
+      x: 128,
+      y: 1291
+    },
+    closed_book: {
+      x: 192,
+      y: 1291
+    },
+    green_book: {
+      x: 256,
+      y: 1291
+    },
+    blue_book: {
+      x: 320,
+      y: 1291
+    },
+    orange_book: {
+      x: 384,
+      y: 1291
+    },
+    notebook: {
+      x: 448,
+      y: 1291
+    },
+    notebook_with_decorative_cover: {
+      x: 512,
+      y: 1291
+    },
+    ledger: {
+      x: 576,
+      y: 1291
+    },
+    books: {
+      x: 640,
+      y: 1291
+    },
+    bookmark: {
+      x: 704,
+      y: 1291
+    },
+    name_badge: {
+      x: 768,
+      y: 1291
+    },
+    microscope: {
+      x: 832,
+      y: 1291
+    },
+    telescope: {
+      x: 896,
+      y: 1291
+    },
+    newspaper: {
+      x: 75,
+      y: 0
+    },
+    football: {
+      x: 1024,
+      y: 1291
+    },
+    basketball: {
+      x: 1088,
+      y: 1291
+    },
+    soccer: {
+      x: 1152,
+      y: 1291
+    },
+    baseball: {
+      x: 1216,
+      y: 1291
+    },
+    tennis: {
+      x: 1280,
+      y: 1291
+    },
+    "8ball": {
+      x: 1355,
+      y: 0
+    },
+    rugby_football: {
+      x: 1355,
+      y: 64
+    },
+    bowling: {
+      x: 1355,
+      y: 128
+    },
+    golf: {
+      x: 1355,
+      y: 192
+    },
+    mountain_bicyclist: {
+      x: 1355,
+      y: 256
+    },
+    bicyclist: {
+      x: 1355,
+      y: 320
+    },
+    horse_racing: {
+      x: 1355,
+      y: 384
+    },
+    snowboarder: {
+      x: 1355,
+      y: 448
+    },
+    swimmer: {
+      x: 1355,
+      y: 512
+    },
+    surfer: {
+      x: 1355,
+      y: 576
+    },
+    ski: {
+      x: 1355,
+      y: 640
+    },
+    spades: {
+      x: 1355,
+      y: 704
+    },
+    hearts: {
+      x: 1355,
+      y: 768
+    },
+    clubs: {
+      x: 1355,
+      y: 832
+    },
+    diamonds: {
+      x: 1355,
+      y: 896
+    },
+    gem: {
+      x: 1355,
+      y: 960
+    },
+    ring: {
+      x: 1355,
+      y: 1024
+    },
+    trophy: {
+      x: 1355,
+      y: 1088
+    },
+    musical_score: {
+      x: 1355,
+      y: 1152
+    },
+    musical_keyboard: {
+      x: 1355,
+      y: 1216
+    },
+    violin: {
+      x: 1355,
+      y: 1280
+    },
+    space_invader: {
+      x: 0,
+      y: 1355
+    },
+    video_game: {
+      x: 64,
+      y: 1355
+    },
+    black_joker: {
+      x: 128,
+      y: 1355
+    },
+    flower_playing_cards: {
+      x: 192,
+      y: 1355
+    },
+    game_die: {
+      x: 256,
+      y: 1355
+    },
+    dart: {
+      x: 320,
+      y: 1355
+    },
+    mahjong: {
+      x: 384,
+      y: 1355
+    },
+    clapper: {
+      x: 448,
+      y: 1355
+    },
+    memo: {
+      x: 512,
+      y: 1355
+    },
+    pencil: {
+      x: 576,
+      y: 1355
+    },
+    book: {
+      x: 640,
+      y: 1355
+    },
+    art: {
+      x: 704,
+      y: 1355
+    },
+    microphone: {
+      x: 768,
+      y: 1355
+    },
+    headphones: {
+      x: 832,
+      y: 1355
+    },
+    trumpet: {
+      x: 896,
+      y: 1355
+    },
+    saxophone: {
+      x: 960,
+      y: 1355
+    },
+    guitar: {
+      x: 1024,
+      y: 1355
+    },
+    shoe: {
+      x: 1088,
+      y: 1355
+    },
+    sandal: {
+      x: 1152,
+      y: 1355
+    },
+    high_heel: {
+      x: 1216,
+      y: 1355
+    },
+    lipstick: {
+      x: 1280,
+      y: 1355
+    },
+    boot: {
+      x: 1344,
+      y: 1355
+    },
+    shirt: {
+      x: 1419,
+      y: 0
+    },
+    tshirt: {
+      x: 1419,
+      y: 64
+    },
+    necktie: {
+      x: 1419,
+      y: 128
+    },
+    womans_clothes: {
+      x: 1419,
+      y: 192
+    },
+    dress: {
+      x: 1419,
+      y: 256
+    },
+    running_shirt_with_sash: {
+      x: 1419,
+      y: 320
+    },
+    jeans: {
+      x: 1419,
+      y: 384
+    },
+    kimono: {
+      x: 1419,
+      y: 448
+    },
+    bikini: {
+      x: 1419,
+      y: 512
+    },
+    ribbon: {
+      x: 1419,
+      y: 576
+    },
+    tophat: {
+      x: 1419,
+      y: 640
+    },
+    crown: {
+      x: 1419,
+      y: 704
+    },
+    womans_hat: {
+      x: 1419,
+      y: 768
+    },
+    mans_shoe: {
+      x: 1419,
+      y: 832
+    },
+    closed_umbrella: {
+      x: 1419,
+      y: 896
+    },
+    briefcase: {
+      x: 1419,
+      y: 960
+    },
+    handbag: {
+      x: 1419,
+      y: 1024
+    },
+    pouch: {
+      x: 1419,
+      y: 1088
+    },
+    purse: {
+      x: 1419,
+      y: 1152
+    },
+    eyeglasses: {
+      x: 1419,
+      y: 1216
+    },
+    fishing_pole_and_fish: {
+      x: 1419,
+      y: 1280
+    },
+    coffee: {
+      x: 1419,
+      y: 1344
+    },
+    tea: {
+      x: 0,
+      y: 1419
+    },
+    sake: {
+      x: 64,
+      y: 1419
+    },
+    baby_bottle: {
+      x: 128,
+      y: 1419
+    },
+    beer: {
+      x: 192,
+      y: 1419
+    },
+    beers: {
+      x: 256,
+      y: 1419
+    },
+    cocktail: {
+      x: 320,
+      y: 1419
+    },
+    tropical_drink: {
+      x: 384,
+      y: 1419
+    },
+    wine_glass: {
+      x: 448,
+      y: 1419
+    },
+    fork_and_knife: {
+      x: 512,
+      y: 1419
+    },
+    pizza: {
+      x: 576,
+      y: 1419
+    },
+    hamburger: {
+      x: 640,
+      y: 1419
+    },
+    fries: {
+      x: 704,
+      y: 1419
+    },
+    poultry_leg: {
+      x: 768,
+      y: 1419
+    },
+    meat_on_bone: {
+      x: 832,
+      y: 1419
+    },
+    spaghetti: {
+      x: 896,
+      y: 1419
+    },
+    curry: {
+      x: 960,
+      y: 1419
+    },
+    fried_shrimp: {
+      x: 1024,
+      y: 1419
+    },
+    bento: {
+      x: 1088,
+      y: 1419
+    },
+    sushi: {
+      x: 1152,
+      y: 1419
+    },
+    fish_cake: {
+      x: 1216,
+      y: 1419
+    },
+    rice_ball: {
+      x: 1280,
+      y: 1419
+    },
+    rice_cracker: {
+      x: 1344,
+      y: 1419
+    },
+    rice: {
+      x: 1408,
+      y: 1419
+    },
+    ramen: {
+      x: 1483,
+      y: 0
+    },
+    stew: {
+      x: 1483,
+      y: 64
+    },
+    oden: {
+      x: 1483,
+      y: 128
+    },
+    dango: {
+      x: 1483,
+      y: 192
+    },
+    egg: {
+      x: 1483,
+      y: 256
+    },
+    bread: {
+      x: 1483,
+      y: 320
+    },
+    doughnut: {
+      x: 1483,
+      y: 384
+    },
+    custard: {
+      x: 1483,
+      y: 448
+    },
+    icecream: {
+      x: 1483,
+      y: 512
+    },
+    ice_cream: {
+      x: 1483,
+      y: 576
+    },
+    shaved_ice: {
+      x: 1483,
+      y: 640
+    },
+    birthday: {
+      x: 1483,
+      y: 704
+    },
+    cake: {
+      x: 1483,
+      y: 768
+    },
+    cookie: {
+      x: 1483,
+      y: 832
+    },
+    chocolate_bar: {
+      x: 1483,
+      y: 896
+    },
+    candy: {
+      x: 1483,
+      y: 960
+    },
+    lollipop: {
+      x: 1483,
+      y: 1024
+    },
+    honey_pot: {
+      x: 1483,
+      y: 1088
+    },
+    apple: {
+      x: 1483,
+      y: 1152
+    },
+    green_apple: {
+      x: 1483,
+      y: 1216
+    },
+    tangerine: {
+      x: 1483,
+      y: 1280
+    },
+    lemon: {
+      x: 1483,
+      y: 1344
+    },
+    cherries: {
+      x: 1483,
+      y: 1408
+    },
+    grapes: {
+      x: 0,
+      y: 1483
+    },
+    watermelon: {
+      x: 64,
+      y: 1483
+    },
+    strawberry: {
+      x: 128,
+      y: 1483
+    },
+    peach: {
+      x: 192,
+      y: 1483
+    },
+    melon: {
+      x: 256,
+      y: 1483
+    },
+    banana: {
+      x: 320,
+      y: 1483
+    },
+    pear: {
+      x: 384,
+      y: 1483
+    },
+    pineapple: {
+      x: 448,
+      y: 1483
+    },
+    sweet_potato: {
+      x: 512,
+      y: 1483
+    },
+    eggplant: {
+      x: 576,
+      y: 1483
+    },
+    tomato: {
+      x: 640,
+      y: 1483
+    },
+    corn: {
+      x: 704,
+      y: 1483
+    },
+    house: {
+      x: 768,
+      y: 1483
+    },
+    house_with_garden: {
+      x: 832,
+      y: 1483
+    },
+    school: {
+      x: 896,
+      y: 1483
+    },
+    office: {
+      x: 960,
+      y: 1483
+    },
+    post_office: {
+      x: 1024,
+      y: 1483
+    },
+    hospital: {
+      x: 1088,
+      y: 1483
+    },
+    bank: {
+      x: 1152,
+      y: 1483
+    },
+    convenience_store: {
+      x: 1216,
+      y: 1483
+    },
+    love_hotel: {
+      x: 1280,
+      y: 1483
+    },
+    hotel: {
+      x: 1344,
+      y: 1483
+    },
+    wedding: {
+      x: 1408,
+      y: 1483
+    },
+    church: {
+      x: 1472,
+      y: 1483
+    },
+    department_store: {
+      x: 1547,
+      y: 0
+    },
+    european_post_office: {
+      x: 1547,
+      y: 64
+    },
+    city_sunrise: {
+      x: 1547,
+      y: 128
+    },
+    city_sunset: {
+      x: 1547,
+      y: 192
+    },
+    japanese_castle: {
+      x: 1547,
+      y: 256
+    },
+    european_castle: {
+      x: 1547,
+      y: 320
+    },
+    tent: {
+      x: 1547,
+      y: 384
+    },
+    factory: {
+      x: 1547,
+      y: 448
+    },
+    tokyo_tower: {
+      x: 1547,
+      y: 512
+    },
+    japan: {
+      x: 1547,
+      y: 576
+    },
+    mount_fuji: {
+      x: 1547,
+      y: 640
+    },
+    sunrise_over_mountains: {
+      x: 1547,
+      y: 704
+    },
+    sunrise: {
+      x: 1547,
+      y: 768
+    },
+    stars: {
+      x: 1547,
+      y: 832
+    },
+    statue_of_liberty: {
+      x: 1547,
+      y: 896
+    },
+    bridge_at_night: {
+      x: 1547,
+      y: 960
+    },
+    carousel_horse: {
+      x: 1547,
+      y: 1024
+    },
+    rainbow: {
+      x: 1547,
+      y: 1088
+    },
+    ferris_wheel: {
+      x: 1547,
+      y: 1152
+    },
+    fountain: {
+      x: 1547,
+      y: 1216
+    },
+    roller_coaster: {
+      x: 1547,
+      y: 1280
+    },
+    ship: {
+      x: 1547,
+      y: 1344
+    },
+    speedboat: {
+      x: 1547,
+      y: 1408
+    },
+    boat: {
+      x: 1547,
+      y: 1472
+    },
+    sailboat: {
+      x: 0,
+      y: 1547
+    },
+    rowboat: {
+      x: 64,
+      y: 1547
+    },
+    anchor: {
+      x: 128,
+      y: 1547
+    },
+    rocket: {
+      x: 192,
+      y: 1547
+    },
+    airplane: {
+      x: 256,
+      y: 1547
+    },
+    helicopter: {
+      x: 320,
+      y: 1547
+    },
+    steam_locomotive: {
+      x: 384,
+      y: 1547
+    },
+    tram: {
+      x: 448,
+      y: 1547
+    },
+    mountain_railway: {
+      x: 512,
+      y: 1547
+    },
+    bike: {
+      x: 576,
+      y: 1547
+    },
+    aerial_tramway: {
+      x: 640,
+      y: 1547
+    },
+    suspension_railway: {
+      x: 704,
+      y: 1547
+    },
+    mountain_cableway: {
+      x: 768,
+      y: 1547
+    },
+    tractor: {
+      x: 832,
+      y: 1547
+    },
+    blue_car: {
+      x: 896,
+      y: 1547
+    },
+    oncoming_automobile: {
+      x: 960,
+      y: 1547
+    },
+    car: {
+      x: 1024,
+      y: 1547
+    },
+    red_car: {
+      x: 1088,
+      y: 1547
+    },
+    taxi: {
+      x: 1152,
+      y: 1547
+    },
+    oncoming_taxi: {
+      x: 1216,
+      y: 1547
+    },
+    articulated_lorry: {
+      x: 1280,
+      y: 1547
+    },
+    bus: {
+      x: 1344,
+      y: 1547
+    },
+    oncoming_bus: {
+      x: 1408,
+      y: 1547
+    },
+    rotating_light: {
+      x: 1472,
+      y: 1547
+    },
+    police_car: {
+      x: 1536,
+      y: 1547
+    },
+    oncoming_police_car: {
+      x: 1611,
+      y: 0
+    },
+    fire_engine: {
+      x: 1611,
+      y: 64
+    },
+    ambulance: {
+      x: 1611,
+      y: 128
+    },
+    minibus: {
+      x: 1611,
+      y: 192
+    },
+    truck: {
+      x: 1611,
+      y: 256
+    },
+    train: {
+      x: 1611,
+      y: 320
+    },
+    station: {
+      x: 1611,
+      y: 384
+    },
+    train2: {
+      x: 1611,
+      y: 448
+    },
+    bullettrain_front: {
+      x: 1611,
+      y: 512
+    },
+    bullettrain_side: {
+      x: 1611,
+      y: 576
+    },
+    light_rail: {
+      x: 1611,
+      y: 640
+    },
+    monorail: {
+      x: 1611,
+      y: 704
+    },
+    railway_car: {
+      x: 1611,
+      y: 768
+    },
+    trolleybus: {
+      x: 1611,
+      y: 832
+    },
+    ticket: {
+      x: 1611,
+      y: 896
+    },
+    fuelpump: {
+      x: 1611,
+      y: 960
+    },
+    vertical_traffic_light: {
+      x: 1611,
+      y: 1024
+    },
+    traffic_light: {
+      x: 1611,
+      y: 1088
+    },
+    warning: {
+      x: 1611,
+      y: 1152
+    },
+    construction: {
+      x: 1611,
+      y: 1216
+    },
+    beginner: {
+      x: 1611,
+      y: 1280
+    },
+    atm: {
+      x: 1611,
+      y: 1344
+    },
+    slot_machine: {
+      x: 1611,
+      y: 1408
+    },
+    busstop: {
+      x: 1611,
+      y: 1472
+    },
+    barber: {
+      x: 1611,
+      y: 1536
+    },
+    hotsprings: {
+      x: 0,
+      y: 1611
+    },
+    checkered_flag: {
+      x: 64,
+      y: 1611
+    },
+    crossed_flags: {
+      x: 128,
+      y: 1611
+    },
+    izakaya_lantern: {
+      x: 192,
+      y: 1611
+    },
+    moyai: {
+      x: 256,
+      y: 1611
+    },
+    circus_tent: {
+      x: 320,
+      y: 1611
+    },
+    performing_arts: {
+      x: 384,
+      y: 1611
+    },
+    round_pushpin: {
+      x: 448,
+      y: 1611
+    },
+    triangular_flag_on_post: {
+      x: 512,
+      y: 1611
+    },
+    jp: {
+      x: 576,
+      y: 1611
+    },
+    kr: {
+      x: 640,
+      y: 1611
+    },
+    cn: {
+      x: 704,
+      y: 1611
+    },
+    us: {
+      x: 768,
+      y: 1611
+    },
+    fr: {
+      x: 832,
+      y: 1611
+    },
+    es: {
+      x: 896,
+      y: 1611
+    },
+    it: {
+      x: 960,
+      y: 1611
+    },
+    ru: {
+      x: 1024,
+      y: 1611
+    },
+    gb: {
+      x: 1088,
+      y: 1611
+    },
+    uk: {
+      x: 1152,
+      y: 1611
+    },
+    de: {
+      x: 1216,
+      y: 1611
+    },
+    one: {
+      x: 1280,
+      y: 1611
+    },
+    two: {
+      x: 1344,
+      y: 1611
+    },
+    three: {
+      x: 1408,
+      y: 1611
+    },
+    four: {
+      x: 1472,
+      y: 1611
+    },
+    five: {
+      x: 1536,
+      y: 1611
+    },
+    six: {
+      x: 1600,
+      y: 1611
+    },
+    seven: {
+      x: 1675,
+      y: 0
+    },
+    eight: {
+      x: 1675,
+      y: 64
+    },
+    nine: {
+      x: 1675,
+      y: 128
+    },
+    keycap_ten: {
+      x: 1675,
+      y: 192
+    },
+    "1234": {
+      x: 1675,
+      y: 256
+    },
+    zero: {
+      x: 1675,
+      y: 320
+    },
+    hash: {
+      x: 1675,
+      y: 384
+    },
+    symbols: {
+      x: 1675,
+      y: 448
+    },
+    arrow_backward: {
+      x: 1675,
+      y: 512
+    },
+    arrow_down: {
+      x: 1675,
+      y: 576
+    },
+    arrow_forward: {
+      x: 1675,
+      y: 640
+    },
+    arrow_left: {
+      x: 1675,
+      y: 704
+    },
+    capital_abcd: {
+      x: 1675,
+      y: 768
+    },
+    abcd: {
+      x: 1675,
+      y: 832
+    },
+    abc: {
+      x: 1675,
+      y: 896
+    },
+    arrow_lower_left: {
+      x: 1675,
+      y: 960
+    },
+    arrow_lower_right: {
+      x: 1675,
+      y: 1024
+    },
+    arrow_right: {
+      x: 1675,
+      y: 1088
+    },
+    arrow_up: {
+      x: 1675,
+      y: 1152
+    },
+    arrow_upper_left: {
+      x: 1675,
+      y: 1216
+    },
+    arrow_upper_right: {
+      x: 1675,
+      y: 1280
+    },
+    arrow_double_down: {
+      x: 1675,
+      y: 1344
+    },
+    arrow_double_up: {
+      x: 1675,
+      y: 1408
+    },
+    arrow_down_small: {
+      x: 1675,
+      y: 1472
+    },
+    arrow_heading_down: {
+      x: 1675,
+      y: 1536
+    },
+    arrow_heading_up: {
+      x: 1675,
+      y: 1600
+    },
+    leftwards_arrow_with_hook: {
+      x: 0,
+      y: 1675
+    },
+    arrow_right_hook: {
+      x: 64,
+      y: 1675
+    },
+    left_right_arrow: {
+      x: 128,
+      y: 1675
+    },
+    arrow_up_down: {
+      x: 192,
+      y: 1675
+    },
+    arrow_up_small: {
+      x: 256,
+      y: 1675
+    },
+    arrows_clockwise: {
+      x: 320,
+      y: 1675
+    },
+    arrows_counterclockwise: {
+      x: 384,
+      y: 1675
+    },
+    rewind: {
+      x: 448,
+      y: 1675
+    },
+    fast_forward: {
+      x: 512,
+      y: 1675
+    },
+    information_source: {
+      x: 576,
+      y: 1675
+    },
+    ok: {
+      x: 640,
+      y: 1675
+    },
+    twisted_rightwards_arrows: {
+      x: 704,
+      y: 1675
+    },
+    repeat: {
+      x: 768,
+      y: 1675
+    },
+    repeat_one: {
+      x: 832,
+      y: 1675
+    },
+    new: {
+      x: 896,
+      y: 1675
+    },
+    top: {
+      x: 960,
+      y: 1675
+    },
+    up: {
+      x: 1024,
+      y: 1675
+    },
+    cool: {
+      x: 1088,
+      y: 1675
+    },
+    free: {
+      x: 1152,
+      y: 1675
+    },
+    ng: {
+      x: 1216,
+      y: 1675
+    },
+    cinema: {
+      x: 1280,
+      y: 1675
+    },
+    koko: {
+      x: 1344,
+      y: 1675
+    },
+    signal_strength: {
+      x: 1408,
+      y: 1675
+    },
+    u5272: {
+      x: 1472,
+      y: 1675
+    },
+    u5408: {
+      x: 1536,
+      y: 1675
+    },
+    u55b6: {
+      x: 1600,
+      y: 1675
+    },
+    u6307: {
+      x: 1664,
+      y: 1675
+    },
+    u6708: {
+      x: 1739,
+      y: 0
+    },
+    u6709: {
+      x: 1739,
+      y: 64
+    },
+    u6e80: {
+      x: 1739,
+      y: 128
+    },
+    u7121: {
+      x: 1739,
+      y: 192
+    },
+    u7533: {
+      x: 1739,
+      y: 256
+    },
+    u7a7a: {
+      x: 1739,
+      y: 320
+    },
+    u7981: {
+      x: 1739,
+      y: 384
+    },
+    sa: {
+      x: 1739,
+      y: 448
+    },
+    restroom: {
+      x: 1739,
+      y: 512
+    },
+    mens: {
+      x: 1739,
+      y: 576
+    },
+    womens: {
+      x: 1739,
+      y: 640
+    },
+    baby_symbol: {
+      x: 1739,
+      y: 704
+    },
+    no_smoking: {
+      x: 1739,
+      y: 768
+    },
+    parking: {
+      x: 1739,
+      y: 832
+    },
+    wheelchair: {
+      x: 1739,
+      y: 896
+    },
+    metro: {
+      x: 1739,
+      y: 960
+    },
+    baggage_claim: {
+      x: 1739,
+      y: 1024
+    },
+    accept: {
+      x: 1739,
+      y: 1088
+    },
+    wc: {
+      x: 1739,
+      y: 1152
+    },
+    potable_water: {
+      x: 1739,
+      y: 1216
+    },
+    put_litter_in_its_place: {
+      x: 1739,
+      y: 1280
+    },
+    secret: {
+      x: 1739,
+      y: 1344
+    },
+    congratulations: {
+      x: 1739,
+      y: 1408
+    },
+    m: {
+      x: 1739,
+      y: 1472
+    },
+    passport_control: {
+      x: 1739,
+      y: 1536
+    },
+    left_luggage: {
+      x: 1739,
+      y: 1600
+    },
+    customs: {
+      x: 1739,
+      y: 1664
+    },
+    ideograph_advantage: {
+      x: 0,
+      y: 1739
+    },
+    cl: {
+      x: 64,
+      y: 1739
+    },
+    sos: {
+      x: 128,
+      y: 1739
+    },
+    id: {
+      x: 192,
+      y: 1739
+    },
+    no_entry_sign: {
+      x: 256,
+      y: 1739
+    },
+    underage: {
+      x: 320,
+      y: 1739
+    },
+    no_mobile_phones: {
+      x: 384,
+      y: 1739
+    },
+    do_not_litter: {
+      x: 448,
+      y: 1739
+    },
+    "non-potable_water": {
+      x: 512,
+      y: 1739
+    },
+    no_bicycles: {
+      x: 576,
+      y: 1739
+    },
+    no_pedestrians: {
+      x: 640,
+      y: 1739
+    },
+    children_crossing: {
+      x: 704,
+      y: 1739
+    },
+    no_entry: {
+      x: 768,
+      y: 1739
+    },
+    eight_spoked_asterisk: {
+      x: 832,
+      y: 1739
+    },
+    sparkle: {
+      x: 896,
+      y: 1739
+    },
+    eight_pointed_black_star: {
+      x: 960,
+      y: 1739
+    },
+    heart_decoration: {
+      x: 1024,
+      y: 1739
+    },
+    vs: {
+      x: 1088,
+      y: 1739
+    },
+    vibration_mode: {
+      x: 1152,
+      y: 1739
+    },
+    mobile_phone_off: {
+      x: 1216,
+      y: 1739
+    },
+    chart: {
+      x: 1280,
+      y: 1739
+    },
+    currency_exchange: {
+      x: 1344,
+      y: 1739
+    },
+    aries: {
+      x: 1408,
+      y: 1739
+    },
+    taurus: {
+      x: 1472,
+      y: 1739
+    },
+    gemini: {
+      x: 1536,
+      y: 1739
+    },
+    cancer: {
+      x: 1600,
+      y: 1739
+    },
+    leo: {
+      x: 1664,
+      y: 1739
+    },
+    virgo: {
+      x: 1728,
+      y: 1739
+    },
+    libra: {
+      x: 1803,
+      y: 0
+    },
+    scorpius: {
+      x: 1803,
+      y: 64
+    },
+    sagittarius: {
+      x: 1803,
+      y: 128
+    },
+    capricorn: {
+      x: 1803,
+      y: 192
+    },
+    aquarius: {
+      x: 1803,
+      y: 256
+    },
+    pisces: {
+      x: 1803,
+      y: 320
+    },
+    ophiuchus: {
+      x: 1803,
+      y: 384
+    },
+    six_pointed_star: {
+      x: 1803,
+      y: 448
+    },
+    negative_squared_cross_mark: {
+      x: 1803,
+      y: 512
+    },
+    a: {
+      x: 1803,
+      y: 576
+    },
+    b: {
+      x: 1803,
+      y: 640
+    },
+    ab: {
+      x: 1803,
+      y: 704
+    },
+    o2: {
+      x: 1803,
+      y: 768
+    },
+    diamond_shape_with_a_dot_inside: {
+      x: 1803,
+      y: 832
+    },
+    recycle: {
+      x: 1803,
+      y: 896
+    },
+    end: {
+      x: 1803,
+      y: 960
+    },
+    back: {
+      x: 1803,
+      y: 1024
+    },
+    on: {
+      x: 1803,
+      y: 1088
+    },
+    soon: {
+      x: 1803,
+      y: 1152
+    },
+    clock1: {
+      x: 1803,
+      y: 1216
+    },
+    clock130: {
+      x: 1803,
+      y: 1280
+    },
+    clock10: {
+      x: 1803,
+      y: 1344
+    },
+    clock1030: {
+      x: 1803,
+      y: 1408
+    },
+    clock11: {
+      x: 1803,
+      y: 1472
+    },
+    clock1130: {
+      x: 1803,
+      y: 1536
+    },
+    clock12: {
+      x: 1803,
+      y: 1600
+    },
+    clock1230: {
+      x: 1803,
+      y: 1664
+    },
+    clock2: {
+      x: 1803,
+      y: 1728
+    },
+    clock230: {
+      x: 0,
+      y: 1803
+    },
+    clock3: {
+      x: 64,
+      y: 1803
+    },
+    clock330: {
+      x: 128,
+      y: 1803
+    },
+    clock4: {
+      x: 192,
+      y: 1803
+    },
+    clock430: {
+      x: 256,
+      y: 1803
+    },
+    clock5: {
+      x: 320,
+      y: 1803
+    },
+    clock530: {
+      x: 384,
+      y: 1803
+    },
+    clock6: {
+      x: 448,
+      y: 1803
+    },
+    clock630: {
+      x: 512,
+      y: 1803
+    },
+    clock7: {
+      x: 576,
+      y: 1803
+    },
+    clock730: {
+      x: 640,
+      y: 1803
+    },
+    clock8: {
+      x: 704,
+      y: 1803
+    },
+    clock830: {
+      x: 768,
+      y: 1803
+    },
+    clock9: {
+      x: 832,
+      y: 1803
+    },
+    clock930: {
+      x: 896,
+      y: 1803
+    },
+    heavy_dollar_sign: {
+      x: 960,
+      y: 1803
+    },
+    copyright: {
+      x: 1024,
+      y: 1803
+    },
+    registered: {
+      x: 1088,
+      y: 1803
+    },
+    tm: {
+      x: 1152,
+      y: 1803
+    },
+    x: {
+      x: 1216,
+      y: 1803
+    },
+    heavy_exclamation_mark: {
+      x: 1280,
+      y: 1803
+    },
+    bangbang: {
+      x: 1344,
+      y: 1803
+    },
+    interrobang: {
+      x: 1408,
+      y: 1803
+    },
+    o: {
+      x: 1472,
+      y: 1803
+    },
+    heavy_multiplication_x: {
+      x: 1536,
+      y: 1803
+    },
+    heavy_plus_sign: {
+      x: 1600,
+      y: 1803
+    },
+    heavy_minus_sign: {
+      x: 1664,
+      y: 1803
+    },
+    heavy_division_sign: {
+      x: 1728,
+      y: 1803
+    },
+    white_flower: {
+      x: 1792,
+      y: 1803
+    },
+    "100": {
+      x: 1867,
+      y: 0
+    },
+    heavy_check_mark: {
+      x: 1867,
+      y: 64
+    },
+    ballot_box_with_check: {
+      x: 1867,
+      y: 128
+    },
+    radio_button: {
+      x: 1867,
+      y: 192
+    },
+    link: {
+      x: 1867,
+      y: 256
+    },
+    curly_loop: {
+      x: 1867,
+      y: 320
+    },
+    wavy_dash: {
+      x: 1867,
+      y: 384
+    },
+    part_alternation_mark: {
+      x: 1867,
+      y: 448
+    },
+    trident: {
+      x: 1867,
+      y: 512
+    },
+    black_small_square: {
+      x: 1867,
+      y: 576
+    },
+    white_small_square: {
+      x: 1867,
+      y: 640
+    },
+    black_medium_small_square: {
+      x: 1867,
+      y: 704
+    },
+    white_medium_small_square: {
+      x: 1867,
+      y: 768
+    },
+    black_medium_square: {
+      x: 1867,
+      y: 832
+    },
+    white_medium_square: {
+      x: 1867,
+      y: 896
+    },
+    white_large_square: {
+      x: 1867,
+      y: 960
+    },
+    white_check_mark: {
+      x: 1867,
+      y: 1024
+    },
+    black_square_button: {
+      x: 1867,
+      y: 1088
+    },
+    white_square_button: {
+      x: 1867,
+      y: 1152
+    },
+    black_circle: {
+      x: 1867,
+      y: 1216
+    },
+    white_circle: {
+      x: 1867,
+      y: 1280
+    },
+    red_circle: {
+      x: 1867,
+      y: 1344
+    },
+    large_blue_circle: {
+      x: 1867,
+      y: 1408
+    },
+    large_blue_diamond: {
+      x: 1867,
+      y: 1472
+    },
+    large_orange_diamond: {
+      x: 1867,
+      y: 1536
+    },
+    small_blue_diamond: {
+      x: 1867,
+      y: 1600
+    },
+    small_orange_diamond: {
+      x: 1867,
+      y: 1664
+    },
+    small_red_triangle: {
+      x: 1867,
+      y: 1728
+    },
+    small_red_triangle_down: {
+      x: 1867,
+      y: 1792
+    }
+  };
+
+  /** Redirect rendering of descendants into the given CSS selector.
+   *  @example
+   *    <Portal into="body">
+   *      <div>I am rendered into document.body</div>
+   *    </Portal>
+   */
+
+  var Portal =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(Portal, _Component);
+
+    function Portal() {
+      _classCallCheck(this, Portal);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(Portal).apply(this, arguments));
+    }
+
+    _createClass(Portal, [{
+      key: "componentDidUpdate",
+      value: function componentDidUpdate(props) {
+        for (var i in props) {
+          if (props[i] !== this.props[i]) {
+            return setTimeout(this.renderLayer);
+          }
+        }
+      }
+    }, {
+      key: "componentDidMount",
+      value: function componentDidMount() {
+        this.isMounted = true;
+        this.renderLayer = this.renderLayer.bind(this);
+        this.renderLayer();
+      }
+    }, {
+      key: "componentWillUnmount",
+      value: function componentWillUnmount() {
+        this.renderLayer(false);
+        this.isMounted = false;
+        if (this.remote) this.remote.parentNode.removeChild(this.remote);
+      }
+    }, {
+      key: "findNode",
+      value: function findNode(node) {
+        return typeof node === 'string' ? document.querySelector(node) : node;
+      }
+    }, {
+      key: "renderLayer",
+      value: function renderLayer() {
+        var show = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+        if (!this.isMounted) return; // clean up old node if moving bases:
+
+        if (this.props.into !== this.intoPointer) {
+          this.intoPointer = this.props.into;
+
+          if (this.into && this.remote) {
+            this.remote = render(h(PortalProxy, null), this.into, this.remote);
+          }
+
+          this.into = this.findNode(this.props.into);
+        }
+
+        this.remote = render(h(PortalProxy, {
+          context: this.context
+        }, show && this.props.children || null), this.into, this.remote);
+      }
+    }, {
+      key: "render",
+      value: function render$$1() {
+        return null;
+      }
+    }]);
+
+    return Portal;
+  }(Component); // high-order component that renders its first child if it exists.
+
+  var PortalProxy =
+  /*#__PURE__*/
+  function (_Component2) {
+    _inherits(PortalProxy, _Component2);
+
+    function PortalProxy() {
+      _classCallCheck(this, PortalProxy);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(PortalProxy).apply(this, arguments));
+    }
+
+    _createClass(PortalProxy, [{
+      key: "getChildContext",
+      value: function getChildContext() {
+        return this.props.context;
+      }
+    }, {
+      key: "render",
+      value: function render$$1(_ref) {
+        var children = _ref.children;
+        return children && children[0] || null;
+      }
+    }]);
+
+    return PortalProxy;
+  }(Component);
+
   var TWITCH_SS_W = 837;
   var TWITCH_SS_H = 819;
 
-  var TwitchPicker =
+  var Picker =
   /*#__PURE__*/
   function (_Component) {
-    _inherits(TwitchPicker, _Component);
+    _inherits(Picker, _Component);
 
-    function TwitchPicker() {
+    function Picker() {
       var _getPrototypeOf2;
 
       var _this;
 
-      _classCallCheck(this, TwitchPicker);
+      _classCallCheck(this, Picker);
 
       for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
 
-      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(TwitchPicker)).call.apply(_getPrototypeOf2, [this].concat(args)));
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Picker)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
         emojiShow: false,
@@ -10526,7 +10816,7 @@ var DubPlus = (function () {
       return _this;
     }
 
-    _createClass(TwitchPicker, [{
+    _createClass(Picker, [{
       key: "fillChat",
       value: function fillChat(val) {
         document.getElementById("chat-txt-message").value += " :".concat(val, ":");
@@ -10614,11 +10904,11 @@ var DubPlus = (function () {
       }
     }]);
 
-    return TwitchPicker;
+    return Picker;
   }(Component);
 
-  function SetupTwitchPicker () {
-    render(h(TwitchPicker, null), document.querySelector(".chat-text-box-icons"));
+  function SetupPicker () {
+    render(h(Picker, null), document.querySelector(".chat-text-box-icons"));
   }
 
   /**
@@ -11168,10 +11458,10 @@ var DubPlus = (function () {
         }
 
         var content = e.message;
-        var user = Dubtrack.session.get('username');
+        var user = proxy.getUserName();
 
-        if (content.indexOf('@' + user) > -1 && Dubtrack.session.id !== e.user.userInfo.userid) {
-          var chatInput = document.getElementById('chat-txt-message');
+        if (content.indexOf('@' + user) > -1 && proxy.getSessionId() !== e.user.userInfo.userid) {
+          var chatInput = proxy.chatInput();
 
           if (userSettings.stored.custom.customAfkMessage) {
             chatInput.value = '[AFK] ' + userSettings.stored.custom.customAfkMessage;
@@ -11179,7 +11469,7 @@ var DubPlus = (function () {
             chatInput.value = "[AFK] I'm not here right now.";
           }
 
-          Dubtrack.room.chat.sendMessage(); // so we don't spam chat, we pause the auto respond for 30sec
+          proxy.sendChatMessage(); // so we don't spam chat, we pause the auto respond for 30sec
 
           _this.setState({
             canSend: false
@@ -11200,12 +11490,12 @@ var DubPlus = (function () {
     _createClass(AFK, [{
       key: "turnOn",
       value: function turnOn() {
-        Dubtrack.Events.bind("realtime:chat-message", this.afk_chat_respond);
+        proxy.onChatMessage(this.afk_chat_respond);
       }
     }, {
       key: "turnOff",
       value: function turnOff() {
-        Dubtrack.Events.unbind("realtime:chat-message", this.afk_chat_respond);
+        proxy.offChatMessage(this.afk_chat_respond);
       }
     }, {
       key: "saveAFKmessage",
@@ -11214,7 +11504,7 @@ var DubPlus = (function () {
       }
     }, {
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render$$1() {
         return h(MenuSwitch, {
           id: "dubplus-afk",
           section: "General",
@@ -11267,11 +11557,11 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (e) {
-        var song = Dubtrack.room.player.activeSong.get('song');
-        var dubCookie = Dubtrack.helpers.cookie.get('dub-' + Dubtrack.room.model.get("_id"));
-        var dubsong = Dubtrack.helpers.cookie.get('dub-song');
+        var song = proxy.getActiveSong();
+        var dubCookie = proxy.getVoteType();
+        var dubsong = proxy.getDubSong();
 
-        if (!Dubtrack.room || !song || song.songid !== dubsong) {
+        if (!song || song.songid !== dubsong) {
           dubCookie = false;
         } // Only cast the vote if user hasn't already voted
 
@@ -11280,11 +11570,11 @@ var DubPlus = (function () {
           _this.advance_vote();
         }
 
-        Dubtrack.Events.bind("realtime:room_playlist-update", _this.voteCheck);
+        proxy.onPlaylistUpdate(_this.voteCheck);
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function (e) {
-        Dubtrack.Events.unbind("realtime:room_playlist-update", _this.voteCheck);
+        proxy.offPlaylistUpdate(_this.voteCheck);
       });
 
       _this.dubup = document.querySelector('.dubup');
@@ -12335,7 +12625,7 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function (e) {
-        Dubtrack.Events.unbind("realtime:chat-message", beginReplace);
+        proxy.offChatMessage(beginReplace);
       });
 
       return _this;
@@ -12346,9 +12636,9 @@ var DubPlus = (function () {
       value: function begin() {
         document.body.classList.remove('dubplus-icon-spinning'); // when first turning it on, it replaces ALL of the emotes in chat history
 
-        beginReplace(document.querySelector('.chat-main')); // then it sets up replacing emotes on new chat messages
+        beginReplace(proxy.chatList()); // then it sets up replacing emotes on new chat messages
 
-        Dubtrack.Events.bind("realtime:chat-message", beginReplace);
+        proxy.onChatMessage(beginReplace);
       }
     }, {
       key: "render",
@@ -12399,8 +12689,8 @@ var DubPlus = (function () {
             return reg.test(content);
           });
 
-          if (Dubtrack.session.id !== e.user.userInfo.userid && inUsers) {
-            Dubtrack.room.chat.mentionChatSound.play();
+          if (proxy.getSessionId() !== e.user.userInfo.userid && inUsers) {
+            proxy.playChatSound();
           }
         }
       });
@@ -12415,12 +12705,12 @@ var DubPlus = (function () {
     _createClass(CustomMentions, [{
       key: "turnOn",
       value: function turnOn() {
-        Dubtrack.Events.bind("realtime:chat-message", this.customMentionCheck);
+        proxy.onChatMessage(this.customMentionCheck);
       }
     }, {
       key: "turnOff",
       value: function turnOff() {
-        Dubtrack.Events.unbind("realtime:chat-message", this.customMentionCheck);
+        proxy.offChatMessage(this.customMentionCheck);
       }
     }, {
       key: "render",
@@ -12470,7 +12760,7 @@ var DubPlus = (function () {
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(ChatCleaner)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatCleanerCheck", function (e) {
-        var totalChats = Array.from(document.querySelectorAll("ul.chat-main > li"));
+        var totalChats = Array.from(proxy.chatList().children);
         var max = parseInt(userSettings.stored.custom.chat_cleaner, 10);
 
         if (isNaN(totalChats.length) || isNaN(max) || !totalChats.length || totalChats.length < max) {
@@ -12484,6 +12774,7 @@ var DubPlus = (function () {
           totalChats.splice(0, min).forEach(function (li) {
             parentUL.removeChild(li);
           });
+          totalChats[totalChats.length - 1].scrollIntoView(false);
         }
       });
 
@@ -12494,11 +12785,11 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        Dubtrack.Events.bind("realtime:chat-message", _this.chatCleanerCheck);
+        proxy.onChatMessage(_this.chatCleanerCheck);
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        Dubtrack.Events.unbind("realtime:chat-message", _this.chatCleanerCheck);
+        proxy.offChatMessage(_this.chatCleanerCheck);
       });
 
       return _this;
@@ -12637,7 +12928,7 @@ var DubPlus = (function () {
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
         notifyCheckPermission(function (status, reason) {
           if (status === true) {
-            Dubtrack.Events.bind("realtime:chat-message", _this.notifyOnMention);
+            proxy.onChatMessage(_this.notifyOnMention);
           } else {
             // call MenuSwitch's switchOff with noTrack=true argument
             _this.switchRef.switchOff(true);
@@ -12658,7 +12949,7 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        Dubtrack.Events.unbind("realtime:chat-message", _this.notifyOnMention);
+        proxy.offChatMessage(_this.notifyOnMention);
       });
 
       return _this;
@@ -12668,7 +12959,7 @@ var DubPlus = (function () {
       key: "notifyOnMention",
       value: function notifyOnMention(e) {
         var content = e.message;
-        var user = Dubtrack.session.get("username").toLowerCase();
+        var user = proxy.getUserName().toLowerCase();
         var mentionTriggers = ["@" + user];
 
         if (userSettings.stored.options.custom_mentions && userSettings.stored.custom.custom_mentions) {
@@ -12681,7 +12972,7 @@ var DubPlus = (function () {
           return reg.test(content);
         });
 
-        if (mentionTriggersTest && !this.isActiveTab && Dubtrack.session.id !== e.user.userInfo.userid) {
+        if (mentionTriggersTest && !this.isActiveTab && proxy.getSessionId() !== e.user.userInfo.userid) {
           showNotification({
             title: "Message from ".concat(e.user.username),
             content: content
@@ -12742,7 +13033,7 @@ var DubPlus = (function () {
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
         notifyCheckPermission(function (status, reason) {
           if (status === true) {
-            Dubtrack.Events.bind("realtime:new-message", _this.notify);
+            proxy.onNewPM(_this.notify);
           } else {
             // call MenuSwitch's switchOff with noTrack=true argument
             _this.switchRef.switchOff(true);
@@ -12763,7 +13054,7 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        Dubtrack.Events.unbind("realtime:new-message", _this.notify);
+        proxy.offNewPM(_this.notify);
       });
 
       return _this;
@@ -12772,7 +13063,7 @@ var DubPlus = (function () {
     _createClass(PMNotifications, [{
       key: "notify",
       value: function notify(e) {
-        var userid = Dubtrack.session.get("_id");
+        var userid = proxy.getSessionId();
 
         if (userid === e.userid) {
           return;
@@ -12847,7 +13138,7 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "djNotificationCheck", function (e) {
         if (e.startTime > 2) return;
-        var queuePos = document.querySelector(".queue-position").textContent;
+        var queuePos = proxy.getQueuePosition();
         var positionParse = parseInt(queuePos, 10);
         var position = e.startTime < 0 && !isNaN(positionParse) ? positionParse - 1 : positionParse;
         if (isNaN(positionParse) || position !== userSettings.stored.custom.dj_notification) return;
@@ -12861,7 +13152,7 @@ var DubPlus = (function () {
           });
         }
 
-        Dubtrack.room.chat.mentionChatSound.play();
+        proxy.playChatSound();
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
@@ -12872,11 +13163,11 @@ var DubPlus = (function () {
             });
           }
         });
-        Dubtrack.Events.bind("realtime:room_playlist-update", _this.djNotificationCheck);
+        proxy.onPlaylistUpdate(_this.djNotificationCheck);
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        Dubtrack.Events.unbind("realtime:room_playlist-update", _this.djNotificationCheck);
+        proxy.offPlaylistUpdate(_this.djNotificationCheck);
       });
 
       return _this;
@@ -13508,15 +13799,6 @@ var DubPlus = (function () {
     return RainSwitch;
   }(Component);
 
-  /**
-   * Check if a user is at least a mod or above
-   */
-
-  /*global Dubtrack */
-  function modCheck(userid) {
-    return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
-  }
-
   var DubsInfoListItem = function DubsInfoListItem(_ref) {
     var data = _ref.data,
         click = _ref.click;
@@ -13651,18 +13933,18 @@ var DubPlus = (function () {
         grabs: []
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "userIsMod", modCheck(Dubtrack.session.id));
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "userIsMod", proxy.modCheck());
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
         _this.setState({
           isOn: true
         }, _this.resetDubs);
 
-        Dubtrack.Events.bind("realtime:room_playlist-dub", _this.dubWatcher);
-        Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", _this.grabWatcher);
-        Dubtrack.Events.bind("realtime:user-leave", _this.dubUserLeaveWatcher);
-        Dubtrack.Events.bind("realtime:room_playlist-update", _this.resetDubs);
-        Dubtrack.Events.bind("realtime:room_playlist-update", _this.resetGrabs);
+        proxy.onSongVote(_this.dubWatcher);
+        proxy.onSongGrab(_this.grabWatcher);
+        proxy.onUserLeave(_this.dubUserLeaveWatcher);
+        proxy.onPlaylistUpdate(_this.resetDubs);
+        proxy.onPlaylistUpdate(_this.resetGrabs);
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
@@ -13670,12 +13952,11 @@ var DubPlus = (function () {
           isOn: false
         });
 
-        Dubtrack.Events.unbind("realtime:room_playlist-dub", _this.dubWatcher);
-        Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", _this.grabWatcher);
-        Dubtrack.Events.unbind("realtime:user-leave", _this.dubUserLeaveWatcher);
-        Dubtrack.Events.unbind("realtime:room_playlist-update", _this.resetDubs); //TODO: Remove when we can hit the api for all grabs of current playing song
-
-        Dubtrack.Events.unbind("realtime:room_playlist-update", _this.resetGrabs);
+        proxy.offSongVote(_this.dubWatcher);
+        proxy.offSongGrab(_this.grabWatcher);
+        proxy.offUserLeave(_this.dubUserLeaveWatcher);
+        proxy.offPlaylistUpdate(_this.resetDubs);
+        proxy.offPlaylistUpdate(_this.resetGrabs);
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "closeModal", function () {
@@ -13816,7 +14097,7 @@ var DubPlus = (function () {
         var _this2 = this;
 
         // get the current active dubs in the room via api
-        var dubsURL = "https://api.dubtrack.fm/room/".concat(Dubtrack.room.model.id, "/playlist/active/dubs");
+        var dubsURL = "https://api.dubtrack.fm/room/".concat(proxy.getRoomId(), "/playlist/active/dubs");
         var roomDubs = getJSON(dubsURL);
         roomDubs.then(function (json) {
           // loop through all the upDubs in the room and add them to our local state
@@ -13830,9 +14111,7 @@ var DubPlus = (function () {
               } // to get username we check for user info in the DT room's user collection
 
 
-              var checkUser = Dubtrack.room.users.collection.findWhere({
-                userid: e.userid
-              });
+              var checkUser = proxy.getUserInfo(e.userid);
 
               if (!checkUser || !checkUser.attributes) {
                 // if they don't exist, we can check the user api directly
@@ -13881,9 +14160,7 @@ var DubPlus = (function () {
                 return;
               }
 
-              var checkUsers = Dubtrack.room.users.collection.findWhere({
-                userid: e.userid
-              });
+              var checkUsers = proxy.getUserInfo(e.userid);
 
               if (!checkUsers || !checkUsers.attributes) {
                 var userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
@@ -13920,6 +14197,8 @@ var DubPlus = (function () {
               }
             });
           }
+        }).catch(function (err) {
+          console.error(err);
         });
       }
     }, {
@@ -14005,29 +14284,26 @@ var DubPlus = (function () {
     _createClass(DowndubInChat, [{
       key: "turnOn",
       value: function turnOn() {
-        if (!modCheck(Dubtrack.session.id)) {
+        if (!proxy.modCheck()) {
           return;
         }
 
-        Dubtrack.Events.bind("realtime:room_playlist-dub", this.downdubWatcher);
+        proxy.onSongVote(this.downdubWatcher);
       }
     }, {
       key: "turnOff",
       value: function turnOff() {
-        Dubtrack.Events.unbind("realtime:room_playlist-dub", this.downdubWatcher);
+        proxy.offSongVote(this.downdubWatcher);
       }
     }, {
       key: "downdubWatcher",
       value: function downdubWatcher(e) {
-        var user = Dubtrack.session.get("username");
-
-        var currentDj = Dubtrack.room.users.collection.findWhere({
-          userid: Dubtrack.room.player.activeSong.attributes.song.userid
-        }).attributes._user.username;
+        var user = proxy.getUserName();
+        var currentDj = proxy.getCurrentDJ();
 
         if (user === currentDj && e.dubtype === "downdub") {
-          var newChat = chatMessage(e.user.username, Dubtrack.room.player.activeSong.attributes.songInfo.name);
-          document.querySelector("ul.chat-main").appendChild(newChat);
+          var newChat = chatMessage(e.user.username, proxy.getSongName());
+          proxy.chatList().appendChild(newChat);
         }
       }
     }, {
@@ -14082,25 +14358,22 @@ var DubPlus = (function () {
     _createClass(UpdubsInChat, [{
       key: "turnOn",
       value: function turnOn() {
-        Dubtrack.Events.bind("realtime:room_playlist-dub", this.updubWatcher);
+        proxy.onSongVote(this.updubWatcher);
       }
     }, {
       key: "turnOff",
       value: function turnOff() {
-        Dubtrack.Events.unbind("realtime:room_playlist-dub", this.updubWatcher);
+        proxy.offSongVote(this.updubWatcher);
       }
     }, {
       key: "updubWatcher",
       value: function updubWatcher(e) {
-        var user = Dubtrack.session.get("username");
-
-        var currentDj = Dubtrack.room.users.collection.findWhere({
-          userid: Dubtrack.room.player.activeSong.attributes.song.userid
-        }).attributes._user.username;
+        var user = proxy.getUserName();
+        var currentDj = proxy.getCurrentDJ();
 
         if (user === currentDj && e.dubtype === "updub") {
-          var newChat = chatMessage$1(e.user.username, Dubtrack.room.player.activeSong.attributes.songInfo.name);
-          document.querySelector("ul.chat-main").appendChild(newChat);
+          var newChat = chatMessage$1(e.user.username, proxy.getSongName());
+          proxy.chatList().appendChild(newChat);
         }
       }
     }, {
@@ -14155,25 +14428,22 @@ var DubPlus = (function () {
     _createClass(GrabsInChat, [{
       key: "turnOn",
       value: function turnOn() {
-        Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
+        proxy.onSongGrab(this.grabChatWatcher);
       }
     }, {
       key: "turnOff",
       value: function turnOff() {
-        Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
+        proxy.offSongGrab(this.grabChatWatcher);
       }
     }, {
       key: "grabChatWatcher",
       value: function grabChatWatcher(e) {
-        var user = Dubtrack.session.get("username");
+        var user = proxy.getUserName();
+        var currentDj = proxy.getCurrentDJ();
 
-        var currentDj = Dubtrack.room.users.collection.findWhere({
-          userid: Dubtrack.room.player.activeSong.attributes.song.userid
-        }).attributes._user.username;
-
-        if (user === currentDj && !Dubtrack.room.model.get('displayUserGrab')) {
-          var newChat = chatMessage$2(e.user.username, Dubtrack.room.player.activeSong.attributes.songInfo.name);
-          document.querySelector("ul.chat-main").appendChild(newChat);
+        if (user === currentDj && !proxy.displayUserGrab()) {
+          var newChat = chatMessage$2(e.user.username, proxy.getSongName());
+          proxy.chatList().appendChild(newChat);
         }
       }
     }, {
@@ -14380,7 +14650,7 @@ var DubPlus = (function () {
     var tag = event.target.tagName.toLowerCase();
 
     if (tag !== "input" && tag !== "textarea") {
-      Dubtrack.room.player.mutePlayer();
+      proxy.mutePlayer();
     }
   }
 
@@ -14459,7 +14729,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549601572537);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549696293938);
     document.head.appendChild(link);
   }
   /**
@@ -14484,7 +14754,7 @@ var DubPlus = (function () {
   };
 
   function turnOn$8() {
-    var location = Dubtrack.room.model.get("roomUrl");
+    var location = proxy.getRoomUrl();
     var roomAjax = getJSON("https://api.dubtrack.fm/room/" + location);
     roomAjax.then(function (json) {
       var content = json.data.description; // for backwards compatibility with dubx we're checking for both @dubx and @dubplus and @dub+
@@ -14746,7 +15016,7 @@ var DubPlus = (function () {
         _this.isOn = true;
 
         if (userSettings.stored.custom.notificationSound) {
-          Dubtrack.room.chat.mentionChatSound.url = userSettings.stored.custom.notificationSound;
+          proxy.setChatSoundUrl(userSettings.stored.custom.notificationSound);
         } else {
           _this.setState({
             showModal: true,
@@ -14757,7 +15027,7 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
         _this.isOn = false;
-        Dubtrack.room.chat.mentionChatSound.url = DubtrackDefaultSound;
+        proxy.setChatSoundUrl(DubtrackDefaultSound);
 
         _this.setState({
           showModal: false
@@ -14778,7 +15048,7 @@ var DubPlus = (function () {
         }
 
         if (_this.isOn) {
-          Dubtrack.room.chat.mentionChatSound.url = val;
+          proxy.setChatSoundUrl(val);
         }
 
         _this.setState({
@@ -14839,9 +15109,8 @@ var DubPlus = (function () {
       // load this async so it doesn't block the rest of the menu render
       // since these buttons are completely independent from the menu
       snooze$1();
-      eta(); // SetupEmojiPicker();
-
-      SetupTwitchPicker();
+      eta();
+      SetupPicker();
     }, 10);
     return h("section", {
       className: "dubplus-menu"
@@ -14885,127 +15154,6 @@ var DubPlus = (function () {
       target: "_blank"
     }, "Twitter"))));
   };
-
-  /**
-   * Takes a string  representation of a variable or object and checks if it's
-   * definied starting at provided scope or default to global window scope.
-   * @param  {string} dottedString  the item you are looking for
-   * @param  {var}    startingScope where to start looking
-   * @return {boolean}              if it is defined or not
-   */
-  function deepCheck(dottedString, startingScope) {
-    var _vars = dottedString.split('.');
-
-    var len = _vars.length;
-    var depth = startingScope || window;
-
-    for (var i = 0; i < len; i++) {
-      if (typeof depth[_vars[i]] === 'undefined') {
-        return false;
-      }
-
-      depth = depth[_vars[i]];
-    }
-
-    return true;
-  }
-
-  function arrayDeepCheck(arr, startingScope) {
-    var len = arr.length;
-    var scope = startingScope || window;
-
-    for (var i = 0; i < len; i++) {
-      if (!deepCheck(arr[i], scope)) {
-        console.log(arr[i], 'is not found yet');
-        return false;
-      }
-    }
-
-    return true;
-  }
-  /**
-   * pings for the existence of var/function for # seconds until it's defined
-   * runs callback once found and stops pinging
-   * @param {string|array} waitingFor          what you are waiting for
-   * @param {object}       options             optional options to pass
-   *                       options.interval    how often to ping
-   *                       options.seconds     how long to ping for
-   *                       
-   * @return {object}                    2 functions:
-   *                  .then(fn)          will run fn only when item successfully found.  This also starts the ping process
-   *                  .fail(fn)          will run fn only when is never found in the time given
-   */
-
-
-  function WaitFor(waitingFor, options) {
-    if (typeof waitingFor !== "string" && !Array.isArray(waitingFor)) {
-      console.warn('WaitFor: invalid first argument');
-      return;
-    }
-
-    var defaults = {
-      interval: 500,
-      // every XX ms we check to see if waitingFor is defined
-      seconds: 15,
-      // how many total seconds we wish to continue pinging
-      isNode: false
-    };
-
-    var _cb = function _cb() {};
-
-    var _failCB = function _failCB() {};
-
-    var opts = Object.assign({}, defaults, options);
-    var checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
-
-    if (opts.isNode) {
-      checkFunc = function checkFunc(selector) {
-        return typeof document.querySelector(selector) !== null;
-      };
-    }
-
-    var tryCount = 0;
-    var tryLimit = opts.seconds * 1000 / opts.interval; // how many intervals
-
-    var check = function check() {
-      tryCount++;
-
-      var _test = checkFunc(waitingFor);
-
-      if (_test) {
-        return _cb();
-      }
-
-      if (tryCount < tryLimit) {
-        window.setTimeout(check, opts.interval);
-      } else {
-        return _failCB();
-      }
-    };
-
-    var then = function then(cb) {
-      if (typeof cb === 'function') {
-        _cb = cb;
-      } // start the first one
-
-
-      window.setTimeout(check, opts.interval);
-      return this;
-    };
-
-    var fail = function fail(cb) {
-      if (typeof cb === 'function') {
-        _failCB = cb;
-      }
-
-      return this;
-    };
-
-    return {
-      then: then,
-      fail: fail
-    };
-  }
 
   var waitingStyles = {
     fontFamily: "'Trebuchet MS', Helvetica, sans-serif",
@@ -15169,7 +15317,7 @@ var DubPlus = (function () {
     return MenuIcon;
   }(Component);
 
-  polyfills(); // the extension loads the CSS from the load script so we don't need to 
+  polyfills(); // the extension loads the CSS from the load script so we don't need to
   // do it here. This is for people who load the script via bookmarklet or userscript
 
   var isExtension = document.getElementById("dubplus-script-ext");
@@ -15179,7 +15327,7 @@ var DubPlus = (function () {
       // start the loading of the CSS asynchronously
       css$2.loadExternal("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
       css$2.load("/css/dubplus.css");
-    }, 1);
+    }, 10);
   }
 
   var DubPlusContainer =
@@ -15217,21 +15365,13 @@ var DubPlus = (function () {
 
         /* globals Dubtrack */
         if (!window.DubPlus) {
-          // checking to see if these items exist before initializing the script
-          // instead of just picking an arbitrary setTimeout and hoping for the best
-          var checkList = ["Dubtrack.session.id", "Dubtrack.room.chat", "Dubtrack.Events", "Dubtrack.room.player", "Dubtrack.helpers.cookie", "Dubtrack.room.model", "Dubtrack.room.users"];
-
-          var _dubplusWaiting = new WaitFor(checkList, {
-            seconds: 120
-          });
-
-          _dubplusWaiting.then(function () {
+          proxy.loadCheck().then(function () {
             _this2.setState({
               loading: false,
               error: false
             });
-          }).fail(function () {
-            if (!Dubtrack.session.id) {
+          }).catch(function () {
+            if (!proxy.getSessionId()) {
               _this2.showError("You're not logged in. Please login to use Dub+.");
             } else {
               _this2.showError("Something happed, refresh and try again");
@@ -15239,12 +15379,13 @@ var DubPlus = (function () {
               track.event("Dub+ lib", "load", "failed");
             }
           });
+          return;
+        }
+
+        if (!proxy.getSessionId()) {
+          this.showError("You're not logged in. Please login to use Dub+.");
         } else {
-          if (!Dubtrack.session.id) {
-            this.showError("You're not logged in. Please login to use Dub+.");
-          } else {
-            this.showError("Dub+ is already loaded");
-          }
+          this.showError("Dub+ is already loaded");
         }
       }
     }, {
@@ -15282,7 +15423,7 @@ var DubPlus = (function () {
           return null;
         }
 
-        document.querySelector('html').classList.add('dubplus');
+        document.querySelector("html").classList.add("dubplus");
         return h(DubPlusMenu, null);
       }
     }]);

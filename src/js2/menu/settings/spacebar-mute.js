@@ -1,5 +1,6 @@
 import { h } from "preact";
 import { MenuSwitch } from "@/components/menuItems.js";
+import dtproxy from "@/utils/DTProxy.js";
 
 function handleKeyup(e) {
   if ((e.keyCode || e.which) !== 32) {
@@ -7,7 +8,7 @@ function handleKeyup(e) {
   }
   var tag = event.target.tagName.toLowerCase();
   if (tag !== "input" && tag !== "textarea") {
-    Dubtrack.room.player.mutePlayer();
+    dtproxy.mutePlayer();
   }
 }
 

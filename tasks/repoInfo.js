@@ -48,7 +48,8 @@ if (localFlag) {
   resourceSrc = args[args.length - 1];
 }
 
-var jsBookmarklet = `javascript:var i,s,ss=['//cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus@${CURRENT_BRANCH}/dubplus.js','//ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js'];for(i=0;i!=ss.length;i++){s=document.createElement('script');s.src=ss[i];document.body.appendChild(s);}void(0);`;
+var payload = `//cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus@${CURRENT_BRANCH}/dist/dubplus.min.js`;
+var jsBookmarklet = `javascript:var i,s=document.createElement('script');s.src="${payload}";document.body.appendChild(s);void(0);`;
 
 log.info('****************************************************************');
 console.log(`Current Github User is: ${yellow(CURRENT_REPO)}`);

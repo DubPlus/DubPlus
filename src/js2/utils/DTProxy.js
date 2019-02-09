@@ -104,11 +104,13 @@ class DTProxy {
     return Dubtrack.room.player.activeSong.get("song");
   }
 
+
+
   /**
    * returns wether user has "updub" or "downdub" current song
    */
   getVoteType() {
-    return Dubtrack.helpers.cookie.get("dub-" + Dubtrack.room.model.get("_id"));
+    return Dubtrack.helpers.cookie.get("dub-" + Dubtrack.room.model.id);
   }
 
   /**
@@ -176,6 +178,13 @@ class DTProxy {
     Dubtrack.Events.unbind("realtime:user-leave", cb);
   }
 
+  onNewPM(cb) {
+    Dubtrack.Events.bind("realtime:new-message", cb);
+  }
+  offNewPM(cb) {
+    Dubtrack.Events.unbind("realtime:new-message", cb);
+  }
+
   /******************************************************************
    * Functions that depend on, or return, DOM elements
    */
@@ -228,3 +237,5 @@ class DTProxy {
 }
 
 const proxy = new DTProxy();
+
+export default proxy;
