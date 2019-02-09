@@ -1,5 +1,6 @@
 import { h, Component } from "preact";
 import { MenuSwitch } from "@/components/menuItems.js";
+import dtproxy from "@/utils/DTProxy.js";
 
 function chatMessage(username, song) {
   var li = document.createElement("li");
@@ -25,25 +26,23 @@ function chatMessage(username, song) {
 
 export default class UpdubsInChat extends Component {
   turnOn() {
-    Dubtrack.Events.bind("realtime:room_playlist-dub", this.updubWatcher);
+    dtproxy.onSongVote(this.updubWatcher);
   }
 
   turnOff() {
-    Dubtrack.Events.unbind("realtime:room_playlist-dub", this.updubWatcher);
+    dtproxy.offSongVote(this.updubWatcher);
   }
 
   updubWatcher(e) {
-    var user = Dubtrack.session.get("username");
-    var currentDj = Dubtrack.room.users.collection.findWhere({
-      userid: Dubtrack.room.player.activeSong.attributes.song.userid
-    }).attributes._user.username;
+    var user = dtproxy.getUserName();
+    var currentDj = dtproxy.getCurrentDJ();
 
     if (user === currentDj && e.dubtype === "updub") {
       let newChat = chatMessage(
         e.user.username,
-        Dubtrack.room.player.activeSong.attributes.songInfo.name
+        dtproxy.getSongName()
       );
-      document.querySelector("ul.chat-main").appendChild(newChat);
+      dtproxy.chatList().appendChild(newChat);
     }
   }
 

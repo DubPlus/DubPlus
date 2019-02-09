@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import { MenuSwitch } from "@/components/menuItems.js";
-import userIsAtLeastMod from "@/utils/modcheck.js";
+import dtproxy from "@/utils/DTProxy.js";
 
 function chatMessage (username, song) {
   var li = document.createElement('li');
@@ -26,26 +26,24 @@ function chatMessage (username, song) {
 
 export default class DowndubInChat extends Component {
   turnOn() {
-    if (!userIsAtLeastMod(Dubtrack.session.id)) {
+    if (!dtproxy.modCheck()) {
       return;
     }
 
-    Dubtrack.Events.bind("realtime:room_playlist-dub", this.downdubWatcher);
+    dtproxy.onSongVote(this.downdubWatcher);
   }
 
   turnOff() {
-    Dubtrack.Events.unbind("realtime:room_playlist-dub", this.downdubWatcher);
+    dtproxy.offSongVote(this.downdubWatcher);
   }
 
   downdubWatcher(e) {
-    var user = Dubtrack.session.get("username");
-    var currentDj = Dubtrack.room.users.collection.findWhere({
-      userid: Dubtrack.room.player.activeSong.attributes.song.userid
-    }).attributes._user.username;
+    var user = dtproxy.getUserName();
+    var currentDj = dtproxy.getCurrentDJ();
 
     if (user === currentDj && e.dubtype === "downdub") {
-      let newChat = chatMessage(e.user.username, Dubtrack.room.player.activeSong.attributes.songInfo.name);
-      document.querySelector("ul.chat-main").appendChild(newChat);
+      let newChat = chatMessage(e.user.username, dtproxy.getSongName());
+      dtproxy.chatList().appendChild(newChat);
     }
   };
 

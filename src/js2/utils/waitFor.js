@@ -39,6 +39,7 @@ function arrayDeepCheck(arr, startingScope){
  * @param {object}       options             optional options to pass
  *                       options.interval    how often to ping
  *                       options.seconds     how long to ping for
+ *                       options.isNode      switches to checking if node exists
  *                       
  * @return {object}                    2 functions:
  *                  .then(fn)          will run fn only when item successfully found.  This also starts the ping process
@@ -49,17 +50,16 @@ function WaitFor(waitingFor, options) {
     console.warn('WaitFor: invalid first argument');
     return;
   }
+
   var defaults = {
     interval : 500, // every XX ms we check to see if waitingFor is defined
     seconds : 15,  // how many total seconds we wish to continue pinging
     isNode: false
   };
 
-  var _cb = ()=>{};
-  var _failCB = ()=>{};
   var opts = Object.assign({}, defaults, options);
-
   var checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
+  
   if (opts.isNode) {
     checkFunc = function(selector){
       return typeof document.querySelector(selector) !== null
@@ -69,39 +69,27 @@ function WaitFor(waitingFor, options) {
   var tryCount = 0;
   var tryLimit = (opts.seconds * 1000) / opts.interval; // how many intervals
 
-  var check =  ()=> {
-    tryCount++;
-    var _test = checkFunc(waitingFor);
+  return new Promise(function(resolve, reject){
+    var check = () => {
+      tryCount++;
+      var _test = checkFunc(waitingFor);
+  
+      if (_test) {
+        resolve();
+        return;
+      } 
+      
+      if (tryCount < tryLimit) {
+        window.setTimeout(check, opts.interval);
+        return;
+      } 
 
-    if (_test) {
-      return _cb();
-    } if (tryCount < tryLimit) {
-      window.setTimeout(check, opts.interval);
-    } else {
-      return _failCB();
-    }
-  };
+      // passed our limit, stop checking
+      reject();
+    };
 
-  var then = function(cb) {
-    if (typeof cb === 'function') {
-      _cb = cb;
-    }
-    // start the first one
     window.setTimeout(check, opts.interval);
-    return this;
-  };
-
-  var fail = function(cb) {
-    if (typeof cb === 'function') {
-      _failCB = cb;
-    }
-    return this;
-  };
-
-  return {
-    then : then, 
-    fail : fail
-  };
+  });
 }
 
 export default WaitFor;

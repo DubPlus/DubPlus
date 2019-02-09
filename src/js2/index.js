@@ -8,10 +8,11 @@ import Loading from "@/components/loading.js";
 import cssHelper from "@/utils/css.js";
 import MenuIcon from "@/components/MenuIcon.js";
 import track from "@/utils/analytics.js";
+import dtproxy from "@/utils/DTProxy.js";
 
 polyfills();
 
-// the extension loads the CSS from the load script so we don't need to 
+// the extension loads the CSS from the load script so we don't need to
 // do it here. This is for people who load the script via bookmarklet or userscript
 let isExtension = document.getElementById("dubplus-script-ext");
 if (!isExtension) {
@@ -19,9 +20,9 @@ if (!isExtension) {
     // start the loading of the CSS asynchronously
     cssHelper.loadExternal(
       "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-      );
+    );
     cssHelper.load("/css/dubplus.css");
-  }, 1);
+  }, 10);
 }
 
 class DubPlusContainer extends Component {
@@ -35,41 +36,29 @@ class DubPlusContainer extends Component {
   componentDidMount() {
     /* globals Dubtrack */
     if (!window.DubPlus) {
-      // checking to see if these items exist before initializing the script
-      // instead of just picking an arbitrary setTimeout and hoping for the best
-      var checkList = [
-        "Dubtrack.session.id",
-        "Dubtrack.room.chat",
-        "Dubtrack.Events",
-        "Dubtrack.room.player",
-        "Dubtrack.helpers.cookie",
-        "Dubtrack.room.model",
-        "Dubtrack.room.users"
-      ];
-
-      var _dubplusWaiting = new WaitFor(checkList, { seconds: 120 });
-
-      _dubplusWaiting
+      dtproxy
+        .loadCheck()
         .then(() => {
           this.setState({
             loading: false,
             error: false
           });
         })
-        .fail(() => {
-          if (!Dubtrack.session.id) {
+        .catch(() => {
+          if (!dtproxy.getSessionId()) {
             this.showError("You're not logged in. Please login to use Dub+.");
           } else {
             this.showError("Something happed, refresh and try again");
             track.event("Dub+ lib", "load", "failed");
           }
         });
+      return;
+    }
+
+    if (!dtproxy.getSessionId()) {
+      this.showError("You're not logged in. Please login to use Dub+.");
     } else {
-      if (!Dubtrack.session.id) {
-        this.showError("You're not logged in. Please login to use Dub+.");
-      } else {
-        this.showError("Dub+ is already loaded");
-      }
+      this.showError("Dub+ is already loaded");
     }
   }
 
@@ -102,15 +91,18 @@ class DubPlusContainer extends Component {
       return null;
     }
 
-    document.querySelector('html').classList.add('dubplus');
+    document.querySelector("html").classList.add("dubplus");
     return <DubPlusMenu />;
   }
 }
 
 render(<DubPlusContainer />, document.body);
 
-let navWait = new WaitFor(".header-right-navigation .user-messages", { seconds: 60, isNode: true });
-navWait.then(()=>{
+let navWait = new WaitFor(".header-right-navigation .user-messages", {
+  seconds: 60,
+  isNode: true
+});
+navWait.then(() => {
   render(<MenuIcon />, document.querySelector(".header-right-navigation"));
 });
 

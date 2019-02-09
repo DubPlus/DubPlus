@@ -1,6 +1,7 @@
 import {h, Component} from 'preact';
 import {MenuSwitch, MenuPencil} from '@/components/menuItems.js';
 import settings from '@/utils/UserSettings.js';
+import dtproxy from "@/utils/DTProxy.js";
 
 /**
  * 
@@ -18,17 +19,17 @@ export default class AFK extends Component {
       return; // do nothing until it's back to true
     }
     var content = e.message;
-    var user = Dubtrack.session.get('username');
+    var user = dtproxy.getUserName();
     
-    if (content.indexOf('@'+user) > -1 && Dubtrack.session.id !== e.user.userInfo.userid) {
-      var chatInput = document.getElementById('chat-txt-message');
+    if (content.indexOf('@'+user) > -1 && dtproxy.getSessionId() !== e.user.userInfo.userid) {
+      var chatInput = dtproxy.chatInput();
       if (settings.stored.custom.customAfkMessage) {
         chatInput.value = '[AFK] '+ settings.stored.custom.customAfkMessage;
       } else {
         chatInput.value = "[AFK] I'm not here right now.";
       }
       
-      Dubtrack.room.chat.sendMessage();
+      dtproxy.sendChatMessage();
 
       // so we don't spam chat, we pause the auto respond for 30sec
       this.setState({canSend:false});
@@ -42,18 +43,18 @@ export default class AFK extends Component {
   }
   
   turnOn(){
-    Dubtrack.Events.bind("realtime:chat-message", this.afk_chat_respond);
+    dtproxy.onChatMessage(this.afk_chat_respond);
   }
   
   turnOff() {
-    Dubtrack.Events.unbind("realtime:chat-message", this.afk_chat_respond);
+    dtproxy.offChatMessage(this.afk_chat_respond);
   }
 
   saveAFKmessage (val) {
     settings.save('custom', 'customAfkMessage', val);
   };
 
-  render(props,state){
+  render(){
     return (
       <MenuSwitch
         id="dubplus-afk"

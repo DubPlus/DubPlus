@@ -3,6 +3,7 @@ import { MenuSwitch } from "@/components/menuItems.js";
 import settings from "@/utils/UserSettings.js";
 import { notifyCheckPermission, showNotification } from "@/utils/notify.js";
 import Modal from "@/components/modal";
+import dtproxy from "@/utils/DTProxy.js";
 
 export default class ChatNotification extends Component {
   state = {
@@ -13,7 +14,7 @@ export default class ChatNotification extends Component {
 
   notifyOnMention(e) {
     var content = e.message;
-    var user = Dubtrack.session.get("username").toLowerCase();
+    var user = dtproxy.getUserName().toLowerCase();
     var mentionTriggers = ["@" + user];
 
     if (
@@ -34,7 +35,7 @@ export default class ChatNotification extends Component {
     if (
       mentionTriggersTest &&
       !this.isActiveTab &&
-      Dubtrack.session.id !== e.user.userInfo.userid
+      dtproxy.getSessionId() !== e.user.userInfo.userid
     ) {
       showNotification({
         title: `Message from ${e.user.username}`,
@@ -46,7 +47,7 @@ export default class ChatNotification extends Component {
   turnOn = () => {
     notifyCheckPermission((status, reason) => {
       if (status === true) {
-        Dubtrack.Events.bind("realtime:chat-message", this.notifyOnMention);
+        dtproxy.onChatMessage(this.notifyOnMention);
       } else {
         // call MenuSwitch's switchOff with noTrack=true argument
         this.switchRef.switchOff(true);
@@ -64,7 +65,7 @@ export default class ChatNotification extends Component {
   }
 
   turnOff = () => {
-    Dubtrack.Events.unbind("realtime:chat-message", this.notifyOnMention);
+    dtproxy.offChatMessage(this.notifyOnMention);
   };
 
   render(props, state) {

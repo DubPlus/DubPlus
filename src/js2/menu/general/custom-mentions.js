@@ -1,6 +1,7 @@
 import {h, Component} from 'preact';
 import {MenuSwitch, MenuPencil} from '@/components/menuItems.js';
 import settings from '@/utils/UserSettings.js';
+import dtproxy from "@/utils/DTProxy.js";
 
 /**
  * Custom mentions
@@ -15,8 +16,8 @@ export default class CustomMentions extends Component {
         var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
         return reg.test(content); 
       });
-      if (Dubtrack.session.id !== e.user.userInfo.userid && inUsers) {
-        Dubtrack.room.chat.mentionChatSound.play();
+      if (dtproxy.getSessionId() !== e.user.userInfo.userid && inUsers) {
+        dtproxy.playChatSound();
       }
     }
   }
@@ -27,11 +28,11 @@ export default class CustomMentions extends Component {
   };
   
   turnOn(){
-    Dubtrack.Events.bind("realtime:chat-message", this.customMentionCheck);
+    dtproxy.onChatMessage(this.customMentionCheck);
   }
   
   turnOff() {
-    Dubtrack.Events.unbind("realtime:chat-message", this.customMentionCheck);
+    dtproxy.offChatMessage(this.customMentionCheck);
   }
 
   render(props,state){

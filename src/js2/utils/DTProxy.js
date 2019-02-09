@@ -3,18 +3,41 @@ In order to prepare for the future alpha changes and the possibility that Dubtra
 alter this object of data we rely on, I am planning to funnel all interaction with
 Dubtrack through this "proxy" (for lack of better word)
 */
+import WaitFor from "@/utils/waitFor.js";
 
 class DTProxy {
+
+  loadCheck() {
+    var checkList = [
+      "Dubtrack.session.id",
+      "Dubtrack.room.chat",
+      "Dubtrack.Events",
+      "Dubtrack.room.player",
+      "Dubtrack.helpers.cookie",
+      "Dubtrack.room.model",
+      "Dubtrack.room.users"
+    ];
+
+    return new WaitFor(checkList, { seconds: 120 });
+  }
+
   getSessionId() {
     return Dubtrack.session.id;
   }
 
+  /**
+   * get the current logged in user name
+   */
   getUserName() {
     return Dubtrack.session.get("username");
   }
 
   getRoomUrl() {
     return Dubtrack.room.model.get("roomUrl");
+  }
+
+  getRoomId() {
+    return Dubtrack.room.model.id
   }
 
   setVolume(vol) {
@@ -37,16 +60,20 @@ class DTProxy {
   getChatSoundUrl() {
     return Dubtrack.room.chat.mentionChatSound.url;
   }
+
   setChatSoundUrl(url) {
     Dubtrack.room.chat.mentionChatSound.url = url;
   }
+
   playChatSound() {
     Dubtrack.room.chat.mentionChatSound.play();
   }
+
   sendChatMessage() {
     Dubtrack.room.chat.sendMessage();
   }
-  modCheck(userid) {
+
+  modCheck(userid = Dubtrack.session.id) {
     return (
       Dubtrack.helpers.isDubtrackAdmin(userid) ||
       Dubtrack.room.users.getIfOwner(userid) ||
@@ -63,10 +90,16 @@ class DTProxy {
     return Dubtrack.room.player.activeSong.attributes.songInfo.name;
   }
 
+  /**
+   * Get the Dubtrack ID for current song.
+   */
   getDubSong() {
     return Dubtrack.helpers.cookie.get("dub-song");
   }
 
+  /**
+   * Get song data for the current song
+   */
   getActiveSong() {
     return Dubtrack.room.player.activeSong.get("song");
   }
@@ -78,10 +111,17 @@ class DTProxy {
     return Dubtrack.helpers.cookie.get("dub-" + Dubtrack.room.model.get("_id"));
   }
 
+  /**
+   *
+   */
   getCurrentDJ() {
     return Dubtrack.room.users.collection.findWhere({
       userid: Dubtrack.room.player.activeSong.attributes.song.userid
     }).attributes._user.username;
+  }
+
+  getUserInfo(userid) {
+    return Dubtrack.room.users.collection.findWhere({ userid: userid });
   }
 
   /******************************************************************
@@ -99,6 +139,9 @@ class DTProxy {
     Dubtrack.Events.unbind("realtime:room_playlist-update", cb);
   }
 
+  /**
+   * When a user up/down votes (aka dub) a song
+   */
   onSongVote(cb) {
     Dubtrack.Events.bind("realtime:room_playlist-dub", cb);
   }
@@ -106,6 +149,9 @@ class DTProxy {
     Dubtrack.Events.unbind("realtime:room_playlist-dub", cb);
   }
 
+  /**
+   * When a new chat message comes in
+   */
   onChatMessage(cb) {
     Dubtrack.Events.bind("realtime:chat-message", cb);
   }
@@ -113,6 +159,9 @@ class DTProxy {
     Dubtrack.Events.unbind("realtime:chat-message", cb);
   }
 
+  /**
+   * When any user in the room grabs a song
+   */
   onSongGrab(cb) {
     Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", cb);
   }
@@ -120,31 +169,62 @@ class DTProxy {
     Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", cb);
   }
 
+  onUserLeave(cb) {
+    Dubtrack.Events.bind("realtime:user-leave", cb);
+  }
+  offUserLeave(cb) {
+    Dubtrack.Events.unbind("realtime:user-leave", cb);
+  }
+
   /******************************************************************
-   * DOM elements that are created by Dubtrack
-   * - not ones this library creates
+   * Functions that depend on, or return, DOM elements
    */
 
   chatInput() {
     return document.getElementById("chat-txt-message");
   }
 
+  chatList() {
+    return document.querySelector("ul.chat-main");
+  }
+
+  /**
+   * Get the current minutes remaining of the song playing
+   */
+  getRemainingTime() {
+    return parseInt(
+      document.querySelector("#player-controller .currentTime span.min")
+        .textContent
+    );
+  }
+
+  // booth duration?
+  getQueuePosition() {
+    return parseInt(this.getQueuePositionElem().textContent);
+  }
+  // booth duration?
+  getQueuePositionElem() {
+    return document.querySelector(".queue-position");
+  }
+
+  getPMmsg(messageid) {
+    return document.querySelector(
+      `.message-item[data-messageid="${messageid}"]`
+    );
+  }
+
   /*
-  var current_time = parseInt(document.querySelector('#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min').textContent);
-  var booth_duration = parseInt(document.querySelector('.queue-position').textContent);
-  document.querySelector('.player_sharing')
-  document.querySelector(".chat-text-box-icons")
-document.querySelector(".header-right-navigation")
-document.querySelector('.backstretch-item img');
-document.querySelector(".pusher-chat-widget-input");
-this.dubup = document.querySelector('.dubup');
-    this.dubdown = document.querySelector('.dubdown');
+    document.querySelector('.player_sharing')
+    document.querySelector(".chat-text-box-icons")
+    document.querySelector(".header-right-navigation")
+    document.querySelector('.backstretch-item img');
+    document.querySelector(".pusher-chat-widget-input");
+    document.querySelector('.dubup');
+    document.querySelector('.dubdown');
     document.querySelector(".add-to-playlist-button")
-    document.querySelectorAll("ul.chat-main > li")
-    document.querySelector("ul.chat-main")
-    document.querySelector(".queue-position").textContent;
     document.querySelector(".user-messages")
-    document.querySelector(`.message-item[data-messageid="${e.messageid}"]`)
     document.querySelector("#room-main-player-container");
    */
 }
+
+const proxy = new DTProxy();

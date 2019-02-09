@@ -1,5 +1,6 @@
 import { h, Component } from "preact";
 import { MenuSwitch } from "@/components/menuItems.js";
+import dtproxy from "@/utils/DTProxy.js";
 
 function chatMessage (username, song) {
   var li = document.createElement('li');
@@ -25,22 +26,20 @@ function chatMessage (username, song) {
 
 export default class GrabsInChat extends Component {
   turnOn() {
-    Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
+    dtproxy.onSongGrab(this.grabChatWatcher);
   }
 
   turnOff() {
-    Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
+    dtproxy.offSongGrab(this.grabChatWatcher);
   }
 
   grabChatWatcher(e) {
-    var user = Dubtrack.session.get("username");
-    var currentDj = Dubtrack.room.users.collection.findWhere({
-      userid: Dubtrack.room.player.activeSong.attributes.song.userid
-    }).attributes._user.username;
+    var user = dtproxy.getUserName();
+    var currentDj = dtproxy.getCurrentDJ();
 
-    if(user === currentDj && !Dubtrack.room.model.get('displayUserGrab')) {
-      let newChat = chatMessage(e.user.username, Dubtrack.room.player.activeSong.attributes.songInfo.name);
-      document.querySelector("ul.chat-main").appendChild(newChat);
+    if(user === currentDj && !dtproxy.displayUserGrab()) {
+      let newChat = chatMessage(e.user.username, dtproxy.getSongName());
+      dtproxy.chatList().appendChild(newChat);
     }
   };
 
