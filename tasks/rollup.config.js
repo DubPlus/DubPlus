@@ -113,7 +113,7 @@ const inputOptions = {
 
 const outputOptions = {
   banner: introBanner,
-  file: process.cwd() + "/build/dubplus.js",
+  file: process.cwd() + "/dubplus.js",
   format: "iife",
   name: "DubPlus"
 };
@@ -150,7 +150,7 @@ inputOptions.plugins = [
     })
 ];
 
-outputOptions.file = process.cwd() + "/build/dubplus.min.js";
+outputOptions.file = process.cwd() + "/dubplus.min.js";
 
 async function buildMin(inOpts, outOpts) {
   console.log('building minified dub+');

@@ -46,11 +46,11 @@ function combine(obj1, obj2, dest) {
 function copyScript() {
   ["Chrome", "Firefox"].forEach(function(dir) {
     fs.copySync(
-      process.cwd() + "/build/dubplus.js",
+      process.cwd() + "/dubplus.js",
       `${extPath}/${dir}/scripts/dubplus.js`
     );
     fs.copySync(
-      process.cwd() + "/build/dubplus.min.js",
+      process.cwd() + "/dubplus.min.js",
       `${extPath}/${dir}/scripts/dubplus.min.js`
     );
   });

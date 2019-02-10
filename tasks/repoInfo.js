@@ -47,7 +47,7 @@ if (localFlag) {
   resourceSrc = args[args.length - 1];
 }
 
-var payload = `//cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus@${CURRENT_BRANCH}/build/dubplus.min.js`;
+var payload = `//cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus@${CURRENT_BRANCH}/dubplus.min.js`;
 var jsBookmarklet = `javascript:var i,d=document,s=d.createElement('script');s.src="${payload}";d.body.appendChild(s);void(0);`;
 
 log.info('****************************************************************');
