@@ -16,7 +16,7 @@ const log = require('./colored-console.js');
 
 var args = process.argv;
 var releaseFlag = args[args.length - 1] === '--release';
-var localFlag = args[args.length - 2] === '--local';
+var betaFlag = args[args.length - 1] === '--beta';
 
 /******************************************************************
  * Get the current branch name to be passed as a variable
@@ -32,6 +32,10 @@ if (CURRENT_BRANCH === 'master' || releaseFlag) {
   // main repo and we should always be set to DubPlus/DubPlus
   CURRENT_REPO = 'DubPlus';
   esourceSrc = `https://cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus`;
+} else if (CURRENT_BRANCH === 'beta' || betaFlag) {
+  // DubPlus/DubPlus@beta
+  CURRENT_REPO = 'DubPlus';
+  esourceSrc = `https://cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus@beta`;
 } else {
   /***************************************
    * Get the github user name 
@@ -41,10 +45,6 @@ if (CURRENT_BRANCH === 'master' || releaseFlag) {
   var gitURL = sync('git', ['config', '--get', 'remote.origin.url'], {encoding : "UTF-8"});
   CURRENT_REPO = gitURL.stdout.split(":")[1].split("/")[0];
   resourceSrc = `https://cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus@${CURRENT_BRANCH}`;
-}
-
-if (localFlag) {
-  resourceSrc = args[args.length - 1];
 }
 
 var payload = `//cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus@${CURRENT_BRANCH}/dubplus.min.js`;
