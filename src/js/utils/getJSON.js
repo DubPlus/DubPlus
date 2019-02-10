@@ -1,30 +1,40 @@
-// jQuery's getJSON kept returning errors so making my own with promise-like
-// structure and added optional Event to fire when done so can hook in elsewhere
-var GetJSON = (function (url, optionalEvent, headers) {
-  var doneEvent = optionalEvent ? new Event(optionalEvent) : null;
+/**
+ * Wrapper around XMLHttpRequest with added ability to trigger a custom event 
+ * when the ajax request is complete. The event will be attached to the window 
+ * object. It returns a promise.
+ * 
+ * @param {String} url 
+ * @param {Object} headers object of xhr headers to add to the request
+ * @returns {Promise}
+ */
+function getJSON(url, headers={}) {
+  return new Promise(function(resolve, reject){
+    let xhr = new XMLHttpRequest();
+  
+    xhr.onload = function() {
+      try {
+        let resp = JSON.parse(xhr.responseText);
+        resolve(resp);
+      } catch(e) {
+        reject(e);
+      }
+    };
 
-  function GetJ(_url, _cb){
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', _url);
-    if(headers) {
-      for (var property in headers) {
-        if (headers.hasOwnProperty(property)) {
-          xhr.setRequestHeader(property, headers[property]);
-        }
+    xhr.onerror = function() {
+      reject();
+    }
+    
+    xhr.open('GET', url);
+
+    for (let property in headers) {
+      if (headers.hasOwnProperty(property)) {
+        xhr.setRequestHeader(property, headers[property]);
       }
     }
-    xhr.send();
-    xhr.onload = function() {
-      var resp = xhr.responseText;
-      if (typeof _cb === 'function') { _cb(resp); }
-      if (doneEvent) { window.dispatchEvent(doneEvent); }
-    };
-  }
   
-  var done = function(cb){
-    new GetJ(url, cb);
-  };
-  return { done: done };
-});
+    xhr.send();
+  });
 
-module.exports = GetJSON;
+}
+
+export default getJSON;
