@@ -1,0 +1,63 @@
+.dp-twitch-picker-icon {
+  background-image: url(https://i.imgur.com/FhzONPQ.png);
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: inline-block;
+  width: 19px;
+  height: 21px;
+  transform: translateY(4px);
+}
+
+.dp-emoji-picker-icon {
+  color: #fff;
+  margin-left: 0.5rem;
+  display: inline-block;
+  cursor: pointer;
+  font-size: 1.2em;
+}
+
+.dp-emoji-picker {
+  background-color: rgba(0, 0, 0, 0.9);
+  position: absolute;
+  bottom: 56px;
+  width: 100%;
+  left: 0;
+  max-height: 0;
+  transition: max-height 0.25s;
+  overflow: hidden;
+
+  &.show {
+    max-height: 180px;
+    overflow-y: scroll;
+  }
+
+  span {
+    display: inline-block;
+    padding: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+    background-image: url(#{$resourceSrc}/images/emoji-spritesheet.png);
+    background-repeat: no-repeat;
+
+    // our desired width and height of the icon, if you change this make sure
+    // to change the `0.46875` around components/emoji-picker.js to match the value of $perc
+    $dim: 35;
+    width: $dim + px;
+    height: $dim + px;
+    $perc: $dim/64; // 64px is the original size of each icon in the spritesheet but we want to reduce them to 25 without altering the spritesheet
+    $w: 1931 * $perc; // 1931 is the total width of the spritesheet png
+    $h: 1867 * $perc; // 1867 is the total height of the spritesheet png
+    // in order to use the background image we need to increase the bg size of the spritesheet by a large percent
+    background-size: #{floor(($w * 100) / $dim) + "%"} #{floor(
+        ($h * 100) / $dim
+      ) + "%"};
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+.dp-emoji-picker.twitch-picker span {
+  background-image: url(#{$resourceSrc}/images/twitch-spritesheet.png);
+}

@@ -11,6 +11,9 @@
   ],
   
   "web_accessible_resources": [
-      "scripts/dubplus.js"
+      "scripts/dubplus.js",
+      "scripts/dubplus.min.js",
+      "css/dubplus.css",
+      "css/dubplus.min.css"
   ]
 }

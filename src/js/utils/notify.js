@@ -1,7 +1,18 @@
 /* global Dubtrack */
-const modal = require('../utils/modal.js');
-
 var isActiveTab = true;
+
+const statuses = {
+  denyDismiss : {
+    title: "Desktop Notifications",
+    content:
+      "You have dismissed or chosen to deny the request to allow desktop notifications. Reset this choice by clearing your cache for the site."
+  },
+  noSupport : {
+    title: "Desktop Notifications",
+    content:
+      "Sorry this browser does not support desktop notifications.  Please use the latest version of Chrome or FireFox"
+  }
+};
 
 window.onfocus = function () {
   isActiveTab = true;
@@ -11,51 +22,33 @@ window.onblur = function () {
   isActiveTab = false;
 };
 
-
-var onDenyDismiss = function() {
-  modal.create({
-    title: 'Desktop Notifications',
-    content: "You have dismissed or chosen to deny the request to allow desktop notifications. Reset this choice by clearing your cache for the site."
-  });
-};
-
-
 export function notifyCheckPermission(cb){
   var _cb = typeof cb === 'function' ? cb :  function(){};
 
   // first check if browser supports it
   if (!("Notification" in window)) {
-    
-    modal.create({
-      title: 'Desktop Notifications',
-      content: "Sorry this browser does not support desktop notifications.  Please use the latest version of Chrome or FireFox"
-    });
-    return _cb(false);
+    return _cb(false, statuses.noSupport);
   }
 
   // no request needed, good to go
   if (Notification.permission === "granted") {
-    return _cb(true);
+    return _cb(true, 'granted');
   }
 
-
   if (Notification.permission !== 'denied') {
-    
+
     Notification.requestPermission().then(function(result) {
       if (result === 'denied' || result === 'default') {
-        onDenyDismiss();
-        _cb(false);
+        _cb(false, statuses.denyDismiss);
         return;
       }
 
-      _cb(true);
+      return _cb(true, 'granted');
     });
 
   } else {
-    onDenyDismiss();
-    return _cb(false);
+    return _cb(false, statuses.denyDismiss)
   }
-
 }
 
 
