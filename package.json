@@ -9,7 +9,7 @@
     "ext-zip": "node ./tasks ext-zip",
     "ext-deploy": "node ./tasks ext-deploy",
     "test": "ENV=test jest -i ./tests --config ./tests/jest.config.js",
-    "rollup": "node tasks/rollup.config.js",
+    "build": "node tasks/rollup.config.js",
     "start": "WATCH=true node tasks/rollup.config.js"
   },
   "repository": {
