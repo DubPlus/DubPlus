@@ -25,6 +25,7 @@ dubshover.grabInfoWarning = function(){
 };
 
 dubshover.showDubsOnHover = function(){
+  var that = this;
   this.resetDubs();
 
   Dubtrack.Events.bind("realtime:room_playlist-dub", this.dubWatcher.bind(this));
@@ -143,10 +144,8 @@ dubshover.showDubsOnHover = function(){
 
     $(document.body).on('click', '.preview-dubinfo-item', (e)=>{
       var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ' ;
-      this.updateChatInputWithString(new_text);
+      that.updateChatInputWithString(new_text);
     });
-
-    $('#dubinfo-preview').perfectScrollbar();
 
     $('.dubplus-updubs-hover').mouseleave(function(event){
       var x = event.clientX, y = event.clientY;
@@ -222,10 +221,8 @@ dubshover.showDubsOnHover = function(){
 
     $(document.body).on('click', '.preview-dubinfo-item', function(e){
       var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ' ;
-      this.updateChatInputWithString(new_text);
+      that.updateChatInputWithString(new_text);
     });
-
-    $('#dubinfo-preview').perfectScrollbar();
 
     $('.dubplus-downdubs-hover').mouseleave(function(event){
       var x = event.clientX, y = event.clientY;
@@ -299,10 +296,8 @@ dubshover.showDubsOnHover = function(){
 
     $(document.body).on('click', '.preview-dubinfo-item', function(e){
       var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ' ;
-      this.updateChatInputWithString(new_text);
+      that.updateChatInputWithString(new_text);
     });
-
-    $('#dubinfo-preview').perfectScrollbar();
 
     $('.dubplus-grabs-hover').mouseleave(function(event){
       var x = event.clientX, y = event.clientY;

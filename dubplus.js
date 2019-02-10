@@ -151,6 +151,13 @@ prepEmoji.tasty = {
   },
   emotes: {}
 };
+prepEmoji.frankerFacez = {
+  template: function template(id) {
+    return "//cdn.frankerfacez.com/emoticon/" + id + "/1";
+  },
+  emotes: {},
+  chatRegex: new RegExp(":([-_a-z0-9]+):", "ig")
+};
 
 prepEmoji.shouldUpdateAPIs = function (apiName, callback) {
   var day = 86400000; // milliseconds in a day
@@ -260,6 +267,33 @@ prepEmoji.loadTastyEmotes = function () {
   });
 };
 
+prepEmoji.loadFrankerFacez = function () {
+  var savedData;
+  // if it doesn't exist in localStorage or it's older than 5 days
+  // grab it from the frankerfacez API
+  this.shouldUpdateAPIs('frankerfacez', function (update) {
+    if (update) {
+      console.log('dub+', 'frankerfacez', 'loading from api');
+      var frankerFacezApi = new GetJSON('//cdn.jsdelivr.net/gh/Jiiks/BetterDiscordApp/data/emotedata_ffz.json', 'frankerfacez:loaded');
+      frankerFacezApi.done(function (data) {
+        var frankerFacez = JSON.parse(data);
+        localStorage.setItem('frankerfacez_api_timestamp', Date.now().toString());
+        ldb.set('frankerfacez_api', data);
+        prepEmoji.processFrankerFacez(frankerFacez);
+      });
+    } else {
+      ldb.get('frankerfacez_api', function (data) {
+        console.log('dub+', 'frankerfacez', 'loading from IndexedDB');
+        savedData = JSON.parse(data);
+        prepEmoji.processFrankerFacez(savedData);
+        savedData = null; // clear the var from memory
+        var twEvent = new Event('frankerfacez:loaded');
+        window.dispatchEvent(twEvent);
+      });
+    }
+  });
+};
+
 prepEmoji.processTwitchEmotes = function (data) {
   for (var code in data) {
     if (data.hasOwnProperty(code)) {
@@ -313,6 +347,30 @@ prepEmoji.processTastyEmotes = function (data) {
   this.tasty.emotes = data.emotes;
   this.tastyJSONLoaded = true;
   this.emojiEmotes = this.emojiEmotes.concat(Object.keys(this.tasty.emotes));
+};
+
+prepEmoji.processFrankerFacez = function (data) {
+  for (var code in data) {
+    if (data.hasOwnProperty(code)) {
+      var _key = code.toLowerCase().replace('~', '-');
+
+      if (code.indexOf(':') >= 0) {
+        continue; // don't want any emotes with smileys and stuff
+      }
+
+      if (emojify.emojiNames.indexOf(_key) >= 0) {
+        continue; // do nothing so we don't override emoji
+      }
+
+      if (code.indexOf('(') >= 0) {
+        _key = _key.replace(/([()])/g, "");
+      }
+
+      this.frankerFacez.emotes[_key] = data[code];
+    }
+  }
+  this.frankerfacezJSONLoaded = true;
+  this.emojiEmotes = this.emojiEmotes.concat(Object.keys(this.frankerFacez.emotes));
 };
 
 module.exports = prepEmoji;
@@ -581,10 +639,9 @@ module.exports = function () {
   // run non-menu related items here:
   (0, _snooze2.default)();
   (0, _eta2.default)();
-  $('.dubplus-menu').perfectScrollbar();
 };
 
-}).call(this,'{"name":"DubPlus","version":"0.1.7","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+}).call(this,'{"name":"DubPlus","version":"0.2.0","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
@@ -895,7 +952,7 @@ exportSettings.srcRoot = _RESOURCE_SRC_;
 
 module.exports = exportSettings;
 
-}).call(this,'https://rawgit.com/DubPlus/DubPlus/master')
+}).call(this,'https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus')
 },{}],9:[function(require,module,exports){
 'use strict';
 
@@ -1044,6 +1101,9 @@ var emojiUtils = {
       if (typeof prepEmjoji.tasty.emotes[_key] !== 'undefined') {
         listArray.push(self.createPreviewObj("tasty", _key, val));
       }
+      if (typeof prepEmjoji.frankerFacez.emotes[_key] !== 'undefined') {
+        listArray.push(self.createPreviewObj("frankerFacez", prepEmjoji.frankerFacez.emotes[_key], val));
+      }
       if (emojify.emojiNames.indexOf(_key) >= 0) {
         listArray.push(self.createPreviewObj("emoji", val, val));
       }
@@ -1055,10 +1115,11 @@ var emojiUtils = {
   filterEmoji: function filterEmoji(str) {
     var finalStr = str.replace(/([+()])/, "\\$1");
     var re = new RegExp('^' + finalStr, "i");
-    var arrayToUse = emojify.emojiNames;
+    var arrayToUse = emojify.emojiNames || [];
     if (settings.options['dubplus-emotes']) {
-      arrayToUse = prepEmjoji.emojiEmotes; // merged array
+      arrayToUse = prepEmjoji.emojiEmotes || []; // merged array
     }
+
     return arrayToUse.filter(function (val) {
       return re.test(val);
     });
@@ -1198,7 +1259,10 @@ autovote.category = "General";
 // add any custom functions to this module
 
 var advance_vote = function advance_vote() {
-  $('.dubup').click();
+  if (Dubtrack && Dubtrack.playerController && Dubtrack.playerController.voteUp) {
+    console.log('voting');
+    Dubtrack.playerController.voteUp.click();
+  }
 };
 
 var voteCheck = function voteCheck(obj) {
@@ -1262,9 +1326,6 @@ myModule.chatCleanerCheck = function (e) {
   if (isNaN(totalChats) || isNaN(settings.custom.chat_cleaner) || totalChats < settings.custom.chat_cleaner) return;
 
   $('ul.chat-main > li:lt(' + ($('ul.chat-main > li').length - settings.custom.chat_cleaner) + ')').remove();
-
-  //Fix scroll bar
-  $('.chat-messages').perfectScrollbar('update');
 };
 
 myModule.turnOn = function () {
@@ -1309,11 +1370,12 @@ myModule.notifyOnMention = function (e) {
 
   if (settings.options.custom_mentions && settings.custom.custom_mentions) {
     //add custom mention triggers to array
-    mentionTriggers = mentionTriggers.concat(settings.custom.custom_mentions.toLowerCase().split(','));
+    mentionTriggers = mentionTriggers.concat(settings.custom.custom_mentions.split(','));
   }
 
   var mentionTriggersTest = mentionTriggers.some(function (v) {
-    return content.toLowerCase().indexOf(v.trim(' ')) >= 0;
+    var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
+    return reg.test(content);
   });
 
   if (mentionTriggersTest && !this.isActiveTab && Dubtrack.session.id !== e.user.userInfo.userid) {
@@ -1539,11 +1601,12 @@ var saveCustomMentions = function saveCustomMentions() {
 };
 
 myModule.customMentionCheck = function (e) {
-  var content = e.message.toLowerCase();
+  var content = e.message;
   if (settings.custom.custom_mentions) {
-    var customMentions = settings.custom.custom_mentions.toLowerCase().split(',');
+    var customMentions = settings.custom.custom_mentions.split(',');
     var inUsers = customMentions.some(function (v) {
-      return content.indexOf(v.trim(' ')) >= 0;
+      var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
+      return reg.test(content);
     });
     if (Dubtrack.session.id !== e.user.userInfo.userid && inUsers) {
       Dubtrack.room.chat.mentionChatSound.play();
@@ -1826,6 +1889,10 @@ var replaceTextWithEmote = function replaceTextWithEmote() {
         } else if (dubplus_emoji.tasty.emotes[key]) {
             _src = dubplus_emoji.tasty.template(key);
             return makeImage("tasty", _src, key, dubplus_emoji.tasty.emotes[key].width, dubplus_emoji.tasty.emotes[key].height);
+        } else if (dubplus_emoji.frankerFacez.emotes[key]) {
+            _id = dubplus_emoji.frankerFacez.emotes[key];
+            _src = dubplus_emoji.frankerFacez.template(_id);
+            return makeImage("frankerFacez", _src, key);
         } else {
             return matched;
         }
@@ -1836,6 +1903,7 @@ var replaceTextWithEmote = function replaceTextWithEmote() {
 
 emote_module.turnOn = function () {
     window.addEventListener('twitch:loaded', dubplus_emoji.loadBTTVEmotes.bind(dubplus_emoji));
+    window.addEventListener('bttv:loaded', dubplus_emoji.loadFrankerFacez.bind(dubplus_emoji));
     // window.addEventListener('bttv:loaded', dubplus_emoji.loadTastyEmotes.bind(dubplus_emoji));
 
     if (!dubplus_emoji.twitchJSONSLoaded) {
@@ -2348,8 +2416,7 @@ dubshover.grabInfoWarning = function () {
 };
 
 dubshover.showDubsOnHover = function () {
-  var _this = this;
-
+  var that = this;
   this.resetDubs();
 
   Dubtrack.Events.bind("realtime:room_playlist-dub", this.dubWatcher.bind(this));
@@ -2469,10 +2536,8 @@ dubshover.showDubsOnHover = function () {
 
     $(document.body).on('click', '.preview-dubinfo-item', function (e) {
       var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ';
-      _this.updateChatInputWithString(new_text);
+      that.updateChatInputWithString(new_text);
     });
-
-    $('#dubinfo-preview').perfectScrollbar();
 
     $('.dubplus-updubs-hover').mouseleave(function (event) {
       var x = event.clientX,
@@ -2541,10 +2606,8 @@ dubshover.showDubsOnHover = function () {
 
     $(document.body).on('click', '.preview-dubinfo-item', function (e) {
       var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ';
-      this.updateChatInputWithString(new_text);
+      that.updateChatInputWithString(new_text);
     });
-
-    $('#dubinfo-preview').perfectScrollbar();
 
     $('.dubplus-downdubs-hover').mouseleave(function (event) {
       var x = event.clientX,
@@ -2613,10 +2676,8 @@ dubshover.showDubsOnHover = function () {
 
     $(document.body).on('click', '.preview-dubinfo-item', function (e) {
       var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ';
-      this.updateChatInputWithString(new_text);
+      that.updateChatInputWithString(new_text);
     });
-
-    $('#dubinfo-preview').perfectScrollbar();
 
     $('.dubplus-grabs-hover').mouseleave(function (event) {
       var x = event.clientX,
@@ -2984,7 +3045,7 @@ module.exports = {
 
     if (!$.snowfall) {
       // only pull in the script once if it doesn't exist
-      $.getScript("https://rawgit.com/loktar00/JQuery-Snowfall/master/src/snowfall.jquery.js").done(function () {
+      $.getScript("https://cdn.jsdelivr.net/gh/loktar00/JQuery-Snowfall/src/snowfall.jquery.js").done(function () {
         _this.doSnow();
       }).fail(function (jqxhr, settings, exception) {
         options.toggleAndSave(_this.id, false);
@@ -3183,7 +3244,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1516731296263')
+}).call(this,'1549826635371')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 

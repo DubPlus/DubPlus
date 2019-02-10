@@ -43,12 +43,12 @@ if (CURRENT_BRANCH === 'master' || releaseFlag) {
 }
 
 
-var resourceSrc = `https://rawgit.com/${CURRENT_REPO}/DubPlus/${CURRENT_BRANCH}`;
+var resourceSrc = `https://cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus`;
 if (localFlag) {
   resourceSrc = args[args.length - 1];
 }
 
-var jsBookmarklet = `javascript:(function()%7B%24.getScript(%27https://rawgit.com/${CURRENT_REPO}/DubPlus/${CURRENT_BRANCH}/dubplus.js%27)%3B%7D())%3B`;
+var jsBookmarklet = `javascript:var i,s,ss=['//cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus/dubplus.js','//ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js'];for(i=0;i!=ss.length;i++){s=document.createElement('script');s.src=ss[i];document.body.appendChild(s);}void(0);`;
 
 log.info('****************************************************************');
 console.log(`Current Github User is: ${yellow(CURRENT_REPO)}`);

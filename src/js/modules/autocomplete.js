@@ -65,6 +65,9 @@ var emojiUtils = {
         if (typeof prepEmjoji.tasty.emotes[_key] !== 'undefined') {
             listArray.push(self.createPreviewObj("tasty", _key, val));
         }
+        if (typeof prepEmjoji.frankerFacez.emotes[_key] !== 'undefined') {
+            listArray.push(self.createPreviewObj("frankerFacez", prepEmjoji.frankerFacez.emotes[_key], val));
+        }
         if (emojify.emojiNames.indexOf(_key) >= 0) {
             listArray.push(self.createPreviewObj("emoji", val, val));
         }
@@ -76,10 +79,11 @@ var emojiUtils = {
   filterEmoji : function(str){
     var finalStr = str.replace(/([+()])/,"\\$1");
     var re = new RegExp('^' + finalStr, "i");
-    var arrayToUse = emojify.emojiNames;
+    var arrayToUse = emojify.emojiNames || [];
     if (settings.options['dubplus-emotes']) {
-        arrayToUse = prepEmjoji.emojiEmotes; // merged array
+        arrayToUse = prepEmjoji.emojiEmotes || []; // merged array
     }
+
     return arrayToUse.filter(function(val){
         return re.test(val);
     });

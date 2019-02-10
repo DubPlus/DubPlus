@@ -26,6 +26,11 @@ prepEmoji.tasty = {
   template: function(id) { return this.emotes[id].url; },
   emotes: {}
 };
+prepEmoji.frankerFacez = {
+  template: function(id) { return "//cdn.frankerfacez.com/emoticon/" + id + "/1"; },
+  emotes: {},
+  chatRegex : new RegExp(":([-_a-z0-9]+):", "ig")
+};
 
 prepEmoji.shouldUpdateAPIs = function(apiName, callback){
   var day = 86400000; // milliseconds in a day
@@ -132,6 +137,34 @@ prepEmoji.loadTastyEmotes = function(){
   });
 };
 
+prepEmoji.loadFrankerFacez = function(){
+  var savedData;
+  // if it doesn't exist in localStorage or it's older than 5 days
+  // grab it from the frankerfacez API
+  this.shouldUpdateAPIs('frankerfacez', function(update) {
+    if (update) {
+      console.log('dub+','frankerfacez','loading from api');
+      var frankerFacezApi = new GetJSON('//cdn.jsdelivr.net/gh/Jiiks/BetterDiscordApp/data/emotedata_ffz.json', 'frankerfacez:loaded');
+      frankerFacezApi.done((data)=>{
+          var frankerFacez = JSON.parse(data);
+          localStorage.setItem('frankerfacez_api_timestamp', Date.now().toString());
+          ldb.set('frankerfacez_api', data);
+          prepEmoji.processFrankerFacez(frankerFacez);
+      });
+
+    } else {
+      ldb.get('frankerfacez_api', function(data) {
+        console.log('dub+','frankerfacez','loading from IndexedDB');
+        savedData = JSON.parse(data);
+        prepEmoji.processFrankerFacez(savedData);
+        savedData = null; // clear the var from memory
+        var twEvent = new Event('frankerfacez:loaded');
+        window.dispatchEvent(twEvent);
+      });
+    }
+  });
+};
+
 prepEmoji.processTwitchEmotes = function(data) {
   for (var code in data) {
     if (data.hasOwnProperty(code)) {
@@ -185,6 +218,30 @@ prepEmoji.processTastyEmotes = function(data) {
   this.tasty.emotes = data.emotes;
   this.tastyJSONLoaded = true;
   this.emojiEmotes = this.emojiEmotes.concat(Object.keys(this.tasty.emotes));
+};
+
+prepEmoji.processFrankerFacez = function(data){
+  for (var code in data) {
+    if (data.hasOwnProperty(code)) {
+      var _key = code.toLowerCase().replace('~', '-');
+
+      if (code.indexOf(':') >= 0) {
+        continue; // don't want any emotes with smileys and stuff
+      }
+
+      if (emojify.emojiNames.indexOf(_key) >= 0) {
+        continue; // do nothing so we don't override emoji
+      }
+
+      if (code.indexOf('(') >= 0) {
+        _key = _key.replace(/([()])/g, "");
+      }
+
+      this.frankerFacez.emotes[_key] = data[code];
+    }
+  }
+  this.frankerfacezJSONLoaded = true;
+  this.emojiEmotes = this.emojiEmotes.concat(Object.keys(this.frankerFacez.emotes));
 };
 
 module.exports = prepEmoji;

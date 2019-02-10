@@ -16,14 +16,15 @@ myModule.notifyOnMention = function(e){
 
   if (settings.options.custom_mentions && settings.custom.custom_mentions) {
     //add custom mention triggers to array
-    mentionTriggers = mentionTriggers.concat(settings.custom.custom_mentions.toLowerCase().split(','));
+    mentionTriggers = mentionTriggers.concat(settings.custom.custom_mentions.split(','));
   }
 
   var mentionTriggersTest = mentionTriggers.some(function(v) { 
-    return content.toLowerCase().indexOf(v.trim(' ')) >= 0; 
+    var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
+    return reg.test(content); 
   });
   
-  if ( mentionTriggersTest && !this.isActiveTab && Dubtrack.session.id !== e.user.userInfo.userid) {
+  if (mentionTriggersTest && !this.isActiveTab && Dubtrack.session.id !== e.user.userInfo.userid) {
     showNotification({
       title: `Message from ${e.user.username}`, 
       content: content
