@@ -1,128 +1,132 @@
-#dubplus-updubs-container, 
-#dubplus-downdubs-container,
-#dubplus-grabs-container {
-    position: fixed;
-    overflow-y: auto;
-    overflow-x: visible;
-    height: 150px;
-    width: 200px;
-    z-index: 100001;
+@media screen and (min-width: 72em) {
+  .dubplus #player-controller {
+    overflow: visible;
+  }
 }
 
-#dubinfo-preview {
+#player-controller .right {
+  .dubplus-updub-btn,
+  .dubplus-downdub-btn,
+  .dubplus-grab-btn {
+    position: relative;
+
+    &:hover .dubinfo-preview {
+      max-height: 164px;
+      display: block;
+    }
+  }
+}
+
+#player-controller .right .dubinfo-preview {
+  background-color: rgba(0, 0, 0, 0.9);
+  border-bottom: 1px solid #878c8e;
+  border: 1px solid #202020;
+  bottom: 100%;
+  right: 0;
+  display: none;
+  height: 164px;
+  list-style-type: none;
+  margin: 0;
+  max-height: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  padding: 0;
+  position: absolute;
+  width: 100%;
+  min-width: 175px;
+  z-index: 10001;
+  transition: max-height 0.4s;
+
+  &.dubinfo-updubs,
+  &.dubinfo-grabs {
+    border-radius: 0.4rem 0.4rem 0.4rem 0;
+  }
+
+  &.dubinfo-downdubs {
+    border-radius: 0.4rem 0.4rem 0 0.4rem;
+  }
+
+  &.dubinfo-no-dubs,
+  &.dubinfo-unauthorized {
+    .dubinfo-preview-none {
+      float: none;
+      text-align: center;
+      padding: 50px 10px 0;
+      width: 100%;
+    }
+  }
+
+  &.dubinfo-no-dubs {
+    color: #0ff;
+  }
+
+  &.dubinfo-grabs.dubinfo-no-dubs {
+    color: #b3e790;
+  }
+
+  &.dubinfo-unauthorized {
+    color: #f0f;
+  }
+
+  .dubinfo-preview-item {
+    background-position: 98% center;
+    background-repeat: no-repeat;
+    background-size: 25px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    float: none;
+    margin: 0;
+    padding: 6px 10px;
+    width: 100%;
+
+    &:hover,
+    &.selected {
+      background-color: #555;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .dubinfo-text {
+    flex: 1;
+    font-size: 0.8em;
+    padding-left: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dubinfo-image {
+    border-radius: 50%;
+    overflow: hidden;
+    width: 1.4em;
+  }
+
+  .dubinfo-image img {
     display: block;
-    background-color: rgba(0,0,0,0.9);
     width: 100%;
     height: auto;
-    max-height: 0;
-    padding: 0;
-    list-style-type: none;
-    margin: 0;
-    position: relative; 
-    overflow: hidden; 
-    bottom: 0; 
-    height: 150px;
-    border: 1px solid white;
-}
-
-#dubinfo-preview.dubplus-updubs-hover, 
-#dubinfo-preview.dubplus-grabs-hover {
-    border-radius: 0.4rem 0.4rem 0.4rem 0;
-}
-
-#dubinfo-preview.dubplus-downdubs-hover {
-    border-radius: 0.4rem 0.4rem 0 0.4rem;
-}
-
-#dubinfo-preview.dubplus-no-dubs, 
-#dubinfo-preview.dubplus-no-grabs, 
-#dubinfo-preview.dubplus-downdubs-unauthorized {
-    text-align: center;
-    padding: 50px 10px;
-}
-
-#dubinfo-preview.dubplus-no-dubs {
-    color: #0ff;
+  }
 }
 
 .dubplus-chat-system {
-    font-style: italic;
-    padding-top: 1rem;
-    padding: 5px;    
-    font-weight: 700;
-    min-height: 1rem;
-    text-align: left;
+  font-style: italic;
+  padding-top: 1rem;
+  padding: 5px;
+  font-weight: 700;
+  min-height: 1rem;
+  text-align: left;
 }
 
-.dubplus-chat-system-grab, .chat-system-grabbed {
-    color: #B3E790 !important;
+.dubplus-chat-system-grab,
+.chat-system-grabbed {
+  color: #b3e790 !important;
 }
 .dubplus-chat-system-updub {
-    color: #0ff;
+  color: #0ff;
 }
 .dubplus-chat-system-downdub {
-    color: #f0f;
-}
-
-#dubinfo-preview.dubplus-no-grabs {
-    color: #B3E790;
-}
-
-#dubinfo-preview.dubplus-downdubs-unauthorized {
-    color: #f0f;
-}
-
-#dubinfo-preview li {
-    display: block;
-    padding: 6px 10px;
-    margin: 0;
-    cursor: pointer;
-}
-
-#dubinfo-preview li:hover,
-#dubinfo-preview li.selected {
-    background-color: #555;
-}
-
-#dubinfo-preview li:focus {
-    outline: none;
-}
-
-#dubinfo-preview .preview-dubinfo-item {
-    background-repeat: no-repeat;
-    background-size: 25px;
-    background-position: 98% center;
-}
-
-#dubinfo-preview span {
-    font-size: 0.8em;
-    display:inline-block;
-    padding-left: 20px;
-    width: 85%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-#dubinfo-preview .dubinfo-image {
-    width: 1.4em;
-    display:inline-block;
-}
-#dubinfo-preview .dubinfo-image img {
-    width: 100%;
-    height: auto;
-}
-
-#dubinfo-preview > .users-preview .dubinfo-image {
-    border-radius: 100%;
-}
-
-#dubinfo-preview.dubinfo-show {
-    border: 1px solid #202020;
-    border-bottom: 1px solid #878c8e;
-    max-height: 164px;
-    -moz-transition: 0.4s;
-    -ms-transition: 0.4s;
-    -o-transition: 0.4s;
-    -webkit-transition: 0.4s;
-    transition: 0.4s;
+  color: #f0f;
 }

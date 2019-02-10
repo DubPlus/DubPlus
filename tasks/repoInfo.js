@@ -6,7 +6,7 @@ const log = require('./colored-console.js');
 
 /*
   --release
-  add this to the END to force rawgit to point to DubPlus/DubPlus/master
+  add this to the END to force jsDelivr to point to DubPlus/DubPlus/master
   example: node ./tasks bundle --release
   
   --local URL
@@ -14,9 +14,8 @@ const log = require('./colored-console.js');
   example: node ./tasks sass --local http://localhost:3001
  */
 
-var args = process.argv;
-var releaseFlag = args[args.length - 1] === '--release';
-var localFlag = args[args.length - 2] === '--local';
+var releaseFlag = process.env.BUILD === "release";
+var betaFlag = process.env.BUILD === "beta";
 
 /******************************************************************
  * Get the current branch name to be passed as a variable
@@ -25,13 +24,17 @@ var localFlag = args[args.length - 2] === '--local';
 var info = getRepoInfo();
 var CURRENT_BRANCH = info.branch;
 
-
+var resourceSrc;
 var CURRENT_REPO;
 if (CURRENT_BRANCH === 'master' || releaseFlag) {
   // if we're in master that means we're ready to send a PR to the
   // main repo and we should always be set to DubPlus/DubPlus
-  CURRENT_BRANCH = 'master'; // just in case we got here via the releaseFlag
   CURRENT_REPO = 'DubPlus';
+  resourceSrc = `https://cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus`;
+} else if (CURRENT_BRANCH === 'beta' || betaFlag) {
+  // DubPlus/DubPlus@beta
+  CURRENT_REPO = 'DubPlus';
+  resourceSrc = `https://cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus@beta`;
 } else {
   /***************************************
    * Get the github user name 
@@ -40,20 +43,16 @@ if (CURRENT_BRANCH === 'master' || releaseFlag) {
    */
   var gitURL = sync('git', ['config', '--get', 'remote.origin.url'], {encoding : "UTF-8"});
   CURRENT_REPO = gitURL.stdout.split(":")[1].split("/")[0];
+  resourceSrc = `https://cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus@${CURRENT_BRANCH}`;
 }
 
-
-var resourceSrc = `https://rawgit.com/${CURRENT_REPO}/DubPlus/${CURRENT_BRANCH}`;
-if (localFlag) {
-  resourceSrc = args[args.length - 1];
-}
-
-var jsBookmarklet = `javascript:(function()%7B%24.getScript(%27https://rawgit.com/${CURRENT_REPO}/DubPlus/${CURRENT_BRANCH}/dubplus.js%27)%3B%7D())%3B`;
+var payload = `//cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus@${CURRENT_BRANCH}/dubplus.min.js`;
+var jsBookmarklet = `javascript:var i,d=document,s=d.createElement('script');s.src="${payload}";d.body.appendChild(s);void(0);`;
 
 log.info('****************************************************************');
 console.log(`Current Github User is: ${yellow(CURRENT_REPO)}`);
 console.log(`Current branch is: ${yellow(CURRENT_BRANCH)}`);
-console.log(`Rawgit url: ${yellow(resourceSrc)}`);
+console.log(`cdn url: ${yellow(resourceSrc)}`);
 console.log('You can create a bookmarklet for this build by copy/pasting this:');
 console.log(yellow(jsBookmarklet));
 log.info('****************************************************************');

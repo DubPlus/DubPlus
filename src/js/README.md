@@ -1,93 +1,47 @@
-## Javascript notes and style guide
+# TODO
+- double-check or add data validation all inputs
+- plan out CI possibilities
+- create Dubplus object proxy/bridge/middle
 
+# Javascript info Guidelines
 :warning: *this doc is a work in progress* :warning:
 
-My TODO:
-* add unit tests
+We're using Preact, because of its smaller size to React, so that we can bundle it with the library
 
-### Adding a new menu item module
+## Folder structure
 
-1. Create a new js file in `src/js/modules`
+`./components/` - place all re-usable components in here
 
-2. require your module in `src/js/modules/index.js`.  For organization's sake, place it in the section pertaining to what part of the menu you would like it added to (see comments in index.js).  If it's not a menu item, don't place it in the index.js file.
+`./menu/` - Place all menu items in here. `./menu/index.js` is the main entry point to the menu and each subfolder represents a section of the menu
 
-#### YourModule.js
+`./utils/` - **I'll probably rename this.** Place all non-UI building logic and utilities here. 
 
-Each module is an object that you export with specific properties and methods. if you look at `src/js/lib/loadModules.js` you can see how each module is loaded and what's required in each.
+## Write tests for non-ui building logic as much as you can
 
-### Start by defining your module as an object:
+### Unit Testing
+At least everything in the utils folder should be unit tested. 
 
-and give it the following properties
-
-```javascript
-var myModule = { // "myModule" can be renamed to whatever you want. This is just for show.
-  id : "myID", // {string}
-  moduleName : "My Module Name", // {string}
-  description : "This module does this thing", // {string}
-  category : "General", // {string}
-
-  extraIcon : "pencil" // {string} [optional] Default: "pencil"
-  altIcon : "arrows-alt" // {string} [optional] 
-};
-```
-**id**: MUST BE UNIQUE. This will be used to bind events to and the #id selector of the menu item, also id of the module in the window.dubplus namespace
-
-**moduleName**: this will be used as the display text in the menu
-
-**description**: this will be used as the html title attribute text
-
-**category**: Which menu section this should be added to. (case sensitive!)
-
-**extraIcon**: OPTIONAL - set the [font-awesome icon](http://fontawesome.io/icons/) to be used to trigger the .extra method. It will automatically be prepended with "fa-".
-
-NOTE: the `.extraIcon` is optional and when you add a `.extra` method to your module (see below), you can still leave it out because the default 'pencil' icon will be used.  It's only when you don't want a pencil that you need to set it.
-
-**altIcon**: OPTIONAL - used to replace the switch with a different icon.  See `src/js/modules/fullscreen.js` for an example
-
-### REQUIRED methods
+## Creating new menu items
 
 ```javascript
-myModule.turnOn = function(){}
-myModule.turnOff = function(){}
-```
-obvious, put your module on and off functions in those. Option state is automatially set and save to localStorage.  On script load, if localStorage setting is on, then turnOn will be run.
-
-### OPTIONAL methods
-
-```javascript
-myModule.init = function(){}
-myModule.go = function(){}
+import {MenuSwitch, MenuPencil, MenuSimple} from '<srcDir/js>/components/menuItems.js';
 ```
 
-**init**: this optional method is always run only once when the script is first loaded.
+### `MenuSwitch`
+The menu switch requires 5 props and it will pass through any other props as usual. It can also contain children.
 
-**go**: this is used to execute whatever you want when a user clicks a menu item but you don't want to set/save option state. See `src/js/modules/fullscreen.js` for an example.
+`@prop menuTitle` - the text to show in the menu    
+`@prop desc` - the description of what the menu item does (used in a `title` attribute)    
+`@prop turnOn` - function to run when switch is turned on    
+`@prop turnOff` - function to run when switch is turned off    
+`@prop id` - html element ID pass through
 
-NOTE: Do not declare both `.go` and `.turnOn+Off` functions in the same module.  It's either/or, not both.
+### `MenuPencil`
+This should always be a child of the MenuSwitch. It's handles loading a modal and saving data from the modal. The props for MenuPencil are basically a pass-through to the `<Modal />` component.
 
-### available properties
+`@prop title` - Text to show in the headline of the Modal    
+`@prop content` - Text to show in the description area of the Modal    
+`@prop placeholder` - Sample text inside the TextArea of the Modal    
+`@prop onConfirm` - function to run when user hits confirm
 
-the following properties will be added to your modules dynamically when loaded. You don't really need to use them but they are there just in case.
 
-```javascript
-myModule.optionState // {boolean}
-
-/**
- * @param {string} id - your module.id
- * @param {boolean} state - the on/off state of the curent module that you would like to set and save
- */
-myModule.toggleAndSave(id, state) // {function}
-```
-**optionState**: on/off state of your menu item.  This is also set on load by checking a user's saved settings in localStorage.
-
-**toggleAndSave**: if you need to save option state for any reason.
-
-### and finally 
-
-don't forget to export at the end!
-
-`module.exports = myModule;` and `require` it in `src/modules/index.js`
-
-OR eventually when we've completely switched over to ES6:
-
-`export default myModule;` and `import` it in `src/modules/index.js`
