@@ -62,8 +62,8 @@ export default class ShowDubsOnHover extends Component {
         });
       }
 
+      // then remove them from downdubs
       let userDowndubbed = downDubs.filter(el => el.userid === e.user._id).length > 0;
-      // if user was previous in downdubs then remove them from downdubs
       if (userDowndubbed) {
         this.setState(prevState => {
           return { downDubs: prevState.downDubs.filter(el => el.userid !== e.user._id) };
@@ -82,7 +82,6 @@ export default class ShowDubsOnHover extends Component {
 
       //Remove user from from updubs
       let userUpdubbed = upDubs.filter(el => el.userid === e.user._id).length > 0;
-      // and then remove them from downdubs
       if (userUpdubbed) {
         this.setState(prevState => {
           return { upDubs: prevState.upDubs.filter(el => el.userid !== e.user._id) };
@@ -122,15 +121,39 @@ export default class ShowDubsOnHover extends Component {
     });
   };
 
+  getUserData(userid, whichVote) {
+    // if they don't exist, we can check the user api directly
+    let userInfo = getJSON(dtproxy.userDataAPI(userid));
+    userInfo.then(json => {
+      let data = json.data;
+      if (data && data.userinfo && data.userinfo.username) {
+        let user = {
+          userid: e.userid,
+          username: data.userinfo.username
+        };
+        this.setState(prevState => {
+          if (whichVote === 'down') {
+            return {
+              downDubs: [...prevState.downDubs, user]
+            };
+          }
+          if (whichVote === 'up') {
+            return {
+              upDubs: [...prevState.upDubs, user]
+            };
+          }
+        });
+      }
+    });
+  }
+
   /**
    * Callback for resetDubs()'s setState
    * Wipes out local state and repopulates with data from the api
    */
   handleReset() {
     // get the current active dubs in the room via api
-    const dubsURL = `https://api.dubtrack.fm/room/${dtproxy.getRoomId()}/playlist/active/dubs`;
-
-    const roomDubs = getJSON(dubsURL);
+    const roomDubs = getJSON(dtproxy.activeDubsAPI());
 
     roomDubs.then(json => {
       // loop through all the upDubs in the room and add them to our local state
@@ -145,21 +168,7 @@ export default class ShowDubsOnHover extends Component {
           let checkUser = dtproxy.getUserInfo(e.userid);
           if (!checkUser || !checkUser.attributes) {
             // if they don't exist, we can check the user api directly
-            let userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
-            userInfo.then(json2 => {
-              let data = json2.data;
-              if (data && data.userinfo && data.userinfo.username) {
-                let user = {
-                  userid: e.userid,
-                  username: data.userinfo.username
-                };
-                this.setState(prevState => {
-                  return {
-                    upDubs: [...prevState.upDubs, user]
-                  };
-                });
-              }
-            });
+            this.getUserData(e.userid, 'up');
             return;
           }
           
@@ -187,21 +196,7 @@ export default class ShowDubsOnHover extends Component {
 
           let checkUsers = dtproxy.getUserInfo(e.userid);
           if (!checkUsers || !checkUsers.attributes) {
-            let userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
-            userInfo.then(json3 => {
-              let data = json3.data;
-              if (data && data.userinfo && data.userinfo.username) {
-                let user = {
-                  userid: e.userid,
-                  username: data.userinfo.username
-                };
-                this.setState(prevState => {
-                  return {
-                    downDubs: [...prevState.downDubs, user]
-                  };
-                });
-              }
-            });
+            this.getUserData(e.userid, 'down');
             return;
           }
 
@@ -238,13 +233,13 @@ export default class ShowDubsOnHover extends Component {
   }
 
   componentWillMount() {
-    this.upElem = document.querySelector(".dubup").parentElement;
+    this.upElem = dtproxy.upVote().parentElement;
     this.upElem.classList.add('dubplus-updub-btn');
     
-    this.downElem = document.querySelector(".dubdown").parentElement;
+    this.downElem = dtproxy.downVote().parentElement;
     this.downElem.classList.add('dubplus-downdub-btn');
 
-    this.grabElem = document.querySelector(".add-to-playlist-button").parentElement;
+    this.grabElem = dtproxy.grabBtn().parentElement;
     this.grabElem.classList.add('dubplus-grab-btn');
   }
 

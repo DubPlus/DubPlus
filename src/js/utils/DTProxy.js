@@ -21,6 +21,13 @@ class DTProxy {
     return new WaitFor(checkList, { seconds: 120 });
   }
 
+  activeDubsAPI() {
+    return `https://api.dubtrack.fm/room/${this.getRoomId()}/playlist/active/dubs`;
+  }
+  userDataAPI(userid) {
+    return "https://api.dubtrack.fm/user/" + userid;
+  }
+
   getSessionId() {
     return Dubtrack.session.id;
   }
@@ -187,6 +194,8 @@ class DTProxy {
 
   /******************************************************************
    * Functions that depend on, or return, DOM elements
+   * for now I'm only proying DOM elements used across multiple files
+   * Except if they are just used as Preact's render target:  render(<Elem>, target)
    */
 
   chatInput() {
@@ -222,16 +231,30 @@ class DTProxy {
     );
   }
 
+  upVote() {
+    return document.querySelector('.dubup');
+  }
+  downVote() {
+    return document.querySelector('.dubdown');
+  }
+  grabBtn() {
+    return document.querySelector(".add-to-playlist-button");
+  }
+
+  userPMs() {
+    return document.querySelector(".user-messages")
+  }
+
+  bgImg() {
+    return document.querySelector('.backstretch-item img');
+  }
+
   /*
+    some more DOM elements being access but
     document.querySelector('.player_sharing')
     document.querySelector(".chat-text-box-icons")
     document.querySelector(".header-right-navigation")
-    document.querySelector('.backstretch-item img');
     document.querySelector(".pusher-chat-widget-input");
-    document.querySelector('.dubup');
-    document.querySelector('.dubdown');
-    document.querySelector(".add-to-playlist-button")
-    document.querySelector(".user-messages")
     document.querySelector("#room-main-player-container");
    */
 }

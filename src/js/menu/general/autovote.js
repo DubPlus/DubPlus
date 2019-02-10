@@ -6,12 +6,8 @@ import dtproxy from "@/utils/DTProxy.js";
  * Menu item for Autovote
  */
 export default class Autovote extends Component {
-
-  constructor(){
-    super();
-    this.dubup = document.querySelector('.dubup');
-    this.dubdown = document.querySelector('.dubdown');
-  }
+  dubup = dtproxy.upVote();
+  dubdown = dtproxy.downVote();
 
   advance_vote = () => {
     var event = document.createEvent('HTMLEvents');
@@ -49,7 +45,7 @@ export default class Autovote extends Component {
   }
 
 
-  render(props,state){
+  render(){
     return (
       <MenuSwitch
         id="dubplus-autovote"

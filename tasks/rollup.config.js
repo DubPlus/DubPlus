@@ -45,18 +45,14 @@ const introBanner = `
  * This custom import alias allows you to replace a '@' in an import statement
  * with your src dir so you can have cleaner import statements
  * instead of:
- *    '../../utils/something'
- *    process.cwd() + '/utils/something'
+ *    '../../utils/something'  OR  process.cwd() + '/utils/something'
  * you can just do:
  *   '@/utils/something'
  */
 function customAlias() {
-  let src = process.cwd() + "/src/js2";
+  let src = process.cwd() + "/src/js";
   function fixExt(id) {
-    if (/\.js$/.test(id)) {
-      return id;
-    }
-    return id + ".js";
+    return /\.js$/.test(id) ? id : id + ".js";
   }
   return {
     name: "customAlias",
@@ -82,7 +78,7 @@ const defaultPlugins = [
   }),
   babel({
     babelrc: false,
-    include: ["src/js2/**", "node_modules/preact-portal/**"],
+    include: ["src/js/**", "node_modules/preact-portal/**"],
     plugins: [
       "@babel/plugin-transform-spread",
       "@babel/plugin-proposal-class-properties",
@@ -90,7 +86,7 @@ const defaultPlugins = [
         "@babel/plugin-transform-react-jsx",
         {
           pragma: "h",
-          pragmaFrag: '"span"' // for now transform Fragments into a <span>
+          pragmaFrag: '"span"' // for now transform Fragments into a <span> until Preact fully supports Fragments
         }
       ]
     ],
@@ -109,7 +105,7 @@ const defaultPlugins = [
 ];
 
 const inputOptions = {
-  input: process.cwd() + "/src/js2/index.js",
+  input: process.cwd() + "/src/js/index.js",
   treeshake: true,
   plugins: [...defaultPlugins, sassTasks.plugin()]
 };
@@ -117,13 +113,14 @@ const inputOptions = {
 
 const outputOptions = {
   banner: introBanner,
-  file: process.cwd() + "/dist/dubplus.js",
+  file: process.cwd() + "/build/dubplus.js",
   format: "iife",
   name: "DubPlus"
 };
 
 /***********************************************
  * This builds the regular version
+ * both min and and non-min SASS built here
  */
 async function build(inOpts, outOpts) {
   console.log('building dub+');
@@ -140,7 +137,7 @@ async function build(inOpts, outOpts) {
 build(inputOptions, outputOptions);
 
 /***********************************************
- * This builds the minified version
+ * This builds the minified JS version
  * note: no need to build sass again
  */
 
@@ -153,7 +150,7 @@ inputOptions.plugins = [
     })
 ];
 
-outputOptions.file = process.cwd() + "/dist/dubplus.min.js";
+outputOptions.file = process.cwd() + "/build/dubplus.min.js";
 
 async function buildMin(inOpts, outOpts) {
   console.log('building minified dub+');

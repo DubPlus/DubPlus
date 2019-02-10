@@ -1,6 +1,7 @@
 import {h, Component} from 'preact';
 import {MenuSwitch, MenuPencil} from '@/components/menuItems.js';
 import settings from '@/utils/UserSettings.js';
+import dtproxy from "@/utils/DTProxy.js";
 
 /**
  * Custom Background
@@ -11,15 +12,15 @@ export default class CustomBG extends Component {
     showModal: false
   }
 
+  bgImg = dtproxy.bgImg()
+
   addCustomBG(val) {
-    let elem = document.querySelector('.backstretch-item img');
-    this.saveSrc = elem.src;
-    elem.src = val;
+    this.saveSrc = this.bgImg.src;
+    this.bgImg.src = val;
   }
 
   revertBG() {
-    let elem = document.querySelector('.backstretch-item img');
-    elem.src = this.saveSrc
+    this.bgImg.src = this.saveSrc
   }
    
   turnOn = () => {

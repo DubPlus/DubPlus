@@ -1000,6 +1000,16 @@ var DubPlus = (function () {
         });
       }
     }, {
+      key: "activeDubsAPI",
+      value: function activeDubsAPI() {
+        return "https://api.dubtrack.fm/room/".concat(this.getRoomId(), "/playlist/active/dubs");
+      }
+    }, {
+      key: "userDataAPI",
+      value: function userDataAPI(userid) {
+        return "https://api.dubtrack.fm/user/" + userid;
+      }
+    }, {
       key: "getSessionId",
       value: function getSessionId() {
         return Dubtrack.session.id;
@@ -1208,6 +1218,8 @@ var DubPlus = (function () {
       }
       /******************************************************************
        * Functions that depend on, or return, DOM elements
+       * for now I'm only proying DOM elements used across multiple files
+       * Except if they are just used as Preact's render target:  render(<Elem>, target)
        */
 
     }, {
@@ -1246,16 +1258,37 @@ var DubPlus = (function () {
       value: function getPMmsg(messageid) {
         return document.querySelector(".message-item[data-messageid=\"".concat(messageid, "\"]"));
       }
+    }, {
+      key: "upVote",
+      value: function upVote() {
+        return document.querySelector('.dubup');
+      }
+    }, {
+      key: "downVote",
+      value: function downVote() {
+        return document.querySelector('.dubdown');
+      }
+    }, {
+      key: "grabBtn",
+      value: function grabBtn() {
+        return document.querySelector(".add-to-playlist-button");
+      }
+    }, {
+      key: "userPMs",
+      value: function userPMs() {
+        return document.querySelector(".user-messages");
+      }
+    }, {
+      key: "bgImg",
+      value: function bgImg() {
+        return document.querySelector('.backstretch-item img');
+      }
       /*
+        some more DOM elements being access but
         document.querySelector('.player_sharing')
         document.querySelector(".chat-text-box-icons")
         document.querySelector(".header-right-navigation")
-        document.querySelector('.backstretch-item img');
         document.querySelector(".pusher-chat-widget-input");
-        document.querySelector('.dubup');
-        document.querySelector('.dubdown');
-        document.querySelector(".add-to-playlist-button")
-        document.querySelector(".user-messages")
         document.querySelector("#room-main-player-container");
        */
 
@@ -11537,11 +11570,21 @@ var DubPlus = (function () {
     _inherits(Autovote, _Component);
 
     function Autovote() {
+      var _getPrototypeOf2;
+
       var _this;
 
       _classCallCheck(this, Autovote);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(Autovote).call(this));
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Autovote)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dubup", proxy.upVote());
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dubdown", proxy.downVote());
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "advance_vote", function () {
         var event = document.createEvent('HTMLEvents');
@@ -11577,14 +11620,12 @@ var DubPlus = (function () {
         proxy.offPlaylistUpdate(_this.voteCheck);
       });
 
-      _this.dubup = document.querySelector('.dubup');
-      _this.dubdown = document.querySelector('.dubdown');
       return _this;
     }
 
     _createClass(Autovote, [{
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render$$1() {
         return h(MenuSwitch, {
           id: "dubplus-autovote",
           section: "General",
@@ -13073,9 +13114,9 @@ var DubPlus = (function () {
           title: "You have a new PM",
           ignoreActiveTab: true,
           callback: function callback() {
-            document.querySelector(".user-messages").click();
+            proxy.userPMs().click();
             setTimeout(function () {
-              document.querySelector(".message-item[data-messageid=\"".concat(e.messageid, "\"]")).click();
+              proxy.getPMmsg(e.messageid).click();
             }, 500);
           },
           wait: 10000
@@ -13985,11 +14026,12 @@ var DubPlus = (function () {
                 upDubs: [].concat(_toConsumableArray(prevState.upDubs), [user])
               };
             });
-          }
+          } // then remove them from downdubs
+
 
           var userDowndubbed = downDubs.filter(function (el) {
             return el.userid === e.user._id;
-          }).length > 0; // if user was previous in downdubs then remove them from downdubs
+          }).length > 0;
 
           if (userDowndubbed) {
             _this.setState(function (prevState) {
@@ -14018,7 +14060,7 @@ var DubPlus = (function () {
 
           var userUpdubbed = upDubs.filter(function (el) {
             return el.userid === e.user._id;
-          }).length > 0; // and then remove them from downdubs
+          }).length > 0;
 
           if (userUpdubbed) {
             _this.setState(function (prevState) {
@@ -14087,24 +14129,55 @@ var DubPlus = (function () {
     }
 
     _createClass(ShowDubsOnHover, [{
-      key: "handleReset",
+      key: "getUserData",
+      value: function getUserData(userid, whichVote) {
+        var _this2 = this;
 
+        // if they don't exist, we can check the user api directly
+        var userInfo = getJSON(proxy.userDataAPI(userid));
+        userInfo.then(function (json) {
+          var data = json.data;
+
+          if (data && data.userinfo && data.userinfo.username) {
+            var user = {
+              userid: e.userid,
+              username: data.userinfo.username
+            };
+
+            _this2.setState(function (prevState) {
+              if (whichVote === 'down') {
+                return {
+                  downDubs: [].concat(_toConsumableArray(prevState.downDubs), [user])
+                };
+              }
+
+              if (whichVote === 'up') {
+                return {
+                  upDubs: [].concat(_toConsumableArray(prevState.upDubs), [user])
+                };
+              }
+            });
+          }
+        });
+      }
       /**
        * Callback for resetDubs()'s setState
        * Wipes out local state and repopulates with data from the api
        */
+
+    }, {
+      key: "handleReset",
       value: function handleReset() {
-        var _this2 = this;
+        var _this3 = this;
 
         // get the current active dubs in the room via api
-        var dubsURL = "https://api.dubtrack.fm/room/".concat(proxy.getRoomId(), "/playlist/active/dubs");
-        var roomDubs = getJSON(dubsURL);
+        var roomDubs = getJSON(proxy.activeDubsAPI());
         roomDubs.then(function (json) {
           // loop through all the upDubs in the room and add them to our local state
           if (json.data && json.data.upDubs) {
             json.data.upDubs.forEach(function (e) {
               // Dub already casted (usually from autodub)
-              if (_this2.state.upDubs.filter(function (el) {
+              if (_this3.state.upDubs.filter(function (el) {
                 return el.userid === e.userid;
               }).length > 0) {
                 return;
@@ -14115,23 +14188,8 @@ var DubPlus = (function () {
 
               if (!checkUser || !checkUser.attributes) {
                 // if they don't exist, we can check the user api directly
-                var userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
-                userInfo.then(function (json2) {
-                  var data = json2.data;
+                _this3.getUserData(e.userid, 'up');
 
-                  if (data && data.userinfo && data.userinfo.username) {
-                    var user = {
-                      userid: e.userid,
-                      username: data.userinfo.username
-                    };
-
-                    _this2.setState(function (prevState) {
-                      return {
-                        upDubs: [].concat(_toConsumableArray(prevState.upDubs), [user])
-                      };
-                    });
-                  }
-                });
                 return;
               }
 
@@ -14141,7 +14199,7 @@ var DubPlus = (function () {
                   username: checkUser.attributes._user.username
                 };
 
-                _this2.setState(function (prevState) {
+                _this3.setState(function (prevState) {
                   return {
                     upDubs: [].concat(_toConsumableArray(prevState.upDubs), [user])
                   };
@@ -14151,10 +14209,10 @@ var DubPlus = (function () {
           } //Only let mods or higher access down dubs
 
 
-          if (json.data && json.data.downDubs && _this2.userIsMod) {
+          if (json.data && json.data.downDubs && _this3.userIsMod) {
             json.data.downDubs.forEach(function (e) {
               //Dub already casted
-              if (_this2.state.downDubs.filter(function (el) {
+              if (_this3.state.downDubs.filter(function (el) {
                 return el.userid === e.userid;
               }).length > 0) {
                 return;
@@ -14163,23 +14221,8 @@ var DubPlus = (function () {
               var checkUsers = proxy.getUserInfo(e.userid);
 
               if (!checkUsers || !checkUsers.attributes) {
-                var userInfo = getJSON("https://api.dubtrack.fm/user/" + e.userid);
-                userInfo.then(function (json3) {
-                  var data = json3.data;
+                _this3.getUserData(e.userid, 'down');
 
-                  if (data && data.userinfo && data.userinfo.username) {
-                    var user = {
-                      userid: e.userid,
-                      username: data.userinfo.username
-                    };
-
-                    _this2.setState(function (prevState) {
-                      return {
-                        downDubs: [].concat(_toConsumableArray(prevState.downDubs), [user])
-                      };
-                    });
-                  }
-                });
                 return;
               }
 
@@ -14189,7 +14232,7 @@ var DubPlus = (function () {
                   username: checkUsers.attributes._user.username
                 };
 
-                _this2.setState(function (prevState) {
+                _this3.setState(function (prevState) {
                   return {
                     downDubs: [].concat(_toConsumableArray(prevState.downDubs), [user])
                   };
@@ -14204,11 +14247,11 @@ var DubPlus = (function () {
     }, {
       key: "componentWillMount",
       value: function componentWillMount() {
-        this.upElem = document.querySelector(".dubup").parentElement;
+        this.upElem = proxy.upVote().parentElement;
         this.upElem.classList.add('dubplus-updub-btn');
-        this.downElem = document.querySelector(".dubdown").parentElement;
+        this.downElem = proxy.downVote().parentElement;
         this.downElem.classList.add('dubplus-downdub-btn');
-        this.grabElem = document.querySelector(".add-to-playlist-button").parentElement;
+        this.grabElem = proxy.grabBtn().parentElement;
         this.grabElem.classList.add('dubplus-grab-btn');
       }
     }, {
@@ -14729,7 +14772,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549696293938);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549821545923);
     document.head.appendChild(link);
   }
   /**
@@ -14908,6 +14951,8 @@ var DubPlus = (function () {
         showModal: false
       });
 
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "bgImg", proxy.bgImg());
+
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
         _this.isOn = true;
 
@@ -14945,15 +14990,13 @@ var DubPlus = (function () {
     _createClass(CustomBG, [{
       key: "addCustomBG",
       value: function addCustomBG(val) {
-        var elem = document.querySelector('.backstretch-item img');
-        this.saveSrc = elem.src;
-        elem.src = val;
+        this.saveSrc = this.bgImg.src;
+        this.bgImg.src = val;
       }
     }, {
       key: "revertBG",
       value: function revertBG() {
-        var elem = document.querySelector('.backstretch-item img');
-        elem.src = this.saveSrc;
+        this.bgImg.src = this.saveSrc;
       }
     }, {
       key: "render",
@@ -15326,7 +15369,7 @@ var DubPlus = (function () {
     setTimeout(function () {
       // start the loading of the CSS asynchronously
       css$2.loadExternal("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
-      css$2.load("/css/dubplus.css");
+      css$2.load("/css/dubplus.min.css");
     }, 10);
   }
 

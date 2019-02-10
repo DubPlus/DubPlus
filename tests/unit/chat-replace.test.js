@@ -3,9 +3,9 @@ import beginReplace, {
   processTextNode,
   getTextNodesUnder,
   getLatestChatNode
-} from '../../src/js2/utils/emotes/chat-replace.js';
-import ldb from '../../src/js2/utils/indexedDB.js';
-import twitch from '../../src/js2/utils/emotes/twitch.js';
+} from '../../src/js/utils/emotes/chat-replace.js';
+import ldb from '../../src/js/utils/indexedDB.js';
+import twitch from '../../src/js/utils/emotes/twitch.js';
 
 test('getLatestChatNode gets last chat node', () => {
   document.body.innerHTML = `

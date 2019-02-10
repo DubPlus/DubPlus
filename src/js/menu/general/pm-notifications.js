@@ -4,19 +4,6 @@ import { notifyCheckPermission, showNotification } from "@/utils/notify.js";
 import Modal from "@/components/modal";
 import dtproxy from "@/utils/DTProxy.js";
 
-const statuses = {
-  denyDismiss: {
-    title: "Desktop Notifications",
-    content:
-      "You have dismissed or chosen to deny the request to allow desktop notifications. Reset this choice by clearing your cache for the site."
-  },
-  noSupport: {
-    title: "Desktop Notifications",
-    content:
-      "Sorry this browser does not support desktop notifications.  Please use the latest version of Chrome or FireFox"
-  }
-};
-
 export default class PMNotifications extends Component {
   state = {
     showWarning: false,
@@ -33,9 +20,9 @@ export default class PMNotifications extends Component {
       title: "You have a new PM",
       ignoreActiveTab: true,
       callback: function() {
-        document.querySelector(".user-messages").click();
+        dtproxy.userPMs().click();
         setTimeout(function() {
-          document.querySelector(`.message-item[data-messageid="${e.messageid}"]`).click();
+          dtproxy.getPMmsg(e.messageid).click();
         }, 500);
       },
       wait: 10000

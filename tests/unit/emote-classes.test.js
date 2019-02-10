@@ -1,7 +1,7 @@
-import twitch from '../../src/js2/utils/emotes/twitch.js';
-import bttv from '../../src/js2/utils/emotes/bttv.js';
-import ldb from '../../src/js2/utils/indexedDB.js';
-import {shouldUpdateAPIs} from '../../src/js2/utils/emotes/updateCheck';
+import twitch from '../../src/js/utils/emotes/twitch.js';
+import bttv from '../../src/js/utils/emotes/bttv.js';
+import ldb from '../../src/js/utils/indexedDB.js';
+import {shouldUpdateAPIs} from '../../src/js/utils/emotes/updateCheck';
 
 describe('shouldUpdateAPIs test', ()=>{
   test('shouldUpdateAPIs returns true when item doesnt exist in indexedDB', async ()=>{

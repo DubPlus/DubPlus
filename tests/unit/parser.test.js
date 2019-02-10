@@ -1,5 +1,5 @@
 'use strict';
-import parser from '../../src/js2/utils/emotes/parser.js'
+import parser from '../../src/js/utils/emotes/parser.js'
 
 test('should match a single emote in a string', () => {
   let str = "yo :kappa: gabba";
