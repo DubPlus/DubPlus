@@ -25,7 +25,7 @@ function chatMessage (username, song) {
 };
 
 export default class DowndubInChat extends Component {
-  turnOn() {
+  turnOn = () => {
     if (!dtproxy.modCheck()) {
       return;
     }
@@ -33,7 +33,7 @@ export default class DowndubInChat extends Component {
     dtproxy.onSongVote(this.downdubWatcher);
   }
 
-  turnOff() {
+  turnOff = () => {
     dtproxy.offSongVote(this.downdubWatcher);
   }
 

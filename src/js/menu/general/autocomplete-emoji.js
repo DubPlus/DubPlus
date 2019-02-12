@@ -5,6 +5,7 @@ import AutocompletePreview from "./autocomplete-preview";
 import twitch from '@/utils/emotes/twitch-local.js';
 import bttv from "@/utils/emotes/bttv.js";
 import { emoji } from "@/utils/emotes/emoji.js";
+import dtproxy from "@/utils/DTProxy.js";
 
 /**********************************************************************
  * Autocomplete Emoji / Emotes
@@ -38,7 +39,7 @@ export default class AutocompleteEmoji extends Component {
 
   renderTo = document.querySelector(".pusher-chat-widget-input");
 
-  chatInput = document.getElementById("chat-txt-message");
+  chatInput = dtproxy.chatInput()
 
   selectedItem = null;
 

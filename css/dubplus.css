@@ -364,7 +364,7 @@
     padding: 5px;
     border-radius: 3px;
     cursor: pointer;
-    background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/emoji-spritesheet.png);
+    background-image: url(https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@fix-afk/images/emoji-spritesheet.png);
     background-repeat: no-repeat;
     width: 35px;
     height: 35px;
@@ -373,7 +373,7 @@
       background-color: rgba(255, 255, 255, 0.3); }
 
 .dp-emoji-picker.twitch-picker span {
-  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/twitch-spritesheet.png); }
+  background-image: url(https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@fix-afk/images/twitch-spritesheet.png); }
 
 .dubplus-split-chat .chat-main li:nth-child(2n) {
   background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
@@ -478,7 +478,7 @@
   padding: 5px;
   border-radius: 3px;
   cursor: pointer;
-  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/twitch-spritesheet.png);
+  background-image: url(https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@fix-afk/images/twitch-spritesheet.png);
   background-repeat: no-repeat; }
 
 .dubplus-chat-only .left_section {

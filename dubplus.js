@@ -10992,7 +10992,7 @@ var DubPlus = (function () {
     function UserSettings() {
       _classCallCheck(this, UserSettings);
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta");
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@fix-afk");
 
       var _savedSettings = localStorage.getItem('dubplusUserSettings');
 
@@ -11457,9 +11457,9 @@ var DubPlus = (function () {
   }(Component);
 
   /**
-   * 
+   *
    * Away From Keyboard autoresponder
-   * 
+   *
    * TODO: setup global state manager
    */
 
@@ -11482,22 +11482,29 @@ var DubPlus = (function () {
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(AFK)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
-        canSend: true
+        canSend: true,
+        afkMessage: userSettings.stored.custom.customAfkMessage
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "afk_chat_respond", function (e) {
+        console.log(e);
+
         if (!_this.state.canSend) {
+          console.log("cant send yet");
           return; // do nothing until it's back to true
         }
 
         var content = e.message;
         var user = proxy.getUserName();
+        console.log(user, content);
+        console.log(proxy.getSessionId(), e.user.userInfo.userid);
+        console.log('msg is: ', _this.state.afkMessage);
 
-        if (content.indexOf('@' + user) > -1 && proxy.getSessionId() !== e.user.userInfo.userid) {
+        if (content.indexOf("@" + user) >= 0 && proxy.getSessionId() !== e.user.userInfo.userid) {
           var chatInput = proxy.chatInput();
 
-          if (userSettings.stored.custom.customAfkMessage) {
-            chatInput.value = '[AFK] ' + userSettings.stored.custom.customAfkMessage;
+          if (_this.state.afkMessage) {
+            chatInput.value = "[AFK] " + _this.state.afkMessage;
           } else {
             chatInput.value = "[AFK] I'm not here right now.";
           }
@@ -11517,27 +11524,29 @@ var DubPlus = (function () {
         }
       });
 
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        proxy.onChatMessage(_this.afk_chat_respond);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        proxy.offChatMessage(_this.afk_chat_respond);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveAFKmessage", function (val) {
+        userSettings.save("custom", "customAfkMessage", val);
+
+        _this.setState({
+          afkMessage: val
+        });
+      });
+
       return _this;
     }
 
     _createClass(AFK, [{
-      key: "turnOn",
-      value: function turnOn() {
-        proxy.onChatMessage(this.afk_chat_respond);
-      }
-    }, {
-      key: "turnOff",
-      value: function turnOff() {
-        proxy.offChatMessage(this.afk_chat_respond);
-      }
-    }, {
-      key: "saveAFKmessage",
-      value: function saveAFKmessage(val) {
-        userSettings.save('custom', 'customAfkMessage', val);
-      }
-    }, {
       key: "render",
-      value: function render$$1() {
+      value: function render$$1(props, _ref) {
+        var afkMessage = _ref.afkMessage;
         return h(MenuSwitch, {
           id: "dubplus-afk",
           section: "General",
@@ -11549,7 +11558,7 @@ var DubPlus = (function () {
           title: "Custom AFK Message",
           section: "General",
           content: "Enter a custom Away From Keyboard [AFK] message here",
-          value: userSettings.stored.custom.customAfkMessage || '',
+          value: afkMessage,
           placeholder: "Be right back!",
           maxlength: "255",
           onConfirm: this.saveAFKmessage
@@ -12150,7 +12159,7 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "renderTo", document.querySelector(".pusher-chat-widget-input"));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatInput", document.getElementById("chat-txt-message"));
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatInput", proxy.chatInput());
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "selectedItem", null);
 
@@ -12720,11 +12729,16 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(CustomMentions)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        custom: userSettings.stored.custom.custom_mentions
+      });
+
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "customMentionCheck", function (e) {
         var content = e.message;
 
-        if (userSettings.custom.custom_mentions) {
-          var customMentions = userSettings.custom.custom_mentions.split(',');
+        if (_this.state.custom) {
+          var customMentions = _this.state.custom.split(',');
+
           var inUsers = customMentions.some(function (v) {
             var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
             return reg.test(content);
@@ -12738,24 +12752,27 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveCustomMentions", function (val) {
         userSettings.save('custom', 'custom_mentions', val);
+
+        _this.setState({
+          custom: val
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        proxy.onChatMessage(_this.customMentionCheck);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        proxy.offChatMessage(_this.customMentionCheck);
       });
 
       return _this;
     }
 
     _createClass(CustomMentions, [{
-      key: "turnOn",
-      value: function turnOn() {
-        proxy.onChatMessage(this.customMentionCheck);
-      }
-    }, {
-      key: "turnOff",
-      value: function turnOff() {
-        proxy.offChatMessage(this.customMentionCheck);
-      }
-    }, {
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render$$1(props, _ref) {
+        var custom = _ref.custom;
         return h(MenuSwitch, {
           id: "custom_mentions",
           section: "General",
@@ -12767,7 +12784,7 @@ var DubPlus = (function () {
           title: "Custom AFK Message",
           section: "General",
           content: "Add your custom mention triggers here (separate by comma)",
-          value: userSettings.stored.custom.custom_mentions || '',
+          value: custom,
           placeholder: "separate, custom triggers, by, comma, :heart:",
           maxlength: "255",
           onConfirm: this.saveCustomMentions
@@ -14772,7 +14789,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549827226508);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549931094663);
     document.head.appendChild(link);
   }
   /**
