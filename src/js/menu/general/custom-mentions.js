@@ -7,11 +7,14 @@ import dtproxy from "@/utils/DTProxy.js";
  * Custom mentions
  */
 export default class CustomMentions extends Component {
-  
+  state = {
+    custom: settings.stored.custom.custom_mentions
+  }
+
   customMentionCheck = (e) => {
     var content = e.message;
-    if (settings.custom.custom_mentions) {
-      var customMentions = settings.custom.custom_mentions.split(',');
+    if (this.state.custom) {
+      var customMentions = this.state.custom.split(',');
       var inUsers = customMentions.some(function(v) {
         var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
         return reg.test(content); 
@@ -22,20 +25,23 @@ export default class CustomMentions extends Component {
     }
   }
 
-
   saveCustomMentions = (val) => {
+    if (val.length > 255) {
+      val = val.substring(0,255);
+    }
     settings.save('custom', 'custom_mentions', val);
+    this.setState({ custom: val });
   };
   
-  turnOn(){
+  turnOn = () => {
     dtproxy.onChatMessage(this.customMentionCheck);
   }
   
-  turnOff() {
+  turnOff = () => {
     dtproxy.offChatMessage(this.customMentionCheck);
   }
 
-  render(props,state){
+  render(props,{ custom }){
     return (
       <MenuSwitch
         id="custom_mentions"
@@ -48,7 +54,7 @@ export default class CustomMentions extends Component {
           title='Custom AFK Message'
           section="General"
           content='Add your custom mention triggers here (separate by comma)'
-          value={settings.stored.custom.custom_mentions || ''}
+          value={custom}
           placeholder='separate, custom triggers, by, comma, :heart:'
           maxlength='255'
           onConfirm={this.saveCustomMentions} />

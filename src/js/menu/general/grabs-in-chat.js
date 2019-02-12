@@ -25,11 +25,11 @@ function chatMessage (username, song) {
 };
 
 export default class GrabsInChat extends Component {
-  turnOn() {
+  turnOn = () => {
     dtproxy.onSongGrab(this.grabChatWatcher);
   }
 
-  turnOff() {
+  turnOff = () => {
     dtproxy.offSongGrab(this.grabChatWatcher);
   }
 

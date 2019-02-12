@@ -6,13 +6,15 @@ import dtproxy from "@/utils/DTProxy.js";
 
 export default class DJNotification extends Component {
   state = {
-    canNotify: false
+    canNotify: false,
+    notifyOn: settings.stored.custom.dj_notification
   };
 
   savePosition = value => {
     var int = parseInt(value, 10);
     let amount = !isNaN(int) ? int : 2;
     settings.save("custom", "dj_notification", amount);
+    this.setState({ notifyOn: value });
   };
 
   djNotificationCheck = e => {
@@ -24,11 +26,9 @@ export default class DJNotification extends Component {
       e.startTime < 0 && !isNaN(positionParse)
         ? positionParse - 1
         : positionParse;
-    if (
-      isNaN(positionParse) ||
-      position !== settings.stored.custom.dj_notification
-    )
+    if (isNaN(positionParse) || position !== this.state.notifyOn) {
       return;
+    }
 
     if (this.canNotify) {
       showNotification({
@@ -54,7 +54,7 @@ export default class DJNotification extends Component {
     dtproxy.offPlaylistUpdate(this.djNotificationCheck);
   };
 
-  render(props, state) {
+  render() {
     return (
       <MenuSwitch
         ref={s => (this.switchRef = s)}
@@ -69,7 +69,7 @@ export default class DJNotification extends Component {
           title="DJ Notification"
           section="General"
           content="Please specify the position in queue you want to be notified at"
-          value={settings.stored.custom.dj_notification || ""}
+          value={this.state.notifyOn}
           placeholder="2"
           maxlength="2"
           onConfirm={this.savePosition}

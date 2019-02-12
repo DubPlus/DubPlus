@@ -7,9 +7,13 @@ import dtproxy from "@/utils/DTProxy.js";
  * Menu item for ChatCleaner
  */
 export default class ChatCleaner extends Component {
+  state = {
+    maxChats: settings.stored.custom.chat_cleaner || 500
+  }
+
   chatCleanerCheck = e => {
     let totalChats = Array.from(dtproxy.chatList().children);
-    let max = parseInt(settings.stored.custom.chat_cleaner, 10);
+    let max = parseInt(this.state.maxChats, 10);
 
     if (
       isNaN(totalChats.length) ||
@@ -34,6 +38,7 @@ export default class ChatCleaner extends Component {
     var chatItems = parseInt(value, 10);
     let amount = !isNaN(chatItems) ? chatItems : 500;
     settings.save("custom", "chat_cleaner", amount); // default to 500
+    this.setState({ maxChats: value});
   };
 
   turnOn = () => {
@@ -58,7 +63,7 @@ export default class ChatCleaner extends Component {
           title="Chat Cleaner"
           section="General"
           content="Please specify the number of most recent chat items that will remain in your chat history"
-          value={settings.stored.custom.chat_cleaner || ""}
+          value={this.state.maxChats}
           placeholder="500"
           maxlength="5"
           onConfirm={this.saveAmount}

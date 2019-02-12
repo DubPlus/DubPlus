@@ -25,11 +25,11 @@ function chatMessage(username, song) {
 }
 
 export default class UpdubsInChat extends Component {
-  turnOn() {
+  turnOn = () => {
     dtproxy.onSongVote(this.updubWatcher);
   }
 
-  turnOff() {
+  turnOff = () => {
     dtproxy.offSongVote(this.updubWatcher);
   }
 
