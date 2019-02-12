@@ -26,6 +26,9 @@ export default class CustomMentions extends Component {
   }
 
   saveCustomMentions = (val) => {
+    if (val.length > 255) {
+      val = val.substring(0,255);
+    }
     settings.save('custom', 'custom_mentions', val);
     this.setState({ custom: val });
   };

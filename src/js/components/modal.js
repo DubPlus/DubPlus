@@ -58,7 +58,7 @@ export default class Modal extends Component {
                 <textarea
                   ref={c => (this.textarea = c)}
                   placeholder={props.placeholder}
-                  maxlength={props.maxlength || 999}
+                  maxlength={props.maxlength || 500}
                 >
                   {props.value || ""}
                 </textarea>

@@ -16,16 +16,11 @@ export default class AFK extends Component {
   };
 
   afk_chat_respond = e => {
-    console.log(e);
     if (!this.state.canSend) {
-      console.log("cant send yet");
       return; // do nothing until it's back to true
     }
     var content = e.message;
     var user = dtproxy.getUserName();
-    console.log(user, content);
-    console.log(dtproxy.getSessionId(), e.user.userInfo.userid);
-    console.log('msg is: ', this.state.afkMessage);
     if (
       content.indexOf("@" + user) >= 0 &&
       dtproxy.getSessionId() !== e.user.userInfo.userid
@@ -58,6 +53,9 @@ export default class AFK extends Component {
   }
 
   saveAFKmessage = val => {
+    if (val.length > 255) {
+      val = val.substring(0,255);
+    }
     settings.save("custom", "customAfkMessage", val);
     this.setState({ afkMessage: val });
   };
