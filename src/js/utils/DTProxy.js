@@ -249,6 +249,10 @@ class DTProxy {
     return document.querySelector('.backstretch-item img');
   }
 
+  hideVideoBtn() {
+    return document.querySelector('.hideVideo-el');
+  }
+
   /*
     some more DOM elements being access but
     document.querySelector('.player_sharing')

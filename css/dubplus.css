@@ -260,6 +260,15 @@
   padding-top: 1rem;
   padding: 5px; }
 
+#chat .pusher-chat-widget-input #chat-txt-message {
+  padding-right: 7.5rem; }
+
+.dubplus-hide-selfie .upload-gif-to-chat {
+  display: none; }
+
+.dubplus-hide-selfie #chat .pusher-chat-widget-input #chat-txt-message {
+  padding-right: 6.25rem; }
+
 /* Dubtracks adds Admin class to its own admins */
 #avatar-list .user-mbsurfer .dubs:before {
   content: "Dub+ TEAM  -  ";

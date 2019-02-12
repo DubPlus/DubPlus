@@ -31,7 +31,9 @@ var defaults = {
     "dubplus-comm-theme": false,
     "dubplus-afk": false,
     "dubplus-snow": false,
-    "dubplus-custom-css": false
+    "dubplus-custom-css": false,
+    "dubplus-hide-selfie" : false,
+    "dubplus-disable-video" : false
   },
 
   "custom": {

@@ -8,6 +8,8 @@ import HideVideo from '@/menu/ui/hide-video';
 import HideAvatars from '@/menu/ui/hide-avatars';
 import HideBackground from '@/menu/ui/hide-background';
 import ShowTimestamps from '@/menu/ui/show-timestamps';
+import HideGifSelfie from '@/menu/ui/hide-gif-selfie';
+import DisableVideo from '@/menu/ui/disable-video';
 
 const UISection = () => {
   return (
@@ -18,7 +20,9 @@ const UISection = () => {
       <HideVideo />
       <HideAvatars />
       <HideBackground />
+      <HideGifSelfie />
       <ShowTimestamps />
+      <DisableVideo />
     </MenuSection>
   );
 };

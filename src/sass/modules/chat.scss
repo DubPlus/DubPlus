@@ -1,15 +1,30 @@
 /* Not sure what this is for */
 #chat .chat-container .chat-messages .chat-main li .stream-item-content .image_row,
 #chat .chat-container .chat-messages .chat-main li .chatDelete {
-    top: 0.6rem;
+  top: 0.6rem;
 }
 #chat .chat-container .chat-messages .chat-main li .activity-row {
-    padding-top: 0.6rem;
+  padding-top: 0.6rem;
 }
 #chat .chat-container .chat-messages .chat-main li.chat-system-loading, 
 #chat .chat-container .chat-messages .chat-main li.system, 
 #chat .chat-container .chat-messages .chat-main li.system-error, 
 #chat .chat-container .chat-messages .chat-main li.chat-me-command-joined {
-    padding-top: 1rem;
-    padding: 5px;
+  padding-top: 1rem;
+  padding: 5px;
+}
+
+// because we're injecting the emoji picker and twitch picker icons into the 
+// chat input area we have to increase the right side padding
+#chat .pusher-chat-widget-input #chat-txt-message {
+  padding-right: 7.5rem;
+}
+// however, if we get rid of the "gif-selfie" icon then we account for that
+.dubplus-hide-selfie {
+  .upload-gif-to-chat {
+    display: none;
+  }
+  #chat .pusher-chat-widget-input #chat-txt-message {
+    padding-right: 6.25rem;
+  }
 }

@@ -1283,6 +1283,11 @@ var DubPlus = (function () {
       value: function bgImg() {
         return document.querySelector('.backstretch-item img');
       }
+    }, {
+      key: "hideVideoBtn",
+      value: function hideVideoBtn() {
+        return document.querySelector('.hideVideo-el');
+      }
       /*
         some more DOM elements being access but
         document.querySelector('.player_sharing')
@@ -10975,7 +10980,9 @@ var DubPlus = (function () {
       "dubplus-comm-theme": false,
       "dubplus-afk": false,
       "dubplus-snow": false,
-      "dubplus-custom-css": false
+      "dubplus-custom-css": false,
+      "dubplus-hide-selfie": false,
+      "dubplus-disable-video": false
     },
     "custom": {
       "customAfkMessage": "",
@@ -12817,9 +12824,13 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(ChatCleaner)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        maxChats: userSettings.stored.custom.chat_cleaner || 500
+      });
+
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatCleanerCheck", function (e) {
         var totalChats = Array.from(proxy.chatList().children);
-        var max = parseInt(userSettings.stored.custom.chat_cleaner, 10);
+        var max = parseInt(_this.state.maxChats, 10);
 
         if (isNaN(totalChats.length) || isNaN(max) || !totalChats.length || totalChats.length < max) {
           return;
@@ -12840,6 +12851,10 @@ var DubPlus = (function () {
         var chatItems = parseInt(value, 10);
         var amount = !isNaN(chatItems) ? chatItems : 500;
         userSettings.save("custom", "chat_cleaner", amount); // default to 500
+
+        _this.setState({
+          maxChats: value
+        });
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
@@ -12867,7 +12882,7 @@ var DubPlus = (function () {
           title: "Chat Cleaner",
           section: "General",
           content: "Please specify the number of most recent chat items that will remain in your chat history",
-          value: userSettings.stored.custom.chat_cleaner || "",
+          value: this.state.maxChats,
           placeholder: "500",
           maxlength: "5",
           onConfirm: this.saveAmount
@@ -13185,13 +13200,18 @@ var DubPlus = (function () {
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(DJNotification)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
-        canNotify: false
+        canNotify: false,
+        notifyOn: userSettings.stored.custom.dj_notification
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "savePosition", function (value) {
         var int = parseInt(value, 10);
         var amount = !isNaN(int) ? int : 2;
         userSettings.save("custom", "dj_notification", amount);
+
+        _this.setState({
+          notifyOn: value
+        });
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "djNotificationCheck", function (e) {
@@ -13199,7 +13219,10 @@ var DubPlus = (function () {
         var queuePos = proxy.getQueuePosition();
         var positionParse = parseInt(queuePos, 10);
         var position = e.startTime < 0 && !isNaN(positionParse) ? positionParse - 1 : positionParse;
-        if (isNaN(positionParse) || position !== userSettings.stored.custom.dj_notification) return;
+
+        if (isNaN(positionParse) || position !== _this.state.notifyOn) {
+          return;
+        }
 
         if (_this.canNotify) {
           showNotification({
@@ -13233,7 +13256,7 @@ var DubPlus = (function () {
 
     _createClass(DJNotification, [{
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render$$1() {
         var _this2 = this;
 
         return h(MenuSwitch, {
@@ -13250,7 +13273,7 @@ var DubPlus = (function () {
           title: "DJ Notification",
           section: "General",
           content: "Please specify the position in queue you want to be notified at",
-          value: userSettings.stored.custom.dj_notification || "",
+          value: this.state.notifyOn,
           placeholder: "2",
           maxlength: "2",
           onConfirm: this.savePosition
@@ -14336,26 +14359,34 @@ var DubPlus = (function () {
     _inherits(DowndubInChat, _Component);
 
     function DowndubInChat() {
+      var _getPrototypeOf2;
+
+      var _this;
+
       _classCallCheck(this, DowndubInChat);
 
-      return _possibleConstructorReturn(this, _getPrototypeOf(DowndubInChat).apply(this, arguments));
-    }
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
 
-    _createClass(DowndubInChat, [{
-      key: "turnOn",
-      value: function turnOn() {
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(DowndubInChat)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
         if (!proxy.modCheck()) {
           return;
         }
 
-        proxy.onSongVote(this.downdubWatcher);
-      }
-    }, {
-      key: "turnOff",
-      value: function turnOff() {
-        proxy.offSongVote(this.downdubWatcher);
-      }
-    }, {
+        proxy.onSongVote(_this.downdubWatcher);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        proxy.offSongVote(_this.downdubWatcher);
+      });
+
+      return _this;
+    }
+
+    _createClass(DowndubInChat, [{
       key: "downdubWatcher",
       value: function downdubWatcher(e) {
         var user = proxy.getUserName();
@@ -14410,22 +14441,30 @@ var DubPlus = (function () {
     _inherits(UpdubsInChat, _Component);
 
     function UpdubsInChat() {
+      var _getPrototypeOf2;
+
+      var _this;
+
       _classCallCheck(this, UpdubsInChat);
 
-      return _possibleConstructorReturn(this, _getPrototypeOf(UpdubsInChat).apply(this, arguments));
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(UpdubsInChat)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        proxy.onSongVote(_this.updubWatcher);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        proxy.offSongVote(_this.updubWatcher);
+      });
+
+      return _this;
     }
 
     _createClass(UpdubsInChat, [{
-      key: "turnOn",
-      value: function turnOn() {
-        proxy.onSongVote(this.updubWatcher);
-      }
-    }, {
-      key: "turnOff",
-      value: function turnOff() {
-        proxy.offSongVote(this.updubWatcher);
-      }
-    }, {
       key: "updubWatcher",
       value: function updubWatcher(e) {
         var user = proxy.getUserName();
@@ -14480,22 +14519,30 @@ var DubPlus = (function () {
     _inherits(GrabsInChat, _Component);
 
     function GrabsInChat() {
+      var _getPrototypeOf2;
+
+      var _this;
+
       _classCallCheck(this, GrabsInChat);
 
-      return _possibleConstructorReturn(this, _getPrototypeOf(GrabsInChat).apply(this, arguments));
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(GrabsInChat)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        proxy.onSongGrab(_this.grabChatWatcher);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        proxy.offSongGrab(_this.grabChatWatcher);
+      });
+
+      return _this;
     }
 
     _createClass(GrabsInChat, [{
-      key: "turnOn",
-      value: function turnOn() {
-        proxy.onSongGrab(this.grabChatWatcher);
-      }
-    }, {
-      key: "turnOff",
-      value: function turnOff() {
-        proxy.offSongGrab(this.grabChatWatcher);
-      }
-    }, {
       key: "grabChatWatcher",
       value: function grabChatWatcher(e) {
         var user = proxy.getUserName();
@@ -14694,12 +14741,69 @@ var DubPlus = (function () {
     });
   };
 
+  function turnOn$6() {
+    document.body.classList.add('dubplus-hide-selfie');
+  }
+
+  function turnOff$6() {
+    document.body.classList.remove('dubplus-hide-selfie');
+  }
+  /**
+   * Hide Chat
+   */
+
+
+  var HideGifSelfie = function HideGifSelfie() {
+    return h(MenuSwitch, {
+      id: "dubplus-hide-selfie",
+      section: "User Interface",
+      menuTitle: "Hide Gif-Selfie",
+      desc: "Toggles hiding the gif selfie icon",
+      turnOn: turnOn$6,
+      turnOff: turnOff$6
+    });
+  };
+
+  var isFirstLoad = true;
+
+  function toggle() {
+    if (isFirstLoad) {
+      // disabling the video from stored settings on page load causes the video
+      // to not play until you un-hide it.  So we delay turning it off for a second
+      setTimeout(function () {
+        proxy.hideVideoBtn().click();
+      }, 5000);
+      isFirstLoad = false;
+      return;
+    }
+
+    proxy.hideVideoBtn().click();
+  }
+  /**
+   * Disable Video 
+   * This is the equivalent of clicking on the little eye icon to toggle the video
+   * Sometimes I just want to hide the video the native dubtrack way but not remove 
+   * the entire video box
+   */
+
+
+  var DisableVideo = function DisableVideo() {
+    return h(MenuSwitch, {
+      id: "dubplus-disable-video",
+      section: "User Interface",
+      menuTitle: "Disable Video",
+      desc: "Toggles disabling the video. Equivalent to clicking on the eye icon under the video",
+      turnOn: toggle,
+      turnOff: toggle
+    });
+  };
+
   var UISection = function UISection() {
     return h(MenuSection, {
       id: "dubplus-ui",
       title: "UI",
       settingsKey: "user-interface"
-    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(ShowTS, null));
+    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(HideGifSelfie, null), h(ShowTS, null), h(DisableVideo, null));
   };
 
   function handleKeyup(e) {
@@ -14714,11 +14818,11 @@ var DubPlus = (function () {
     }
   }
 
-  function turnOn$6() {
+  function turnOn$7() {
     document.addEventListener("keyup", handleKeyup);
   }
 
-  function turnOff$6() {
+  function turnOff$7() {
     document.removeEventListener("keyup", handleKeyup);
   }
 
@@ -14728,8 +14832,8 @@ var DubPlus = (function () {
       section: "Settings",
       menuTitle: "Spacebar Mute",
       desc: "Turn on/off the ability to mute current song with the spacebar.",
-      turnOn: turnOn$6,
-      turnOff: turnOff$6
+      turnOn: turnOn$7,
+      turnOff: turnOff$7
     });
   };
 
@@ -14739,11 +14843,11 @@ var DubPlus = (function () {
     return confirmationMessage;
   }
 
-  function turnOn$7() {
+  function turnOn$8() {
     window.addEventListener("beforeunload", unloader);
   }
 
-  function turnOff$7() {
+  function turnOff$8() {
     window.removeEventListener("beforeunload", unloader);
   }
 
@@ -14753,8 +14857,8 @@ var DubPlus = (function () {
       section: "Settings",
       menuTitle: "Warn On Navigation",
       desc: "Warns you when accidentally clicking on a link that takes you out of dubtrack.",
-      turnOn: turnOn$7,
-      turnOff: turnOff$7
+      turnOn: turnOn$8,
+      turnOff: turnOff$8
     });
   };
 
@@ -14789,7 +14893,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549931094663);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549935753621);
     document.head.appendChild(link);
   }
   /**
@@ -14813,7 +14917,7 @@ var DubPlus = (function () {
     loadExternal: loadExternal
   };
 
-  function turnOn$8() {
+  function turnOn$9() {
     var location = proxy.getRoomUrl();
     var roomAjax = getJSON("https://api.dubtrack.fm/room/" + location);
     roomAjax.then(function (json) {
@@ -14834,7 +14938,7 @@ var DubPlus = (function () {
     });
   }
 
-  function turnOff$8() {
+  function turnOff$9() {
     var css = document.querySelector(".dubplus-comm-theme");
 
     if (css) {
@@ -14848,8 +14952,8 @@ var DubPlus = (function () {
       section: "Customize",
       menuTitle: "Community Theme",
       desc: "Toggle Community CSS theme.",
-      turnOn: turnOn$8,
-      turnOff: turnOff$8
+      turnOn: turnOn$9,
+      turnOff: turnOff$9
     });
   };
 
