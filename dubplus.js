@@ -10999,7 +10999,7 @@ var DubPlus = (function () {
     function UserSettings() {
       _classCallCheck(this, UserSettings);
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@fix-afk");
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta");
 
       var _savedSettings = localStorage.getItem('dubplusUserSettings');
 
@@ -11139,7 +11139,7 @@ var DubPlus = (function () {
             return _this2.textarea = c;
           },
           placeholder: props.placeholder,
-          maxlength: props.maxlength || 999
+          maxlength: props.maxlength || 500
         }, props.value || "")), h("div", {
           className: "dp-modal-buttons"
         }, h("button", {
@@ -11494,18 +11494,12 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "afk_chat_respond", function (e) {
-        console.log(e);
-
         if (!_this.state.canSend) {
-          console.log("cant send yet");
           return; // do nothing until it's back to true
         }
 
         var content = e.message;
         var user = proxy.getUserName();
-        console.log(user, content);
-        console.log(proxy.getSessionId(), e.user.userInfo.userid);
-        console.log('msg is: ', _this.state.afkMessage);
 
         if (content.indexOf("@" + user) >= 0 && proxy.getSessionId() !== e.user.userInfo.userid) {
           var chatInput = proxy.chatInput();
@@ -11540,6 +11534,10 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveAFKmessage", function (val) {
+        if (val.length > 255) {
+          val = val.substring(0, 255);
+        }
+
         userSettings.save("custom", "customAfkMessage", val);
 
         _this.setState({
@@ -12758,6 +12756,10 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveCustomMentions", function (val) {
+        if (val.length > 255) {
+          val = val.substring(0, 255);
+        }
+
         userSettings.save('custom', 'custom_mentions', val);
 
         _this.setState({
@@ -14769,7 +14771,8 @@ var DubPlus = (function () {
   function toggle() {
     if (isFirstLoad) {
       // disabling the video from stored settings on page load causes the video
-      // to not play until you un-hide it.  So we delay turning it off for a second
+      // to not play until you un-hide it.  So we delay turning it off for a bit
+      // to give the video time to load and start playing
       setTimeout(function () {
         proxy.hideVideoBtn().click();
       }, 5000);
@@ -14893,7 +14896,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549935753621);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549938961086);
     document.head.appendChild(link);
   }
   /**
