@@ -15372,7 +15372,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550037957820);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550071539827);
     document.head.appendChild(link);
   }
   /**
@@ -15969,7 +15969,7 @@ var DubPlus = (function () {
     setTimeout(function () {
       // start the loading of the CSS asynchronously
       css$2.loadExternal("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
-      css$2.load("/css/dubplus.min.css");
+      css$2.load("/css/dubplus.css");
     }, 10);
   }
 
