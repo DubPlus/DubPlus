@@ -8,15 +8,16 @@
  */
 
 import twitch from "@/utils/emotes/twitch-local.js";
-import bttv from "@/utils/emotes/bttv.js";
+import bttv from "@/utils/emotes/bttv-local.js";
 import parser from "@/utils/emotes/parser.js";
+import dtproxy from "@/utils/DTProxy.js";
 
 /**
  * return the last chat item in the chat area
  * this item could have a collection of <p> tags or just one
  */
 export function getLatestChatNode() {
-  var list = document.querySelectorAll(".chat-main .text");
+  var list = dtproxy.allChatTexts();
   if (list.length > 0) {
     return list[list.length - 1];
   }
@@ -73,10 +74,11 @@ export function getImageDataForEmote(emote) {
     };
   }
 
-  if (bttv.emotes[key]) {
+  let bttvImg = bttv.get(key);
+  if (bttvImg) {
     return {
       type: "bttv",
-      src: bttv.template(bttv.emotes[key]),
+      src: bttvImg,
       name: key
     };
   }

@@ -206,6 +206,10 @@ class DTProxy {
     return document.querySelector("ul.chat-main");
   }
 
+  allChatTexts() {
+    return document.querySelectorAll(".chat-main .text");
+  }
+
   /**
    * Get the current minutes remaining of the song playing
    */

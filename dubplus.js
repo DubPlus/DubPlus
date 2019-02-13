@@ -12892,357 +12892,6 @@ var DubPlus = (function () {
   }(Component);
 
   /**
-   * Wrapper around XMLHttpRequest with added ability to trigger a custom event 
-   * when the ajax request is complete. The event will be attached to the window 
-   * object. It returns a promise.
-   * 
-   * @param {String} url 
-   * @param {Object} headers object of xhr headers to add to the request
-   * @returns {Promise}
-   */
-  function getJSON(url) {
-    var headers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    return new Promise(function (resolve, reject) {
-      var xhr = new XMLHttpRequest();
-
-      xhr.onload = function () {
-        try {
-          var resp = JSON.parse(xhr.responseText);
-          resolve(resp);
-        } catch (e) {
-          reject(e);
-        }
-      };
-
-      xhr.onerror = function () {
-        reject();
-      };
-
-      xhr.open('GET', url);
-
-      for (var property in headers) {
-        if (headers.hasOwnProperty(property)) {
-          xhr.setRequestHeader(property, headers[property]);
-        }
-      }
-
-      xhr.send();
-    });
-  }
-
-  // IndexedDB wrapper for increased quota compared to localstorage (5mb to 50mb)
-  function IndexDBWrapper() {
-    var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-
-    if (!indexedDB) {
-      return console.error("indexDB not supported");
-    }
-
-    var db;
-    var timeout = 50; // 50 * 100 = 5000ms = 5s
-
-    /**
-     * Get item from indexedDB
-     * @param {string} item the db key name of what you want to retrieve
-     * @param {function} [cb] optional callback because it also returns a promise
-     * @returns {Promise}
-     */
-
-    function getItem(item, cb) {
-      // keep trying until db open request is established
-      if (!db && timeout >= 0) {
-        setTimeout(function () {
-          getItem(item, cb);
-        }, 100);
-        timeout--;
-        return;
-      }
-
-      timeout = 30; // reset the dbrequest timeout counter
-
-      try {
-        var transaction = db.transaction("s");
-
-        transaction.onerror = function (event) {
-          cb(null, event);
-        };
-
-        var dbItemStore = transaction.objectStore("s");
-
-        dbItemStore.onerror = function (event) {
-          cb(null, event);
-        };
-
-        var dbItemStoreGet = dbItemStore.get(item);
-
-        dbItemStoreGet.onsuccess = function (e) {
-          var t = e.target.result && e.target.result.v || null;
-          cb(t);
-        };
-
-        dbItemStoreGet.onerror = function (event) {
-          cb(null, event);
-        };
-      } catch (e) {
-        cb(null, e.message);
-      }
-    }
-    /**
-     * Store a value in indexedDB
-     * @param {string} item key name for the value that will be stored
-     * @param {string} val value to be stored
-     */
-
-
-    function setItem(item, val) {
-      // keep trying until db open request is established
-      if (!db && timeout >= 0) {
-        setTimeout(function () {
-          setItem(item, val);
-        }, 100);
-        timeout--;
-        return;
-      }
-
-      timeout = 30; // reset the dbrequest timeout counter
-
-      var obj = {
-        k: item,
-        v: val
-      };
-      db.transaction("s", "readwrite").objectStore("s").put(obj);
-    }
-
-    var dbRequest = indexedDB.open("d2", 1);
-
-    dbRequest.onsuccess = function (e) {
-      db = this.result;
-    };
-
-    dbRequest.onerror = function (e) {
-      console.error("indexedDB request error", e);
-    };
-
-    dbRequest.onupgradeneeded = function (e) {
-      db = this.result;
-      var t = db.createObjectStore("s", {
-        keyPath: "k"
-      });
-
-      db.transaction.oncomplete = function (e) {
-        db = e.target.db;
-      };
-    };
-
-    return {
-      get: getItem,
-      set: setItem
-    };
-  }
-
-  var ldb = new IndexDBWrapper();
-
-  /* global  emojify */
-  function shouldUpdateAPIs(apiName) {
-    var day = 1000 * 60 * 60 * 24; // milliseconds in a day
-
-    return new Promise(function (resolve, reject) {
-      // if api returned an object with an error and we stored it 
-      // then we should try again
-      ldb.get(apiName + "_api", function (savedItem, err) {
-        if (err) {
-          return reject(err);
-        }
-
-        if (savedItem) {
-          try {
-            var parsed = JSON.parse(savedItem);
-
-            if (typeof parsed.error !== "undefined") {
-              resolve(true); // yes we should refresh data from api
-            }
-          } catch (e) {
-            resolve(true); // data was corrupted, needs to be refreshed
-          }
-        } else {
-          resolve(true); // data doesn't exist, needs to be fetched
-        } // at this point we have good data without issues in IndexedDB
-        // so now we check how old it is to see if we should update it (7 days is the limit)
-
-
-        var today = Date.now();
-        var lastSaved = parseInt(localStorage.getItem(apiName + "_api_timestamp")); // Is the lastsaved not a number for some strange reason, then we should update 
-        // OR
-        // are we past 5 days from last update? then we should update
-
-        resolve(isNaN(lastSaved) || today - lastSaved > day * 7);
-      });
-    });
-  }
-
-  /* global  emojify */
-
-  var BTTVemotes =
-  /*#__PURE__*/
-  function () {
-    function BTTVemotes() {
-      var _this = this;
-
-      _classCallCheck(this, BTTVemotes);
-
-      _defineProperty(this, "emotes", {});
-
-      _defineProperty(this, "sortedKeys", {
-        'nonAlpha': []
-      });
-
-      _defineProperty(this, "loaded", false);
-
-      _defineProperty(this, "headers", {});
-
-      _defineProperty(this, "addKeyToSorted", function (key) {
-        var first = key.charAt(0); // all numbers and symbols get stored in one 'nonAlpha' array
-
-        if (!/[a-z]/i.test(first)) {
-          _this.sortedKeys.nonAlpha.push(key);
-
-          return;
-        }
-
-        if (!_this.sortedKeys[first]) {
-          _this.sortedKeys[first] = [];
-        }
-
-        _this.sortedKeys[first].push(key);
-      });
-    }
-
-    _createClass(BTTVemotes, [{
-      key: "optionalSetHeaders",
-      value: function optionalSetHeaders(obj) {
-        this.headers = obj;
-      }
-    }, {
-      key: "load",
-      value: function load() {
-        var _this2 = this;
-
-        // if it doesn't exist in localStorage or it's older than 5 days
-        // grab it from the bttv API
-        return shouldUpdateAPIs("bttv").then(function (update) {
-          if (update) {
-            return _this2.updateFromAPI();
-          }
-
-          return _this2.loadFromDB();
-        });
-      }
-    }, {
-      key: "loadFromDB",
-      value: function loadFromDB() {
-        var _this3 = this;
-
-        return new Promise(function (resolve, reject) {
-          try {
-            ldb.get("bttv_api", function (data) {
-              console.log("dub+", "bttv", "loading from IndexedDB");
-              var savedData = JSON.parse(data);
-
-              _this3.processEmotes(savedData);
-
-              savedData = null; // clear the var from memory
-
-              resolve();
-            });
-          } catch (e) {
-            reject(e);
-          }
-        });
-      }
-    }, {
-      key: "updateFromAPI",
-      value: function updateFromAPI() {
-        var _this4 = this;
-
-        console.log("dub+", "bttv", "loading from api");
-        var bttvApi = getJSON("https://api.betterttv.net/2/emotes", this.headers);
-        return bttvApi.then(function (json) {
-          var bttvEmotes = {};
-          json.emotes.forEach(function (e) {
-            if (!bttvEmotes[e.code]) {
-              bttvEmotes[e.code] = e.id;
-            }
-          });
-          localStorage.setItem("bttv_api_timestamp", Date.now().toString());
-          ldb.set("bttv_api", JSON.stringify(bttvEmotes));
-
-          _this4.processEmotes(bttvEmotes);
-        });
-      }
-    }, {
-      key: "template",
-      value: function template(id) {
-        return "//cdn.betterttv.net/emote/".concat(id, "/3x");
-      }
-    }, {
-      key: "find",
-      value: function find(symbol) {
-        var _this5 = this;
-
-        var first = symbol.charAt(0);
-        var arr;
-
-        if (!/[a-z]/i.test(first)) {
-          arr = this.sortedKeys.nonAlpha;
-        } else {
-          arr = this.sortedKeys[first] || [];
-        }
-
-        var matchBttvKeys = arr.filter(function (key) {
-          return key.indexOf(symbol) === 0;
-        });
-        return matchBttvKeys.map(function (key) {
-          return {
-            type: "bttv",
-            src: _this5.template(_this5.emotes[key]),
-            name: key
-          };
-        });
-      }
-    }, {
-      key: "processEmotes",
-      value: function processEmotes(data) {
-        for (var code in data) {
-          if (data.hasOwnProperty(code)) {
-            var _key = code.toLowerCase();
-
-            if (code.indexOf(":") >= 0) {
-              continue; // don't want any emotes with smileys and stuff
-            }
-
-            if (emojify.emojiNames.indexOf(_key) >= 0) {
-              continue; // do nothing so we don't override emoji
-            }
-
-            if (code.indexOf("(") >= 0) {
-              _key = _key.replace(/([()])/g, "");
-            }
-
-            this.emotes[_key] = data[code];
-            this.addKeyToSorted(_key);
-          }
-        }
-
-        this.loaded = true;
-      }
-    }]);
-
-    return BTTVemotes;
-  }();
-
-  var bttv$1 = new BTTVemotes();
-
-  /**
    * Simple string parser based on Douglas Crockford's JSON.parse
    * https://github.com/douglascrockford/JSON-js/blob/master/json_parse.js
    * which itself is a simplified recursive descent parser
@@ -13392,10 +13041,12 @@ var DubPlus = (function () {
       };
     }
 
-    if (bttv$1.emotes[key]) {
+    var bttvImg = bttv.get(key);
+
+    if (bttvImg) {
       return {
         type: "bttv",
-        src: bttv$1.template(bttv$1.emotes[key]),
+        src: bttvImg,
         name: key
       };
     }
@@ -14698,6 +14349,45 @@ var DubPlus = (function () {
     return RainSwitch;
   }(Component);
 
+  /**
+   * Wrapper around XMLHttpRequest with added ability to trigger a custom event 
+   * when the ajax request is complete. The event will be attached to the window 
+   * object. It returns a promise.
+   * 
+   * @param {String} url 
+   * @param {Object} headers object of xhr headers to add to the request
+   * @returns {Promise}
+   */
+  function getJSON(url) {
+    var headers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+
+      xhr.onload = function () {
+        try {
+          var resp = JSON.parse(xhr.responseText);
+          resolve(resp);
+        } catch (e) {
+          reject(e);
+        }
+      };
+
+      xhr.onerror = function () {
+        reject();
+      };
+
+      xhr.open('GET', url);
+
+      for (var property in headers) {
+        if (headers.hasOwnProperty(property)) {
+          xhr.setRequestHeader(property, headers[property]);
+        }
+      }
+
+      xhr.send();
+    });
+  }
+
   var DubsInfoListItem = function DubsInfoListItem(_ref) {
     var data = _ref.data,
         click = _ref.click;
@@ -15677,7 +15367,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550037281261);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550037700880);
     document.head.appendChild(link);
   }
   /**
