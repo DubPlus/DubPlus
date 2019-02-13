@@ -1,17 +1,16 @@
-'use strict';
-import ldb from '../../src/js/utils/indexedDB.js';
+"use strict";
+import ldb from "@/utils/indexedDB.js";
 
-test('Indexed DB sets a value successfully', (done) => {
+test("Indexed DB sets a value successfully", done => {
   var err = null;
-  try { 
+  try {
     ldb.set("test", "********************this is a test");
 
-    ldb.get("test", (data) => {
+    ldb.get("test", data => {
       // console.log(data);
       expect(data).toEqual("********************this is a test");
       done();
     });
-
   } catch (e) {
     console.error(e);
   }

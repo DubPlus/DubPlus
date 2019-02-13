@@ -110,7 +110,6 @@ const inputOptions = {
   plugins: [...defaultPlugins, sassTasks.plugin()]
 };
 
-
 const outputOptions = {
   banner: introBanner,
   file: process.cwd() + "/dubplus.js",
@@ -123,7 +122,7 @@ const outputOptions = {
  * both min and and non-min SASS built here
  */
 async function build(inOpts, outOpts) {
-  console.log('building dub+');
+  console.log("building dub+");
   let _in = Object.assign({}, inOpts);
   let _out = Object.assign({}, outOpts);
   try {
@@ -143,17 +142,17 @@ build(inputOptions, outputOptions);
 
 inputOptions.plugins = [
   ...defaultPlugins,
-    uglify({
-      output: {
-        preamble: introBanner
-      }
-    })
+  uglify({
+    output: {
+      preamble: introBanner
+    }
+  })
 ];
 
 outputOptions.file = process.cwd() + "/dubplus.min.js";
 
 async function buildMin(inOpts, outOpts) {
-  console.log('building minified dub+');
+  console.log("building minified dub+");
   let _in = Object.assign({}, inOpts);
   let _out = Object.assign({}, outOpts);
   try {

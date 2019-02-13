@@ -1,0 +1,28 @@
+{
+  "plugins": [
+    "@babel/plugin-transform-spread",
+    "@babel/plugin-proposal-class-properties",
+    [
+      "@babel/plugin-transform-react-jsx",
+      {
+        "pragma": "h",
+        "pragmaFrag": "\"span\"" // for now transform Fragments into a <span> until Preact fully supports Fragments
+      }
+    ]
+  ],
+  "env": {
+    "test": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "debug": true,
+            "targets": {
+              "node": "current"
+            }
+          }
+        ]
+      ]
+    }
+  }
+}
