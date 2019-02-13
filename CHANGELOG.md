@@ -8,10 +8,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - A complete rewrite from the ground up in Preact, which is a 3kb alternative with 1:1 feature parity with React.  
 - Emotes and Autocomplete Emoji have been completely revamped. Using a better system to replace emotes in chat and autocomplete has been redesigned and has an improved keyboard navigation. 
   - one thing to note is that autocomplete can now only replace an emote/emoji at the end of the chat input and not in the middle, this is how Dubtrack's user autocomplete works and it simplified and stabilized the code for this feature 
+- The amount of Twitch emotes were getting way out of hand. We've drastically reduced the amount of Twitch emotes supported to only a handful of Twitch channels and the global ones. 
 - switched to RollupJS for building
 
 ### New!
-- a new emoji picker! look for the happy face next to the mardown icon in the chat input. On first load it only shows the first 70 emoji. As you scroll down it will load in chunks of 70s until all our loaded.  From then on you're good!
+- emoji and twitch+bttv pickers! look for the 2 new icons in the chat input next to the markdown info icon. 
+- Hide gif-selfie switch in the UI section. Toggles the icon in the chat input so you gain a little extra room
 
 ### Fixed
 - Fixed Twitch emotes not loading. 

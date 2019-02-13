@@ -25,6 +25,11 @@
     display: none;
   }
   #chat .pusher-chat-widget-input #chat-txt-message {
+    padding-right: 4.5rem;
+  }
+}
+.dubplus-emotes-on {
+  #chat .pusher-chat-widget-input #chat-txt-message {
     padding-right: 6.25rem;
   }
 }
