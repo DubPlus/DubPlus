@@ -373,16 +373,21 @@
     padding: 5px;
     border-radius: 3px;
     cursor: pointer;
-    background-image: url(https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@bttv-local/images/emoji-spritesheet.png);
-    background-repeat: no-repeat;
-    width: 35px;
-    height: 35px;
-    background-size: 3017% 2917%; }
+    background-repeat: no-repeat; }
     .dp-emoji-picker span:hover {
       background-color: rgba(255, 255, 255, 0.3); }
 
-.dp-emoji-picker.twitch-picker span {
+.emoji-picker-image {
+  background-image: url(https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@bttv-local/images/emoji-spritesheet.png);
+  width: 35px;
+  height: 35px;
+  background-size: 3017% 2917%; }
+
+.twitch-picker-image {
   background-image: url(https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@bttv-local/images/twitch-spritesheet.png); }
+
+.bttv-picker-image {
+  background-image: url(https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@bttv-local/images/bttv-spritesheet.png); }
 
 .dubplus-split-chat .chat-main li:nth-child(2n) {
   background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
@@ -477,10 +482,14 @@
   max-height: 164px;
   transition: max-height 0.4s; }
 
-.twitch-emote.emoji,
-.bttv-emote.emoji {
+#chat .chat-container .chat-messages .chat-main li .activity-row .text img.twitch-emote {
   max-width: 1.75rem !important;
   height: auto !important; }
+
+#chat .chat-container .chat-messages .chat-main li .activity-row .text img.bttv-emote {
+  width: auto !important;
+  height: auto !important;
+  max-height: 50px; }
 
 .twitch-previews .ac-image {
   display: inline-block;
@@ -488,6 +497,14 @@
   border-radius: 3px;
   cursor: pointer;
   background-image: url(https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@bttv-local/images/twitch-spritesheet.png);
+  background-repeat: no-repeat; }
+
+.bttv-previews .ac-image {
+  display: inline-block;
+  padding: 5px;
+  border-radius: 3px;
+  cursor: pointer;
+  background-image: url(https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@bttv-local/images/bttv-spritesheet.png);
   background-repeat: no-repeat; }
 
 .dubplus-chat-only .left_section {

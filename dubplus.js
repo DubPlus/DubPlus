@@ -11515,8 +11515,8 @@ var DubPlus = (function () {
 
   var TWITCH_SS_W = 837;
   var TWITCH_SS_H = 819;
-  var BTTV_SS_W = 1931;
-  var BTTV_SS_H = 1867;
+  var BTTV_SS_W = 326;
+  var BTTV_SS_H = 316;
 
   var Picker =
   /*#__PURE__*/
@@ -11576,7 +11576,8 @@ var DubPlus = (function () {
     _createClass(Picker, [{
       key: "fillChat",
       value: function fillChat(val) {
-        document.getElementById("chat-txt-message").value += " :".concat(val, ":");
+        proxy.chatInput().value += " :".concat(val, ":");
+        proxy.chatInput().focus();
         this.setState({
           emojiShow: false,
           twitchShow: false
@@ -11603,6 +11604,7 @@ var DubPlus = (function () {
             key: "emoji-".concat(id),
             style: css,
             title: id,
+            className: "emoji-picker-image",
             onClick: function onClick() {
               return _this2.fillChat(id);
             }
@@ -11615,7 +11617,7 @@ var DubPlus = (function () {
       value: function twitchList() {
         var _this3 = this;
 
-        var twitchList = Object.keys(twitchSpriteSheet).map(function (name) {
+        return Object.keys(twitchSpriteSheet).map(function (name) {
           var data = twitchSpriteSheet[name];
           var x = TWITCH_SS_W * 100 / data.width;
           var y = TWITCH_SS_H * 100 / data.height;
@@ -11629,12 +11631,19 @@ var DubPlus = (function () {
             key: "twitch-".concat(name),
             style: css,
             title: name,
+            className: "twitch-picker-image",
             onClick: function onClick() {
               return _this3.fillChat(name);
             }
           });
         });
-        var bttvList = Object.keys(bttvSpriteSheet).map(function (name) {
+      }
+    }, {
+      key: "bttvList",
+      value: function bttvList() {
+        var _this4 = this;
+
+        return Object.keys(bttvSpriteSheet).map(function (name) {
           var data = bttvSpriteSheet[name];
           var x = BTTV_SS_W * 100 / data.width;
           var y = BTTV_SS_H * 100 / data.height;
@@ -11645,15 +11654,15 @@ var DubPlus = (function () {
             backgroundSize: "".concat(x, "% ").concat(y, "%")
           };
           return h("span", {
-            key: "twitch-".concat(name),
+            key: "bttv-".concat(name),
             style: css,
+            className: "bttv-picker-image",
             title: name,
             onClick: function onClick() {
-              return _this3.fillChat(name);
+              return _this4.fillChat(name);
             }
           });
         });
-        return twitchList.concat(bttvList);
       }
     }, {
       key: "render",
@@ -11675,8 +11684,8 @@ var DubPlus = (function () {
         }, h(Portal, {
           into: ".pusher-chat-widget-input"
         }, h("div", {
-          className: "dp-emoji-picker twitch-picker ".concat(twitchShow ? "show" : "")
-        }, this.twitchList()))));
+          className: "dp-emoji-picker twitch-bttv-picker ".concat(twitchShow ? "show" : "")
+        }, this.twitchList().concat(this.bttvList())))));
       }
     }]);
 
@@ -12394,6 +12403,8 @@ var DubPlus = (function () {
 
   var TWITCH_SS_W$1 = 837;
   var TWITCH_SS_H$1 = 819;
+  var BTTV_SS_W$1 = 326;
+  var BTTV_SS_H$1 = 316;
 
   var PreviewListItem = function PreviewListItem(_ref) {
     var data = _ref.data,
@@ -12423,6 +12434,32 @@ var DubPlus = (function () {
       }, h("span", {
         className: "ac-image",
         style: css,
+        title: data.name
+      }), h("span", {
+        className: "ac-text"
+      }, data.name));
+    }
+
+    if (data.type === "bttv") {
+      var _x = BTTV_SS_W$1 * 100 / data.width;
+
+      var _y = BTTV_SS_H$1 * 100 / data.height;
+
+      var _css = {
+        backgroundPosition: "-".concat(data.x, "px -").concat(data.y, "px"),
+        width: "".concat(data.width, "px"),
+        height: "".concat(data.height, "px"),
+        backgroundSize: "".concat(_x, "% ").concat(_y, "%")
+      };
+      return h("li", {
+        className: "preview-item bttv-previews",
+        onClick: function onClick() {
+          onSelect(data.name);
+        },
+        "data-name": data.name
+      }, h("span", {
+        className: "ac-image",
+        style: _css,
         title: data.name
       }), h("span", {
         className: "ac-text"
@@ -15664,7 +15701,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550030248994);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550034276741);
     document.head.appendChild(link);
   }
   /**

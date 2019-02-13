@@ -3,12 +3,13 @@ import twitchSpriteSheet from "@/utils/emotes/twitch-spritesheet";
 import bttvSpriteSheet from "@/utils/emotes/bttv-spritesheet";
 import { emojiNames } from "@/utils/emotes/emoji";
 import Portal from "preact-portal/src/preact-portal";
+import dtproxy from "@/utils/DTProxy.js";
 
 const TWITCH_SS_W = 837;
 const TWITCH_SS_H = 819;
 
-const BTTV_SS_W = 1931;
-const BTTV_SS_H = 1867;
+const BTTV_SS_W = 326;
+const BTTV_SS_H = 316;
 
 class Picker extends Component {
   state = {
@@ -17,7 +18,8 @@ class Picker extends Component {
   };
 
   fillChat(val) {
-    document.getElementById("chat-txt-message").value += ` :${val}:`;
+    dtproxy.chatInput().value += ` :${val}:`;
+    dtproxy.chatInput().focus();
     this.setState({
       emojiShow: false,
       twitchShow: false
@@ -67,6 +69,7 @@ class Picker extends Component {
           key={`emoji-${id}`}
           style={css}
           title={id}
+          className="emoji-picker-image"
           onClick={() => this.fillChat(id)}
         />
       );
@@ -75,7 +78,7 @@ class Picker extends Component {
   }
 
   twitchList() {
-    let twitchList = Object.keys(twitchSpriteSheet).map(name => {
+    return Object.keys(twitchSpriteSheet).map(name => {
       let data = twitchSpriteSheet[name];
       let x = (TWITCH_SS_W * 100) / data.width;
       let y = (TWITCH_SS_H * 100) / data.height;
@@ -90,11 +93,15 @@ class Picker extends Component {
           key={`twitch-${name}`}
           style={css}
           title={name}
+          className="twitch-picker-image"
           onClick={() => this.fillChat(name)}
         />
       );
     });
-    let bttvList = Object.keys(bttvSpriteSheet).map(name => {
+  }
+
+  bttvList() {
+    return Object.keys(bttvSpriteSheet).map(name => {
       let data = bttvSpriteSheet[name];
       let x = (BTTV_SS_W * 100) / data.width;
       let y = (BTTV_SS_H * 100) / data.height;
@@ -106,14 +113,14 @@ class Picker extends Component {
       };
       return (
         <span
-          key={`twitch-${name}`}
+          key={`bttv-${name}`}
           style={css}
+          className="bttv-picker-image"
           title={name}
           onClick={() => this.fillChat(name)}
         />
       );
     });
-    return twitchList.concat(bttvList);
   }
 
   render(props, { emojiShow, twitchShow }) {
@@ -132,9 +139,11 @@ class Picker extends Component {
         <span className="dp-twitch-picker-icon" onClick={this.toggleTwitch}>
           <Portal into=".pusher-chat-widget-input">
             <div
-              className={`dp-emoji-picker twitch-picker ${twitchShow ? "show" : ""}`}
+              className={`dp-emoji-picker twitch-bttv-picker ${
+                twitchShow ? "show" : ""
+              }`}
             >
-              {this.twitchList()}
+              {this.twitchList().concat(this.bttvList())}
             </div>
           </Portal>
         </span>
