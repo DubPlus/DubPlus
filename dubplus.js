@@ -1232,6 +1232,11 @@ var DubPlus = (function () {
       value: function chatList() {
         return document.querySelector("ul.chat-main");
       }
+    }, {
+      key: "allChatTexts",
+      value: function allChatTexts() {
+        return document.querySelectorAll(".chat-main .text");
+      }
       /**
        * Get the current minutes remaining of the song playing
        */
@@ -11757,7 +11762,7 @@ var DubPlus = (function () {
     function UserSettings() {
       _classCallCheck(this, UserSettings);
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@bttv-local");
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta");
 
       var _savedSettings = localStorage.getItem('dubplusUserSettings');
 
@@ -12973,7 +12978,7 @@ var DubPlus = (function () {
    */
 
   function getLatestChatNode() {
-    var list = document.querySelectorAll(".chat-main .text");
+    var list = proxy.allChatTexts();
 
     if (list.length > 0) {
       return list[list.length - 1];
@@ -15367,7 +15372,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550037700880);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550037957820);
     document.head.appendChild(link);
   }
   /**
