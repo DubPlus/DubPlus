@@ -64,6 +64,9 @@
   position: relative;
   top: -5px;
 }
+#autocomplete-preview .preview-item-header span {
+  padding-left: 20px;
+}
 
 #autocomplete-preview .ac-image {
   width: 1.4em;
@@ -85,11 +88,18 @@
   transition: max-height 0.4s;
 }
 
-// alters the emoji when replaced in chat
-.twitch-emote.emoji,
-.bttv-emote.emoji {
-  max-width: 1.75rem !important;
-  height: auto !important;
+#chat .chat-container .chat-messages .chat-main li .activity-row .text img {
+  // alters the emoji when replaced in chat
+  &.twitch-emote {
+    max-width: 1.75rem !important;
+    height: auto !important;
+  }
+  
+  &.bttv-emote {
+    width: auto !important;
+    height: auto !important;
+    max-height: 35px;
+  }
 }
 
 .twitch-previews {
@@ -99,6 +109,16 @@
     border-radius: 3px;
     cursor: pointer;
     background-image: url(#{$resourceSrc}/images/twitch-spritesheet.png);
+    background-repeat: no-repeat;
+  }
+}
+.bttv-previews {
+  .ac-image {
+    display: inline-block;
+    padding: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+    background-image: url(#{$resourceSrc}/images/bttv-spritesheet.png);
     background-repeat: no-repeat;
   }
 }

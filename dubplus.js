@@ -1232,6 +1232,11 @@ var DubPlus = (function () {
       value: function chatList() {
         return document.querySelector("ul.chat-main");
       }
+    }, {
+      key: "allChatTexts",
+      value: function allChatTexts() {
+        return document.querySelectorAll(".chat-main .text");
+      }
       /**
        * Get the current minutes remaining of the song playing
        */
@@ -7187,6 +7192,723 @@ var DubPlus = (function () {
     }
   };
 
+  var bttvSpriteSheet = {
+    "(chompy)": {
+      "x": 214,
+      "y": 28,
+      "width": 28,
+      "height": 28,
+      "id": "550b225fff8ecee922d2a3b2"
+    },
+    "(poolparty)": {
+      "x": 87,
+      "y": 34,
+      "width": 20,
+      "height": 20,
+      "id": "5502883d135896936880fdd3"
+    },
+    "(puke)": {
+      "x": 0,
+      "y": 296,
+      "width": 20,
+      "height": 20,
+      "id": "550288fe135896936880fdd4"
+    },
+    ":'(": {
+      "x": 107,
+      "y": 34,
+      "width": 20,
+      "height": 20,
+      "id": "55028923135896936880fdd5"
+    },
+    ":tf:": {
+      "x": 79,
+      "y": 128,
+      "width": 28,
+      "height": 28,
+      "id": "54fa8f1401e468494b85b537"
+    },
+    "angelthump": {
+      "x": 0,
+      "y": 30,
+      "width": 84,
+      "height": 28,
+      "id": "566ca1a365dbbdab32ec055b"
+    },
+    "aplis": {
+      "x": 214,
+      "y": 140,
+      "width": 28,
+      "height": 28,
+      "id": "54fa8f4201e468494b85b538"
+    },
+    "ariw": {
+      "x": 0,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "56fa09f18eff3b595e93ac26"
+    },
+    "baconeffect": {
+      "x": 28,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "54fbf05a01abde735115de5e"
+    },
+    "badass": {
+      "x": 56,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "54faa4f101e468494b85b577"
+    },
+    "basedgod": {
+      "x": 0,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "566c9eeb65dbbdab32ec052b"
+    },
+    "batkappa": {
+      "x": 56,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "550b6b07ff8ecee922d2a3e7"
+    },
+    "blackappa": {
+      "x": 168,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "54faa50d01e468494b85b578"
+    },
+    "brobalt": {
+      "x": 74,
+      "y": 88,
+      "width": 46,
+      "height": 30,
+      "id": "54fbf00a01abde735115de5c"
+    },
+    "bttvangry": {
+      "x": 112,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "550291a3135896936880fde3"
+    },
+    "bttvconfused": {
+      "x": 252,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "550291be135896936880fde4"
+    },
+    "bttvcool": {
+      "x": 298,
+      "y": 84,
+      "width": 28,
+      "height": 28,
+      "id": "550291d4135896936880fde5"
+    },
+    "bttvgrin": {
+      "x": 143,
+      "y": 65,
+      "width": 28,
+      "height": 28,
+      "id": "550291ea135896936880fde6"
+    },
+    "bttvhappy": {
+      "x": 143,
+      "y": 93,
+      "width": 28,
+      "height": 28,
+      "id": "55029200135896936880fde7"
+    },
+    "bttvheart": {
+      "x": 113,
+      "y": 58,
+      "width": 28,
+      "height": 28,
+      "id": "55029215135896936880fde8"
+    },
+    "bttvnice": {
+      "x": 0,
+      "y": 128,
+      "width": 42,
+      "height": 28,
+      "id": "54fab7d2633595ca4c713abf"
+    },
+    "bttvsad": {
+      "x": 107,
+      "y": 128,
+      "width": 28,
+      "height": 28,
+      "id": "5502925d135896936880fdea"
+    },
+    "bttvsleep": {
+      "x": 135,
+      "y": 128,
+      "width": 28,
+      "height": 28,
+      "id": "55029272135896936880fdeb"
+    },
+    "bttvsurprised": {
+      "x": 0,
+      "y": 156,
+      "width": 28,
+      "height": 28,
+      "id": "55029288135896936880fdec"
+    },
+    "bttvtongue": {
+      "x": 28,
+      "y": 156,
+      "width": 28,
+      "height": 28,
+      "id": "5502929b135896936880fded"
+    },
+    "bttvtwink": {
+      "x": 56,
+      "y": 156,
+      "width": 28,
+      "height": 28,
+      "id": "55029247135896936880fde9"
+    },
+    "bttvunsure": {
+      "x": 84,
+      "y": 156,
+      "width": 28,
+      "height": 28,
+      "id": "550292ad135896936880fdee"
+    },
+    "bttvwink": {
+      "x": 112,
+      "y": 156,
+      "width": 28,
+      "height": 28,
+      "id": "550292c0135896936880fdef"
+    },
+    "burself": {
+      "x": 140,
+      "y": 156,
+      "width": 28,
+      "height": 28,
+      "id": "566c9f3b65dbbdab32ec052e"
+    },
+    "buttersauce": {
+      "x": 168,
+      "y": 156,
+      "width": 28,
+      "height": 28,
+      "id": "54fbf02f01abde735115de5d"
+    },
+    "candianrage": {
+      "x": 0,
+      "y": 184,
+      "width": 28,
+      "height": 28,
+      "id": "54fbf09c01abde735115de61"
+    },
+    "chaccepted": {
+      "x": 28,
+      "y": 184,
+      "width": 28,
+      "height": 28,
+      "id": "54fa8fb201e468494b85b53b"
+    },
+    "cigrip": {
+      "x": 56,
+      "y": 184,
+      "width": 28,
+      "height": 28,
+      "id": "54fa8fce01e468494b85b53c"
+    },
+    "concerndoge": {
+      "x": 298,
+      "y": 140,
+      "width": 25,
+      "height": 28,
+      "id": "566c9f6365dbbdab32ec0532"
+    },
+    "cruw": {
+      "x": 112,
+      "y": 184,
+      "width": 28,
+      "height": 28,
+      "id": "55471c2789d53f2d12781713"
+    },
+    "d:": {
+      "x": 140,
+      "y": 184,
+      "width": 28,
+      "height": 28,
+      "id": "55028cd2135896936880fdd7"
+    },
+    "datsauce": {
+      "x": 168,
+      "y": 184,
+      "width": 28,
+      "height": 28,
+      "id": "54fa903b01e468494b85b53f"
+    },
+    "dogewitit": {
+      "x": 214,
+      "y": 0,
+      "width": 28,
+      "height": 28,
+      "id": "54faa52f01e468494b85b579"
+    },
+    "duckerz": {
+      "x": 42,
+      "y": 128,
+      "width": 37,
+      "height": 28,
+      "id": "573d38b50ffbf6cc5cc38dc9"
+    },
+    "fapfapfap": {
+      "x": 214,
+      "y": 56,
+      "width": 28,
+      "height": 28,
+      "id": "566c9f9265dbbdab32ec0538"
+    },
+    "fcreep": {
+      "x": 214,
+      "y": 84,
+      "width": 28,
+      "height": 28,
+      "id": "56d937f7216793c63ec140cb"
+    },
+    "feelsamazingman": {
+      "x": 214,
+      "y": 112,
+      "width": 28,
+      "height": 28,
+      "id": "5733ff12e72c3c0814233e20"
+    },
+    "feelsbadman": {
+      "x": 178,
+      "y": 92,
+      "width": 30,
+      "height": 30,
+      "id": "566c9fc265dbbdab32ec053b"
+    },
+    "feelsbirthdayman": {
+      "x": 120,
+      "y": 88,
+      "width": 19,
+      "height": 28,
+      "id": "55b6524154eefd53777b2580"
+    },
+    "feelsgoodman": {
+      "x": 178,
+      "y": 62,
+      "width": 30,
+      "height": 30,
+      "id": "566c9fde65dbbdab32ec053e"
+    },
+    "firespeed": {
+      "x": 60,
+      "y": 58,
+      "width": 53,
+      "height": 28,
+      "id": "566c9ff365dbbdab32ec0541"
+    },
+    "fishmoley": {
+      "x": 87,
+      "y": 0,
+      "width": 56,
+      "height": 34,
+      "id": "566ca00f65dbbdab32ec0544"
+    },
+    "foreveralone": {
+      "x": 84,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "54fa909b01e468494b85b542"
+    },
+    "fuckyea": {
+      "x": 112,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "54fa90d601e468494b85b544"
+    },
+    "gaben": {
+      "x": 140,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "54fa90ba01e468494b85b543"
+    },
+    "hahaa": {
+      "x": 168,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "555981336ba1901877765555"
+    },
+    "hailhelix": {
+      "x": 298,
+      "y": 112,
+      "width": 28,
+      "height": 28,
+      "id": "54fa90f201e468494b85b545"
+    },
+    "herbperve": {
+      "x": 242,
+      "y": 0,
+      "width": 28,
+      "height": 28,
+      "id": "54fa913701e468494b85b546"
+    },
+    "hhhehehe": {
+      "x": 242,
+      "y": 28,
+      "width": 28,
+      "height": 28,
+      "id": "566ca02865dbbdab32ec0547"
+    },
+    "hhydro": {
+      "x": 242,
+      "y": 56,
+      "width": 28,
+      "height": 28,
+      "id": "54fbef6601abde735115de57"
+    },
+    "iamsocal": {
+      "x": 242,
+      "y": 84,
+      "width": 28,
+      "height": 28,
+      "id": "54fbef8701abde735115de58"
+    },
+    "idog": {
+      "x": 242,
+      "y": 112,
+      "width": 28,
+      "height": 28,
+      "id": "54fa919901e468494b85b548"
+    },
+    "kaged": {
+      "x": 242,
+      "y": 140,
+      "width": 28,
+      "height": 28,
+      "id": "54fbf11001abde735115de66"
+    },
+    "kappacool": {
+      "x": 298,
+      "y": 196,
+      "width": 22,
+      "height": 28,
+      "id": "560577560874de34757d2dc0"
+    },
+    "karappa": {
+      "x": 242,
+      "y": 196,
+      "width": 28,
+      "height": 28,
+      "id": "550b344bff8ecee922d2a3c1"
+    },
+    "kkona": {
+      "x": 178,
+      "y": 122,
+      "width": 25,
+      "height": 34,
+      "id": "566ca04265dbbdab32ec054a"
+    },
+    "lul": {
+      "x": 28,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "567b00c61ddbe1786688a633"
+    },
+    "m&mjc": {
+      "x": 178,
+      "y": 0,
+      "width": 36,
+      "height": 30,
+      "id": "54fab45f633595ca4c713abc"
+    },
+    "minijulia": {
+      "x": 84,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "552d2fc2236a1aa17a996c5b"
+    },
+    "monkas": {
+      "x": 112,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "56e9f494fff3cc5c35e5287e"
+    },
+    "motnahp": {
+      "x": 140,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "55288e390fa35376704a4c7a"
+    },
+    "nam": {
+      "x": 0,
+      "y": 88,
+      "width": 38,
+      "height": 40,
+      "id": "566ca06065dbbdab32ec054e"
+    },
+    "notsquishy": {
+      "x": 298,
+      "y": 168,
+      "width": 24,
+      "height": 28,
+      "id": "5709ab688eff3b595e93c595"
+    },
+    "ohgod": {
+      "x": 224,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "566ca07965dbbdab32ec0552"
+    },
+    "ohhhkee": {
+      "x": 270,
+      "y": 0,
+      "width": 28,
+      "height": 28,
+      "id": "54fbefa901abde735115de59"
+    },
+    "ohmygoodness": {
+      "x": 270,
+      "y": 28,
+      "width": 28,
+      "height": 28,
+      "id": "54fa925e01e468494b85b54d"
+    },
+    "pancakemix": {
+      "x": 270,
+      "y": 56,
+      "width": 28,
+      "height": 28,
+      "id": "54fa927801e468494b85b54e"
+    },
+    "pedobear": {
+      "x": 270,
+      "y": 84,
+      "width": 28,
+      "height": 28,
+      "id": "54fa928f01e468494b85b54f"
+    },
+    "pokerface": {
+      "x": 270,
+      "y": 112,
+      "width": 28,
+      "height": 28,
+      "id": "54fa92a701e468494b85b550"
+    },
+    "poledoge": {
+      "x": 270,
+      "y": 140,
+      "width": 28,
+      "height": 28,
+      "id": "566ca09365dbbdab32ec0555"
+    },
+    "rageface": {
+      "x": 270,
+      "y": 168,
+      "width": 28,
+      "height": 28,
+      "id": "54fa92d701e468494b85b552"
+    },
+    "rarepepe": {
+      "x": 270,
+      "y": 196,
+      "width": 28,
+      "height": 28,
+      "id": "555015b77676617e17dd2e8e"
+    },
+    "rebeccablack": {
+      "x": 270,
+      "y": 224,
+      "width": 28,
+      "height": 28,
+      "id": "54fa92ee01e468494b85b553"
+    },
+    "ronsmug": {
+      "x": 298,
+      "y": 252,
+      "width": 21,
+      "height": 28,
+      "id": "55f324c47f08be9f0a63cce0"
+    },
+    "rstrike": {
+      "x": 28,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "54fa930801e468494b85b554"
+    },
+    "saltycorn": {
+      "x": 143,
+      "y": 35,
+      "width": 28,
+      "height": 30,
+      "id": "56901914991f200c34ffa656"
+    },
+    "savagejerky": {
+      "x": 84,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "54fb603201abde735115ddb5"
+    },
+    "sexpanda": {
+      "x": 38,
+      "y": 88,
+      "width": 36,
+      "height": 40,
+      "id": "5502874d135896936880fdd2"
+    },
+    "she'llberight": {
+      "x": 140,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "54fbefc901abde735115de5a"
+    },
+    "shoopdawhoop": {
+      "x": 168,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "54fa932201e468494b85b555"
+    },
+    "soserious": {
+      "x": 196,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "5514afe362e6bd0027aede8a"
+    },
+    "sosgame": {
+      "x": 224,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "553b48a21f145f087fc15ca6"
+    },
+    "sourpls": {
+      "x": 143,
+      "y": 0,
+      "width": 35,
+      "height": 35,
+      "id": "566ca38765dbbdab32ec0560"
+    },
+    "sqshy": {
+      "x": 298,
+      "y": 0,
+      "width": 28,
+      "height": 28,
+      "id": "59cf182fcbe2693d59d7bf46"
+    },
+    "suchfraud": {
+      "x": 298,
+      "y": 28,
+      "width": 28,
+      "height": 28,
+      "id": "54fbf07e01abde735115de5f"
+    },
+    "swedswag": {
+      "x": 298,
+      "y": 56,
+      "width": 28,
+      "height": 28,
+      "id": "54fa9cc901e468494b85b565"
+    },
+    "taxibro": {
+      "x": 0,
+      "y": 0,
+      "width": 87,
+      "height": 30,
+      "id": "54fbefeb01abde735115de5b"
+    },
+    "tehpolecat": {
+      "x": 298,
+      "y": 224,
+      "width": 21,
+      "height": 28,
+      "id": "566ca11a65dbbdab32ec0558"
+    },
+    "topham": {
+      "x": 0,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "54fa934001e468494b85b556"
+    },
+    "twat": {
+      "x": 196,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "54fa935601e468494b85b557"
+    },
+    "vapenation": {
+      "x": 242,
+      "y": 168,
+      "width": 28,
+      "height": 28,
+      "id": "56f5be00d48006ba34f530a4"
+    },
+    "vislaud": {
+      "x": 196,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "550352766f86a5b26c281ba2"
+    },
+    "watchusay": {
+      "x": 214,
+      "y": 168,
+      "width": 28,
+      "height": 28,
+      "id": "54fa99b601e468494b85b55d"
+    },
+    "whatayolk": {
+      "x": 84,
+      "y": 184,
+      "width": 28,
+      "height": 28,
+      "id": "54fa93d001e468494b85b559"
+    },
+    "wowee": {
+      "x": 56,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "58d2e73058d8950a875ad027"
+    },
+    "yetiz": {
+      "x": 0,
+      "y": 58,
+      "width": 60,
+      "height": 30,
+      "id": "55189a5062e6bd0027aee082"
+    },
+    "zappa": {
+      "x": 178,
+      "y": 30,
+      "width": 32,
+      "height": 32,
+      "id": "5622aaef3286c42e57d8e4ab"
+    }
+  };
+
   var emoji = {
     template: function template(id) {
       id = id.replace(/^:|:$/g, "");
@@ -10796,8 +11518,14 @@ var DubPlus = (function () {
     return PortalProxy;
   }(Component);
 
+  var EMOJI_SS_W = 1931;
+  var EMOJI_SS_H = 1867; // the W and H of the twitch spritesheet
+
   var TWITCH_SS_W = 837;
-  var TWITCH_SS_H = 819;
+  var TWITCH_SS_H = 819; // the W and H of the bttv spritesheet
+
+  var BTTV_SS_W = 326;
+  var BTTV_SS_H = 316;
 
   var Picker =
   /*#__PURE__*/
@@ -10857,7 +11585,8 @@ var DubPlus = (function () {
     _createClass(Picker, [{
       key: "fillChat",
       value: function fillChat(val) {
-        document.getElementById("chat-txt-message").value += " :".concat(val, ":");
+        proxy.chatInput().value += " :".concat(val, ":");
+        proxy.chatInput().focus();
         this.setState({
           emojiShow: false,
           twitchShow: false
@@ -10873,17 +11602,25 @@ var DubPlus = (function () {
       value: function emojiList() {
         var _this2 = this;
 
+        var size = 35; // 64px is the original size of each icon in the spritesheet but we want to 
+        // reduce them to SIZE without altering the spritesheet
+
+        var perc = size / 64;
         var list = Object.keys(emojiNames).map(function (id) {
           var data = emojiNames[id];
-          var x = data.x * 0.546875;
-          var y = data.y * 0.546875;
+          var x = EMOJI_SS_W * perc * 100 / size;
+          var y = EMOJI_SS_H * perc * 100 / size;
           var css = {
-            backgroundPosition: "-".concat(x, "px -").concat(y, "px")
+            backgroundPosition: "-".concat(data.x * perc, "px -").concat(data.y * perc, "px"),
+            width: "".concat(size, "px"),
+            height: "".concat(size, "px"),
+            backgroundSize: "".concat(x, "% ").concat(y, "%")
           };
           return h("span", {
             key: "emoji-".concat(id),
             style: css,
             title: id,
+            className: "emoji-picker-image",
             onClick: function onClick() {
               return _this2.fillChat(id);
             }
@@ -10896,7 +11633,7 @@ var DubPlus = (function () {
       value: function twitchList() {
         var _this3 = this;
 
-        var list = Object.keys(twitchSpriteSheet).map(function (name) {
+        return Object.keys(twitchSpriteSheet).map(function (name) {
           var data = twitchSpriteSheet[name];
           var x = TWITCH_SS_W * 100 / data.width;
           var y = TWITCH_SS_H * 100 / data.height;
@@ -10910,12 +11647,38 @@ var DubPlus = (function () {
             key: "twitch-".concat(name),
             style: css,
             title: name,
+            className: "twitch-picker-image",
             onClick: function onClick() {
               return _this3.fillChat(name);
             }
           });
         });
-        return list;
+      }
+    }, {
+      key: "bttvList",
+      value: function bttvList() {
+        var _this4 = this;
+
+        return Object.keys(bttvSpriteSheet).map(function (name) {
+          var data = bttvSpriteSheet[name];
+          var x = BTTV_SS_W * 100 / data.width;
+          var y = BTTV_SS_H * 100 / data.height;
+          var css = {
+            backgroundPosition: "-".concat(data.x, "px -").concat(data.y, "px"),
+            width: "".concat(data.width, "px"),
+            height: "".concat(data.height, "px"),
+            backgroundSize: "".concat(x, "% ").concat(y, "%")
+          };
+          return h("span", {
+            key: "bttv-".concat(name),
+            style: css,
+            className: "bttv-picker-image",
+            title: name,
+            onClick: function onClick() {
+              return _this4.fillChat(name);
+            }
+          });
+        });
       }
     }, {
       key: "render",
@@ -10937,8 +11700,8 @@ var DubPlus = (function () {
         }, h(Portal, {
           into: ".pusher-chat-widget-input"
         }, h("div", {
-          className: "dp-emoji-picker twitch-picker ".concat(twitchShow ? "show" : "")
-        }, this.twitchList()))));
+          className: "dp-emoji-picker twitch-bttv-picker ".concat(twitchShow ? "show" : "")
+        }, this.twitchList().concat(this.bttvList())))));
       }
     }]);
 
@@ -11656,6 +12419,8 @@ var DubPlus = (function () {
 
   var TWITCH_SS_W$1 = 837;
   var TWITCH_SS_H$1 = 819;
+  var BTTV_SS_W$1 = 326;
+  var BTTV_SS_H$1 = 316;
 
   var PreviewListItem = function PreviewListItem(_ref) {
     var data = _ref.data,
@@ -11685,6 +12450,32 @@ var DubPlus = (function () {
       }, h("span", {
         className: "ac-image",
         style: css,
+        title: data.name
+      }), h("span", {
+        className: "ac-text"
+      }, data.name));
+    }
+
+    if (data.type === "bttv") {
+      var _x = BTTV_SS_W$1 * 100 / data.width;
+
+      var _y = BTTV_SS_H$1 * 100 / data.height;
+
+      var _css = {
+        backgroundPosition: "-".concat(data.x, "px -").concat(data.y, "px"),
+        width: "".concat(data.width, "px"),
+        height: "".concat(data.height, "px"),
+        backgroundSize: "".concat(_x, "% ").concat(_y, "%")
+      };
+      return h("li", {
+        className: "preview-item bttv-previews",
+        onClick: function onClick() {
+          onSelect(data.name);
+        },
+        "data-name": data.name
+      }, h("span", {
+        className: "ac-image",
+        style: _css,
         title: data.name
       }), h("span", {
         className: "ac-text"
@@ -11771,356 +12562,35 @@ var DubPlus = (function () {
     }
   };
 
-  /**
-   * Wrapper around XMLHttpRequest with added ability to trigger a custom event 
-   * when the ajax request is complete. The event will be attached to the window 
-   * object. It returns a promise.
-   * 
-   * @param {String} url 
-   * @param {Object} headers object of xhr headers to add to the request
-   * @returns {Promise}
-   */
-  function getJSON(url) {
-    var headers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    return new Promise(function (resolve, reject) {
-      var xhr = new XMLHttpRequest();
+  var bttv = {
+    get: function get(name) {
+      var emoteData = bttvSpriteSheet[name];
 
-      xhr.onload = function () {
-        try {
-          var resp = JSON.parse(xhr.responseText);
-          resolve(resp);
-        } catch (e) {
-          reject(e);
-        }
-      };
-
-      xhr.onerror = function () {
-        reject();
-      };
-
-      xhr.open('GET', url);
-
-      for (var property in headers) {
-        if (headers.hasOwnProperty(property)) {
-          xhr.setRequestHeader(property, headers[property]);
-        }
+      if (emoteData) {
+        return this.template(emoteData.id);
       }
 
-      xhr.send();
-    });
-  }
-
-  // IndexedDB wrapper for increased quota compared to localstorage (5mb to 50mb)
-  function IndexDBWrapper() {
-    var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-
-    if (!indexedDB) {
-      return console.error("indexDB not supported");
-    }
-
-    var db;
-    var timeout = 50; // 50 * 100 = 5000ms = 5s
+      return null;
+    },
+    template: function template(id) {
+      return "//cdn.betterttv.net/emote/".concat(id, "/3x");
+    },
 
     /**
-     * Get item from indexedDB
-     * @param {string} item the db key name of what you want to retrieve
-     * @param {function} [cb] optional callback because it also returns a promise
-     * @returns {Promise}
+     * @param {string} symbol the emote name without the enclosing colons
+     * @returns {array} an array of matches
      */
-
-    function getItem(item, cb) {
-      // keep trying until db open request is established
-      if (!db && timeout >= 0) {
-        setTimeout(function () {
-          getItem(item, cb);
-        }, 100);
-        timeout--;
-        return;
-      }
-
-      timeout = 30; // reset the dbrequest timeout counter
-
-      try {
-        var transaction = db.transaction("s");
-
-        transaction.onerror = function (event) {
-          cb(null, event);
-        };
-
-        var dbItemStore = transaction.objectStore("s");
-
-        dbItemStore.onerror = function (event) {
-          cb(null, event);
-        };
-
-        var dbItemStoreGet = dbItemStore.get(item);
-
-        dbItemStoreGet.onsuccess = function (e) {
-          var t = e.target.result && e.target.result.v || null;
-          cb(t);
-        };
-
-        dbItemStoreGet.onerror = function (event) {
-          cb(null, event);
-        };
-      } catch (e) {
-        cb(null, e.message);
-      }
-    }
-    /**
-     * Store a value in indexedDB
-     * @param {string} item key name for the value that will be stored
-     * @param {string} val value to be stored
-     */
-
-
-    function setItem(item, val) {
-      // keep trying until db open request is established
-      if (!db && timeout >= 0) {
-        setTimeout(function () {
-          setItem(item, val);
-        }, 100);
-        timeout--;
-        return;
-      }
-
-      timeout = 30; // reset the dbrequest timeout counter
-
-      var obj = {
-        k: item,
-        v: val
-      };
-      db.transaction("s", "readwrite").objectStore("s").put(obj);
-    }
-
-    var dbRequest = indexedDB.open("d2", 1);
-
-    dbRequest.onsuccess = function (e) {
-      db = this.result;
-    };
-
-    dbRequest.onerror = function (e) {
-      console.error("indexedDB request error", e);
-    };
-
-    dbRequest.onupgradeneeded = function (e) {
-      db = this.result;
-      var t = db.createObjectStore("s", {
-        keyPath: "k"
-      });
-
-      db.transaction.oncomplete = function (e) {
-        db = e.target.db;
-      };
-    };
-
-    return {
-      get: getItem,
-      set: setItem
-    };
-  }
-
-  var ldb = new IndexDBWrapper();
-
-  /* global  emojify */
-  function shouldUpdateAPIs(apiName) {
-    var day = 1000 * 60 * 60 * 24; // milliseconds in a day
-
-    return new Promise(function (resolve, reject) {
-      // if api returned an object with an error and we stored it 
-      // then we should try again
-      ldb.get(apiName + "_api", function (savedItem, err) {
-        if (err) {
-          return reject(err);
-        }
-
-        if (savedItem) {
-          try {
-            var parsed = JSON.parse(savedItem);
-
-            if (typeof parsed.error !== "undefined") {
-              resolve(true); // yes we should refresh data from api
-            }
-          } catch (e) {
-            resolve(true); // data was corrupted, needs to be refreshed
-          }
-        } else {
-          resolve(true); // data doesn't exist, needs to be fetched
-        } // at this point we have good data without issues in IndexedDB
-        // so now we check how old it is to see if we should update it (7 days is the limit)
-
-
-        var today = Date.now();
-        var lastSaved = parseInt(localStorage.getItem(apiName + "_api_timestamp")); // Is the lastsaved not a number for some strange reason, then we should update 
-        // OR
-        // are we past 5 days from last update? then we should update
-
-        resolve(isNaN(lastSaved) || today - lastSaved > day * 7);
-      });
-    });
-  }
-
-  /* global  emojify */
-
-  var BTTVemotes =
-  /*#__PURE__*/
-  function () {
-    function BTTVemotes() {
-      var _this = this;
-
-      _classCallCheck(this, BTTVemotes);
-
-      _defineProperty(this, "emotes", {});
-
-      _defineProperty(this, "sortedKeys", {
-        'nonAlpha': []
-      });
-
-      _defineProperty(this, "loaded", false);
-
-      _defineProperty(this, "headers", {});
-
-      _defineProperty(this, "addKeyToSorted", function (key) {
-        var first = key.charAt(0); // all numbers and symbols get stored in one 'nonAlpha' array
-
-        if (!/[a-z]/i.test(first)) {
-          _this.sortedKeys.nonAlpha.push(key);
-
-          return;
-        }
-
-        if (!_this.sortedKeys[first]) {
-          _this.sortedKeys[first] = [];
-        }
-
-        _this.sortedKeys[first].push(key);
+    find: function find(symbol) {
+      return Object.keys(bttvSpriteSheet).filter(function (key) {
+        return key.toLowerCase().indexOf(symbol.toLowerCase()) === 0;
+      }).map(function (name) {
+        var obj = bttvSpriteSheet[name];
+        obj.name = name;
+        obj.type = "bttv";
+        return obj;
       });
     }
-
-    _createClass(BTTVemotes, [{
-      key: "optionalSetHeaders",
-      value: function optionalSetHeaders(obj) {
-        this.headers = obj;
-      }
-    }, {
-      key: "load",
-      value: function load() {
-        var _this2 = this;
-
-        // if it doesn't exist in localStorage or it's older than 5 days
-        // grab it from the bttv API
-        return shouldUpdateAPIs("bttv").then(function (update) {
-          if (update) {
-            return _this2.updateFromAPI();
-          }
-
-          return _this2.loadFromDB();
-        });
-      }
-    }, {
-      key: "loadFromDB",
-      value: function loadFromDB() {
-        var _this3 = this;
-
-        return new Promise(function (resolve, reject) {
-          try {
-            ldb.get("bttv_api", function (data) {
-              console.log("dub+", "bttv", "loading from IndexedDB");
-              var savedData = JSON.parse(data);
-
-              _this3.processEmotes(savedData);
-
-              savedData = null; // clear the var from memory
-
-              resolve();
-            });
-          } catch (e) {
-            reject(e);
-          }
-        });
-      }
-    }, {
-      key: "updateFromAPI",
-      value: function updateFromAPI() {
-        var _this4 = this;
-
-        console.log("dub+", "bttv", "loading from api");
-        var bttvApi = getJSON("https://api.betterttv.net/2/emotes", this.headers);
-        return bttvApi.then(function (json) {
-          var bttvEmotes = {};
-          json.emotes.forEach(function (e) {
-            if (!bttvEmotes[e.code]) {
-              bttvEmotes[e.code] = e.id;
-            }
-          });
-          localStorage.setItem("bttv_api_timestamp", Date.now().toString());
-          ldb.set("bttv_api", JSON.stringify(bttvEmotes));
-
-          _this4.processEmotes(bttvEmotes);
-        });
-      }
-    }, {
-      key: "template",
-      value: function template(id) {
-        return "//cdn.betterttv.net/emote/".concat(id, "/3x");
-      }
-    }, {
-      key: "find",
-      value: function find(symbol) {
-        var _this5 = this;
-
-        var first = symbol.charAt(0);
-        var arr;
-
-        if (!/[a-z]/i.test(first)) {
-          arr = this.sortedKeys.nonAlpha;
-        } else {
-          arr = this.sortedKeys[first] || [];
-        }
-
-        var matchBttvKeys = arr.filter(function (key) {
-          return key.indexOf(symbol) === 0;
-        });
-        return matchBttvKeys.map(function (key) {
-          return {
-            type: "bttv",
-            src: _this5.template(_this5.emotes[key]),
-            name: key
-          };
-        });
-      }
-    }, {
-      key: "processEmotes",
-      value: function processEmotes(data) {
-        for (var code in data) {
-          if (data.hasOwnProperty(code)) {
-            var _key = code.toLowerCase();
-
-            if (code.indexOf(":") >= 0) {
-              continue; // don't want any emotes with smileys and stuff
-            }
-
-            if (emojify.emojiNames.indexOf(_key) >= 0) {
-              continue; // do nothing so we don't override emoji
-            }
-
-            if (code.indexOf("(") >= 0) {
-              _key = _key.replace(/([()])/g, "");
-            }
-
-            this.emotes[_key] = data[code];
-            this.addKeyToSorted(_key);
-          }
-        }
-
-        this.loaded = true;
-      }
-    }]);
-
-    return BTTVemotes;
-  }();
-
-  var bttv = new BTTVemotes();
+  };
 
   /**********************************************************************
    * Autocomplete Emoji / Emotes
@@ -12298,6 +12768,11 @@ var DubPlus = (function () {
           classic.unshift({
             header: "Emoji"
           });
+        } // if emotes is not on then we return just classic emoji
+
+
+        if (!userSettings.stored.options["dubplus-emotes"]) {
+          return classic;
         }
 
         var bttvMatches = bttv.find(symbol);
@@ -12503,7 +12978,7 @@ var DubPlus = (function () {
    */
 
   function getLatestChatNode() {
-    var list = document.querySelectorAll(".chat-main .text");
+    var list = proxy.allChatTexts();
 
     if (list.length > 0) {
       return list[list.length - 1];
@@ -12571,10 +13046,12 @@ var DubPlus = (function () {
       };
     }
 
-    if (bttv.emotes[key]) {
+    var bttvImg = bttv.get(key);
+
+    if (bttvImg) {
       return {
         type: "bttv",
-        src: bttv.template(bttv.emotes[key]),
+        src: bttvImg,
         name: key
       };
     }
@@ -12669,17 +13146,13 @@ var DubPlus = (function () {
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Emotes)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        // spin logo to indicate emotes are still loading
-        document.body.classList.add('dubplus-icon-spinning'); // these load super fast
-
-        if (!bttv.loaded) {
-          bttv.load();
-        }
+        document.body.classList.add('dubplus-emotes-on');
 
         _this.begin();
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function (e) {
+        document.body.classList.remove('dubplus-emotes-on');
         proxy.offChatMessage(beginReplace);
       });
 
@@ -12689,8 +13162,7 @@ var DubPlus = (function () {
     _createClass(Emotes, [{
       key: "begin",
       value: function begin() {
-        document.body.classList.remove('dubplus-icon-spinning'); // when first turning it on, it replaces ALL of the emotes in chat history
-
+        // when first turning it on, it replaces ALL of the emotes in chat history
         beginReplace(proxy.chatList()); // then it sets up replacing emotes on new chat messages
 
         proxy.onChatMessage(beginReplace);
@@ -13882,6 +14354,45 @@ var DubPlus = (function () {
     return RainSwitch;
   }(Component);
 
+  /**
+   * Wrapper around XMLHttpRequest with added ability to trigger a custom event 
+   * when the ajax request is complete. The event will be attached to the window 
+   * object. It returns a promise.
+   * 
+   * @param {String} url 
+   * @param {Object} headers object of xhr headers to add to the request
+   * @returns {Promise}
+   */
+  function getJSON(url) {
+    var headers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+
+      xhr.onload = function () {
+        try {
+          var resp = JSON.parse(xhr.responseText);
+          resolve(resp);
+        } catch (e) {
+          reject(e);
+        }
+      };
+
+      xhr.onerror = function () {
+        reject();
+      };
+
+      xhr.open('GET', url);
+
+      for (var property in headers) {
+        if (headers.hasOwnProperty(property)) {
+          xhr.setRequestHeader(property, headers[property]);
+        }
+      }
+
+      xhr.send();
+    });
+  }
+
   var DubsInfoListItem = function DubsInfoListItem(_ref) {
     var data = _ref.data,
         click = _ref.click;
@@ -14766,47 +15277,12 @@ var DubPlus = (function () {
     });
   };
 
-  var isFirstLoad = true;
-
-  function toggle() {
-    if (isFirstLoad) {
-      // disabling the video from stored settings on page load causes the video
-      // to not play until you un-hide it.  So we delay turning it off for a bit
-      // to give the video time to load and start playing
-      setTimeout(function () {
-        proxy.hideVideoBtn().click();
-      }, 5000);
-      isFirstLoad = false;
-      return;
-    }
-
-    proxy.hideVideoBtn().click();
-  }
-  /**
-   * Disable Video 
-   * This is the equivalent of clicking on the little eye icon to toggle the video
-   * Sometimes I just want to hide the video the native dubtrack way but not remove 
-   * the entire video box
-   */
-
-
-  var DisableVideo = function DisableVideo() {
-    return h(MenuSwitch, {
-      id: "dubplus-disable-video",
-      section: "User Interface",
-      menuTitle: "Disable Video",
-      desc: "Toggles disabling the video. Equivalent to clicking on the eye icon under the video",
-      turnOn: toggle,
-      turnOff: toggle
-    });
-  };
-
   var UISection = function UISection() {
     return h(MenuSection, {
       id: "dubplus-ui",
       title: "UI",
       settingsKey: "user-interface"
-    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(HideGifSelfie, null), h(ShowTS, null), h(DisableVideo, null));
+    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(HideGifSelfie, null), h(ShowTS, null));
   };
 
   function handleKeyup(e) {
@@ -14896,7 +15372,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549938961086);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550037957820);
     document.head.appendChild(link);
   }
   /**

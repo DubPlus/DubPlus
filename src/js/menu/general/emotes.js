@@ -1,7 +1,6 @@
 import {h, Component} from 'preact';
 import {MenuSwitch} from '@/components/menuItems.js';
 import chatReplace from '@/utils/emotes/chat-replace.js';
-import bttvEmotes from '@/utils/emotes/bttv.js';
 import dtproxy from "@/utils/DTProxy.js";
 
 /**********************************************************************
@@ -11,19 +10,11 @@ import dtproxy from "@/utils/DTProxy.js";
 export default class Emotes extends Component {
 
   turnOn = () => {
-    // spin logo to indicate emotes are still loading
-    document.body.classList.add('dubplus-icon-spinning');
-
-    // these load super fast
-    if (!bttvEmotes.loaded) {
-      bttvEmotes.load();
-    }
-
+    document.body.classList.add('dubplus-emotes-on');
     this.begin();
   }
 
   begin() {
-    document.body.classList.remove('dubplus-icon-spinning');
     // when first turning it on, it replaces ALL of the emotes in chat history
     chatReplace(dtproxy.chatList());
     // then it sets up replacing emotes on new chat messages
@@ -31,6 +22,7 @@ export default class Emotes extends Component {
   }
   
   turnOff = (e) => {
+    document.body.classList.remove('dubplus-emotes-on');
     dtproxy.offChatMessage(chatReplace);
   }
 

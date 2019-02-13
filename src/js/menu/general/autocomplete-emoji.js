@@ -3,9 +3,10 @@ import { MenuSwitch } from "@/components/menuItems.js";
 import Portal from "preact-portal/src/preact-portal";
 import AutocompletePreview from "./autocomplete-preview";
 import twitch from '@/utils/emotes/twitch-local.js';
-import bttv from "@/utils/emotes/bttv.js";
+import bttv from "@/utils/emotes/bttv-local.js";
 import { emoji } from "@/utils/emotes/emoji.js";
 import dtproxy from "@/utils/DTProxy.js";
+import settings from "@/utils/UserSettings.js";
 
 /**********************************************************************
  * Autocomplete Emoji / Emotes
@@ -83,6 +84,12 @@ export default class AutocompleteEmoji extends Component {
     if (classic.length > 0) {
       classic.unshift({ header: "Emoji" });
     }
+
+    // if emotes is not on then we return just classic emoji
+    if (!settings.stored.options["dubplus-emotes"]) {
+      return classic;
+    }
+
     var bttvMatches = bttv.find(symbol);
     if (bttvMatches.length > 0) {
       bttvMatches.unshift({ header: "BetterTTV" });

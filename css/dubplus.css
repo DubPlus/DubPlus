@@ -267,6 +267,9 @@
   display: none; }
 
 .dubplus-hide-selfie #chat .pusher-chat-widget-input #chat-txt-message {
+  padding-right: 4.5rem; }
+
+.dubplus-emotes-on #chat .pusher-chat-widget-input #chat-txt-message {
   padding-right: 6.25rem; }
 
 /* Dubtracks adds Admin class to its own admins */
@@ -344,10 +347,13 @@
   background-image: url(https://i.imgur.com/FhzONPQ.png);
   background-repeat: no-repeat;
   background-size: contain;
-  display: inline-block;
+  display: none;
   width: 19px;
   height: 21px;
   transform: translateY(4px); }
+
+.dubplus-emotes-on .dp-twitch-picker-icon {
+  display: inline-block; }
 
 .dp-emoji-picker-icon {
   color: #fff;
@@ -373,16 +379,18 @@
     padding: 5px;
     border-radius: 3px;
     cursor: pointer;
-    background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/emoji-spritesheet.png);
-    background-repeat: no-repeat;
-    width: 35px;
-    height: 35px;
-    background-size: 3017% 2917%; }
+    background-repeat: no-repeat; }
     .dp-emoji-picker span:hover {
       background-color: rgba(255, 255, 255, 0.3); }
 
-.dp-emoji-picker.twitch-picker span {
+.emoji-picker-image {
+  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/emoji-spritesheet.png); }
+
+.twitch-picker-image {
   background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/twitch-spritesheet.png); }
+
+.bttv-picker-image {
+  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/bttv-spritesheet.png); }
 
 .dubplus-split-chat .chat-main li:nth-child(2n) {
   background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
@@ -460,6 +468,9 @@
   position: relative;
   top: -5px; }
 
+#autocomplete-preview .preview-item-header span {
+  padding-left: 20px; }
+
 #autocomplete-preview .ac-image {
   width: 1.4em;
   display: inline-block; }
@@ -477,10 +488,14 @@
   max-height: 164px;
   transition: max-height 0.4s; }
 
-.twitch-emote.emoji,
-.bttv-emote.emoji {
+#chat .chat-container .chat-messages .chat-main li .activity-row .text img.twitch-emote {
   max-width: 1.75rem !important;
   height: auto !important; }
+
+#chat .chat-container .chat-messages .chat-main li .activity-row .text img.bttv-emote {
+  width: auto !important;
+  height: auto !important;
+  max-height: 35px; }
 
 .twitch-previews .ac-image {
   display: inline-block;
@@ -488,6 +503,14 @@
   border-radius: 3px;
   cursor: pointer;
   background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/twitch-spritesheet.png);
+  background-repeat: no-repeat; }
+
+.bttv-previews .ac-image {
+  display: inline-block;
+  padding: 5px;
+  border-radius: 3px;
+  cursor: pointer;
+  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/bttv-spritesheet.png);
   background-repeat: no-repeat; }
 
 .dubplus-chat-only .left_section {
