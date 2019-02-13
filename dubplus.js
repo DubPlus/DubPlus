@@ -7187,6 +7187,723 @@ var DubPlus = (function () {
     }
   };
 
+  var bttvSpriteSheet = {
+    "(chompy)": {
+      "x": 214,
+      "y": 28,
+      "width": 28,
+      "height": 28,
+      "id": "550b225fff8ecee922d2a3b2"
+    },
+    "(poolparty)": {
+      "x": 87,
+      "y": 34,
+      "width": 20,
+      "height": 20,
+      "id": "5502883d135896936880fdd3"
+    },
+    "(puke)": {
+      "x": 0,
+      "y": 296,
+      "width": 20,
+      "height": 20,
+      "id": "550288fe135896936880fdd4"
+    },
+    ":'(": {
+      "x": 107,
+      "y": 34,
+      "width": 20,
+      "height": 20,
+      "id": "55028923135896936880fdd5"
+    },
+    ":tf:": {
+      "x": 79,
+      "y": 128,
+      "width": 28,
+      "height": 28,
+      "id": "54fa8f1401e468494b85b537"
+    },
+    "angelthump": {
+      "x": 0,
+      "y": 30,
+      "width": 84,
+      "height": 28,
+      "id": "566ca1a365dbbdab32ec055b"
+    },
+    "aplis": {
+      "x": 214,
+      "y": 140,
+      "width": 28,
+      "height": 28,
+      "id": "54fa8f4201e468494b85b538"
+    },
+    "ariw": {
+      "x": 0,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "56fa09f18eff3b595e93ac26"
+    },
+    "baconeffect": {
+      "x": 28,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "54fbf05a01abde735115de5e"
+    },
+    "badass": {
+      "x": 56,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "54faa4f101e468494b85b577"
+    },
+    "basedgod": {
+      "x": 0,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "566c9eeb65dbbdab32ec052b"
+    },
+    "batkappa": {
+      "x": 56,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "550b6b07ff8ecee922d2a3e7"
+    },
+    "blackappa": {
+      "x": 168,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "54faa50d01e468494b85b578"
+    },
+    "brobalt": {
+      "x": 74,
+      "y": 88,
+      "width": 46,
+      "height": 30,
+      "id": "54fbf00a01abde735115de5c"
+    },
+    "bttvangry": {
+      "x": 112,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "550291a3135896936880fde3"
+    },
+    "bttvconfused": {
+      "x": 252,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "550291be135896936880fde4"
+    },
+    "bttvcool": {
+      "x": 298,
+      "y": 84,
+      "width": 28,
+      "height": 28,
+      "id": "550291d4135896936880fde5"
+    },
+    "bttvgrin": {
+      "x": 143,
+      "y": 65,
+      "width": 28,
+      "height": 28,
+      "id": "550291ea135896936880fde6"
+    },
+    "bttvhappy": {
+      "x": 143,
+      "y": 93,
+      "width": 28,
+      "height": 28,
+      "id": "55029200135896936880fde7"
+    },
+    "bttvheart": {
+      "x": 113,
+      "y": 58,
+      "width": 28,
+      "height": 28,
+      "id": "55029215135896936880fde8"
+    },
+    "bttvnice": {
+      "x": 0,
+      "y": 128,
+      "width": 42,
+      "height": 28,
+      "id": "54fab7d2633595ca4c713abf"
+    },
+    "bttvsad": {
+      "x": 107,
+      "y": 128,
+      "width": 28,
+      "height": 28,
+      "id": "5502925d135896936880fdea"
+    },
+    "bttvsleep": {
+      "x": 135,
+      "y": 128,
+      "width": 28,
+      "height": 28,
+      "id": "55029272135896936880fdeb"
+    },
+    "bttvsurprised": {
+      "x": 0,
+      "y": 156,
+      "width": 28,
+      "height": 28,
+      "id": "55029288135896936880fdec"
+    },
+    "bttvtongue": {
+      "x": 28,
+      "y": 156,
+      "width": 28,
+      "height": 28,
+      "id": "5502929b135896936880fded"
+    },
+    "bttvtwink": {
+      "x": 56,
+      "y": 156,
+      "width": 28,
+      "height": 28,
+      "id": "55029247135896936880fde9"
+    },
+    "bttvunsure": {
+      "x": 84,
+      "y": 156,
+      "width": 28,
+      "height": 28,
+      "id": "550292ad135896936880fdee"
+    },
+    "bttvwink": {
+      "x": 112,
+      "y": 156,
+      "width": 28,
+      "height": 28,
+      "id": "550292c0135896936880fdef"
+    },
+    "burself": {
+      "x": 140,
+      "y": 156,
+      "width": 28,
+      "height": 28,
+      "id": "566c9f3b65dbbdab32ec052e"
+    },
+    "buttersauce": {
+      "x": 168,
+      "y": 156,
+      "width": 28,
+      "height": 28,
+      "id": "54fbf02f01abde735115de5d"
+    },
+    "candianrage": {
+      "x": 0,
+      "y": 184,
+      "width": 28,
+      "height": 28,
+      "id": "54fbf09c01abde735115de61"
+    },
+    "chaccepted": {
+      "x": 28,
+      "y": 184,
+      "width": 28,
+      "height": 28,
+      "id": "54fa8fb201e468494b85b53b"
+    },
+    "cigrip": {
+      "x": 56,
+      "y": 184,
+      "width": 28,
+      "height": 28,
+      "id": "54fa8fce01e468494b85b53c"
+    },
+    "concerndoge": {
+      "x": 298,
+      "y": 140,
+      "width": 25,
+      "height": 28,
+      "id": "566c9f6365dbbdab32ec0532"
+    },
+    "cruw": {
+      "x": 112,
+      "y": 184,
+      "width": 28,
+      "height": 28,
+      "id": "55471c2789d53f2d12781713"
+    },
+    "d:": {
+      "x": 140,
+      "y": 184,
+      "width": 28,
+      "height": 28,
+      "id": "55028cd2135896936880fdd7"
+    },
+    "datsauce": {
+      "x": 168,
+      "y": 184,
+      "width": 28,
+      "height": 28,
+      "id": "54fa903b01e468494b85b53f"
+    },
+    "dogewitit": {
+      "x": 214,
+      "y": 0,
+      "width": 28,
+      "height": 28,
+      "id": "54faa52f01e468494b85b579"
+    },
+    "duckerz": {
+      "x": 42,
+      "y": 128,
+      "width": 37,
+      "height": 28,
+      "id": "573d38b50ffbf6cc5cc38dc9"
+    },
+    "fapfapfap": {
+      "x": 214,
+      "y": 56,
+      "width": 28,
+      "height": 28,
+      "id": "566c9f9265dbbdab32ec0538"
+    },
+    "fcreep": {
+      "x": 214,
+      "y": 84,
+      "width": 28,
+      "height": 28,
+      "id": "56d937f7216793c63ec140cb"
+    },
+    "feelsamazingman": {
+      "x": 214,
+      "y": 112,
+      "width": 28,
+      "height": 28,
+      "id": "5733ff12e72c3c0814233e20"
+    },
+    "feelsbadman": {
+      "x": 178,
+      "y": 92,
+      "width": 30,
+      "height": 30,
+      "id": "566c9fc265dbbdab32ec053b"
+    },
+    "feelsbirthdayman": {
+      "x": 120,
+      "y": 88,
+      "width": 19,
+      "height": 28,
+      "id": "55b6524154eefd53777b2580"
+    },
+    "feelsgoodman": {
+      "x": 178,
+      "y": 62,
+      "width": 30,
+      "height": 30,
+      "id": "566c9fde65dbbdab32ec053e"
+    },
+    "firespeed": {
+      "x": 60,
+      "y": 58,
+      "width": 53,
+      "height": 28,
+      "id": "566c9ff365dbbdab32ec0541"
+    },
+    "fishmoley": {
+      "x": 87,
+      "y": 0,
+      "width": 56,
+      "height": 34,
+      "id": "566ca00f65dbbdab32ec0544"
+    },
+    "foreveralone": {
+      "x": 84,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "54fa909b01e468494b85b542"
+    },
+    "fuckyea": {
+      "x": 112,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "54fa90d601e468494b85b544"
+    },
+    "gaben": {
+      "x": 140,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "54fa90ba01e468494b85b543"
+    },
+    "hahaa": {
+      "x": 168,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "555981336ba1901877765555"
+    },
+    "hailhelix": {
+      "x": 298,
+      "y": 112,
+      "width": 28,
+      "height": 28,
+      "id": "54fa90f201e468494b85b545"
+    },
+    "herbperve": {
+      "x": 242,
+      "y": 0,
+      "width": 28,
+      "height": 28,
+      "id": "54fa913701e468494b85b546"
+    },
+    "hhhehehe": {
+      "x": 242,
+      "y": 28,
+      "width": 28,
+      "height": 28,
+      "id": "566ca02865dbbdab32ec0547"
+    },
+    "hhydro": {
+      "x": 242,
+      "y": 56,
+      "width": 28,
+      "height": 28,
+      "id": "54fbef6601abde735115de57"
+    },
+    "iamsocal": {
+      "x": 242,
+      "y": 84,
+      "width": 28,
+      "height": 28,
+      "id": "54fbef8701abde735115de58"
+    },
+    "idog": {
+      "x": 242,
+      "y": 112,
+      "width": 28,
+      "height": 28,
+      "id": "54fa919901e468494b85b548"
+    },
+    "kaged": {
+      "x": 242,
+      "y": 140,
+      "width": 28,
+      "height": 28,
+      "id": "54fbf11001abde735115de66"
+    },
+    "kappacool": {
+      "x": 298,
+      "y": 196,
+      "width": 22,
+      "height": 28,
+      "id": "560577560874de34757d2dc0"
+    },
+    "karappa": {
+      "x": 242,
+      "y": 196,
+      "width": 28,
+      "height": 28,
+      "id": "550b344bff8ecee922d2a3c1"
+    },
+    "kkona": {
+      "x": 178,
+      "y": 122,
+      "width": 25,
+      "height": 34,
+      "id": "566ca04265dbbdab32ec054a"
+    },
+    "lul": {
+      "x": 28,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "567b00c61ddbe1786688a633"
+    },
+    "m&mjc": {
+      "x": 178,
+      "y": 0,
+      "width": 36,
+      "height": 30,
+      "id": "54fab45f633595ca4c713abc"
+    },
+    "minijulia": {
+      "x": 84,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "552d2fc2236a1aa17a996c5b"
+    },
+    "monkas": {
+      "x": 112,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "56e9f494fff3cc5c35e5287e"
+    },
+    "motnahp": {
+      "x": 140,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "55288e390fa35376704a4c7a"
+    },
+    "nam": {
+      "x": 0,
+      "y": 88,
+      "width": 38,
+      "height": 40,
+      "id": "566ca06065dbbdab32ec054e"
+    },
+    "notsquishy": {
+      "x": 298,
+      "y": 168,
+      "width": 24,
+      "height": 28,
+      "id": "5709ab688eff3b595e93c595"
+    },
+    "ohgod": {
+      "x": 224,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "566ca07965dbbdab32ec0552"
+    },
+    "ohhhkee": {
+      "x": 270,
+      "y": 0,
+      "width": 28,
+      "height": 28,
+      "id": "54fbefa901abde735115de59"
+    },
+    "ohmygoodness": {
+      "x": 270,
+      "y": 28,
+      "width": 28,
+      "height": 28,
+      "id": "54fa925e01e468494b85b54d"
+    },
+    "pancakemix": {
+      "x": 270,
+      "y": 56,
+      "width": 28,
+      "height": 28,
+      "id": "54fa927801e468494b85b54e"
+    },
+    "pedobear": {
+      "x": 270,
+      "y": 84,
+      "width": 28,
+      "height": 28,
+      "id": "54fa928f01e468494b85b54f"
+    },
+    "pokerface": {
+      "x": 270,
+      "y": 112,
+      "width": 28,
+      "height": 28,
+      "id": "54fa92a701e468494b85b550"
+    },
+    "poledoge": {
+      "x": 270,
+      "y": 140,
+      "width": 28,
+      "height": 28,
+      "id": "566ca09365dbbdab32ec0555"
+    },
+    "rageface": {
+      "x": 270,
+      "y": 168,
+      "width": 28,
+      "height": 28,
+      "id": "54fa92d701e468494b85b552"
+    },
+    "rarepepe": {
+      "x": 270,
+      "y": 196,
+      "width": 28,
+      "height": 28,
+      "id": "555015b77676617e17dd2e8e"
+    },
+    "rebeccablack": {
+      "x": 270,
+      "y": 224,
+      "width": 28,
+      "height": 28,
+      "id": "54fa92ee01e468494b85b553"
+    },
+    "ronsmug": {
+      "x": 298,
+      "y": 252,
+      "width": 21,
+      "height": 28,
+      "id": "55f324c47f08be9f0a63cce0"
+    },
+    "rstrike": {
+      "x": 28,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "54fa930801e468494b85b554"
+    },
+    "saltycorn": {
+      "x": 143,
+      "y": 35,
+      "width": 28,
+      "height": 30,
+      "id": "56901914991f200c34ffa656"
+    },
+    "savagejerky": {
+      "x": 84,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "54fb603201abde735115ddb5"
+    },
+    "sexpanda": {
+      "x": 38,
+      "y": 88,
+      "width": 36,
+      "height": 40,
+      "id": "5502874d135896936880fdd2"
+    },
+    "she'llberight": {
+      "x": 140,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "54fbefc901abde735115de5a"
+    },
+    "shoopdawhoop": {
+      "x": 168,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "54fa932201e468494b85b555"
+    },
+    "soserious": {
+      "x": 196,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "5514afe362e6bd0027aede8a"
+    },
+    "sosgame": {
+      "x": 224,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "553b48a21f145f087fc15ca6"
+    },
+    "sourpls": {
+      "x": 143,
+      "y": 0,
+      "width": 35,
+      "height": 35,
+      "id": "566ca38765dbbdab32ec0560"
+    },
+    "sqshy": {
+      "x": 298,
+      "y": 0,
+      "width": 28,
+      "height": 28,
+      "id": "59cf182fcbe2693d59d7bf46"
+    },
+    "suchfraud": {
+      "x": 298,
+      "y": 28,
+      "width": 28,
+      "height": 28,
+      "id": "54fbf07e01abde735115de5f"
+    },
+    "swedswag": {
+      "x": 298,
+      "y": 56,
+      "width": 28,
+      "height": 28,
+      "id": "54fa9cc901e468494b85b565"
+    },
+    "taxibro": {
+      "x": 0,
+      "y": 0,
+      "width": 87,
+      "height": 30,
+      "id": "54fbefeb01abde735115de5b"
+    },
+    "tehpolecat": {
+      "x": 298,
+      "y": 224,
+      "width": 21,
+      "height": 28,
+      "id": "566ca11a65dbbdab32ec0558"
+    },
+    "topham": {
+      "x": 0,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "54fa934001e468494b85b556"
+    },
+    "twat": {
+      "x": 196,
+      "y": 240,
+      "width": 28,
+      "height": 28,
+      "id": "54fa935601e468494b85b557"
+    },
+    "vapenation": {
+      "x": 242,
+      "y": 168,
+      "width": 28,
+      "height": 28,
+      "id": "56f5be00d48006ba34f530a4"
+    },
+    "vislaud": {
+      "x": 196,
+      "y": 212,
+      "width": 28,
+      "height": 28,
+      "id": "550352766f86a5b26c281ba2"
+    },
+    "watchusay": {
+      "x": 214,
+      "y": 168,
+      "width": 28,
+      "height": 28,
+      "id": "54fa99b601e468494b85b55d"
+    },
+    "whatayolk": {
+      "x": 84,
+      "y": 184,
+      "width": 28,
+      "height": 28,
+      "id": "54fa93d001e468494b85b559"
+    },
+    "wowee": {
+      "x": 56,
+      "y": 268,
+      "width": 28,
+      "height": 28,
+      "id": "58d2e73058d8950a875ad027"
+    },
+    "yetiz": {
+      "x": 0,
+      "y": 58,
+      "width": 60,
+      "height": 30,
+      "id": "55189a5062e6bd0027aee082"
+    },
+    "zappa": {
+      "x": 178,
+      "y": 30,
+      "width": 32,
+      "height": 32,
+      "id": "5622aaef3286c42e57d8e4ab"
+    }
+  };
+
   var emoji = {
     template: function template(id) {
       id = id.replace(/^:|:$/g, "");
@@ -10798,6 +11515,8 @@ var DubPlus = (function () {
 
   var TWITCH_SS_W = 837;
   var TWITCH_SS_H = 819;
+  var BTTV_SS_W = 1931;
+  var BTTV_SS_H = 1867;
 
   var Picker =
   /*#__PURE__*/
@@ -10896,7 +11615,7 @@ var DubPlus = (function () {
       value: function twitchList() {
         var _this3 = this;
 
-        var list = Object.keys(twitchSpriteSheet).map(function (name) {
+        var twitchList = Object.keys(twitchSpriteSheet).map(function (name) {
           var data = twitchSpriteSheet[name];
           var x = TWITCH_SS_W * 100 / data.width;
           var y = TWITCH_SS_H * 100 / data.height;
@@ -10915,7 +11634,26 @@ var DubPlus = (function () {
             }
           });
         });
-        return list;
+        var bttvList = Object.keys(bttvSpriteSheet).map(function (name) {
+          var data = bttvSpriteSheet[name];
+          var x = BTTV_SS_W * 100 / data.width;
+          var y = BTTV_SS_H * 100 / data.height;
+          var css = {
+            backgroundPosition: "-".concat(data.x, "px -").concat(data.y, "px"),
+            width: "".concat(data.width, "px"),
+            height: "".concat(data.height, "px"),
+            backgroundSize: "".concat(x, "% ").concat(y, "%")
+          };
+          return h("span", {
+            key: "twitch-".concat(name),
+            style: css,
+            title: name,
+            onClick: function onClick() {
+              return _this3.fillChat(name);
+            }
+          });
+        });
+        return twitchList.concat(bttvList);
       }
     }, {
       key: "render",
@@ -10999,7 +11737,7 @@ var DubPlus = (function () {
     function UserSettings() {
       _classCallCheck(this, UserSettings);
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta");
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@bttv-local");
 
       var _savedSettings = localStorage.getItem('dubplusUserSettings');
 
@@ -11771,6 +12509,335 @@ var DubPlus = (function () {
     }
   };
 
+  var bttv = {
+    get: function get(name) {
+      var emoteData = bttvSpriteSheet[name];
+
+      if (emoteData) {
+        return this.template(emoteData.id);
+      }
+
+      return null;
+    },
+    template: function template(id) {
+      return "//cdn.betterttv.net/emote/".concat(id, "/3x");
+    },
+
+    /**
+     * @param {string} symbol the emote name without the enclosing colons
+     * @returns {array} an array of matches
+     */
+    find: function find(symbol) {
+      return Object.keys(bttvSpriteSheet).filter(function (key) {
+        return key.toLowerCase().indexOf(symbol.toLowerCase()) === 0;
+      }).map(function (name) {
+        var obj = bttvSpriteSheet[name];
+        obj.name = name;
+        obj.type = "bttv";
+        return obj;
+      });
+    }
+  };
+
+  /**********************************************************************
+   * Autocomplete Emoji / Emotes
+   * Brings up a small window above the chat input to help the user
+   * pick emoji/emotes
+   */
+
+  var KEYS = {
+    up: 38,
+    down: 40,
+    left: 37,
+    right: 39,
+    enter: 13,
+    esc: 27,
+    tab: 9
+  };
+  var ignoreKeys = [KEYS.up, KEYS.down, KEYS.left, KEYS.right, KEYS.esc, KEYS.enter];
+
+  var AutocompleteEmoji =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(AutocompleteEmoji, _Component);
+
+    function AutocompleteEmoji() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, AutocompleteEmoji);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(AutocompleteEmoji)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        isOn: false,
+        matches: []
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "renderTo", document.querySelector(".pusher-chat-widget-input"));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatInput", proxy.chatInput());
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "selectedItem", null);
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "checkInput", function (e) {
+        // we want to ignore keyups that don't output anything
+        var key = "which" in e ? e.which : e.keyCode;
+
+        if (ignoreKeys.indexOf(key) >= 0) {
+          return;
+        } // grab the input value and split into an array so we can easily grab the
+        // last element in it
+
+
+        var parts = e.target.value.split(" ");
+
+        if (parts.length === 0) {
+          return;
+        }
+
+        var lastPart = parts[parts.length - 1];
+        var lastChar = lastPart.charAt(lastPart.length - 1); // now we check if the last word in the input starts with the opening
+        // emoji colon but does not have the closing emoji colon
+
+        if (lastPart.charAt(0) === ":" && lastPart.length > 3 && lastChar !== ":") {
+          var new_matches = _this.getMatches(lastPart);
+
+          _this.setState({
+            matches: new_matches
+          });
+
+          return;
+        }
+
+        if (_this.state.matches.length !== 0) {
+          _this.closePreview();
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateChatInput", function (emote) {
+        var focusBack = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+        var inputText = _this.chatInput.value.split(" ");
+
+        inputText.pop();
+        inputText.push(":".concat(emote, ":"));
+        _this.chatInput.value = inputText.join(" ");
+
+        if (focusBack) {
+          _this.chatInput.focus();
+
+          _this.closePreview();
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "keyboardNav", function (e) {
+        if (_this.state.matches.length === 0) {
+          return true;
+        }
+
+        var key = "which" in e ? e.which : e.keyCode;
+
+        switch (key) {
+          case KEYS.down:
+          case KEYS.tab:
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            _this.navDown();
+
+            break;
+
+          case KEYS.up:
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            _this.navUp();
+
+            break;
+
+          case KEYS.esc:
+            _this.closePreview();
+
+            _this.chatInput.focus();
+
+            break;
+
+          case KEYS.enter:
+            _this.closePreview();
+
+            break;
+
+          default:
+            return true;
+        }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (e) {
+        _this.setState({
+          isOn: true
+        }); // relying on Dubtrack.fm's lodash being globally available
+
+
+        _this.debouncedCheckInput = window._.debounce(_this.checkInput, 100);
+        _this.debouncedNav = window._.debounce(_this.keyboardNav, 100);
+
+        _this.chatInput.addEventListener("keydown", _this.debouncedNav);
+
+        _this.chatInput.addEventListener("keyup", _this.debouncedCheckInput);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function (e) {
+        _this.setState({
+          isOn: false
+        });
+
+        _this.chatInput.removeEventListener("keydown", _this.debouncedNav);
+
+        _this.chatInput.removeEventListener("keyup", _this.debouncedCheckInput);
+      });
+
+      return _this;
+    }
+
+    _createClass(AutocompleteEmoji, [{
+      key: "getMatches",
+      value: function getMatches(symbol) {
+        symbol = symbol.replace(/^:/, "");
+        var classic = emoji.find(symbol);
+
+        if (classic.length > 0) {
+          classic.unshift({
+            header: "Emoji"
+          });
+        }
+
+        var bttvMatches = bttv.find(symbol);
+
+        if (bttvMatches.length > 0) {
+          bttvMatches.unshift({
+            header: "BetterTTV"
+          });
+        }
+
+        var twitchMatches = twitch.find(symbol);
+
+        if (twitchMatches.length > 0) {
+          twitchMatches.unshift({
+            header: "Twitch"
+          });
+        }
+
+        return classic.concat(bttvMatches, twitchMatches);
+      }
+    }, {
+      key: "closePreview",
+      value: function closePreview() {
+        this.setState({
+          matches: []
+        });
+        this.selectedItem = null;
+      }
+    }, {
+      key: "isElementInView",
+      value: function isElementInView(el) {
+        var container = document.querySelector("#autocomplete-preview");
+        var rect = el.getBoundingClientRect();
+        var outerRect = container.getBoundingClientRect();
+        return rect.top >= outerRect.top && rect.bottom <= outerRect.bottom;
+      }
+    }, {
+      key: "navDown",
+      value: function navDown() {
+        var item;
+
+        if (this.selectedItem) {
+          this.selectedItem.classList.remove("selected");
+          item = this.selectedItem.nextSibling;
+        } // go back to the first item
+
+
+        if (!item) {
+          item = document.querySelector(".preview-item");
+        } // there should always be a nextSibling after a header so
+        // we don't need to check item again after this
+
+
+        if (item.classList.contains("preview-item-header")) {
+          item = item.nextSibling;
+        }
+
+        item.classList.add("selected");
+
+        if (!this.isElementInView(item)) {
+          item.scrollIntoView(false);
+        }
+
+        this.selectedItem = item;
+        this.updateChatInput(item.dataset.name, false);
+      }
+    }, {
+      key: "navUp",
+      value: function navUp() {
+        var item;
+
+        if (this.selectedItem) {
+          this.selectedItem.classList.remove("selected");
+          item = this.selectedItem.previousSibling;
+        } // get to the last item
+
+
+        if (!item) {
+          item = [].slice.call(document.querySelectorAll(".preview-item")).pop();
+        }
+
+        if (item.classList.contains("preview-item-header")) {
+          item = item.previousSibling;
+        } // check again because the header
+
+
+        if (!item) {
+          item = [].slice.call(document.querySelectorAll(".preview-item")).pop();
+        }
+
+        item.classList.add("selected");
+
+        if (!this.isElementInView(item)) {
+          item.scrollIntoView(true);
+        }
+
+        this.selectedItem = item;
+        this.updateChatInput(item.dataset.name, false);
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, _ref) {
+        var isOn = _ref.isOn,
+            matches = _ref.matches;
+        return h(MenuSwitch, {
+          id: "dubplus-emotes",
+          section: "General",
+          menuTitle: "Autocomplete Emoji",
+          desc: "Quick find and insert emojis and emotes while typing in the chat input",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, isOn ? h(Portal, {
+          into: this.renderTo
+        }, h(AutocompletePreview, {
+          onSelect: this.updateChatInput,
+          matches: matches
+        })) : null);
+      }
+    }]);
+
+    return AutocompleteEmoji;
+  }(Component);
+
   /**
    * Wrapper around XMLHttpRequest with added ability to trigger a custom event 
    * when the ajax request is complete. The event will be attached to the window 
@@ -12120,306 +13187,7 @@ var DubPlus = (function () {
     return BTTVemotes;
   }();
 
-  var bttv = new BTTVemotes();
-
-  /**********************************************************************
-   * Autocomplete Emoji / Emotes
-   * Brings up a small window above the chat input to help the user
-   * pick emoji/emotes
-   */
-
-  var KEYS = {
-    up: 38,
-    down: 40,
-    left: 37,
-    right: 39,
-    enter: 13,
-    esc: 27,
-    tab: 9
-  };
-  var ignoreKeys = [KEYS.up, KEYS.down, KEYS.left, KEYS.right, KEYS.esc, KEYS.enter];
-
-  var AutocompleteEmoji =
-  /*#__PURE__*/
-  function (_Component) {
-    _inherits(AutocompleteEmoji, _Component);
-
-    function AutocompleteEmoji() {
-      var _getPrototypeOf2;
-
-      var _this;
-
-      _classCallCheck(this, AutocompleteEmoji);
-
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(AutocompleteEmoji)).call.apply(_getPrototypeOf2, [this].concat(args)));
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
-        isOn: false,
-        matches: []
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "renderTo", document.querySelector(".pusher-chat-widget-input"));
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatInput", proxy.chatInput());
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "selectedItem", null);
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "checkInput", function (e) {
-        // we want to ignore keyups that don't output anything
-        var key = "which" in e ? e.which : e.keyCode;
-
-        if (ignoreKeys.indexOf(key) >= 0) {
-          return;
-        } // grab the input value and split into an array so we can easily grab the
-        // last element in it
-
-
-        var parts = e.target.value.split(" ");
-
-        if (parts.length === 0) {
-          return;
-        }
-
-        var lastPart = parts[parts.length - 1];
-        var lastChar = lastPart.charAt(lastPart.length - 1); // now we check if the last word in the input starts with the opening
-        // emoji colon but does not have the closing emoji colon
-
-        if (lastPart.charAt(0) === ":" && lastPart.length > 3 && lastChar !== ":") {
-          var new_matches = _this.getMatches(lastPart);
-
-          _this.setState({
-            matches: new_matches
-          });
-
-          return;
-        }
-
-        if (_this.state.matches.length !== 0) {
-          _this.closePreview();
-        }
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateChatInput", function (emote) {
-        var focusBack = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
-        var inputText = _this.chatInput.value.split(" ");
-
-        inputText.pop();
-        inputText.push(":".concat(emote, ":"));
-        _this.chatInput.value = inputText.join(" ");
-
-        if (focusBack) {
-          _this.chatInput.focus();
-
-          _this.closePreview();
-        }
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "keyboardNav", function (e) {
-        if (_this.state.matches.length === 0) {
-          return true;
-        }
-
-        var key = "which" in e ? e.which : e.keyCode;
-
-        switch (key) {
-          case KEYS.down:
-          case KEYS.tab:
-            e.preventDefault();
-            e.stopImmediatePropagation();
-
-            _this.navDown();
-
-            break;
-
-          case KEYS.up:
-            e.preventDefault();
-            e.stopImmediatePropagation();
-
-            _this.navUp();
-
-            break;
-
-          case KEYS.esc:
-            _this.closePreview();
-
-            _this.chatInput.focus();
-
-            break;
-
-          case KEYS.enter:
-            _this.closePreview();
-
-            break;
-
-          default:
-            return true;
-        }
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (e) {
-        _this.setState({
-          isOn: true
-        }); // relying on Dubtrack.fm's lodash being globally available
-
-
-        _this.debouncedCheckInput = window._.debounce(_this.checkInput, 100);
-        _this.debouncedNav = window._.debounce(_this.keyboardNav, 100);
-
-        _this.chatInput.addEventListener("keydown", _this.debouncedNav);
-
-        _this.chatInput.addEventListener("keyup", _this.debouncedCheckInput);
-      });
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function (e) {
-        _this.setState({
-          isOn: false
-        });
-
-        _this.chatInput.removeEventListener("keydown", _this.debouncedNav);
-
-        _this.chatInput.removeEventListener("keyup", _this.debouncedCheckInput);
-      });
-
-      return _this;
-    }
-
-    _createClass(AutocompleteEmoji, [{
-      key: "getMatches",
-      value: function getMatches(symbol) {
-        symbol = symbol.replace(/^:/, "");
-        var classic = emoji.find(symbol);
-
-        if (classic.length > 0) {
-          classic.unshift({
-            header: "Emoji"
-          });
-        }
-
-        var bttvMatches = bttv.find(symbol);
-
-        if (bttvMatches.length > 0) {
-          bttvMatches.unshift({
-            header: "BetterTTV"
-          });
-        }
-
-        var twitchMatches = twitch.find(symbol);
-
-        if (twitchMatches.length > 0) {
-          twitchMatches.unshift({
-            header: "Twitch"
-          });
-        }
-
-        return classic.concat(bttvMatches, twitchMatches);
-      }
-    }, {
-      key: "closePreview",
-      value: function closePreview() {
-        this.setState({
-          matches: []
-        });
-        this.selectedItem = null;
-      }
-    }, {
-      key: "isElementInView",
-      value: function isElementInView(el) {
-        var container = document.querySelector("#autocomplete-preview");
-        var rect = el.getBoundingClientRect();
-        var outerRect = container.getBoundingClientRect();
-        return rect.top >= outerRect.top && rect.bottom <= outerRect.bottom;
-      }
-    }, {
-      key: "navDown",
-      value: function navDown() {
-        var item;
-
-        if (this.selectedItem) {
-          this.selectedItem.classList.remove("selected");
-          item = this.selectedItem.nextSibling;
-        } // go back to the first item
-
-
-        if (!item) {
-          item = document.querySelector(".preview-item");
-        } // there should always be a nextSibling after a header so
-        // we don't need to check item again after this
-
-
-        if (item.classList.contains("preview-item-header")) {
-          item = item.nextSibling;
-        }
-
-        item.classList.add("selected");
-
-        if (!this.isElementInView(item)) {
-          item.scrollIntoView(false);
-        }
-
-        this.selectedItem = item;
-        this.updateChatInput(item.dataset.name, false);
-      }
-    }, {
-      key: "navUp",
-      value: function navUp() {
-        var item;
-
-        if (this.selectedItem) {
-          this.selectedItem.classList.remove("selected");
-          item = this.selectedItem.previousSibling;
-        } // get to the last item
-
-
-        if (!item) {
-          item = [].slice.call(document.querySelectorAll(".preview-item")).pop();
-        }
-
-        if (item.classList.contains("preview-item-header")) {
-          item = item.previousSibling;
-        } // check again because the header
-
-
-        if (!item) {
-          item = [].slice.call(document.querySelectorAll(".preview-item")).pop();
-        }
-
-        item.classList.add("selected");
-
-        if (!this.isElementInView(item)) {
-          item.scrollIntoView(true);
-        }
-
-        this.selectedItem = item;
-        this.updateChatInput(item.dataset.name, false);
-      }
-    }, {
-      key: "render",
-      value: function render$$1(props, _ref) {
-        var isOn = _ref.isOn,
-            matches = _ref.matches;
-        return h(MenuSwitch, {
-          id: "dubplus-emotes",
-          section: "General",
-          menuTitle: "Autocomplete Emoji",
-          desc: "Quick find and insert emojis and emotes while typing in the chat input",
-          turnOn: this.turnOn,
-          turnOff: this.turnOff
-        }, isOn ? h(Portal, {
-          into: this.renderTo
-        }, h(AutocompletePreview, {
-          onSelect: this.updateChatInput,
-          matches: matches
-        })) : null);
-      }
-    }]);
-
-    return AutocompleteEmoji;
-  }(Component);
+  var bttv$1 = new BTTVemotes();
 
   /**
    * Simple string parser based on Douglas Crockford's JSON.parse
@@ -12571,10 +13339,10 @@ var DubPlus = (function () {
       };
     }
 
-    if (bttv.emotes[key]) {
+    if (bttv$1.emotes[key]) {
       return {
         type: "bttv",
-        src: bttv.template(bttv.emotes[key]),
+        src: bttv$1.template(bttv$1.emotes[key]),
         name: key
       };
     }
@@ -12672,8 +13440,8 @@ var DubPlus = (function () {
         // spin logo to indicate emotes are still loading
         document.body.classList.add('dubplus-icon-spinning'); // these load super fast
 
-        if (!bttv.loaded) {
-          bttv.load();
+        if (!bttv$1.loaded) {
+          bttv$1.load();
         }
 
         _this.begin();
@@ -14896,7 +15664,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1549938961086);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550030248994);
     document.head.appendChild(link);
   }
   /**

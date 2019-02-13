@@ -1,10 +1,14 @@
 import { h, render, Component } from "preact";
 import twitchSpriteSheet from "@/utils/emotes/twitch-spritesheet";
+import bttvSpriteSheet from "@/utils/emotes/bttv-spritesheet";
 import { emojiNames } from "@/utils/emotes/emoji";
 import Portal from "preact-portal/src/preact-portal";
 
 const TWITCH_SS_W = 837;
 const TWITCH_SS_H = 819;
+
+const BTTV_SS_W = 1931;
+const BTTV_SS_H = 1867;
 
 class Picker extends Component {
   state = {
@@ -71,7 +75,7 @@ class Picker extends Component {
   }
 
   twitchList() {
-    let list = Object.keys(twitchSpriteSheet).map(name => {
+    let twitchList = Object.keys(twitchSpriteSheet).map(name => {
       let data = twitchSpriteSheet[name];
       let x = (TWITCH_SS_W * 100) / data.width;
       let y = (TWITCH_SS_H * 100) / data.height;
@@ -90,7 +94,26 @@ class Picker extends Component {
         />
       );
     });
-    return list;
+    let bttvList = Object.keys(bttvSpriteSheet).map(name => {
+      let data = bttvSpriteSheet[name];
+      let x = (BTTV_SS_W * 100) / data.width;
+      let y = (BTTV_SS_H * 100) / data.height;
+      let css = {
+        backgroundPosition: `-${data.x}px -${data.y}px`,
+        width: `${data.width}px`,
+        height: `${data.height}px`,
+        backgroundSize: `${x}% ${y}%`
+      };
+      return (
+        <span
+          key={`twitch-${name}`}
+          style={css}
+          title={name}
+          onClick={() => this.fillChat(name)}
+        />
+      );
+    });
+    return twitchList.concat(bttvList);
   }
 
   render(props, { emojiShow, twitchShow }) {

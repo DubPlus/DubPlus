@@ -3,7 +3,7 @@ import { MenuSwitch } from "@/components/menuItems.js";
 import Portal from "preact-portal/src/preact-portal";
 import AutocompletePreview from "./autocomplete-preview";
 import twitch from '@/utils/emotes/twitch-local.js';
-import bttv from "@/utils/emotes/bttv.js";
+import bttv from "@/utils/emotes/bttv-local.js";
 import { emoji } from "@/utils/emotes/emoji.js";
 import dtproxy from "@/utils/DTProxy.js";
 
