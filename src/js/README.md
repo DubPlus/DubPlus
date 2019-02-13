@@ -1,7 +1,12 @@
 # TODO
-- double-check or add data validation all inputs
 - plan out CI possibilities
-- create Dubplus object proxy/bridge/middle
+
+## Beta test
+
+```javascript
+javascript:var i,d=document,s=d.createElement('script');s.src="//cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/dubplus.js?"+Date.now();d.body.appendChild(s);void(0);
+```
+
 
 # Javascript info Guidelines
 :warning: *this doc is a work in progress* :warning:
@@ -14,12 +19,12 @@ We're using Preact, because of its smaller size to React, so that we can bundle 
 
 `./menu/` - Place all menu items in here. `./menu/index.js` is the main entry point to the menu and each subfolder represents a section of the menu
 
-`./utils/` - **I'll probably rename this.** Place all non-UI building logic and utilities here. 
+`./utils/` - **I'll probably rename this.** Place all non-UI building logic and utilities here.
 
 ## Write tests for non-ui building logic as much as you can
 
 ### Unit Testing
-At least everything in the utils folder should be unit tested. 
+At least everything in the utils folder should be unit tested.
 
 ## Creating new menu items
 
@@ -30,18 +35,18 @@ import {MenuSwitch, MenuPencil, MenuSimple} from '<srcDir/js>/components/menuIte
 ### `MenuSwitch`
 The menu switch requires 5 props and it will pass through any other props as usual. It can also contain children.
 
-`@prop menuTitle` - the text to show in the menu    
-`@prop desc` - the description of what the menu item does (used in a `title` attribute)    
-`@prop turnOn` - function to run when switch is turned on    
-`@prop turnOff` - function to run when switch is turned off    
+`@prop menuTitle` - the text to show in the menu
+`@prop desc` - the description of what the menu item does (used in a `title` attribute)
+`@prop turnOn` - function to run when switch is turned on
+`@prop turnOff` - function to run when switch is turned off
 `@prop id` - html element ID pass through
 
 ### `MenuPencil`
 This should always be a child of the MenuSwitch. It's handles loading a modal and saving data from the modal. The props for MenuPencil are basically a pass-through to the `<Modal />` component.
 
-`@prop title` - Text to show in the headline of the Modal    
-`@prop content` - Text to show in the description area of the Modal    
-`@prop placeholder` - Sample text inside the TextArea of the Modal    
+`@prop title` - Text to show in the headline of the Modal
+`@prop content` - Text to show in the description area of the Modal
+`@prop placeholder` - Sample text inside the TextArea of the Modal
 `@prop onConfirm` - function to run when user hits confirm
 
 
