@@ -5,9 +5,15 @@ import { emojiNames } from "@/utils/emotes/emoji";
 import Portal from "preact-portal/src/preact-portal";
 import dtproxy from "@/utils/DTProxy.js";
 
+// the W and H of the emoji spritesheet
+const EMOJI_SS_W = 1931;
+const EMOJI_SS_H = 1867;
+
+// the W and H of the twitch spritesheet
 const TWITCH_SS_W = 837;
 const TWITCH_SS_H = 819;
 
+// the W and H of the bttv spritesheet
 const BTTV_SS_W = 326;
 const BTTV_SS_H = 316;
 
@@ -59,11 +65,22 @@ class Picker extends Component {
   }
 
   emojiList() {
+    let size = 35;
+    
+    // 64px is the original size of each icon in the spritesheet but we want to 
+    // reduce them to SIZE without altering the spritesheet
+    let perc = size/64; 
+
     let list = Object.keys(emojiNames).map(id => {
       let data = emojiNames[id];
-      let x = data.x * 0.546875;
-      let y = data.y * 0.546875;
-      let css = { backgroundPosition: `-${x}px -${y}px` };
+      let x = ((EMOJI_SS_W * perc) * 100) / size;
+      let y = ((EMOJI_SS_H * perc) * 100) / size;
+      let css = {
+        backgroundPosition: `-${data.x * perc}px -${data.y * perc}px`,
+        width: `${size}px`,
+        height: `${size}px`,
+        backgroundSize: `${x}% ${y}%`
+      };
       return (
         <span
           key={`emoji-${id}`}

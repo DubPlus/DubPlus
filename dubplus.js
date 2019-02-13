@@ -11513,8 +11513,12 @@ var DubPlus = (function () {
     return PortalProxy;
   }(Component);
 
+  var EMOJI_SS_W = 1931;
+  var EMOJI_SS_H = 1867; // the W and H of the twitch spritesheet
+
   var TWITCH_SS_W = 837;
-  var TWITCH_SS_H = 819;
+  var TWITCH_SS_H = 819; // the W and H of the bttv spritesheet
+
   var BTTV_SS_W = 326;
   var BTTV_SS_H = 316;
 
@@ -11593,12 +11597,19 @@ var DubPlus = (function () {
       value: function emojiList() {
         var _this2 = this;
 
+        var size = 35; // 64px is the original size of each icon in the spritesheet but we want to 
+        // reduce them to SIZE without altering the spritesheet
+
+        var perc = size / 64;
         var list = Object.keys(emojiNames).map(function (id) {
           var data = emojiNames[id];
-          var x = data.x * 0.546875;
-          var y = data.y * 0.546875;
+          var x = EMOJI_SS_W * perc * 100 / size;
+          var y = EMOJI_SS_H * perc * 100 / size;
           var css = {
-            backgroundPosition: "-".concat(x, "px -").concat(y, "px")
+            backgroundPosition: "-".concat(data.x * perc, "px -").concat(data.y * perc, "px"),
+            width: "".concat(size, "px"),
+            height: "".concat(size, "px"),
+            backgroundSize: "".concat(x, "% ").concat(y, "%")
           };
           return h("span", {
             key: "emoji-".concat(id),
@@ -12752,6 +12763,11 @@ var DubPlus = (function () {
           classic.unshift({
             header: "Emoji"
           });
+        } // if emotes is not on then we return just classic emoji
+
+
+        if (!userSettings.stored.options["dubplus-emotes"]) {
+          return classic;
         }
 
         var bttvMatches = bttv.find(symbol);
@@ -13474,17 +13490,13 @@ var DubPlus = (function () {
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Emotes)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        // spin logo to indicate emotes are still loading
-        document.body.classList.add('dubplus-icon-spinning'); // these load super fast
-
-        if (!bttv$1.loaded) {
-          bttv$1.load();
-        }
+        document.body.classList.add('dubplus-emotes-on');
 
         _this.begin();
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function (e) {
+        document.body.classList.remove('dubplus-emotes-on');
         proxy.offChatMessage(beginReplace);
       });
 
@@ -13494,8 +13506,7 @@ var DubPlus = (function () {
     _createClass(Emotes, [{
       key: "begin",
       value: function begin() {
-        document.body.classList.remove('dubplus-icon-spinning'); // when first turning it on, it replaces ALL of the emotes in chat history
-
+        // when first turning it on, it replaces ALL of the emotes in chat history
         beginReplace(proxy.chatList()); // then it sets up replacing emotes on new chat messages
 
         proxy.onChatMessage(beginReplace);
@@ -15571,47 +15582,12 @@ var DubPlus = (function () {
     });
   };
 
-  var isFirstLoad = true;
-
-  function toggle() {
-    if (isFirstLoad) {
-      // disabling the video from stored settings on page load causes the video
-      // to not play until you un-hide it.  So we delay turning it off for a bit
-      // to give the video time to load and start playing
-      setTimeout(function () {
-        proxy.hideVideoBtn().click();
-      }, 5000);
-      isFirstLoad = false;
-      return;
-    }
-
-    proxy.hideVideoBtn().click();
-  }
-  /**
-   * Disable Video 
-   * This is the equivalent of clicking on the little eye icon to toggle the video
-   * Sometimes I just want to hide the video the native dubtrack way but not remove 
-   * the entire video box
-   */
-
-
-  var DisableVideo = function DisableVideo() {
-    return h(MenuSwitch, {
-      id: "dubplus-disable-video",
-      section: "User Interface",
-      menuTitle: "Disable Video",
-      desc: "Toggles disabling the video. Equivalent to clicking on the eye icon under the video",
-      turnOn: toggle,
-      turnOff: toggle
-    });
-  };
-
   var UISection = function UISection() {
     return h(MenuSection, {
       id: "dubplus-ui",
       title: "UI",
       settingsKey: "user-interface"
-    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(HideGifSelfie, null), h(ShowTS, null), h(DisableVideo, null));
+    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(HideGifSelfie, null), h(ShowTS, null));
   };
 
   function handleKeyup(e) {
@@ -15701,7 +15677,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550034276741);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550037281261);
     document.head.appendChild(link);
   }
   /**
