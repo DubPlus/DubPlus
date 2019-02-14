@@ -7,16 +7,23 @@ import css from "@/utils/css.js";
  * Custom CSS
  */
 export default class CustomCSS extends Component {
+  // if you edit the stored value but the switch is off we check this value
+  // to know if we should load the css or not
   isOn = false;
+
   state = {
     showModal: false
   };
 
-  turnOn = () => {
+  turnOn = initialLoad => {
     this.isOn = true;
     if (settings.stored.custom.css) {
       css.loadExternal(settings.stored.custom.css, "dubplus-custom-css");
-    } else {
+      return;
+    }
+
+    // so we dont have a ton of modals popup when you first load the extension
+    if (!initialLoad) {
       this.setState({ showModal: true });
     }
   };
@@ -27,18 +34,28 @@ export default class CustomCSS extends Component {
     if (link) {
       link.remove();
     }
+    this.closeModal();
   };
 
   save = val => {
-    // TODO: save to global state
-    settings.save("custom", "css", val);
-    if (this.isOn && val !== "") {
+    settings.save("custom", "css", val || "");
+
+    if (!val) {
+      this.turnOff();
+      return;
+    }
+
+    if (this.isOn) {
       css.loadExternal(settings.stored.custom.css, "dubplus-custom-css");
     }
+    this.closeModal();
+  };
+
+  closeModal = () => {
     this.setState({ showModal: false });
   };
 
-  render(props, state) {
+  render() {
     return (
       <MenuSwitch
         id="dubplus-custom-css"
@@ -49,7 +66,7 @@ export default class CustomCSS extends Component {
         turnOff={this.turnOff}
       >
         <MenuPencil
-          showModal={state.showModal}
+          showModal={this.state.showModal}
           title="Custom CSS"
           section="Customize"
           content="Enter a url location for your custom css"
@@ -57,6 +74,7 @@ export default class CustomCSS extends Component {
           placeholder="https://example.com/example.css"
           maxlength="500"
           onConfirm={this.save}
+          onCancel={this.closeModal}
         />
       </MenuSwitch>
     );

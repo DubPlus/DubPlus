@@ -90,9 +90,8 @@ export class MenuPencil extends Component {
   };
 
   closeModal = () => {
-    console.log("closing dub+ modal");
     this.setState({ open: false });
-    if (typeof this.props.onCancel === 'function') {
+    if (typeof this.props.onCancel === "function") {
       this.props.onCancel();
     }
   };
@@ -121,12 +120,12 @@ export class MenuSwitch extends Component {
 
   componentDidMount() {
     if (this.state.on) {
-      this.props.turnOn();
+      this.props.turnOn(true); // "true" so you can tell if component was activated on first load or not
     }
   }
 
   switchOn = () => {
-    this.props.turnOn();
+    this.props.turnOn(false);
     settings.save("options", this.props.id, true);
     this.setState({ on: true });
     track.menuClick(this.props.section + " section", this.props.id + " on");
@@ -161,7 +160,7 @@ export class MenuSwitch extends Component {
 
     return (
       <li id={props.id} title={props.desc} className={_cn.join(" ")}>
-        {/* 
+        {/*
           used for the optional MenuPencil at the moment
           but leaving it open ended for now. Can be any component
          */}
