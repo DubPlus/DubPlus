@@ -8,7 +8,7 @@
  *
  * [1] https://github.com/FranciscoG/emoji-spritesheet/blob/master/lib/downloadTwitch.js
  */
-import twitchSpriteSheet from "./twitch-spritesheet";
+import twitchSpriteSheet from "./twitch-spritesheet.js";
 
 const twitch = {
   get(name) {
