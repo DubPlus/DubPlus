@@ -128,10 +128,12 @@ export function processTextNode(textNode, emoteMatches) {
 }
 
 export default function beginReplace(nodeStart) {
-  if (!nodeStart.nodeType) {
+  // if starting node is missing or not a real node we look for the latest message
+  if (!nodeStart || !nodeStart.nodeType) {
     nodeStart = getLatestChatNode();
   }
 
+  // if we still have nothing then quit
   if (!nodeStart) {
     return;
   }

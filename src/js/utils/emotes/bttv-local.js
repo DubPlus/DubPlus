@@ -1,8 +1,9 @@
-import bttvSpriteSheet from './bttv-spritesheet';
+import bttvSpriteSheet from "./bttv-spritesheet";
 
 const bttv = {
   get(name) {
-    let emoteData = bttvSpriteSheet[name];
+    let emoteData =
+      bttvSpriteSheet[name] || bttvSpriteSheet[name.toLowerCase()];
     if (emoteData) {
       return this.template(emoteData.id);
     }

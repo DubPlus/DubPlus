@@ -1,53 +1,51 @@
-import twitch from "@/utils/emotes/twitch-local.js";
-import bttv from "@/utils/emotes/bttv.js";
-import ldb from "@/utils/indexedDB.js";
-import { shouldUpdateAPIs } from "@/utils/emotes/updateCheck";
+import twitch from "@/utils/emotes/twitch-local";
+import bttv from "@/utils/emotes/bttv-local";
+import { emoji } from "@/utils/emotes/emoji";
 
-describe("shouldUpdateAPIs test", () => {
-  test("shouldUpdateAPIs returns true when item doesnt exist in indexedDB", async () => {
-    var update = await shouldUpdateAPIs("fake");
-    expect(update).toEqual(true);
+describe("twitch emote tests", () => {
+  test("Should get an emote from provided string", () => {
+    let found = twitch.get("moon2SHRUG");
+    expect(typeof found).toEqual("string");
+    expect(found).toEqual(
+      expect.stringContaining("static-cdn.jtvnw.net/emoticons")
+    );
   });
 
-  test("shouldUpdateAPIs returns true when indexedDB item has error property", async () => {
-    ldb.set("fake_api", JSON.stringify({ error: true }));
-    var update = await shouldUpdateAPIs("fake");
-    expect(update).toEqual(true);
+  test("Should get null", () => {
+    let found = twitch.get("notanemote");
+    expect(found).toBeNull();
   });
 
-  test("shouldUpdateAPIs returns true when indexedDB item cant be JSON parsed", async () => {
-    ldb.set("fake_api", "x");
-    var update = await shouldUpdateAPIs("fake");
-    expect(update).toEqual(true);
-  });
-
-  test("shouldUpdateAPIs returns true when timestamp doesnt exist", async () => {
-    ldb.set("fake_api", JSON.stringify({ emote: "face" }));
-    var update = await shouldUpdateAPIs("fake");
-    expect(update).toEqual(true);
-  });
-
-  test("shouldUpdateAPIs returns false when item exists and does not need to be refreshed", async () => {
-    ldb.set("fake_api", JSON.stringify({ emote: "face" }));
-    localStorage.setItem("fake_api_timestamp", Date.now().toString());
-    var update = await shouldUpdateAPIs("fake");
-    expect(update).toEqual(false);
+  test("Should return an array of matches", () => {
+    let matches = twitch.find("kap");
+    expect(matches.length > 0).toBe(true);
+    expect(matches[0].type).toEqual("twitch");
   });
 });
 
-describe("bttv class tests", () => {
-  test("bttv loads from api", async () => {
-    await bttv.load();
-    expect(bttv.loaded).toBe(true);
-    expect(Object.keys(bttv.emotes).length).toBeGreaterThan(50);
+describe("bttv emote tests", () => {
+  test("Should get an emote from provided string", () => {
+    let found = bttv.get("(puke)");
+    expect(typeof found).toEqual("string");
+    expect(found).toEqual(expect.stringContaining("cdn.betterttv.net/emote"));
+  });
+
+  test("Should get null", () => {
+    let found = bttv.get("notanemote");
+    expect(found).toBeNull();
+  });
+
+  test("Should return an array of matches", () => {
+    let matches = bttv.find("btt");
+    expect(matches.length > 0).toBe(true);
+    expect(matches[0].type).toEqual("bttv");
   });
 });
 
-afterAll(done => {
-  localStorage.clear();
-  let rq = indexedDB.deleteDatabase("d2");
-  rq.onerror = function(event) {
-    console.log("Error deleting database.");
-  };
-  rq.onsuccess = done;
+describe("emoji tests", () => {
+  test("Should return an array of matches", () => {
+    let matches = emoji.find("kis");
+    expect(matches.length > 0).toBe(true);
+    expect(matches[0].type).toEqual("emojify");
+  });
 });

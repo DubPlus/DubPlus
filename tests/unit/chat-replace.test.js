@@ -32,7 +32,7 @@ test("getLatestChatNode returns undefined when chat is empty", () => {
   expect(chatNode).toBeNull();
 });
 
-test("emoteEmbed replaces emote with an img tag", () => {
+test("emote Embed replaces emote with an img tag", () => {
   document.body.innerHTML = `
     <ul class="chat-main">
       <li>
@@ -47,17 +47,8 @@ test("emoteEmbed replaces emote with an img tag", () => {
   // <img src="//static-cdn.jtvnw.net/emoticons/v1/25/3.0" title="kappa" alt="kappa">
 
   beginReplace();
-  let imgs = document.querySelectorAll(".emoji");
+  let imgs = document.querySelectorAll(".twitch-emote");
   expect(imgs.length).toEqual(1);
   expect(imgs[0].src).toEqual("//static-cdn.jtvnw.net/emoticons/v1/25/3.0");
   expect(document.querySelector(".text p").childNodes.length).toEqual(3);
-});
-
-afterAll(done => {
-  localStorage.clear();
-  let rq = indexedDB.deleteDatabase("d2");
-  rq.onerror = function(event) {
-    console.log("Error deleting database.");
-  };
-  rq.onsuccess = done;
 });
