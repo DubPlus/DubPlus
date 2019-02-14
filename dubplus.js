@@ -1548,364 +1548,301 @@ var DubPlus = (function () {
       "height": 28,
       "id": "100189"
     },
-    "MercyWing1": {
+    "mercywing1": {
       "x": 677,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "1003187"
     },
-    "MercyWing2": {
+    "mercywing2": {
       "x": 196,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "1003189"
     },
-    "PinkMercy": {
+    "pinkmercy": {
       "x": 140,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "1003190"
     },
-    "OpieOP": {
+    "opieop": {
       "x": 532,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "100590"
     },
-    "sodaAYAYA": {
-      "x": 644,
-      "y": 736,
-      "width": 28,
-      "height": 28,
-      "id": "1006811"
-    },
-    "sodaDS": {
-      "x": 28,
-      "y": 92,
-      "width": 28,
-      "height": 28,
-      "id": "100980"
-    },
-    "sodaFF": {
-      "x": 56,
-      "y": 92,
-      "width": 28,
-      "height": 28,
-      "id": "100982"
-    },
-    "DoritosChip": {
+    "doritoschip": {
       "x": 84,
       "y": 92,
       "width": 28,
       "height": 28,
       "id": "102242"
     },
-    "PJSugar": {
+    "pjsugar": {
       "x": 112,
       "y": 92,
       "width": 28,
       "height": 28,
       "id": "102556"
     },
-    "reckKers": {
+    "reckkers": {
       "x": 145,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "103416"
     },
-    "sodaFINN": {
-      "x": 145,
-      "y": 28,
-      "width": 28,
-      "height": 28,
-      "id": "1034841"
-    },
-    "sodaWut": {
-      "x": 145,
-      "y": 56,
-      "width": 28,
-      "height": 28,
-      "id": "1034858"
-    },
-    "lirikANGRY": {
+    "lirikangry": {
       "x": 145,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "1037101"
     },
-    "reckQ": {
+    "reckq": {
       "x": 0,
       "y": 120,
       "width": 28,
       "height": 28,
       "id": "103837"
     },
-    "sodaPYAH": {
-      "x": 28,
-      "y": 120,
-      "width": 28,
-      "height": 28,
-      "id": "1049962"
-    },
-    "sodaL": {
-      "x": 56,
-      "y": 120,
-      "width": 28,
-      "height": 28,
-      "id": "1054768"
-    },
-    "sodaG": {
-      "x": 84,
-      "y": 120,
-      "width": 28,
-      "height": 28,
-      "id": "105757"
-    },
-    "tatHYPERS": {
+    "tathypers": {
       "x": 112,
       "y": 120,
       "width": 28,
       "height": 28,
       "id": "1058125"
     },
-    "angryyapPotatos": {
+    "angryyappotatos": {
       "x": 140,
       "y": 120,
       "width": 28,
       "height": 28,
       "id": "1059983"
     },
-    "poongJing": {
+    "poongjing": {
       "x": 173,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "1060927"
     },
-    "poongR3": {
+    "poongr3": {
       "x": 173,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "1060942"
     },
-    "poongR2": {
+    "poongr2": {
       "x": 173,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "1060947"
     },
-    "poongR1": {
+    "poongr1": {
       "x": 173,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "1060950"
     },
-    "poongVes2": {
+    "poongves2": {
       "x": 173,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "1060951"
     },
-    "poongVes1": {
+    "poongves1": {
       "x": 0,
       "y": 148,
       "width": 28,
       "height": 28,
       "id": "1060953"
     },
-    "tyler1Hey": {
+    "tyler1hey": {
       "x": 28,
       "y": 148,
       "width": 28,
       "height": 28,
       "id": "106169"
     },
-    "tyler1SSJ": {
+    "tyler1ssj": {
       "x": 56,
       "y": 148,
       "width": 28,
       "height": 28,
       "id": "106170"
     },
-    "tyler1Lift": {
+    "tyler1lift": {
       "x": 84,
       "y": 148,
       "width": 28,
       "height": 28,
       "id": "106173"
     },
-    "tyler1BB": {
+    "tyler1bb": {
       "x": 112,
       "y": 148,
       "width": 28,
       "height": 28,
       "id": "106175"
     },
-    "tyler1AYY": {
+    "tyler1ayy": {
       "x": 140,
       "y": 148,
       "width": 28,
       "height": 28,
       "id": "106204"
     },
-    "tyler1XD": {
+    "tyler1xd": {
       "x": 168,
       "y": 148,
       "width": 28,
       "height": 28,
       "id": "106205"
     },
-    "tyler1Skip": {
+    "tyler1skip": {
       "x": 201,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "106209"
     },
-    "tyler1Geo": {
+    "tyler1geo": {
       "x": 201,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "106233"
     },
-    "reckHey": {
+    "reckhey": {
       "x": 201,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "106252"
     },
-    "tyler1INT": {
+    "tyler1int": {
       "x": 201,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "106287"
     },
-    "VoteYea": {
+    "voteyea": {
       "x": 201,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "106293"
     },
-    "VoteNay": {
+    "votenay": {
       "x": 201,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "106294"
     },
-    "BisexualPride": {
+    "bisexualpride": {
       "x": 0,
       "y": 176,
       "width": 28,
       "height": 28,
       "id": "1064987"
     },
-    "LesbianPride": {
+    "lesbianpride": {
       "x": 28,
       "y": 176,
       "width": 28,
       "height": 28,
       "id": "1064988"
     },
-    "GayPride": {
+    "gaypride": {
       "x": 56,
       "y": 176,
       "width": 28,
       "height": 28,
       "id": "1064991"
     },
-    "TransgenderPride": {
+    "transgenderpride": {
       "x": 84,
       "y": 176,
       "width": 28,
       "height": 28,
       "id": "1064995"
     },
-    "tatH": {
+    "tath": {
       "x": 112,
       "y": 176,
       "width": 28,
       "height": 28,
       "id": "106925"
     },
-    "RuleFive": {
+    "rulefive": {
       "x": 140,
       "y": 176,
       "width": 28,
       "height": 28,
       "id": "107030"
     },
-    "sodaMicMuted": {
-      "x": 168,
-      "y": 176,
-      "width": 28,
-      "height": 28,
-      "id": "1073"
-    },
-    "tyler1Ban": {
+    "tyler1ban": {
       "x": 196,
       "y": 176,
       "width": 28,
       "height": 28,
       "id": "107708"
     },
-    "tyler1Chair": {
+    "tyler1chair": {
       "x": 229,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "107716"
     },
-    "tyler1Feels": {
+    "tyler1feels": {
       "x": 229,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "107719"
     },
-    "tyler1Toxic": {
+    "tyler1toxic": {
       "x": 229,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "107722"
     },
-    "tyler1IQ": {
+    "tyler1iq": {
       "x": 229,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "107731"
     },
-    "tyler1Sleeper": {
+    "tyler1sleeper": {
       "x": 229,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "108650"
     },
-    "tyler1Free": {
+    "tyler1free": {
       "x": 229,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "108704"
     },
-    "moon2MLADY": {
+    "moon2mlady": {
       "x": 229,
       "y": 168,
       "width": 28,
@@ -1919,266 +1856,259 @@ var DubPlus = (function () {
       "height": 18,
       "id": "11"
     },
-    "moon2O": {
+    "moon2o": {
       "x": 28,
       "y": 204,
       "width": 28,
       "height": 28,
       "id": "1100135"
     },
-    "angryyapDeong": {
+    "angryyapdeong": {
       "x": 56,
       "y": 204,
       "width": 28,
       "height": 28,
       "id": "1102516"
     },
-    "angryyapSil": {
+    "angryyapsil": {
       "x": 84,
       "y": 204,
       "width": 28,
       "height": 28,
       "id": "1102517"
     },
-    "moon2WINKY": {
+    "moon2winky": {
       "x": 112,
       "y": 204,
       "width": 28,
       "height": 28,
       "id": "110301"
     },
-    "tyler1Bruh": {
+    "tyler1bruh": {
       "x": 140,
       "y": 204,
       "width": 28,
       "height": 28,
       "id": "110520"
     },
-    "DxCat": {
+    "dxcat": {
       "x": 168,
       "y": 204,
       "width": 28,
       "height": 28,
       "id": "110734"
     },
-    "DrinkPurple": {
+    "drinkpurple": {
       "x": 196,
       "y": 204,
       "width": 28,
       "height": 28,
       "id": "110785"
     },
-    "TinyFace": {
+    "tinyface": {
       "x": 224,
       "y": 204,
       "width": 28,
       "height": 28,
       "id": "111119"
     },
-    "PicoMause": {
+    "picomause": {
       "x": 257,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "111300"
     },
-    "TheTarFu": {
+    "thetarfu": {
       "x": 257,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "111351"
     },
-    "tyler1NLT": {
+    "tyler1nlt": {
       "x": 257,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "111552"
     },
-    "tyler1GOOD": {
+    "tyler1good": {
       "x": 257,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "111553"
     },
-    "DatSheffy": {
+    "datsheffy": {
       "x": 257,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "111700"
     },
-    "UnSane": {
+    "unsane": {
       "x": 257,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "111792"
     },
-    "copyThis": {
+    "copythis": {
       "x": 257,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "112288"
     },
-    "pastaThat": {
+    "pastathat": {
       "x": 257,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "112289"
     },
-    "imGlitch": {
+    "imglitch": {
       "x": 0,
       "y": 232,
       "width": 28,
       "height": 28,
       "id": "112290"
     },
-    "GivePLZ": {
+    "giveplz": {
       "x": 28,
       "y": 232,
       "width": 28,
       "height": 28,
       "id": "112291"
     },
-    "TakeNRG": {
+    "takenrg": {
       "x": 56,
       "y": 232,
       "width": 28,
       "height": 28,
       "id": "112292"
     },
-    "tyler1O": {
+    "tyler1o": {
       "x": 84,
       "y": 232,
       "width": 28,
       "height": 28,
       "id": "112379"
     },
-    "AsexualPride": {
+    "asexualpride": {
       "x": 112,
       "y": 232,
       "width": 28,
       "height": 28,
       "id": "1130348"
     },
-    "PansexualPride": {
+    "pansexualpride": {
       "x": 140,
       "y": 232,
       "width": 28,
       "height": 28,
       "id": "1130349"
     },
-    "moon2GOOD": {
+    "moon2good": {
       "x": 168,
       "y": 232,
       "width": 28,
       "height": 28,
       "id": "114075"
     },
-    "qtpW": {
+    "qtpw": {
       "x": 196,
       "y": 232,
       "width": 28,
       "height": 28,
       "id": "114091"
     },
-    "qtpNLT": {
+    "qtpnlt": {
       "x": 224,
       "y": 232,
       "width": 28,
       "height": 28,
       "id": "114093"
     },
-    "BlargNaut": {
+    "blargnaut": {
       "x": 252,
       "y": 232,
       "width": 28,
       "height": 28,
       "id": "114738"
     },
-    "DogFace": {
+    "dogface": {
       "x": 285,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "114835"
     },
-    "Jebaited": {
+    "jebaited": {
       "x": 285,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "114836"
     },
-    "TooSpicy": {
+    "toospicy": {
       "x": 285,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "114846"
     },
-    "WTRuck": {
+    "wtruck": {
       "x": 285,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "114847"
     },
-    "UncleNox": {
+    "unclenox": {
       "x": 285,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "114856"
     },
-    "RaccAttack": {
+    "raccattack": {
       "x": 285,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "114870"
     },
-    "StrawBeary": {
+    "strawbeary": {
       "x": 285,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "114876"
     },
-    "PrimeMe": {
+    "primeme": {
       "x": 285,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "115075"
     },
-    "BrainSlug": {
+    "brainslug": {
       "x": 285,
       "y": 224,
       "width": 28,
       "height": 28,
       "id": "115233"
     },
-    "BatChest": {
+    "batchest": {
       "x": 0,
       "y": 260,
       "width": 28,
       "height": 28,
       "id": "115234"
     },
-    "sodaRAGE": {
-      "x": 28,
-      "y": 260,
-      "width": 28,
-      "height": 28,
-      "id": "1154900"
-    },
-    "forsenH": {
+    "forsenh": {
       "x": 56,
       "y": 260,
       "width": 28,
@@ -2213,1680 +2143,1533 @@ var DubPlus = (function () {
       "height": 28,
       "id": "116055"
     },
-    "forsenLUL": {
+    "forsenlul": {
       "x": 196,
       "y": 260,
       "width": 28,
       "height": 28,
       "id": "116245"
     },
-    "forsenDED": {
+    "forsended": {
       "x": 224,
       "y": 260,
       "width": 28,
       "height": 28,
       "id": "116256"
     },
-    "forsenFeels": {
+    "forsenfeels": {
       "x": 252,
       "y": 260,
       "width": 28,
       "height": 28,
       "id": "116273"
     },
-    "moon2GUMS": {
+    "moon2gums": {
       "x": 280,
       "y": 260,
       "width": 28,
       "height": 28,
       "id": "116435"
     },
-    "CurseLit": {
+    "curselit": {
       "x": 313,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "116625"
     },
-    "qtpLUL": {
+    "qtplul": {
       "x": 313,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "116948"
     },
-    "qtpCOOL": {
+    "qtpcool": {
       "x": 313,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "116984"
     },
-    "qtpTHINKING": {
+    "qtpthinking": {
       "x": 313,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "117009"
     },
-    "forsenK": {
+    "forsenk": {
       "x": 313,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "1171397"
     },
-    "qtpKAWAII": {
+    "qtpkawaii": {
       "x": 313,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "117329"
     },
-    "qtpEDGE": {
+    "qtpedge": {
       "x": 313,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "117343"
     },
-    "qtpSWAG": {
+    "qtpswag": {
       "x": 313,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "117351"
     },
-    "qtpBOOSTED": {
+    "qtpboosted": {
       "x": 313,
       "y": 224,
       "width": 28,
       "height": 28,
       "id": "117471"
     },
-    "Poooound": {
+    "poooound": {
       "x": 313,
       "y": 252,
       "width": 28,
       "height": 28,
       "id": "117484"
     },
-    "qtpHAHAA": {
+    "qtphahaa": {
       "x": 0,
       "y": 288,
       "width": 28,
       "height": 28,
       "id": "117608"
     },
-    "FreakinStinkin": {
+    "freakinstinkin": {
       "x": 28,
       "y": 288,
       "width": 28,
       "height": 28,
       "id": "117701"
     },
-    "forsenO": {
+    "forseno": {
       "x": 56,
       "y": 288,
       "width": 28,
       "height": 28,
       "id": "118074"
     },
-    "qtpNO": {
+    "qtpno": {
       "x": 84,
       "y": 288,
       "width": 28,
       "height": 28,
       "id": "118250"
     },
-    "qtpSMORC": {
+    "qtpsmorc": {
       "x": 112,
       "y": 288,
       "width": 28,
       "height": 28,
       "id": "118456"
     },
-    "qtpBOT": {
+    "qtpbot": {
       "x": 140,
       "y": 288,
       "width": 28,
       "height": 28,
       "id": "118492"
     },
-    "SuperVinlin": {
+    "supervinlin": {
       "x": 168,
       "y": 288,
       "width": 28,
       "height": 28,
       "id": "118772"
     },
-    "moon2MLEM": {
+    "moon2mlem": {
       "x": 196,
       "y": 288,
       "width": 28,
       "height": 28,
       "id": "119382"
     },
-    "\\:-?(p|P)": {
+    "\\:-?(p|p)": {
       "x": 339,
       "y": 764,
       "width": 24,
       "height": 18,
       "id": "12"
     },
-    "TriHard": {
+    "trihard": {
       "x": 252,
       "y": 288,
       "width": 28,
       "height": 28,
       "id": "120232"
     },
-    "angryyapH": {
+    "angryyaph": {
       "x": 280,
       "y": 288,
       "width": 28,
       "height": 28,
       "id": "121569"
     },
-    "moon2KISSES": {
+    "moon2kisses": {
       "x": 308,
       "y": 288,
       "width": 28,
       "height": 28,
       "id": "121734"
     },
-    "tyler1HA": {
+    "tyler1ha": {
       "x": 341,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "121815"
     },
-    "tyler1KKona": {
+    "tyler1kkona": {
       "x": 341,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "121816"
     },
-    "tyler1LUL": {
+    "tyler1lul": {
       "x": 341,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "121817"
     },
-    "moon2BANNED": {
+    "moon2banned": {
       "x": 341,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "121936"
     },
-    "TwitchRPG": {
+    "twitchrpg": {
       "x": 341,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "1220086"
     },
-    "IntersexPride": {
+    "intersexpride": {
       "x": 341,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "1221184"
     },
-    "forsenDiglett": {
+    "forsendiglett": {
       "x": 341,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "122255"
     },
-    "forsenPuke3": {
+    "forsenpuke3": {
       "x": 341,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "122261"
     },
-    "CoolStoryBob": {
+    "coolstorybob": {
       "x": 341,
       "y": 224,
       "width": 28,
       "height": 28,
       "id": "123171"
     },
-    "moon2SHRUG": {
+    "moon2shrug": {
       "x": 341,
       "y": 252,
       "width": 28,
       "height": 28,
       "id": "123403"
     },
-    "reckHands": {
+    "reckhands": {
       "x": 341,
       "y": 280,
       "width": 28,
       "height": 28,
       "id": "1236381"
     },
-    "reckGasp": {
+    "reckgasp": {
       "x": 0,
       "y": 316,
       "width": 28,
       "height": 28,
       "id": "1239179"
     },
-    "reckRob": {
+    "reckrob": {
       "x": 28,
       "y": 316,
       "width": 28,
       "height": 28,
       "id": "1239201"
     },
-    "tyler1P": {
+    "tyler1p": {
       "x": 56,
       "y": 316,
       "width": 28,
       "height": 28,
       "id": "124643"
     },
-    "tatBlanket": {
+    "tatblanket": {
       "x": 84,
       "y": 316,
       "width": 28,
       "height": 28,
       "id": "1248055"
     },
-    "poongYep": {
+    "poongyep": {
       "x": 112,
       "y": 316,
       "width": 28,
       "height": 28,
       "id": "125017"
     },
-    "tyler1Champ": {
+    "tyler1champ": {
       "x": 140,
       "y": 316,
       "width": 28,
       "height": 28,
       "id": "125258"
     },
-    "poongMak": {
+    "poongmak": {
       "x": 168,
       "y": 316,
       "width": 28,
       "height": 28,
       "id": "125653"
     },
-    "poongCap": {
+    "poongcap": {
       "x": 196,
       "y": 316,
       "width": 28,
       "height": 28,
       "id": "125654"
     },
-    "qtpBLESSED": {
+    "qtpblessed": {
       "x": 224,
       "y": 316,
       "width": 28,
       "height": 28,
       "id": "12576"
     },
-    "tyler1Q": {
+    "tyler1q": {
       "x": 252,
       "y": 316,
       "width": 28,
       "height": 28,
       "id": "125850"
     },
-    "reckO": {
+    "recko": {
       "x": 280,
       "y": 316,
       "width": 28,
       "height": 28,
       "id": "1260943"
     },
-    "poongDeath": {
+    "poongdeath": {
       "x": 308,
       "y": 316,
       "width": 28,
       "height": 28,
       "id": "126514"
     },
-    "poongSpicy": {
+    "poongspicy": {
       "x": 336,
       "y": 316,
       "width": 28,
       "height": 28,
       "id": "126515"
     },
-    "poongBbuing": {
+    "poongbbuing": {
       "x": 369,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "126518"
     },
-    "moon2SP": {
+    "moon2sp": {
       "x": 369,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "1267155"
     },
-    "moon2SMAG": {
+    "moon2smag": {
       "x": 369,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "1267163"
     },
-    "tyler1C": {
+    "tyler1c": {
       "x": 369,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "126817"
     },
-    "tyler1Bad": {
+    "tyler1bad": {
       "x": 369,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "126818"
     },
-    "qtpHEHE": {
+    "qtphehe": {
       "x": 369,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "126889"
     },
-    "forsenDab": {
+    "forsendab": {
       "x": 369,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "1271995"
     },
-    "tyler1G": {
+    "tyler1g": {
       "x": 369,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "127464"
     },
-    "moon2YE": {
+    "moon2ye": {
       "x": 369,
       "y": 224,
       "width": 28,
       "height": 28,
       "id": "128246"
     },
-    "moon2GASM": {
+    "moon2gasm": {
       "x": 369,
       "y": 252,
       "width": 28,
       "height": 28,
       "id": "128391"
     },
-    "tyler1Pride": {
+    "tyler1pride": {
       "x": 369,
       "y": 280,
       "width": 28,
       "height": 28,
       "id": "128660"
     },
-    "MaxLOL": {
+    "maxlol": {
       "x": 369,
       "y": 308,
       "width": 28,
       "height": 28,
       "id": "1290325"
     },
-    "tatWC": {
+    "tatwc": {
       "x": 0,
       "y": 344,
       "width": 28,
       "height": 28,
       "id": "1294993"
     },
-    "NonBinaryPride": {
+    "nonbinarypride": {
       "x": 28,
       "y": 344,
       "width": 28,
       "height": 28,
       "id": "1297279"
     },
-    "GenderFluidPride": {
+    "genderfluidpride": {
       "x": 56,
       "y": 344,
       "width": 28,
       "height": 28,
       "id": "1297281"
     },
-    "\\;-?(p|P)": {
+    "\\;-?(p|p)": {
       "x": 315,
       "y": 764,
       "width": 24,
       "height": 18,
       "id": "13"
     },
-    "tatTHIRST": {
+    "tatthirst": {
       "x": 112,
       "y": 344,
       "width": 28,
       "height": 28,
       "id": "1308379"
     },
-    "tatTHIRSTY": {
+    "tatthirsty": {
       "x": 140,
       "y": 344,
       "width": 28,
       "height": 28,
       "id": "1312218"
     },
-    "moon2PH": {
+    "moon2ph": {
       "x": 168,
       "y": 344,
       "width": 28,
       "height": 28,
       "id": "1317272"
     },
-    "tatTomato": {
+    "tattomato": {
       "x": 196,
       "y": 344,
       "width": 28,
       "height": 28,
       "id": "1317421"
     },
-    "tyler1NA": {
+    "tyler1na": {
       "x": 224,
       "y": 344,
       "width": 28,
       "height": 28,
       "id": "132669"
     },
-    "angryyapLight": {
+    "angryyaplight": {
       "x": 252,
       "y": 344,
       "width": 28,
       "height": 28,
       "id": "1326860"
     },
-    "tyler1Beta": {
+    "tyler1beta": {
       "x": 280,
       "y": 344,
       "width": 28,
       "height": 28,
       "id": "132992"
     },
-    "tatRoad": {
+    "tatroad": {
       "x": 308,
       "y": 344,
       "width": 28,
       "height": 28,
       "id": "1330097"
     },
-    "ItsBoshyTime": {
+    "itsboshytime": {
       "x": 336,
       "y": 344,
       "width": 28,
       "height": 28,
       "id": "133468"
     },
-    "tyler1Bandit": {
+    "tyler1bandit": {
       "x": 364,
       "y": 344,
       "width": 28,
       "height": 28,
       "id": "133509"
     },
-    "KAPOW": {
+    "kapow": {
       "x": 397,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "133537"
     },
-    "YouDontSay": {
+    "youdontsay": {
       "x": 397,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "134254"
     },
-    "UWot": {
+    "uwot": {
       "x": 397,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "134255"
     },
-    "RlyTho": {
+    "rlytho": {
       "x": 397,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "134256"
     },
-    "tatDMG": {
+    "tatdmg": {
       "x": 397,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "1343473"
     },
-    "tyler1EU": {
+    "tyler1eu": {
       "x": 397,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "134421"
     },
-    "SoonerLater": {
+    "soonerlater": {
       "x": 397,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "134472"
     },
-    "PartyTime": {
+    "partytime": {
       "x": 397,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "135393"
     },
-    "sodaLUL": {
-      "x": 397,
-      "y": 224,
-      "width": 28,
-      "height": 28,
-      "id": "1360209"
-    },
-    "tatTUFF": {
+    "tattuff": {
       "x": 397,
       "y": 252,
       "width": 28,
       "height": 28,
       "id": "1360600"
     },
-    "forsenPuke5": {
+    "forsenpuke5": {
       "x": 397,
       "y": 280,
       "width": 28,
       "height": 28,
       "id": "1361610"
     },
-    "sumMolly": {
+    "summolly": {
       "x": 397,
       "y": 308,
       "width": 28,
       "height": 28,
       "id": "136983"
     },
-    "tyler1CS": {
+    "tyler1cs": {
       "x": 397,
       "y": 336,
       "width": 28,
       "height": 28,
       "id": "137629"
     },
-    "reckS": {
+    "recks": {
       "x": 0,
       "y": 372,
       "width": 28,
       "height": 28,
       "id": "1383"
     },
-    "NinjaGrumpy": {
+    "ninjagrumpy": {
       "x": 28,
       "y": 372,
       "width": 28,
       "height": 28,
       "id": "138325"
     },
-    "tyler1Stutter": {
+    "tyler1stutter": {
       "x": 56,
       "y": 372,
       "width": 28,
       "height": 28,
       "id": "139047"
     },
-    "moon2G": {
+    "moon2g": {
       "x": 84,
       "y": 372,
       "width": 28,
       "height": 28,
       "id": "1394894"
     },
-    "moon2PLSNO": {
-      "x": 112,
-      "y": 372,
-      "width": 28,
-      "height": 28,
-      "id": "139989"
-    },
-    "R-?\\)": {
+    "r-?\\)": {
       "x": 291,
       "y": 764,
       "width": 24,
       "height": 18,
       "id": "14"
     },
-    "moon2AY": {
+    "moon2ay": {
       "x": 168,
       "y": 372,
       "width": 28,
       "height": 28,
       "id": "1405347"
     },
-    "tyler1R1": {
+    "tyler1r1": {
       "x": 196,
       "y": 372,
       "width": 28,
       "height": 28,
       "id": "140809"
     },
-    "tyler1R2": {
+    "tyler1r2": {
       "x": 224,
       "y": 372,
       "width": 28,
       "height": 28,
       "id": "140810"
     },
-    "sumW": {
+    "sumw": {
       "x": 252,
       "y": 372,
       "width": 28,
       "height": 28,
       "id": "141193"
     },
-    "MVGame": {
+    "mvgame": {
       "x": 280,
       "y": 372,
       "width": 28,
       "height": 28,
       "id": "142140"
     },
-    "qtpUSA": {
+    "qtpusa": {
       "x": 308,
       "y": 372,
       "width": 28,
       "height": 28,
       "id": "14303"
     },
-    "moon2HEY": {
+    "moon2hey": {
       "x": 336,
       "y": 372,
       "width": 28,
       "height": 28,
       "id": "143034"
     },
-    "TBAngel": {
+    "tbangel": {
       "x": 364,
       "y": 372,
       "width": 28,
       "height": 28,
       "id": "143490"
     },
-    "tyler1T1": {
+    "tyler1t1": {
       "x": 392,
       "y": 372,
       "width": 28,
       "height": 28,
       "id": "143635"
     },
-    "tyler1T2": {
+    "tyler1t2": {
       "x": 425,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "143636"
     },
-    "FBRun": {
+    "fbrun": {
       "x": 425,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "1441261"
     },
-    "FBPass": {
+    "fbpass": {
       "x": 425,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "1441271"
     },
-    "FBSpiral": {
+    "fbspiral": {
       "x": 425,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "1441273"
     },
-    "FBBlock": {
+    "fbblock": {
       "x": 425,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "1441276"
     },
-    "FBCatch": {
+    "fbcatch": {
       "x": 425,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "1441281"
     },
-    "FBChallenge": {
+    "fbchallenge": {
       "x": 425,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "1441285"
     },
-    "FBPenalty": {
+    "fbpenalty": {
       "x": 425,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "1441289"
     },
-    "qtpGIVE": {
+    "qtpgive": {
       "x": 425,
       "y": 224,
       "width": 28,
       "height": 28,
       "id": "144214"
     },
-    "tyler1M": {
+    "tyler1m": {
       "x": 425,
       "y": 252,
       "width": 28,
       "height": 28,
       "id": "144428"
     },
-    "sumHassan": {
+    "sumhassan": {
       "x": 425,
       "y": 280,
       "width": 28,
       "height": 28,
       "id": "14462"
     },
-    "TheIlluminati": {
+    "theilluminati": {
       "x": 425,
       "y": 308,
       "width": 28,
       "height": 28,
       "id": "145315"
     },
-    "tatGlam": {
+    "tatglam": {
       "x": 425,
       "y": 336,
       "width": 28,
       "height": 28,
       "id": "145662"
     },
-    "moon2XD": {
+    "moon2xd": {
       "x": 425,
       "y": 364,
       "width": 28,
       "height": 28,
       "id": "146225"
     },
-    "tatBling": {
+    "tatbling": {
       "x": 0,
       "y": 400,
       "width": 28,
       "height": 28,
       "id": "1465723"
     },
-    "angryyapA": {
+    "angryyapa": {
       "x": 28,
       "y": 400,
       "width": 28,
       "height": 28,
       "id": "146700"
     },
-    "moon2T": {
+    "moon2t": {
       "x": 56,
       "y": 400,
       "width": 28,
       "height": 28,
       "id": "146843"
     },
-    "PeteZaroll": {
+    "petezaroll": {
       "x": 84,
       "y": 400,
       "width": 28,
       "height": 28,
       "id": "1470035"
     },
-    "PeteZarollOdyssey": {
+    "petezarollodyssey": {
       "x": 112,
       "y": 400,
       "width": 28,
       "height": 28,
       "id": "1470037"
     },
-    "moon2L": {
+    "moon2l": {
       "x": 140,
       "y": 400,
       "width": 28,
       "height": 28,
       "id": "147833"
     },
-    "forsenWeird": {
+    "forsenweird": {
       "x": 168,
       "y": 400,
       "width": 28,
       "height": 28,
       "id": "1479466"
     },
-    "sodaThump": {
-      "x": 196,
-      "y": 400,
-      "width": 28,
-      "height": 28,
-      "id": "148260"
-    },
-    "sodaHi": {
-      "x": 224,
-      "y": 400,
-      "width": 28,
-      "height": 28,
-      "id": "148261"
-    },
-    "sodaWat": {
-      "x": 252,
-      "y": 400,
-      "width": 28,
-      "height": 28,
-      "id": "148262"
-    },
-    "moon2ME": {
+    "moon2me": {
       "x": 280,
       "y": 400,
       "width": 28,
       "height": 28,
       "id": "1485944"
     },
-    "moon2P": {
+    "moon2p": {
       "x": 308,
       "y": 400,
       "width": 28,
       "height": 28,
       "id": "1486187"
     },
-    "sodaDITCH": {
-      "x": 336,
-      "y": 400,
-      "width": 28,
-      "height": 28,
-      "id": "1493721"
-    },
-    "lirikBLIND": {
+    "lirikblind": {
       "x": 364,
       "y": 400,
       "width": 28,
       "height": 28,
       "id": "1498549"
     },
-    "lirikTEN": {
+    "lirikten": {
       "x": 392,
       "y": 400,
       "width": 28,
       "height": 28,
       "id": "1498552"
     },
-    "lirikTHUMP": {
+    "lirikthump": {
       "x": 420,
       "y": 400,
       "width": 28,
       "height": 28,
       "id": "1498553"
     },
-    "lirikHAPPY": {
+    "lirikhappy": {
       "x": 453,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "1498555"
     },
-    "lirikCLENCH": {
+    "lirikclench": {
       "x": 453,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "1498556"
     },
-    "lirikCLAP": {
+    "lirikclap": {
       "x": 453,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "1498557"
     },
-    "lirikK": {
+    "lirikk": {
       "x": 453,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "1498558"
     },
-    "lirikH": {
+    "lirikh": {
       "x": 453,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "1498561"
     },
-    "lirikHMM": {
+    "lirikhmm": {
       "x": 453,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "1498566"
     },
-    "lirikAYAYA": {
+    "lirikayaya": {
       "x": 453,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "1498569"
     },
-    "lirikTOS": {
+    "liriktos": {
       "x": 453,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "1498577"
     },
-    "lirikWEEB": {
+    "lirikweeb": {
       "x": 453,
       "y": 224,
       "width": 28,
       "height": 28,
       "id": "1498578"
     },
-    "lirikHUG": {
+    "lirikhug": {
       "x": 453,
       "y": 252,
       "width": 28,
       "height": 28,
       "id": "1498657"
     },
-    "lirikPOG": {
+    "lirikpog": {
       "x": 453,
       "y": 280,
       "width": 28,
       "height": 28,
       "id": "1498659"
     },
-    "lirikSMUG": {
+    "liriksmug": {
       "x": 453,
       "y": 308,
       "width": 28,
       "height": 28,
       "id": "1498661"
     },
-    "lirikSHUCKS": {
+    "lirikshucks": {
       "x": 453,
       "y": 336,
       "width": 28,
       "height": 28,
       "id": "1499983"
     },
-    "JKanStyle": {
+    "jkanstyle": {
       "x": 42,
       "y": 791,
       "width": 21,
       "height": 27,
       "id": "15"
     },
-    "lirikGACHI": {
+    "lirikgachi": {
       "x": 453,
       "y": 392,
       "width": 28,
       "height": 28,
       "id": "1500011"
     },
-    "angryyapD": {
+    "angryyapd": {
       "x": 0,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "152029"
     },
-    "angryyapGamza": {
+    "angryyapgamza": {
       "x": 28,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "152030"
     },
-    "angryyapB": {
+    "angryyapb": {
       "x": 56,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "152618"
     },
-    "tatHmm": {
-      "x": 84,
-      "y": 428,
-      "width": 28,
-      "height": 28,
-      "id": "1531079"
-    },
-    "BlessRNG": {
+    "blessrng": {
       "x": 112,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "153556"
     },
-    "reckK": {
+    "reckk": {
       "x": 140,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "1539309"
     },
-    "moon2SH": {
+    "moon2sh": {
       "x": 168,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "1544083"
     },
-    "sodaCOOL": {
-      "x": 196,
-      "y": 428,
-      "width": 28,
-      "height": 28,
-      "id": "154529"
-    },
-    "tppUrn": {
+    "tppurn": {
       "x": 224,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "1546081"
     },
-    "tppShiny": {
+    "tppshiny": {
       "x": 252,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "1546135"
     },
-    "PixelBob": {
+    "pixelbob": {
       "x": 280,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "1547903"
     },
-    "forsenTake": {
+    "forsentake": {
       "x": 308,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "1558719"
     },
-    "forsenA": {
+    "forsena": {
       "x": 336,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "1558721"
     },
-    "forsenBreak": {
+    "forsenbreak": {
       "x": 364,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "1558723"
     },
-    "lirikME": {
+    "lirikme": {
       "x": 392,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "1559270"
     },
-    "lirikOSVN": {
+    "lirikosvn": {
       "x": 420,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "1559272"
     },
-    "lirikFEAST": {
+    "lirikfeast": {
       "x": 448,
       "y": 428,
       "width": 28,
       "height": 28,
       "id": "1559273"
     },
-    "lirikHUH": {
+    "lirikhuh": {
       "x": 481,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "1559276"
     },
-    "poongPoongak": {
+    "poongpoongak": {
       "x": 481,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "156225"
     },
-    "poongEnd2": {
+    "poongend2": {
       "x": 481,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "156229"
     },
-    "poongNawa": {
+    "poongnawa": {
       "x": 481,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "156230"
     },
-    "poongPain": {
+    "poongpain": {
       "x": 481,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "156368"
     },
-    "poongCop": {
+    "poongcop": {
       "x": 481,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "156372"
     },
-    "poongPig": {
+    "poongpig": {
       "x": 481,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "156373"
     },
-    "poongQm": {
+    "poongqm": {
       "x": 481,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "156375"
     },
-    "moon2WUT": {
+    "moon2wut": {
       "x": 481,
       "y": 224,
       "width": 28,
       "height": 28,
       "id": "1564343"
     },
-    "moon2A": {
+    "moon2a": {
       "x": 481,
       "y": 252,
       "width": 28,
       "height": 28,
       "id": "1564353"
     },
-    "moon2N": {
+    "moon2n": {
       "x": 481,
       "y": 280,
       "width": 28,
       "height": 28,
       "id": "1564354"
     },
-    "moon2CUTE": {
+    "moon2cute": {
       "x": 481,
       "y": 308,
       "width": 28,
       "height": 28,
       "id": "1564358"
     },
-    "moon2DOIT": {
+    "moon2doit": {
       "x": 481,
       "y": 336,
       "width": 28,
       "height": 28,
       "id": "1564365"
     },
-    "forsenLicence": {
+    "forsenlicence": {
       "x": 481,
       "y": 364,
       "width": 28,
       "height": 28,
       "id": "1565929"
     },
-    "forsenDeer": {
+    "forsendeer": {
       "x": 481,
       "y": 392,
       "width": 28,
       "height": 28,
       "id": "1565934"
     },
-    "forsenSanta": {
+    "forsensanta": {
       "x": 481,
       "y": 420,
       "width": 28,
       "height": 28,
       "id": "1565935"
     },
-    "forsenPosture": {
+    "forsenposture": {
       "x": 0,
       "y": 456,
       "width": 28,
       "height": 28,
       "id": "1565952"
     },
-    "forsenPosture1": {
+    "forsenposture1": {
       "x": 28,
       "y": 456,
       "width": 28,
       "height": 28,
       "id": "1565958"
     },
-    "forsenPosture2": {
+    "forsenposture2": {
       "x": 56,
       "y": 456,
       "width": 28,
       "height": 28,
       "id": "1565960"
     },
-    "MorphinTime": {
+    "morphintime": {
       "x": 84,
       "y": 456,
       "width": 28,
       "height": 28,
       "id": "156787"
     },
-    "moon2MMM": {
+    "moon2mmm": {
       "x": 112,
       "y": 456,
       "width": 28,
       "height": 28,
       "id": "1572248"
     },
-    "forsenC": {
+    "forsenc": {
       "x": 140,
       "y": 456,
       "width": 28,
       "height": 28,
       "id": "1572478"
     },
-    "forsenGrill": {
+    "forsengrill": {
       "x": 168,
       "y": 456,
       "width": 28,
       "height": 28,
       "id": "1572481"
     },
-    "forsenReins": {
+    "forsenreins": {
       "x": 196,
       "y": 456,
       "width": 28,
       "height": 28,
       "id": "1572498"
     },
-    "forsenChraken": {
+    "forsenchraken": {
       "x": 224,
       "y": 456,
       "width": 28,
       "height": 28,
       "id": "1572508"
     },
-    "forsenHobo": {
+    "forsenhobo": {
       "x": 252,
       "y": 456,
       "width": 28,
       "height": 28,
       "id": "1572725"
     },
-    "moon2SECRETEMOTE": {
+    "moon2secretemote": {
       "x": 280,
       "y": 456,
       "width": 28,
       "height": 28,
       "id": "1574694"
     },
-    "moon2PO": {
+    "moon2po": {
       "x": 308,
       "y": 456,
       "width": 28,
       "height": 28,
       "id": "1575108"
     },
-    "moon2OP": {
+    "moon2op": {
       "x": 336,
       "y": 456,
       "width": 28,
       "height": 28,
       "id": "1575110"
     },
-    "sodaTHINKING": {
-      "x": 364,
-      "y": 456,
-      "width": 28,
-      "height": 28,
-      "id": "157609"
-    },
-    "sodaGASP": {
-      "x": 392,
-      "y": 456,
-      "width": 28,
-      "height": 28,
-      "id": "158222"
-    },
-    "GunRun": {
+    "gunrun": {
       "x": 420,
       "y": 456,
       "width": 28,
       "height": 28,
       "id": "1584743"
     },
-    "sodaSad": {
-      "x": 448,
-      "y": 456,
-      "width": 28,
-      "height": 28,
-      "id": "1589023"
-    },
-    "sodaGA": {
-      "x": 476,
-      "y": 456,
-      "width": 28,
-      "height": 28,
-      "id": "1589033"
-    },
-    "lirikTENK": {
+    "liriktenk": {
       "x": 509,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "1592774"
     },
-    "lirikGASM": {
+    "lirikgasm": {
       "x": 509,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "1592787"
     },
-    "lirikLATE": {
+    "liriklate": {
       "x": 509,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "1597520"
     },
-    "moon2DEV": {
+    "moon2dev": {
       "x": 509,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "1597801"
     },
-    "sodaComfy": {
-      "x": 509,
-      "y": 112,
-      "width": 28,
-      "height": 28,
-      "id": "1598119"
-    },
-    "sodaEZZ": {
-      "x": 509,
-      "y": 140,
-      "width": 28,
-      "height": 28,
-      "id": "1599197"
-    },
-    "sodaR": {
-      "x": 509,
-      "y": 168,
-      "width": 28,
-      "height": 28,
-      "id": "1599201"
-    },
-    "sodaGIFT": {
-      "x": 509,
-      "y": 196,
-      "width": 28,
-      "height": 28,
-      "id": "1599204"
-    },
-    "sodaHG": {
-      "x": 509,
-      "y": 224,
-      "width": 28,
-      "height": 28,
-      "id": "1599206"
-    },
-    "sodaFC": {
-      "x": 509,
-      "y": 252,
-      "width": 28,
-      "height": 28,
-      "id": "1599397"
-    },
-    "tatLit": {
+    "tatlit": {
       "x": 509,
       "y": 280,
       "width": 28,
       "height": 28,
       "id": "1599586"
     },
-    "OptimizePrime": {
+    "optimizeprime": {
       "x": 29,
       "y": 764,
       "width": 22,
       "height": 27,
       "id": "16"
     },
-    "sodaFR": {
-      "x": 509,
-      "y": 336,
-      "width": 28,
-      "height": 28,
-      "id": "1603324"
-    },
-    "sodaFV": {
-      "x": 509,
-      "y": 364,
-      "width": 28,
-      "height": 28,
-      "id": "1603326"
-    },
-    "tatGift": {
+    "tatgift": {
       "x": 509,
       "y": 392,
       "width": 28,
       "height": 28,
       "id": "1603328"
     },
-    "ThankEgg": {
+    "thankegg": {
       "x": 509,
       "y": 420,
       "width": 28,
       "height": 28,
       "id": "160392"
     },
-    "ArigatoNas": {
+    "arigatonas": {
       "x": 509,
       "y": 448,
       "width": 28,
       "height": 28,
       "id": "160393"
     },
-    "BegWan": {
+    "begwan": {
       "x": 0,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "160394"
     },
-    "BigPhish": {
+    "bigphish": {
       "x": 28,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "160395"
     },
-    "InuyoFace": {
+    "inuyoface": {
       "x": 56,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "160396"
     },
-    "Kappu": {
+    "kappu": {
       "x": 84,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "160397"
     },
-    "KonCha": {
+    "koncha": {
       "x": 112,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "160400"
     },
-    "PunOko": {
+    "punoko": {
       "x": 140,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "160401"
     },
-    "SabaPing": {
+    "sabaping": {
       "x": 168,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "160402"
     },
-    "TearGlove": {
+    "tearglove": {
       "x": 196,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "160403"
     },
-    "TehePelo": {
+    "tehepelo": {
       "x": 224,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "160404"
     },
-    "moon2D": {
+    "moon2d": {
       "x": 252,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "1611444"
     },
-    "sumE": {
+    "sume": {
       "x": 280,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "162456"
     },
-    "tatPreach": {
+    "tatpreach": {
       "x": 308,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "16247"
     },
-    "angryyapHaetae": {
+    "angryyaphaetae": {
       "x": 336,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "1628001"
     },
-    "tppRage": {
+    "tpprage": {
       "x": 364,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "1631716"
     },
-    "moon2C": {
+    "moon2c": {
       "x": 392,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "1651240"
     },
-    "TwitchLit": {
+    "twitchlit": {
       "x": 420,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "166263"
     },
-    "CarlSmile": {
+    "carlsmile": {
       "x": 448,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "166266"
     },
-    "moon2CLOSET": {
+    "moon2closet": {
       "x": 476,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "1663328"
     },
-    "moon2SMEG": {
+    "moon2smeg": {
       "x": 504,
       "y": 484,
       "width": 28,
       "height": 28,
       "id": "166713"
     },
-    "sodaLEGS": {
-      "x": 537,
-      "y": 0,
-      "width": 28,
-      "height": 28,
-      "id": "1680886"
-    },
-    "tyler1Monk": {
+    "tyler1monk": {
       "x": 537,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "168930"
     },
-    "StoneLightning": {
+    "stonelightning": {
       "x": 817,
       "y": 141,
       "width": 20,
       "height": 27,
       "id": "17"
     },
-    "sumRip": {
+    "sumrip": {
       "x": 537,
       "y": 84,
       "width": 28,
@@ -3900,299 +3683,278 @@ var DubPlus = (function () {
       "height": 28,
       "id": "171274"
     },
-    "HolidayCookie": {
+    "holidaycookie": {
       "x": 537,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "1713813"
     },
-    "HolidayLog": {
+    "holidaylog": {
       "x": 537,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "1713816"
     },
-    "HolidayOrnament": {
+    "holidayornament": {
       "x": 537,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "1713818"
     },
-    "HolidayPresent": {
+    "holidaypresent": {
       "x": 537,
       "y": 224,
       "width": 28,
       "height": 28,
       "id": "1713819"
     },
-    "HolidaySanta": {
+    "holidaysanta": {
       "x": 537,
       "y": 252,
       "width": 28,
       "height": 28,
       "id": "1713822"
     },
-    "HolidayTree": {
+    "holidaytree": {
       "x": 537,
       "y": 280,
       "width": 28,
       "height": 28,
       "id": "1713825"
     },
-    "qtpDONG": {
+    "qtpdong": {
       "x": 537,
       "y": 308,
       "width": 28,
       "height": 28,
       "id": "17218"
     },
-    "AquamanGG": {
+    "aquamangg": {
       "x": 537,
       "y": 336,
       "width": 28,
       "height": 28,
       "id": "1733216"
     },
-    "forsenY": {
+    "forseny": {
       "x": 537,
       "y": 364,
       "width": 28,
       "height": 28,
       "id": "173372"
     },
-    "forsenGASM": {
+    "forsengasm": {
       "x": 537,
       "y": 392,
       "width": 28,
       "height": 28,
       "id": "173378"
     },
-    "forsenWut": {
+    "forsenwut": {
       "x": 537,
       "y": 420,
       "width": 28,
       "height": 28,
       "id": "175766"
     },
-    "sumAthena": {
+    "sumathena": {
       "x": 537,
       "y": 448,
       "width": 28,
       "height": 28,
       "id": "1768681"
     },
-    "lirikLOOT": {
+    "lirikloot": {
       "x": 537,
       "y": 476,
       "width": 28,
       "height": 28,
       "id": "1771663"
     },
-    "lirikOBESE": {
+    "lirikobese": {
       "x": 0,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771965"
     },
-    "lirikSMART": {
+    "liriksmart": {
       "x": 28,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771968"
     },
-    "lirikSALT": {
+    "liriksalt": {
       "x": 56,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771970"
     },
-    "lirikNICE": {
+    "liriknice": {
       "x": 84,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771971"
     },
-    "lirikN": {
+    "lirikn": {
       "x": 112,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771973"
     },
-    "lirikLUL": {
+    "liriklul": {
       "x": 140,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771975"
     },
-    "lirikHYPE": {
+    "lirikhype": {
       "x": 168,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771976"
     },
-    "lirikFR": {
+    "lirikfr": {
       "x": 196,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771979"
     },
-    "lirikPOOL": {
+    "lirikpool": {
       "x": 224,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771980"
     },
-    "lirikRE": {
+    "lirikre": {
       "x": 252,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771981"
     },
-    "lirikNS": {
+    "lirikns": {
       "x": 280,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771982"
     },
-    "lirikLEWD": {
+    "liriklewd": {
       "x": 308,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771988"
     },
-    "lirikD": {
+    "lirikd": {
       "x": 336,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771989"
     },
-    "lirikDJ": {
+    "lirikdj": {
       "x": 364,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771992"
     },
-    "lirikGREAT": {
+    "lirikgreat": {
       "x": 392,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771994"
     },
-    "lirikSCARED": {
+    "lirikscared": {
       "x": 420,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1771996"
     },
-    "lirikEZ": {
+    "lirikez": {
       "x": 448,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1772001"
     },
-    "lirikS": {
+    "liriks": {
       "x": 476,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1772005"
     },
-    "sumPirate": {
+    "sumpirate": {
       "x": 504,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1774063"
     },
-    "moon2PEEPEEGA": {
+    "moon2peepeega": {
       "x": 532,
       "y": 512,
       "width": 28,
       "height": 28,
       "id": "1776306"
     },
-    "sumTucked": {
+    "sumtucked": {
       "x": 565,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "1778224"
     },
-    "forsenOMEGA": {
+    "forsenomega": {
       "x": 565,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "177861"
     },
-    "forsenS": {
+    "forsens": {
       "x": 565,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "177866"
     },
-    "tyler1BBC": {
+    "tyler1bbc": {
       "x": 565,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "177968"
     },
-    "sumOhface": {
+    "sumohface": {
       "x": 565,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "1785"
     },
-    "tppPika": {
+    "tpppika": {
       "x": 565,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "1785881"
-    },
-    "forsenAYOYO": {
-      "x": 565,
-      "y": 168,
-      "width": 28,
-      "height": 28,
-      "id": "1788693"
-    },
-    "forsenSpeedrun": {
-      "x": 565,
-      "y": 196,
-      "width": 28,
-      "height": 28,
-      "id": "1788698"
-    },
-    "forsenClown": {
-      "x": 565,
-      "y": 224,
-      "width": 28,
-      "height": 28,
-      "id": "1788703"
     },
     "moon21": {
       "x": 565,
@@ -4222,203 +3984,203 @@ var DubPlus = (function () {
       "height": 28,
       "id": "1794075"
     },
-    "moon2COFFEE": {
+    "moon2coffee": {
       "x": 565,
       "y": 364,
       "width": 28,
       "height": 28,
       "id": "1794235"
     },
-    "lirikA": {
+    "lirika": {
       "x": 565,
       "y": 392,
       "width": 28,
       "height": 28,
       "id": "1795151"
     },
-    "lirikCHAMP": {
+    "lirikchamp": {
       "x": 565,
       "y": 420,
       "width": 28,
       "height": 28,
       "id": "1795152"
     },
-    "lirikFEELS": {
+    "lirikfeels": {
       "x": 565,
       "y": 448,
       "width": 28,
       "height": 28,
       "id": "1795153"
     },
-    "lirikHEY": {
+    "lirikhey": {
       "x": 565,
       "y": 476,
       "width": 28,
       "height": 28,
       "id": "1795154"
     },
-    "lirikPOOP": {
+    "lirikpoop": {
       "x": 565,
       "y": 504,
       "width": 28,
       "height": 28,
       "id": "1795156"
     },
-    "lirikPRAY": {
+    "lirikpray": {
       "x": 0,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1795158"
     },
-    "lirikPUKE": {
+    "lirikpuke": {
       "x": 28,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1795160"
     },
-    "lirikWINK": {
+    "lirikwink": {
       "x": 56,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1795161"
     },
-    "lirikKappa": {
+    "lirikkappa": {
       "x": 84,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1795162"
     },
-    "TheRinger": {
+    "theringer": {
       "x": 817,
       "y": 114,
       "width": 20,
       "height": 27,
       "id": "18"
     },
-    "sumDust": {
+    "sumdust": {
       "x": 140,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1804794"
     },
-    "sumSwim": {
+    "sumswim": {
       "x": 168,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1816465"
     },
-    "moon2VERYSCARED": {
+    "moon2veryscared": {
       "x": 196,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1817217"
     },
-    "moon2DUMB": {
+    "moon2dumb": {
       "x": 224,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1817220"
     },
-    "moon2SMUG": {
+    "moon2smug": {
       "x": 252,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1825113"
     },
-    "sumWiener": {
+    "sumwiener": {
       "x": 280,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1834172"
     },
-    "moon2TUDD": {
+    "moon2tudd": {
       "x": 308,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1838742"
     },
-    "lirikDROOL": {
+    "lirikdrool": {
       "x": 0,
       "y": 92,
       "width": 28,
       "height": 28,
       "id": "1840583"
     },
-    "forsenT": {
+    "forsent": {
       "x": 364,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "184115"
     },
-    "qtpFU": {
+    "qtpfu": {
       "x": 392,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1847364"
     },
-    "qtpPOO": {
+    "qtppoo": {
       "x": 420,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1847365"
     },
-    "qtpYUMMY": {
+    "qtpyummy": {
       "x": 448,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1847366"
     },
-    "qtpHONK": {
+    "qtphonk": {
       "x": 476,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1850242"
     },
-    "qtpBOX": {
+    "qtpbox": {
       "x": 504,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1850256"
     },
-    "qtpHANDS": {
+    "qtphands": {
       "x": 532,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1850258"
     },
-    "qtpWOW": {
+    "qtpwow": {
       "x": 560,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "1850262"
     },
-    "qtpSTARE": {
+    "qtpstare": {
       "x": 593,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "1850266"
     },
-    "qtpSIP": {
+    "qtpsip": {
       "x": 593,
       "y": 28,
       "width": 28,
@@ -4446,364 +4208,350 @@ var DubPlus = (function () {
       "height": 28,
       "id": "185305"
     },
-    "tatAFK": {
+    "tatafk": {
       "x": 593,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "185306"
     },
-    "tatBlind": {
-      "x": 593,
-      "y": 168,
-      "width": 28,
-      "height": 28,
-      "id": "185307"
-    },
-    "tatKevinH": {
+    "tatkevinh": {
       "x": 593,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "185311"
     },
-    "tatLove": {
+    "tatlove": {
       "x": 593,
       "y": 224,
       "width": 28,
       "height": 28,
       "id": "185312"
     },
-    "tatKevinM": {
+    "tatkevinm": {
       "x": 593,
       "y": 252,
       "width": 28,
       "height": 28,
       "id": "185313"
     },
-    "tatThink": {
+    "tatthink": {
       "x": 593,
       "y": 280,
       "width": 28,
       "height": 28,
       "id": "185314"
     },
-    "tatNOLINKS": {
+    "tatnolinks": {
       "x": 593,
       "y": 308,
       "width": 28,
       "height": 28,
       "id": "185315"
     },
-    "tatTopD": {
+    "tattopd": {
       "x": 593,
       "y": 336,
       "width": 28,
       "height": 28,
       "id": "185316"
     },
-    "tatHype": {
+    "tathype": {
       "x": 593,
       "y": 364,
       "width": 28,
       "height": 28,
       "id": "185347"
     },
-    "moon2SPY": {
+    "moon2spy": {
       "x": 593,
       "y": 392,
       "width": 28,
       "height": 28,
       "id": "185483"
     },
-    "tatPirate": {
+    "tatpirate": {
       "x": 593,
       "y": 420,
       "width": 28,
       "height": 28,
       "id": "1859035"
     },
-    "tatMad": {
+    "tatmad": {
       "x": 593,
       "y": 448,
       "width": 28,
       "height": 28,
       "id": "1859043"
     },
-    "qtpAYAYA": {
+    "qtpayaya": {
       "x": 593,
       "y": 476,
       "width": 28,
       "height": 28,
       "id": "1862657"
     },
-    "qtpWEIRD": {
+    "qtpweird": {
       "x": 593,
       "y": 504,
       "width": 28,
       "height": 28,
       "id": "1863554"
     },
-    "qtpA": {
+    "qtpa": {
       "x": 593,
       "y": 532,
       "width": 28,
       "height": 28,
       "id": "1866844"
     },
-    "qtpWUT": {
+    "qtpwut": {
       "x": 0,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "1867315"
     },
-    "qtpBLUSH": {
+    "qtpblush": {
       "x": 28,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "1867515"
     },
-    "tatMonster": {
+    "tatmonster": {
       "x": 56,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "187146"
     },
-    "tatPrime": {
+    "tatprime": {
       "x": 84,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "187149"
     },
-    "tatRiot": {
+    "tatriot": {
       "x": 112,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "187150"
     },
-    "tatPotato": {
+    "tatpotato": {
       "x": 140,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "187153"
     },
-    "tatToxic": {
+    "tattoxic": {
       "x": 168,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "187155"
     },
-    "tatKevinS": {
+    "tatkevins": {
       "x": 196,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "187159"
     },
-    "moon2S": {
+    "moon2s": {
       "x": 224,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "1893080"
     },
-    "WholeWheat": {
+    "wholewheat": {
       "x": 817,
       "y": 30,
       "width": 20,
       "height": 30,
       "id": "1896"
     },
-    "ThunBeast": {
+    "thunbeast": {
       "x": 789,
       "y": 449,
       "width": 26,
       "height": 28,
       "id": "1898"
     },
-    "TF2John": {
+    "tf2john": {
       "x": 120,
       "y": 62,
       "width": 22,
       "height": 30,
       "id": "1899"
     },
-    "RalpherZ": {
+    "ralpherz": {
       "x": 32,
       "y": 60,
       "width": 33,
       "height": 30,
       "id": "1900"
     },
-    "Kippa": {
+    "kippa": {
       "x": 789,
       "y": 715,
       "width": 24,
       "height": 28,
       "id": "1901"
     },
-    "moon2KNUCKLESRICK": {
+    "moon2knucklesrick": {
       "x": 392,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "1901015"
     },
-    "Keepo": {
+    "keepo": {
       "x": 789,
       "y": 392,
       "width": 27,
       "height": 29,
       "id": "1902"
     },
-    "BigBrother": {
+    "bigbrother": {
       "x": 789,
       "y": 507,
       "width": 24,
       "height": 30,
       "id": "1904"
     },
-    "SoBayed": {
+    "sobayed": {
       "x": 789,
       "y": 537,
       "width": 24,
       "height": 30,
       "id": "1906"
     },
-    "lirikLIT": {
+    "liriklit": {
       "x": 504,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "1910543"
     },
-    "lirikTI": {
+    "lirikti": {
       "x": 532,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "1910547"
     },
-    "sodaSMUG": {
-      "x": 560,
-      "y": 568,
-      "width": 28,
-      "height": 28,
-      "id": "191211"
-    },
-    "CrreamAwk": {
+    "crreamawk": {
       "x": 588,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "191313"
     },
-    "angryyapWatching": {
+    "angryyapwatching": {
       "x": 621,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "191721"
     },
-    "Squid1": {
+    "squid1": {
       "x": 621,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "191762"
     },
-    "Squid2": {
+    "squid2": {
       "x": 621,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "191763"
     },
-    "Squid3": {
+    "squid3": {
       "x": 621,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "191764"
     },
-    "Squid4": {
+    "squid4": {
       "x": 621,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "191767"
     },
-    "sumChair": {
+    "sumchair": {
       "x": 621,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "194200"
     },
-    "sumPride": {
+    "sumpride": {
       "x": 621,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "194201"
     },
-    "sumGG": {
+    "sumgg": {
       "x": 621,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "194498"
     },
-    "sumGold": {
+    "sumgold": {
       "x": 621,
       "y": 224,
       "width": 28,
       "height": 28,
       "id": "194602"
     },
-    "moon2W": {
+    "moon2w": {
       "x": 621,
       "y": 252,
       "width": 28,
       "height": 28,
       "id": "195855"
     },
-    "qtpCULLED": {
+    "qtpculled": {
       "x": 621,
       "y": 280,
       "width": 28,
       "height": 28,
       "id": "19671"
     },
-    "TwitchUnity": {
+    "twitchunity": {
       "x": 621,
       "y": 308,
       "width": 28,
       "height": 28,
       "id": "196892"
     },
-    "poongInseung": {
+    "poonginseung": {
       "x": 621,
       "y": 336,
       "width": 28,
       "height": 28,
       "id": "199081"
     },
-    "poongBus": {
+    "poongbus": {
       "x": 621,
       "y": 364,
       "width": 28,
       "height": 28,
       "id": "199082"
     },
-    "poongNemo": {
+    "poongnemo": {
       "x": 621,
       "y": 392,
       "width": 28,
@@ -4817,686 +4565,637 @@ var DubPlus = (function () {
       "height": 18,
       "id": "2"
     },
-    "lirikDERP": {
+    "lirikderp": {
       "x": 621,
       "y": 448,
       "width": 28,
       "height": 28,
       "id": "201144"
     },
-    "lirikDAPPER": {
+    "lirikdapper": {
       "x": 621,
       "y": 476,
       "width": 28,
       "height": 28,
       "id": "201145"
     },
-    "HassaanChop": {
+    "hassaanchop": {
       "x": 621,
       "y": 504,
       "width": 28,
       "height": 28,
       "id": "20225"
     },
-    "sodaMONK": {
-      "x": 621,
-      "y": 532,
-      "width": 28,
-      "height": 28,
-      "id": "205835"
-    },
-    "qtpBETA": {
+    "qtpbeta": {
       "x": 621,
       "y": 560,
       "width": 28,
       "height": 28,
       "id": "206963"
     },
-    "sodaJ": {
-      "x": 0,
-      "y": 596,
-      "width": 28,
-      "height": 28,
-      "id": "208346"
-    },
-    "sumLUL": {
+    "sumlul": {
       "x": 28,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "208772"
     },
-    "reckSoup": {
+    "recksoup": {
       "x": 56,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "209730"
     },
-    "moon2WOW": {
+    "moon2wow": {
       "x": 84,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "211890"
     },
-    "angryyapHeup": {
+    "angryyapheup": {
       "x": 112,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "212107"
     },
-    "angryyapChex": {
+    "angryyapchex": {
       "x": 140,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "212110"
     },
-    "tyler1H1": {
+    "tyler1h1": {
       "x": 168,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "212205"
     },
-    "tyler1H2": {
+    "tyler1h2": {
       "x": 196,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "212206"
     },
-    "tyler1H3": {
+    "tyler1h3": {
       "x": 224,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "212207"
     },
-    "tyler1H4": {
+    "tyler1h4": {
       "x": 252,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "212208"
     },
-    "angryyapK": {
+    "angryyapk": {
       "x": 280,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "212467"
     },
-    "tatBEST": {
+    "tatbest": {
       "x": 308,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "212548"
     },
-    "poongYuri": {
+    "poongyuri": {
       "x": 336,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "213594"
     },
-    "angryyapL": {
+    "angryyapl": {
       "x": 364,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "214473"
     },
-    "RedCoat": {
+    "redcoat": {
       "x": 817,
       "y": 223,
       "width": 19,
       "height": 27,
       "id": "22"
     },
-    "lirikL": {
+    "lirikl": {
       "x": 420,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "2200"
     },
-    "qtpSTFU": {
+    "qtpstfu": {
       "x": 448,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "22127"
     },
-    "BabyRage": {
+    "babyrage": {
       "x": 476,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "22639"
     },
-    "panicBasket": {
+    "panicbasket": {
       "x": 504,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "22998"
     },
-    "forsenThink": {
+    "forsenthink": {
       "x": 532,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "239535"
     },
-    "reckFarmer": {
+    "reckfarmer": {
       "x": 560,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "24129"
     },
-    "FUNgineer": {
+    "fungineer": {
       "x": 789,
       "y": 567,
       "width": 24,
       "height": 30,
       "id": "244"
     },
-    "ResidentSleeper": {
+    "residentsleeper": {
       "x": 616,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "245"
     },
-    "Kappa": {
+    "kappa": {
       "x": 789,
       "y": 627,
       "width": 25,
       "height": 28,
       "id": "25"
     },
-    "JonCarnage": {
+    "joncarnage": {
       "x": 817,
       "y": 87,
       "width": 20,
       "height": 27,
       "id": "26"
     },
-    "PermaSmug": {
+    "permasmug": {
       "x": 649,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "27509"
     },
-    "BuddhaBar": {
+    "buddhabar": {
       "x": 649,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "27602"
     },
-    "MrDestructoid": {
+    "mrdestructoid": {
       "x": 81,
       "y": 0,
       "width": 39,
       "height": 27,
       "id": "28"
     },
-    "tppBait": {
+    "tppbait": {
       "x": 649,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "280496"
     },
-    "sodaW": {
-      "x": 649,
-      "y": 168,
-      "width": 28,
-      "height": 28,
-      "id": "28073"
-    },
-    "WutFace": {
+    "wutface": {
       "x": 649,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "28087"
     },
-    "PRChase": {
+    "prchase": {
       "x": 649,
       "y": 224,
       "width": 28,
       "height": 28,
       "id": "28328"
     },
-    "tppS": {
+    "tpps": {
       "x": 649,
       "y": 252,
       "width": 28,
       "height": 28,
       "id": "284047"
     },
-    "sodaEZ": {
-      "x": 649,
-      "y": 280,
-      "width": 28,
-      "height": 28,
-      "id": "284144"
-    },
-    "sodaREE": {
-      "x": 649,
-      "y": 308,
-      "width": 28,
-      "height": 28,
-      "id": "284665"
-    },
-    "sodaSpecial": {
-      "x": 649,
-      "y": 336,
-      "width": 28,
-      "height": 28,
-      "id": "284701"
-    },
-    "sumPuzzle": {
+    "sumpuzzle": {
       "x": 649,
       "y": 364,
       "width": 28,
       "height": 28,
       "id": "29115"
     },
-    "sumBlind": {
+    "sumblind": {
       "x": 649,
       "y": 392,
       "width": 28,
       "height": 28,
       "id": "29159"
     },
-    "tppLUL": {
+    "tpplul": {
       "x": 649,
       "y": 420,
       "width": 28,
       "height": 28,
       "id": "295931"
     },
-    "\\:-?D": {
+    "\\:-?d": {
       "x": 147,
       "y": 764,
       "width": 24,
       "height": 18,
       "id": "3"
     },
-    "BCWarrior": {
+    "bcwarrior": {
       "x": 0,
       "y": 764,
       "width": 29,
       "height": 27,
       "id": "30"
     },
-    "Mau5": {
+    "mau5": {
       "x": 649,
       "y": 504,
       "width": 28,
       "height": 28,
       "id": "30134"
     },
-    "HeyGuys": {
+    "heyguys": {
       "x": 649,
       "y": 532,
       "width": 28,
       "height": 28,
       "id": "30259"
     },
-    "tatBURP": {
+    "tatburp": {
       "x": 649,
       "y": 560,
       "width": 28,
       "height": 28,
       "id": "309686"
     },
-    "forsenW": {
+    "forsenw": {
       "x": 649,
       "y": 588,
       "width": 28,
       "height": 28,
       "id": "31021"
     },
-    "forsenBoys": {
+    "forsenboys": {
       "x": 0,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "31097"
     },
-    "forsenRP": {
+    "forsenrp": {
       "x": 28,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "31100"
     },
-    "qtpPAID": {
+    "qtppaid": {
       "x": 56,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "31292"
     },
-    "moon2WAH": {
+    "moon2wah": {
       "x": 84,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "317534"
     },
-    "qtpSPOOKY": {
+    "qtpspooky": {
       "x": 112,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "3176"
     },
-    "reckW": {
+    "reckw": {
       "x": 81,
       "y": 27,
       "width": 32,
       "height": 32,
       "id": "31837"
     },
-    "sodaC": {
-      "x": 168,
-      "y": 624,
-      "width": 28,
-      "height": 28,
-      "id": "31965"
-    },
-    "sumStepdad": {
+    "sumstepdad": {
       "x": 196,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "319871"
     },
-    "sumSmokey": {
+    "sumsmokey": {
       "x": 224,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "319886"
     },
-    "GingerPower": {
+    "gingerpower": {
       "x": 21,
       "y": 791,
       "width": 21,
       "height": 27,
       "id": "32"
     },
-    "sumVac": {
+    "sumvac": {
       "x": 280,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "32062"
     },
-    "sumVac2": {
+    "sumvac2": {
       "x": 308,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "32063"
     },
-    "sumGodflash": {
+    "sumgodflash": {
       "x": 336,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "32086"
     },
-    "sumRage": {
+    "sumrage": {
       "x": 364,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "32285"
     },
-    "TPcrunchyroll": {
+    "tpcrunchyroll": {
       "x": 392,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "323914"
     },
-    "qtpWAVE": {
+    "qtpwave": {
       "x": 420,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "32438"
     },
-    "DansGame": {
+    "dansgame": {
       "x": 120,
       "y": 0,
       "width": 25,
       "height": 32,
       "id": "33"
     },
-    "SwiftRage": {
+    "swiftrage": {
       "x": 0,
       "y": 791,
       "width": 21,
       "height": 28,
       "id": "34"
     },
-    "PeoplesChamp": {
+    "peopleschamp": {
       "x": 504,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "3412"
     },
-    "NotATK": {
+    "notatk": {
       "x": 532,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "34875"
     },
-    "mcaT": {
+    "mcat": {
       "x": 560,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "35063"
     },
-    "qtpTILT": {
+    "qtptilt": {
       "x": 588,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "35064"
     },
-    "4Head": {
+    "4head": {
       "x": 817,
       "y": 0,
       "width": 20,
       "height": 30,
       "id": "354"
     },
-    "HotPokket": {
+    "hotpokket": {
       "x": 65,
       "y": 60,
       "width": 28,
       "height": 30,
       "id": "357"
     },
-    "PJSalt": {
+    "pjsalt": {
       "x": 36,
       "y": 30,
       "width": 36,
       "height": 30,
       "id": "36"
     },
-    "FailFish": {
+    "failfish": {
       "x": 120,
       "y": 32,
       "width": 22,
       "height": 30,
       "id": "360"
     },
-    "GrammarKing": {
+    "grammarking": {
       "x": 677,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "3632"
     },
-    "forsenDDK": {
+    "forsenddk": {
       "x": 677,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "36391"
     },
-    "forsenSS": {
+    "forsenss": {
       "x": 677,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "36535"
     },
-    "PanicVis": {
+    "panicvis": {
       "x": 677,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "3668"
     },
-    "tppCrit": {
+    "tppcrit": {
       "x": 677,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "36873"
     },
-    "tppPokeyen": {
+    "tpppokeyen": {
       "x": 677,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "36874"
     },
-    "angryyapZ": {
+    "angryyapz": {
       "x": 677,
       "y": 224,
       "width": 28,
       "height": 28,
       "id": "368818"
     },
-    "angryyapDog": {
+    "angryyapdog": {
       "x": 677,
       "y": 252,
       "width": 28,
       "height": 28,
       "id": "368836"
     },
-    "sumCreeper": {
+    "sumcreeper": {
       "x": 677,
       "y": 280,
       "width": 28,
       "height": 28,
       "id": "3689"
     },
-    "tppHax": {
+    "tpphax": {
       "x": 677,
       "y": 308,
       "width": 28,
       "height": 28,
       "id": "37025"
     },
-    "tppMiss": {
+    "tppmiss": {
       "x": 677,
       "y": 336,
       "width": 28,
       "height": 28,
       "id": "37026"
     },
-    "EntropyWins": {
+    "entropywins": {
       "x": 677,
       "y": 364,
       "width": 28,
       "height": 28,
       "id": "376765"
     },
-    "ANELE": {
+    "anele": {
       "x": 677,
       "y": 392,
       "width": 28,
       "height": 28,
       "id": "3792"
     },
-    "angryyapDdoddo": {
+    "angryyapddoddo": {
       "x": 677,
       "y": 420,
       "width": 28,
       "height": 28,
       "id": "379345"
     },
-    "tppRng": {
+    "tpprng": {
       "x": 677,
       "y": 448,
       "width": 28,
       "height": 28,
       "id": "38008"
     },
-    "tppHelix": {
+    "tpphelix": {
       "x": 677,
       "y": 476,
       "width": 28,
       "height": 28,
       "id": "38009"
     },
-    "reckChamp": {
+    "reckchamp": {
       "x": 677,
       "y": 504,
       "width": 28,
       "height": 28,
       "id": "383522"
     },
-    "TTours": {
+    "ttours": {
       "x": 677,
       "y": 532,
       "width": 28,
       "height": 28,
       "id": "38436"
     },
-    "PraiseIt": {
+    "praiseit": {
       "x": 677,
       "y": 560,
       "width": 28,
       "height": 28,
       "id": "38586"
     },
-    "reckKGB": {
+    "reckkgb": {
       "x": 677,
       "y": 588,
       "width": 28,
       "height": 28,
       "id": "388380"
     },
-    "tppRiot": {
+    "tppriot": {
       "x": 677,
       "y": 616,
       "width": 28,
       "height": 28,
       "id": "38947"
     },
-    "tppPc": {
+    "tpppc": {
       "x": 0,
       "y": 652,
       "width": 28,
@@ -5510,322 +5209,287 @@ var DubPlus = (function () {
       "height": 18,
       "id": "4"
     },
-    "KevinTurtle": {
+    "kevinturtle": {
       "x": 63,
       "y": 791,
       "width": 21,
       "height": 27,
       "id": "40"
     },
-    "BrokeBack": {
+    "brokeback": {
       "x": 84,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "4057"
     },
-    "sumAbby": {
+    "sumabby": {
       "x": 112,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "4075"
     },
-    "sumOreo": {
+    "sumoreo": {
       "x": 140,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "4076"
     },
-    "Kreygasm": {
+    "kreygasm": {
       "x": 817,
       "y": 196,
       "width": 19,
       "height": 27,
       "id": "41"
     },
-    "sumDesi": {
+    "sumdesi": {
       "x": 196,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "4102"
     },
-    "sumHorse": {
+    "sumhorse": {
       "x": 224,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "4110"
     },
-    "tppDome": {
+    "tppdome": {
       "x": 252,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "41225"
     },
-    "qtpHEART": {
+    "qtpheart": {
       "x": 280,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "41374"
     },
-    "tyler1B2": {
+    "tyler1b2": {
       "x": 308,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "420049"
     },
-    "tyler1B1": {
+    "tyler1b1": {
       "x": 336,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "420051"
     },
-    "PipeHype": {
+    "pipehype": {
       "x": 364,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "4240"
     },
-    "LUL": {
+    "lul": {
       "x": 392,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "425618"
     },
-    "PowerUpR": {
+    "powerupr": {
       "x": 420,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "425671"
     },
-    "PowerUpL": {
+    "powerupl": {
       "x": 448,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "425688"
     },
-    "YouWHY": {
+    "youwhy": {
       "x": 476,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "4337"
     },
-    "RitzMitz": {
+    "ritzmitz": {
       "x": 504,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "4338"
     },
-    "EleGiggle": {
+    "elegiggle": {
       "x": 532,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "4339"
     },
-    "sodaSHRUG": {
-      "x": 560,
-      "y": 652,
-      "width": 28,
-      "height": 28,
-      "id": "435476"
-    },
-    "sodaBUDDY": {
-      "x": 588,
-      "y": 652,
-      "width": 28,
-      "height": 28,
-      "id": "435587"
-    },
-    "sodaKEVIN": {
-      "x": 616,
-      "y": 652,
-      "width": 28,
-      "height": 28,
-      "id": "435588"
-    },
-    "sodaS": {
-      "x": 644,
-      "y": 652,
-      "width": 28,
-      "height": 28,
-      "id": "43860"
-    },
-    "qtpMOIST": {
+    "qtpmoist": {
       "x": 672,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "44081"
     },
-    "qtpWHAT": {
+    "qtpwhat": {
       "x": 705,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "44083"
     },
-    "angryyapChexx": {
+    "angryyapchexx": {
       "x": 705,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "443109"
     },
-    "HSCheers": {
+    "hscheers": {
       "x": 705,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "444572"
     },
-    "angryyapNoru": {
+    "angryyapnoru": {
       "x": 705,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "444791"
     },
-    "HSWP": {
+    "hswp": {
       "x": 705,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "446979"
     },
-    "moon2E": {
+    "moon2e": {
       "x": 705,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "448024"
     },
-    "poongBase": {
+    "poongbase": {
       "x": 705,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "449933"
     },
-    "poongKiki": {
+    "poongkiki": {
       "x": 705,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "449935"
     },
-    "sodaPT": {
-      "x": 705,
-      "y": 224,
-      "width": 28,
-      "height": 28,
-      "id": "459181"
-    },
-    "SSSsss": {
+    "ssssss": {
       "x": 51,
       "y": 764,
       "width": 24,
       "height": 24,
       "id": "46"
     },
-    "DarkMode": {
+    "darkmode": {
       "x": 705,
       "y": 280,
       "width": 28,
       "height": 28,
       "id": "461298"
     },
-    "angryyapYapyap": {
+    "angryyapyapyap": {
       "x": 705,
       "y": 308,
       "width": 28,
       "height": 28,
       "id": "465572"
     },
-    "HumbleLife": {
+    "humblelife": {
       "x": 705,
       "y": 336,
       "width": 28,
       "height": 28,
       "id": "46881"
     },
-    "PunchTrees": {
+    "punchtrees": {
       "x": 75,
       "y": 764,
       "width": 24,
       "height": 24,
       "id": "47"
     },
-    "moon2EZ": {
+    "moon2ez": {
       "x": 705,
       "y": 392,
       "width": 28,
       "height": 28,
       "id": "476110"
     },
-    "TwitchVotes": {
+    "twitchvotes": {
       "x": 705,
       "y": 420,
       "width": 28,
       "height": 28,
       "id": "479745"
     },
-    "trofleCopter": {
+    "troflecopter": {
       "x": 705,
       "y": 448,
       "width": 28,
       "height": 28,
       "id": "48083"
     },
-    "trofleInc": {
+    "trofleinc": {
       "x": 705,
       "y": 476,
       "width": 28,
       "height": 28,
       "id": "48120"
     },
-    "trofleRip": {
+    "troflerip": {
       "x": 705,
       "y": 504,
       "width": 28,
       "height": 28,
       "id": "48280"
     },
-    "trofleRampDdos": {
+    "troflerampddos": {
       "x": 705,
       "y": 532,
       "width": 28,
       "height": 28,
       "id": "48281"
     },
-    "poongGoldman": {
+    "poonggoldman": {
       "x": 705,
       "y": 560,
       "width": 28,
       "height": 28,
       "id": "482974"
     },
-    "trofleB1": {
+    "trofleb1": {
       "x": 705,
       "y": 588,
       "width": 28,
       "height": 28,
       "id": "48301"
     },
-    "poongNof": {
+    "poongnof": {
       "x": 705,
       "y": 616,
       "width": 28,
@@ -5839,1092 +5503,980 @@ var DubPlus = (function () {
       "height": 28,
       "id": "486401"
     },
-    "CorgiDerp": {
+    "corgiderp": {
       "x": 789,
       "y": 421,
       "width": 27,
       "height": 28,
       "id": "49106"
     },
-    "forsenD": {
+    "forsend": {
       "x": 28,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "494927"
     },
-    "sodaHP": {
-      "x": 56,
-      "y": 680,
-      "width": 28,
-      "height": 28,
-      "id": "49642"
-    },
-    "\\:-?[z|Z|\\|]": {
+    "\\:-?[z|z|\\|]": {
       "x": 195,
       "y": 764,
       "width": 24,
       "height": 18,
       "id": "5"
     },
-    "ArsonNoSexy": {
+    "arsonnosexy": {
       "x": 817,
       "y": 250,
       "width": 18,
       "height": 27,
       "id": "50"
     },
-    "TPFufun": {
+    "tpfufun": {
       "x": 140,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "508650"
     },
-    "ArgieB8": {
+    "argieb8": {
       "x": 168,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "51838"
     },
-    "SMOrc": {
+    "smorc": {
       "x": 0,
       "y": 60,
       "width": 32,
       "height": 32,
       "id": "52"
     },
-    "reckB": {
+    "reckb": {
       "x": 224,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "520383"
     },
-    "sodaB": {
-      "x": 252,
-      "y": 680,
-      "width": 28,
-      "height": 28,
-      "id": "520386"
-    },
-    "forsenE": {
+    "forsene": {
       "x": 280,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "521050"
     },
-    "ShadyLulu": {
+    "shadylulu": {
       "x": 308,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "52492"
     },
-    "RedTeam": {
+    "redteam": {
       "x": 336,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "530888"
     },
-    "GreenTeam": {
+    "greenteam": {
       "x": 364,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "530890"
     },
-    "tatW": {
+    "tatw": {
       "x": 392,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "54495"
     },
-    "HappyJack": {
+    "happyjack": {
       "x": 420,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "551865"
     },
-    "AngryJack": {
+    "angryjack": {
       "x": 448,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "551866"
     },
-    "KappaPride": {
+    "kappapride": {
       "x": 476,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "55338"
     },
-    "angryyapHappy": {
+    "angryyaphappy": {
       "x": 504,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "555284"
     },
-    "forsenBee": {
+    "forsenbee": {
       "x": 532,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "555437"
     },
-    "sodaSO": {
-      "x": 560,
-      "y": 680,
-      "width": 28,
-      "height": 28,
-      "id": "55638"
-    },
-    "moon2M": {
+    "moon2m": {
       "x": 588,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "560023"
     },
-    "tyler1Yikes": {
+    "tyler1yikes": {
       "x": 616,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "571061"
     },
-    "tppSlowpoke": {
+    "tppslowpoke": {
       "x": 644,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "57116"
     },
-    "tppTrumpet": {
+    "tpptrumpet": {
       "x": 672,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "57117"
     },
-    "reckA": {
+    "recka": {
       "x": 700,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "574983"
     },
-    "CoolCat": {
+    "coolcat": {
       "x": 733,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "58127"
     },
-    "DendiFace": {
+    "dendiface": {
       "x": 733,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "58135"
     },
-    "lirikNO": {
+    "lirikno": {
       "x": 733,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "586490"
     },
-    "NotLikeThis": {
+    "notlikethis": {
       "x": 733,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "58765"
     },
-    "[oO](_|\\.)[oO]": {
+    "[oo](_|\\.)[oo]": {
       "x": 243,
       "y": 764,
       "width": 24,
       "height": 18,
       "id": "6"
     },
-    "forsenX": {
+    "forsenx": {
       "x": 733,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "60257"
     },
-    "forsenSheffy": {
+    "forsensheffy": {
       "x": 733,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "60390"
     },
-    "forsenPuke": {
+    "forsenpuke": {
       "x": 733,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "60391"
     },
-    "tppTeiHard": {
+    "tppteihard": {
       "x": 733,
       "y": 224,
       "width": 28,
       "height": 28,
       "id": "605235"
     },
-    "sumPotato": {
+    "sumpotato": {
       "x": 733,
       "y": 252,
       "width": 28,
       "height": 28,
       "id": "60613"
     },
-    "tatPretty": {
+    "tatpretty": {
       "x": 733,
       "y": 280,
       "width": 28,
       "height": 28,
       "id": "60643"
     },
-    "moon2MM": {
+    "moon2mm": {
       "x": 733,
       "y": 308,
       "width": 28,
       "height": 28,
       "id": "610213"
     },
-    "sumPhone": {
+    "sumphone": {
       "x": 733,
       "y": 336,
       "width": 28,
       "height": 28,
       "id": "615043"
     },
-    "sumEZ": {
+    "sumez": {
       "x": 733,
       "y": 364,
       "width": 28,
       "height": 28,
       "id": "615044"
     },
-    "sumG": {
+    "sumg": {
       "x": 733,
       "y": 392,
       "width": 28,
       "height": 28,
       "id": "615045"
     },
-    "sumCrash": {
+    "sumcrash": {
       "x": 733,
       "y": 420,
       "width": 28,
       "height": 28,
       "id": "61531"
     },
-    "tppPayout": {
+    "tpppayout": {
       "x": 733,
       "y": 448,
       "width": 28,
       "height": 28,
       "id": "618758"
     },
-    "reckF": {
+    "reckf": {
       "x": 733,
       "y": 476,
       "width": 28,
       "height": 28,
       "id": "61954"
     },
-    "lirikTHINK": {
+    "lirikthink": {
       "x": 733,
       "y": 504,
       "width": 28,
       "height": 28,
       "id": "623352"
     },
-    "PurpleStar": {
+    "purplestar": {
       "x": 733,
       "y": 532,
       "width": 28,
       "height": 28,
       "id": "624501"
     },
-    "tatSellout": {
+    "tatsellout": {
       "x": 733,
       "y": 560,
       "width": 28,
       "height": 28,
       "id": "62485"
     },
-    "FBtouchdown": {
+    "fbtouchdown": {
       "x": 733,
       "y": 588,
       "width": 28,
       "height": 28,
       "id": "626795"
     },
-    "riPepperonis": {
+    "ripepperonis": {
       "x": 733,
       "y": 616,
       "width": 28,
       "height": 28,
       "id": "62833"
     },
-    "duDudu": {
+    "dududu": {
       "x": 733,
       "y": 644,
       "width": 28,
       "height": 28,
       "id": "62834"
     },
-    "bleedPurple": {
+    "bleedpurple": {
       "x": 733,
       "y": 672,
       "width": 28,
       "height": 28,
       "id": "62835"
     },
-    "twitchRaid": {
+    "twitchraid": {
       "x": 0,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "62836"
     },
-    "sodaFeels": {
-      "x": 28,
-      "y": 708,
-      "width": 28,
-      "height": 28,
-      "id": "64045"
-    },
-    "SeemsGood": {
+    "seemsgood": {
       "x": 56,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "64138"
     },
-    "qtpLURK": {
+    "qtplurk": {
       "x": 84,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "647939"
     },
-    "qtpDEAD": {
+    "qtpdead": {
       "x": 112,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "647951"
     },
-    "FrankerZ": {
+    "frankerz": {
       "x": 0,
       "y": 0,
       "width": 40,
       "height": 30,
       "id": "65"
     },
-    "poongTt": {
+    "poongtt": {
       "x": 168,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "656466"
     },
-    "poongL": {
+    "poongl": {
       "x": 196,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "658395"
     },
-    "OneHand": {
+    "onehand": {
       "x": 817,
       "y": 60,
       "width": 20,
       "height": 27,
       "id": "66"
     },
-    "poongB": {
+    "poongb": {
       "x": 252,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "665687"
     },
-    "poongP": {
+    "poongp": {
       "x": 280,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "665688"
     },
-    "poongGy": {
+    "poonggy": {
       "x": 308,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "669169"
     },
-    "poongCh": {
+    "poongch": {
       "x": 336,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "669170"
     },
-    "sodaJR": {
-      "x": 364,
-      "y": 708,
-      "width": 28,
-      "height": 28,
-      "id": "675036"
-    },
-    "forsenIQ": {
+    "forseniq": {
       "x": 392,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "67683"
     },
-    "HassanChop": {
+    "hassanchop": {
       "x": 817,
       "y": 168,
       "width": 19,
       "height": 28,
       "id": "68"
     },
-    "forsenKek": {
+    "forsenkek": {
       "x": 448,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "684688"
     },
-    "forsenL": {
+    "forsenl": {
       "x": 476,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "684692"
     },
-    "MingLee": {
+    "minglee": {
       "x": 504,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "68856"
     },
-    "BloodTrail": {
+    "bloodtrail": {
       "x": 40,
       "y": 0,
       "width": 41,
       "height": 28,
       "id": "69"
     },
-    "qtpMEW": {
+    "qtpmew": {
       "x": 560,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "69103"
     },
-    "sumPluto": {
+    "sumpluto": {
       "x": 588,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "69298"
     },
-    "moon2DAB": {
+    "moon2dab": {
       "x": 616,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "695739"
     },
-    "forsenRedSonic": {
+    "forsenredsonic": {
       "x": 644,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "696755"
     },
-    "qtpBAKED": {
+    "qtpbaked": {
       "x": 672,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "69729"
     },
-    "qtpFEELS": {
+    "qtpfeels": {
       "x": 700,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "69731"
     },
-    "B-?\\)": {
+    "b-?\\)": {
       "x": 219,
       "y": 764,
       "width": 24,
       "height": 18,
       "id": "7"
     },
-    "tatFat": {
+    "tatfat": {
       "x": 761,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "70086"
     },
-    "tatPleb": {
+    "tatpleb": {
       "x": 761,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "70087"
     },
-    "tatMlg": {
+    "tatmlg": {
       "x": 761,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "70089"
     },
-    "KappaRoss": {
+    "kappaross": {
       "x": 761,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "70433"
     },
-    "tatTank": {
+    "tattank": {
       "x": 761,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "708603"
     },
-    "tatWink": {
+    "tatwink": {
       "x": 761,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "720524"
     },
-    "PopCorn": {
+    "popcorn": {
       "x": 761,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "724216"
     },
-    "qtpSMUG": {
+    "qtpsmug": {
       "x": 761,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "729285"
     },
-    "qtpCAT": {
+    "qtpcat": {
       "x": 761,
       "y": 224,
       "width": 28,
       "height": 28,
       "id": "729414"
     },
-    "DBstyle": {
+    "dbstyle": {
       "x": 93,
       "y": 60,
       "width": 21,
       "height": 30,
       "id": "73"
     },
-    "tppPokeball": {
+    "tpppokeball": {
       "x": 761,
       "y": 280,
       "width": 28,
       "height": 28,
       "id": "73516"
     },
-    "trofleSnail": {
+    "troflesnail": {
       "x": 761,
       "y": 308,
       "width": 28,
       "height": 28,
       "id": "73873"
     },
-    "AsianGlow": {
+    "asianglow": {
       "x": 789,
       "y": 477,
       "width": 24,
       "height": 30,
       "id": "74"
     },
-    "TheThing": {
+    "thething": {
       "x": 761,
       "y": 364,
       "width": 28,
       "height": 28,
       "id": "7427"
     },
-    "qtpD": {
+    "qtpd": {
       "x": 761,
       "y": 392,
       "width": 28,
       "height": 28,
       "id": "743103"
     },
-    "KappaClaus": {
+    "kappaclaus": {
       "x": 761,
       "y": 420,
       "width": 28,
       "height": 28,
       "id": "74510"
     },
-    "angryyapOznojam": {
+    "angryyapoznojam": {
       "x": 761,
       "y": 448,
       "width": 28,
       "height": 28,
       "id": "748215"
     },
-    "reckC": {
+    "reckc": {
       "x": 761,
       "y": 476,
       "width": 28,
       "height": 28,
       "id": "74931"
     },
-    "reckP1": {
+    "reckp1": {
       "x": 761,
       "y": 504,
       "width": 28,
       "height": 28,
       "id": "756332"
     },
-    "reckP2": {
+    "reckp2": {
       "x": 761,
       "y": 532,
       "width": 28,
       "height": 28,
       "id": "756334"
     },
-    "reckP3": {
+    "reckp3": {
       "x": 761,
       "y": 560,
       "width": 28,
       "height": 28,
       "id": "756335"
     },
-    "reckP4": {
+    "reckp4": {
       "x": 761,
       "y": 588,
       "width": 28,
       "height": 28,
       "id": "756336"
     },
-    "reckBald": {
+    "reckbald": {
       "x": 761,
       "y": 616,
       "width": 28,
       "height": 28,
       "id": "76093"
     },
-    "angryyapZzz": {
+    "angryyapzzz": {
       "x": 761,
       "y": 644,
       "width": 28,
       "height": 28,
       "id": "761175"
     },
-    "reckDDOS": {
+    "reckddos": {
       "x": 761,
       "y": 672,
       "width": 28,
       "height": 28,
       "id": "77110"
     },
-    "forsenWTF": {
+    "forsenwtf": {
       "x": 761,
       "y": 700,
       "width": 28,
       "height": 28,
       "id": "780629"
     },
-    "reckRage": {
+    "reckrage": {
       "x": 0,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "78421"
     },
-    "\\:-?(o|O)": {
+    "\\:-?(o|o)": {
       "x": 123,
       "y": 764,
       "width": 24,
       "height": 18,
       "id": "8"
     },
-    "qtpLUCIAN": {
+    "qtplucian": {
       "x": 56,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "80386"
     },
-    "sumLove": {
+    "sumlove": {
       "x": 84,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "80958"
     },
-    "sumFail": {
+    "sumfail": {
       "x": 112,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "80993"
     },
-    "sumFood": {
+    "sumfood": {
       "x": 140,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "80994"
     },
-    "sumThump": {
+    "sumthump": {
       "x": 168,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "80995"
     },
-    "sumUp": {
+    "sumup": {
       "x": 196,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "80996"
     },
-    "sumWTF": {
+    "sumwtf": {
       "x": 224,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "80998"
     },
-    "OhMyDog": {
+    "ohmydog": {
       "x": 252,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "81103"
     },
-    "OSFrog": {
+    "osfrog": {
       "x": 280,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "81248"
     },
-    "SeriousSloth": {
+    "serioussloth": {
       "x": 308,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "81249"
     },
-    "KomodoHype": {
+    "komodohype": {
       "x": 336,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "81273"
     },
-    "VoHiYo": {
+    "vohiyo": {
       "x": 364,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "81274"
     },
-    "MikeHogu": {
+    "mikehogu": {
       "x": 392,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "81636"
     },
-    "KappaWealth": {
+    "kappawealth": {
       "x": 420,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "81997"
     },
-    "tyler1N": {
+    "tyler1n": {
       "x": 448,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "821920"
     },
-    "reckH": {
+    "reckh": {
       "x": 476,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "83335"
     },
-    "sodaNOPE": {
-      "x": 504,
-      "y": 736,
-      "width": 28,
-      "height": 28,
-      "id": "8380"
-    },
-    "reckGL": {
+    "reckgl": {
       "x": 532,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "84049"
     },
-    "reckGR": {
+    "reckgr": {
       "x": 560,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "84050"
     },
-    "tatChair": {
+    "tatchair": {
       "x": 588,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "8408"
     },
-    "cmonBruh": {
+    "cmonbruh": {
       "x": 616,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "84608"
     },
-    "BibleThump": {
+    "biblethump": {
       "x": 0,
       "y": 30,
       "width": 36,
       "height": 30,
       "id": "86"
     },
-    "sodaBOOP": {
-      "x": 672,
-      "y": 736,
-      "width": 28,
-      "height": 28,
-      "id": "860842"
-    },
-    "sodaH": {
-      "x": 700,
-      "y": 736,
-      "width": 28,
-      "height": 28,
-      "id": "863358"
-    },
-    "TombRaid": {
+    "tombraid": {
       "x": 728,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "864205"
     },
-    "tatMesa": {
+    "tatmesa": {
       "x": 756,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "86639"
     },
-    "reckP": {
+    "reckp": {
       "x": 789,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "86847"
     },
-    "ShazBotstix": {
+    "shazbotstix": {
       "x": 789,
       "y": 597,
       "width": 24,
       "height": 30,
       "id": "87"
     },
-    "angryyapE": {
+    "angryyape": {
       "x": 789,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "87236"
     },
-    "angryyapF": {
+    "angryyapf": {
       "x": 789,
       "y": 84,
       "width": 28,
       "height": 28,
       "id": "87239"
     },
-    "lirikHS": {
+    "lirikhs": {
       "x": 789,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "875499"
     },
-    "qtpH": {
+    "qtph": {
       "x": 789,
       "y": 140,
       "width": 28,
       "height": 28,
       "id": "876449"
     },
-    "tatSuh": {
+    "tatsuh": {
       "x": 789,
       "y": 168,
       "width": 28,
       "height": 28,
       "id": "87756"
     },
-    "PogChamp": {
+    "pogchamp": {
       "x": 789,
       "y": 685,
       "width": 23,
       "height": 30,
       "id": "88"
     },
-    "sodaSLEEPER": {
-      "x": 789,
-      "y": 224,
-      "width": 28,
-      "height": 28,
-      "id": "884528"
-    },
-    "sodaPUKE": {
-      "x": 789,
-      "y": 252,
-      "width": 28,
-      "height": 28,
-      "id": "88469"
-    },
-    "sodaRIOT": {
-      "x": 789,
-      "y": 280,
-      "width": 28,
-      "height": 28,
-      "id": "88472"
-    },
-    "sodaGN": {
-      "x": 789,
-      "y": 308,
-      "width": 28,
-      "height": 28,
-      "id": "885611"
-    },
-    "sodaGL": {
-      "x": 789,
-      "y": 336,
-      "width": 28,
-      "height": 28,
-      "id": "885617"
-    },
-    "sodaGR": {
-      "x": 789,
-      "y": 364,
-      "width": 28,
-      "height": 28,
-      "id": "885618"
-    },
-    "qtpMINION": {
+    "qtpminion": {
       "x": 789,
       "y": 196,
       "width": 28,
       "height": 28,
       "id": "887530"
     },
-    "sodaWOW": {
-      "x": 789,
-      "y": 28,
-      "width": 28,
-      "height": 28,
-      "id": "891129"
-    },
-    "tatOshi": {
+    "tatoshi": {
       "x": 28,
       "y": 736,
       "width": 28,
       "height": 28,
       "id": "89232"
     },
-    "sodaMoney": {
-      "x": 761,
-      "y": 336,
-      "width": 28,
-      "height": 28,
-      "id": "894933"
-    },
-    "angryyapG": {
+    "angryyapg": {
       "x": 761,
       "y": 252,
       "width": 28,
       "height": 28,
       "id": "89520"
     },
-    "forsenWhip": {
+    "forsenwhip": {
       "x": 728,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "89640"
     },
-    "forsenSleeper": {
+    "forsensleeper": {
       "x": 420,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "89641"
     },
-    "forsenGun": {
+    "forsengun": {
       "x": 224,
       "y": 708,
       "width": 28,
       "height": 28,
       "id": "89650"
     },
-    "forsenPuke2": {
+    "forsenpuke2": {
       "x": 733,
       "y": 112,
       "width": 28,
       "height": 28,
       "id": "89678"
     },
-    "SmoocherZ": {
+    "smoocherz": {
       "x": 112,
       "y": 680,
       "width": 28,
@@ -6938,217 +6490,196 @@ var DubPlus = (function () {
       "height": 18,
       "id": "9"
     },
-    "NomNom": {
+    "nomnom": {
       "x": 84,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "90075"
     },
-    "StinkyCheese": {
+    "stinkycheese": {
       "x": 0,
       "y": 680,
       "width": 28,
       "height": 28,
       "id": "90076"
     },
-    "ChefFrank": {
+    "cheffrank": {
       "x": 705,
       "y": 364,
       "width": 28,
       "height": 28,
       "id": "90129"
     },
-    "sodaEMOJI": {
-      "x": 705,
-      "y": 252,
-      "width": 28,
-      "height": 28,
-      "id": "90226"
-    },
-    "forsenKnife": {
+    "forsenknife": {
       "x": 168,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "90377"
     },
-    "trofleMoon": {
+    "troflemoon": {
       "x": 56,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "90792"
     },
-    "sumBuhblam": {
+    "sumbuhblam": {
       "x": 28,
       "y": 652,
       "width": 28,
       "height": 28,
       "id": "90969"
     },
-    "sumS": {
+    "sums": {
       "x": 677,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "910286"
     },
-    "PMSTwin": {
+    "pmstwin": {
       "x": 789,
       "y": 655,
       "width": 23,
       "height": 30,
       "id": "92"
     },
-    "forsenPrime": {
+    "forsenprime": {
       "x": 616,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "922505"
     },
-    "tatPik": {
+    "tatpik": {
       "x": 476,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "92258"
     },
-    "tatKKevin": {
+    "tatkkevin": {
       "x": 252,
       "y": 624,
       "width": 28,
       "height": 28,
       "id": "927952"
     },
-    "moon2MD": {
+    "moon2md": {
       "x": 649,
       "y": 476,
       "width": 28,
       "height": 28,
       "id": "938129"
     },
-    "reckDong": {
+    "reckdong": {
       "x": 649,
       "y": 448,
       "width": 28,
       "height": 28,
       "id": "938946"
     },
-    "reckD": {
+    "reckd": {
       "x": 649,
       "y": 28,
       "width": 28,
       "height": 28,
       "id": "938950"
     },
-    "sumSuh": {
+    "sumsuh": {
       "x": 649,
       "y": 0,
       "width": 28,
       "height": 28,
       "id": "94254"
     },
-    "moon2H": {
+    "moon2h": {
       "x": 588,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "952500"
     },
-    "moon2CD": {
+    "moon2cd": {
       "x": 392,
       "y": 596,
       "width": 28,
       "height": 28,
       "id": "955757"
     },
-    "tatDab": {
+    "tatdab": {
       "x": 621,
       "y": 420,
       "width": 28,
       "height": 28,
       "id": "95854"
     },
-    "tatJK": {
+    "tatjk": {
       "x": 476,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "95855"
     },
-    "EarthDay": {
+    "earthday": {
       "x": 448,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "959018"
     },
-    "forsenLewd": {
+    "forsenlewd": {
       "x": 420,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "96553"
     },
-    "PartyHat": {
+    "partyhat": {
       "x": 364,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "965738"
     },
-    "sodaGM": {
-      "x": 308,
-      "y": 568,
-      "width": 28,
-      "height": 28,
-      "id": "970344"
-    },
-    "tatY": {
+    "taty": {
       "x": 280,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "97067"
     },
-    "tatLATE": {
+    "tatlate": {
       "x": 252,
       "y": 568,
       "width": 28,
       "height": 28,
       "id": "972382"
     },
-    "DAESuppy": {
+    "daesuppy": {
       "x": 336,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "973"
     },
-    "sumOrc": {
+    "sumorc": {
       "x": 112,
       "y": 540,
       "width": 28,
       "height": 28,
       "id": "9793"
     },
-    "FutureMan": {
+    "futureman": {
       "x": 537,
       "y": 56,
       "width": 28,
       "height": 28,
       "id": "98562"
     },
-    "sodaKEK": {
-      "x": 509,
-      "y": 308,
-      "width": 28,
-      "height": 28,
-      "id": "987094"
-    },
-    "sumRekt": {
+    "sumrekt": {
       "x": 453,
       "y": 364,
       "width": 28,
@@ -7162,33 +6693,26 @@ var DubPlus = (function () {
       "height": 28,
       "id": "9874"
     },
-    "sumBag": {
+    "sumbag": {
       "x": 84,
       "y": 344,
       "width": 28,
       "height": 28,
       "id": "9875"
     },
-    "qtpTHUMP": {
+    "qtpthump": {
       "x": 224,
       "y": 288,
       "width": 28,
       "height": 28,
       "id": "99038"
     },
-    "qtpOWO": {
+    "qtpowo": {
       "x": 0,
       "y": 204,
       "width": 28,
       "height": 28,
       "id": "99039"
-    },
-    "sodaLOUDER": {
-      "x": 336,
-      "y": 568,
-      "width": 28,
-      "height": 28,
-      "id": "99300"
     }
   };
 
@@ -12524,17 +12048,17 @@ var DubPlus = (function () {
 
   /**
    * Twitch emotes
-   * 
+   *
    * No longer loading twitch emotes from API and using indexedDB
    * Instead of loading the 80,000 (or whatever) possible twitch emotes I've reduced
-   * the emotes to just 15 channels[1] plus global, which is about ~800 emotes 
+   * the emotes to just 15 channels[1] plus global, which is about ~800 emotes
    * (similar in size to the regular emoji)
-   * 
-   * [1] https://github.com/FranciscoG/emoji-spritesheet/blob/master/lib/downloadTwitch.js 
+   *
+   * [1] https://github.com/FranciscoG/emoji-spritesheet/blob/master/lib/downloadTwitch.js
    */
   var twitch = {
     get: function get(name) {
-      var emoteData = twitchSpriteSheet[name];
+      var emoteData = twitchSpriteSheet[name] || twitchSpriteSheet[name.toLowerCase()];
 
       if (emoteData) {
         return this.template(emoteData.id);
@@ -12564,7 +12088,7 @@ var DubPlus = (function () {
 
   var bttv = {
     get: function get(name) {
-      var emoteData = bttvSpriteSheet[name];
+      var emoteData = bttvSpriteSheet[name] || bttvSpriteSheet[name.toLowerCase()];
 
       if (emoteData) {
         return this.template(emoteData.id);
@@ -13097,9 +12621,11 @@ var DubPlus = (function () {
     parent.replaceChild(fragment, textNode);
   }
   function beginReplace(nodeStart) {
-    if (!nodeStart.nodeType) {
+    // if starting node is missing or not a real node we look for the latest message
+    if (!nodeStart || !nodeStart.nodeType) {
       nodeStart = getLatestChatNode();
-    }
+    } // if we still have nothing then quit
+
 
     if (!nodeStart) {
       return;
@@ -15372,7 +14898,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550071539827);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550124737389);
     document.head.appendChild(link);
   }
   /**

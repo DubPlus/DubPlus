@@ -1,4 +1,6 @@
 // Mock Browser API's which are not supported by JSDOM, e.g. ServiceWorker, LocalStorage
+var request = require("request");
+var emojify = require("./emojify.js");
 
 /**************************************************************
  * localStorage in-memory replacement
@@ -59,7 +61,6 @@ Object.defineProperty(window, "_RESOURCE_SRC_", {
   value: "/test/"
 });
 
-import emojify from "./emojify.js";
 Object.defineProperty(window, "emojify", {
   value: emojify
 });
@@ -67,8 +68,6 @@ Object.defineProperty(window, "emojify", {
 /**************************************************************
  * XHR replacement
  */
-
-import request from "request";
 
 function MockXHR() {
   this.responseText = null;

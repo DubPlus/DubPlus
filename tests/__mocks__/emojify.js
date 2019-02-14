@@ -1,25 +1,17 @@
-export default {
-  "defaultConfig": {
-    "blacklist": {
-      "ids": [],
-      "classes": [
-        "no-emojify"
-      ],
-      "elements": [
-        "script",
-        "textarea",
-        "a",
-        "pre",
-        "code"
-      ]
+module.exports = {
+  defaultConfig: {
+    blacklist: {
+      ids: [],
+      classes: ["no-emojify"],
+      elements: ["script", "textarea", "a", "pre", "code"]
     },
-    "tag_type": null,
-    "only_crawl_id": null,
-    "img_dir": "/assets/emoji/apple",
-    "ignore_emoticons": false,
-    "mode": "img"
+    tag_type: null,
+    only_crawl_id: null,
+    img_dir: "/assets/emoji/apple",
+    ignore_emoticons: false,
+    mode: "img"
   },
-  "emojiNames": [
+  emojiNames: [
     "+1",
     "-1",
     "100",
@@ -907,4 +899,4 @@ export default {
     "zero",
     "zzz"
   ]
-}
+};
