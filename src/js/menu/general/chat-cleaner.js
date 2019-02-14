@@ -8,8 +8,9 @@ import dtproxy from "@/utils/DTProxy.js";
  */
 export default class ChatCleaner extends Component {
   state = {
-    maxChats: settings.stored.custom.chat_cleaner || 500
-  }
+    maxChats: settings.stored.custom.chat_cleaner || 500,
+    showModal: false
+  };
 
   chatCleanerCheck = e => {
     let totalChats = Array.from(dtproxy.chatList().children);
@@ -38,11 +39,14 @@ export default class ChatCleaner extends Component {
     var chatItems = parseInt(value, 10);
     let amount = !isNaN(chatItems) ? chatItems : 500;
     settings.save("custom", "chat_cleaner", amount); // default to 500
-    this.setState({ maxChats: value});
+    this.setState({ maxChats: value, showModal: false });
   };
 
   turnOn = () => {
     dtproxy.onChatMessage(this.chatCleanerCheck);
+    if (!settings.stored.custom.chat_cleaner) {
+      this.setState({ showModal: true });
+    }
   };
 
   turnOff = () => {
@@ -60,6 +64,7 @@ export default class ChatCleaner extends Component {
         turnOff={this.turnOff}
       >
         <MenuPencil
+          showModal={this.state.showModal}
           title="Chat Cleaner"
           section="General"
           content="Please specify the number of most recent chat items that will remain in your chat history"
