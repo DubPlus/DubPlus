@@ -11614,15 +11614,28 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "closeModal", function () {
-        console.log("closing dub+ modal");
-
         _this2.setState({
           open: false
         });
 
-        if (typeof _this2.props.onCancel === 'function') {
+        if (typeof _this2.props.onCancel === "function") {
           _this2.props.onCancel();
         }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "checkVal", function (val) {
+        var limit = parseInt(_this2.props.maxlength, 10);
+
+        if (isNaN(limit)) {
+          limit = 500;
+        }
+
+        if (val.length > limit) {
+          val = val.substring(0, limit);
+        } // now we don't have to check val length inside every option
+
+
+        _this2.props.onConfirm(val);
       });
 
       return _this2;
@@ -11640,7 +11653,8 @@ var DubPlus = (function () {
           content: props.content || "Please enter a value",
           placeholder: props.placeholder || "in here",
           value: props.value,
-          onConfirm: props.onConfirm,
+          maxlength: props.maxlength,
+          onConfirm: this.checkVal,
           onClose: this.closeModal
         }));
       }
@@ -11671,7 +11685,7 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "switchOn", function () {
-        _this3.props.turnOn();
+        _this3.props.turnOn(false);
 
         userSettings.save("options", _this3.props.id, true);
 
@@ -11713,7 +11727,8 @@ var DubPlus = (function () {
       key: "componentDidMount",
       value: function componentDidMount() {
         if (this.state.on) {
-          this.props.turnOn();
+          // The "true" argument is so you can tell if component was activated on first load or not
+          this.props.turnOn(true);
         }
       }
     }, {
@@ -11753,8 +11768,6 @@ var DubPlus = (function () {
   /**
    *
    * Away From Keyboard autoresponder
-   *
-   * TODO: setup global state manager
    */
 
   var AFK =
@@ -11821,10 +11834,6 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveAFKmessage", function (val) {
-        if (val.length > 255) {
-          val = val.substring(0, 255);
-        }
-
         userSettings.save("custom", "customAfkMessage", val);
 
         _this.setState({
@@ -12740,10 +12749,10 @@ var DubPlus = (function () {
         var content = e.message;
 
         if (_this.state.custom) {
-          var customMentions = _this.state.custom.split(',');
+          var customMentions = _this.state.custom.split(",");
 
           var inUsers = customMentions.some(function (v) {
-            var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
+            var reg = new RegExp("\\b" + v.trim() + "\\b", "i");
             return reg.test(content);
           });
 
@@ -12754,11 +12763,7 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveCustomMentions", function (val) {
-        if (val.length > 255) {
-          val = val.substring(0, 255);
-        }
-
-        userSettings.save('custom', 'custom_mentions', val);
+        userSettings.save("custom", "custom_mentions", val);
 
         _this.setState({
           custom: val
@@ -12825,7 +12830,8 @@ var DubPlus = (function () {
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(ChatCleaner)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
-        maxChats: userSettings.stored.custom.chat_cleaner || 500
+        maxChats: userSettings.stored.custom.chat_cleaner || 500,
+        showModal: false
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatCleanerCheck", function (e) {
@@ -12853,12 +12859,19 @@ var DubPlus = (function () {
         userSettings.save("custom", "chat_cleaner", amount); // default to 500
 
         _this.setState({
-          maxChats: value
+          maxChats: value,
+          showModal: false
         });
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (initialLoad) {
         proxy.onChatMessage(_this.chatCleanerCheck);
+
+        if (!initialLoad && !userSettings.stored.custom.chat_cleaner) {
+          _this.setState({
+            showModal: true
+          });
+        }
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
@@ -12879,11 +12892,12 @@ var DubPlus = (function () {
           turnOn: this.turnOn,
           turnOff: this.turnOff
         }, h(MenuPencil, {
+          showModal: this.state.showModal,
           title: "Chat Cleaner",
           section: "General",
           content: "Please specify the number of most recent chat items that will remain in your chat history",
           value: this.state.maxChats,
-          placeholder: "500",
+          placeholder: "defaults to 500",
           maxlength: "5",
           onConfirm: this.saveAmount
         }));
@@ -13206,7 +13220,8 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "savePosition", function (value) {
         var int = parseInt(value, 10);
-        var amount = !isNaN(int) ? int : 2;
+        var amount = !isNaN(int) ? int : 2; // set default to position 2 in the queue
+
         userSettings.save("custom", "dj_notification", amount);
 
         _this.setState({
@@ -13215,7 +13230,7 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "djNotificationCheck", function (e) {
-        if (e.startTime > 2) return;
+        if (!_this.canNotify || e.startTime > 2) return;
         var queuePos = proxy.getQueuePosition();
         var positionParse = parseInt(queuePos, 10);
         var position = e.startTime < 0 && !isNaN(positionParse) ? positionParse - 1 : positionParse;
@@ -13224,15 +13239,12 @@ var DubPlus = (function () {
           return;
         }
 
-        if (_this.canNotify) {
-          showNotification({
-            title: "DJ Alert!",
-            content: "You will be DJing shortly! Make sure your song is set!",
-            ignoreActiveTab: true,
-            wait: 10000
-          });
-        }
-
+        showNotification({
+          title: "DJ Alert!",
+          content: "You will be DJing shortly! Make sure your song is set!",
+          ignoreActiveTab: true,
+          wait: 10000
+        });
         proxy.playChatSound();
       });
 
@@ -14898,7 +14910,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550706401389);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550867890597);
     document.head.appendChild(link);
   }
   /**
@@ -14990,12 +15002,17 @@ var DubPlus = (function () {
         showModal: false
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        _this.isOn = true;
-
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (initialLoad) {
+        // if a valid custom css file exists then we can load it
         if (userSettings.stored.custom.css) {
-          css$2.loadExternal(userSettings.stored.custom.css, 'dubplus-custom-css');
-        } else {
+          _this.isOn = true;
+          css$2.loadExternal(userSettings.stored.custom.css, "dubplus-custom-css");
+          return;
+        } // if you turn this option on but the stored value is empty then we should
+        // bring up a modal ... BUT not initial load of the extension
+
+
+        if (!initialLoad) {
           _this.setState({
             showModal: true
           });
@@ -15004,17 +15021,33 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
         _this.isOn = false;
-        document.querySelector('.dubplus-custom-css').remove();
-      });
+        var link = document.querySelector(".dubplus-custom-css");
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "save", function (val) {
-        // TODO: save to global state
-        userSettings.save('custom', 'css', val);
-
-        if (_this.isOn && val !== '') {
-          css$2.loadExternal(userSettings.stored.custom.css, 'dubplus-custom-css');
+        if (link) {
+          link.remove();
         }
 
+        _this.closeModal();
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "save", function () {
+        var val = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+        userSettings.save("custom", "css", val); // disable the switch if the value is empty/null/undefined
+
+        if (!val) {
+          _this.turnOff();
+
+          return;
+        }
+
+        if (_this.isOn) {
+          css$2.loadExternal(userSettings.stored.custom.css, "dubplus-custom-css");
+        }
+
+        _this.closeModal();
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "closeModal", function () {
         _this.setState({
           showModal: false
         });
@@ -15025,7 +15058,7 @@ var DubPlus = (function () {
 
     _createClass(CustomCSS, [{
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render$$1() {
         return h(MenuSwitch, {
           id: "dubplus-custom-css",
           section: "Customize",
@@ -15034,14 +15067,15 @@ var DubPlus = (function () {
           turnOn: this.turnOn,
           turnOff: this.turnOff
         }, h(MenuPencil, {
-          showModal: state.showModal,
+          showModal: this.state.showModal,
           title: "Custom CSS",
           section: "Customize",
           content: "Enter a url location for your custom css",
-          value: userSettings.stored.custom.css || '',
+          value: userSettings.stored.custom.css || "",
           placeholder: "https://example.com/example.css",
           maxlength: "500",
-          onConfirm: this.save
+          onConfirm: this.save,
+          onCancel: this.closeModal
         }));
       }
     }]);
@@ -15079,12 +15113,16 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "bgImg", proxy.bgImg());
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        _this.isOn = true;
-
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (initialLoad) {
         if (userSettings.stored.custom.bg) {
+          _this.isOn = true;
+
           _this.addCustomBG(userSettings.stored.custom.bg);
-        } else {
+
+          return;
+        }
+
+        if (!initialLoad) {
           _this.setState({
             showModal: true
           });
@@ -15095,13 +15133,22 @@ var DubPlus = (function () {
         _this.isOn = false;
 
         _this.revertBG();
+
+        _this.setState({
+          showModal: false
+        });
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "save", function (val) {
-        // TODO: save to global state
-        userSettings.save('custom', 'bg', val);
+        userSettings.save("custom", "bg", val); // disable the switch if the value is empty/null/undefined
 
-        if (_this.isOn && val !== '') {
+        if (!val) {
+          _this.turnOff();
+
+          return;
+        }
+
+        if (_this.isOn) {
           _this.addCustomBG(val);
         }
 
@@ -15139,7 +15186,7 @@ var DubPlus = (function () {
           title: "Custom Background Image",
           section: "Customize",
           content: "Enter the full URL of an image. We recommend using a .jpg file. Leave blank to remove the current background image",
-          value: userSettings.stored.custom.bg || '',
+          value: userSettings.stored.custom.bg || "",
           placeholder: "https://example.com/big-image.jpg",
           maxlength: "500",
           onConfirm: this.save
@@ -15181,12 +15228,14 @@ var DubPlus = (function () {
         modalMessage: modalMessage
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        _this.isOn = true;
-
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (initialLoad) {
         if (userSettings.stored.custom.notificationSound) {
+          _this.isOn = true;
           proxy.setChatSoundUrl(userSettings.stored.custom.notificationSound);
-        } else {
+          return;
+        }
+
+        if (!initialLoad) {
           _this.setState({
             showModal: true,
             modalMessage: modalMessage

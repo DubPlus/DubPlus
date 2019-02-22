@@ -12,13 +12,13 @@ export default class DJNotification extends Component {
 
   savePosition = value => {
     var int = parseInt(value, 10);
-    let amount = !isNaN(int) ? int : 2;
+    let amount = !isNaN(int) ? int : 2; // set default to position 2 in the queue
     settings.save("custom", "dj_notification", amount);
     this.setState({ notifyOn: value });
   };
 
   djNotificationCheck = e => {
-    if (e.startTime > 2) return;
+    if (!this.canNotify || e.startTime > 2) return;
 
     let queuePos = dtproxy.getQueuePosition();
     var positionParse = parseInt(queuePos, 10);
@@ -30,14 +30,12 @@ export default class DJNotification extends Component {
       return;
     }
 
-    if (this.canNotify) {
-      showNotification({
-        title: "DJ Alert!",
-        content: "You will be DJing shortly! Make sure your song is set!",
-        ignoreActiveTab: true,
-        wait: 10000
-      });
-    }
+    showNotification({
+      title: "DJ Alert!",
+      content: "You will be DJing shortly! Make sure your song is set!",
+      ignoreActiveTab: true,
+      wait: 10000
+    });
     dtproxy.playChatSound();
   };
 
