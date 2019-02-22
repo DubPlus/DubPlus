@@ -6,7 +6,6 @@ Dubtrack through this "proxy" (for lack of better word)
 import WaitFor from "@/utils/waitFor.js";
 
 class DTProxy {
-
   loadCheck() {
     var checkList = [
       "Dubtrack.session.id",
@@ -44,7 +43,7 @@ class DTProxy {
   }
 
   getRoomId() {
-    return Dubtrack.room.model.id
+    return Dubtrack.room.model.id;
   }
 
   setVolume(vol) {
@@ -110,8 +109,6 @@ class DTProxy {
   getActiveSong() {
     return Dubtrack.room.player.activeSong.get("song");
   }
-
-
 
   /**
    * returns wether user has "updub" or "downdub" current song
@@ -210,6 +207,16 @@ class DTProxy {
     return document.querySelectorAll(".chat-main .text");
   }
 
+  // this is the little input that's in the grabs popup
+  playlistInput() {
+    return document.getElementById("playlist-input");
+  }
+
+  // this is the list of playlists in the grab popup
+  grabPlaylists() {
+    return document.querySelector(".playlist-list-action");
+  }
+
   /**
    * Get the current minutes remaining of the song playing
    */
@@ -236,25 +243,25 @@ class DTProxy {
   }
 
   upVote() {
-    return document.querySelector('.dubup');
+    return document.querySelector(".dubup");
   }
   downVote() {
-    return document.querySelector('.dubdown');
+    return document.querySelector(".dubdown");
   }
   grabBtn() {
     return document.querySelector(".add-to-playlist-button");
   }
 
   userPMs() {
-    return document.querySelector(".user-messages")
+    return document.querySelector(".user-messages");
   }
 
   bgImg() {
-    return document.querySelector('.backstretch-item img');
+    return document.querySelector(".backstretch-item img");
   }
 
   hideVideoBtn() {
-    return document.querySelector('.hideVideo-el');
+    return document.querySelector(".hideVideo-el");
   }
 
   /*

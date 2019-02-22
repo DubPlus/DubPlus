@@ -1236,6 +1236,18 @@ var DubPlus = (function () {
       key: "allChatTexts",
       value: function allChatTexts() {
         return document.querySelectorAll(".chat-main .text");
+      } // this is the little input that's in the grabs popup
+
+    }, {
+      key: "playlistInput",
+      value: function playlistInput() {
+        return document.getElementById("playlist-input");
+      } // this is the list of playlists in the grab popup
+
+    }, {
+      key: "grabPlaylists",
+      value: function grabPlaylists() {
+        return document.querySelector(".playlist-list-action");
       }
       /**
        * Get the current minutes remaining of the song playing
@@ -1266,12 +1278,12 @@ var DubPlus = (function () {
     }, {
       key: "upVote",
       value: function upVote() {
-        return document.querySelector('.dubup');
+        return document.querySelector(".dubup");
       }
     }, {
       key: "downVote",
       value: function downVote() {
-        return document.querySelector('.dubdown');
+        return document.querySelector(".dubdown");
       }
     }, {
       key: "grabBtn",
@@ -1286,12 +1298,12 @@ var DubPlus = (function () {
     }, {
       key: "bgImg",
       value: function bgImg() {
-        return document.querySelector('.backstretch-item img');
+        return document.querySelector(".backstretch-item img");
       }
     }, {
       key: "hideVideoBtn",
       value: function hideVideoBtn() {
-        return document.querySelector('.hideVideo-el');
+        return document.querySelector(".hideVideo-el");
       }
       /*
         some more DOM elements being access but
@@ -11042,6 +11054,45 @@ var DubPlus = (function () {
     return PortalProxy;
   }(Component);
 
+  function isIE() {
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf("MSIE "); // IE 10 and below
+
+    var trident = ua.indexOf("Trident/"); // IE 11
+
+    return msie > 0 || trident > 0;
+  }
+
+  var ie = isIE();
+  var KEYS = {
+    get up() {
+      return ie ? "Up" : "ArrowUp";
+    },
+
+    get down() {
+      return ie ? "Down" : "ArrowDown";
+    },
+
+    get left() {
+      return ie ? "Left" : "ArrowLeft";
+    },
+
+    get right() {
+      return ie ? "Right" : "ArrowRight";
+    },
+
+    get esc() {
+      return ie ? "Esc" : "Escape";
+    },
+
+    get space() {
+      return ie ? "Spacebar" : "Space";
+    },
+
+    enter: "Enter",
+    tab: "Tab"
+  };
+
   var EMOJI_SS_W = 1931;
   var EMOJI_SS_H = 1867; // the W and H of the twitch spritesheet
 
@@ -11093,9 +11144,9 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleKeyup", function (e) {
-        var key = "which" in e ? e.which : e.keyCode;
+        var key = e.code;
 
-        if ((_this.state.emojiShow || _this.state.twitchShow) && key === 27) {
+        if ((_this.state.emojiShow || _this.state.twitchShow) && key === KEYS.esc) {
           _this.setState({
             emojiShow: false,
             twitchShow: false
@@ -11126,7 +11177,7 @@ var DubPlus = (function () {
       value: function emojiList() {
         var _this2 = this;
 
-        var size = 35; // 64px is the original size of each icon in the spritesheet but we want to 
+        var size = 35; // 64px is the original size of each icon in the spritesheet but we want to
         // reduce them to SIZE without altering the spritesheet
 
         var perc = size / 64;
@@ -11286,7 +11337,7 @@ var DubPlus = (function () {
     function UserSettings() {
       _classCallCheck(this, UserSettings);
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta");
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@feature/filter-add-to-playlist");
 
       var _savedSettings = localStorage.getItem('dubplusUserSettings');
 
@@ -12131,15 +12182,6 @@ var DubPlus = (function () {
    * pick emoji/emotes
    */
 
-  var KEYS = {
-    up: 38,
-    down: 40,
-    left: 37,
-    right: 39,
-    enter: 13,
-    esc: 27,
-    tab: 9
-  };
   var ignoreKeys = [KEYS.up, KEYS.down, KEYS.left, KEYS.right, KEYS.esc, KEYS.enter];
 
   var AutocompleteEmoji =
@@ -12173,7 +12215,7 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "checkInput", function (e) {
         // we want to ignore keyups that don't output anything
-        var key = "which" in e ? e.which : e.keyCode;
+        var key = e.code;
 
         if (ignoreKeys.indexOf(key) >= 0) {
           return;
@@ -12227,9 +12269,7 @@ var DubPlus = (function () {
           return true;
         }
 
-        var key = "which" in e ? e.which : e.keyCode;
-
-        switch (key) {
+        switch (e.code) {
           case KEYS.down:
           case KEYS.tab:
             e.preventDefault();
@@ -14824,7 +14864,7 @@ var DubPlus = (function () {
   };
 
   function handleKeyup(e) {
-    if ((e.keyCode || e.which) !== 32) {
+    if (e.code === KEYS.space) {
       return;
     }
 
@@ -14910,7 +14950,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550867890597);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550877629844);
     document.head.appendChild(link);
   }
   /**
