@@ -96,6 +96,20 @@ export class MenuPencil extends Component {
     }
   };
 
+  checkVal = val => {
+    let limit = parseInt(this.props.maxlength, 10);
+    if (isNaN(limit)) {
+      limit = 500;
+    }
+
+    if (val.length > limit) {
+      val = val.substring(0, limit);
+    }
+
+    // now we don't have to check val length inside every option
+    this.props.onConfirm(val);
+  };
+
   render(props, state) {
     return (
       <span onClick={this.loadModal} className="fa fa-pencil extra-icon">
@@ -105,7 +119,8 @@ export class MenuPencil extends Component {
           content={props.content || "Please enter a value"}
           placeholder={props.placeholder || "in here"}
           value={props.value}
-          onConfirm={props.onConfirm}
+          maxlength={props.maxlength}
+          onConfirm={this.checkVal}
           onClose={this.closeModal}
         />
       </span>
@@ -120,7 +135,8 @@ export class MenuSwitch extends Component {
 
   componentDidMount() {
     if (this.state.on) {
-      this.props.turnOn(true); // "true" so you can tell if component was activated on first load or not
+      // The "true" argument is so you can tell if component was activated on first load or not
+      this.props.turnOn(true);
     }
   }
 

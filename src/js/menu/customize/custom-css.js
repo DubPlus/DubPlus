@@ -8,7 +8,7 @@ import css from "@/utils/css.js";
  */
 export default class CustomCSS extends Component {
   // if you edit the stored value but the switch is off we check this value
-  // to know if we should load the css or not
+  // to know if we should load the css or not.
   isOn = false;
 
   state = {
@@ -16,13 +16,15 @@ export default class CustomCSS extends Component {
   };
 
   turnOn = initialLoad => {
-    this.isOn = true;
+    // if a valid custom css file exists then we can load it
     if (settings.stored.custom.css) {
+      this.isOn = true;
       css.loadExternal(settings.stored.custom.css, "dubplus-custom-css");
       return;
     }
 
-    // so we dont have a ton of modals popup when you first load the extension
+    // if you turn this option on but the stored value is empty then we should
+    // bring up a modal ... BUT not initial load of the extension
     if (!initialLoad) {
       this.setState({ showModal: true });
     }
@@ -37,9 +39,10 @@ export default class CustomCSS extends Component {
     this.closeModal();
   };
 
-  save = val => {
-    settings.save("custom", "css", val || "");
+  save = (val = "") => {
+    settings.save("custom", "css", val);
 
+    // disable the switch if the value is empty/null/undefined
     if (!val) {
       this.turnOff();
       return;

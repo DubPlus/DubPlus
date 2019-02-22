@@ -6,8 +6,6 @@ import dtproxy from "@/utils/DTProxy.js";
 /**
  *
  * Away From Keyboard autoresponder
- *
- * TODO: setup global state manager
  */
 export default class AFK extends Component {
   state = {
@@ -46,16 +44,13 @@ export default class AFK extends Component {
 
   turnOn = () => {
     dtproxy.onChatMessage(this.afk_chat_respond);
-  }
+  };
 
   turnOff = () => {
     dtproxy.offChatMessage(this.afk_chat_respond);
-  }
+  };
 
   saveAFKmessage = val => {
-    if (val.length > 255) {
-      val = val.substring(0,255);
-    }
     settings.save("custom", "customAfkMessage", val);
     this.setState({ afkMessage: val });
   };

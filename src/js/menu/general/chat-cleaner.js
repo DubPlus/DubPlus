@@ -42,9 +42,10 @@ export default class ChatCleaner extends Component {
     this.setState({ maxChats: value, showModal: false });
   };
 
-  turnOn = () => {
+  turnOn = initialLoad => {
     dtproxy.onChatMessage(this.chatCleanerCheck);
-    if (!settings.stored.custom.chat_cleaner) {
+
+    if (!initialLoad && !settings.stored.custom.chat_cleaner) {
       this.setState({ showModal: true });
     }
   };
@@ -69,7 +70,7 @@ export default class ChatCleaner extends Component {
           section="General"
           content="Please specify the number of most recent chat items that will remain in your chat history"
           value={this.state.maxChats}
-          placeholder="500"
+          placeholder="defaults to 500"
           maxlength="5"
           onConfirm={this.saveAmount}
         />

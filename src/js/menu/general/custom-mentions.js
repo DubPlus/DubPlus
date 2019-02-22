@@ -1,6 +1,6 @@
-import {h, Component} from 'preact';
-import {MenuSwitch, MenuPencil} from '@/components/menuItems.js';
-import settings from '@/utils/UserSettings.js';
+import { h, Component } from "preact";
+import { MenuSwitch, MenuPencil } from "@/components/menuItems.js";
+import settings from "@/utils/UserSettings.js";
 import dtproxy from "@/utils/DTProxy.js";
 
 /**
@@ -9,39 +9,36 @@ import dtproxy from "@/utils/DTProxy.js";
 export default class CustomMentions extends Component {
   state = {
     custom: settings.stored.custom.custom_mentions
-  }
+  };
 
-  customMentionCheck = (e) => {
+  customMentionCheck = e => {
     var content = e.message;
     if (this.state.custom) {
-      var customMentions = this.state.custom.split(',');
+      var customMentions = this.state.custom.split(",");
       var inUsers = customMentions.some(function(v) {
-        var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
-        return reg.test(content); 
+        var reg = new RegExp("\\b" + v.trim() + "\\b", "i");
+        return reg.test(content);
       });
       if (dtproxy.getSessionId() !== e.user.userInfo.userid && inUsers) {
         dtproxy.playChatSound();
       }
     }
-  }
+  };
 
-  saveCustomMentions = (val) => {
-    if (val.length > 255) {
-      val = val.substring(0,255);
-    }
-    settings.save('custom', 'custom_mentions', val);
+  saveCustomMentions = val => {
+    settings.save("custom", "custom_mentions", val);
     this.setState({ custom: val });
   };
-  
+
   turnOn = () => {
     dtproxy.onChatMessage(this.customMentionCheck);
-  }
-  
+  };
+
   turnOff = () => {
     dtproxy.offChatMessage(this.customMentionCheck);
-  }
+  };
 
-  render(props,{ custom }){
+  render(props, { custom }) {
     return (
       <MenuSwitch
         id="custom_mentions"
@@ -49,16 +46,18 @@ export default class CustomMentions extends Component {
         menuTitle="Custom Mentions"
         desc="Toggle using custom mentions to trigger sounds in chat"
         turnOn={this.turnOn}
-        turnOff={this.turnOff}>
-        <MenuPencil 
-          title='Custom AFK Message'
+        turnOff={this.turnOff}
+      >
+        <MenuPencil
+          title="Custom AFK Message"
           section="General"
-          content='Add your custom mention triggers here (separate by comma)'
+          content="Add your custom mention triggers here (separate by comma)"
           value={custom}
-          placeholder='separate, custom triggers, by, comma, :heart:'
-          maxlength='255'
-          onConfirm={this.saveCustomMentions} />
+          placeholder="separate, custom triggers, by, comma, :heart:"
+          maxlength="255"
+          onConfirm={this.saveCustomMentions}
+        />
       </MenuSwitch>
-    )
+    );
   }
 }
