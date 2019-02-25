@@ -7,71 +7,6 @@ import WaitFor from "@/utils/waitFor.js";
 
 class DTProxy {
 
-  constructor() {
-    // to avoid tests failing since we're not stubbing or testing this yet
-    if (window.MutationObserver) {
-      this.observer = new MutationObserver(this.observerCallback);
-  
-      // Start observing the target node for configured mutations
-      this.observer.observe(document.body, {
-        attributes: false,
-        childList: true,
-        subtree: false
-      });
-    }
-  }
-
-  subscribers = {};
-
-  /**
-   * Subscribe to nodes being added OR removed to the DOM
-   * use ID of complete className of the node (uses the inspector to get that)
-   * include the "#" or the "." in the selector name
-   * this.nodeOn('.long-class.name.withLots-of-things', myCallbackFunc);
-   */
-  nodeOn(selector, cb) {
-    this.subscribers[selector] = cb;
-  }
-  /**
-   * remove subscriptions
-   */
-  nodeOff(selector) {
-    if (this.subscribers[selector]) {
-      delete this.subscribers[selector];
-    }
-  }
-
-  observerCallback = mutationsList => {
-    for (var mutation of mutationsList) {
-      if (mutation.type == "childList") {
-        this.handleNewNodes(mutation.addedNodes);
-        this.handleRemovedNodes(mutation.removedNodes);
-      }
-    }
-  };
-
-  handleNewNodes(nodes) {
-    nodes.forEach(n => {
-      if (n.id && this.subscribers['#'+n.id]) {
-        this.subscribers['#'+n.id](n, true, false);
-      } 
-      if (n.className && this.subscribers['.'+n.className]) {
-        this.subscribers['#'+n.className](n, true, false);
-      } 
-    });
-  }
-
-  handleRemovedNodes(nodes) {
-    nodes.forEach(n => {
-      if (n.id && this.subscribers['#'+n.id]) {
-        this.subscribers['#'+n.id](n, false, true);
-      } 
-      if (n.className && this.subscribers['.'+n.className]) {
-        this.subscribers['#'+n.className](n, false, true);
-      } 
-    });
-  }
-
   loadCheck() {
     var checkList = [
       "Dubtrack.session.id",
@@ -183,9 +118,6 @@ class DTProxy {
     return Dubtrack.helpers.cookie.get("dub-" + Dubtrack.room.model.id);
   }
 
-  /**
-   *
-   */
   getCurrentDJ() {
     return Dubtrack.room.users.collection.findWhere({
       userid: Dubtrack.room.player.activeSong.attributes.song.userid
@@ -280,7 +212,7 @@ class DTProxy {
 
   // this is the list of playlists in the grab popup
   grabPlaylists() {
-    return document.querySelector(".playlist-list-action");
+    return document.querySelectorAll(".playlist-list-action li");
   }
 
   /**
@@ -331,7 +263,9 @@ class DTProxy {
   }
 
   /*
-    some more DOM elements being access but
+    some more DOM elements being access but only has render targets for Preact
+    going to leave them out for now
+
     document.querySelector('.player_sharing')
     document.querySelector(".chat-text-box-icons")
     document.querySelector(".header-right-navigation")

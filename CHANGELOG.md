@@ -7,14 +7,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - removed any use or dependency of jQuery
 - switched to RollupJS for building
 - slowly adding in unit tests for some of the logic
-- A complete rewrite from the ground up in Preact, which is a 3kb alternative with 1:1 feature parity with React.  
+- A complete rewrite from the ground up in `Preact`, which is a 3kb alternative with 1:1 feature parity with `React`.  
 - Emotes and Autocomplete Emoji have been completely revamped. Using a better system to replace emotes in chat and autocomplete has been redesigned and has an improved keyboard navigation. 
   - one thing to note is that autocomplete can now only replace an emote/emoji at the end of the chat input and not in the middle, this is how Dubtrack's user autocomplete works and it simplified and stabilized the code for this feature 
 - We've drastically reduced the amount of Twitch emotes supported to only a handful of Twitch channels and the global ones. We're now using way less memory so we no longer need to store emote data in localStorage or indexedDB. We also no longer call the Twitch or BTTV emote APIs directly. Emotes are bundled with the extension as JSON data and spritesheets. A separate repo has been setup to update and create the spritesheets and JSON.
 
 ### New!
-- emoji and twitch+bttv pickers! look for the 2 new icons in the chat input next to the markdown info icon. 
-- Hide gif-selfie switch in the UI section. Toggles the icon in the chat input so you gain a little extra room
+- `emoji and twitch+bttv pickers`! look for the 2 new icons in the chat input next to the markdown info icon. 
+- `Hide gif-selfie` switch in the UI section. Toggles the icon in the chat input so you gain a little extra room
+- `Filter playlists in grabs` - Adds 'filter as you type' functionality to the 'create a new playlist' input inside the grab to playlist popup
 - on the dev side we've added [husky](https://www.npmjs.com/package/husky) to ensure everything is rebuilt before committing and after merging
 
 ### Fixed

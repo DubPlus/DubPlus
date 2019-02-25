@@ -988,109 +988,10 @@ var DubPlus = (function () {
   /*#__PURE__*/
   function () {
     function DTProxy() {
-      var _this = this;
-
       _classCallCheck(this, DTProxy);
-
-      _defineProperty(this, "subscribers", {});
-
-      _defineProperty(this, "observerCallback", function (mutationsList) {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = mutationsList[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var mutation = _step.value;
-
-            if (mutation.type == "childList") {
-              _this.handleNewNodes(mutation.addedNodes);
-
-              _this.handleRemovedNodes(mutation.removedNodes);
-            }
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
-        }
-      });
-
-      // to avoid tests failing since we're not stubbing or testing this yet
-      if (window.MutationObserver) {
-        this.observer = new MutationObserver(this.observerCallback); // Start observing the target node for configured mutations
-
-        this.observer.observe(document.body, {
-          attributes: false,
-          childList: true,
-          subtree: false
-        });
-      }
     }
 
     _createClass(DTProxy, [{
-      key: "nodeOn",
-
-      /**
-       * Subscribe to nodes being added OR removed to the DOM
-       * use ID of complete className of the node (uses the inspector to get that)
-       * include the "#" or the "." in the selector name
-       * this.nodeOn('.long-class.name.withLots-of-things', myCallbackFunc);
-       */
-      value: function nodeOn(selector, cb) {
-        this.subscribers[selector] = cb;
-      }
-      /**
-       * remove subscriptions
-       */
-
-    }, {
-      key: "nodeOff",
-      value: function nodeOff(selector) {
-        if (this.subscribers[selector]) {
-          delete this.subscribers[selector];
-        }
-      }
-    }, {
-      key: "handleNewNodes",
-      value: function handleNewNodes(nodes) {
-        var _this2 = this;
-
-        nodes.forEach(function (n) {
-          if (n.id && _this2.subscribers['#' + n.id]) {
-            _this2.subscribers['#' + n.id](n, true, false);
-          }
-
-          if (n.className && _this2.subscribers['.' + n.className]) {
-            _this2.subscribers['#' + n.className](n, true, false);
-          }
-        });
-      }
-    }, {
-      key: "handleRemovedNodes",
-      value: function handleRemovedNodes(nodes) {
-        var _this3 = this;
-
-        nodes.forEach(function (n) {
-          if (n.id && _this3.subscribers['#' + n.id]) {
-            _this3.subscribers['#' + n.id](n, false, true);
-          }
-
-          if (n.className && _this3.subscribers['.' + n.className]) {
-            _this3.subscribers['#' + n.className](n, false, true);
-          }
-        });
-      }
-    }, {
       key: "loadCheck",
       value: function loadCheck() {
         var checkList = ["Dubtrack.session.id", "Dubtrack.room.chat", "Dubtrack.Events", "Dubtrack.room.player", "Dubtrack.helpers.cookie", "Dubtrack.room.model", "Dubtrack.room.users"];
@@ -1216,10 +1117,6 @@ var DubPlus = (function () {
       value: function getVoteType() {
         return Dubtrack.helpers.cookie.get("dub-" + Dubtrack.room.model.id);
       }
-      /**
-       *
-       */
-
     }, {
       key: "getCurrentDJ",
       value: function getCurrentDJ() {
@@ -1346,7 +1243,7 @@ var DubPlus = (function () {
     }, {
       key: "grabPlaylists",
       value: function grabPlaylists() {
-        return document.querySelector(".playlist-list-action");
+        return document.querySelectorAll(".playlist-list-action li");
       }
       /**
        * Get the current minutes remaining of the song playing
@@ -1405,8 +1302,9 @@ var DubPlus = (function () {
         return document.querySelector(".hideVideo-el");
       }
       /*
-        some more DOM elements being access but
-        document.querySelector('.player_sharing')
+        some more DOM elements being access but only has render targets for Preact
+        going to leave them out for now
+         document.querySelector('.player_sharing')
         document.querySelector(".chat-text-box-icons")
         document.querySelector(".header-right-navigation")
         document.querySelector(".pusher-chat-widget-input");
@@ -15018,16 +14916,43 @@ var DubPlus = (function () {
     });
   };
 
-  var input = proxy.playlistInput();
-  input.placeholder = "filter or create a new playlist";
-  input.placeholder = "create a new playlist";
+  function handleKeyup$1(e) {
+    if (e.target.id === 'playlist-input') {
+      var list = proxy.grabPlaylists();
+      list.forEach(function (li) {
+        var check = li.textContent.indexOf(e.target.value) >= 0;
+        li.style.display = check ? 'block' : 'none';
+      });
+    }
+  }
+
+  function turnOn$9() {
+    // the playlist is part of a DOM element that gets added and removed so we 
+    // can't bind directly to it, we need to use delegation.
+    document.body.addEventListener("keyup", handleKeyup$1);
+  }
+
+  function turnOff$9() {
+    document.body.removeEventListener("keyup", handleKeyup$1);
+  }
+
+  var filterAddToPlaylists = function filterAddToPlaylists() {
+    return h(MenuSwitch, {
+      id: "dubplus-playlist-filter",
+      section: "Settings",
+      menuTitle: "Filter playlists in grabs",
+      desc: "Adds 'filter as you type' functionality to the 'create a new playlist' input inside the grab to playlist popup",
+      turnOn: turnOn$9,
+      turnOff: turnOff$9
+    });
+  };
 
   var SettingsSection = function SettingsSection() {
     return h(MenuSection, {
       id: "dubplus-settings",
       title: "Settings",
       settingsKey: "settings"
-    }, h(SpacebarMute, null), h(WarnNav, null), h("filterAddToPlaylists", null));
+    }, h(SpacebarMute, null), h(WarnNav, null), h(filterAddToPlaylists, null));
   };
 
   var makeLink = function makeLink(className, FileName) {
@@ -15053,7 +14978,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1551055721505);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1551072849608);
     document.head.appendChild(link);
   }
   /**
