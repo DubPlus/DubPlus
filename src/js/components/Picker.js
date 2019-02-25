@@ -4,6 +4,7 @@ import bttvSpriteSheet from "@/utils/emotes/bttv-spritesheet";
 import { emojiNames } from "@/utils/emotes/emoji";
 import Portal from "preact-portal/src/preact-portal";
 import dtproxy from "@/utils/DTProxy.js";
+import KEYS from "@/utils/keys";
 
 // the W and H of the emoji spritesheet
 const EMOJI_SS_W = 1931;
@@ -51,8 +52,8 @@ class Picker extends Component {
   };
 
   handleKeyup = e => {
-    var key = "which" in e ? e.which : e.keyCode;
-    if ((this.state.emojiShow || this.state.twitchShow) && key === 27) {
+    var key = e.code;
+    if ((this.state.emojiShow || this.state.twitchShow) && key === KEYS.esc) {
       this.setState({
         emojiShow: false,
         twitchShow: false
@@ -66,15 +67,15 @@ class Picker extends Component {
 
   emojiList() {
     let size = 35;
-    
-    // 64px is the original size of each icon in the spritesheet but we want to 
+
+    // 64px is the original size of each icon in the spritesheet but we want to
     // reduce them to SIZE without altering the spritesheet
-    let perc = size/64; 
+    let perc = size / 64;
 
     let list = Object.keys(emojiNames).map(id => {
       let data = emojiNames[id];
-      let x = ((EMOJI_SS_W * perc) * 100) / size;
-      let y = ((EMOJI_SS_H * perc) * 100) / size;
+      let x = (EMOJI_SS_W * perc * 100) / size;
+      let y = (EMOJI_SS_H * perc * 100) / size;
       let css = {
         backgroundPosition: `-${data.x * perc}px -${data.y * perc}px`,
         width: `${size}px`,

@@ -44,7 +44,7 @@ class DTProxy {
   }
 
   getRoomId() {
-    return Dubtrack.room.model.id
+    return Dubtrack.room.model.id;
   }
 
   setVolume(vol) {
@@ -111,8 +111,6 @@ class DTProxy {
     return Dubtrack.room.player.activeSong.get("song");
   }
 
-
-
   /**
    * returns wether user has "updub" or "downdub" current song
    */
@@ -120,9 +118,6 @@ class DTProxy {
     return Dubtrack.helpers.cookie.get("dub-" + Dubtrack.room.model.id);
   }
 
-  /**
-   *
-   */
   getCurrentDJ() {
     return Dubtrack.room.users.collection.findWhere({
       userid: Dubtrack.room.player.activeSong.attributes.song.userid
@@ -210,6 +205,16 @@ class DTProxy {
     return document.querySelectorAll(".chat-main .text");
   }
 
+  // this is the little input that's in the grabs popup
+  playlistInput() {
+    return document.getElementById("playlist-input");
+  }
+
+  // this is the list of playlists in the grab popup
+  grabPlaylists() {
+    return document.querySelectorAll(".playlist-list-action li");
+  }
+
   /**
    * Get the current minutes remaining of the song playing
    */
@@ -236,29 +241,31 @@ class DTProxy {
   }
 
   upVote() {
-    return document.querySelector('.dubup');
+    return document.querySelector(".dubup");
   }
   downVote() {
-    return document.querySelector('.dubdown');
+    return document.querySelector(".dubdown");
   }
   grabBtn() {
     return document.querySelector(".add-to-playlist-button");
   }
 
   userPMs() {
-    return document.querySelector(".user-messages")
+    return document.querySelector(".user-messages");
   }
 
   bgImg() {
-    return document.querySelector('.backstretch-item img');
+    return document.querySelector(".backstretch-item img");
   }
 
   hideVideoBtn() {
-    return document.querySelector('.hideVideo-el');
+    return document.querySelector(".hideVideo-el");
   }
 
   /*
-    some more DOM elements being access but
+    some more DOM elements being access but only has render targets for Preact
+    going to leave them out for now
+
     document.querySelector('.player_sharing')
     document.querySelector(".chat-text-box-icons")
     document.querySelector(".header-right-navigation")

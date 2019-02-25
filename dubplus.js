@@ -1117,10 +1117,6 @@ var DubPlus = (function () {
       value: function getVoteType() {
         return Dubtrack.helpers.cookie.get("dub-" + Dubtrack.room.model.id);
       }
-      /**
-       *
-       */
-
     }, {
       key: "getCurrentDJ",
       value: function getCurrentDJ() {
@@ -1236,6 +1232,18 @@ var DubPlus = (function () {
       key: "allChatTexts",
       value: function allChatTexts() {
         return document.querySelectorAll(".chat-main .text");
+      } // this is the little input that's in the grabs popup
+
+    }, {
+      key: "playlistInput",
+      value: function playlistInput() {
+        return document.getElementById("playlist-input");
+      } // this is the list of playlists in the grab popup
+
+    }, {
+      key: "grabPlaylists",
+      value: function grabPlaylists() {
+        return document.querySelectorAll(".playlist-list-action li");
       }
       /**
        * Get the current minutes remaining of the song playing
@@ -1266,12 +1274,12 @@ var DubPlus = (function () {
     }, {
       key: "upVote",
       value: function upVote() {
-        return document.querySelector('.dubup');
+        return document.querySelector(".dubup");
       }
     }, {
       key: "downVote",
       value: function downVote() {
-        return document.querySelector('.dubdown');
+        return document.querySelector(".dubdown");
       }
     }, {
       key: "grabBtn",
@@ -1286,16 +1294,17 @@ var DubPlus = (function () {
     }, {
       key: "bgImg",
       value: function bgImg() {
-        return document.querySelector('.backstretch-item img');
+        return document.querySelector(".backstretch-item img");
       }
     }, {
       key: "hideVideoBtn",
       value: function hideVideoBtn() {
-        return document.querySelector('.hideVideo-el');
+        return document.querySelector(".hideVideo-el");
       }
       /*
-        some more DOM elements being access but
-        document.querySelector('.player_sharing')
+        some more DOM elements being access but only has render targets for Preact
+        going to leave them out for now
+         document.querySelector('.player_sharing')
         document.querySelector(".chat-text-box-icons")
         document.querySelector(".header-right-navigation")
         document.querySelector(".pusher-chat-widget-input");
@@ -11042,6 +11051,45 @@ var DubPlus = (function () {
     return PortalProxy;
   }(Component);
 
+  function isIE() {
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf("MSIE "); // IE 10 and below
+
+    var trident = ua.indexOf("Trident/"); // IE 11
+
+    return msie > 0 || trident > 0;
+  }
+
+  var ie = isIE();
+  var KEYS = {
+    get up() {
+      return ie ? "Up" : "ArrowUp";
+    },
+
+    get down() {
+      return ie ? "Down" : "ArrowDown";
+    },
+
+    get left() {
+      return ie ? "Left" : "ArrowLeft";
+    },
+
+    get right() {
+      return ie ? "Right" : "ArrowRight";
+    },
+
+    get esc() {
+      return ie ? "Esc" : "Escape";
+    },
+
+    get space() {
+      return ie ? "Spacebar" : "Space";
+    },
+
+    enter: "Enter",
+    tab: "Tab"
+  };
+
   var EMOJI_SS_W = 1931;
   var EMOJI_SS_H = 1867; // the W and H of the twitch spritesheet
 
@@ -11093,9 +11141,9 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleKeyup", function (e) {
-        var key = "which" in e ? e.which : e.keyCode;
+        var key = e.code;
 
-        if ((_this.state.emojiShow || _this.state.twitchShow) && key === 27) {
+        if ((_this.state.emojiShow || _this.state.twitchShow) && key === KEYS.esc) {
           _this.setState({
             emojiShow: false,
             twitchShow: false
@@ -11126,7 +11174,7 @@ var DubPlus = (function () {
       value: function emojiList() {
         var _this2 = this;
 
-        var size = 35; // 64px is the original size of each icon in the spritesheet but we want to 
+        var size = 35; // 64px is the original size of each icon in the spritesheet but we want to
         // reduce them to SIZE without altering the spritesheet
 
         var perc = size / 64;
@@ -11614,15 +11662,28 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "closeModal", function () {
-        console.log("closing dub+ modal");
-
         _this2.setState({
           open: false
         });
 
-        if (typeof _this2.props.onCancel === 'function') {
+        if (typeof _this2.props.onCancel === "function") {
           _this2.props.onCancel();
         }
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "checkVal", function (val) {
+        var limit = parseInt(_this2.props.maxlength, 10);
+
+        if (isNaN(limit)) {
+          limit = 500;
+        }
+
+        if (val.length > limit) {
+          val = val.substring(0, limit);
+        } // now we don't have to check val length inside every option
+
+
+        _this2.props.onConfirm(val);
       });
 
       return _this2;
@@ -11640,7 +11701,8 @@ var DubPlus = (function () {
           content: props.content || "Please enter a value",
           placeholder: props.placeholder || "in here",
           value: props.value,
-          onConfirm: props.onConfirm,
+          maxlength: props.maxlength,
+          onConfirm: this.checkVal,
           onClose: this.closeModal
         }));
       }
@@ -11671,7 +11733,7 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "switchOn", function () {
-        _this3.props.turnOn();
+        _this3.props.turnOn(false);
 
         userSettings.save("options", _this3.props.id, true);
 
@@ -11713,7 +11775,8 @@ var DubPlus = (function () {
       key: "componentDidMount",
       value: function componentDidMount() {
         if (this.state.on) {
-          this.props.turnOn();
+          // The "true" argument is so you can tell if component was activated on first load or not
+          this.props.turnOn(true);
         }
       }
     }, {
@@ -11753,8 +11816,6 @@ var DubPlus = (function () {
   /**
    *
    * Away From Keyboard autoresponder
-   *
-   * TODO: setup global state manager
    */
 
   var AFK =
@@ -11821,10 +11882,6 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveAFKmessage", function (val) {
-        if (val.length > 255) {
-          val = val.substring(0, 255);
-        }
-
         userSettings.save("custom", "customAfkMessage", val);
 
         _this.setState({
@@ -12122,15 +12179,6 @@ var DubPlus = (function () {
    * pick emoji/emotes
    */
 
-  var KEYS = {
-    up: 38,
-    down: 40,
-    left: 37,
-    right: 39,
-    enter: 13,
-    esc: 27,
-    tab: 9
-  };
   var ignoreKeys = [KEYS.up, KEYS.down, KEYS.left, KEYS.right, KEYS.esc, KEYS.enter];
 
   var AutocompleteEmoji =
@@ -12164,7 +12212,7 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "checkInput", function (e) {
         // we want to ignore keyups that don't output anything
-        var key = "which" in e ? e.which : e.keyCode;
+        var key = e.code;
 
         if (ignoreKeys.indexOf(key) >= 0) {
           return;
@@ -12218,9 +12266,7 @@ var DubPlus = (function () {
           return true;
         }
 
-        var key = "which" in e ? e.which : e.keyCode;
-
-        switch (key) {
+        switch (e.code) {
           case KEYS.down:
           case KEYS.tab:
             e.preventDefault();
@@ -12740,10 +12786,10 @@ var DubPlus = (function () {
         var content = e.message;
 
         if (_this.state.custom) {
-          var customMentions = _this.state.custom.split(',');
+          var customMentions = _this.state.custom.split(",");
 
           var inUsers = customMentions.some(function (v) {
-            var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
+            var reg = new RegExp("\\b" + v.trim() + "\\b", "i");
             return reg.test(content);
           });
 
@@ -12754,11 +12800,7 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveCustomMentions", function (val) {
-        if (val.length > 255) {
-          val = val.substring(0, 255);
-        }
-
-        userSettings.save('custom', 'custom_mentions', val);
+        userSettings.save("custom", "custom_mentions", val);
 
         _this.setState({
           custom: val
@@ -12825,7 +12867,8 @@ var DubPlus = (function () {
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(ChatCleaner)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
-        maxChats: userSettings.stored.custom.chat_cleaner || 500
+        maxChats: userSettings.stored.custom.chat_cleaner || 500,
+        showModal: false
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatCleanerCheck", function (e) {
@@ -12853,12 +12896,19 @@ var DubPlus = (function () {
         userSettings.save("custom", "chat_cleaner", amount); // default to 500
 
         _this.setState({
-          maxChats: value
+          maxChats: value,
+          showModal: false
         });
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (initialLoad) {
         proxy.onChatMessage(_this.chatCleanerCheck);
+
+        if (!initialLoad && !userSettings.stored.custom.chat_cleaner) {
+          _this.setState({
+            showModal: true
+          });
+        }
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
@@ -12879,11 +12929,12 @@ var DubPlus = (function () {
           turnOn: this.turnOn,
           turnOff: this.turnOff
         }, h(MenuPencil, {
+          showModal: this.state.showModal,
           title: "Chat Cleaner",
           section: "General",
           content: "Please specify the number of most recent chat items that will remain in your chat history",
           value: this.state.maxChats,
-          placeholder: "500",
+          placeholder: "defaults to 500",
           maxlength: "5",
           onConfirm: this.saveAmount
         }));
@@ -13206,7 +13257,8 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "savePosition", function (value) {
         var int = parseInt(value, 10);
-        var amount = !isNaN(int) ? int : 2;
+        var amount = !isNaN(int) ? int : 2; // set default to position 2 in the queue
+
         userSettings.save("custom", "dj_notification", amount);
 
         _this.setState({
@@ -13215,7 +13267,7 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "djNotificationCheck", function (e) {
-        if (e.startTime > 2) return;
+        if (!_this.canNotify || e.startTime > 2) return;
         var queuePos = proxy.getQueuePosition();
         var positionParse = parseInt(queuePos, 10);
         var position = e.startTime < 0 && !isNaN(positionParse) ? positionParse - 1 : positionParse;
@@ -13224,15 +13276,12 @@ var DubPlus = (function () {
           return;
         }
 
-        if (_this.canNotify) {
-          showNotification({
-            title: "DJ Alert!",
-            content: "You will be DJing shortly! Make sure your song is set!",
-            ignoreActiveTab: true,
-            wait: 10000
-          });
-        }
-
+        showNotification({
+          title: "DJ Alert!",
+          content: "You will be DJing shortly! Make sure your song is set!",
+          ignoreActiveTab: true,
+          wait: 10000
+        });
         proxy.playChatSound();
       });
 
@@ -14812,7 +14861,7 @@ var DubPlus = (function () {
   };
 
   function handleKeyup(e) {
-    if ((e.keyCode || e.which) !== 32) {
+    if (e.code === KEYS.space) {
       return;
     }
 
@@ -14867,12 +14916,43 @@ var DubPlus = (function () {
     });
   };
 
+  function handleKeyup$1(e) {
+    if (e.target.id === 'playlist-input') {
+      var list = proxy.grabPlaylists();
+      list.forEach(function (li) {
+        var check = li.textContent.indexOf(e.target.value) >= 0;
+        li.style.display = check ? 'block' : 'none';
+      });
+    }
+  }
+
+  function turnOn$9() {
+    // the playlist is part of a DOM element that gets added and removed so we 
+    // can't bind directly to it, we need to use delegation.
+    document.body.addEventListener("keyup", handleKeyup$1);
+  }
+
+  function turnOff$9() {
+    document.body.removeEventListener("keyup", handleKeyup$1);
+  }
+
+  var filterAddToPlaylists = function filterAddToPlaylists() {
+    return h(MenuSwitch, {
+      id: "dubplus-playlist-filter",
+      section: "Settings",
+      menuTitle: "Filter playlists in grabs",
+      desc: "Adds 'filter as you type' functionality to the 'create a new playlist' input inside the grab to playlist popup",
+      turnOn: turnOn$9,
+      turnOff: turnOff$9
+    });
+  };
+
   var SettingsSection = function SettingsSection() {
     return h(MenuSection, {
       id: "dubplus-settings",
       title: "Settings",
       settingsKey: "settings"
-    }, h(SpacebarMute, null), h(WarnNav, null));
+    }, h(SpacebarMute, null), h(WarnNav, null), h(filterAddToPlaylists, null));
   };
 
   var makeLink = function makeLink(className, FileName) {
@@ -14898,7 +14978,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550124737389);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1551073008891);
     document.head.appendChild(link);
   }
   /**
@@ -14922,7 +15002,7 @@ var DubPlus = (function () {
     loadExternal: loadExternal
   };
 
-  function turnOn$9() {
+  function turnOn$a() {
     var location = proxy.getRoomUrl();
     var roomAjax = getJSON("https://api.dubtrack.fm/room/" + location);
     roomAjax.then(function (json) {
@@ -14943,7 +15023,7 @@ var DubPlus = (function () {
     });
   }
 
-  function turnOff$9() {
+  function turnOff$a() {
     var css = document.querySelector(".dubplus-comm-theme");
 
     if (css) {
@@ -14957,8 +15037,8 @@ var DubPlus = (function () {
       section: "Customize",
       menuTitle: "Community Theme",
       desc: "Toggle Community CSS theme.",
-      turnOn: turnOn$9,
-      turnOff: turnOff$9
+      turnOn: turnOn$a,
+      turnOff: turnOff$a
     });
   };
 
@@ -14990,12 +15070,17 @@ var DubPlus = (function () {
         showModal: false
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        _this.isOn = true;
-
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (initialLoad) {
+        // if a valid custom css file exists then we can load it
         if (userSettings.stored.custom.css) {
-          css$2.loadExternal(userSettings.stored.custom.css, 'dubplus-custom-css');
-        } else {
+          _this.isOn = true;
+          css$2.loadExternal(userSettings.stored.custom.css, "dubplus-custom-css");
+          return;
+        } // if you turn this option on but the stored value is empty then we should
+        // bring up a modal ... BUT not initial load of the extension
+
+
+        if (!initialLoad) {
           _this.setState({
             showModal: true
           });
@@ -15004,17 +15089,33 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
         _this.isOn = false;
-        document.querySelector('.dubplus-custom-css').remove();
-      });
+        var link = document.querySelector(".dubplus-custom-css");
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "save", function (val) {
-        // TODO: save to global state
-        userSettings.save('custom', 'css', val);
-
-        if (_this.isOn && val !== '') {
-          css$2.loadExternal(userSettings.stored.custom.css, 'dubplus-custom-css');
+        if (link) {
+          link.remove();
         }
 
+        _this.closeModal();
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "save", function () {
+        var val = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+        userSettings.save("custom", "css", val); // disable the switch if the value is empty/null/undefined
+
+        if (!val) {
+          _this.turnOff();
+
+          return;
+        }
+
+        if (_this.isOn) {
+          css$2.loadExternal(userSettings.stored.custom.css, "dubplus-custom-css");
+        }
+
+        _this.closeModal();
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "closeModal", function () {
         _this.setState({
           showModal: false
         });
@@ -15025,7 +15126,7 @@ var DubPlus = (function () {
 
     _createClass(CustomCSS, [{
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render$$1() {
         return h(MenuSwitch, {
           id: "dubplus-custom-css",
           section: "Customize",
@@ -15034,14 +15135,15 @@ var DubPlus = (function () {
           turnOn: this.turnOn,
           turnOff: this.turnOff
         }, h(MenuPencil, {
-          showModal: state.showModal,
+          showModal: this.state.showModal,
           title: "Custom CSS",
           section: "Customize",
           content: "Enter a url location for your custom css",
-          value: userSettings.stored.custom.css || '',
+          value: userSettings.stored.custom.css || "",
           placeholder: "https://example.com/example.css",
           maxlength: "500",
-          onConfirm: this.save
+          onConfirm: this.save,
+          onCancel: this.closeModal
         }));
       }
     }]);
@@ -15079,12 +15181,16 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "bgImg", proxy.bgImg());
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        _this.isOn = true;
-
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (initialLoad) {
         if (userSettings.stored.custom.bg) {
+          _this.isOn = true;
+
           _this.addCustomBG(userSettings.stored.custom.bg);
-        } else {
+
+          return;
+        }
+
+        if (!initialLoad) {
           _this.setState({
             showModal: true
           });
@@ -15095,13 +15201,22 @@ var DubPlus = (function () {
         _this.isOn = false;
 
         _this.revertBG();
+
+        _this.setState({
+          showModal: false
+        });
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "save", function (val) {
-        // TODO: save to global state
-        userSettings.save('custom', 'bg', val);
+        userSettings.save("custom", "bg", val); // disable the switch if the value is empty/null/undefined
 
-        if (_this.isOn && val !== '') {
+        if (!val) {
+          _this.turnOff();
+
+          return;
+        }
+
+        if (_this.isOn) {
           _this.addCustomBG(val);
         }
 
@@ -15139,7 +15254,7 @@ var DubPlus = (function () {
           title: "Custom Background Image",
           section: "Customize",
           content: "Enter the full URL of an image. We recommend using a .jpg file. Leave blank to remove the current background image",
-          value: userSettings.stored.custom.bg || '',
+          value: userSettings.stored.custom.bg || "",
           placeholder: "https://example.com/big-image.jpg",
           maxlength: "500",
           onConfirm: this.save
@@ -15181,12 +15296,14 @@ var DubPlus = (function () {
         modalMessage: modalMessage
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        _this.isOn = true;
-
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (initialLoad) {
         if (userSettings.stored.custom.notificationSound) {
+          _this.isOn = true;
           proxy.setChatSoundUrl(userSettings.stored.custom.notificationSound);
-        } else {
+          return;
+        }
+
+        if (!initialLoad) {
           _this.setState({
             showModal: true,
             modalMessage: modalMessage

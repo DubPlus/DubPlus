@@ -4,7 +4,8 @@ import settings from "@/utils/UserSettings.js";
 import dtproxy from "@/utils/DTProxy.js";
 
 const DubtrackDefaultSound = "/assets/music/user_ping.mp3";
-const modalMessage = "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to Dubtrack's default sound";
+const modalMessage =
+  "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to Dubtrack's default sound";
 
 /**
  * Custom Notification Sound
@@ -16,11 +17,14 @@ export default class CustomSound extends Component {
     modalMessage: modalMessage
   };
 
-  turnOn = () => {
-    this.isOn = true;
+  turnOn = initialLoad => {
     if (settings.stored.custom.notificationSound) {
+      this.isOn = true;
       dtproxy.setChatSoundUrl(settings.stored.custom.notificationSound);
-    } else {
+      return;
+    }
+
+    if (!initialLoad) {
       this.setState({ showModal: true, modalMessage: modalMessage });
     }
   };
@@ -37,9 +41,10 @@ export default class CustomSound extends Component {
       settings.save("custom", "notificationSound", val);
     } else {
       this.setState({
-        modalMessage: "You've entered an invalid sound url! Please make sure you are entering the full, direct url to the file. IE: https://example.com/sweet-sound.mp3",
+        modalMessage:
+          "You've entered an invalid sound url! Please make sure you are entering the full, direct url to the file. IE: https://example.com/sweet-sound.mp3",
         showModal: true
-      })
+      });
       return;
     }
 
@@ -53,7 +58,7 @@ export default class CustomSound extends Component {
     if (!settings.stored.custom.notificationSound) {
       this.turnOff();
     }
-  }
+  };
 
   render(props, state) {
     return (

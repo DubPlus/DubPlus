@@ -90,11 +90,24 @@ export class MenuPencil extends Component {
   };
 
   closeModal = () => {
-    console.log("closing dub+ modal");
     this.setState({ open: false });
-    if (typeof this.props.onCancel === 'function') {
+    if (typeof this.props.onCancel === "function") {
       this.props.onCancel();
     }
+  };
+
+  checkVal = val => {
+    let limit = parseInt(this.props.maxlength, 10);
+    if (isNaN(limit)) {
+      limit = 500;
+    }
+
+    if (val.length > limit) {
+      val = val.substring(0, limit);
+    }
+
+    // now we don't have to check val length inside every option
+    this.props.onConfirm(val);
   };
 
   render(props, state) {
@@ -106,7 +119,8 @@ export class MenuPencil extends Component {
           content={props.content || "Please enter a value"}
           placeholder={props.placeholder || "in here"}
           value={props.value}
-          onConfirm={props.onConfirm}
+          maxlength={props.maxlength}
+          onConfirm={this.checkVal}
           onClose={this.closeModal}
         />
       </span>
@@ -121,12 +135,13 @@ export class MenuSwitch extends Component {
 
   componentDidMount() {
     if (this.state.on) {
-      this.props.turnOn();
+      // The "true" argument is so you can tell if component was activated on first load or not
+      this.props.turnOn(true);
     }
   }
 
   switchOn = () => {
-    this.props.turnOn();
+    this.props.turnOn(false);
     settings.save("options", this.props.id, true);
     this.setState({ on: true });
     track.menuClick(this.props.section + " section", this.props.id + " on");
@@ -161,7 +176,7 @@ export class MenuSwitch extends Component {
 
     return (
       <li id={props.id} title={props.desc} className={_cn.join(" ")}>
-        {/* 
+        {/*
           used for the optional MenuPencil at the moment
           but leaving it open ended for now. Can be any component
          */}

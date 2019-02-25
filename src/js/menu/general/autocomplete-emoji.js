@@ -2,11 +2,12 @@ import { h, Component } from "preact";
 import { MenuSwitch } from "@/components/menuItems.js";
 import Portal from "preact-portal/src/preact-portal";
 import AutocompletePreview from "./autocomplete-preview";
-import twitch from '@/utils/emotes/twitch-local.js';
+import twitch from "@/utils/emotes/twitch-local.js";
 import bttv from "@/utils/emotes/bttv-local.js";
 import { emoji } from "@/utils/emotes/emoji.js";
 import dtproxy from "@/utils/DTProxy.js";
 import settings from "@/utils/UserSettings.js";
+import KEYS from "@/utils/keys";
 
 /**********************************************************************
  * Autocomplete Emoji / Emotes
@@ -14,15 +15,6 @@ import settings from "@/utils/UserSettings.js";
  * pick emoji/emotes
  */
 
-const KEYS = {
-  up: 38,
-  down: 40,
-  left: 37,
-  right: 39,
-  enter: 13,
-  esc: 27,
-  tab: 9
-};
 const ignoreKeys = [
   KEYS.up,
   KEYS.down,
@@ -40,7 +32,7 @@ export default class AutocompleteEmoji extends Component {
 
   renderTo = document.querySelector(".pusher-chat-widget-input");
 
-  chatInput = dtproxy.chatInput()
+  chatInput = dtproxy.chatInput();
 
   selectedItem = null;
 
@@ -50,7 +42,7 @@ export default class AutocompleteEmoji extends Component {
    */
   checkInput = e => {
     // we want to ignore keyups that don't output anything
-    const key = "which" in e ? e.which : e.keyCode;
+    const key = e.code;
     if (ignoreKeys.indexOf(key) >= 0) {
       return;
     }
@@ -188,8 +180,7 @@ export default class AutocompleteEmoji extends Component {
       return true;
     }
 
-    const key = "which" in e ? e.which : e.keyCode;
-    switch (key) {
+    switch (e.code) {
       case KEYS.down:
       case KEYS.tab:
         e.preventDefault();
