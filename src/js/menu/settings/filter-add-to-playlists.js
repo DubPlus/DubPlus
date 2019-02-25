@@ -1,20 +1,24 @@
 import { h } from "preact";
 import { MenuSwitch } from "@/components/menuItems.js";
 import dtproxy from "@/utils/DTProxy.js";
-// https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver#Browser_compatibility
-let input = dtproxy.playlistInput();
 
-function handleKeyup(e) {}
+// #playlist-input
+let input = dtproxy.playlistInput();
+input.placeholder = "filter or create a new playlist";
+input.placeholder = "create a new playlist";
+
+function handleKeyup(e) {
+  console.log(e.target);
+}
 
 function turnOn() {
-  input.addEventListener("keyup", handleKeyup);
-  input.placeholder = "filter or create a new playlist";
+  // the playlist is part of a DOM element that gets added and removed so we 
+  // can't bind directly to it
+  document.body.addEventListener("keyup", handleKeyup);
 }
 
 function turnOff() {
-  input.removeEventListener("keyup", handleKeyup);
-  // create a new playlist
-  input.placeholder = "create a new playlist";
+  document.body.addEventListener("keyup", handleKeyup);
 }
 
 const SpacebarMute = function() {

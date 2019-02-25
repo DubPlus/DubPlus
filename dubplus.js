@@ -988,10 +988,109 @@ var DubPlus = (function () {
   /*#__PURE__*/
   function () {
     function DTProxy() {
+      var _this = this;
+
       _classCallCheck(this, DTProxy);
+
+      _defineProperty(this, "subscribers", {});
+
+      _defineProperty(this, "observerCallback", function (mutationsList) {
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = mutationsList[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var mutation = _step.value;
+
+            if (mutation.type == "childList") {
+              _this.handleNewNodes(mutation.addedNodes);
+
+              _this.handleRemovedNodes(mutation.removedNodes);
+            }
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+      });
+
+      // to avoid tests failing since we're not stubbing or testing this yet
+      if (window.MutationObserver) {
+        this.observer = new MutationObserver(this.observerCallback); // Start observing the target node for configured mutations
+
+        this.observer.observe(document.body, {
+          attributes: false,
+          childList: true,
+          subtree: false
+        });
+      }
     }
 
     _createClass(DTProxy, [{
+      key: "nodeOn",
+
+      /**
+       * Subscribe to nodes being added OR removed to the DOM
+       * use ID of complete className of the node (uses the inspector to get that)
+       * include the "#" or the "." in the selector name
+       * this.nodeOn('.long-class.name.withLots-of-things', myCallbackFunc);
+       */
+      value: function nodeOn(selector, cb) {
+        this.subscribers[selector] = cb;
+      }
+      /**
+       * remove subscriptions
+       */
+
+    }, {
+      key: "nodeOff",
+      value: function nodeOff(selector) {
+        if (this.subscribers[selector]) {
+          delete this.subscribers[selector];
+        }
+      }
+    }, {
+      key: "handleNewNodes",
+      value: function handleNewNodes(nodes) {
+        var _this2 = this;
+
+        nodes.forEach(function (n) {
+          if (n.id && _this2.subscribers['#' + n.id]) {
+            _this2.subscribers['#' + n.id](n, true, false);
+          }
+
+          if (n.className && _this2.subscribers['.' + n.className]) {
+            _this2.subscribers['#' + n.className](n, true, false);
+          }
+        });
+      }
+    }, {
+      key: "handleRemovedNodes",
+      value: function handleRemovedNodes(nodes) {
+        var _this3 = this;
+
+        nodes.forEach(function (n) {
+          if (n.id && _this3.subscribers['#' + n.id]) {
+            _this3.subscribers['#' + n.id](n, false, true);
+          }
+
+          if (n.className && _this3.subscribers['.' + n.className]) {
+            _this3.subscribers['#' + n.className](n, false, true);
+          }
+        });
+      }
+    }, {
       key: "loadCheck",
       value: function loadCheck() {
         var checkList = ["Dubtrack.session.id", "Dubtrack.room.chat", "Dubtrack.Events", "Dubtrack.room.player", "Dubtrack.helpers.cookie", "Dubtrack.room.model", "Dubtrack.room.users"];
@@ -14919,12 +15018,16 @@ var DubPlus = (function () {
     });
   };
 
+  var input = proxy.playlistInput();
+  input.placeholder = "filter or create a new playlist";
+  input.placeholder = "create a new playlist";
+
   var SettingsSection = function SettingsSection() {
     return h(MenuSection, {
       id: "dubplus-settings",
       title: "Settings",
       settingsKey: "settings"
-    }, h(SpacebarMute, null), h(WarnNav, null));
+    }, h(SpacebarMute, null), h(WarnNav, null), h("filterAddToPlaylists", null));
   };
 
   var makeLink = function makeLink(className, FileName) {
@@ -14950,7 +15053,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1550877629844);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1551055721505);
     document.head.appendChild(link);
   }
   /**
@@ -14974,7 +15077,7 @@ var DubPlus = (function () {
     loadExternal: loadExternal
   };
 
-  function turnOn$9() {
+  function turnOn$a() {
     var location = proxy.getRoomUrl();
     var roomAjax = getJSON("https://api.dubtrack.fm/room/" + location);
     roomAjax.then(function (json) {
@@ -14995,7 +15098,7 @@ var DubPlus = (function () {
     });
   }
 
-  function turnOff$9() {
+  function turnOff$a() {
     var css = document.querySelector(".dubplus-comm-theme");
 
     if (css) {
@@ -15009,8 +15112,8 @@ var DubPlus = (function () {
       section: "Customize",
       menuTitle: "Community Theme",
       desc: "Toggle Community CSS theme.",
-      turnOn: turnOn$9,
-      turnOff: turnOff$9
+      turnOn: turnOn$a,
+      turnOff: turnOff$a
     });
   };
 
