@@ -11334,7 +11334,7 @@ var DubPlus = (function () {
     function UserSettings() {
       _classCallCheck(this, UserSettings);
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@feature/filter-add-to-playlist");
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta");
 
       var _savedSettings = localStorage.getItem('dubplusUserSettings');
 
@@ -14978,7 +14978,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1551072849608);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1551073008891);
     document.head.appendChild(link);
   }
   /**
