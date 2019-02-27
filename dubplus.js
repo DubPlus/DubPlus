@@ -11317,10 +11317,11 @@ var DubPlus = (function () {
       "dubplus-snow": false,
       "dubplus-custom-css": false,
       "dubplus-hide-selfie": false,
-      "dubplus-disable-video": false
+      "dubplus-disable-video": false,
+      "dubplus-playlist-filter": false
     },
     "custom": {
-      "customAfkMessage": "",
+      "customAfkMessage": "[AFK] I'm not here right now.",
       "dj_notification": 1,
       "css": "",
       "bg": "",
@@ -11334,7 +11335,7 @@ var DubPlus = (function () {
     function UserSettings() {
       _classCallCheck(this, UserSettings);
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta");
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@bugfix-filter");
 
       var _savedSettings = localStorage.getItem('dubplusUserSettings');
 
@@ -14919,8 +14920,10 @@ var DubPlus = (function () {
   function handleKeyup$1(e) {
     if (e.target.id === 'playlist-input') {
       var list = proxy.grabPlaylists();
+      var lcVal = e.target.value.toLowerCase();
       list.forEach(function (li) {
-        var check = li.textContent.indexOf(e.target.value) >= 0;
+        var liText = li.textContent.toLowerCase();
+        var check = liText.indexOf(lcVal) >= 0;
         li.style.display = check ? 'block' : 'none';
       });
     }
@@ -14978,7 +14981,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1551073008891);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1551240544342);
     document.head.appendChild(link);
   }
   /**

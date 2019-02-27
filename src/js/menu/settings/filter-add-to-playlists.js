@@ -5,8 +5,10 @@ import dtproxy from "@/utils/DTProxy.js";
 function handleKeyup(e) {
   if (e.target.id === 'playlist-input') {
     let list = dtproxy.grabPlaylists();
+    let lcVal = e.target.value.toLowerCase();
     list.forEach(function(li){
-      let check = li.textContent.indexOf(e.target.value) >= 0;
+      let liText = li.textContent.toLowerCase();
+      let check = liText.indexOf(lcVal) >= 0;
       li.style.display = check ? 'block' : 'none';
     });
   }

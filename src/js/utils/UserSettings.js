@@ -33,11 +33,12 @@ var defaults = {
     "dubplus-snow": false,
     "dubplus-custom-css": false,
     "dubplus-hide-selfie" : false,
-    "dubplus-disable-video" : false
+    "dubplus-disable-video" : false,
+    "dubplus-playlist-filter" : false
   },
 
   "custom": {
-    "customAfkMessage": "",
+    "customAfkMessage": "[AFK] I'm not here right now.",
     "dj_notification": 1,
     "css": "",
     "bg" : "",
