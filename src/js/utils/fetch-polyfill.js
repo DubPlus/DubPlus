@@ -17,7 +17,7 @@ class ResponsePolyfill {
   json() {
     return new Promise((resolve, reject) => {
       try {
-        let resp = JSON.parse(this.data.responseText);
+        let resp = JSON.parse(this.data);
         resolve(resp);
       } catch (e) {
         reject(e);

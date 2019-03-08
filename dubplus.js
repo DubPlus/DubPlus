@@ -880,7 +880,7 @@ var DubPlus = (function () {
 
         return new Promise(function (resolve, reject) {
           try {
-            var resp = JSON.parse(_this.data.responseText);
+            var resp = JSON.parse(_this.data);
             resolve(resp);
           } catch (e) {
             reject(e);
@@ -15012,7 +15012,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1552022187223);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1552022282706);
     document.head.appendChild(link);
   }
   /**
