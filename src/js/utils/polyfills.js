@@ -1,4 +1,5 @@
 import getScript from "@/utils/getScript.js";
+import fetchPolyfill from '@/utils/fetch-polyfill';
 
 export default function() {
   // Element.remove() polyfill
@@ -28,5 +29,9 @@ export default function() {
 
   if (window.NodeList && !NodeList.prototype.forEach) {
     NodeList.prototype.forEach = Array.prototype.forEach;
+  }
+
+  if (!window.fetch) {
+    window.fetch = fetchPolyfill;
   }
 }

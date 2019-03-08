@@ -853,6 +853,68 @@ var DubPlus = (function () {
     prior.parentNode.insertBefore(script, prior);
   }
 
+  /**
+   * Writing my own simplified polyfill for fetch in order to keep the library size
+   * small. Only including the things that I need. The current polyfill is a little 
+   * too big: https://github.com/github/fetch/blob/master/fetch.js
+   * because Rollup tree shaking only works on import/export
+   */
+
+  /**
+   * @class a polyfill for the Response object returned from Fetch
+   * https://developer.mozilla.org/en-US/docs/Web/API/Response
+   */
+  var ResponsePolyfill =
+  /*#__PURE__*/
+  function () {
+    function ResponsePolyfill(data) {
+      _classCallCheck(this, ResponsePolyfill);
+
+      this.data = data;
+    }
+
+    _createClass(ResponsePolyfill, [{
+      key: "json",
+      value: function json() {
+        var _this = this;
+
+        return new Promise(function (resolve, reject) {
+          try {
+            var resp = JSON.parse(_this.data.responseText);
+            resolve(resp);
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+    }]);
+
+    return ResponsePolyfill;
+  }();
+  /**
+   * @param {String} url
+   * @returns {Promise}
+   */
+
+
+  function fetchPolyfill(url) {
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+
+      xhr.onload = function () {
+        resolve(new ResponsePolyfill(xhr.responseText));
+      };
+
+      xhr.onerror = function () {
+        reject();
+      };
+
+      xhr.open("GET", url);
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.send();
+    });
+  }
+
   function polyfills () {
     // Element.remove() polyfill
     // from:https://github.com/jserz/js_piece/blob/master/DOM/ChildNode/remove()/remove().md
@@ -880,6 +942,10 @@ var DubPlus = (function () {
 
     if (window.NodeList && !NodeList.prototype.forEach) {
       NodeList.prototype.forEach = Array.prototype.forEach;
+    }
+
+    if (!window.fetch) {
+      window.fetch = fetchPolyfill;
     }
   }
 
@@ -11335,7 +11401,7 @@ var DubPlus = (function () {
     function UserSettings() {
       _classCallCheck(this, UserSettings);
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@bugfix-filter");
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@fetchify");
 
       var _savedSettings = localStorage.getItem('dubplusUserSettings');
 
@@ -13930,45 +13996,6 @@ var DubPlus = (function () {
     return RainSwitch;
   }(Component);
 
-  /**
-   * Wrapper around XMLHttpRequest with added ability to trigger a custom event 
-   * when the ajax request is complete. The event will be attached to the window 
-   * object. It returns a promise.
-   * 
-   * @param {String} url 
-   * @param {Object} headers object of xhr headers to add to the request
-   * @returns {Promise}
-   */
-  function getJSON(url) {
-    var headers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    return new Promise(function (resolve, reject) {
-      var xhr = new XMLHttpRequest();
-
-      xhr.onload = function () {
-        try {
-          var resp = JSON.parse(xhr.responseText);
-          resolve(resp);
-        } catch (e) {
-          reject(e);
-        }
-      };
-
-      xhr.onerror = function () {
-        reject();
-      };
-
-      xhr.open('GET', url);
-
-      for (var property in headers) {
-        if (headers.hasOwnProperty(property)) {
-          xhr.setRequestHeader(property, headers[property]);
-        }
-      }
-
-      xhr.send();
-    });
-  }
-
   var DubsInfoListItem = function DubsInfoListItem(_ref) {
     var data = _ref.data,
         click = _ref.click;
@@ -14263,8 +14290,10 @@ var DubPlus = (function () {
         var _this2 = this;
 
         // if they don't exist, we can check the user api directly
-        var userInfo = getJSON(proxy.userDataAPI(userid));
-        userInfo.then(function (json) {
+        var userInfo = fetch(proxy.userDataAPI(userid));
+        userInfo.then(function (resp) {
+          return resp.json();
+        }).then(function (json) {
           var data = json.data;
 
           if (data && data.userinfo && data.userinfo.username) {
@@ -14274,13 +14303,13 @@ var DubPlus = (function () {
             };
 
             _this2.setState(function (prevState) {
-              if (whichVote === 'down') {
+              if (whichVote === "down") {
                 return {
                   downDubs: [].concat(_toConsumableArray(prevState.downDubs), [user])
                 };
               }
 
-              if (whichVote === 'up') {
+              if (whichVote === "up") {
                 return {
                   upDubs: [].concat(_toConsumableArray(prevState.upDubs), [user])
                 };
@@ -14300,8 +14329,10 @@ var DubPlus = (function () {
         var _this3 = this;
 
         // get the current active dubs in the room via api
-        var roomDubs = getJSON(proxy.activeDubsAPI());
-        roomDubs.then(function (json) {
+        var roomDubs = fetch(proxy.activeDubsAPI());
+        roomDubs.then(function (resp) {
+          return resp.json();
+        }).then(function (json) {
           // loop through all the upDubs in the room and add them to our local state
           if (json.data && json.data.upDubs) {
             json.data.upDubs.forEach(function (e) {
@@ -14317,7 +14348,7 @@ var DubPlus = (function () {
 
               if (!checkUser || !checkUser.attributes) {
                 // if they don't exist, we can check the user api directly
-                _this3.getUserData(e.userid, 'up');
+                _this3.getUserData(e.userid, "up");
 
                 return;
               }
@@ -14350,7 +14381,7 @@ var DubPlus = (function () {
               var checkUsers = proxy.getUserInfo(e.userid);
 
               if (!checkUsers || !checkUsers.attributes) {
-                _this3.getUserData(e.userid, 'down');
+                _this3.getUserData(e.userid, "down");
 
                 return;
               }
@@ -14377,11 +14408,11 @@ var DubPlus = (function () {
       key: "componentWillMount",
       value: function componentWillMount() {
         this.upElem = proxy.upVote().parentElement;
-        this.upElem.classList.add('dubplus-updub-btn');
+        this.upElem.classList.add("dubplus-updub-btn");
         this.downElem = proxy.downVote().parentElement;
-        this.downElem.classList.add('dubplus-downdub-btn');
+        this.downElem.classList.add("dubplus-downdub-btn");
         this.grabElem = proxy.grabBtn().parentElement;
-        this.grabElem.classList.add('dubplus-grab-btn');
+        this.grabElem.classList.add("dubplus-grab-btn");
       }
     }, {
       key: "render",
@@ -14981,7 +15012,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1551240544342);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1552022187223);
     document.head.appendChild(link);
   }
   /**
@@ -15007,8 +15038,10 @@ var DubPlus = (function () {
 
   function turnOn$a() {
     var location = proxy.getRoomUrl();
-    var roomAjax = getJSON("https://api.dubtrack.fm/room/" + location);
-    roomAjax.then(function (json) {
+    var roomAjax = fetch("https://api.dubtrack.fm/room/" + location);
+    roomAjax.then(function (resp) {
+      return resp.json();
+    }).then(function (json) {
       var content = json.data.description; // for backwards compatibility with dubx we're checking for both @dubx and @dubplus and @dub+
 
       var themeCheck = new RegExp(/(@dub(x|plus|\+)=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/, "i");
