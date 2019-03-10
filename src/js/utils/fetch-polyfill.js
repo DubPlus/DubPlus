@@ -6,7 +6,8 @@
  */
 
  /**
-  * @class a polyfill for the Response object returned from Fetch
+  * @class ResponsePolyfill
+  * a polyfill for the Response object returned from Fetch
   * https://developer.mozilla.org/en-US/docs/Web/API/Response
   */
 class ResponsePolyfill {

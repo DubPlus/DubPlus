@@ -1,6 +1,8 @@
 "use strict";
-import { h, render, Component } from "preact";
 import polyfills from "@/utils/polyfills";
+polyfills();
+
+import { h, render, Component } from "preact";
 import DubPlusMenu from "@/menu/index.js";
 import Modal from "@/components/modal.js";
 import WaitFor from "@/utils/waitFor.js";
@@ -10,7 +12,6 @@ import MenuIcon from "@/components/MenuIcon.js";
 import track from "@/utils/analytics.js";
 import dtproxy from "@/utils/DTProxy.js";
 
-polyfills();
 
 // the extension loads the CSS from the load script so we don't need to
 // do it here. This is for people who load the script via bookmarklet or userscript

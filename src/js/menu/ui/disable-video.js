@@ -2,9 +2,7 @@ import {h} from 'preact';
 import {MenuSwitch} from '@/components/menuItems.js';
 import dtproxy from '@/utils/DTProxy';
 
-var isFirstLoad = true;
-
-function toggle() {
+function toggle(isFirstLoad) {
   if (isFirstLoad) {
     // disabling the video from stored settings on page load causes the video
     // to not play until you un-hide it.  So we delay turning it off for a bit
@@ -12,7 +10,6 @@ function toggle() {
     setTimeout(function(){
       dtproxy.hideVideoBtn().click()
     }, 5000);
-    isFirstLoad = false;
     return;
   }
 

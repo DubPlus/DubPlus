@@ -126,6 +126,133 @@ var DubPlus = (function () {
     throw new TypeError("Invalid attempt to spread non-iterable instance");
   }
 
+  /**
+   * Pure JS version of jQuery's $.getScript
+   * 
+   * @param {string} source url or path to JS file
+   * @param {function} callback function to run after script is loaded
+   */
+  function getScript(source, callback) {
+    var script = document.createElement('script');
+    var prior = document.getElementsByTagName('script')[0];
+    script.async = 1;
+
+    script.onload = script.onreadystatechange = function (_, isAbort) {
+      if (isAbort || !script.readyState || /loaded|complete/.test(script.readyState)) {
+        script.onload = script.onreadystatechange = null;
+        script = undefined;
+
+        if (!isAbort) {
+          if (callback) callback();
+        }
+      }
+    };
+
+    script.onerror = function (err) {
+      if (callback) callback(err);
+    };
+
+    script.src = source;
+    prior.parentNode.insertBefore(script, prior);
+  }
+
+  /**
+   * Writing my own simplified polyfill for fetch in order to keep the library size
+   * small. Only including the things that I need. The current polyfill is a little 
+   * too big: https://github.com/github/fetch/blob/master/fetch.js
+   * because Rollup tree shaking only works on import/export
+   */
+
+  /**
+   * @class ResponsePolyfill
+   * a polyfill for the Response object returned from Fetch
+   * https://developer.mozilla.org/en-US/docs/Web/API/Response
+   */
+  var ResponsePolyfill =
+  /*#__PURE__*/
+  function () {
+    function ResponsePolyfill(data) {
+      _classCallCheck(this, ResponsePolyfill);
+
+      this.data = data;
+    }
+
+    _createClass(ResponsePolyfill, [{
+      key: "json",
+      value: function json() {
+        var _this = this;
+
+        return new Promise(function (resolve, reject) {
+          try {
+            var resp = JSON.parse(_this.data);
+            resolve(resp);
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+    }]);
+
+    return ResponsePolyfill;
+  }();
+  /**
+   * @param {String} url
+   * @returns {Promise}
+   */
+
+
+  function fetchPolyfill(url) {
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+
+      xhr.onload = function () {
+        resolve(new ResponsePolyfill(xhr.responseText));
+      };
+
+      xhr.onerror = function () {
+        reject();
+      };
+
+      xhr.open("GET", url);
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.send();
+    });
+  }
+
+  function polyfills () {
+    // Element.remove() polyfill
+    // from:https://github.com/jserz/js_piece/blob/master/DOM/ChildNode/remove()/remove().md
+    (function (arr) {
+      arr.forEach(function (item) {
+        if (item.hasOwnProperty("remove")) {
+          return;
+        }
+
+        Object.defineProperty(item, "remove", {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: function remove() {
+            if (this.parentNode !== null) this.parentNode.removeChild(this);
+          }
+        });
+      });
+    })([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
+
+    if (typeof Promise === "undefined") {
+      // load Promise polyfill for IE because we are still supporting it
+      getScript("https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js");
+    }
+
+    if (window.NodeList && !NodeList.prototype.forEach) {
+      NodeList.prototype.forEach = Array.prototype.forEach;
+    }
+
+    if (!window.fetch) {
+      window.fetch = fetchPolyfill;
+    }
+  }
+
   var VNode = function VNode() {};
 
   var options = {};
@@ -821,132 +948,6 @@ var DubPlus = (function () {
 
   function render(vnode, parent, merge) {
     return diff(merge, vnode, {}, false, parent, false);
-  }
-
-  /**
-   * Pure JS version of jQuery's $.getScript
-   * 
-   * @param {string} source url or path to JS file
-   * @param {function} callback function to run after script is loaded
-   */
-  function getScript(source, callback) {
-    var script = document.createElement('script');
-    var prior = document.getElementsByTagName('script')[0];
-    script.async = 1;
-
-    script.onload = script.onreadystatechange = function (_, isAbort) {
-      if (isAbort || !script.readyState || /loaded|complete/.test(script.readyState)) {
-        script.onload = script.onreadystatechange = null;
-        script = undefined;
-
-        if (!isAbort) {
-          if (callback) callback();
-        }
-      }
-    };
-
-    script.onerror = function (err) {
-      if (callback) callback(err);
-    };
-
-    script.src = source;
-    prior.parentNode.insertBefore(script, prior);
-  }
-
-  /**
-   * Writing my own simplified polyfill for fetch in order to keep the library size
-   * small. Only including the things that I need. The current polyfill is a little 
-   * too big: https://github.com/github/fetch/blob/master/fetch.js
-   * because Rollup tree shaking only works on import/export
-   */
-
-  /**
-   * @class a polyfill for the Response object returned from Fetch
-   * https://developer.mozilla.org/en-US/docs/Web/API/Response
-   */
-  var ResponsePolyfill =
-  /*#__PURE__*/
-  function () {
-    function ResponsePolyfill(data) {
-      _classCallCheck(this, ResponsePolyfill);
-
-      this.data = data;
-    }
-
-    _createClass(ResponsePolyfill, [{
-      key: "json",
-      value: function json() {
-        var _this = this;
-
-        return new Promise(function (resolve, reject) {
-          try {
-            var resp = JSON.parse(_this.data);
-            resolve(resp);
-          } catch (e) {
-            reject(e);
-          }
-        });
-      }
-    }]);
-
-    return ResponsePolyfill;
-  }();
-  /**
-   * @param {String} url
-   * @returns {Promise}
-   */
-
-
-  function fetchPolyfill(url) {
-    return new Promise(function (resolve, reject) {
-      var xhr = new XMLHttpRequest();
-
-      xhr.onload = function () {
-        resolve(new ResponsePolyfill(xhr.responseText));
-      };
-
-      xhr.onerror = function () {
-        reject();
-      };
-
-      xhr.open("GET", url);
-      xhr.setRequestHeader('Accept', 'application/json');
-      xhr.send();
-    });
-  }
-
-  function polyfills () {
-    // Element.remove() polyfill
-    // from:https://github.com/jserz/js_piece/blob/master/DOM/ChildNode/remove()/remove().md
-    (function (arr) {
-      arr.forEach(function (item) {
-        if (item.hasOwnProperty("remove")) {
-          return;
-        }
-
-        Object.defineProperty(item, "remove", {
-          configurable: true,
-          enumerable: true,
-          writable: true,
-          value: function remove() {
-            if (this.parentNode !== null) this.parentNode.removeChild(this);
-          }
-        });
-      });
-    })([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
-
-    if (typeof Promise === "undefined") {
-      // load Promise polyfill for IE because we are still supporting it
-      getScript("https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js");
-    }
-
-    if (window.NodeList && !NodeList.prototype.forEach) {
-      NodeList.prototype.forEach = Array.prototype.forEach;
-    }
-
-    if (!window.fetch) {
-      window.fetch = fetchPolyfill;
-    }
   }
 
   /**
@@ -14884,12 +14885,44 @@ var DubPlus = (function () {
     });
   };
 
+  function toggle(isFirstLoad) {
+    if (isFirstLoad) {
+      // disabling the video from stored settings on page load causes the video
+      // to not play until you un-hide it.  So we delay turning it off for a bit
+      // to give the video time to load and start playing
+      setTimeout(function () {
+        proxy.hideVideoBtn().click();
+      }, 5000);
+      return;
+    }
+
+    proxy.hideVideoBtn().click();
+  }
+  /**
+   * Disable Video 
+   * This is the equivalent of clicking on the little eye icon to toggle the video
+   * Sometimes I just want to hide the video the native dubtrack way but not remove 
+   * the entire video box
+   */
+
+
+  var DisableVideo = function DisableVideo() {
+    return h(MenuSwitch, {
+      id: "dubplus-disable-video",
+      section: "User Interface",
+      menuTitle: "Disable Video",
+      desc: "Toggles disabling the video. Equivalent to clicking on the eye icon under the video",
+      turnOn: toggle,
+      turnOff: toggle
+    });
+  };
+
   var UISection = function UISection() {
     return h(MenuSection, {
       id: "dubplus-ui",
       title: "UI",
       settingsKey: "user-interface"
-    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(HideGifSelfie, null), h(ShowTS, null));
+    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(HideGifSelfie, null), h(ShowTS, null), h(DisableVideo, null));
   };
 
   function handleKeyup(e) {
@@ -15012,7 +15045,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1552022282706);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1552177455145);
     document.head.appendChild(link);
   }
   /**
@@ -15639,7 +15672,7 @@ var DubPlus = (function () {
     return MenuIcon;
   }(Component);
 
-  polyfills(); // the extension loads the CSS from the load script so we don't need to
+  polyfills();
   // do it here. This is for people who load the script via bookmarklet or userscript
 
   var isExtension = document.getElementById("dubplus-script-ext");
