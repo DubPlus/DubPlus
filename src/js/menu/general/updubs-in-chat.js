@@ -36,6 +36,7 @@ export default class UpdubsInChat extends Component {
   updubWatcher(e) {
     var user = dtproxy.getUserName();
     var currentDj = dtproxy.getCurrentDJ();
+    if (!currentDj) { return; }
 
     if (user === currentDj && e.dubtype === "updub") {
       let newChat = chatMessage(

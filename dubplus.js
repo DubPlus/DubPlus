@@ -1187,9 +1187,13 @@ var DubPlus = (function () {
     }, {
       key: "getCurrentDJ",
       value: function getCurrentDJ() {
-        return Dubtrack.room.users.collection.findWhere({
+        var user = Dubtrack.room.users.collection.findWhere({
           userid: Dubtrack.room.player.activeSong.attributes.song.userid
-        }).attributes._user.username;
+        });
+
+        if (user) {
+          return user.attributes._user.username;
+        }
       }
     }, {
       key: "getUserInfo",
@@ -14513,6 +14517,10 @@ var DubPlus = (function () {
         var user = proxy.getUserName();
         var currentDj = proxy.getCurrentDJ();
 
+        if (!currentDj) {
+          return;
+        }
+
         if (user === currentDj && e.dubtype === "downdub") {
           var newChat = chatMessage(e.user.username, proxy.getSongName());
           proxy.chatList().appendChild(newChat);
@@ -14591,6 +14599,10 @@ var DubPlus = (function () {
         var user = proxy.getUserName();
         var currentDj = proxy.getCurrentDJ();
 
+        if (!currentDj) {
+          return;
+        }
+
         if (user === currentDj && e.dubtype === "updub") {
           var newChat = chatMessage$1(e.user.username, proxy.getSongName());
           proxy.chatList().appendChild(newChat);
@@ -14668,6 +14680,10 @@ var DubPlus = (function () {
       value: function grabChatWatcher(e) {
         var user = proxy.getUserName();
         var currentDj = proxy.getCurrentDJ();
+
+        if (!currentDj) {
+          return;
+        }
 
         if (user === currentDj && !proxy.displayUserGrab()) {
           var newChat = chatMessage$2(e.user.username, proxy.getSongName());
@@ -14926,11 +14942,11 @@ var DubPlus = (function () {
   };
 
   function handleKeyup(e) {
-    if (e.code === KEYS.space) {
+    if (e.code !== KEYS.space) {
       return;
     }
 
-    var tag = event.target.tagName.toLowerCase();
+    var tag = e.target.tagName.toLowerCase();
 
     if (tag !== "input" && tag !== "textarea") {
       proxy.mutePlayer();
@@ -14984,6 +15000,17 @@ var DubPlus = (function () {
   function handleKeyup$1(e) {
     if (e.target.id === 'playlist-input') {
       var list = proxy.grabPlaylists();
+
+      if (!list.length) {
+        return;
+      }
+
+      var ul = list[0].parentElement;
+
+      if (!ul.style.height) {
+        ul.style.height = ul.offsetHeight + 'px';
+      }
+
       var lcVal = e.target.value.toLowerCase();
       list.forEach(function (li) {
         var liText = li.textContent.toLowerCase();
@@ -15045,7 +15072,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1552177521344);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1552885549844);
     document.head.appendChild(link);
   }
   /**

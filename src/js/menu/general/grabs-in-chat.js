@@ -36,6 +36,7 @@ export default class GrabsInChat extends Component {
   grabChatWatcher(e) {
     var user = dtproxy.getUserName();
     var currentDj = dtproxy.getCurrentDJ();
+    if (!currentDj) { return; }
 
     if(user === currentDj && !dtproxy.displayUserGrab()) {
       let newChat = chatMessage(e.user.username, dtproxy.getSongName());

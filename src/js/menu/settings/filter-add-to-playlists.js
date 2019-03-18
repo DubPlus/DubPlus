@@ -5,6 +5,11 @@ import dtproxy from "@/utils/DTProxy.js";
 function handleKeyup(e) {
   if (e.target.id === 'playlist-input') {
     let list = dtproxy.grabPlaylists();
+    if (!list.length) { return; }
+    let ul = list[0].parentElement;
+    if (!ul.style.height) {
+      ul.style.height = ul.offsetHeight + 'px';
+    }
     let lcVal = e.target.value.toLowerCase();
     list.forEach(function(li){
       let liText = li.textContent.toLowerCase();

@@ -119,9 +119,10 @@ class DTProxy {
   }
 
   getCurrentDJ() {
-    return Dubtrack.room.users.collection.findWhere({
+    let user = Dubtrack.room.users.collection.findWhere({
       userid: Dubtrack.room.player.activeSong.attributes.song.userid
-    }).attributes._user.username;
+    });
+    if (user) { return user.attributes._user.username; }
   }
 
   getUserInfo(userid) {

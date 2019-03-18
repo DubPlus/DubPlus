@@ -4,10 +4,10 @@ import dtproxy from "@/utils/DTProxy.js";
 import KEYS from "@/utils/keys";
 
 function handleKeyup(e) {
-  if (e.code === KEYS.space) {
+  if (e.code !== KEYS.space) {
     return;
   }
-  var tag = event.target.tagName.toLowerCase();
+  var tag = e.target.tagName.toLowerCase();
   if (tag !== "input" && tag !== "textarea") {
     dtproxy.mutePlayer();
   }
