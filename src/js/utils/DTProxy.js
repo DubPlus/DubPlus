@@ -28,8 +28,14 @@ class DTProxy {
     return "https://api.dubtrack.fm/user/" + userid;
   }
 
+  /**
+   * Session Id is the same as User ID apparently
+   */
   getSessionId() {
     return Dubtrack.session.id;
+  }
+  getUserId() {
+    return this.getSessionId();
   }
 
   /**
@@ -261,6 +267,26 @@ class DTProxy {
 
   hideVideoBtn() {
     return document.querySelector(".hideVideo-el");
+  }
+
+  /**
+   * This one is a bit different. Reads the DOM but returns an array of
+   * objects created from some of the DOM elements
+   */
+  getCurrentQueue() {
+    let items = document.querySelectorAll('.browserPlaylistItems li');
+    return [...items].map(function(li){
+      return {
+        userid: li.dataset.userid,
+        title: li.querySelector('.description h2').textContent.trim(),
+        time: li.querySelector('.timeDisplay').textContent.trim(),
+        img: li.querySelector('figure img').src
+      }
+    });
+  }
+
+  getChatInputContainer() {
+    return document.querySelector(".pusher-chat-widget-input");
   }
 
   /*

@@ -1076,10 +1076,19 @@ var DubPlus = (function () {
       value: function userDataAPI(userid) {
         return "https://api.dubtrack.fm/user/" + userid;
       }
+      /**
+       * Session Id is the same as User ID apparently
+       */
+
     }, {
       key: "getSessionId",
       value: function getSessionId() {
         return Dubtrack.session.id;
+      }
+    }, {
+      key: "getUserId",
+      value: function getUserId() {
+        return this.getSessionId();
       }
       /**
        * get the current logged in user name
@@ -1371,6 +1380,29 @@ var DubPlus = (function () {
       key: "hideVideoBtn",
       value: function hideVideoBtn() {
         return document.querySelector(".hideVideo-el");
+      }
+      /**
+       * This one is a bit different. Reads the DOM but returns an array of
+       * objects created from some of the DOM elements
+       */
+
+    }, {
+      key: "getCurrentQueue",
+      value: function getCurrentQueue() {
+        var items = document.querySelectorAll('.browserPlaylistItems li');
+        return _toConsumableArray(items).map(function (li) {
+          return {
+            userid: li.dataset.userid,
+            title: li.querySelector('.description h2').textContent.trim(),
+            time: li.querySelector('.timeDisplay').textContent.trim(),
+            img: li.querySelector('figure img').src
+          };
+        });
+      }
+    }, {
+      key: "getChatInputContainer",
+      value: function getChatInputContainer() {
+        return document.querySelector(".pusher-chat-widget-input");
       }
       /*
         some more DOM elements being access but only has render targets for Preact
@@ -11406,7 +11438,7 @@ var DubPlus = (function () {
     function UserSettings() {
       _classCallCheck(this, UserSettings);
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta");
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@feature/preview-next");
 
       var _savedSettings = localStorage.getItem('dubplusUserSettings');
 
@@ -15072,7 +15104,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1552885549844);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1552969770597);
     document.head.appendChild(link);
   }
   /**
