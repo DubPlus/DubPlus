@@ -135,6 +135,17 @@ class DTProxy {
     return Dubtrack.room.users.collection.findWhere({ userid: userid });
   }
 
+  getUserQueue(cb) {
+    return fetch(`https://api.dubtrack.fm/user/session/room/${this.getRoomId()}/queue`)
+      .then(resp => resp.json())
+      .then(json => {
+        cb(null, json.data);
+      })
+      .catch(err => {
+        cb(err, null)
+      });
+  }
+
   /******************************************************************
    * Dubtrack Events
    */
@@ -267,22 +278,6 @@ class DTProxy {
 
   hideVideoBtn() {
     return document.querySelector(".hideVideo-el");
-  }
-
-  /**
-   * This one is a bit different. Reads the DOM but returns an array of
-   * objects created from some of the DOM elements
-   */
-  getCurrentQueue() {
-    let items = document.querySelectorAll('.browserPlaylistItems li');
-    return [...items].map(function(li){
-      return {
-        userid: li.dataset.userid,
-        title: li.querySelector('.description h2').textContent.trim(),
-        time: li.querySelector('.timeDisplay').textContent.trim(),
-        img: li.querySelector('figure img').src
-      }
-    });
   }
 
   getChatInputContainer() {

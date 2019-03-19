@@ -1211,6 +1211,17 @@ var DubPlus = (function () {
           userid: userid
         });
       }
+    }, {
+      key: "getUserQueue",
+      value: function getUserQueue(cb) {
+        return fetch("https://api.dubtrack.fm/user/session/room/".concat(this.getRoomId(), "/queue")).then(function (resp) {
+          return resp.json();
+        }).then(function (json) {
+          cb(null, json.data);
+        }).catch(function (err) {
+          cb(err, null);
+        });
+      }
       /******************************************************************
        * Dubtrack Events
        */
@@ -1380,24 +1391,6 @@ var DubPlus = (function () {
       key: "hideVideoBtn",
       value: function hideVideoBtn() {
         return document.querySelector(".hideVideo-el");
-      }
-      /**
-       * This one is a bit different. Reads the DOM but returns an array of
-       * objects created from some of the DOM elements
-       */
-
-    }, {
-      key: "getCurrentQueue",
-      value: function getCurrentQueue() {
-        var items = document.querySelectorAll('.browserPlaylistItems li');
-        return _toConsumableArray(items).map(function (li) {
-          return {
-            userid: li.dataset.userid,
-            title: li.querySelector('.description h2').textContent.trim(),
-            time: li.querySelector('.timeDisplay').textContent.trim(),
-            img: li.querySelector('figure img').src
-          };
-        });
       }
     }, {
       key: "getChatInputContainer",
@@ -14739,12 +14732,115 @@ var DubPlus = (function () {
     return GrabsInChat;
   }(Component);
 
+  var SongPreview = function SongPreview(props) {
+    return h("p", {
+      class: "dubplus-song-preview"
+    }, h("span", null, props.title || ''), " ", h("span", null, props.time || ''));
+  };
+
+  var PreviewNextSong =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(PreviewNextSong, _Component);
+
+    function PreviewNextSong() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, PreviewNextSong);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(PreviewNextSong)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+        isOn: false,
+        nextSong: null,
+        renderTo: null
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+        _this.setState({
+          isOn: true
+        });
+
+        proxy.onPlaylistUpdate(_this.findNextSong);
+      });
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+        _this.setState({
+          isOn: false
+        });
+
+        proxy.offPlaylistUpdate(_this.findNextSong);
+      });
+
+      return _this;
+    }
+
+    _createClass(PreviewNextSong, [{
+      key: "componentWillMount",
+      value: function componentWillMount() {
+        // add an empty span on mount to give Poral something to render to
+        var widget = proxy.getChatInputContainer();
+        var span = document.createElement('span');
+        widget.parentNode.insertBefore(span, widget);
+        this.renderTo = span;
+      }
+    }, {
+      key: "findNextSong",
+      value: function findNextSong() {
+        var _this2 = this;
+
+        proxy.getUserQueue(function (err, queue) {
+          if (err) {
+            return;
+          }
+
+          if (!queue.length || !queue[0].isActive) {
+            _this2.nextSong = null;
+            return;
+          }
+
+          _this2.nextSong = {
+            title: queue[0]._song.name,
+            time: queue[0]._song.songLength
+          };
+        });
+      }
+    }, {
+      key: "render",
+      value: function render$$1(props, _ref) {
+        var isOn = _ref.isOn,
+            nextSong = _ref.nextSong,
+            renderTo = _ref.renderTo;
+        return h(MenuSwitch, {
+          id: "dubplus-preview-next-song",
+          section: "General",
+          menuTitle: "Preview Next Song",
+          desc: "Show the next song you have queued up without having to look in your queue",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, isOn && renderTo ? h(Portal, {
+          into: renderTo
+        }, h(SongPreview, {
+          song: nextSong
+        })) : null);
+      }
+    }]);
+
+    return PreviewNextSong;
+  }(Component);
+
   var GeneralSection = function GeneralSection() {
     return h(MenuSection, {
       id: "dubplus-general",
       title: "General",
       settingsKey: "general"
-    }, h(Autovote, null), h(AFK, null), h(AutocompleteEmoji, null), h(Emotes, null), h(CustomMentions, null), h(ChatCleaner, null), h(ChatNotification, null), h(PMNotifications, null), h(DJNotification, null), h(ShowDubsOnHover, null), h(DowndubInChat, null), h(UpdubsInChat, null), h(GrabsInChat, null), h(SnowSwitch, null), h(RainSwitch, null));
+    }, h(Autovote, null), h(AFK, null), h(AutocompleteEmoji, null), h(Emotes, null), h(CustomMentions, null), h(ChatCleaner, null), h(ChatNotification, null), h(PMNotifications, null), h(DJNotification, null), h(ShowDubsOnHover, null), h(DowndubInChat, null), h(UpdubsInChat, null), h(GrabsInChat, null), h(PreviewNextSong, null), h(SnowSwitch, null), h(RainSwitch, null));
   };
 
   /**
@@ -15104,7 +15200,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1552969770597);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1552972755230);
     document.head.appendChild(link);
   }
   /**

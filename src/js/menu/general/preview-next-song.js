@@ -11,35 +11,29 @@ const SongPreview = (props) => {
   );
 };
 
-export default class ShowNextSong extends Component {
+export default class PreviewNextSong extends Component {
   state = {
     isOn : false,
     nextSong : null,
     renderTo: null
   }
-
-  userId = dtproxy.getUserId()
-
   
   componentWillMount() {
     // add an empty span on mount to give Poral something to render to
     let widget = dtproxy.getChatInputContainer();
     let span = document.createElement('span');
-    this.renderTo = widget.parentNode.insertBefore(span, widget);
+    widget.parentNode.insertBefore(span, widget);
+    this.renderTo = span;
   }
 
   findNextSong() {
-    let queue = dtproxy.getCurrentQueue();
-    
-    if (!queue.length) {
-      this.nextSong = null;
-      return;
-    }
-
-    queue.forEach( song => {
-      if (song.userid === this.userId) {
-        this.nextSong = song
-      } 
+    dtproxy.getUserQueue((err, queue) => {
+      if (err) { return; }
+      if (!queue.length || !queue[0].isActive) {
+        this.nextSong = null;
+        return;
+      }
+      this.nextSong = {title: queue[0]._song.name, time: queue[0]._song.songLength};
     });
   }
 
