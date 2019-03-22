@@ -14831,7 +14831,9 @@ var DubPlus = (function () {
         var widget = proxy.getChatInputContainer();
         var span = document.createElement("span");
         widget.parentNode.insertBefore(span, widget);
-        this.renderTo = span;
+        this.setState({
+          renderTo: span
+        });
       }
       /**
        * Go through the room's playlist queue and look for the ID of the current
@@ -15275,7 +15277,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553285125729);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553285393227);
     document.head.appendChild(link);
   }
   /**

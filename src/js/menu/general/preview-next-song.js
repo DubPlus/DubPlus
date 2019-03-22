@@ -46,7 +46,7 @@ export default class PreviewNextSong extends Component {
     let widget = dtproxy.getChatInputContainer();
     let span = document.createElement("span");
     widget.parentNode.insertBefore(span, widget);
-    this.renderTo = span;
+    this.setState({ renderTo: span });
   }
 
   /**
