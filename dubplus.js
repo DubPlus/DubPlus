@@ -1212,12 +1212,26 @@ var DubPlus = (function () {
         });
       }
     }, {
-      key: "getUserQueue",
-      value: function getUserQueue(cb) {
-        return fetch("https://api.dubtrack.fm/user/session/room/".concat(this.getRoomId(), "/queue")).then(function (resp) {
+      key: "getRoomQueue",
+      value: function getRoomQueue(cb) {
+        this._handleAsync("https://api.dubtrack.fm/room/".concat(Dubtrack.room.model.id, "/playlist/details"), cb);
+      }
+    }, {
+      key: "getSongData",
+      value: function getSongData(songID, cb) {
+        this._handleAsync("https://api.dubtrack.fm/song/".concat(songID), cb);
+      }
+    }, {
+      key: "_handleAsync",
+      value: function _handleAsync(url, cb) {
+        fetch(url).then(function (resp) {
           return resp.json();
         }).then(function (json) {
-          cb(null, json.data);
+          if (json.code === "200") {
+            cb(null, json);
+          } else {
+            cb(true, json);
+          }
         }).catch(function (err) {
           cb(err, null);
         });
@@ -11431,7 +11445,7 @@ var DubPlus = (function () {
     function UserSettings() {
       _classCallCheck(this, UserSettings);
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@feature/preview-next");
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh//DubPlus@feature/preview-next");
 
       var _savedSettings = localStorage.getItem('dubplusUserSettings');
 
@@ -14732,10 +14746,35 @@ var DubPlus = (function () {
     return GrabsInChat;
   }(Component);
 
-  var SongPreview = function SongPreview(props) {
+  function convertTime(ms) {
+    if (!ms) {
+      return ""; // just in case songLength is missing for some reason
+    }
+
+    var rounded = 1000 * Math.round(ms / 1000); // round to nearest second
+
+    var d = new Date(rounded);
+    return d.getUTCMinutes() + ":" + d.getUTCSeconds();
+  }
+
+  var SongPreview = function SongPreview(_ref) {
+    var song = _ref.song;
+
+    if (!song) {
+      return null;
+    }
+
     return h("p", {
       class: "dubplus-song-preview"
-    }, h("span", null, props.title || ''), " ", h("span", null, props.time || ''));
+    }, song.images && song.images.thumbnail ? h("span", {
+      class: "dubplus-song-preview__image"
+    }, h("img", {
+      src: song.images.thumbnail
+    })) : null, h("span", {
+      class: "dubplus-song-preview__title"
+    }, song.name), h("span", {
+      class: "dubplus-song-preview__length"
+    }, convertTime(song.songLength)));
   };
 
   var PreviewNextSong =
@@ -14762,10 +14801,14 @@ var DubPlus = (function () {
         renderTo: null
       });
 
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "userid", proxy.getUserId());
+
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
         _this.setState({
           isOn: true
         });
+
+        _this.findNextSong();
 
         proxy.onPlaylistUpdate(_this.findNextSong);
       });
@@ -14784,39 +14827,71 @@ var DubPlus = (function () {
     _createClass(PreviewNextSong, [{
       key: "componentWillMount",
       value: function componentWillMount() {
-        // add an empty span on mount to give Poral something to render to
+        // add an empty span on mount to give Portal something to render to
         var widget = proxy.getChatInputContainer();
-        var span = document.createElement('span');
+        var span = document.createElement("span");
         widget.parentNode.insertBefore(span, widget);
         this.renderTo = span;
       }
+      /**
+       * Go through the room's playlist queue and look for the ID of the current
+       * logged in User
+       */
+
     }, {
       key: "findNextSong",
       value: function findNextSong() {
         var _this2 = this;
 
-        proxy.getUserQueue(function (err, queue) {
-          if (err) {
+        proxy.getRoomQueue(function (err, json) {
+          if (err || !json.data || !json.data.length) {
+            _this2.setState({
+              nextSong: null
+            });
+
             return;
           }
 
-          if (!queue.length || !queue[0].isActive) {
-            _this2.nextSong = null;
+          var next = json.data.filter(function (track) {
+            return track.userid === _this2.userid;
+          });
+
+          if (next.length > 0) {
+            _this2.getSongInfo(next[0].songid);
+
             return;
           }
 
-          _this2.nextSong = {
-            title: queue[0]._song.name,
-            time: queue[0]._song.songLength
-          };
+          _this2.setState({
+            nextSong: null
+          });
+        });
+      }
+    }, {
+      key: "getSongInfo",
+      value: function getSongInfo(songId) {
+        var _this3 = this;
+
+        proxy.getSongData(songId, function (err, json) {
+          if (err || !json.data || !json.data.name) {
+            _this3.setState({
+              nextSong: null
+            });
+
+            return;
+          }
+
+          _this3.setState({
+            nextSong: json.data
+          });
         });
       }
     }, {
       key: "render",
-      value: function render$$1(props, _ref) {
-        var isOn = _ref.isOn,
-            nextSong = _ref.nextSong,
-            renderTo = _ref.renderTo;
+      value: function render$$1(props, _ref2) {
+        var isOn = _ref2.isOn,
+            nextSong = _ref2.nextSong,
+            renderTo = _ref2.renderTo;
         return h(MenuSwitch, {
           id: "dubplus-preview-next-song",
           section: "General",
@@ -15200,7 +15275,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1552972755230);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553284464221);
     document.head.appendChild(link);
   }
   /**

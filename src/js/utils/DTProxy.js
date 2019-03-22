@@ -6,7 +6,6 @@ Dubtrack through this "proxy" (for lack of better word)
 import WaitFor from "@/utils/waitFor.js";
 
 class DTProxy {
-
   loadCheck() {
     var checkList = [
       "Dubtrack.session.id",
@@ -128,21 +127,38 @@ class DTProxy {
     let user = Dubtrack.room.users.collection.findWhere({
       userid: Dubtrack.room.player.activeSong.attributes.song.userid
     });
-    if (user) { return user.attributes._user.username; }
+    if (user) {
+      return user.attributes._user.username;
+    }
   }
 
   getUserInfo(userid) {
     return Dubtrack.room.users.collection.findWhere({ userid: userid });
   }
 
-  getUserQueue(cb) {
-    return fetch(`https://api.dubtrack.fm/user/session/room/${this.getRoomId()}/queue`)
+  getRoomQueue(cb) {
+    this._handleAsync(
+      `https://api.dubtrack.fm/room/${Dubtrack.room.model.id}/playlist/details`,
+      cb
+    );
+  }
+
+  getSongData(songID, cb) {
+    this._handleAsync(`https://api.dubtrack.fm/song/${songID}`, cb);
+  }
+
+  _handleAsync(url, cb) {
+    fetch(url)
       .then(resp => resp.json())
       .then(json => {
-        cb(null, json.data);
+        if (json.code === "200") {
+          cb(null, json);
+        } else {
+          cb(true, json);
+        }
       })
       .catch(err => {
-        cb(err, null)
+        cb(err, null);
       });
   }
 
