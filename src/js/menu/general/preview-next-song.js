@@ -3,6 +3,9 @@ import { MenuSwitch } from "@/components/menuItems.js";
 import Portal from "preact-portal/src/preact-portal";
 import dtproxy from "@/utils/DTProxy.js";
 
+function pad(num) {
+  return num.toString().length === 1 ? "0" + num : num;
+}
 // if something else needs to use this then we can move it into utils
 function convertTime(ms) {
   if (!ms) {
@@ -10,7 +13,8 @@ function convertTime(ms) {
   }
   let rounded = 1000 * Math.round(ms / 1000); // round to nearest second
   var d = new Date(rounded);
-  return d.getUTCMinutes() + ":" + d.getUTCSeconds();
+
+  return d.getUTCMinutes() + ":" + pad(d.getUTCSeconds());
 }
 
 const SongPreview = ({ song }) => {
@@ -54,7 +58,7 @@ export default class PreviewNextSong extends Component {
    * Go through the room's playlist queue and look for the ID of the current
    * logged in User
    */
-  findNextSong() {
+  findNextSong = () => {
     dtproxy.getRoomQueue((err, json) => {
       if (err || !json.data || !json.data.length) {
         this.setState({ nextSong: null });
@@ -67,9 +71,9 @@ export default class PreviewNextSong extends Component {
       }
       this.setState({ nextSong: null });
     });
-  }
+  };
 
-  getSongInfo(songId) {
+  getSongInfo = songId => {
     dtproxy.getSongData(songId, (err, json) => {
       if (err || !json.data || !json.data.name) {
         this.setState({ nextSong: null });
@@ -79,17 +83,21 @@ export default class PreviewNextSong extends Component {
         nextSong: json.data
       });
     });
-  }
+  };
 
   turnOn = () => {
     this.setState({ isOn: true });
     this.findNextSong();
     dtproxy.onPlaylistUpdate(this.findNextSong);
+    dtproxy.onPlaylistQueueUpdate(this.findNextSong);
+    document.body.classList.add("dplus-song-preview");
   };
 
   turnOff = () => {
     this.setState({ isOn: false });
     dtproxy.offPlaylistUpdate(this.findNextSong);
+    dtproxy.offPlaylistQueueUpdate(this.findNextSong);
+    document.body.classList.remove("dplus-song-preview");
   };
 
   render(props, { isOn, nextSong }) {

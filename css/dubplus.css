@@ -655,16 +655,27 @@
 .dubplus-hide-bg .backstretch {
   display: none !important; }
 
+#dp-song-prev-target {
+  display: block;
+  width: 100%;
+  position: absolute;
+  bottom: 40px; }
+
 .dubplus-song-preview {
   display: -ms-flexbox;
   display: flex;
   -ms-flex-direction: row;
       flex-direction: row;
   -ms-flex-align: center;
-      align-items: center; }
+      align-items: center;
+  background-color: black; }
   .dubplus-song-preview__length {
     justify-self: flex-end;
-    margin-left: 10px; }
+    margin-left: 10px;
+    padding-right: 10px; }
+  .dubplus-song-preview__title {
+    -ms-flex: 1;
+        flex: 1; }
   .dubplus-song-preview__image {
     margin-right: 10px;
     max-width: 50px; }
@@ -672,6 +683,9 @@
       display: block;
       width: 100%;
       height: auto; }
+
+.dplus-song-preview #chat .chat-container .chat-messages {
+  height: 95%; }
 
 .dubplus-custom-bg {
   width: 100%;

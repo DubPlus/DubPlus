@@ -151,7 +151,7 @@ class DTProxy {
     fetch(url)
       .then(resp => resp.json())
       .then(json => {
-        if (json.code === "200") {
+        if (json.code === 200) {
           cb(null, json);
         } else {
           cb(true, json);
@@ -175,6 +175,13 @@ class DTProxy {
   }
   offPlaylistUpdate(cb) {
     Dubtrack.Events.unbind("realtime:room_playlist-update", cb);
+  }
+
+  onPlaylistQueueUpdate(cb) {
+    Dubtrack.Events.bind("realtime:room_playlist-queue-update", cb);
+  }
+  offPlaylistQueueUpdate(cb) {
+    Dubtrack.Events.unbind("realtime:room_playlist-queue-update", cb);
   }
 
   /**

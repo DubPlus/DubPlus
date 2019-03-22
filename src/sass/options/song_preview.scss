@@ -1,11 +1,23 @@
+#dp-song-prev-target {
+  display: block;
+  width: 100%;
+  position: absolute;
+  bottom: 40px;
+}
 .dubplus-song-preview {
   display: flex;
   flex-direction: row;
   align-items: center;
+  background-color: black;
 
   &__length {
     justify-self: flex-end;
     margin-left: 10px;
+    padding-right: 10px;
+  }
+
+  &__title {
+    flex: 1;
   }
 
   &__image {
@@ -18,4 +30,8 @@
       height: auto;
     }
   }
+}
+
+.dplus-song-preview #chat .chat-container .chat-messages {
+  height: 95%;
 }
