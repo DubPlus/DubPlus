@@ -35,18 +35,19 @@ const SongPreview = ({ song }) => {
 export default class PreviewNextSong extends Component {
   state = {
     isOn: false,
-    nextSong: null,
-    renderTo: null
+    nextSong: null
   };
 
   userid = dtproxy.getUserId();
+  renderTo = null;
 
   componentWillMount() {
     // add an empty span on mount to give Portal something to render to
     let widget = dtproxy.getChatInputContainer();
     let span = document.createElement("span");
+    span.id = "dp-song-prev-target";
     widget.parentNode.insertBefore(span, widget);
-    this.setState({ renderTo: span });
+    this.renderTo = document.getElementById("dp-song-prev-target");
   }
 
   /**
@@ -91,7 +92,7 @@ export default class PreviewNextSong extends Component {
     dtproxy.offPlaylistUpdate(this.findNextSong);
   };
 
-  render(props, { isOn, nextSong, renderTo }) {
+  render(props, { isOn, nextSong }) {
     return (
       <MenuSwitch
         id="dubplus-preview-next-song"
@@ -101,8 +102,8 @@ export default class PreviewNextSong extends Component {
         turnOn={this.turnOn}
         turnOff={this.turnOff}
       >
-        {isOn && renderTo ? (
-          <Portal into={renderTo}>
+        {isOn ? (
+          <Portal into={this.renderTo}>
             <SongPreview song={nextSong} />
           </Portal>
         ) : null}

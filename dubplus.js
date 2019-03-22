@@ -14797,11 +14797,12 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
         isOn: false,
-        nextSong: null,
-        renderTo: null
+        nextSong: null
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "userid", proxy.getUserId());
+
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "renderTo", null);
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
         _this.setState({
@@ -14830,10 +14831,9 @@ var DubPlus = (function () {
         // add an empty span on mount to give Portal something to render to
         var widget = proxy.getChatInputContainer();
         var span = document.createElement("span");
+        span.id = "dp-song-prev-target";
         widget.parentNode.insertBefore(span, widget);
-        this.setState({
-          renderTo: span
-        });
+        this.renderTo = document.getElementById("dp-song-prev-target");
       }
       /**
        * Go through the room's playlist queue and look for the ID of the current
@@ -14892,8 +14892,7 @@ var DubPlus = (function () {
       key: "render",
       value: function render$$1(props, _ref2) {
         var isOn = _ref2.isOn,
-            nextSong = _ref2.nextSong,
-            renderTo = _ref2.renderTo;
+            nextSong = _ref2.nextSong;
         return h(MenuSwitch, {
           id: "dubplus-preview-next-song",
           section: "General",
@@ -14901,8 +14900,8 @@ var DubPlus = (function () {
           desc: "Show the next song you have queued up without having to look in your queue",
           turnOn: this.turnOn,
           turnOff: this.turnOff
-        }, isOn && renderTo ? h(Portal, {
-          into: renderTo
+        }, isOn ? h(Portal, {
+          into: this.renderTo
         }, h(SongPreview, {
           song: nextSong
         })) : null);
@@ -15277,7 +15276,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553285393227);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553286095099);
     document.head.appendChild(link);
   }
   /**
