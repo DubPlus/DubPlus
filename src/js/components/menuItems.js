@@ -50,13 +50,29 @@ export class MenuSection extends Component {
  * @param {string} props.desc description of the menu item used in the title attr
  * @param {string} props.icon icon to be used
  * @param {string} props.menuTitle text to display in the menu
- * @param {Function} props.onClick text to display in the menu
+ * @param {Function} props.onClick function to run on click
+ * @param {string} props.href if provided will render an anchor instead
  */
 export function MenuSimple(props) {
   let _cn = ["dubplus-menu-icon"];
   // combine with ones that were passed through
   if (props.className) {
     _cn.push(props.className);
+  }
+
+  if (props.href) {
+    return (
+      <li class="dubplus-menu-icon">
+        <span class={`fa fa-${props.icon}`} />
+        <a
+          href={props.href}
+          class="dubplus-menu-label"
+          target="_blank"
+        >
+          {props.menuTitle}
+        </a>
+      </li>
+    );
   }
 
   return (

@@ -12075,7 +12075,8 @@ var DubPlus = (function () {
    * @param {string} props.desc description of the menu item used in the title attr
    * @param {string} props.icon icon to be used
    * @param {string} props.menuTitle text to display in the menu
-   * @param {Function} props.onClick text to display in the menu
+   * @param {Function} props.onClick function to run on click
+   * @param {string} props.href if provided will render an anchor instead
    */
 
   function MenuSimple(props) {
@@ -12083,6 +12084,18 @@ var DubPlus = (function () {
 
     if (props.className) {
       _cn.push(props.className);
+    }
+
+    if (props.href) {
+      return h("li", {
+        class: "dubplus-menu-icon"
+      }, h("span", {
+        class: "fa fa-".concat(props.icon)
+      }), h("a", {
+        href: props.href,
+        class: "dubplus-menu-label",
+        target: "_blank"
+      }, props.menuTitle));
     }
 
     return h("li", {
@@ -15655,7 +15668,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553405199415);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553407132808);
     document.head.appendChild(link);
   }
   /**
@@ -16085,39 +16098,23 @@ var DubPlus = (function () {
       id: "dubplus-contacts",
       title: "Contacts",
       settingsKey: "contact"
-    }, h("li", {
-      class: "dubplus-menu-icon"
-    }, h("span", {
-      class: "fa fa-bug"
-    }), h("a", {
-      href: "https://discord.gg/XUkG3Qy",
-      class: "dubplus-menu-label",
-      target: "_blank"
-    }, "Report bugs on Discord")), h("li", {
-      class: "dubplus-menu-icon"
-    }, h("span", {
-      class: "fa fa-reddit-alien"
-    }), h("a", {
-      href: "https://www.reddit.com/r/DubPlus/",
-      class: "dubplus-menu-label",
-      target: "_blank"
-    }, "Reddit")), h("li", {
-      class: "dubplus-menu-icon"
-    }, h("span", {
-      class: "fa fa-facebook"
-    }), h("a", {
-      href: "https://facebook.com/DubPlusScript",
-      class: "dubplus-menu-label",
-      target: "_blank"
-    }, "Facebook")), h("li", {
-      class: "dubplus-menu-icon"
-    }, h("span", {
-      class: "fa fa-twitter"
-    }), h("a", {
-      href: "https://twitter.com/DubPlusScript",
-      class: "dubplus-menu-label",
-      target: "_blank"
-    }, "Twitter"))));
+    }, h(MenuSimple, {
+      icon: "bug",
+      menuTitle: "Report bugs on Discord",
+      href: "https://discord.gg/XUkG3Qy"
+    }), h(MenuSimple, {
+      icon: "reddit-alien",
+      menuTitle: "Reddit",
+      href: "https://www.reddit.com/r/DubPlus/"
+    }), h(MenuSimple, {
+      icon: "facebook",
+      menuTitle: "Facebook",
+      href: "https://facebook.com/DubPlusScript"
+    }), h(MenuSimple, {
+      icon: "twitter",
+      menuTitle: "Twitter",
+      href: "https://twitter.com/DubPlusScript"
+    })));
   };
 
   var waitingStyles = {
