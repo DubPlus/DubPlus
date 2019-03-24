@@ -1051,6 +1051,14 @@ var DubPlus = (function () {
     });
   }
 
+  /**
+   * In order to prepare for the future alpha changes and the possibility that 
+   * Dubtrack might alter this object of data we rely on, I am planning to funnel 
+   * all interaction with Dubtrack through this "proxy" (for lack of better word)
+   *
+   * @class DTProxy
+   */
+
   var DTProxy =
   /*#__PURE__*/
   function () {
@@ -1060,17 +1068,40 @@ var DubPlus = (function () {
 
     _createClass(DTProxy, [{
       key: "loadCheck",
+
+      /**
+       * Begins polling of window object for the existence of a set of global
+       * variables. 
+       *
+       * @returns {Promise}
+       * @memberof DTProxy
+       */
       value: function loadCheck() {
         var checkList = ["Dubtrack.session.id", "Dubtrack.room.chat", "Dubtrack.Events", "Dubtrack.room.player", "Dubtrack.helpers.cookie", "Dubtrack.room.model", "Dubtrack.room.users"];
         return new WaitFor(checkList, {
           seconds: 120
         });
       }
+      /**
+       * returns the API URL for the active dubs in the current user is in
+       * 
+       * @return {string}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "activeDubsAPI",
       value: function activeDubsAPI() {
         return "https://api.dubtrack.fm/room/".concat(this.getRoomId(), "/playlist/active/dubs");
       }
+      /**
+       * returns the API url to get a users info
+       * 
+       * @param {string} userid - current logged in user id
+       * @returns {string}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "userDataAPI",
       value: function userDataAPI(userid) {
@@ -1078,6 +1109,9 @@ var DubPlus = (function () {
       }
       /**
        * Session Id is the same as User ID apparently
+       * 
+       * @returns {string}
+       * @memberof DTProxy
        */
 
     }, {
@@ -1085,6 +1119,13 @@ var DubPlus = (function () {
       value: function getSessionId() {
         return Dubtrack.session.id;
       }
+      /**
+       * pass through of session id which is the same as user id
+       * 
+       * @returns {string}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "getUserId",
       value: function getUserId() {
@@ -1092,6 +1133,9 @@ var DubPlus = (function () {
       }
       /**
        * get the current logged in user name
+       * 
+       * @returns {string}
+       * @memberof DTProxy
        */
 
     }, {
@@ -1099,68 +1143,157 @@ var DubPlus = (function () {
       value: function getUserName() {
         return Dubtrack.session.get("username");
       }
+      /**
+       * get current room's name. Don't let the name fool you, it doesn't return a
+       * URL, it just returns the name of the room and that's it
+       * 
+       * @return {string}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "getRoomUrl",
       value: function getRoomUrl() {
         return Dubtrack.room.model.get("roomUrl");
       }
+      /**
+       * returns the current room's id
+       * 
+       * @returns {string}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "getRoomId",
       value: function getRoomId() {
         return Dubtrack.room.model.id;
       }
+      /**
+       * set volume of room's player
+       * 
+       * @param {number} vol - number between 0 - 100
+       * @memberof DTProxy
+       */
+
     }, {
       key: "setVolume",
       value: function setVolume(vol) {
         Dubtrack.room.player.setVolume(vol);
         Dubtrack.room.player.updateVolumeBar();
       }
+      /**
+       * get the current volume of the room's player
+       * 
+       * @returns {number}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "getVolume",
       value: function getVolume() {
         return Dubtrack.playerController.volume;
       }
+      /**
+       * get the current mute state of the room's player
+       * 
+       * @return {boolean}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "isMuted",
       value: function isMuted() {
         return Dubtrack.room.player.muted_player;
       }
+      /**
+       * mute the room's player
+       * 
+       * @memberof DTProxy
+       */
+
     }, {
       key: "mutePlayer",
       value: function mutePlayer() {
         Dubtrack.room.player.mutePlayer();
       }
+      /**
+       * Get the path of the mp3 file that is used for notifications
+       * 
+       * @returns {string}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "getChatSoundUrl",
       value: function getChatSoundUrl() {
         return Dubtrack.room.chat.mentionChatSound.url;
       }
+      /**
+       * set the mp3 file that is used for notifications
+       * 
+       * @param {string} url - the url of the mp3 file
+       * @memberof DTProxy
+       */
+
     }, {
       key: "setChatSoundUrl",
       value: function setChatSoundUrl(url) {
         Dubtrack.room.chat.mentionChatSound.url = url;
       }
+      /**
+       * play the notification sound
+       * 
+       * @memberof DTProxy
+       */
+
     }, {
       key: "playChatSound",
       value: function playChatSound() {
         Dubtrack.room.chat.mentionChatSound.play();
       }
+      /**
+       * This will take whatever text inside the input and send it to the chat
+       * 
+       * @memberof DTProxy
+       */
+
     }, {
       key: "sendChatMessage",
       value: function sendChatMessage() {
         Dubtrack.room.chat.sendMessage();
       }
+      /**
+       * check if a user has mod (or higher) priviledges. 
+       * 
+       * @param {string} userid - any user's id, defaults to current logged in user
+       * @memberof DTProxy
+       */
+
     }, {
       key: "modCheck",
       value: function modCheck() {
         var userid = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Dubtrack.session.id;
         return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
       }
+      /**
+       * Get room's "display grabs in chat" setting
+       * 
+       * @returns {boolean}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "displayUserGrab",
       value: function displayUserGrab() {
         return Dubtrack.room.model.get("displayUserGrab");
       }
+      /**
+       * get the name of the song that's currently playing in the room
+       * 
+       * @returns {string}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "getSongName",
       value: function getSongName() {
@@ -1168,6 +1301,9 @@ var DubPlus = (function () {
       }
       /**
        * Get the Dubtrack ID for current song.
+       * 
+       * @returns {string}
+       * @memberof DTProxy
        */
 
     }, {
@@ -1177,6 +1313,9 @@ var DubPlus = (function () {
       }
       /**
        * Get song data for the current song
+       * 
+       * @returns {object}
+       * @memberof DTProxy
        */
 
     }, {
@@ -1186,6 +1325,9 @@ var DubPlus = (function () {
       }
       /**
        * returns wether user has "updub" or "downdub" current song
+       * 
+       * @returns {string|null} "updub", "downdub", or null if no vote was cast
+       * @memberof DTProxy
        */
 
     }, {
@@ -1193,6 +1335,13 @@ var DubPlus = (function () {
       value: function getVoteType() {
         return Dubtrack.helpers.cookie.get("dub-" + Dubtrack.room.model.id);
       }
+      /**
+       * get the name of the current DJ
+       * 
+       * @returns {string}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "getCurrentDJ",
       value: function getCurrentDJ() {
@@ -1204,6 +1353,14 @@ var DubPlus = (function () {
           return user.attributes._user.username;
         }
       }
+      /**
+       * get a user in the room's info
+       * 
+       * @param {string} userid
+       * @returns {object}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "getUserInfo",
       value: function getUserInfo(userid) {
@@ -1211,16 +1368,39 @@ var DubPlus = (function () {
           userid: userid
         });
       }
+      /**
+       * Make api call to get data for all the songs in the room's active queue
+       * 
+       * @param {function} cb - callback function
+       * @memberof DTProxy
+       */
+
     }, {
       key: "getRoomQueue",
       value: function getRoomQueue(cb) {
         this._handleAsync("https://api.dubtrack.fm/room/".concat(Dubtrack.room.model.id, "/playlist/details"), cb);
       }
+      /**
+       * make api call to get data for a specific song
+       * 
+       * @param {string} songID
+       * @param {function} cb - callback function
+       * @memberof DTProxy
+       */
+
     }, {
       key: "getSongData",
       value: function getSongData(songID, cb) {
         this._handleAsync("https://api.dubtrack.fm/song/".concat(songID), cb);
       }
+      /**
+       * meant for internal use only. Handles async calls to api urls using
+       * fetch. Uses old school callbacks
+       * 
+       * @private
+       * @memberof DTProxy
+       */
+
     }, {
       key: "_handleAsync",
       value: function _handleAsync(url, cb) {
@@ -1241,8 +1421,10 @@ var DubPlus = (function () {
        */
 
       /**
-       * When the room's current song changes and a new song comes on
+       * Subscribe to the room's current song changes including when a new song comes on
+       * 
        * @param {function} cb callback function to bind to playlist-update
+       * @memberof DTProxy
        */
 
     }, {
@@ -1250,23 +1432,47 @@ var DubPlus = (function () {
       value: function onPlaylistUpdate(cb) {
         Dubtrack.Events.bind("realtime:room_playlist-update", cb);
       }
+      /**
+       * unsubscribe to playlist updates
+       *
+       * @param {function} cb
+       * @memberof DTProxy
+       */
+
     }, {
       key: "offPlaylistUpdate",
       value: function offPlaylistUpdate(cb) {
         Dubtrack.Events.unbind("realtime:room_playlist-update", cb);
       }
+      /**
+       * Subscribe to changes in the current room's queue
+       *
+       * @param {function} cb
+       * @memberof DTProxy
+       */
+
     }, {
       key: "onPlaylistQueueUpdate",
       value: function onPlaylistQueueUpdate(cb) {
         Dubtrack.Events.bind("realtime:room_playlist-queue-update", cb);
       }
+      /**
+       * Unsubscribe to changes in the current room's queue
+       *
+       * @param {function} cb
+       * @memberof DTProxy
+       */
+
     }, {
       key: "offPlaylistQueueUpdate",
       value: function offPlaylistQueueUpdate(cb) {
         Dubtrack.Events.unbind("realtime:room_playlist-queue-update", cb);
       }
       /**
-       * When a user up/down votes (aka dub) a song
+       * Subscribe to when a user up/down votes (aka dub) a song
+       *
+       * @param {function} cb
+       * @memberof DTProxy
        */
 
     }, {
@@ -1274,13 +1480,23 @@ var DubPlus = (function () {
       value: function onSongVote(cb) {
         Dubtrack.Events.bind("realtime:room_playlist-dub", cb);
       }
+      /**
+       * Unbsubscribe to song vote event
+       *
+       * @param {function} cb
+       * @memberof DTProxy
+       */
+
     }, {
       key: "offSongVote",
       value: function offSongVote(cb) {
         Dubtrack.Events.unbind("realtime:room_playlist-dub", cb);
       }
       /**
-       * When a new chat message comes in
+       * Subscribe when a new chat message comes in
+       *
+       * @param {function} cb
+       * @memberof DTProxy
        */
 
     }, {
@@ -1288,13 +1504,23 @@ var DubPlus = (function () {
       value: function onChatMessage(cb) {
         Dubtrack.Events.bind("realtime:chat-message", cb);
       }
+      /**
+       * Unsubscribe to new chat messages event
+       *
+       * @param {function} cb
+       * @memberof DTProxy
+       */
+
     }, {
       key: "offChatMessage",
       value: function offChatMessage(cb) {
         Dubtrack.Events.unbind("realtime:chat-message", cb);
       }
       /**
-       * When any user in the room grabs a song
+       * subscribe to when any user in the room grabs a song
+       *
+       * @param {function} cb
+       * @memberof DTProxy
        */
 
     }, {
@@ -1302,58 +1528,124 @@ var DubPlus = (function () {
       value: function onSongGrab(cb) {
         Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", cb);
       }
+      /**
+       * Unsubscribe to when any user in the room grabs a song
+       *
+       * @param {function} cb
+       * @memberof DTProxy
+       */
+
     }, {
       key: "offSongGrab",
       value: function offSongGrab(cb) {
         Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", cb);
       }
+      /**
+       * Subscribe to user leave event 
+       *
+       * @param {function} cb
+       * @memberof DTProxy
+       */
+
     }, {
       key: "onUserLeave",
       value: function onUserLeave(cb) {
         Dubtrack.Events.bind("realtime:user-leave", cb);
       }
+      /**
+       * Unsubscribe to user leave event
+       *
+       * @param {function} cb
+       * @memberof DTProxy
+       */
+
     }, {
       key: "offUserLeave",
       value: function offUserLeave(cb) {
         Dubtrack.Events.unbind("realtime:user-leave", cb);
       }
+      /**
+       * Subscribe to new private message
+       *
+       * @param {function} cb
+       * @memberof DTProxy
+       */
+
     }, {
       key: "onNewPM",
       value: function onNewPM(cb) {
         Dubtrack.Events.bind("realtime:new-message", cb);
       }
+      /**
+       * Unsubscribe to new private message
+       *
+       * @param {function} cb
+       * @memberof DTProxy
+       */
+
     }, {
       key: "offNewPM",
       value: function offNewPM(cb) {
         Dubtrack.Events.unbind("realtime:new-message", cb);
       }
       /******************************************************************
-       * Functions that depend on, or return, DOM elements
-       * for now I'm only proying DOM elements used across multiple files
-       * Except if they are just used as Preact's render target:  render(<Elem>, target)
+       * DOM Elements
        */
+
+      /**
+      * Returns the chat input element
+      *
+      * @returns {HTMLInputElement}
+      * @memberof DTProxy
+      */
 
     }, {
       key: "chatInput",
       value: function chatInput() {
         return document.getElementById("chat-txt-message");
       }
+      /**
+       * returns the <ul> containing all the chat messages
+       *
+       * @returns {HTMLUListElement}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "chatList",
       value: function chatList() {
         return document.querySelector("ul.chat-main");
       }
+      /**
+       * Returns all of the elements that hold the chat text
+       *
+       * @returns {NodeList}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "allChatTexts",
       value: function allChatTexts() {
         return document.querySelectorAll(".chat-main .text");
-      } // this is the little input that's in the grabs popup
+      }
+      /**
+       * returns the little input that's in the grabs popup
+       *
+       * @returns {HTMLInputElement}
+       * @memberof DTProxy
+       */
 
     }, {
       key: "playlistInput",
       value: function playlistInput() {
         return document.getElementById("playlist-input");
-      } // this is the list of playlists in the grab popup
+      }
+      /**
+       * returns the <li> in the grab popup
+       *
+       * @returns {NodeList}
+       * @memberof DTProxy
+       */
 
     }, {
       key: "grabPlaylists",
@@ -1362,60 +1654,120 @@ var DubPlus = (function () {
       }
       /**
        * Get the current minutes remaining of the song playing
+       *
+       * @returns {number}
+       * @memberof DTProxy
        */
 
     }, {
       key: "getRemainingTime",
       value: function getRemainingTime() {
         return parseInt(document.querySelector("#player-controller .currentTime span.min").textContent);
-      } // booth duration?
+      }
+      /**
+       * get the queue position
+       * @returns {string}
+       */
 
     }, {
       key: "getQueuePosition",
       value: function getQueuePosition() {
         return parseInt(this.getQueuePositionElem().textContent);
-      } // booth duration?
+      }
+      /**
+       * get element that contains the queue position
+       * @returns {HTMLElement}
+       */
 
     }, {
       key: "getQueuePositionElem",
       value: function getQueuePositionElem() {
         return document.querySelector(".queue-position");
       }
+      /**
+       * Get the html element of a specific private message
+       * @param {string} messageid
+       * @returns {HTMLElement}
+       */
+
     }, {
       key: "getPMmsg",
       value: function getPMmsg(messageid) {
         return document.querySelector(".message-item[data-messageid=\"".concat(messageid, "\"]"));
       }
+      /**
+       * get the anchor element for the up dub button
+       * @returns {HTMLAnchorElement}
+       */
+
     }, {
       key: "upVote",
       value: function upVote() {
         return document.querySelector(".dubup");
       }
+      /**
+       * get the anchor element for the down dub button
+       * @returns {HTMLAnchorElement}
+       */
+
     }, {
       key: "downVote",
       value: function downVote() {
         return document.querySelector(".dubdown");
       }
+      /**
+       * get the add to playlist "grab" button
+       * @returns {HTMLAnchorElement}
+       */
+
     }, {
       key: "grabBtn",
       value: function grabBtn() {
         return document.querySelector(".add-to-playlist-button");
       }
+      /**
+       * Returns the element that triggers the opening the private messages sidebar
+       *
+       * @returns {HTMLDivElement}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "userPMs",
       value: function userPMs() {
         return document.querySelector(".user-messages");
       }
+      /**
+       * returns the full size background img element
+       *
+       * @returns {HTMLImageElement}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "bgImg",
       value: function bgImg() {
         return document.querySelector(".backstretch-item img");
       }
+      /**
+       * returns the element used to hide/show the video
+       *
+       * @returns {HTMLDivElement}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "hideVideoBtn",
       value: function hideVideoBtn() {
         return document.querySelector(".hideVideo-el");
       }
+      /**
+       * Returns the chat input's containing element
+       *
+       * @returns {HTMLDivElement}
+       * @memberof DTProxy
+       */
+
     }, {
       key: "getChatInputContainer",
       value: function getChatInputContainer() {
@@ -14721,12 +15073,17 @@ var DubPlus = (function () {
         proxy.offSongGrab(_this.grabChatWatcher);
       });
 
-      return _this;
-    }
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "grabChatWatcher", function (e) {
+        if (proxy.displayUserGrab()) {
+          // if the room has turned on its own "show grab in chat" setting
+          // then we no longer need to listen to grabs
+          proxy.offSongGrab(_this.grabChatWatcher); // a nd we turn switch off
 
-    _createClass(GrabsInChat, [{
-      key: "grabChatWatcher",
-      value: function grabChatWatcher(e) {
+          _this.switchRef.switchOff(true);
+
+          return;
+        }
+
         var user = proxy.getUserName();
         var currentDj = proxy.getCurrentDJ();
 
@@ -14734,15 +15091,24 @@ var DubPlus = (function () {
           return;
         }
 
-        if (user === currentDj && !proxy.displayUserGrab()) {
+        if (user === currentDj) {
           var newChat = chatMessage$2(e.user.username, proxy.getSongName());
           proxy.chatList().appendChild(newChat);
         }
-      }
-    }, {
+      });
+
+      return _this;
+    }
+
+    _createClass(GrabsInChat, [{
       key: "render",
       value: function render$$1() {
+        var _this2 = this;
+
         return h(MenuSwitch, {
+          ref: function ref(s) {
+            return _this2.switchRef = s;
+          },
           id: "dubplus-grabschat",
           section: "General",
           menuTitle: "Grabs in Chat",
@@ -14787,7 +15153,7 @@ var DubPlus = (function () {
       src: song.images.thumbnail
     })) : null, h("span", {
       class: "dubplus-song-preview__title"
-    }, song.name), h("span", {
+    }, h("small", null, "Your next track:"), song.name), h("span", {
       class: "dubplus-song-preview__length"
     }, convertTime(song.songLength)));
   };
@@ -15289,7 +15655,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553288607717);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553403290130);
     document.head.appendChild(link);
   }
   /**

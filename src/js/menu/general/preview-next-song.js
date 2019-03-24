@@ -6,6 +6,7 @@ import dtproxy from "@/utils/DTProxy.js";
 function pad(num) {
   return num.toString().length === 1 ? "0" + num : num;
 }
+
 // if something else needs to use this then we can move it into utils
 function convertTime(ms) {
   if (!ms) {
@@ -28,7 +29,10 @@ const SongPreview = ({ song }) => {
           <img src={song.images.thumbnail} />
         </span>
       ) : null}
-      <span class="dubplus-song-preview__title">{song.name}</span>
+      <span class="dubplus-song-preview__title">
+        <small>Your next track:</small>
+        {song.name}
+      </span>
       <span class="dubplus-song-preview__length">
         {convertTime(song.songLength)}
       </span>

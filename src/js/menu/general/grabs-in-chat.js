@@ -33,12 +33,21 @@ export default class GrabsInChat extends Component {
     dtproxy.offSongGrab(this.grabChatWatcher);
   }
 
-  grabChatWatcher(e) {
+  grabChatWatcher = (e) => {
+    if (dtproxy.displayUserGrab()) { 
+      // if the room has turned on its own "show grab in chat" setting
+      // then we no longer need to listen to grabs
+      dtproxy.offSongGrab(this.grabChatWatcher);
+      // a nd we turn switch off
+      this.switchRef.switchOff(true);
+      return; 
+    }
+
     var user = dtproxy.getUserName();
     var currentDj = dtproxy.getCurrentDJ();
     if (!currentDj) { return; }
 
-    if(user === currentDj && !dtproxy.displayUserGrab()) {
+    if(user === currentDj) {
       let newChat = chatMessage(e.user.username, dtproxy.getSongName());
       dtproxy.chatList().appendChild(newChat);
     }
@@ -47,6 +56,7 @@ export default class GrabsInChat extends Component {
   render() {
     return (
       <MenuSwitch
+        ref={s => (this.switchRef = s)}
         id="dubplus-grabschat"
         section="General"
         menuTitle="Grabs in Chat"

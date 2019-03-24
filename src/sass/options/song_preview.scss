@@ -18,6 +18,10 @@
 
   &__title {
     flex: 1;
+
+    small {
+      display: block;
+    }
   }
 
   &__image {
