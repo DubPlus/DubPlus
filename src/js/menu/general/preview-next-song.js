@@ -3,19 +3,21 @@ import { MenuSwitch } from "@/components/menuItems.js";
 import Portal from "preact-portal/src/preact-portal";
 import dtproxy from "@/utils/DTProxy.js";
 
-function pad(num) {
-  return num.toString().length === 1 ? "0" + num : num;
-}
-
+// 4513000 should === 75:13
 // if something else needs to use this then we can move it into utils
-function convertTime(ms) {
-  if (!ms) {
+function convertMStoTime(duration) {
+  if (!duration) {
     return ""; // just in case songLength is missing for some reason
   }
-  let rounded = 1000 * Math.round(ms / 1000); // round to nearest second
-  var d = new Date(rounded);
+  var seconds = parseInt((duration / 1000) % 60);
+  var minutes = parseInt((duration / (1000 * 60)) % 60);
+  var hours = parseInt((duration / (1000 * 60 * 60)) % 24);
 
-  return d.getUTCMinutes() + ":" + pad(d.getUTCSeconds());
+  // only left pad the minutes and seconds
+  minutes = minutes < 10 ? "0" + minutes : minutes;
+  seconds = seconds < 10 ? "0" + seconds : seconds;
+
+  return hours + ":" + minutes + ":" + seconds;
 }
 
 const SongPreview = ({ song }) => {
@@ -34,7 +36,7 @@ const SongPreview = ({ song }) => {
         {song.name}
       </span>
       <span class="dubplus-song-preview__length">
-        {convertTime(song.songLength)}
+        {convertMStoTime(song.songLength)}
       </span>
     </p>
   );

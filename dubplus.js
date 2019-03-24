@@ -15122,20 +15122,20 @@ var DubPlus = (function () {
     return GrabsInChat;
   }(Component);
 
-  function pad(num) {
-    return num.toString().length === 1 ? "0" + num : num;
-  } // if something else needs to use this then we can move it into utils
+  // if something else needs to use this then we can move it into utils
 
-
-  function convertTime(ms) {
-    if (!ms) {
+  function convertMStoTime(duration) {
+    if (!duration) {
       return ""; // just in case songLength is missing for some reason
     }
 
-    var rounded = 1000 * Math.round(ms / 1000); // round to nearest second
+    var seconds = parseInt(duration / 1000 % 60);
+    var minutes = parseInt(duration / (1000 * 60) % 60);
+    var hours = parseInt(duration / (1000 * 60 * 60) % 24); // only left pad the minutes and seconds
 
-    var d = new Date(rounded);
-    return d.getUTCMinutes() + ":" + pad(d.getUTCSeconds());
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+    return hours + ":" + minutes + ":" + seconds;
   }
 
   var SongPreview = function SongPreview(_ref) {
@@ -15155,7 +15155,7 @@ var DubPlus = (function () {
       class: "dubplus-song-preview__title"
     }, h("small", null, "Your next track:"), song.name), h("span", {
       class: "dubplus-song-preview__length"
-    }, convertTime(song.songLength)));
+    }, convertMStoTime(song.songLength)));
   };
 
   var PreviewNextSong =
@@ -15655,7 +15655,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553403290130);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553405199415);
     document.head.appendChild(link);
   }
   /**
