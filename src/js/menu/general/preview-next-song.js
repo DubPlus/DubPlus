@@ -13,11 +13,14 @@ function convertMStoTime(duration) {
   var minutes = parseInt((duration / (1000 * 60)) % 60);
   var hours = parseInt((duration / (1000 * 60 * 60)) % 24);
 
-  // only left pad the minutes and seconds
-  minutes = minutes < 10 ? "0" + minutes : minutes;
   seconds = seconds < 10 ? "0" + seconds : seconds;
 
-  return hours + ":" + minutes + ":" + seconds;
+  if (hours) {
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    return hours + ":" + minutes + ":" + seconds;
+  }
+
+  return  minutes + ":" + seconds;
 }
 
 const SongPreview = ({ song }) => {

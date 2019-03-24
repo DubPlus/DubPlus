@@ -1,17 +1,16 @@
 import WaitFor from "@/utils/waitFor.js";
 
 /**
- * In order to prepare for the future alpha changes and the possibility that 
- * Dubtrack might alter this object of data we rely on, I am planning to funnel 
+ * In order to prepare for the future alpha changes and the possibility that
+ * Dubtrack might alter this object of data we rely on, I am planning to funnel
  * all interaction with Dubtrack through this "proxy" (for lack of better word)
  *
  * @class DTProxy
  */
 class DTProxy {
-
   /**
    * Begins polling of window object for the existence of a set of global
-   * variables. 
+   * variables.
    *
    * @returns {Promise}
    * @memberof DTProxy
@@ -32,18 +31,18 @@ class DTProxy {
 
   /**
    * returns the API URL for the active dubs in the current user is in
-   * 
+   *
    * @return {string}
    * @memberof DTProxy
    */
-  
+
   activeDubsAPI() {
     return `https://api.dubtrack.fm/room/${this.getRoomId()}/playlist/active/dubs`;
   }
 
   /**
    * returns the API url to get a users info
-   * 
+   *
    * @param {string} userid - current logged in user id
    * @returns {string}
    * @memberof DTProxy
@@ -54,7 +53,7 @@ class DTProxy {
 
   /**
    * Session Id is the same as User ID apparently
-   * 
+   *
    * @returns {string}
    * @memberof DTProxy
    */
@@ -64,7 +63,7 @@ class DTProxy {
 
   /**
    * pass through of session id which is the same as user id
-   * 
+   *
    * @returns {string}
    * @memberof DTProxy
    */
@@ -74,7 +73,7 @@ class DTProxy {
 
   /**
    * get the current logged in user name
-   * 
+   *
    * @returns {string}
    * @memberof DTProxy
    */
@@ -85,7 +84,7 @@ class DTProxy {
   /**
    * get current room's name. Don't let the name fool you, it doesn't return a
    * URL, it just returns the name of the room and that's it
-   * 
+   *
    * @return {string}
    * @memberof DTProxy
    */
@@ -95,7 +94,7 @@ class DTProxy {
 
   /**
    * returns the current room's id
-   * 
+   *
    * @returns {string}
    * @memberof DTProxy
    */
@@ -105,7 +104,7 @@ class DTProxy {
 
   /**
    * set volume of room's player
-   * 
+   *
    * @param {number} vol - number between 0 - 100
    * @memberof DTProxy
    */
@@ -116,7 +115,7 @@ class DTProxy {
 
   /**
    * get the current volume of the room's player
-   * 
+   *
    * @returns {number}
    * @memberof DTProxy
    */
@@ -126,7 +125,7 @@ class DTProxy {
 
   /**
    * get the current mute state of the room's player
-   * 
+   *
    * @return {boolean}
    * @memberof DTProxy
    */
@@ -136,7 +135,7 @@ class DTProxy {
 
   /**
    * mute the room's player
-   * 
+   *
    * @memberof DTProxy
    */
   mutePlayer() {
@@ -145,7 +144,7 @@ class DTProxy {
 
   /**
    * Get the path of the mp3 file that is used for notifications
-   * 
+   *
    * @returns {string}
    * @memberof DTProxy
    */
@@ -155,7 +154,7 @@ class DTProxy {
 
   /**
    * set the mp3 file that is used for notifications
-   * 
+   *
    * @param {string} url - the url of the mp3 file
    * @memberof DTProxy
    */
@@ -165,7 +164,7 @@ class DTProxy {
 
   /**
    * play the notification sound
-   * 
+   *
    * @memberof DTProxy
    */
   playChatSound() {
@@ -174,7 +173,7 @@ class DTProxy {
 
   /**
    * This will take whatever text inside the input and send it to the chat
-   * 
+   *
    * @memberof DTProxy
    */
   sendChatMessage() {
@@ -182,8 +181,8 @@ class DTProxy {
   }
 
   /**
-   * check if a user has mod (or higher) priviledges. 
-   * 
+   * check if a user has mod (or higher) priviledges.
+   *
    * @param {string} userid - any user's id, defaults to current logged in user
    * @memberof DTProxy
    */
@@ -198,7 +197,7 @@ class DTProxy {
 
   /**
    * Get room's "display grabs in chat" setting
-   * 
+   *
    * @returns {boolean}
    * @memberof DTProxy
    */
@@ -208,17 +207,27 @@ class DTProxy {
 
   /**
    * get the name of the song that's currently playing in the room
-   * 
+   *
    * @returns {string}
    * @memberof DTProxy
    */
   getSongName() {
-    return Dubtrack.room.player.activeSong.attributes.songInfo.name;
+    return Dubtrack.room.player.activeSong.get("songInfo").name;
+  }
+
+  /**
+   * Get current playing song's platform ID (aka fkid)
+   *
+   * @returns {string}
+   * @memberof DTProxy
+   */
+  getSongFKID() {
+    return Dubtrack.room.player.activeSong.get("songInfo").fkid;
   }
 
   /**
    * Get the Dubtrack ID for current song.
-   * 
+   *
    * @returns {string}
    * @memberof DTProxy
    */
@@ -228,7 +237,7 @@ class DTProxy {
 
   /**
    * Get song data for the current song
-   * 
+   *
    * @returns {object}
    * @memberof DTProxy
    */
@@ -237,8 +246,8 @@ class DTProxy {
   }
 
   /**
-   * returns wether user has "updub" or "downdub" current song
-   * 
+   * returns whether user has "updub" or "downdub" current song
+   *
    * @returns {string|null} "updub", "downdub", or null if no vote was cast
    * @memberof DTProxy
    */
@@ -248,7 +257,7 @@ class DTProxy {
 
   /**
    * get the name of the current DJ
-   * 
+   *
    * @returns {string}
    * @memberof DTProxy
    */
@@ -263,7 +272,7 @@ class DTProxy {
 
   /**
    * get a user in the room's info
-   * 
+   *
    * @param {string} userid
    * @returns {object}
    * @memberof DTProxy
@@ -274,7 +283,7 @@ class DTProxy {
 
   /**
    * Make api call to get data for all the songs in the room's active queue
-   * 
+   *
    * @param {function} cb - callback function
    * @memberof DTProxy
    */
@@ -287,7 +296,7 @@ class DTProxy {
 
   /**
    * make api call to get data for a specific song
-   * 
+   *
    * @param {string} songID
    * @param {function} cb - callback function
    * @memberof DTProxy
@@ -299,7 +308,7 @@ class DTProxy {
   /**
    * meant for internal use only. Handles async calls to api urls using
    * fetch. Uses old school callbacks
-   * 
+   *
    * @private
    * @memberof DTProxy
    */
@@ -324,7 +333,7 @@ class DTProxy {
 
   /**
    * Subscribe to the room's current song changes including when a new song comes on
-   * 
+   *
    * @param {function} cb callback function to bind to playlist-update
    * @memberof DTProxy
    */
@@ -423,7 +432,7 @@ class DTProxy {
   }
 
   /**
-   * Subscribe to user leave event 
+   * Subscribe to user leave event
    *
    * @param {function} cb
    * @memberof DTProxy
@@ -465,8 +474,8 @@ class DTProxy {
   /******************************************************************
    * DOM Elements
    */
-  
-   /**
+
+  /**
    * Returns the chat input element
    *
    * @returns {HTMLInputElement}
@@ -620,6 +629,26 @@ class DTProxy {
     return document.querySelector(".pusher-chat-widget-input");
   }
 
+  /**
+   * Get the track info of a SoundCloud track
+   *
+   * @param {string} scID - the soundcloud Id (known as fkid in Dubtrack)
+   * @param {function} cb
+   * @memberof DTProxy
+   */
+  getSCtrackInfo(scID, cb) {
+    let url = `https://api.soundcloud.com/tracks/${scID}?client_id=${Dubtrack.config.keys.soundcloud}`;
+    
+    fetch(url)
+      .then(resp => resp.json())
+      .then(json => {
+        cb(null, json)
+      })
+      .catch(err => {
+        cb(err);
+      });
+  }
+
   /*
     some more DOM elements being access but only has render targets for Preact
     going to leave them out for now
@@ -627,7 +656,6 @@ class DTProxy {
     document.querySelector('.player_sharing')
     document.querySelector(".chat-text-box-icons")
     document.querySelector(".header-right-navigation")
-    document.querySelector(".pusher-chat-widget-input");
     document.querySelector("#room-main-player-container");
    */
 }

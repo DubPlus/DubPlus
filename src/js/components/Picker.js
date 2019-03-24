@@ -24,6 +24,10 @@ class Picker extends Component {
     twitchShow: false
   };
 
+  componentWillMount() {
+    this.chatWidget = dtproxy.getChatInputContainer();
+  }
+
   fillChat(val) {
     dtproxy.chatInput().value += ` :${val}:`;
     dtproxy.chatInput().focus();
@@ -148,14 +152,14 @@ class Picker extends Component {
           className="dp-emoji-picker-icon fa fa-smile-o"
           onClick={this.toggleEmoji}
         >
-          <Portal into=".pusher-chat-widget-input">
+          <Portal into={this.chatWidget}>
             <div className={`dp-emoji-picker ${emojiShow ? "show" : ""}`}>
               {this.emojiList()}
             </div>
           </Portal>
         </span>
         <span className="dp-twitch-picker-icon" onClick={this.toggleTwitch}>
-          <Portal into=".pusher-chat-widget-input">
+          <Portal into={this.chatWidget}>
             <div
               className={`dp-emoji-picker twitch-bttv-picker ${
                 twitchShow ? "show" : ""
