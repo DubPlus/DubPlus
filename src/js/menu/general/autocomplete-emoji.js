@@ -32,7 +32,7 @@ export default class AutocompleteEmoji extends Component {
 
   renderTo = document.querySelector(".pusher-chat-widget-input");
 
-  chatInput = dtproxy.chatInput();
+  chatInput = dtproxy.chatInput;
 
   selectedItem = null;
 

@@ -4,8 +4,7 @@ import css from "@/utils/css";
 import dtproxy from "@/utils/DTProxy.js";
 
 function turnOn() {
-  var location = dtproxy.getRoomUrl;
-  let roomAjax = fetch("https://api.dubtrack.fm/room/" + location);
+  let roomAjax = fetch(dtproxy.roomInfoAPI);
   roomAjax
     .then(resp => resp.json())
     .then(json => {

@@ -252,13 +252,13 @@ export default class ShowDubsOnHover extends Component {
   };
 
   componentWillMount() {
-    this.upElem = dtproxy.upVote().parentElement;
+    this.upElem = dtproxy.upVote.parentElement;
     this.upElem.classList.add("dubplus-updub-btn");
 
-    this.downElem = dtproxy.downVote().parentElement;
+    this.downElem = dtproxy.downVote.parentElement;
     this.downElem.classList.add("dubplus-downdub-btn");
 
-    this.grabElem = dtproxy.grabBtn().parentElement;
+    this.grabElem = dtproxy.grabBtn.parentElement;
     this.grabElem.classList.add("dubplus-grab-btn");
   }
 

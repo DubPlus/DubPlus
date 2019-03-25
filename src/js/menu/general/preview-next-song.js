@@ -20,7 +20,7 @@ function convertMStoTime(duration) {
     return hours + ":" + minutes + ":" + seconds;
   }
 
-  return  minutes + ":" + seconds;
+  return minutes + ":" + seconds;
 }
 
 const SongPreview = ({ song }) => {
@@ -51,7 +51,7 @@ export default class PreviewNextSong extends Component {
     nextSong: null
   };
 
-  userid = dtproxy.getUserId;
+  userid = dtproxy.userId;
   renderTo = null;
 
   componentWillMount() {
@@ -98,14 +98,14 @@ export default class PreviewNextSong extends Component {
     this.setState({ isOn: true });
     this.findNextSong();
     dtproxy.onPlaylistUpdate(this.findNextSong);
-    dtproxy.onPlaylistQueueUpdate(this.findNextSong);
+    dtproxy.onQueueUpdate(this.findNextSong);
     document.body.classList.add("dplus-song-preview");
   };
 
   turnOff = () => {
     this.setState({ isOn: false });
     dtproxy.offPlaylistUpdate(this.findNextSong);
-    dtproxy.offPlaylistQueueUpdate(this.findNextSong);
+    dtproxy.offQueueUpdate(this.findNextSong);
     document.body.classList.remove("dplus-song-preview");
   };
 

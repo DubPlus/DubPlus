@@ -5,6 +5,12 @@ import WaitFor from "@/utils/waitFor.js";
  * Dubtrack might alter this object of data we rely on, I am planning to funnel
  * all interaction with Dubtrack through this "proxy" (for lack of better word)
  *
+ * When proxying data that never really changes (like ids, api urls, DOM elements, etc)
+ * I recommend using a getter function for a cleaner syntax when using it.
+ * Use functions for items that change often (like getting all queue and active song
+ * info, etc), or functions that require arguments (of course)
+ * Use both getter & setters when it makes sense
+ *
  * @class DTProxy
  */
 class DTProxy {
@@ -38,6 +44,7 @@ class DTProxy {
    * Get Dubtrack's API url
    *
    * @readonly
+   * @property {string}
    * @memberof DTProxy
    */
   get apiUrl() {
@@ -48,17 +55,21 @@ class DTProxy {
    * get the API url to get info about songs in the active queue
    *
    * @readonly
+   * @property {string}
    * @memberof DTProxy
    */
   get roomQueueDetails() {
-    const id = this.getRoomId;
-    return this.apiUrl + Dubtrack.config.urls.roomQueueDetails.replace(':id', id);
+    const id = this.roomId;
+    return (
+      this.apiUrl + Dubtrack.config.urls.roomQueueDetails.replace(":id", id)
+    );
   }
 
   /**
    * API url to get song info
    *
    * @readonly
+   * @property {string}
    * @memberof DTProxy
    */
   get songAPI() {
@@ -69,11 +80,12 @@ class DTProxy {
    * returns the API URL for the active dubs in the current user is in
    *
    * @readonly
+   * @property {string}
    * @memberof DTProxy
    */
 
   get activeDubsAPI() {
-    return `${this.apiUrl}/${this.getRoomId}/playlist/active/dubs`;
+    return `${this.apiUrl}/${this.roomId}/playlist/active/dubs`;
   }
 
   /**
@@ -88,12 +100,33 @@ class DTProxy {
   }
 
   /**
+   * API url for current room's info
+   *
+   * @readonly
+   * @property {string}
+   * @memberof DTProxy
+   */
+  get roomInfoAPI() {
+    return this.apiUrl + "/room/" + this.roomUrlName;
+  }
+
+  /**
+   * get the avatar image of a user
+   * @param {string} userid
+   * @returns {string}
+   */
+  userImage(userid) {
+    return `${this.apiUrl}/user/${userid}/image`;
+  }
+
+  /**
    * Session Id is the same as User ID apparently
    *
    * @readonly
+   * @property {string}
    * @memberof DTProxy
    */
-  get getSessionId() {
+  get sessionId() {
     return Dubtrack.session.id;
   }
 
@@ -101,30 +134,33 @@ class DTProxy {
    * pass through of session id which is the same as user id
    *
    * @readonly
+   * @property {string}
    * @memberof DTProxy
    */
-  get getUserId() {
-    return this.getSessionId;
+  get userId() {
+    return this.sessionId;
   }
 
   /**
    * get the current logged in user name
    *
    * @readonly
+   * @property {string}
    * @memberof DTProxy
    */
-  get getUserName() {
+  get userName() {
     return Dubtrack.session.get("username");
   }
 
   /**
-   * get current room's name. Don't let the name fool you, it doesn't return a
-   * URL, it just returns the name of the room and that's it
+   * get current the room's name from the URL. Just the name and not other part
+   * of the URL and no slashes
    *
    * @readonly
+   * @property {string}
    * @memberof DTProxy
    */
-  get getRoomUrl() {
+  get roomUrlName() {
     return Dubtrack.room.model.get("roomUrl");
   }
 
@@ -132,9 +168,10 @@ class DTProxy {
    * returns the current room's id
    *
    * @readonly
+   * @property {string}
    * @memberof DTProxy
    */
-  get getRoomId() {
+  get roomId() {
     return Dubtrack.room.model.id;
   }
 
@@ -144,7 +181,7 @@ class DTProxy {
    * @param {number} vol - number between 0 - 100
    * @memberof DTProxy
    */
-  setVolume(vol) {
+  set volume(vol) {
     Dubtrack.room.player.setVolume(vol);
     Dubtrack.room.player.updateVolumeBar();
   }
@@ -153,9 +190,10 @@ class DTProxy {
    * get the current volume of the room's player
    *
    * @readonly
+   * @property {number}
    * @memberof DTProxy
    */
-  get getVolume() {
+  get volume() {
     return Dubtrack.playerController.volume;
   }
 
@@ -163,6 +201,7 @@ class DTProxy {
    * get the current mute state of the room's player
    *
    * @readonly
+   * @property {boolean}
    * @memberof DTProxy
    */
   get isMuted() {
@@ -182,9 +221,10 @@ class DTProxy {
    * Get the path of the mp3 file that is used for notifications
    *
    * @readonly
+   * @property {string}
    * @memberof DTProxy
    */
-  get getChatSoundUrl() {
+  get chatSoundUrl() {
     return Dubtrack.room.chat.mentionChatSound.url;
   }
 
@@ -194,7 +234,7 @@ class DTProxy {
    * @param {string} url - the url of the mp3 file
    * @memberof DTProxy
    */
-  setChatSoundUrl(url) {
+  set chatSoundUrl(url) {
     Dubtrack.room.chat.mentionChatSound.url = url;
   }
 
@@ -233,41 +273,40 @@ class DTProxy {
 
   /**
    * Get room's "display grabs in chat" setting
-   *
-   * @returns {boolean}
+   * @property {boolean}
    * @memberof DTProxy
    */
-  displayUserGrab() {
+  get displayUserGrab() {
     return Dubtrack.room.model.get("displayUserGrab");
   }
 
   /**
    * get the name of the song that's currently playing in the room
    *
-   * @readonly
+   * @returns {string}
    * @memberof DTProxy
    */
-  get getSongName() {
+  getSongName() {
     return Dubtrack.room.player.activeSong.get("songInfo").name;
   }
 
   /**
    * Get current playing song's platform ID (aka fkid)
    *
-   * @readonly
+   * @returns {string}
    * @memberof DTProxy
    */
-  get getSongFKID() {
+  getSongFKID() {
     return Dubtrack.room.player.activeSong.get("songInfo").fkid;
   }
 
   /**
    * Get the Dubtrack ID for current song.
    *
-   * @readonly
+   * @returns {string}
    * @memberof DTProxy
    */
-  get getDubSong() {
+  getDubSong() {
     return Dubtrack.helpers.cookie.get("dub-song");
   }
 
@@ -282,7 +321,7 @@ class DTProxy {
   }
 
   /**
-   * returns whether user has "updub" or "downdub" current song
+   * returns whether user has "updub"-ed or "downdub"-ed current song
    *
    * @returns {string|null} "updub", "downdub", or null if no vote was cast
    * @memberof DTProxy
@@ -324,7 +363,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   getRoomQueue(cb) {
-    this._handleAsync(this.roomQueueDetails,cb);
+    this._handleAsync(this.roomQueueDetails, cb);
   }
 
   /**
@@ -371,7 +410,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   onPlaylistUpdate(cb) {
-    Dubtrack.Events.bind("realtime:room_playlist-update", cb);
+    Dubtrack.Events.on("realtime:room_playlist-update", cb);
   }
 
   /**
@@ -381,7 +420,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   offPlaylistUpdate(cb) {
-    Dubtrack.Events.unbind("realtime:room_playlist-update", cb);
+    Dubtrack.Events.off("realtime:room_playlist-update", cb);
   }
 
   /**
@@ -390,8 +429,8 @@ class DTProxy {
    * @param {function} cb
    * @memberof DTProxy
    */
-  onPlaylistQueueUpdate(cb) {
-    Dubtrack.Events.bind("realtime:room_playlist-queue-update", cb);
+  onQueueUpdate(cb) {
+    Dubtrack.Events.on("realtime:room_playlist-queue-update", cb);
   }
 
   /**
@@ -400,8 +439,8 @@ class DTProxy {
    * @param {function} cb
    * @memberof DTProxy
    */
-  offPlaylistQueueUpdate(cb) {
-    Dubtrack.Events.unbind("realtime:room_playlist-queue-update", cb);
+  offQueueUpdate(cb) {
+    Dubtrack.Events.off("realtime:room_playlist-queue-update", cb);
   }
 
   /**
@@ -411,7 +450,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   onSongVote(cb) {
-    Dubtrack.Events.bind("realtime:room_playlist-dub", cb);
+    Dubtrack.Events.on("realtime:room_playlist-dub", cb);
   }
 
   /**
@@ -421,7 +460,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   offSongVote(cb) {
-    Dubtrack.Events.unbind("realtime:room_playlist-dub", cb);
+    Dubtrack.Events.off("realtime:room_playlist-dub", cb);
   }
 
   /**
@@ -431,7 +470,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   onChatMessage(cb) {
-    Dubtrack.Events.bind("realtime:chat-message", cb);
+    Dubtrack.Events.on("realtime:chat-message", cb);
   }
 
   /**
@@ -441,7 +480,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   offChatMessage(cb) {
-    Dubtrack.Events.unbind("realtime:chat-message", cb);
+    Dubtrack.Events.off("realtime:chat-message", cb);
   }
 
   /**
@@ -451,7 +490,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   onSongGrab(cb) {
-    Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", cb);
+    Dubtrack.Events.on("realtime:room_playlist-queue-update-grabs", cb);
   }
 
   /**
@@ -461,7 +500,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   offSongGrab(cb) {
-    Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", cb);
+    Dubtrack.Events.off("realtime:room_playlist-queue-update-grabs", cb);
   }
 
   /**
@@ -471,7 +510,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   onUserLeave(cb) {
-    Dubtrack.Events.bind("realtime:user-leave", cb);
+    Dubtrack.Events.on("realtime:user-leave", cb);
   }
 
   /**
@@ -481,7 +520,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   offUserLeave(cb) {
-    Dubtrack.Events.unbind("realtime:user-leave", cb);
+    Dubtrack.Events.off("realtime:user-leave", cb);
   }
 
   /**
@@ -491,7 +530,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   onNewPM(cb) {
-    Dubtrack.Events.bind("realtime:new-message", cb);
+    Dubtrack.Events.on("realtime:new-message", cb);
   }
 
   /**
@@ -501,7 +540,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   offNewPM(cb) {
-    Dubtrack.Events.unbind("realtime:new-message", cb);
+    Dubtrack.Events.off("realtime:new-message", cb);
   }
 
   /******************************************************************
@@ -511,10 +550,10 @@ class DTProxy {
   /**
    * Returns the chat input element
    *
-   * @returns {HTMLInputElement}
+   * @readonly
    * @memberof DTProxy
    */
-  chatInput() {
+  get chatInput() {
     return document.getElementById("chat-txt-message");
   }
 
@@ -574,6 +613,7 @@ class DTProxy {
   /**
    * get the queue position
    * @returns {string}
+   * @memberof DTProxy
    */
   getQueuePosition() {
     return parseInt(this.getQueuePositionElem().textContent);
@@ -582,6 +622,7 @@ class DTProxy {
   /**
    * get element that contains the queue position
    * @returns {HTMLElement}
+   * @memberof DTProxy
    */
   getQueuePositionElem() {
     return document.querySelector(".queue-position");
@@ -591,6 +632,7 @@ class DTProxy {
    * Get the html element of a specific private message
    * @param {string} messageid
    * @returns {HTMLElement}
+   * @memberof DTProxy
    */
   getPMmsg(messageid) {
     return document.querySelector(
@@ -599,46 +641,49 @@ class DTProxy {
   }
 
   /**
-   * get the anchor element for the up dub button
-   * @returns {HTMLAnchorElement}
+   * the anchor element for the up dub button
+   * @readonly
+   * @memberof DTProxy
    */
-  upVote() {
+  get upVote() {
     return document.querySelector(".dubup");
   }
 
   /**
    * get the anchor element for the down dub button
-   * @returns {HTMLAnchorElement}
+   * @readonly
+   * @memberof DTProxy
    */
-  downVote() {
+  get downVote() {
     return document.querySelector(".dubdown");
   }
 
   /**
    * get the add to playlist "grab" button
-   * @returns {HTMLAnchorElement}
+   * @readonly
+   * @memberof DTProxy
    */
-  grabBtn() {
+  get grabBtn() {
     return document.querySelector(".add-to-playlist-button");
   }
 
   /**
    * Returns the element that triggers the opening the private messages sidebar
    *
-   * @returns {HTMLDivElement}
+   * @readonly
    * @memberof DTProxy
    */
-  userPMs() {
+  get userPMs() {
     return document.querySelector(".user-messages");
   }
 
   /**
    * returns the full size background img element
    *
-   * @returns {HTMLImageElement}
+   * @readonly
    * @memberof DTProxy
    */
-  bgImg() {
+  get bgImg() {
     return document.querySelector(".backstretch-item img");
   }
 
@@ -670,12 +715,14 @@ class DTProxy {
    * @memberof DTProxy
    */
   getSCtrackInfo(scID, cb) {
-    let url = `https://api.soundcloud.com/tracks/${scID}?client_id=${Dubtrack.config.keys.soundcloud}`;
-    
+    let url = `https://api.soundcloud.com/tracks/${scID}?client_id=${
+      Dubtrack.config.keys.soundcloud
+    }`;
+
     fetch(url)
       .then(resp => resp.json())
       .then(json => {
-        cb(null, json)
+        cb(null, json);
       })
       .catch(err => {
         cb(err);

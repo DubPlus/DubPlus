@@ -13,7 +13,7 @@ export default class CustomBG extends Component {
   };
 
   // this returns the DOM element for the background image
-  bgImg = dtproxy.bgImg();
+  bgImg = dtproxy.bgImg;
 
   addCustomBG(val) {
     this.saveSrc = this.bgImg.src;

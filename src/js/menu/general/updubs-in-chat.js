@@ -27,22 +27,21 @@ function chatMessage(username, song) {
 export default class UpdubsInChat extends Component {
   turnOn = () => {
     dtproxy.onSongVote(this.updubWatcher);
-  }
+  };
 
   turnOff = () => {
     dtproxy.offSongVote(this.updubWatcher);
-  }
+  };
 
   updubWatcher(e) {
-    var user = dtproxy.getUserName;
+    var user = dtproxy.userName;
     var currentDj = dtproxy.getCurrentDJ();
-    if (!currentDj) { return; }
+    if (!currentDj) {
+      return;
+    }
 
     if (user === currentDj && e.dubtype === "updub") {
-      let newChat = chatMessage(
-        e.user.username,
-        dtproxy.getSongName
-      );
+      let newChat = chatMessage(e.user.username, dtproxy.getSongName());
       dtproxy.chatList().appendChild(newChat);
     }
   }

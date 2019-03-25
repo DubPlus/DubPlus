@@ -18,12 +18,12 @@ export default class AFK extends Component {
       return; // do nothing until it's back to true
     }
     var content = e.message;
-    var user = dtproxy.getUserName;
+    var user = dtproxy.userName;
     if (
       content.indexOf("@" + user) >= 0 &&
-      dtproxy.getSessionId !== e.user.userInfo.userid
+      dtproxy.sessionId !== e.user.userInfo.userid
     ) {
-      var chatInput = dtproxy.chatInput();
+      var chatInput = dtproxy.chatInput;
       if (this.state.afkMessage) {
         chatInput.value = "[AFK] " + this.state.afkMessage;
       } else {

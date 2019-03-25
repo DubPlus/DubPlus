@@ -7,14 +7,14 @@ import dtproxy from "@/utils/DTProxy.js";
 
 export default class ChatNotification extends Component {
   state = {
-    showWarning : false,
-    warnTitle : '',
-    warnContent: ''
-  }
+    showWarning: false,
+    warnTitle: "",
+    warnContent: ""
+  };
 
   notifyOnMention(e) {
     var content = e.message;
-    var user = dtproxy.getUserName.toLowerCase();
+    var user = dtproxy.userName.toLowerCase();
     var mentionTriggers = ["@" + user];
 
     if (
@@ -35,7 +35,7 @@ export default class ChatNotification extends Component {
     if (
       mentionTriggersTest &&
       !this.isActiveTab &&
-      dtproxy.getSessionId !== e.user.userInfo.userid
+      dtproxy.sessionId !== e.user.userInfo.userid
     ) {
       showNotification({
         title: `Message from ${e.user.username}`,
@@ -62,7 +62,7 @@ export default class ChatNotification extends Component {
 
   closeModal = () => {
     this.setState({ showWarning: false });
-  }
+  };
 
   turnOff = () => {
     dtproxy.offChatMessage(this.notifyOnMention);

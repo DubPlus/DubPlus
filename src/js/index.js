@@ -12,7 +12,6 @@ import MenuIcon from "@/components/MenuIcon.js";
 import track from "@/utils/analytics.js";
 import dtproxy from "@/utils/DTProxy.js";
 
-
 // the extension loads the CSS from the load script so we don't need to
 // do it here. This is for people who load the script via bookmarklet or userscript
 let isExtension = document.getElementById("dubplus-script-ext");
@@ -46,7 +45,7 @@ class DubPlusContainer extends Component {
           });
         })
         .catch(() => {
-          if (!dtproxy.getSessionId) {
+          if (!dtproxy.sessionId) {
             this.showError("You're not logged in. Please login to use Dub+.");
           } else {
             this.showError("Something happed, refresh and try again");
@@ -56,7 +55,7 @@ class DubPlusContainer extends Component {
       return;
     }
 
-    if (!dtproxy.getSessionId) {
+    if (!dtproxy.sessionId) {
       this.showError("You're not logged in. Please login to use Dub+.");
     } else {
       this.showError("Dub+ is already loaded");
