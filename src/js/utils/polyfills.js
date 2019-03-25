@@ -1,5 +1,5 @@
 import getScript from "@/utils/getScript.js";
-import fetchPolyfill from '@/utils/fetch-polyfill';
+import fetchPolyfill from "@/utils/fetch-polyfill";
 
 export default function() {
   // Element.remove() polyfill
@@ -25,6 +25,17 @@ export default function() {
     getScript(
       "https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"
     );
+  }
+
+  /**
+   * Dubtrack loads lodash into the global namespace right now so we are able
+   * to use it, but if they ever remove it then we can load it here so things
+   * don't break. If they do remove it we'll eventually move to an npm
+   * installed lodash and only importing the functions we need
+   */
+  if (typeof window._ === "undefined") {
+    console.log("DubPlus: loading lodash from CDN");
+    getScript("https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js");
   }
 
   if (window.NodeList && !NodeList.prototype.forEach) {

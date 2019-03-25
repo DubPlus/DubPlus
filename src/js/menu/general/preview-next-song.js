@@ -56,7 +56,7 @@ export default class PreviewNextSong extends Component {
 
   componentWillMount() {
     // add an empty span on mount to give Portal something to render to
-    let widget = dtproxy.getChatInputContainer();
+    let widget = dtproxy.dom.chatInputContainer;
     let span = document.createElement("span");
     span.id = "dp-song-prev-target";
     widget.parentNode.insertBefore(span, widget);
@@ -68,44 +68,52 @@ export default class PreviewNextSong extends Component {
    * logged in User
    */
   findNextSong = () => {
-    dtproxy.getRoomQueue((err, json) => {
-      if (err || !json.data || !json.data.length) {
+    dtproxy.api
+      .getRoomQueue()
+      .then(json => {
+        let data = window._.get(json, "data", []);
+        const next = data.filter(track => track.userid === this.userid);
+        if (next.length > 0) {
+          this.getSongInfo(next[0].songid);
+          return;
+        }
         this.setState({ nextSong: null });
-        return;
-      }
-      const next = json.data.filter(track => track.userid === this.userid);
-      if (next.length > 0) {
-        this.getSongInfo(next[0].songid);
-        return;
-      }
-      this.setState({ nextSong: null });
-    });
+      })
+      .catch(err => {
+        this.setState({ nextSong: null });
+      });
   };
 
   getSongInfo = songId => {
-    dtproxy.getSongData(songId, (err, json) => {
-      if (err || !json.data || !json.data.name) {
+    dtproxy.api
+      .getSongData(songId)
+      .then(json => {
+        let name = window._.get(json, "data.name");
+        if (name) {
+          this.setState({
+            nextSong: json.data
+          });
+          return;
+        }
         this.setState({ nextSong: null });
-        return;
-      }
-      this.setState({
-        nextSong: json.data
+      })
+      .catch(err => {
+        this.setState({ nextSong: null });
       });
-    });
   };
 
   turnOn = () => {
     this.setState({ isOn: true });
     this.findNextSong();
-    dtproxy.onPlaylistUpdate(this.findNextSong);
-    dtproxy.onQueueUpdate(this.findNextSong);
+    dtproxy.events.onPlaylistUpdate(this.findNextSong);
+    dtproxy.events.onQueueUpdate(this.findNextSong);
     document.body.classList.add("dplus-song-preview");
   };
 
   turnOff = () => {
     this.setState({ isOn: false });
-    dtproxy.offPlaylistUpdate(this.findNextSong);
-    dtproxy.offQueueUpdate(this.findNextSong);
+    dtproxy.events.offPlaylistUpdate(this.findNextSong);
+    dtproxy.events.offQueueUpdate(this.findNextSong);
     document.body.classList.remove("dplus-song-preview");
   };
 

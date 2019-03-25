@@ -26,18 +26,18 @@ function chatMessage(username, song) {
 
 export default class GrabsInChat extends Component {
   turnOn = () => {
-    dtproxy.onSongGrab(this.grabChatWatcher);
+    dtproxy.events.onSongGrab(this.grabChatWatcher);
   };
 
   turnOff = () => {
-    dtproxy.offSongGrab(this.grabChatWatcher);
+    dtproxy.events.offSongGrab(this.grabChatWatcher);
   };
 
   grabChatWatcher = e => {
     if (dtproxy.displayUserGrab) {
       // if the room has turned on its own "show grab in chat" setting
       // then we no longer need to listen to grabs
-      dtproxy.offSongGrab(this.grabChatWatcher);
+      dtproxy.events.offSongGrab(this.grabChatWatcher);
       // a nd we turn switch off
       this.switchRef.switchOff(true);
       return;
@@ -51,7 +51,7 @@ export default class GrabsInChat extends Component {
 
     if (user === currentDj) {
       let newChat = chatMessage(e.user.username, dtproxy.getSongName());
-      dtproxy.chatList().appendChild(newChat);
+      dtproxy.dom.chatList.appendChild(newChat);
     }
   };
 

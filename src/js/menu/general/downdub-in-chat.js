@@ -30,11 +30,11 @@ export default class DowndubInChat extends Component {
       return;
     }
 
-    dtproxy.onSongVote(this.downdubWatcher);
+    dtproxy.events.onSongVote(this.downdubWatcher);
   };
 
   turnOff = () => {
-    dtproxy.offSongVote(this.downdubWatcher);
+    dtproxy.events.offSongVote(this.downdubWatcher);
   };
 
   downdubWatcher(e) {
@@ -46,7 +46,7 @@ export default class DowndubInChat extends Component {
 
     if (user === currentDj && e.dubtype === "downdub") {
       let newChat = chatMessage(e.user.username, dtproxy.getSongName());
-      dtproxy.chatList().appendChild(newChat);
+      dtproxy.dom.chatList.appendChild(newChat);
     }
   }
 

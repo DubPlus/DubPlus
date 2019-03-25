@@ -13,7 +13,7 @@ export default class ChatCleaner extends Component {
   };
 
   chatCleanerCheck = e => {
-    let totalChats = Array.from(dtproxy.chatList().children);
+    let totalChats = Array.from(dtproxy.dom.chatList.children);
     let max = parseInt(this.state.maxChats, 10);
 
     if (
@@ -43,7 +43,7 @@ export default class ChatCleaner extends Component {
   };
 
   turnOn = initialLoad => {
-    dtproxy.onChatMessage(this.chatCleanerCheck);
+    dtproxy.events.onChatMessage(this.chatCleanerCheck);
 
     if (!initialLoad && !settings.stored.custom.chat_cleaner) {
       this.setState({ showModal: true });
@@ -51,7 +51,7 @@ export default class ChatCleaner extends Component {
   };
 
   turnOff = () => {
-    dtproxy.offChatMessage(this.chatCleanerCheck);
+    dtproxy.events.offChatMessage(this.chatCleanerCheck);
   };
 
   render() {

@@ -20,7 +20,7 @@ export default class DJNotification extends Component {
   djNotificationCheck = e => {
     if (!this.canNotify || e.startTime > 2) return;
 
-    let queuePos = dtproxy.getQueuePosition();
+    let queuePos = dtproxy.dom.getQueuePosition();
     var positionParse = parseInt(queuePos, 10);
     var position =
       e.startTime < 0 && !isNaN(positionParse)
@@ -45,11 +45,11 @@ export default class DJNotification extends Component {
         this.setState({ canNotify: true });
       }
     });
-    dtproxy.onPlaylistUpdate(this.djNotificationCheck);
+    dtproxy.events.onPlaylistUpdate(this.djNotificationCheck);
   };
 
   turnOff = () => {
-    dtproxy.offPlaylistUpdate(this.djNotificationCheck);
+    dtproxy.events.offPlaylistUpdate(this.djNotificationCheck);
   };
 
   render() {

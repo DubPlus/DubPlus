@@ -4,28 +4,26 @@ import css from "@/utils/css";
 import dtproxy from "@/utils/DTProxy.js";
 
 function turnOn() {
-  let roomAjax = fetch(dtproxy.roomInfoAPI);
-  roomAjax
-    .then(resp => resp.json())
-    .then(json => {
-      var content = json.data.description;
+  let roomAjax = dtproxy.api.roomInfo();
+  roomAjax.then(json => {
+    var content = json.data.description;
 
-      // for backwards compatibility with dubx we're checking for both @dubx and @dubplus and @dub+
-      var themeCheck = new RegExp(
-        /(@dub(x|plus|\+)=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/,
-        "i"
-      );
-      var communityCSSUrl = null;
-      content.replace(themeCheck, function(match, p1, p2, p3) {
-        console.log("loading community css theme:", p3);
-        communityCSSUrl = p3;
-      });
-
-      if (!communityCSSUrl) {
-        return;
-      }
-      css.loadExternal(communityCSSUrl, "dubplus-comm-theme");
+    // for backwards compatibility with dubx we're checking for both @dubx and @dubplus and @dub+
+    var themeCheck = new RegExp(
+      /(@dub(x|plus|\+)=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/,
+      "i"
+    );
+    var communityCSSUrl = null;
+    content.replace(themeCheck, function(match, p1, p2, p3) {
+      console.log("loading community css theme:", p3);
+      communityCSSUrl = p3;
     });
+
+    if (!communityCSSUrl) {
+      return;
+    }
+    css.loadExternal(communityCSSUrl, "dubplus-comm-theme");
+  });
 }
 
 function turnOff() {

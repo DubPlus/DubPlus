@@ -47,7 +47,7 @@ export default class ChatNotification extends Component {
   turnOn = () => {
     notifyCheckPermission((status, reason) => {
       if (status === true) {
-        dtproxy.onChatMessage(this.notifyOnMention);
+        dtproxy.events.onChatMessage(this.notifyOnMention);
       } else {
         // call MenuSwitch's switchOff with noTrack=true argument
         this.switchRef.switchOff(true);
@@ -65,7 +65,7 @@ export default class ChatNotification extends Component {
   };
 
   turnOff = () => {
-    dtproxy.offChatMessage(this.notifyOnMention);
+    dtproxy.events.offChatMessage(this.notifyOnMention);
   };
 
   render(props, state) {

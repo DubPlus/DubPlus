@@ -23,7 +23,7 @@ export default class AFK extends Component {
       content.indexOf("@" + user) >= 0 &&
       dtproxy.sessionId !== e.user.userInfo.userid
     ) {
-      var chatInput = dtproxy.chatInput;
+      var chatInput = dtproxy.dom.chatInput;
       if (this.state.afkMessage) {
         chatInput.value = "[AFK] " + this.state.afkMessage;
       } else {
@@ -43,11 +43,11 @@ export default class AFK extends Component {
   };
 
   turnOn = () => {
-    dtproxy.onChatMessage(this.afk_chat_respond);
+    dtproxy.events.onChatMessage(this.afk_chat_respond);
   };
 
   turnOff = () => {
-    dtproxy.offChatMessage(this.afk_chat_respond);
+    dtproxy.events.offChatMessage(this.afk_chat_respond);
   };
 
   saveAFKmessage = val => {

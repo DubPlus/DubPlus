@@ -29,7 +29,7 @@ var snooze = function() {
     eventUtils.currentVol = dtproxy.volume;
     dtproxy.mutePlayer();
     eventUtils.snoozed = true;
-    dtproxy.onPlaylistUpdate(eventSongAdvance);
+    dtproxy.events.onPlaylistUpdate(eventSongAdvance);
   } else if (eventUtils.snoozed) {
     dtproxy.volume = eventUtils.currentVol;
     eventUtils.snoozed = false;

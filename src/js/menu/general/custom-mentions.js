@@ -31,11 +31,11 @@ export default class CustomMentions extends Component {
   };
 
   turnOn = () => {
-    dtproxy.onChatMessage(this.customMentionCheck);
+    dtproxy.events.onChatMessage(this.customMentionCheck);
   };
 
   turnOff = () => {
-    dtproxy.offChatMessage(this.customMentionCheck);
+    dtproxy.events.offChatMessage(this.customMentionCheck);
   };
 
   render(props, { custom }) {
