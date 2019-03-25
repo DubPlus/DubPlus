@@ -10,6 +10,7 @@ import HideBackground from "@/menu/ui/hide-background";
 import ShowTimestamps from "@/menu/ui/show-timestamps";
 import HideGifSelfie from "@/menu/ui/hide-gif-selfie";
 import DisableVideo from "@/menu/ui/disable-video";
+import ShowSCArtist from "@/menu/ui/show-sc-artist";
 
 const UISection = () => {
   return (
@@ -23,6 +24,7 @@ const UISection = () => {
       <HideGifSelfie />
       <ShowTimestamps />
       <DisableVideo />
+      <ShowSCArtist />
     </MenuSection>
   );
 };

@@ -1310,7 +1310,7 @@ var DubPlus = (function () {
     /**
      * Make api call to get data for all the songs in the room's active queue
      *
-     * @returns {Promise}
+     * @returns {Promise} returns a fetch promise which already resolves response.json()
      */
     getRoomQueue: function getRoomQueue() {
       var api = this.apiUrl + Dubtrack.config.urls.roomQueueDetails.replace(":id", DTGlobal.roomId);
@@ -1321,7 +1321,7 @@ var DubPlus = (function () {
      * make api call to get data for a specific song
      *
      * @param {string} songID
-     * @returns {Promise}
+     * @returns {Promise} returns a fetch promise which already resolves response.json()
      */
     getSongData: function getSongData(songID) {
       return this._fetch("".concat(this.songAPI, "/").concat(songID));
@@ -1340,7 +1340,7 @@ var DubPlus = (function () {
     /**
      * Makes API call to get the dubs for the currently playing song in a room
      *
-     * @returns {Promise}
+     * @returns {Promise} returns a fetch promise which already resolves response.json()
      */
     getActiveDubs: function getActiveDubs() {
       var url = "".concat(this.apiUrl, "/").concat(DTGlobal.roomId, "/playlist/active/dubs");
@@ -1351,7 +1351,7 @@ var DubPlus = (function () {
      * returns the API url to get a users info
      *
      * @param {string} userid - current logged in user id
-     * @returns {Promise}
+     * @returns {Promise} returns a fetch promise which already resolves response.json()
      */
     getUserData: function getUserData(userid) {
       var api = this.apiUrl + Dubtrack.config.urls.user + "/" + userid;
@@ -1361,7 +1361,7 @@ var DubPlus = (function () {
     /**
      * fetch data from api about the current room user is in
      *
-     * @returns {Promise}
+     * @returns {Promise} returns a fetch promise which already resolves response.json()
      */
     roomInfo: function roomInfo() {
       return this._fetch(this.apiUrl + "/room/" + DTGlobal.roomUrlName);
@@ -1381,11 +1381,13 @@ var DubPlus = (function () {
      * Get the track info of a SoundCloud track
      *
      * @param {string} scID - the soundcloud Id (known as fkid in Dubtrack)
-     * @returns {Promise} returns a fetch promise
+     * @returns {Promise} returns a fetch promise which already resolves response.json()
      */
     getSCtrackInfo: function getSCtrackInfo(scID) {
       var url = "https://api.soundcloud.com/tracks/".concat(scID, "?client_id=").concat(Dubtrack.config.keys.soundcloud);
-      return fetch(url);
+      return fetch(url).then(function (resp) {
+        return resp.json();
+      });
     }
   };
 
@@ -14319,7 +14321,7 @@ var DubPlus = (function () {
     }, h("div", {
       className: "dubinfo-image"
     }, h("img", {
-      src: proxy.userImage(data.userid)
+      src: proxy.api.userImage(data.userid)
     })), h("span", {
       className: "dubinfo-text"
     }, "@", data.username));
@@ -15394,7 +15396,7 @@ var DubPlus = (function () {
     });
   };
 
-  function toggle(isFirstLoad) {
+  function toggle$1(isFirstLoad) {
     if (isFirstLoad) {
       // disabling the video from stored settings on page load causes the video
       // to not play until you un-hide it.  So we delay turning it off for a bit
@@ -15421,7 +15423,43 @@ var DubPlus = (function () {
       section: "User Interface",
       menuTitle: "Disable Video",
       desc: "Toggles disabling the video. Equivalent to clicking on the eye icon under the video",
-      turnOn: toggle,
+      turnOn: toggle$1,
+      turnOff: toggle$1
+    });
+  };
+
+  function getArtist() {
+    var song = proxy.getActiveSong();
+
+    if (song.type !== "soundcloud") {
+      return;
+    }
+
+    proxy.api.getSCtrackInfo(song.fkid).then(function (json) {
+      var artist = window._.get(json, "user.username");
+
+      if (aritst) {
+        var currentSong = proxy.dom.getCurrentSongElem();
+        var track = currentSong.textContent;
+        currentSong.textContent = "".concat(track, " [artist: ").concat(artist, "]");
+      }
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  function turnOn$7() {
+    getArtist();
+    proxy.events.onPlaylistUpdate(getArtist);
+  }
+
+  var ShowSCArtist = function ShowSCArtist() {
+    return h(MenuSwitch, {
+      id: "dubplus-show-sc-artist",
+      section: "User Interface",
+      menuTitle: "Show Soundcloud artist",
+      desc: "Insert SoundCloud artist name into track title in the player bar",
+      turnOn: turnOn$7,
       turnOff: toggle
     });
   };
@@ -15431,7 +15469,7 @@ var DubPlus = (function () {
       id: "dubplus-ui",
       title: "UI",
       settingsKey: "user-interface"
-    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(HideGifSelfie, null), h(ShowTS, null), h(DisableVideo, null));
+    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(HideGifSelfie, null), h(ShowTS, null), h(DisableVideo, null), h(ShowSCArtist, null));
   };
 
   function handleKeyup(e) {
@@ -15446,11 +15484,11 @@ var DubPlus = (function () {
     }
   }
 
-  function turnOn$7() {
+  function turnOn$8() {
     document.addEventListener("keyup", handleKeyup);
   }
 
-  function turnOff$7() {
+  function turnOff$8() {
     document.removeEventListener("keyup", handleKeyup);
   }
 
@@ -15460,8 +15498,8 @@ var DubPlus = (function () {
       section: "Settings",
       menuTitle: "Spacebar Mute",
       desc: "Turn on/off the ability to mute current song with the spacebar.",
-      turnOn: turnOn$7,
-      turnOff: turnOff$7
+      turnOn: turnOn$8,
+      turnOff: turnOff$8
     });
   };
 
@@ -15471,11 +15509,11 @@ var DubPlus = (function () {
     return confirmationMessage;
   }
 
-  function turnOn$8() {
+  function turnOn$9() {
     window.addEventListener("beforeunload", unloader);
   }
 
-  function turnOff$8() {
+  function turnOff$9() {
     window.removeEventListener("beforeunload", unloader);
   }
 
@@ -15485,8 +15523,8 @@ var DubPlus = (function () {
       section: "Settings",
       menuTitle: "Warn On Navigation",
       desc: "Warns you when accidentally clicking on a link that takes you out of dubtrack.",
-      turnOn: turnOn$8,
-      turnOff: turnOff$8
+      turnOn: turnOn$9,
+      turnOff: turnOff$9
     });
   };
 
@@ -15513,13 +15551,13 @@ var DubPlus = (function () {
     }
   }
 
-  function turnOn$9() {
+  function turnOn$a() {
     // the playlist is part of a DOM element that gets added and removed so we
     // can't bind directly to it, we need to use delegation.
     document.body.addEventListener("keyup", handleKeyup$1);
   }
 
-  function turnOff$9() {
+  function turnOff$a() {
     document.body.removeEventListener("keyup", handleKeyup$1);
   }
 
@@ -15529,8 +15567,8 @@ var DubPlus = (function () {
       section: "Settings",
       menuTitle: "Filter playlists in grabs",
       desc: "Adds 'filter as you type' functionality to the 'create a new playlist' input inside the grab to playlist popup",
-      turnOn: turnOn$9,
-      turnOff: turnOff$9
+      turnOn: turnOn$a,
+      turnOff: turnOff$a
     });
   };
 
@@ -15565,7 +15603,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553547232249);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553547731676);
     document.head.appendChild(link);
   }
   /**
@@ -15589,7 +15627,7 @@ var DubPlus = (function () {
     loadExternal: loadExternal
   };
 
-  function turnOn$a() {
+  function turnOn$b() {
     var roomAjax = proxy.api.roomInfo();
     roomAjax.then(function (json) {
       var content = json.data.description; // for backwards compatibility with dubx we're checking for both @dubx and @dubplus and @dub+
@@ -15609,7 +15647,7 @@ var DubPlus = (function () {
     });
   }
 
-  function turnOff$a() {
+  function turnOff$b() {
     var css = document.querySelector(".dubplus-comm-theme");
 
     if (css) {
@@ -15623,8 +15661,8 @@ var DubPlus = (function () {
       section: "Customize",
       menuTitle: "Community Theme",
       desc: "Toggle Community CSS theme.",
-      turnOn: turnOn$a,
-      turnOff: turnOff$a
+      turnOn: turnOn$b,
+      turnOff: turnOff$b
     });
   };
 

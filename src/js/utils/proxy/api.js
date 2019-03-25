@@ -28,7 +28,7 @@ const DTProxyAPIs = {
   /**
    * Make api call to get data for all the songs in the room's active queue
    *
-   * @returns {Promise}
+   * @returns {Promise} returns a fetch promise which already resolves response.json()
    */
   getRoomQueue() {
     const api =
@@ -41,7 +41,7 @@ const DTProxyAPIs = {
    * make api call to get data for a specific song
    *
    * @param {string} songID
-   * @returns {Promise}
+   * @returns {Promise} returns a fetch promise which already resolves response.json()
    */
   getSongData(songID) {
     return this._fetch(`${this.songAPI}/${songID}`);
@@ -60,7 +60,7 @@ const DTProxyAPIs = {
   /**
    * Makes API call to get the dubs for the currently playing song in a room
    *
-   * @returns {Promise}
+   * @returns {Promise} returns a fetch promise which already resolves response.json()
    */
   getActiveDubs() {
     const url = `${this.apiUrl}/${dtGlobal.roomId}/playlist/active/dubs`;
@@ -71,7 +71,7 @@ const DTProxyAPIs = {
    * returns the API url to get a users info
    *
    * @param {string} userid - current logged in user id
-   * @returns {Promise}
+   * @returns {Promise} returns a fetch promise which already resolves response.json()
    */
   getUserData(userid) {
     const api = this.apiUrl + Dubtrack.config.urls.user + "/" + userid;
@@ -81,7 +81,7 @@ const DTProxyAPIs = {
   /**
    * fetch data from api about the current room user is in
    *
-   * @returns {Promise}
+   * @returns {Promise} returns a fetch promise which already resolves response.json()
    */
   roomInfo() {
     return this._fetch(this.apiUrl + "/room/" + dtGlobal.roomUrlName);
@@ -101,13 +101,13 @@ const DTProxyAPIs = {
    * Get the track info of a SoundCloud track
    *
    * @param {string} scID - the soundcloud Id (known as fkid in Dubtrack)
-   * @returns {Promise} returns a fetch promise
+   * @returns {Promise} returns a fetch promise which already resolves response.json()
    */
   getSCtrackInfo(scID) {
     let url = `https://api.soundcloud.com/tracks/${scID}?client_id=${
       Dubtrack.config.keys.soundcloud
     }`;
-    return fetch(url);
+    return fetch(url).then(resp => resp.json());
   }
 };
 

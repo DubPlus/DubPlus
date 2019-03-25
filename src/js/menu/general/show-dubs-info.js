@@ -8,7 +8,7 @@ const DubsInfoListItem = ({ data, click }) => {
       className="dubinfo-preview-item"
     >
       <div className="dubinfo-image">
-        <img src={dtproxy.userImage(data.userid)} />
+        <img src={dtproxy.api.userImage(data.userid)} />
       </div>
       <span className="dubinfo-text">@{data.username}</span>
     </li>

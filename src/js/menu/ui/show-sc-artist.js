@@ -11,13 +11,12 @@ function getArtist() {
 
   dtproxy.api
     .getSCtrackInfo(song.fkid)
-    .then(resp => resp.json())
     .then(json => {
       let artist = window._.get(json, "user.username");
       if (aritst) {
         let currentSong = dtproxy.dom.getCurrentSongElem();
         let track = currentSong.textContent;
-        currentSong.innerHTML = `${track} <small>by ${artist}</small>`;
+        currentSong.textContent = `${track} [artist: ${artist}]`;
       }
     })
     .catch(err => {
@@ -26,6 +25,7 @@ function getArtist() {
 }
 
 function turnOn() {
+  getArtist();
   dtproxy.events.onPlaylistUpdate(getArtist);
 }
 function turnOff() {
