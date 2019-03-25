@@ -3,7 +3,7 @@ import { MenuSwitch, MenuPencil } from "@/components/menuItems.js";
 import settings from "@/utils/UserSettings.js";
 import dtproxy from "@/utils/DTProxy.js";
 
-const DubtrackDefaultSound = "/assets/music/user_ping.mp3";
+const DubtrackDefaultSound = dtproxy.getChatSoundUrl;
 const modalMessage =
   "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to Dubtrack's default sound";
 

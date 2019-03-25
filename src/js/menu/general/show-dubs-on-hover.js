@@ -164,7 +164,7 @@ export default class ShowDubsOnHover extends Component {
    */
   handleReset() {
     // get the current active dubs in the room via api
-    const roomDubs = fetch(dtproxy.activeDubsAPI());
+    const roomDubs = fetch(dtproxy.activeDubsAPI);
 
     roomDubs
       .then(resp => resp.json())

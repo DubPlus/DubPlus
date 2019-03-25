@@ -19,7 +19,7 @@ export default class CustomMentions extends Component {
         var reg = new RegExp("\\b" + v.trim() + "\\b", "i");
         return reg.test(content);
       });
-      if (dtproxy.getSessionId() !== e.user.userInfo.userid && inUsers) {
+      if (dtproxy.getSessionId !== e.user.userInfo.userid && inUsers) {
         dtproxy.playChatSound();
       }
     }

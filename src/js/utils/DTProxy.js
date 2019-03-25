@@ -23,21 +23,57 @@ class DTProxy {
       "Dubtrack.room.player",
       "Dubtrack.helpers.cookie",
       "Dubtrack.room.model",
-      "Dubtrack.room.users"
+      "Dubtrack.room.users",
+      "Dubtrack.config.apiUrl"
     ];
 
     return new WaitFor(checkList, { seconds: 120 });
   }
 
+  /******************************************************************
+   * API urls
+   */
+
+  /**
+   * Get Dubtrack's API url
+   *
+   * @readonly
+   * @memberof DTProxy
+   */
+  get apiUrl() {
+    return Dubtrack.config.apiUrl;
+  }
+
+  /**
+   * get the API url to get info about songs in the active queue
+   *
+   * @readonly
+   * @memberof DTProxy
+   */
+  get roomQueueDetails() {
+    const id = this.getRoomId;
+    return this.apiUrl + Dubtrack.config.urls.roomQueueDetails.replace(':id', id);
+  }
+
+  /**
+   * API url to get song info
+   *
+   * @readonly
+   * @memberof DTProxy
+   */
+  get songAPI() {
+    return this.apiUrl + Dubtrack.config.urls.song;
+  }
+
   /**
    * returns the API URL for the active dubs in the current user is in
    *
-   * @return {string}
+   * @readonly
    * @memberof DTProxy
    */
 
-  activeDubsAPI() {
-    return `https://api.dubtrack.fm/room/${this.getRoomId()}/playlist/active/dubs`;
+  get activeDubsAPI() {
+    return `${this.apiUrl}/${this.getRoomId}/playlist/active/dubs`;
   }
 
   /**
@@ -48,36 +84,36 @@ class DTProxy {
    * @memberof DTProxy
    */
   userDataAPI(userid) {
-    return "https://api.dubtrack.fm/user/" + userid;
+    return this.apiUrl + Dubtrack.config.urls.user + "/" + userid;
   }
 
   /**
    * Session Id is the same as User ID apparently
    *
-   * @returns {string}
+   * @readonly
    * @memberof DTProxy
    */
-  getSessionId() {
+  get getSessionId() {
     return Dubtrack.session.id;
   }
 
   /**
    * pass through of session id which is the same as user id
    *
-   * @returns {string}
+   * @readonly
    * @memberof DTProxy
    */
-  getUserId() {
-    return this.getSessionId();
+  get getUserId() {
+    return this.getSessionId;
   }
 
   /**
    * get the current logged in user name
    *
-   * @returns {string}
+   * @readonly
    * @memberof DTProxy
    */
-  getUserName() {
+  get getUserName() {
     return Dubtrack.session.get("username");
   }
 
@@ -85,20 +121,20 @@ class DTProxy {
    * get current room's name. Don't let the name fool you, it doesn't return a
    * URL, it just returns the name of the room and that's it
    *
-   * @return {string}
+   * @readonly
    * @memberof DTProxy
    */
-  getRoomUrl() {
+  get getRoomUrl() {
     return Dubtrack.room.model.get("roomUrl");
   }
 
   /**
    * returns the current room's id
    *
-   * @returns {string}
+   * @readonly
    * @memberof DTProxy
    */
-  getRoomId() {
+  get getRoomId() {
     return Dubtrack.room.model.id;
   }
 
@@ -116,20 +152,20 @@ class DTProxy {
   /**
    * get the current volume of the room's player
    *
-   * @returns {number}
+   * @readonly
    * @memberof DTProxy
    */
-  getVolume() {
+  get getVolume() {
     return Dubtrack.playerController.volume;
   }
 
   /**
    * get the current mute state of the room's player
    *
-   * @return {boolean}
+   * @readonly
    * @memberof DTProxy
    */
-  isMuted() {
+  get isMuted() {
     return Dubtrack.room.player.muted_player;
   }
 
@@ -145,10 +181,10 @@ class DTProxy {
   /**
    * Get the path of the mp3 file that is used for notifications
    *
-   * @returns {string}
+   * @readonly
    * @memberof DTProxy
    */
-  getChatSoundUrl() {
+  get getChatSoundUrl() {
     return Dubtrack.room.chat.mentionChatSound.url;
   }
 
@@ -208,30 +244,30 @@ class DTProxy {
   /**
    * get the name of the song that's currently playing in the room
    *
-   * @returns {string}
+   * @readonly
    * @memberof DTProxy
    */
-  getSongName() {
+  get getSongName() {
     return Dubtrack.room.player.activeSong.get("songInfo").name;
   }
 
   /**
    * Get current playing song's platform ID (aka fkid)
    *
-   * @returns {string}
+   * @readonly
    * @memberof DTProxy
    */
-  getSongFKID() {
+  get getSongFKID() {
     return Dubtrack.room.player.activeSong.get("songInfo").fkid;
   }
 
   /**
    * Get the Dubtrack ID for current song.
    *
-   * @returns {string}
+   * @readonly
    * @memberof DTProxy
    */
-  getDubSong() {
+  get getDubSong() {
     return Dubtrack.helpers.cookie.get("dub-song");
   }
 
@@ -288,10 +324,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   getRoomQueue(cb) {
-    this._handleAsync(
-      `https://api.dubtrack.fm/room/${Dubtrack.room.model.id}/playlist/details`,
-      cb
-    );
+    this._handleAsync(this.roomQueueDetails,cb);
   }
 
   /**
@@ -302,7 +335,7 @@ class DTProxy {
    * @memberof DTProxy
    */
   getSongData(songID, cb) {
-    this._handleAsync(`https://api.dubtrack.fm/song/${songID}`, cb);
+    this._handleAsync(`${this.songAPI}/${songID}`, cb);
   }
 
   /**

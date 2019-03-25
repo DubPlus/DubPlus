@@ -24,7 +24,7 @@ export default class Autovote extends Component {
   turnOn = (e) => {
     var song = dtproxy.getActiveSong();
     var dubCookie = dtproxy.getVoteType();
-    var dubsong = dtproxy.getDubSong();
+    var dubsong = dtproxy.getDubSong;
   
     if (!song || song.songid !== dubsong) {
       dubCookie = false;

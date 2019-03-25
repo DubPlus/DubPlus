@@ -51,7 +51,7 @@ export default class PreviewNextSong extends Component {
     nextSong: null
   };
 
-  userid = dtproxy.getUserId();
+  userid = dtproxy.getUserId;
   renderTo = null;
 
   componentWillMount() {

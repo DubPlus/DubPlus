@@ -46,7 +46,7 @@ class DubPlusContainer extends Component {
           });
         })
         .catch(() => {
-          if (!dtproxy.getSessionId()) {
+          if (!dtproxy.getSessionId) {
             this.showError("You're not logged in. Please login to use Dub+.");
           } else {
             this.showError("Something happed, refresh and try again");
@@ -56,7 +56,7 @@ class DubPlusContainer extends Component {
       return;
     }
 
-    if (!dtproxy.getSessionId()) {
+    if (!dtproxy.getSessionId) {
       this.showError("You're not logged in. Please login to use Dub+.");
     } else {
       this.showError("Dub+ is already loaded");

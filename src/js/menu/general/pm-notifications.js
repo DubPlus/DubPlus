@@ -12,7 +12,7 @@ export default class PMNotifications extends Component {
   };
 
   notify(e) {
-    var userid = dtproxy.getSessionId();
+    var userid = dtproxy.getSessionId;
     if (userid === e.userid) {
       return;
     }

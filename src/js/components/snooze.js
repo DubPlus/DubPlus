@@ -25,8 +25,8 @@ var eventSongAdvance = function(e) {
 };
 
 var snooze = function() {
-  if (!eventUtils.snoozed && !dtproxy.isMuted() && dtproxy.getVolume() > 2) {
-    eventUtils.currentVol = dtproxy.getVolume();
+  if (!eventUtils.snoozed && !dtproxy.isMuted && dtproxy.getVolume > 2) {
+    eventUtils.currentVol = dtproxy.getVolume;
     dtproxy.mutePlayer();
     eventUtils.snoozed = true;
     dtproxy.onPlaylistUpdate(eventSongAdvance);
