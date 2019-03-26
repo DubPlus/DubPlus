@@ -8,12 +8,12 @@ function toggle(isFirstLoad) {
     // to not play until you un-hide it.  So we delay turning it off for a bit
     // to give the video time to load and start playing
     setTimeout(function() {
-      dtproxy.dom.hideVideoBtn.click();
+      dtproxy.dom.hideVideoBtn().click();
     }, 5000);
     return;
   }
 
-  dtproxy.dom.hideVideoBtn.click();
+  dtproxy.dom.hideVideoBtn().click();
 }
 
 /**

@@ -14,7 +14,7 @@ export default class ChatNotification extends Component {
 
   notifyOnMention(e) {
     var content = e.message;
-    var user = dtproxy.userName.toLowerCase();
+    var user = dtproxy.userName().toLowerCase();
     var mentionTriggers = ["@" + user];
 
     if (
@@ -35,7 +35,7 @@ export default class ChatNotification extends Component {
     if (
       mentionTriggersTest &&
       !this.isActiveTab &&
-      dtproxy.sessionId !== e.user.userInfo.userid
+      dtproxy.sessionId() !== e.user.userInfo.userid
     ) {
       showNotification({
         title: `Message from ${e.user.username}`,

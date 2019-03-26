@@ -3,7 +3,6 @@ import { MenuSwitch, MenuPencil } from "@/components/menuItems.js";
 import settings from "@/utils/UserSettings.js";
 import dtproxy from "@/utils/DTProxy.js";
 
-const DubtrackDefaultSound = dtproxy.chatSoundUrl;
 const modalMessage =
   "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to Dubtrack's default sound";
 
@@ -17,10 +16,12 @@ export default class CustomSound extends Component {
     modalMessage: modalMessage
   };
 
+  DubtrackDefaultSound = dtproxy.getChatSoundUrl();
+
   turnOn = initialLoad => {
     if (settings.stored.custom.notificationSound) {
       this.isOn = true;
-      dtproxy.chatSoundUrl = settings.stored.custom.notificationSound;
+      dtproxy.setChatSoundUrl(settings.stored.custom.notificationSound);
       return;
     }
 
@@ -31,7 +32,7 @@ export default class CustomSound extends Component {
 
   turnOff = () => {
     this.isOn = false;
-    dtproxy.chatSoundUrl = DubtrackDefaultSound;
+    dtproxy.setChatSoundUrl(this.DubtrackDefaultSound);
     this.setState({ showModal: false });
   };
 
@@ -49,7 +50,7 @@ export default class CustomSound extends Component {
     }
 
     if (this.isOn) {
-      dtproxy.chatSoundUrl = val;
+      dtproxy.setChatSoundUrl(val);
     }
     this.setState({ showModal: false });
   };

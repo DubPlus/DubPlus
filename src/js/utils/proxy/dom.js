@@ -5,20 +5,18 @@ const DTProxyDOM = {
   /**
    * Returns the chat input element
    *
-   * @property {HTMLElement}
-   * @readonly
+   * @returns {HTMLElement}
    */
-  get chatInput() {
+  chatInput() {
     return document.getElementById("chat-txt-message");
   },
 
   /**
    * get the <ul> containing all the chat messages
    *
-   * @property {HTMLUListElement}
-   * @readonly
+   * @returns {HTMLUListElement}
    */
-  get chatList() {
+  chatList() {
     return document.querySelector("ul.chat-main");
   },
 
@@ -52,6 +50,12 @@ const DTProxyDOM = {
     return document.querySelectorAll(".playlist-list-action li");
   },
 
+  /**
+   * get the element that holds the text of the currently playing track in
+   * the bottom player bar
+   *
+   * @returns {HTMLElement} think it's a span but that doesn't matter
+   */
   getCurrentSongElem() {
     return document.querySelector(".currentSong");
   },
@@ -91,64 +95,64 @@ const DTProxyDOM = {
 
   /**
    * the anchor element for the up dub button
-   * @readonly
+   * 
+   * @returns {HTMLAnchorElement}
    */
-  get upVote() {
+  upVote() {
     return document.querySelector(".dubup");
   },
 
   /**
    * get the anchor element for the down dub button
-   *
-   * @readonly
+   * 
+   * @returns {HTMLAnchorElement}
    */
-  get downVote() {
+  downVote() {
     return document.querySelector(".dubdown");
   },
 
   /**
    * get the add to playlist "grab" button, the one with the heart icon
-   * @readonly
+   * 
+   * @returns {HTMLElement}
    */
-  get grabBtn() {
+  grabBtn() {
     return document.querySelector(".add-to-playlist-button");
   },
 
   /**
    * Returns the element that triggers the opening the private messages sidebar
    *
-   * @readonly
+   * @returns {HTMLElement}
    */
-  get userPMs() {
+  userPMs() {
     return document.querySelector(".user-messages");
   },
 
   /**
    * returns the full size background img element
-   *
-   * @readonly
+   * 
+   * @returns {HTMLImageElement}
    */
-  get bgImg() {
+  bgImg() {
     return document.querySelector(".backstretch-item img");
   },
 
   /**
    * returns the element used to hide/show the video
    *
-   * @property {HTMLElement}
-   * @readonly
+   * @returns {HTMLElement}
    */
-  get hideVideoBtn() {
+  hideVideoBtn() {
     return document.querySelector(".hideVideo-el");
   },
 
   /**
    * Returns the chat input's containing element
    *
-   * @property {HTMLElement}
-   * @readonly
+   * @returns {HTMLElement}
    */
-  get chatInputContainer() {
+  chatInputContainer() {
     return document.querySelector(".pusher-chat-widget-input");
   }
 };

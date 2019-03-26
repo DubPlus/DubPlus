@@ -1,4 +1,3 @@
-import WaitFor from "@/utils/waitFor.js";
 import DTGlobal from "./proxy/global_object";
 import DTProxyAPIs from "./proxy/api";
 import DTProxyDOM from "./proxy/dom";

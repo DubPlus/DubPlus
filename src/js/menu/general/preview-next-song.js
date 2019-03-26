@@ -51,16 +51,14 @@ export default class PreviewNextSong extends Component {
     nextSong: null
   };
 
-  userid = dtproxy.userId;
-  renderTo = null;
-
   componentWillMount() {
     // add an empty span on mount to give Portal something to render to
-    let widget = dtproxy.dom.chatInputContainer;
+    let widget = dtproxy.dom.chatInputContainer();
     let span = document.createElement("span");
     span.id = "dp-song-prev-target";
     widget.parentNode.insertBefore(span, widget);
     this.renderTo = document.getElementById("dp-song-prev-target");
+    this.userid = dtproxy.userId();
   }
 
   /**

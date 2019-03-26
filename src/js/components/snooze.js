@@ -17,7 +17,7 @@ var eventUtils = {
 var eventSongAdvance = function(e) {
   if (e.startTime < 2) {
     if (eventUtils.snoozed) {
-      dtproxy.volume = eventUtils.currentVol;
+      dtproxy.setVolume(eventUtils.currentVol);
       eventUtils.snoozed = false;
     }
     return true;
@@ -25,13 +25,14 @@ var eventSongAdvance = function(e) {
 };
 
 var snooze = function() {
-  if (!eventUtils.snoozed && !dtproxy.isMuted && dtproxy.volume > 2) {
-    eventUtils.currentVol = dtproxy.volume;
+  const vol = dtproxy.getVolume();
+  if (!eventUtils.snoozed && !dtproxy.isMuted() && vol > 2) {
+    eventUtils.currentVol = vol;
     dtproxy.mutePlayer();
     eventUtils.snoozed = true;
     dtproxy.events.onPlaylistUpdate(eventSongAdvance);
   } else if (eventUtils.snoozed) {
-    dtproxy.volume = eventUtils.currentVol;
+    dtproxy.setVolume(eventUtils.currentVol);
     eventUtils.snoozed = false;
   }
 };

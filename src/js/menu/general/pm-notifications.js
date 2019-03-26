@@ -12,7 +12,7 @@ export default class PMNotifications extends Component {
   };
 
   notify(e) {
-    var userid = dtproxy.sessionId;
+    var userid = dtproxy.userId();
     if (userid === e.userid) {
       return;
     }
@@ -20,7 +20,7 @@ export default class PMNotifications extends Component {
       title: "You have a new PM",
       ignoreActiveTab: true,
       callback: function() {
-        dtproxy.dom.userPMs.click();
+        dtproxy.dom.userPMs().click();
         setTimeout(function() {
           dtproxy.dom.getPMmsg(e.messageid).click();
         }, 500);

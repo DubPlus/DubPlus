@@ -25,12 +25,13 @@ class Picker extends Component {
   };
 
   componentWillMount() {
-    this.chatWidget = dtproxy.dom.chatInputContainer;
+    this.chatWidget = dtproxy.dom.chatInputContainer();
   }
 
   fillChat(val) {
-    dtproxy.dom.chatInput.value += ` :${val}:`;
-    dtproxy.dom.chatInput.focus();
+    const input = dtproxy.dom.chatInput();
+    input.value += ` :${val}:`;
+    input.focus();
     this.setState({
       emojiShow: false,
       twitchShow: false

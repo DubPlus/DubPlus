@@ -1,3 +1,5 @@
+import WaitFor from "@/utils/waitFor.js";
+
 /**
  * Proxy for anything that uses `window.Dubtrack` global object
  */
@@ -8,7 +10,6 @@ const DTGlobal = {
    * variables.
    *
    * @returns {Promise}
-   * @memberof DTProxy
    */
   loadCheck() {
     var checkList = [
@@ -19,7 +20,7 @@ const DTGlobal = {
       "Dubtrack.helpers.cookie",
       "Dubtrack.room.model",
       "Dubtrack.room.users",
-      "Dubtrack.config.apiUrl"
+      "Dubtrack.config"
     ];
 
     return new WaitFor(checkList, { seconds: 120 });
@@ -28,30 +29,27 @@ const DTGlobal = {
   /**
    * Session Id is the same as User ID apparently
    *
-   * @readonly
-   * @property {string}
+   * @returns {string}
    */
-  get sessionId() {
+  sessionId() {
     return Dubtrack.session.id;
   },
 
   /**
    * pass through of session id which is the same as user id
    *
-   * @readonly
-   * @property {string}
+   * @returns {string}
    */
-  get userId() {
-    return this.sessionId;
+  userId() {
+    return this.sessionId();
   },
 
   /**
    * get the current logged in user name
    *
-   * @readonly
-   * @property {string}
+   * @returns {string}
    */
-  get userName() {
+  userName() {
     return Dubtrack.session.get("username");
   },
 
@@ -59,20 +57,18 @@ const DTGlobal = {
    * get current room's name from the URL. Just the name and not other part
    * of the URL and no slashes
    *
-   * @readonly
-   * @property {string}
+   * @returns {string}
    */
-  get roomUrlName() {
+  roomUrlName() {
     return Dubtrack.room.model.get("roomUrl");
   },
 
   /**
    * returns the current room's id
    *
-   * @readonly
-   * @property {string}
+   * @returns {string}
    */
-  get roomId() {
+  roomId() {
     return Dubtrack.room.model.id;
   },
 
@@ -81,7 +77,7 @@ const DTGlobal = {
    *
    * @param {number} vol - number between 0 - 100
    */
-  set volume(vol) {
+  setVolume(vol) {
     Dubtrack.room.player.setVolume(vol);
     Dubtrack.room.player.updateVolumeBar();
   },
@@ -89,20 +85,18 @@ const DTGlobal = {
   /**
    * get the current volume of the room's player
    *
-   * @readonly
-   * @property {number}
+   * @returns {number}
    */
-  get volume() {
+  getVolume() {
     return Dubtrack.playerController.volume;
   },
 
   /**
    * get the current mute state of the room's player
    *
-   * @readonly
-   * @property {boolean}
+   * @returns {boolean}
    */
-  get isMuted() {
+  isMuted() {
     return Dubtrack.room.player.muted_player;
   },
 
@@ -117,10 +111,9 @@ const DTGlobal = {
   /**
    * Get the path of the mp3 file that is used for notifications
    *
-   * @readonly
-   * @property {string}
+   * @returns {string}
    */
-  get chatSoundUrl() {
+  getChatSoundUrl() {
     return Dubtrack.room.chat.mentionChatSound.url;
   },
 
@@ -129,7 +122,7 @@ const DTGlobal = {
    *
    * @param {string} url - the url of the mp3 file
    */
-  set chatSoundUrl(url) {
+  setChatSoundUrl(url) {
     Dubtrack.room.chat.mentionChatSound.url = url;
   },
 
@@ -166,9 +159,9 @@ const DTGlobal = {
   /**
    * Get room's "display grabs in chat" setting
    *
-   * @property {boolean}
+   * @returns {boolean}
    */
-  get displayUserGrab() {
+  displayUserGrab() {
     return Dubtrack.room.model.get("displayUserGrab");
   },
 
@@ -206,15 +199,6 @@ const DTGlobal = {
    */
   getDubSong() {
     return Dubtrack.helpers.cookie.get("dub-song");
-  },
-
-  /**
-   * Get song data for the current song
-   *
-   * @returns {object}
-   */
-  getActiveSong() {
-    return Dubtrack.room.player.activeSong.get("song");
   },
 
   /**

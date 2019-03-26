@@ -25,9 +25,9 @@ export default class DubsInfo extends Component {
     let whichVote = this.props.type.replace("dubs", "");
     let elem;
     if (whichVote === "up") {
-      elem = dtproxy.dom.upVote;
+      elem = dtproxy.dom.upVote();
     } else if (whichVote === "down") {
-      elem = dtproxy.dom.downVote;
+      elem = dtproxy.dom.downVote();
     } else {
       return;
     }
@@ -41,7 +41,7 @@ export default class DubsInfo extends Component {
   }
 
   updateChat(str) {
-    const chat = dtproxy.dom.chatInput;
+    const chat = dtproxy.dom.chatInput();
     chat.value = str;
     chat.focus();
   }

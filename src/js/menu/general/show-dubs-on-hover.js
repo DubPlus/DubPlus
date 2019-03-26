@@ -230,7 +230,8 @@ export default class ShowDubsOnHover extends Component {
         }
       })
       .catch(function(err) {
-        console.error(err);
+        // console.error(err);
+        console.log('error getting active dubs, maybe no songs playing')
       });
   }
 
@@ -249,13 +250,13 @@ export default class ShowDubsOnHover extends Component {
   };
 
   componentWillMount() {
-    this.upElem = dtproxy.dom.upVote.parentElement;
+    this.upElem = dtproxy.dom.upVote().parentElement;
     this.upElem.classList.add("dubplus-updub-btn");
 
-    this.downElem = dtproxy.dom.downVote.parentElement;
+    this.downElem = dtproxy.dom.downVote().parentElement;
     this.downElem.classList.add("dubplus-downdub-btn");
 
-    this.grabElem = dtproxy.dom.grabBtn.parentElement;
+    this.grabElem = dtproxy.dom.grabBtn().parentElement;
     this.grabElem.classList.add("dubplus-grab-btn");
   }
 

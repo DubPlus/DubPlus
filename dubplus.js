@@ -1014,7 +1014,7 @@ var DubPlus = (function () {
    */
 
 
-  function WaitFor$1(waitingFor, options) {
+  function WaitFor(waitingFor, options) {
     if (typeof waitingFor !== "string" && !Array.isArray(waitingFor)) {
       console.warn('WaitFor: invalid first argument');
       return;
@@ -1063,21 +1063,19 @@ var DubPlus = (function () {
     });
   }
 
-  var _DTGlobal;
-
   /**
    * Proxy for anything that uses `window.Dubtrack` global object
    */
-  var DTGlobal = (_DTGlobal = {
+
+  var DTGlobal = {
     /**
      * Begins polling of window object for the existence of a set of global
      * variables.
      *
      * @returns {Promise}
-     * @memberof DTProxy
      */
     loadCheck: function loadCheck() {
-      var checkList = ["Dubtrack.session.id", "Dubtrack.room.chat", "Dubtrack.Events", "Dubtrack.room.player", "Dubtrack.helpers.cookie", "Dubtrack.room.model", "Dubtrack.room.users", "Dubtrack.config.apiUrl"];
+      var checkList = ["Dubtrack.session.id", "Dubtrack.room.chat", "Dubtrack.Events", "Dubtrack.room.player", "Dubtrack.helpers.cookie", "Dubtrack.room.model", "Dubtrack.room.users", "Dubtrack.config"];
       return new WaitFor(checkList, {
         seconds: 120
       });
@@ -1086,30 +1084,27 @@ var DubPlus = (function () {
     /**
      * Session Id is the same as User ID apparently
      *
-     * @readonly
-     * @property {string}
+     * @returns {string}
      */
-    get sessionId() {
+    sessionId: function sessionId() {
       return Dubtrack.session.id;
     },
 
     /**
      * pass through of session id which is the same as user id
      *
-     * @readonly
-     * @property {string}
+     * @returns {string}
      */
-    get userId() {
-      return this.sessionId;
+    userId: function userId() {
+      return this.sessionId();
     },
 
     /**
      * get the current logged in user name
      *
-     * @readonly
-     * @property {string}
+     * @returns {string}
      */
-    get userName() {
+    userName: function userName() {
       return Dubtrack.session.get("username");
     },
 
@@ -1117,20 +1112,18 @@ var DubPlus = (function () {
      * get current room's name from the URL. Just the name and not other part
      * of the URL and no slashes
      *
-     * @readonly
-     * @property {string}
+     * @returns {string}
      */
-    get roomUrlName() {
+    roomUrlName: function roomUrlName() {
       return Dubtrack.room.model.get("roomUrl");
     },
 
     /**
      * returns the current room's id
      *
-     * @readonly
-     * @property {string}
+     * @returns {string}
      */
-    get roomId() {
+    roomId: function roomId() {
       return Dubtrack.room.model.id;
     },
 
@@ -1139,7 +1132,7 @@ var DubPlus = (function () {
      *
      * @param {number} vol - number between 0 - 100
      */
-    set volume(vol) {
+    setVolume: function setVolume(vol) {
       Dubtrack.room.player.setVolume(vol);
       Dubtrack.room.player.updateVolumeBar();
     },
@@ -1147,20 +1140,18 @@ var DubPlus = (function () {
     /**
      * get the current volume of the room's player
      *
-     * @readonly
-     * @property {number}
+     * @returns {number}
      */
-    get volume() {
+    getVolume: function getVolume() {
       return Dubtrack.playerController.volume;
     },
 
     /**
      * get the current mute state of the room's player
      *
-     * @readonly
-     * @property {boolean}
+     * @returns {boolean}
      */
-    get isMuted() {
+    isMuted: function isMuted() {
       return Dubtrack.room.player.muted_player;
     },
 
@@ -1175,10 +1166,9 @@ var DubPlus = (function () {
     /**
      * Get the path of the mp3 file that is used for notifications
      *
-     * @readonly
-     * @property {string}
+     * @returns {string}
      */
-    get chatSoundUrl() {
+    getChatSoundUrl: function getChatSoundUrl() {
       return Dubtrack.room.chat.mentionChatSound.url;
     },
 
@@ -1187,7 +1177,7 @@ var DubPlus = (function () {
      *
      * @param {string} url - the url of the mp3 file
      */
-    set chatSoundUrl(url) {
+    setChatSoundUrl: function setChatSoundUrl(url) {
       Dubtrack.room.chat.mentionChatSound.url = url;
     },
 
@@ -1220,9 +1210,9 @@ var DubPlus = (function () {
     /**
      * Get room's "display grabs in chat" setting
      *
-     * @property {boolean}
+     * @returns {boolean}
      */
-    get displayUserGrab() {
+    displayUserGrab: function displayUserGrab() {
       return Dubtrack.room.model.get("displayUserGrab");
     },
 
@@ -1260,24 +1250,44 @@ var DubPlus = (function () {
      */
     getDubSong: function getDubSong() {
       return Dubtrack.helpers.cookie.get("dub-song");
-    }
-  }, _defineProperty(_DTGlobal, "getActiveSong", function getActiveSong() {
-    return Dubtrack.room.player.activeSong.get("song");
-  }), _defineProperty(_DTGlobal, "getVoteType", function getVoteType() {
-    return Dubtrack.helpers.cookie.get("dub-" + Dubtrack.room.model.id);
-  }), _defineProperty(_DTGlobal, "getCurrentDJ", function getCurrentDJ() {
-    var user = Dubtrack.room.users.collection.findWhere({
-      userid: Dubtrack.room.player.activeSong.attributes.song.userid
-    });
+    },
 
-    if (user) {
-      return user.attributes._user.username;
+    /**
+     * returns whether user has "updub"-ed or "downdub"-ed current song
+     *
+     * @returns {string|null} "updub", "downdub", or null if no vote was cast
+     */
+    getVoteType: function getVoteType() {
+      return Dubtrack.helpers.cookie.get("dub-" + Dubtrack.room.model.id);
+    },
+
+    /**
+     * get the name of the current DJ
+     *
+     * @returns {string}
+     */
+    getCurrentDJ: function getCurrentDJ() {
+      var user = Dubtrack.room.users.collection.findWhere({
+        userid: Dubtrack.room.player.activeSong.attributes.song.userid
+      });
+
+      if (user) {
+        return user.attributes._user.username;
+      }
+    },
+
+    /**
+     * get a user in the room's info
+     *
+     * @param {string} userid
+     * @returns {object}
+     */
+    getUserInfo: function getUserInfo(userid) {
+      return Dubtrack.room.users.collection.findWhere({
+        userid: userid
+      });
     }
-  }), _defineProperty(_DTGlobal, "getUserInfo", function getUserInfo(userid) {
-    return Dubtrack.room.users.collection.findWhere({
-      userid: userid
-    });
-  }), _DTGlobal);
+  };
 
   /******************************************************************
    * API urls and calls
@@ -1296,24 +1306,12 @@ var DubPlus = (function () {
     },
 
     /**
-     * Get Dubtrack's API url
-     * even though this is part of the global object I'm leaving it here
-     * since this is the only place using it
-     *
-     * @readonly
-     * @property {string}
-     */
-    get apiUrl() {
-      return Dubtrack.config.apiUrl;
-    },
-
-    /**
      * Make api call to get data for all the songs in the room's active queue
      *
      * @returns {Promise} returns a fetch promise which already resolves response.json()
      */
     getRoomQueue: function getRoomQueue() {
-      var api = this.apiUrl + Dubtrack.config.urls.roomQueueDetails.replace(":id", DTGlobal.roomId);
+      var api = Dubtrack.config.apiUrl + Dubtrack.config.urls.roomQueueDetails.replace(":id", DTGlobal.roomId());
       return this._fetch(api);
     },
 
@@ -1324,17 +1322,8 @@ var DubPlus = (function () {
      * @returns {Promise} returns a fetch promise which already resolves response.json()
      */
     getSongData: function getSongData(songID) {
-      return this._fetch("".concat(this.songAPI, "/").concat(songID));
-    },
-
-    /**
-     * API url to get song info
-     *
-     * @readonly
-     * @property {string}
-     */
-    get songAPI() {
-      return this.apiUrl + Dubtrack.config.urls.song;
+      var api = Dubtrack.config.apiUrl + Dubtrack.config.urls.song;
+      return this._fetch("".concat(api, "/").concat(songID));
     },
 
     /**
@@ -1343,8 +1332,10 @@ var DubPlus = (function () {
      * @returns {Promise} returns a fetch promise which already resolves response.json()
      */
     getActiveDubs: function getActiveDubs() {
-      var url = "".concat(this.apiUrl, "/").concat(DTGlobal.roomId, "/playlist/active/dubs");
-      return this._fetch(url);
+      // `https://api.dubtrack.fm/room/${this.getRoomId()}/playlist/active/dubs`;
+      var apiBase = Dubtrack.config.apiUrl;
+      var path = Dubtrack.config.urls.dubsPlaylistActive.replace(":id", DTGlobal.roomId()).replace(":playlistid", "active");
+      return this._fetch(apiBase + path);
     },
 
     /**
@@ -1354,7 +1345,7 @@ var DubPlus = (function () {
      * @returns {Promise} returns a fetch promise which already resolves response.json()
      */
     getUserData: function getUserData(userid) {
-      var api = this.apiUrl + Dubtrack.config.urls.user + "/" + userid;
+      var api = Dubtrack.config.apiUrl + Dubtrack.config.urls.user + "/" + userid;
       return this._fetch(api);
     },
 
@@ -1364,7 +1355,8 @@ var DubPlus = (function () {
      * @returns {Promise} returns a fetch promise which already resolves response.json()
      */
     roomInfo: function roomInfo() {
-      return this._fetch(this.apiUrl + "/room/" + DTGlobal.roomUrlName);
+      var api = Dubtrack.config.apiUrl + "/room/" + DTGlobal.roomUrlName();
+      return this._fetch(api);
     },
 
     /**
@@ -1374,7 +1366,7 @@ var DubPlus = (function () {
      * @returns {string}
      */
     userImage: function userImage(userid) {
-      return "".concat(this.apiUrl, "/user/").concat(userid, "/image");
+      return "".concat(Dubtrack.config.apiUrl, "/user/").concat(userid, "/image");
     },
 
     /**
@@ -1398,20 +1390,18 @@ var DubPlus = (function () {
     /**
      * Returns the chat input element
      *
-     * @property {HTMLElement}
-     * @readonly
+     * @returns {HTMLElement}
      */
-    get chatInput() {
+    chatInput: function chatInput() {
       return document.getElementById("chat-txt-message");
     },
 
     /**
      * get the <ul> containing all the chat messages
      *
-     * @property {HTMLUListElement}
-     * @readonly
+     * @returns {HTMLUListElement}
      */
-    get chatList() {
+    chatList: function chatList() {
       return document.querySelector("ul.chat-main");
     },
 
@@ -1444,6 +1434,13 @@ var DubPlus = (function () {
     grabPlaylists: function grabPlaylists() {
       return document.querySelectorAll(".playlist-list-action li");
     },
+
+    /**
+     * get the element that holds the text of the currently playing track in
+     * the bottom player bar
+     *
+     * @returns {HTMLElement} think it's a span but that doesn't matter
+     */
     getCurrentSongElem: function getCurrentSongElem() {
       return document.querySelector(".currentSong");
     },
@@ -1478,67 +1475,66 @@ var DubPlus = (function () {
 
     /**
      * the anchor element for the up dub button
-     * @readonly
+     * 
+     * @returns {HTMLAnchorElement}
      */
-    get upVote() {
+    upVote: function upVote() {
       return document.querySelector(".dubup");
     },
 
     /**
      * get the anchor element for the down dub button
-     *
-     * @readonly
+     * 
+     * @returns {HTMLAnchorElement}
      */
-    get downVote() {
+    downVote: function downVote() {
       return document.querySelector(".dubdown");
     },
 
     /**
      * get the add to playlist "grab" button, the one with the heart icon
-     * @readonly
+     * 
+     * @returns {HTMLElement}
      */
-    get grabBtn() {
+    grabBtn: function grabBtn() {
       return document.querySelector(".add-to-playlist-button");
     },
 
     /**
      * Returns the element that triggers the opening the private messages sidebar
      *
-     * @readonly
+     * @returns {HTMLElement}
      */
-    get userPMs() {
+    userPMs: function userPMs() {
       return document.querySelector(".user-messages");
     },
 
     /**
      * returns the full size background img element
-     *
-     * @readonly
+     * 
+     * @returns {HTMLImageElement}
      */
-    get bgImg() {
+    bgImg: function bgImg() {
       return document.querySelector(".backstretch-item img");
     },
 
     /**
      * returns the element used to hide/show the video
      *
-     * @property {HTMLElement}
-     * @readonly
+     * @returns {HTMLElement}
      */
-    get hideVideoBtn() {
+    hideVideoBtn: function hideVideoBtn() {
       return document.querySelector(".hideVideo-el");
     },
 
     /**
      * Returns the chat input's containing element
      *
-     * @property {HTMLElement}
-     * @readonly
+     * @returns {HTMLElement}
      */
-    get chatInputContainer() {
+    chatInputContainer: function chatInputContainer() {
       return document.querySelector(".pusher-chat-widget-input");
     }
-
   };
 
   var DTProxyEvents = {
@@ -1690,7 +1686,7 @@ var DubPlus = (function () {
   var eventSongAdvance = function eventSongAdvance(e) {
     if (e.startTime < 2) {
       if (eventUtils.snoozed) {
-        proxy.volume = eventUtils.currentVol;
+        proxy.setVolume(eventUtils.currentVol);
         eventUtils.snoozed = false;
       }
 
@@ -1699,13 +1695,15 @@ var DubPlus = (function () {
   };
 
   var snooze = function snooze() {
-    if (!eventUtils.snoozed && !proxy.isMuted && proxy.volume > 2) {
-      eventUtils.currentVol = proxy.volume;
+    var vol = proxy.getVolume();
+
+    if (!eventUtils.snoozed && !proxy.isMuted() && vol > 2) {
+      eventUtils.currentVol = vol;
       proxy.mutePlayer();
       eventUtils.snoozed = true;
       proxy.events.onPlaylistUpdate(eventSongAdvance);
     } else if (eventUtils.snoozed) {
-      proxy.volume = eventUtils.currentVol;
+      proxy.setVolume(eventUtils.currentVol);
       eventUtils.snoozed = false;
     }
   };
@@ -11519,13 +11517,14 @@ var DubPlus = (function () {
     _createClass(Picker, [{
       key: "componentWillMount",
       value: function componentWillMount() {
-        this.chatWidget = proxy.dom.chatInputContainer;
+        this.chatWidget = proxy.dom.chatInputContainer();
       }
     }, {
       key: "fillChat",
       value: function fillChat(val) {
-        proxy.dom.chatInput.value += " :".concat(val, ":");
-        proxy.dom.chatInput.focus();
+        var input = proxy.dom.chatInput();
+        input.value += " :".concat(val, ":");
+        input.focus();
         this.setState({
           emojiShow: false,
           twitchShow: false
@@ -11702,7 +11701,7 @@ var DubPlus = (function () {
     function UserSettings() {
       _classCallCheck(this, UserSettings);
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh//DubPlus@using-getters");
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@using-getters");
 
       var _savedSettings = localStorage.getItem('dubplusUserSettings');
 
@@ -12228,10 +12227,10 @@ var DubPlus = (function () {
         }
 
         var content = e.message;
-        var user = proxy.userName;
+        var user = proxy.userName();
 
-        if (content.indexOf("@" + user) >= 0 && proxy.sessionId !== e.user.userInfo.userid) {
-          var chatInput = proxy.dom.chatInput;
+        if (content.indexOf("@" + user) >= 0 && proxy.sessionId() !== e.user.userInfo.userid) {
+          var chatInput = proxy.dom.chatInput();
 
           if (_this.state.afkMessage) {
             chatInput.value = "[AFK] " + _this.state.afkMessage;
@@ -12321,9 +12320,9 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Autovote)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dubup", proxy.dom.upVote);
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dubup", proxy.dom.upVote());
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dubdown", proxy.dom.downVote);
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dubdown", proxy.dom.downVote());
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "advance_vote", function () {
         var event = document.createEvent("HTMLEvents");
@@ -12587,7 +12586,7 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "renderTo", document.querySelector(".pusher-chat-widget-input"));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatInput", proxy.dom.chatInput);
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatInput", proxy.dom.chatInput());
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "selectedItem", null);
 
@@ -13116,7 +13115,7 @@ var DubPlus = (function () {
       key: "begin",
       value: function begin() {
         // when first turning it on, it replaces ALL of the emotes in chat history
-        beginReplace(proxy.dom.chatList); // then it sets up replacing emotes on new chat messages
+        beginReplace(proxy.dom.chatList()); // then it sets up replacing emotes on new chat messages
 
         proxy.events.onChatMessage(beginReplace);
       }
@@ -13174,7 +13173,7 @@ var DubPlus = (function () {
             return reg.test(content);
           });
 
-          if (proxy.sessionId !== e.user.userInfo.userid && inUsers) {
+          if (proxy.sessionId() !== e.user.userInfo.userid && inUsers) {
             proxy.playChatSound();
           }
         }
@@ -13253,7 +13252,7 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatCleanerCheck", function (e) {
-        var totalChats = Array.from(proxy.dom.chatList.children);
+        var totalChats = Array.from(proxy.dom.chatList().children);
         var max = parseInt(_this.state.maxChats, 10);
 
         if (isNaN(totalChats.length) || isNaN(max) || !totalChats.length || totalChats.length < max) {
@@ -13464,7 +13463,7 @@ var DubPlus = (function () {
       key: "notifyOnMention",
       value: function notifyOnMention(e) {
         var content = e.message;
-        var user = proxy.userName.toLowerCase();
+        var user = proxy.userName().toLowerCase();
         var mentionTriggers = ["@" + user];
 
         if (userSettings.stored.options.custom_mentions && userSettings.stored.custom.custom_mentions) {
@@ -13477,7 +13476,7 @@ var DubPlus = (function () {
           return reg.test(content);
         });
 
-        if (mentionTriggersTest && !this.isActiveTab && proxy.sessionId !== e.user.userInfo.userid) {
+        if (mentionTriggersTest && !this.isActiveTab && proxy.sessionId() !== e.user.userInfo.userid) {
           showNotification({
             title: "Message from ".concat(e.user.username),
             content: content
@@ -13568,7 +13567,7 @@ var DubPlus = (function () {
     _createClass(PMNotifications, [{
       key: "notify",
       value: function notify(e) {
-        var userid = proxy.sessionId;
+        var userid = proxy.userId();
 
         if (userid === e.userid) {
           return;
@@ -13578,7 +13577,7 @@ var DubPlus = (function () {
           title: "You have a new PM",
           ignoreActiveTab: true,
           callback: function callback() {
-            proxy.dom.userPMs.click();
+            proxy.dom.userPMs().click();
             setTimeout(function () {
               proxy.dom.getPMmsg(e.messageid).click();
             }, 500);
@@ -14351,9 +14350,9 @@ var DubPlus = (function () {
         var elem;
 
         if (whichVote === "up") {
-          elem = proxy.dom.upVote;
+          elem = proxy.dom.upVote();
         } else if (whichVote === "down") {
-          elem = proxy.dom.downVote;
+          elem = proxy.dom.downVote();
         } else {
           return;
         }
@@ -14364,7 +14363,7 @@ var DubPlus = (function () {
     }, {
       key: "updateChat",
       value: function updateChat(str) {
-        var chat = proxy.dom.chatInput;
+        var chat = proxy.dom.chatInput();
         chat.value = str;
         chat.focus();
       }
@@ -14711,17 +14710,18 @@ var DubPlus = (function () {
             });
           }
         }).catch(function (err) {
-          console.error(err);
+          // console.error(err);
+          console.log('error getting active dubs, maybe no songs playing');
         });
       }
     }, {
       key: "componentWillMount",
       value: function componentWillMount() {
-        this.upElem = proxy.dom.upVote.parentElement;
+        this.upElem = proxy.dom.upVote().parentElement;
         this.upElem.classList.add("dubplus-updub-btn");
-        this.downElem = proxy.dom.downVote.parentElement;
+        this.downElem = proxy.dom.downVote().parentElement;
         this.downElem.classList.add("dubplus-downdub-btn");
-        this.grabElem = proxy.dom.grabBtn.parentElement;
+        this.grabElem = proxy.dom.grabBtn().parentElement;
         this.grabElem.classList.add("dubplus-grab-btn");
       }
     }, {
@@ -14819,7 +14819,7 @@ var DubPlus = (function () {
     _createClass(DowndubInChat, [{
       key: "downdubWatcher",
       value: function downdubWatcher(e) {
-        var user = proxy.userName;
+        var user = proxy.userName();
         var currentDj = proxy.getCurrentDJ();
 
         if (!currentDj) {
@@ -14828,7 +14828,7 @@ var DubPlus = (function () {
 
         if (user === currentDj && e.dubtype === "downdub") {
           var newChat = chatMessage(e.user.username, proxy.getSongName());
-          proxy.dom.chatList.appendChild(newChat);
+          proxy.dom.chatList().appendChild(newChat);
         }
       }
     }, {
@@ -14901,7 +14901,7 @@ var DubPlus = (function () {
     _createClass(UpdubsInChat, [{
       key: "updubWatcher",
       value: function updubWatcher(e) {
-        var user = proxy.userName;
+        var user = proxy.userName();
         var currentDj = proxy.getCurrentDJ();
 
         if (!currentDj) {
@@ -14910,7 +14910,7 @@ var DubPlus = (function () {
 
         if (user === currentDj && e.dubtype === "updub") {
           var newChat = chatMessage$1(e.user.username, proxy.getSongName());
-          proxy.dom.chatList.appendChild(newChat);
+          proxy.dom.chatList().appendChild(newChat);
         }
       }
     }, {
@@ -14978,7 +14978,7 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "grabChatWatcher", function (e) {
-        if (proxy.displayUserGrab) {
+        if (proxy.displayUserGrab()) {
           // if the room has turned on its own "show grab in chat" setting
           // then we no longer need to listen to grabs
           proxy.events.offSongGrab(_this.grabChatWatcher); // a nd we turn switch off
@@ -14988,7 +14988,7 @@ var DubPlus = (function () {
           return;
         }
 
-        var user = proxy.userName;
+        var user = proxy.userName();
         var currentDj = proxy.getCurrentDJ();
 
         if (!currentDj) {
@@ -14997,7 +14997,7 @@ var DubPlus = (function () {
 
         if (user === currentDj) {
           var newChat = chatMessage$2(e.user.username, proxy.getSongName());
-          proxy.dom.chatList.appendChild(newChat);
+          proxy.dom.chatList().appendChild(newChat);
         }
       });
 
@@ -15089,10 +15089,6 @@ var DubPlus = (function () {
         nextSong: null
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "userid", proxy.userId);
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "renderTo", null);
-
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "findNextSong", function () {
         proxy.api.getRoomQueue().then(function (json) {
           var data = window._.get(json, "data", []);
@@ -15168,11 +15164,12 @@ var DubPlus = (function () {
       key: "componentWillMount",
       value: function componentWillMount() {
         // add an empty span on mount to give Portal something to render to
-        var widget = proxy.dom.chatInputContainer;
+        var widget = proxy.dom.chatInputContainer();
         var span = document.createElement("span");
         span.id = "dp-song-prev-target";
         widget.parentNode.insertBefore(span, widget);
         this.renderTo = document.getElementById("dp-song-prev-target");
+        this.userid = proxy.userId();
       }
       /**
        * Go through the room's playlist queue and look for the ID of the current
@@ -15396,18 +15393,18 @@ var DubPlus = (function () {
     });
   };
 
-  function toggle$1(isFirstLoad) {
+  function toggle(isFirstLoad) {
     if (isFirstLoad) {
       // disabling the video from stored settings on page load causes the video
       // to not play until you un-hide it.  So we delay turning it off for a bit
       // to give the video time to load and start playing
       setTimeout(function () {
-        proxy.dom.hideVideoBtn.click();
+        proxy.dom.hideVideoBtn().click();
       }, 5000);
       return;
     }
 
-    proxy.dom.hideVideoBtn.click();
+    proxy.dom.hideVideoBtn().click();
   }
   /**
    * Disable Video
@@ -15423,43 +15420,7 @@ var DubPlus = (function () {
       section: "User Interface",
       menuTitle: "Disable Video",
       desc: "Toggles disabling the video. Equivalent to clicking on the eye icon under the video",
-      turnOn: toggle$1,
-      turnOff: toggle$1
-    });
-  };
-
-  function getArtist() {
-    var song = proxy.getActiveSong();
-
-    if (song.type !== "soundcloud") {
-      return;
-    }
-
-    proxy.api.getSCtrackInfo(song.fkid).then(function (json) {
-      var artist = window._.get(json, "user.username");
-
-      if (aritst) {
-        var currentSong = proxy.dom.getCurrentSongElem();
-        var track = currentSong.textContent;
-        currentSong.textContent = "".concat(track, " [artist: ").concat(artist, "]");
-      }
-    }).catch(function (err) {
-      console.error(err);
-    });
-  }
-
-  function turnOn$7() {
-    getArtist();
-    proxy.events.onPlaylistUpdate(getArtist);
-  }
-
-  var ShowSCArtist = function ShowSCArtist() {
-    return h(MenuSwitch, {
-      id: "dubplus-show-sc-artist",
-      section: "User Interface",
-      menuTitle: "Show Soundcloud artist",
-      desc: "Insert SoundCloud artist name into track title in the player bar",
-      turnOn: turnOn$7,
+      turnOn: toggle,
       turnOff: toggle
     });
   };
@@ -15469,7 +15430,7 @@ var DubPlus = (function () {
       id: "dubplus-ui",
       title: "UI",
       settingsKey: "user-interface"
-    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(HideGifSelfie, null), h(ShowTS, null), h(DisableVideo, null), h(ShowSCArtist, null));
+    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(HideGifSelfie, null), h(ShowTS, null), h(DisableVideo, null));
   };
 
   function handleKeyup(e) {
@@ -15484,11 +15445,11 @@ var DubPlus = (function () {
     }
   }
 
-  function turnOn$8() {
+  function turnOn$7() {
     document.addEventListener("keyup", handleKeyup);
   }
 
-  function turnOff$8() {
+  function turnOff$7() {
     document.removeEventListener("keyup", handleKeyup);
   }
 
@@ -15498,8 +15459,8 @@ var DubPlus = (function () {
       section: "Settings",
       menuTitle: "Spacebar Mute",
       desc: "Turn on/off the ability to mute current song with the spacebar.",
-      turnOn: turnOn$8,
-      turnOff: turnOff$8
+      turnOn: turnOn$7,
+      turnOff: turnOff$7
     });
   };
 
@@ -15509,11 +15470,11 @@ var DubPlus = (function () {
     return confirmationMessage;
   }
 
-  function turnOn$9() {
+  function turnOn$8() {
     window.addEventListener("beforeunload", unloader);
   }
 
-  function turnOff$9() {
+  function turnOff$8() {
     window.removeEventListener("beforeunload", unloader);
   }
 
@@ -15523,8 +15484,8 @@ var DubPlus = (function () {
       section: "Settings",
       menuTitle: "Warn On Navigation",
       desc: "Warns you when accidentally clicking on a link that takes you out of dubtrack.",
-      turnOn: turnOn$9,
-      turnOff: turnOff$9
+      turnOn: turnOn$8,
+      turnOff: turnOff$8
     });
   };
 
@@ -15551,13 +15512,13 @@ var DubPlus = (function () {
     }
   }
 
-  function turnOn$a() {
+  function turnOn$9() {
     // the playlist is part of a DOM element that gets added and removed so we
     // can't bind directly to it, we need to use delegation.
     document.body.addEventListener("keyup", handleKeyup$1);
   }
 
-  function turnOff$a() {
+  function turnOff$9() {
     document.body.removeEventListener("keyup", handleKeyup$1);
   }
 
@@ -15567,8 +15528,8 @@ var DubPlus = (function () {
       section: "Settings",
       menuTitle: "Filter playlists in grabs",
       desc: "Adds 'filter as you type' functionality to the 'create a new playlist' input inside the grab to playlist popup",
-      turnOn: turnOn$a,
-      turnOff: turnOff$a
+      turnOn: turnOn$9,
+      turnOff: turnOff$9
     });
   };
 
@@ -15603,7 +15564,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553547731676);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1553575718551);
     document.head.appendChild(link);
   }
   /**
@@ -15627,7 +15588,7 @@ var DubPlus = (function () {
     loadExternal: loadExternal
   };
 
-  function turnOn$b() {
+  function turnOn$a() {
     var roomAjax = proxy.api.roomInfo();
     roomAjax.then(function (json) {
       var content = json.data.description; // for backwards compatibility with dubx we're checking for both @dubx and @dubplus and @dub+
@@ -15647,7 +15608,7 @@ var DubPlus = (function () {
     });
   }
 
-  function turnOff$b() {
+  function turnOff$a() {
     var css = document.querySelector(".dubplus-comm-theme");
 
     if (css) {
@@ -15661,8 +15622,8 @@ var DubPlus = (function () {
       section: "Customize",
       menuTitle: "Community Theme",
       desc: "Toggle Community CSS theme.",
-      turnOn: turnOn$b,
-      turnOff: turnOff$b
+      turnOn: turnOn$a,
+      turnOff: turnOff$a
     });
   };
 
@@ -15803,7 +15764,7 @@ var DubPlus = (function () {
         showModal: false
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "bgImg", proxy.dom.bgImg);
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "bgImg", proxy.dom.bgImg());
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (initialLoad) {
         if (userSettings.stored.custom.bg) {
@@ -15889,7 +15850,6 @@ var DubPlus = (function () {
     return CustomBG;
   }(Component);
 
-  var DubtrackDefaultSound = proxy.chatSoundUrl;
   var modalMessage = "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to Dubtrack's default sound";
   /**
    * Custom Notification Sound
@@ -15920,10 +15880,12 @@ var DubPlus = (function () {
         modalMessage: modalMessage
       });
 
+      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "DubtrackDefaultSound", proxy.getChatSoundUrl());
+
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (initialLoad) {
         if (userSettings.stored.custom.notificationSound) {
           _this.isOn = true;
-          proxy.chatSoundUrl = userSettings.stored.custom.notificationSound;
+          proxy.setChatSoundUrl(userSettings.stored.custom.notificationSound);
           return;
         }
 
@@ -15937,7 +15899,7 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
         _this.isOn = false;
-        proxy.chatSoundUrl = DubtrackDefaultSound;
+        proxy.setChatSoundUrl(_this.DubtrackDefaultSound);
 
         _this.setState({
           showModal: false
@@ -15958,7 +15920,7 @@ var DubPlus = (function () {
         }
 
         if (_this.isOn) {
-          proxy.chatSoundUrl = val;
+          proxy.setChatSoundUrl(val);
         }
 
         _this.setState({
@@ -16265,7 +16227,7 @@ var DubPlus = (function () {
               error: false
             });
           }).catch(function () {
-            if (!proxy.sessionId) {
+            if (!proxy.sessionId()) {
               _this2.showError("You're not logged in. Please login to use Dub+.");
             } else {
               _this2.showError("Something happed, refresh and try again");
@@ -16276,7 +16238,7 @@ var DubPlus = (function () {
           return;
         }
 
-        if (!proxy.sessionId) {
+        if (!proxy.sessionId()) {
           this.showError("You're not logged in. Please login to use Dub+.");
         } else {
           this.showError("Dub+ is already loaded");
@@ -16326,7 +16288,7 @@ var DubPlus = (function () {
   }(Component);
 
   render(h(DubPlusContainer, null), document.body);
-  var navWait = new WaitFor$1(".header-right-navigation .user-messages", {
+  var navWait = new WaitFor(".header-right-navigation .user-messages", {
     seconds: 60,
     isNode: true
   });

@@ -13,7 +13,7 @@ export default class ChatCleaner extends Component {
   };
 
   chatCleanerCheck = e => {
-    let totalChats = Array.from(dtproxy.dom.chatList.children);
+    let totalChats = Array.from(dtproxy.dom.chatList().children);
     let max = parseInt(this.state.maxChats, 10);
 
     if (

@@ -15,7 +15,7 @@ export default class Emotes extends Component {
 
   begin() {
     // when first turning it on, it replaces ALL of the emotes in chat history
-    chatReplace(dtproxy.dom.chatList);
+    chatReplace(dtproxy.dom.chatList());
     // then it sets up replacing emotes on new chat messages
     dtproxy.events.onChatMessage(chatReplace);
   }

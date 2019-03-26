@@ -1,3 +1,11 @@
+/**
+ * Get soundcloud user's name and insert it next to the track name in the
+ * player bar. (most of the time the user is the artist but not always)
+ * 
+ * NOT IN USE
+ * you can get the artist name from the SoundCloud widget now so I'm not 
+ * sure if this is worth the extra SoundCloud API call. 
+ */
 import { h } from "preact";
 import { MenuSwitch } from "@/components/menuItems.js";
 import dtproxy from "@/utils/DTProxy";
@@ -5,18 +13,19 @@ import dtproxy from "@/utils/DTProxy";
 function getArtist() {
   let song = dtproxy.getActiveSong();
 
-  if (song.type !== "soundcloud") {
+  if (!song || song.type !== "soundcloud") {
     return;
   }
 
   dtproxy.api
     .getSCtrackInfo(song.fkid)
     .then(json => {
-      let artist = window._.get(json, "user.username");
-      if (aritst) {
+      const artist = window._.get(json, "user.username");
+      if (artist) {
         let currentSong = dtproxy.dom.getCurrentSongElem();
-        let track = currentSong.textContent;
-        currentSong.textContent = `${track} [artist: ${artist}]`;
+        let small = document.createElement('small');
+        small.textContent = ` by: ${artist}`;
+        currentSong.appendChild(small);
       }
     })
     .catch(err => {
@@ -35,12 +44,12 @@ function turnOff() {
 const ShowSCArtist = function() {
   return (
     <MenuSwitch
-      id="dubplus-show-sc-artist"
+      id="dubplus-show-sc-user"
       section="User Interface"
-      menuTitle="Show Soundcloud artist"
-      desc="Insert SoundCloud artist name into track title in the player bar"
+      menuTitle="Show Soundcloud user"
+      desc="Insert SoundCloud username into track title in the player bar"
       turnOn={turnOn}
-      turnOff={toggle}
+      turnOff={turnOff}
     />
   );
 };

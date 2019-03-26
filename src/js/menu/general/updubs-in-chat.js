@@ -34,7 +34,7 @@ export default class UpdubsInChat extends Component {
   };
 
   updubWatcher(e) {
-    var user = dtproxy.userName;
+    var user = dtproxy.userName();
     var currentDj = dtproxy.getCurrentDJ();
     if (!currentDj) {
       return;
@@ -42,7 +42,7 @@ export default class UpdubsInChat extends Component {
 
     if (user === currentDj && e.dubtype === "updub") {
       let newChat = chatMessage(e.user.username, dtproxy.getSongName());
-      dtproxy.dom.chatList.appendChild(newChat);
+      dtproxy.dom.chatList().appendChild(newChat);
     }
   }
 

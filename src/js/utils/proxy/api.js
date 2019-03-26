@@ -14,26 +14,14 @@ const DTProxyAPIs = {
   },
 
   /**
-   * Get Dubtrack's API url
-   * even though this is part of the global object I'm leaving it here
-   * since this is the only place using it
-   *
-   * @readonly
-   * @property {string}
-   */
-  get apiUrl() {
-    return Dubtrack.config.apiUrl;
-  },
-
-  /**
    * Make api call to get data for all the songs in the room's active queue
    *
    * @returns {Promise} returns a fetch promise which already resolves response.json()
    */
   getRoomQueue() {
     const api =
-      this.apiUrl +
-      Dubtrack.config.urls.roomQueueDetails.replace(":id", dtGlobal.roomId);
+      Dubtrack.config.apiUrl +
+      Dubtrack.config.urls.roomQueueDetails.replace(":id", dtGlobal.roomId());
     return this._fetch(api);
   },
 
@@ -44,17 +32,8 @@ const DTProxyAPIs = {
    * @returns {Promise} returns a fetch promise which already resolves response.json()
    */
   getSongData(songID) {
-    return this._fetch(`${this.songAPI}/${songID}`);
-  },
-
-  /**
-   * API url to get song info
-   *
-   * @readonly
-   * @property {string}
-   */
-  get songAPI() {
-    return this.apiUrl + Dubtrack.config.urls.song;
+    const api = Dubtrack.config.apiUrl + Dubtrack.config.urls.song;
+    return this._fetch(`${api}/${songID}`);
   },
 
   /**
@@ -63,8 +42,12 @@ const DTProxyAPIs = {
    * @returns {Promise} returns a fetch promise which already resolves response.json()
    */
   getActiveDubs() {
-    const url = `${this.apiUrl}/${dtGlobal.roomId}/playlist/active/dubs`;
-    return this._fetch(url);
+    // `https://api.dubtrack.fm/room/${this.getRoomId()}/playlist/active/dubs`;
+    const apiBase = Dubtrack.config.apiUrl;
+    let path = Dubtrack.config.urls.dubsPlaylistActive
+      .replace(":id", dtGlobal.roomId())
+      .replace(":playlistid", "active");
+    return this._fetch(apiBase + path);
   },
 
   /**
@@ -74,7 +57,8 @@ const DTProxyAPIs = {
    * @returns {Promise} returns a fetch promise which already resolves response.json()
    */
   getUserData(userid) {
-    const api = this.apiUrl + Dubtrack.config.urls.user + "/" + userid;
+    const api =
+      Dubtrack.config.apiUrl + Dubtrack.config.urls.user + "/" + userid;
     return this._fetch(api);
   },
 
@@ -84,7 +68,8 @@ const DTProxyAPIs = {
    * @returns {Promise} returns a fetch promise which already resolves response.json()
    */
   roomInfo() {
-    return this._fetch(this.apiUrl + "/room/" + dtGlobal.roomUrlName);
+    const api = Dubtrack.config.apiUrl + "/room/" + dtGlobal.roomUrlName();
+    return this._fetch(api);
   },
 
   /**
@@ -94,7 +79,7 @@ const DTProxyAPIs = {
    * @returns {string}
    */
   userImage(userid) {
-    return `${this.apiUrl}/user/${userid}/image`;
+    return `${Dubtrack.config.apiUrl}/user/${userid}/image`;
   },
 
   /**
