@@ -11701,7 +11701,7 @@ var DubPlus = (function () {
     function UserSettings() {
       _classCallCheck(this, UserSettings);
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta");
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@page-active");
 
       var _savedSettings = localStorage.getItem('dubplusUserSettings');
 
@@ -15564,7 +15564,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1554267512524);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1564325232289);
     document.head.appendChild(link);
   }
   /**

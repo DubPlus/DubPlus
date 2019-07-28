@@ -1,120 +1,92 @@
 /**
- * Page Potentially hidden
- * refactor of code from: https://stackoverflow.com/a/9502074/395414
- * targetting IE11+ and last couple versions of Chrome, FF, and Safari
- * Desktop only
+ * Page Activity Monitor
  */
 
-var potentialPageVisibility = {
-  pageVisibilityChangeThreshold: 3 * 3600, // in seconds
-  init: function() {
-    document.potentialHidden = false;
-    document.potentiallyHiddenSince = 0;
-    
-    var timeout;
+class PageActive {
+  idleTimeout = false
 
-    var lastActionDate = null;
-    var hasFocusLocal = true;
-    var hasMouseOver = true;
-    var timeoutHandler = null;
+  onIdle = function() {}
+  onActive = function() {}
 
-    function setAsNotHidden() {
-      var dispatchEventRequired = document.potentialHidden;
-      document.potentialHidden = false;
-      document.potentiallyHiddenSince = 0;
-      if (dispatchEventRequired) dispatch();
-    }
+  /**
+   * Whether the mouse and key events are active
+   */
+  eventsOn = false
 
-    function initPotentiallyHiddenDetection() {
-      if (!hasFocusLocal) {
-        // the window does not has the focus => check for  user activity in the window
-        lastActionDate = new Date();
-        if (timeoutHandler != null) {
-          clearTimeout(timeoutHandler);
-        }
-        timeoutHandler = setTimeout(
-          checkPageVisibility,
-          potentialPageVisibility.pageVisibilityChangeThreshold * 1000 + 100
-        ); // +100 ms to avoid rounding issues under Firefox
-      }
-    }
-
-    function dispatch() {
-      var event = new Event('potentialvisilitychange');
-      document.dispatchEvent(event);
-    }
-
-    function checkPageVisibility() {
-      var potentialHiddenDuration =
-        hasFocusLocal || lastActionDate == null
-          ? 0
-          : Math.floor(
-              (new Date().getTime() - lastActionDate.getTime()) / 1000
-            );
-      document.potentiallyHiddenSince = potentialHiddenDuration;
-      if (
-        potentialHiddenDuration >=
-          potentialPageVisibility.pageVisibilityChangeThreshold &&
-        !document.potentialHidden
-      ) {
-        // page visibility change threshold raiched => raise the even
-        document.potentialHidden = true;
-        dispatch();
-      }
-    }
-
-    
-
-    // register to the W3C Page Visibility API
-    // only fires when you change tabs
-    document.addEventListener("visibilitychange", function(event) {
-      console.log('visibilitychange:', document.hidden);
-      dispatch();
-    });
-    // document.addEventListener("pageshow", function(event) {
-    //   console.log('doc.pageshow:', document.hidden);
-    // });
-    // document.addEventListener("pagehide", function(event) {
-    //   console.log('doc.pagehide:', document.hidden);
-    // });
-    window.addEventListener("pageshow", function(event) {
-      console.log('win.pageshow:', document.hidden);
-    });
-    window.addEventListener("pagehide", function(event) {
-      console.log('win.pagehide:', document.hidden);
-    });
-
-    document.addEventListener("mousemove", function(event) {
-      lastActionDate = new Date();
-    });
-    document.addEventListener("mouseover", function(event) {
-      hasMouseOver = true;
-      setAsNotHidden();
-    });
-    document.addEventListener("mouseout", function(event) {
-      hasMouseOver = false;
-      initPotentiallyHiddenDetection();
-    });
-    window.addEventListener("blur", function(event) {
-      hasFocusLocal = false;
-      initPotentiallyHiddenDetection();
-    });
-    window.addEventListener("focus", function(event) {
-      hasFocusLocal = true;
-      setAsNotHidden();
-    });
-    setAsNotHidden();
+  constructor(inActivityWait, restartWait = 1000) {
+    this.inActivityWait = inActivityWait;
+    this.restartWait = restartWait;
+    this.setupEvents();
+    this.startIdleTimer();
   }
-};
 
-potentialPageVisibility.pageVisibilityChangeThreshold = 4; // 4 seconds for testing
-potentialPageVisibility.init();
-
-// register to the potential page visibility change
-document.addEventListener("potentialvisilitychange", function(event) {
-  if (document.hidden) {
-    log("page is hidden");
-  } else {
-    log("page is back");
+  dispatch(isActive) {
+    if (isActive) {
+      this.onActive()
+    } else {
+      this.onIdle()
+    }
   }
-});
+
+  /**
+   * Activity was detected
+   */
+  onActivity = () => {
+    if (this.idleTimeout) {
+      clearTimeout(this.idleTimeout);
+    }
+
+    // clear the events if they were set up
+    if (this.eventsOn) {
+      document.removeEventListener("mousemove", this.onActivity);
+      document.removeEventListener("keydown", this.onActivity);
+      this.eventsOn = false;
+    }
+
+    if (document.hasFocus()) {
+      // dont setup key/mouse events for a bit
+      setTimeout(this.startIdleTimer, this.restartWait);
+      // notify that activity was detected
+      this.dispatch(true);
+    }
+  };
+
+  /**
+   * this runs when the idle timer expired meaning no movement on the
+   * page has been detected or user is off page in another tab or program
+   */
+  isIdle = () => {
+    this.idleTimeout = false;
+    this.dispatch(false);
+  };
+
+  /**
+   * Start a timer and listen for events
+   * if an event is found, run: onActivity
+   */
+  startIdleTimer = () => {
+    this.idleTimer();
+    document.addEventListener("mousemove", this.onActivity);
+    document.addEventListener("keydown", this.onActivity);
+    this.eventsOn = true;
+  };
+
+  idleTimer = () => {
+    clearTimeout(this.idleTimeout);
+    this.idleTimeout = setTimeout(this.isIdle, this.inActivityWait);
+  };
+
+  setupEvents() {
+    window.addEventListener("blur", this.idleTimer);
+    window.addEventListener("focus", this.onActivity);
+  }
+}
+
+var p = new PageActive(5000);
+p.onIdle = function() {
+  console.log("page has been idle for 5 sec");
+}
+p.onActive = function() {
+  console.log("page is active again");
+}
+
