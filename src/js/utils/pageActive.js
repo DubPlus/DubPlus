@@ -82,6 +82,8 @@ class PageActive {
   }
 }
 
+/*
+usage:
 var p = new PageActive(5000);
 p.onIdle = function() {
   console.log("page has been idle for 5 sec");
@@ -89,4 +91,6 @@ p.onIdle = function() {
 p.onActive = function() {
   console.log("page is active again");
 }
+*/
+
 
