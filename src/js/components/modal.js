@@ -1,5 +1,6 @@
 import { h, Component } from "preact";
-import Portal from "preact-portal/src/preact-portal";
+// import Portal from "preact-portal/src/preact-portal";
+import Portal from "@/utils/Portal.js"
 
 /**
  * Modal used to display messages and also capture data
@@ -12,6 +13,10 @@ import Portal from "preact-portal/src/preact-portal";
  * @prop  {number} maxlength   for the textarea maxlength attribute
  */
 export default class Modal extends Component {
+  state = {
+    error: false
+  };
+
   keyUpHandler = e => {
     // save and close when user presses enter
     // considering removing this though
@@ -38,15 +43,17 @@ export default class Modal extends Component {
   }
 
   confirmClick = () => {
-    this.props.onConfirm(this.textarea.value);
-    this.props.onClose();
+    let result = this.props.onConfirm(this.textarea.value);
+    if (result) {
+      this.props.onClose();
+    }
   };
 
-  render(props) {
+  render(props, state) {
     let closeButtonText = !props.onConfirm ? "close" : "cancel";
 
     return props.open ? (
-      <Portal into="body">
+      <Portal into={document.body}>
         <div className="dp-modal">
           <aside className="container">
             <div className="title">
@@ -54,6 +61,7 @@ export default class Modal extends Component {
             </div>
             <div className="content">
               <p>{props.content || ""}</p>
+              {state.error && <p>{props.errorMsg}</p>}
               {props.placeholder && (
                 <textarea
                   ref={c => (this.textarea = c)}

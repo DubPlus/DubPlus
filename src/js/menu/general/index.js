@@ -2,6 +2,7 @@ import { h } from 'preact';
 import { MenuSection } from "@/components/menuItems";
 
 import AFK from '@/menu/general/afk.js'
+import AutoAFK from '@/menu/general/auto-afk.js'
 import Autovote from '@/menu/general/autovote.js'
 import AutocompleteEmoji from '@/menu/general/autocomplete-emoji.js';
 import Emotes from '@/menu/general/emotes.js';
@@ -23,6 +24,7 @@ const GeneralSection = () => {
     <MenuSection id="dubplus-general" title="General" settingsKey="general">
       <Autovote />
       <AFK />
+      <AutoAFK />
       <AutocompleteEmoji />
       <Emotes />
       <CustomMentions />

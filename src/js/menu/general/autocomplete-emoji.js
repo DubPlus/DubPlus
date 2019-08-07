@@ -1,6 +1,7 @@
 import { h, Component } from "preact";
 import { MenuSwitch } from "@/components/menuItems.js";
-import Portal from "preact-portal/src/preact-portal";
+// import Portal from "preact-portal/src/preact-portal";
+import Portal from "@/utils/Portal.js"
 import AutocompletePreview from "./autocomplete-preview";
 import twitch from "@/utils/emotes/twitch-local.js";
 import bttv from "@/utils/emotes/bttv-local.js";

@@ -13,14 +13,12 @@ class PageActive {
    */
   eventsOn = false
 
-  constructor(inActivityWait, restartWait = 1000) {
-    this.inActivityWait = inActivityWait;
+  constructor(inactiveTimer, restartWait = 1000) {
+    this.inactiveTimer = inactiveTimer;
     this.restartWait = restartWait;
-    this.setupEvents();
-    this.startIdleTimer();
   }
 
-  dispatch(isActive) {
+  dispatch = (isActive) => {
     if (isActive) {
       this.onActive()
     } else {
@@ -73,14 +71,28 @@ class PageActive {
 
   idleTimer = () => {
     clearTimeout(this.idleTimeout);
-    this.idleTimeout = setTimeout(this.isIdle, this.inActivityWait);
+    this.idleTimeout = setTimeout(this.isIdle, this.inactiveTimer);
   };
 
-  setupEvents() {
+  setupEvents = () => {
     window.addEventListener("blur", this.idleTimer);
     window.addEventListener("focus", this.onActivity);
   }
+
+  start = () => {
+    this.setupEvents();
+    this.startIdleTimer();
+  }
+
+  stop = () => {
+    clearTimeout(this.idleTimeout);
+    window.removeEventListener("blur", this.idleTimer);
+    window.removeEventListener("focus", this.onActivity);
+    document.removeEventListener("mousemove", this.onActivity);
+    document.removeEventListener("keydown", this.onActivity);
+  }
 }
+export default PageActive
 
 /*
 usage:
@@ -91,6 +103,7 @@ p.onIdle = function() {
 p.onActive = function() {
   console.log("page is active again");
 }
+p.start()
 */
 
 

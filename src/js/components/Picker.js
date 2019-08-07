@@ -2,7 +2,8 @@ import { h, render, Component } from "preact";
 import twitchSpriteSheet from "@/utils/emotes/twitch-spritesheet";
 import bttvSpriteSheet from "@/utils/emotes/bttv-spritesheet";
 import { emojiNames } from "@/utils/emotes/emoji";
-import Portal from "preact-portal/src/preact-portal";
+// import Portal from "preact-portal/src/preact-portal";
+import Portal from "@/utils/Portal.js"
 import dtproxy from "@/utils/DTProxy.js";
 import KEYS from "@/utils/keys";
 

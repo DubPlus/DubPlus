@@ -11,6 +11,7 @@ import cssHelper from "@/utils/css.js";
 import MenuIcon from "@/components/MenuIcon.js";
 import track from "@/utils/analytics.js";
 import dtproxy from "@/utils/DTProxy.js";
+import Portal from "@/utils/Portal.js";
 
 // the extension loads the CSS from the load script so we don't need to
 // do it here. This is for people who load the script via bookmarklet or userscript
@@ -30,12 +31,16 @@ class DubPlusContainer extends Component {
     loading: true,
     error: false,
     errorMsg: "",
-    failed: false
+    failed: false,
+    navReady: false,
+    navDom: document.body
   };
 
   componentDidMount() {
     /* globals Dubtrack */
     if (!window.DubPlus) {
+      // check if necessary dubtrack api methods are available before loading
+      // the script
       dtproxy
         .loadCheck()
         .then(() => {
@@ -52,6 +57,25 @@ class DubPlusContainer extends Component {
             track.event("Dub+ lib", "load", "failed");
           }
         });
+      
+      // check if the right side of the global nav is setup before we insert
+      // the dubplus menu toggle icon
+      let navWait = new WaitFor(
+        [
+          ".header-right-navigation .user-messages",
+          ".header-right-navigation .user-info"
+        ],
+        {
+          seconds: 60,
+          isNode: true
+        }
+      );
+      navWait.then(() => {
+        this.setState({
+          navReady: true,
+          navDom: document.querySelector(".header-right-navigation")
+        });
+      });
       return;
     }
 
@@ -92,19 +116,19 @@ class DubPlusContainer extends Component {
     }
 
     document.querySelector("html").classList.add("dubplus");
-    return <DubPlusMenu />;
+    return (
+      <DubPlusMenu>
+        {state.navReady ? (
+          <Portal into={state.navDom}>
+            <MenuIcon />
+          </Portal>
+        ) : null}
+      </DubPlusMenu>
+    );
   }
 }
 
 render(<DubPlusContainer />, document.body);
-
-let navWait = new WaitFor(".header-right-navigation .user-messages", {
-  seconds: 60,
-  isNode: true
-});
-navWait.then(() => {
-  render(<MenuIcon />, document.querySelector(".header-right-navigation"));
-});
 
 // PKGINFO is inserted by the rollup build process
 export default _PKGINFO_;

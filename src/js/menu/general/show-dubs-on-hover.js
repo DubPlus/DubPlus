@@ -2,7 +2,8 @@ import { h, Component } from "preact";
 import { MenuSwitch } from "@/components/menuItems.js";
 import Modal from "@/components/modal";
 import DubsInfo from "./show-dubs-info";
-import Portal from "preact-portal/src/preact-portal";
+// import Portal from "preact-portal/src/preact-portal";
+import Portal from "@/utils/Portal.js"
 import dtproxy from "@/utils/DTProxy.js";
 
 export default class ShowDubsOnHover extends Component {

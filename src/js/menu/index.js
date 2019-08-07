@@ -28,7 +28,7 @@ const DubPlusMenu = function() {
       <SettingsSection />
       <CustomizeSection />
 
-      {/* the contact section is just links so I'll just added them directly here */}
+      {/* the contact section is just links so I'll just added them directly here for now */}
       <MenuSection id="dubplus-contacts" title="Contacts" settingsKey="contact">
         <MenuSimple
           icon="bug"
