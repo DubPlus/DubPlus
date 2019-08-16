@@ -334,17 +334,19 @@ var DubPlus = (function () {
     return true;
   }
   /**
+   * @typedef OptionsObject
+   * @type {Object}
+   * @property {number} interval how often to ping
+   * @property {number} seconds  how long to ping for
+   * @property {boolean} isNode switches to checking if node exists
+   */
+
+  /**
    * pings for the existence of var/function for # seconds until it's defined
    * runs callback once found and stops pinging
-   * @param {string|array} waitingFor          what you are waiting for
-   * @param {object}       options             optional options to pass
-   *                       options.interval    how often to ping
-   *                       options.seconds     how long to ping for
-   *                       options.isNode      switches to checking if node exists
-   *                       
-   * @return {object}                    2 functions:
-   *                  .then(fn)          will run fn only when item successfully found.  This also starts the ping process
-   *                  .fail(fn)          will run fn only when is never found in the time given
+   * @param {string|array} waitingFor what you are waiting for
+   * @param {OptionsObject} options optional options to pass
+   * @returns {Promise}
    */
 
 
@@ -11063,6 +11065,10 @@ var DubPlus = (function () {
 
         if (result) {
           _this.props.onClose();
+        } else {
+          _this.setState({
+            error: true
+          });
         }
       });
 
@@ -11661,6 +11667,7 @@ var DubPlus = (function () {
       value: afkWait,
       placeholder: "30",
       maxlength: "3",
+      errorMsg: "error, must be a number",
       onConfirm: saveAFKwait
     }));
   }
@@ -14931,7 +14938,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1565154401281);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1565924727104);
     document.head.appendChild(link);
   }
   /**
@@ -15575,9 +15582,7 @@ var DubPlus = (function () {
         loading: true,
         error: false,
         errorMsg: "",
-        failed: false,
-        navReady: false,
-        navDom: document.body
+        failed: false
       });
 
       return _this;
@@ -15590,8 +15595,6 @@ var DubPlus = (function () {
 
         /* globals Dubtrack */
         if (!window.DubPlus) {
-          // check if necessary dubtrack api methods are available before loading
-          // the script
           proxy.loadCheck().then(function () {
             _this2.setState({
               loading: false,
@@ -15605,18 +15608,6 @@ var DubPlus = (function () {
 
               track.event("Dub+ lib", "load", "failed");
             }
-          }); // check if the right side of the global nav is setup before we insert
-          // the dubplus menu toggle icon
-
-          var navWait = new WaitFor([".header-right-navigation .user-messages", ".header-right-navigation .user-info"], {
-            seconds: 60,
-            isNode: true
-          });
-          navWait.then(function () {
-            _this2.setState({
-              navReady: true,
-              navDom: document.querySelector(".header-right-navigation")
-            });
           });
           return;
         }
@@ -15663,16 +15654,24 @@ var DubPlus = (function () {
         }
 
         document.querySelector("html").classList.add("dubplus");
-        return s(DubPlusMenu, null, state.navReady ? s(Portal, {
-          into: state.navDom
-        }, s(MenuIcon, null)) : null);
+        return s(DubPlusMenu, null);
       }
     }]);
 
     return DubPlusContainer;
   }(y);
 
-  D(s(DubPlusContainer, null), document.body); // PKGINFO is inserted by the rollup build process
+  D(s(DubPlusContainer, null), document.body);
+  var navWait = new WaitFor([".header-right-navigation .user-messages", ".header-right-navigation .user-info"], {
+    seconds: 120,
+    isNode: true
+  });
+  navWait.then(function () {
+    var holder = document.createElement('span');
+    holder.id = "dubplus-icon-holder";
+    document.querySelector(".header-right-navigation").appendChild(holder);
+    D(s(MenuIcon, null), holder);
+  }); // PKGINFO is inserted by the rollup build process
 
   var index = {
     "version": "2.0.0",

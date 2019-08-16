@@ -50,6 +50,7 @@ export default function AutoAFK() {
           value={afkWait}
           placeholder="30"
           maxlength="3"
+          errorMsg={"error, must be a number"}
           onConfirm={saveAFKwait}
         />
     </MenuSwitch>

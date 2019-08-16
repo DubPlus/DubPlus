@@ -31,16 +31,12 @@ class DubPlusContainer extends Component {
     loading: true,
     error: false,
     errorMsg: "",
-    failed: false,
-    navReady: false,
-    navDom: document.body
+    failed: false
   };
 
   componentDidMount() {
     /* globals Dubtrack */
     if (!window.DubPlus) {
-      // check if necessary dubtrack api methods are available before loading
-      // the script
       dtproxy
         .loadCheck()
         .then(() => {
@@ -57,25 +53,6 @@ class DubPlusContainer extends Component {
             track.event("Dub+ lib", "load", "failed");
           }
         });
-      
-      // check if the right side of the global nav is setup before we insert
-      // the dubplus menu toggle icon
-      let navWait = new WaitFor(
-        [
-          ".header-right-navigation .user-messages",
-          ".header-right-navigation .user-info"
-        ],
-        {
-          seconds: 60,
-          isNode: true
-        }
-      );
-      navWait.then(() => {
-        this.setState({
-          navReady: true,
-          navDom: document.querySelector(".header-right-navigation")
-        });
-      });
       return;
     }
 
@@ -116,19 +93,29 @@ class DubPlusContainer extends Component {
     }
 
     document.querySelector("html").classList.add("dubplus");
-    return (
-      <DubPlusMenu>
-        {state.navReady ? (
-          <Portal into={state.navDom}>
-            <MenuIcon />
-          </Portal>
-        ) : null}
-      </DubPlusMenu>
-    );
+    return <DubPlusMenu />;
   }
 }
 
 render(<DubPlusContainer />, document.body);
+
+let navWait = new WaitFor(
+  [
+    ".header-right-navigation .user-messages",
+    ".header-right-navigation .user-info"
+  ],
+  {
+    seconds: 120,
+    isNode: true
+  }
+);
+navWait.then(() => {
+  const holder = document.createElement('span');
+  holder.id = "dubplus-icon-holder";
+  document.querySelector(".header-right-navigation").appendChild(holder)
+
+  render(<MenuIcon />, holder);
+});
 
 // PKGINFO is inserted by the rollup build process
 export default _PKGINFO_;

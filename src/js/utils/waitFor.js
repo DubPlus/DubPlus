@@ -59,17 +59,19 @@ function arrayCheckNode(selectors) {
 }
 
 /**
+ * @typedef OptionsObject
+ * @type {Object}
+ * @property {number} interval how often to ping
+ * @property {number} seconds  how long to ping for
+ * @property {boolean} isNode switches to checking if node exists
+ */
+
+/**
  * pings for the existence of var/function for # seconds until it's defined
  * runs callback once found and stops pinging
- * @param {string|array} waitingFor          what you are waiting for
- * @param {object}       options             optional options to pass
- *                       options.interval    how often to ping
- *                       options.seconds     how long to ping for
- *                       options.isNode      switches to checking if node exists
- *                       
- * @return {object}                    2 functions:
- *                  .then(fn)          will run fn only when item successfully found.  This also starts the ping process
- *                  .fail(fn)          will run fn only when is never found in the time given
+ * @param {string|array} waitingFor what you are waiting for
+ * @param {OptionsObject} options optional options to pass
+ * @returns {Promise}
  */
 function WaitFor(waitingFor, options) {
   if ( typeof waitingFor !== "string" && !Array.isArray(waitingFor) ) {

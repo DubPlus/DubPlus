@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 // import Portal from "preact-portal/src/preact-portal";
-import Portal from "@/utils/Portal.js"
+import Portal from "@/utils/Portal.js";
 
 /**
  * Modal used to display messages and also capture data
@@ -46,6 +46,8 @@ export default class Modal extends Component {
     let result = this.props.onConfirm(this.textarea.value);
     if (result) {
       this.props.onClose();
+    } else {
+      this.setState({error: true})
     }
   };
 
