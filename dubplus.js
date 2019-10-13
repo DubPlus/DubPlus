@@ -1049,7 +1049,6 @@ var DubPlus = (function () {
     position: "absolute",
     font: "1rem/1.5 proxima-nova,sans-serif",
     display: "block",
-    left: "-33px",
     cursor: "pointer",
     borderRadius: "1.5rem",
     padding: "8px 16px",
@@ -1101,16 +1100,32 @@ var DubPlus = (function () {
     }
 
     _createClass(Snooze, [{
+      key: "updateLeft",
+      value: function updateLeft() {
+        if (css.left) {
+          return css;
+        }
+
+        var left = this.snoozeRef.getBoundingClientRect().left;
+        css.left = left + "";
+        return css;
+      }
+    }, {
       key: "render",
       value: function render(props, state) {
+        var _this2 = this;
+
         return h("span", {
+          ref: function ref(s) {
+            return _this2.snoozeRef = s;
+          },
           className: "icon-mute snooze_btn",
           onClick: snooze,
           onMouseOver: this.showTooltip,
           onMouseOut: this.hideTooltip
         }, state.show && h("div", {
           className: "snooze_tooltip",
-          style: css
+          style: this.updateLeft()
         }, "Mute current song"));
       }
     }]);
@@ -1118,15 +1133,10 @@ var DubPlus = (function () {
     return Snooze;
   }(m);
 
-  function snooze$1 () {
-    I(h(Snooze, null), document.querySelector(".player_sharing"));
-  }
-
   var css$1 = {
     position: 'absolute',
     font: '1rem/1.5 proxima-nova,sans-serif',
     display: 'block',
-    left: '-33px',
     cursor: 'pointer',
     borderRadius: '1.5rem',
     padding: '8px 16px',
@@ -1191,25 +1201,37 @@ var DubPlus = (function () {
         return booth_time >= 0 ? booth_time : 'You\'re not in the queue';
       }
     }, {
+      key: "updateLeft",
+      value: function updateLeft() {
+        if (css$1.left) {
+          return css$1;
+        }
+
+        var left = this.etaRef.getBoundingClientRect().left;
+        css$1.left = left + "";
+        return css$1;
+      }
+    }, {
       key: "render",
       value: function render(props, state) {
+        var _this2 = this;
+
         return h("span", {
           className: "icon-history eta_tooltip_t",
+          ref: function ref(s) {
+            return _this2.etaRef = s;
+          },
           onMouseOver: this.showTooltip,
           onMouseOut: this.hideTooltip
         }, this.state.show && h("span", {
           className: "eta_tooltip",
-          style: css$1
+          style: this.updateLeft()
         }, this.state.booth_time));
       }
     }]);
 
     return ETA;
   }(m);
-
-  function eta () {
-    I(h(ETA, null), document.querySelector('.player_sharing'));
-  }
 
   var twitchSpriteSheet = {
     "\\:-?\\)": {
@@ -12547,12 +12569,16 @@ var DubPlus = (function () {
       _defineProperty(_assertThisInitialized(_this), "saveAmount", function (value) {
         var chatItems = parseInt(value, 10);
         var amount = !isNaN(chatItems) ? chatItems : 500;
-        userSettings.save("custom", "chat_cleaner", amount); // default to 500
+        var success = userSettings.save("custom", "chat_cleaner", amount); // default to 500
 
-        _this.setState({
-          maxChats: value,
-          showModal: false
-        });
+        if (success) {
+          _this.setState({
+            maxChats: value,
+            showModal: false
+          });
+        }
+
+        return success;
       });
 
       _defineProperty(_assertThisInitialized(_this), "turnOn", function (initialLoad) {
@@ -12913,11 +12939,15 @@ var DubPlus = (function () {
         var int = parseInt(value, 10);
         var amount = !isNaN(int) ? int : 2; // set default to position 2 in the queue
 
-        userSettings.save("custom", "dj_notification", amount);
+        var success = userSettings.save("custom", "dj_notification", amount);
 
-        _this.setState({
-          notifyOn: value
-        });
+        if (success) {
+          _this.setState({
+            notifyOn: value
+          });
+        }
+
+        return success;
       });
 
       _defineProperty(_assertThisInitialized(_this), "djNotificationCheck", function (e) {
@@ -14665,7 +14695,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1570935618128);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1570938430668);
     document.head.appendChild(link);
   }
   /**
@@ -15077,12 +15107,29 @@ var DubPlus = (function () {
    * DubPlus Menu Container
    */
 
+  function ExtraButtons() {
+    return h("span", null, h(ETA, null), h(Snooze, null));
+  }
+
+  function addButtons() {
+    // icon-twitter  icon-facebook
+    var shareWait = new WaitFor([".player_sharing", ".icon-twitter", ".icon-facebook"], {
+      seconds: 120,
+      isNode: true
+    });
+    shareWait.then(function () {
+      var holder = document.createElement('span');
+      holder.id = "dubplus-button-holder";
+      document.querySelector(".player_sharing").appendChild(holder);
+      I(h(ExtraButtons, null), holder);
+    });
+  }
+
   var DubPlusMenu = function DubPlusMenu() {
     setTimeout(function () {
       // load this async so it doesn't block the rest of the menu render
       // since these buttons are completely independent from the menu
-      snooze$1();
-      eta();
+      addButtons();
       SetupPicker();
     }, 10);
     return h("section", {

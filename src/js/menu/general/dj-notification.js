@@ -13,8 +13,11 @@ export default class DJNotification extends Component {
   savePosition = value => {
     var int = parseInt(value, 10);
     let amount = !isNaN(int) ? int : 2; // set default to position 2 in the queue
-    settings.save("custom", "dj_notification", amount);
-    this.setState({ notifyOn: value });
+    const success = settings.save("custom", "dj_notification", amount);
+    if (success) {
+      this.setState({ notifyOn: value });
+    }
+    return success
   };
 
   djNotificationCheck = e => {

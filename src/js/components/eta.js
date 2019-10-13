@@ -10,7 +10,6 @@ var css = {
   position: 'absolute',
   font: '1rem/1.5 proxima-nova,sans-serif',
   display: 'block',
-  left: '-33px',
   cursor: 'pointer',
   borderRadius: '1.5rem',
   padding: '8px 16px',
@@ -24,7 +23,7 @@ var css = {
   zIndex: '9'
 };
 
-class ETA extends Component {
+export default class ETA extends Component {
   state = {
     show : false,
     booth_time : ''
@@ -50,19 +49,25 @@ class ETA extends Component {
     this.setState({show:false});
   }
 
+  updateLeft() {
+    if (css.left) {
+      return css
+    }
+    const left = this.etaRef.getBoundingClientRect().left
+    css.left = left + ""
+    return css
+  }
+
   render(props,state) {
     return (
       <span className="icon-history eta_tooltip_t" 
+        ref={s => (this.etaRef = s)}
         onMouseOver={this.showTooltip}
         onMouseOut={this.hideTooltip}>
         {this.state.show &&
-          <span className="eta_tooltip" style={css}>{this.state.booth_time}</span>
+          <span className="eta_tooltip" style={this.updateLeft()}>{this.state.booth_time}</span>
         }
       </span>
     );
   }
-}
-
-export default function() {
-  render( <ETA />, document.querySelector('.player_sharing') );
 }

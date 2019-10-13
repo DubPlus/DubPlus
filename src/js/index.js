@@ -11,7 +11,6 @@ import cssHelper from "@/utils/css.js";
 import MenuIcon from "@/components/MenuIcon.js";
 import track from "@/utils/analytics.js";
 import dtproxy from "@/utils/DTProxy.js";
-import Portal from "@/utils/Portal.js";
 
 // the extension loads the CSS from the load script so we don't need to
 // do it here. This is for people who load the script via bookmarklet or userscript
