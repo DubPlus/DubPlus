@@ -1107,7 +1107,7 @@ var DubPlus = (function () {
         }
 
         var left = this.snoozeRef.getBoundingClientRect().left;
-        css.left = left + "";
+        css.left = left + "px";
         return css;
       }
     }, {
@@ -1208,7 +1208,7 @@ var DubPlus = (function () {
         }
 
         var left = this.etaRef.getBoundingClientRect().left;
-        css$1.left = left + "";
+        css$1.left = left + "px";
         return css$1;
       }
     }, {
@@ -14524,44 +14524,12 @@ var DubPlus = (function () {
     });
   };
 
-  function toggle(isFirstLoad) {
-    if (isFirstLoad) {
-      // disabling the video from stored settings on page load causes the video
-      // to not play until you un-hide it.  So we delay turning it off for a bit
-      // to give the video time to load and start playing
-      setTimeout(function () {
-        proxy.dom.hideVideoBtn().click();
-      }, 5000);
-      return;
-    }
-
-    proxy.dom.hideVideoBtn().click();
-  }
-  /**
-   * Disable Video
-   * This is the equivalent of clicking on the little eye icon to toggle the video
-   * Sometimes I just want to hide the video the native dubtrack way but not remove
-   * the entire video box
-   */
-
-
-  var DisableVideo = function DisableVideo() {
-    return h(MenuSwitch, {
-      id: "dubplus-disable-video",
-      section: "User Interface",
-      menuTitle: "Disable Video",
-      desc: "Toggles disabling the video. Equivalent to clicking on the eye icon under the video",
-      turnOn: toggle,
-      turnOff: toggle
-    });
-  };
-
   var UISection = function UISection() {
     return h(MenuSection, {
       id: "dubplus-ui",
       title: "UI",
       settingsKey: "user-interface"
-    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(HideGifSelfie, null), h(ShowTS, null), h(DisableVideo, null));
+    }, h(FullscreenVideo, null), h(SplitChat, null), h(HideChat, null), h(HideVideo, null), h(HideAvatars, null), h(HideBackground, null), h(HideGifSelfie, null), h(ShowTS, null));
   };
 
   function handleKeyup(e) {
@@ -14695,7 +14663,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1570938430668);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1570939432365);
     document.head.appendChild(link);
   }
   /**

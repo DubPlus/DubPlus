@@ -72,7 +72,7 @@ export default class Snooze extends Component {
       return css
     }
     const left = this.snoozeRef.getBoundingClientRect().left
-    css.left = left + ""
+    css.left = left + "px"
     return css
   }
 

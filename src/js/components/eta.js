@@ -54,7 +54,7 @@ export default class ETA extends Component {
       return css
     }
     const left = this.etaRef.getBoundingClientRect().left
-    css.left = left + ""
+    css.left = left + "px"
     return css
   }
 
