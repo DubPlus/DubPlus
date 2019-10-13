@@ -26,8 +26,11 @@ export default class CustomMentions extends Component {
   };
 
   saveCustomMentions = val => {
-    settings.save("custom", "custom_mentions", val);
-    this.setState({ custom: val });
+    const success = settings.save("custom", "custom_mentions", val);
+    if (success) { 
+      this.setState({ custom: val });
+    }
+    return success
   };
 
   turnOn = () => {

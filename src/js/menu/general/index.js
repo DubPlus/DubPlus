@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { MenuSection } from "@/components/menuItems";
 
 import AFK from '@/menu/general/afk.js'
-import AutoAFK from '@/menu/general/auto-afk.js'
+// import AutoAFK from '@/menu/general/auto-afk.js'
 import Autovote from '@/menu/general/autovote.js'
 import AutocompleteEmoji from '@/menu/general/autocomplete-emoji.js';
 import Emotes from '@/menu/general/emotes.js';
@@ -17,14 +17,14 @@ import ShowDubsOnHover from '@/menu/general/show-dubs-on-hover.js';
 import DowndubInChat from '@/menu/general/downdub-in-chat.js';
 import UpdubsInChat from '@/menu/general/updubs-in-chat.js';
 import GrabsInChat from '@/menu/general/grabs-in-chat.js';
-import PreviewNextSong from '@/menu/general/preview-next-song';
+// import PreviewNextSong from '@/menu/general/preview-next-song';
 
 const GeneralSection = () => {
   return (
     <MenuSection id="dubplus-general" title="General" settingsKey="general">
       <Autovote />
       <AFK />
-      <AutoAFK />
+      {/* <AutoAFK /> */}
       <AutocompleteEmoji />
       <Emotes />
       <CustomMentions />
@@ -36,7 +36,7 @@ const GeneralSection = () => {
       <DowndubInChat />
       <UpdubsInChat />
       <GrabsInChat />
-      <PreviewNextSong />
+      {/* <PreviewNextSong /> */}
       <SnowSwitch />
       <RainSwitch />
     </MenuSection>

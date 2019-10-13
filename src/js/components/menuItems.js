@@ -123,7 +123,7 @@ export class MenuPencil extends Component {
     }
 
     // now we don't have to check val length inside every option
-    this.props.onConfirm(val);
+    return this.props.onConfirm(val);
   };
 
   render(props, state) {

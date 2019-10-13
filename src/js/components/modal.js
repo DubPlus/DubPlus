@@ -1,5 +1,4 @@
 import { h, Component } from "preact";
-// import Portal from "preact-portal/src/preact-portal";
 import Portal from "@/utils/Portal.js";
 
 /**

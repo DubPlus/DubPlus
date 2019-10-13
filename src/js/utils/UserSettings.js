@@ -70,13 +70,16 @@ class UserSettings {
    * @param {String} type The section of the stored values. i.e. "menu", "options", "custom"
    * @param {String} optionName the key name of the option to store
    * @param {String|Boolean} value the new setting value to store
+   * @returns {Boolean} whether it succeeded or not
    */
   save(type, optionName, value) {
     this.stored[type][optionName] = value;
     try {
       localStorage.setItem('dubplusUserSettings', JSON.stringify(this.stored));
+      return true
     } catch(err) {
       console.error(`an error occured saving dubplus to localStorage`, err);
+      return false
     }
   }
 }

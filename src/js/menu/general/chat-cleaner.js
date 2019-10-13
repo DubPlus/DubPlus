@@ -38,8 +38,11 @@ export default class ChatCleaner extends Component {
   saveAmount = value => {
     var chatItems = parseInt(value, 10);
     let amount = !isNaN(chatItems) ? chatItems : 500;
-    settings.save("custom", "chat_cleaner", amount); // default to 500
-    this.setState({ maxChats: value, showModal: false });
+    const success = settings.save("custom", "chat_cleaner", amount); // default to 500
+    if (success) {
+      this.setState({ maxChats: value, showModal: false });
+    }
+    return success
   };
 
   turnOn = initialLoad => {
