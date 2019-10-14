@@ -7,13 +7,13 @@ import dtproxy from "@/utils/DTProxy.js";
 export default class DJNotification extends Component {
   state = {
     canNotify: false,
-    notifyOn: settings.stored.custom.dj_notification
+    notifyOn: settings.stored.custom["dj-notification"]
   };
 
   savePosition = value => {
     var int = parseInt(value, 10);
     let amount = !isNaN(int) ? int : 2; // set default to position 2 in the queue
-    const success = settings.save("custom", "dj_notification", amount);
+    const success = settings.save("custom", "dj-notification", amount);
     if (success) {
       this.setState({ notifyOn: value });
     }

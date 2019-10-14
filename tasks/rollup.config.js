@@ -4,8 +4,10 @@ const babel = require("rollup-plugin-babel");
 const { uglify } = require("rollup-plugin-uglify");
 const replace = require("rollup-plugin-replace");
 const sassTasks = require("./sassbundle.js");
+const stripCode = require("rollup-plugin-strip-code")
 
 const watchMode = process.env.WATCH === "true";
+const isExtension = process.env.IS_EXT && process.env.IS_EXT === "true"
 
 // our own custom module
 var gitInfo = require("./repoInfo.js");
@@ -78,7 +80,7 @@ const defaultPlugins = [
   }),
   babel({
     babelrc: false,
-    include: ["src/js/**", "node_modules/preact-portal/**"],
+    include: ["src/js/**"],
     plugins: [
       "@babel/plugin-transform-spread",
       "@babel/plugin-proposal-class-properties",
@@ -107,7 +109,16 @@ const defaultPlugins = [
 const inputOptions = {
   input: process.cwd() + "/src/js/index.js",
   treeshake: true,
-  plugins: [...defaultPlugins, sassTasks.plugin()]
+  plugins: [
+    ...isExtension ? [
+      stripCode({
+        start_comment: 'START.NOT_EXT',
+        end_comment: 'END.NOT_EXT'
+      }),
+    ] : [],
+    ...defaultPlugins,
+    sassTasks.plugin()
+  ]
 };
 
 const outputOptions = {

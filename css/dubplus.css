@@ -676,7 +676,8 @@
   .dubplus-song-preview__title {
     -ms-flex: 1;
         flex: 1;
-    line-height: 1.2; }
+    line-height: 1.2;
+    font-size: 0.85em; }
     .dubplus-song-preview__title small {
       display: block; }
   .dubplus-song-preview__image {

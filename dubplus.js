@@ -855,6 +855,8 @@ var DubPlus = (function () {
       return document.querySelector(".backstretch-item img");
     },
 
+    /*START.NOT_EXT*/
+
     /**
      * returns the element used to hide/show the video
      *
@@ -863,6 +865,8 @@ var DubPlus = (function () {
     hideVideoBtn: function hideVideoBtn() {
       return document.querySelector(".hideVideo-el");
     },
+
+    /*END.NOT_EXT*/
 
     /**
      * Returns the chat input's containing element
@@ -10964,7 +10968,8 @@ var DubPlus = (function () {
       "dubplus-hide-selfie": false,
       "dubplus-disable-video": false,
       "dubplus-playlist-filter": false,
-      "dubplus-auto-afk": false
+      "dubplus-auto-afk": false,
+      "custom_mentions": false
     },
     "custom": {
       "customAfkMessage": "[AFK] I'm not here right now.",
@@ -10972,7 +10977,8 @@ var DubPlus = (function () {
       "css": "",
       "bg": "",
       "notificationSound": "",
-      "auto_afk_wait": 30
+      "auto_afk_wait": 30,
+      "custom_mentions": ""
     }
   };
 
@@ -12772,8 +12778,7 @@ var DubPlus = (function () {
         }
 
         var mentionTriggersTest = mentionTriggers.some(function (v) {
-          var reg = new RegExp("\\b" + v.trim() + "\\b", "i");
-          return reg.test(content);
+          return content.toLowerCase().indexOf(v.toLowerCase().trim()) >= 0;
         });
 
         if (mentionTriggersTest && !this.isActiveTab && proxy.sessionId() !== e.user.userInfo.userid) {
@@ -12932,14 +12937,14 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_this), "state", {
         canNotify: false,
-        notifyOn: userSettings.stored.custom.dj_notification
+        notifyOn: userSettings.stored.custom["dj-notification"]
       });
 
       _defineProperty(_assertThisInitialized(_this), "savePosition", function (value) {
         var int = parseInt(value, 10);
         var amount = !isNaN(int) ? int : 2; // set default to position 2 in the queue
 
-        var success = userSettings.save("custom", "dj_notification", amount);
+        var success = userSettings.save("custom", "dj-notification", amount);
 
         if (success) {
           _this.setState({
@@ -14330,12 +14335,196 @@ var DubPlus = (function () {
     return GrabsInChat;
   }(m);
 
+  /**
+   * Takes time in milliseconds and converts it to a H:MM:SS format
+   *  The hours is not left padded
+   * 
+   * @export
+   * @param {String|Number} duration
+   * @returns {String}
+   */
+  function convertMStoTime(duration) {
+    if (!duration) {
+      return ""; // just in case songLength is missing for some reason
+    }
+
+    var seconds = parseInt(duration / 1000 % 60, 10);
+    var minutes = parseInt(duration / (1000 * 60) % 60, 10);
+    var hours = parseInt(duration / (1000 * 60 * 60) % 24, 10);
+
+    if (isNaN(seconds) || isNaN(minutes) || isNaN(hours)) {
+      return "";
+    }
+
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    if (hours) {
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      return hours + ":" + minutes + ":" + seconds;
+    }
+
+    return minutes + ":" + seconds;
+  }
+
+  var SongPreview = function SongPreview(_ref) {
+    var song = _ref.song;
+
+    if (!song) {
+      return null;
+    }
+
+    return h("p", {
+      class: "dubplus-song-preview"
+    }, song.images && song.images.thumbnail ? h("span", {
+      class: "dubplus-song-preview__image"
+    }, h("img", {
+      src: song.images.thumbnail
+    })) : null, h("span", {
+      class: "dubplus-song-preview__title"
+    }, h("small", null, "Your next track:"), song.name), h("span", {
+      class: "dubplus-song-preview__length"
+    }, convertMStoTime(song.songLength)));
+  };
+
+  var PreviewNextSong =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(PreviewNextSong, _Component);
+
+    function PreviewNextSong() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, PreviewNextSong);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(PreviewNextSong)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_this), "state", {
+        isOn: false,
+        nextSong: null
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "findNextSong", function () {
+        proxy.api.getRoomQueue().then(function (json) {
+          var data = window._.get(json, "data", []);
+
+          var next = data.filter(function (track) {
+            return track.userid === _this.userid;
+          });
+
+          if (next.length > 0) {
+            _this.getSongInfo(next[0].songid);
+
+            return;
+          }
+
+          _this.setState({
+            nextSong: null
+          });
+        }).catch(function (err) {
+          _this.setState({
+            nextSong: null
+          });
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "getSongInfo", function (songId) {
+        proxy.api.getSongData(songId).then(function (json) {
+          var name = window._.get(json, "data.name");
+
+          if (name) {
+            _this.setState({
+              nextSong: json.data
+            });
+
+            return;
+          }
+
+          _this.setState({
+            nextSong: null
+          });
+        }).catch(function (err) {
+          _this.setState({
+            nextSong: null
+          });
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function () {
+        _this.setState({
+          isOn: true
+        });
+
+        _this.findNextSong();
+
+        proxy.events.onPlaylistUpdate(_this.findNextSong);
+        proxy.events.onQueueUpdate(_this.findNextSong);
+        document.body.classList.add("dplus-song-preview");
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
+        _this.setState({
+          isOn: false
+        });
+
+        proxy.events.offPlaylistUpdate(_this.findNextSong);
+        proxy.events.offQueueUpdate(_this.findNextSong);
+        document.body.classList.remove("dplus-song-preview");
+      });
+
+      return _this;
+    }
+
+    _createClass(PreviewNextSong, [{
+      key: "componentWillMount",
+      value: function componentWillMount() {
+        // add an empty span on mount to give Portal something to render to
+        var widget = proxy.dom.chatInputContainer();
+        var span = document.createElement("span");
+        span.id = "dp-song-prev-target";
+        widget.parentNode.insertBefore(span, widget);
+        this.renderTo = document.getElementById("dp-song-prev-target");
+        this.userid = proxy.userId();
+      }
+      /**
+       * Go through the room's playlist queue and look for the ID of the current
+       * logged in User
+       */
+
+    }, {
+      key: "render",
+      value: function render(props, _ref2) {
+        var isOn = _ref2.isOn,
+            nextSong = _ref2.nextSong;
+        return h(MenuSwitch, {
+          id: "dubplus-preview-next-song",
+          section: "General",
+          menuTitle: "Preview Next Song",
+          desc: "Show the next song you have queued up without having to look in your queue",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, isOn ? h(Portal, {
+          into: this.renderTo
+        }, h(SongPreview, {
+          song: nextSong
+        })) : null);
+      }
+    }]);
+
+    return PreviewNextSong;
+  }(m);
+
   var GeneralSection = function GeneralSection() {
     return h(MenuSection, {
       id: "dubplus-general",
       title: "General",
       settingsKey: "general"
-    }, h(Autovote, null), h(AFK, null), h(AutocompleteEmoji, null), h(Emotes, null), h(CustomMentions, null), h(ChatCleaner, null), h(ChatNotification, null), h(PMNotifications, null), h(DJNotification, null), h(ShowDubsOnHover, null), h(DowndubInChat, null), h(UpdubsInChat, null), h(GrabsInChat, null), h(SnowSwitch, null), h(RainSwitch, null));
+    }, h(Autovote, null), h(AFK, null), h(AutocompleteEmoji, null), h(Emotes, null), h(CustomMentions, null), h(ChatCleaner, null), h(ChatNotification, null), h(PMNotifications, null), h(DJNotification, null), h(ShowDubsOnHover, null), h(DowndubInChat, null), h(UpdubsInChat, null), h(GrabsInChat, null), h(PreviewNextSong, null), h(SnowSwitch, null), h(RainSwitch, null));
   };
 
   /**
@@ -14414,33 +14603,10 @@ var DubPlus = (function () {
   };
 
   function turnOn$2() {
-    document.body.classList.add('dubplus-chat-only');
-  }
-
-  function turnOff$2() {
-    document.body.classList.remove('dubplus-chat-only');
-  }
-  /**
-   * Hide Video
-   */
-
-
-  var HideVideo = function HideVideo() {
-    return h(MenuSwitch, {
-      id: "dubplus-chat-only",
-      section: "User Interface",
-      menuTitle: "Hide Video",
-      desc: "Toggles hiding the video box",
-      turnOn: turnOn$2,
-      turnOff: turnOff$2
-    });
-  };
-
-  function turnOn$3() {
     document.body.classList.add('dubplus-hide-avatars');
   }
 
-  function turnOff$3() {
+  function turnOff$2() {
     document.body.classList.remove('dubplus-hide-avatars');
   }
   /**
@@ -14454,16 +14620,16 @@ var DubPlus = (function () {
       section: "User Interface",
       menuTitle: "Hide Avatars",
       desc: "Toggle hiding user avatars in the chat box.",
-      turnOn: turnOn$3,
-      turnOff: turnOff$3
+      turnOn: turnOn$2,
+      turnOff: turnOff$2
     });
   };
 
-  function turnOn$4() {
+  function turnOn$3() {
     document.body.classList.add('dubplus-hide-bg');
   }
 
-  function turnOff$4() {
+  function turnOff$3() {
     document.body.classList.remove('dubplus-hide-bg');
   }
   /**
@@ -14477,16 +14643,16 @@ var DubPlus = (function () {
       section: "User Interface",
       menuTitle: "Hide Background",
       desc: "Toggle hiding background image.",
-      turnOn: turnOn$4,
-      turnOff: turnOff$4
+      turnOn: turnOn$3,
+      turnOff: turnOff$3
     });
   };
 
-  function turnOn$5() {
+  function turnOn$4() {
     document.body.classList.add('dubplus-show-timestamp');
   }
 
-  function turnOff$5() {
+  function turnOff$4() {
     document.body.classList.remove('dubplus-show-timestamp');
   }
 
@@ -14496,16 +14662,16 @@ var DubPlus = (function () {
       section: "User Interface",
       menuTitle: "Show Timestamps",
       desc: "Toggle always showing chat message timestamps.",
-      turnOn: turnOn$5,
-      turnOff: turnOff$5
+      turnOn: turnOn$4,
+      turnOff: turnOff$4
     });
   };
 
-  function turnOn$6() {
+  function turnOn$5() {
     document.body.classList.add('dubplus-hide-selfie');
   }
 
-  function turnOff$6() {
+  function turnOff$5() {
     document.body.classList.remove('dubplus-hide-selfie');
   }
   /**
@@ -14519,10 +14685,35 @@ var DubPlus = (function () {
       section: "User Interface",
       menuTitle: "Hide Gif-Selfie",
       desc: "Toggles hiding the gif selfie icon",
+      turnOn: turnOn$5,
+      turnOff: turnOff$5
+    });
+  };
+
+  function turnOn$6() {
+    document.body.classList.add('dubplus-chat-only');
+  }
+
+  function turnOff$6() {
+    document.body.classList.remove('dubplus-chat-only');
+  }
+  /**
+   * Hide Video
+   */
+
+
+  var HideVideo = function HideVideo() {
+    return h(MenuSwitch, {
+      id: "dubplus-chat-only",
+      section: "User Interface",
+      menuTitle: "Hide Video",
+      desc: "Toggles hiding the video box",
       turnOn: turnOn$6,
       turnOff: turnOff$6
     });
   };
+
+  /*END.NOT_EXT*/
 
   var UISection = function UISection() {
     return h(MenuSection, {
@@ -14663,7 +14854,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1570939432365);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571022074268);
     document.head.appendChild(link);
   }
   /**

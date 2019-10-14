@@ -1,28 +1,9 @@
 import { h, Component } from "preact";
 import { MenuSwitch } from "@/components/menuItems.js";
-// import Portal from "preact-portal/src/preact-portal";
 import Portal from "@/utils/Portal.js"
 import dtproxy from "@/utils/DTProxy.js";
+import { convertMStoTime } from "@/utils/time-utils.js"
 
-// 4513000 should === 75:13
-// if something else needs to use this then we can move it into utils
-function convertMStoTime(duration) {
-  if (!duration) {
-    return ""; // just in case songLength is missing for some reason
-  }
-  var seconds = parseInt((duration / 1000) % 60);
-  var minutes = parseInt((duration / (1000 * 60)) % 60);
-  var hours = parseInt((duration / (1000 * 60 * 60)) % 24);
-
-  seconds = seconds < 10 ? "0" + seconds : seconds;
-
-  if (hours) {
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    return hours + ":" + minutes + ":" + seconds;
-  }
-
-  return minutes + ":" + seconds;
-}
 
 const SongPreview = ({ song }) => {
   if (!song) {

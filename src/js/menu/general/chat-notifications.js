@@ -28,8 +28,7 @@ export default class ChatNotification extends Component {
     }
 
     var mentionTriggersTest = mentionTriggers.some(function(v) {
-      var reg = new RegExp("\\b" + v.trim() + "\\b", "i");
-      return reg.test(content);
+      return content.toLowerCase().indexOf(v.toLowerCase().trim()) >= 0; 
     });
 
     if (

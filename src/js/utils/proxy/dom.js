@@ -138,6 +138,7 @@ const DTProxyDOM = {
     return document.querySelector(".backstretch-item img");
   },
 
+/*START.NOT_EXT*/
   /**
    * returns the element used to hide/show the video
    *
@@ -146,6 +147,7 @@ const DTProxyDOM = {
   hideVideoBtn() {
     return document.querySelector(".hideVideo-el");
   },
+/*END.NOT_EXT*/
 
   /**
    * Returns the chat input's containing element

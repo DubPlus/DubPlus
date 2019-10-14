@@ -35,7 +35,8 @@ var defaults = {
     "dubplus-hide-selfie" : false,
     "dubplus-disable-video" : false,
     "dubplus-playlist-filter" : false,
-    "dubplus-auto-afk": false
+    "dubplus-auto-afk": false,
+    "custom_mentions" : false
   },
 
   "custom": {
@@ -44,7 +45,8 @@ var defaults = {
     "css": "",
     "bg" : "",
     "notificationSound": "",
-    "auto_afk_wait" : 30 
+    "auto_afk_wait" : 30,
+    "custom_mentions" : ""
   }
 };
 
