@@ -161,7 +161,8 @@ export class MenuSwitch extends Component {
 
   componentDidMount() {
     if (this.state.on) {
-      // The "true" argument is so you can tell if component was activated on first load or not
+      // The "true" argument is so you can tell if component 
+      // was activated on first load or not
       this.props.turnOn(true);
     }
   }

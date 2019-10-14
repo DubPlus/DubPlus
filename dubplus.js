@@ -11465,7 +11465,8 @@ var DubPlus = (function () {
       key: "componentDidMount",
       value: function componentDidMount() {
         if (this.state.on) {
-          // The "true" argument is so you can tell if component was activated on first load or not
+          // The "true" argument is so you can tell if component 
+          // was activated on first load or not
           this.props.turnOn(true);
         }
       }
@@ -14865,7 +14866,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571026209816);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571029112735);
     document.head.appendChild(link);
   }
   /**
@@ -15106,6 +15107,16 @@ var DubPlus = (function () {
         return success;
       });
 
+      _defineProperty(_assertThisInitialized(_this), "onCancel", function () {
+        _this.setState({
+          showModal: false
+        });
+
+        if (!userSettings.stored.custom.bg) {
+          _this.switchRef.switchOff();
+        }
+      });
+
       return _this;
     }
 
@@ -15115,7 +15126,9 @@ var DubPlus = (function () {
         var _this2 = this;
 
         this.bgImg.onerror = function () {
-          alert("error loading image, check the url and try again");
+          alert("error loading image, check the url and try again"); // remove the bad url from stored settings
+
+          userSettings.save("custom", "bg", ""); // and then turn off the switch
 
           _this2.switchRef.switchOff();
         };
@@ -15156,6 +15169,7 @@ var DubPlus = (function () {
           value: userSettings.stored.custom.bg || "",
           placeholder: "https://example.com/big-image.jpg",
           maxlength: "500",
+          onCancel: this.onCancel,
           onConfirm: this.save
         }));
       }
@@ -15187,32 +15201,36 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(CustomSound)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_this), "isOn", false);
-
       _defineProperty(_assertThisInitialized(_this), "state", {
         showModal: false,
-        modalMessage: modalMessage
+        errorMsg: ""
       });
+
+      _defineProperty(_assertThisInitialized(_this), "badUrlError", "You've entered an invalid sound url! Please make sure you are entering the full, direct url to the file. IE: https://example.com/sweet-sound.mp3");
 
       _defineProperty(_assertThisInitialized(_this), "DubtrackDefaultSound", proxy.getChatSoundUrl());
 
       _defineProperty(_assertThisInitialized(_this), "turnOn", function (initialLoad) {
-        if (userSettings.stored.custom.notificationSound) {
-          _this.isOn = true;
-          proxy.setChatSoundUrl(userSettings.stored.custom.notificationSound);
+        var notificationSound = userSettings.stored.custom.notificationSound;
+
+        if (notificationSound && soundManager.canPlayURL(notificationSound)) {
+          proxy.setChatSoundUrl(notificationSound);
+          return;
+        } else if (initialLoad) {
+          _this.switchRef.switchOff();
+
           return;
         }
 
         if (!initialLoad) {
           _this.setState({
             showModal: true,
-            modalMessage: modalMessage
+            errorMsg: _this.badUrlError
           });
         }
       });
 
       _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
-        _this.isOn = false;
         proxy.setChatSoundUrl(_this.DubtrackDefaultSound);
 
         _this.setState({
@@ -15221,30 +15239,43 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_this), "save", function (val) {
-        // Check if valid sound url
+        // if value was empty then we turn off the switch
+        if (val.trim() === "") {
+          userSettings.save("custom", "notificationSound", val);
+
+          _this.switchRef.switchOff();
+
+          return true;
+        } // Check if valid sound url
+
+
         if (soundManager.canPlayURL(val)) {
           userSettings.save("custom", "notificationSound", val);
-        } else {
+          proxy.setChatSoundUrl(val);
+
           _this.setState({
-            modalMessage: "You've entered an invalid sound url! Please make sure you are entering the full, direct url to the file. IE: https://example.com/sweet-sound.mp3",
-            showModal: true
+            showModal: false
           });
 
-          return;
-        }
+          return true;
+        } else {
+          userSettings.save("custom", "notificationSound", "");
 
-        if (_this.isOn) {
-          proxy.setChatSoundUrl(val);
-        }
+          _this.setState({
+            errorMsg: _this.badUrlError
+          });
 
-        _this.setState({
-          showModal: false
-        });
+          return false;
+        }
       });
 
       _defineProperty(_assertThisInitialized(_this), "onCancel", function () {
+        _this.setState({
+          showModal: false
+        });
+
         if (!userSettings.stored.custom.notificationSound) {
-          _this.turnOff();
+          _this.switchRef.switchOff();
         }
       });
 
@@ -15254,7 +15285,12 @@ var DubPlus = (function () {
     _createClass(CustomSound, [{
       key: "render",
       value: function render(props, state) {
+        var _this2 = this;
+
         return h(MenuSwitch, {
+          ref: function ref(e) {
+            return _this2.switchRef = e;
+          },
           id: "dubplus-custom-notification-sound",
           section: "Customize",
           menuTitle: "Custom Notification Sound",
@@ -15265,12 +15301,13 @@ var DubPlus = (function () {
           showModal: state.showModal,
           title: "Custom Notification Sound",
           section: "Customize",
-          content: state.modalMessage,
+          content: modalMessage,
           value: userSettings.stored.custom.notificationSound || "",
           placeholder: "https://example.com/sweet-sound.mp3",
           maxlength: "500",
           onConfirm: this.save,
-          onCancel: this.onCancel
+          onCancel: this.onCancel,
+          errorMsg: this.state.errorMsg
         }));
       }
     }]);

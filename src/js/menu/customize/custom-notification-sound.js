@@ -10,60 +10,68 @@ const modalMessage =
  * Custom Notification Sound
  */
 export default class CustomSound extends Component {
-  isOn = false;
   state = {
     showModal: false,
-    modalMessage: modalMessage
-  };
+    errorMsg: ""
+  }
+
+  badUrlError = "You've entered an invalid sound url! Please make sure you are entering the full, direct url to the file. IE: https://example.com/sweet-sound.mp3"
 
   DubtrackDefaultSound = dtproxy.getChatSoundUrl();
 
   turnOn = initialLoad => {
-    if (settings.stored.custom.notificationSound) {
-      this.isOn = true;
-      dtproxy.setChatSoundUrl(settings.stored.custom.notificationSound);
+    const {notificationSound } = settings.stored.custom;
+
+    if (notificationSound && soundManager.canPlayURL(notificationSound)) {
+      dtproxy.setChatSoundUrl(notificationSound);
       return;
+    } else if (initialLoad) {
+      this.switchRef.switchOff()
+      return
     }
 
     if (!initialLoad) {
-      this.setState({ showModal: true, modalMessage: modalMessage });
+      this.setState({ showModal: true, errorMsg: this.badUrlError});
     }
   };
 
   turnOff = () => {
-    this.isOn = false;
     dtproxy.setChatSoundUrl(this.DubtrackDefaultSound);
     this.setState({ showModal: false });
   };
 
-  save = val => {
-    // Check if valid sound url
-    if (soundManager.canPlayURL(val)) {
-      settings.save("custom", "notificationSound", val);
-    } else {
-      this.setState({
-        modalMessage:
-          "You've entered an invalid sound url! Please make sure you are entering the full, direct url to the file. IE: https://example.com/sweet-sound.mp3",
-        showModal: true
-      });
-      return;
+  save = val => { 
+    // if value was empty then we turn off the switch
+    if (val.trim() === "") {
+      settings.save("custom", "notificationSound", val)
+      this.switchRef.switchOff()
+      return true;
     }
 
-    if (this.isOn) {
+    // Check if valid sound url
+    if (soundManager.canPlayURL(val)) {
+      settings.save("custom", "notificationSound", val)
       dtproxy.setChatSoundUrl(val);
+      this.setState({ showModal: false });
+      return true
+    } else {
+      settings.save("custom", "notificationSound", "")
+      this.setState({errorMsg: this.badUrlError})
+      return false
     }
-    this.setState({ showModal: false });
   };
 
   onCancel = () => {
+    this.setState({ showModal: false });
     if (!settings.stored.custom.notificationSound) {
-      this.turnOff();
+      this.switchRef.switchOff()
     }
   };
 
   render(props, state) {
     return (
       <MenuSwitch
+        ref={e => this.switchRef = e}
         id="dubplus-custom-notification-sound"
         section="Customize"
         menuTitle="Custom Notification Sound"
@@ -75,12 +83,13 @@ export default class CustomSound extends Component {
           showModal={state.showModal}
           title="Custom Notification Sound"
           section="Customize"
-          content={state.modalMessage}
+          content={modalMessage}
           value={settings.stored.custom.notificationSound || ""}
           placeholder="https://example.com/sweet-sound.mp3"
           maxlength="500"
           onConfirm={this.save}
           onCancel={this.onCancel}
+          errorMsg={this.state.errorMsg}
         />
       </MenuSwitch>
     );

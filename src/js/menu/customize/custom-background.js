@@ -17,6 +17,9 @@ export default class CustomBG extends Component {
   componentDidMount() {
     this.bgImg.onerror = () => {
       alert("error loading image, check the url and try again")
+      // remove the bad url from stored settings
+      settings.save("custom", "bg", "");
+      // and then turn off the switch
       this.switchRef.switchOff()
     }
   }
@@ -64,6 +67,13 @@ export default class CustomBG extends Component {
     return success
   };
 
+  onCancel = () => {
+    this.setState({ showModal: false });
+    if (!settings.stored.custom.bg) {
+      this.switchRef.switchOff()
+    }
+  };
+
   render(props, state) {
     return (
       <MenuSwitch
@@ -83,6 +93,7 @@ export default class CustomBG extends Component {
           value={settings.stored.custom.bg || ""}
           placeholder="https://example.com/big-image.jpg"
           maxlength="500"
+          onCancel={this.onCancel}
           onConfirm={this.save}
         />
       </MenuSwitch>
