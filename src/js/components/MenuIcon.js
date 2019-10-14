@@ -8,6 +8,12 @@ class MenuIcon extends Component {
 
   toggle = () => {
     let menu = document.querySelector('.dubplus-menu');
+
+    if (!menu) {
+      console.warn("menu not built yet, try again");
+      return;
+    }
+
     if (this.state.open) {
       menu.classList.remove('dubplus-menu-open');
       this.setState({open: false});

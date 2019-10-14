@@ -12,6 +12,7 @@ function handleKeyup(e) {
     if (!ul.style.height) {
       ul.style.height = ul.offsetHeight + "px";
     }
+    ul.scrollTop = 0
     let lcVal = e.target.value.toLowerCase();
     list.forEach(function(li) {
       let liText = li.textContent.toLowerCase();

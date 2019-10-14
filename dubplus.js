@@ -14793,6 +14793,7 @@ var DubPlus = (function () {
         ul.style.height = ul.offsetHeight + "px";
       }
 
+      ul.scrollTop = 0;
       var lcVal = e.target.value.toLowerCase();
       list.forEach(function (li) {
         var liText = li.textContent.toLowerCase();
@@ -14854,7 +14855,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571022074268);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571023498900);
     document.head.appendChild(link);
   }
   /**
@@ -15445,6 +15446,11 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_this), "toggle", function () {
         var menu = document.querySelector('.dubplus-menu');
+
+        if (!menu) {
+          console.warn("menu not built yet, try again");
+          return;
+        }
 
         if (_this.state.open) {
           menu.classList.remove('dubplus-menu-open');
