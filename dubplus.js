@@ -11309,6 +11309,15 @@ var DubPlus = (function () {
    * parent menu item.
    *
    * MenuPencil must always by a child of MenuSwitch.
+   * @param {string} props.section which section of the menu this is in
+   * @param {string} props.title the modal title
+   * @param {string} props.content  the description below the title
+   * @param {string} props.value prepopulate the value of the text area
+   * @param {number|string} props.maxLength  the max length of characters allowed in the text field
+   * @param {string} props.placeholder the text area placeholder if there is no value
+   * @param {boolean} props.showModal turns modal on/off directlt
+   * @param {function} props.onConfirm 
+   * @param {function} props.onCancel
    */
 
   var MenuPencil =
@@ -11338,7 +11347,7 @@ var DubPlus = (function () {
           open: true
         });
 
-        track.menuClick(_this2.props.section + " section", _this2.props.id + " edit");
+        track.menuClick(_this2.props.section + " section", _this2.props.title + " edit");
       });
 
       _defineProperty(_assertThisInitialized(_this2), "closeModal", function () {
@@ -11383,7 +11392,8 @@ var DubPlus = (function () {
           value: props.value,
           maxlength: props.maxlength,
           onConfirm: this.checkVal,
-          onClose: this.closeModal
+          onClose: this.closeModal,
+          errorMsg: props.errorMsg
         }));
       }
     }]);
@@ -14855,7 +14865,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571023498900);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571026209816);
     document.head.appendChild(link);
   }
   /**
@@ -15049,8 +15059,6 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(CustomBG)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_this), "isOn", false);
-
       _defineProperty(_assertThisInitialized(_this), "state", {
         showModal: false
       });
@@ -15059,8 +15067,6 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_this), "turnOn", function (initialLoad) {
         if (userSettings.stored.custom.bg) {
-          _this.isOn = true;
-
           _this.addCustomBG(userSettings.stored.custom.bg);
 
           return;
@@ -15074,8 +15080,6 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
-        _this.isOn = false;
-
         _this.revertBG();
 
         _this.setState({
@@ -15084,27 +15088,39 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_this), "save", function (val) {
-        userSettings.save("custom", "bg", val); // disable the switch if the value is empty/null/undefined
+        var success = userSettings.save("custom", "bg", val);
 
-        if (!val) {
-          _this.turnOff();
-
-          return;
-        }
-
-        if (_this.isOn) {
+        if (val && success) {
           _this.addCustomBG(val);
+
+          _this.setState({
+            showModal: false
+          });
+        } // if custom bg is empty we should disable the switch 
+
+
+        if (!userSettings.stored.custom.bg) {
+          _this.switchRef.switchOff();
         }
 
-        _this.setState({
-          showModal: false
-        });
+        return success;
       });
 
       return _this;
     }
 
     _createClass(CustomBG, [{
+      key: "componentDidMount",
+      value: function componentDidMount() {
+        var _this2 = this;
+
+        this.bgImg.onerror = function () {
+          alert("error loading image, check the url and try again");
+
+          _this2.switchRef.switchOff();
+        };
+      }
+    }, {
       key: "addCustomBG",
       value: function addCustomBG(val) {
         this.saveSrc = this.bgImg.src;
@@ -15113,12 +15129,19 @@ var DubPlus = (function () {
     }, {
       key: "revertBG",
       value: function revertBG() {
-        this.bgImg.src = this.saveSrc;
+        if (this.saveSrc) {
+          this.bgImg.src = this.saveSrc;
+        }
       }
     }, {
       key: "render",
       value: function render(props, state) {
+        var _this3 = this;
+
         return h(MenuSwitch, {
+          ref: function ref(e) {
+            return _this3.switchRef = e;
+          },
           id: "dubplus-custom-bg",
           section: "Customize",
           menuTitle: "Custom Background Image",

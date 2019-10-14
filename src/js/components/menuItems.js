@@ -94,6 +94,15 @@ export function MenuSimple(props) {
  * parent menu item.
  *
  * MenuPencil must always by a child of MenuSwitch.
+ * @param {string} props.section which section of the menu this is in
+ * @param {string} props.title the modal title
+ * @param {string} props.content  the description below the title
+ * @param {string} props.value prepopulate the value of the text area
+ * @param {number|string} props.maxLength  the max length of characters allowed in the text field
+ * @param {string} props.placeholder the text area placeholder if there is no value
+ * @param {boolean} props.showModal turns modal on/off directlt
+ * @param {function} props.onConfirm 
+ * @param {function} props.onCancel
  */
 export class MenuPencil extends Component {
   state = {
@@ -102,7 +111,7 @@ export class MenuPencil extends Component {
 
   loadModal = () => {
     this.setState({ open: true });
-    track.menuClick(this.props.section + " section", this.props.id + " edit");
+    track.menuClick(this.props.section + " section", this.props.title + " edit");
   };
 
   closeModal = () => {
@@ -138,6 +147,7 @@ export class MenuPencil extends Component {
           maxlength={props.maxlength}
           onConfirm={this.checkVal}
           onClose={this.closeModal}
+          errorMsg={props.errorMsg}
         />
       </span>
     );

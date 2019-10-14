@@ -7,7 +7,6 @@ import dtproxy from "@/utils/DTProxy.js";
  * Custom Background
  */
 export default class CustomBG extends Component {
-  isOn = false;
   state = {
     showModal: false
   };
@@ -15,18 +14,26 @@ export default class CustomBG extends Component {
   // this returns the DOM element for the background image
   bgImg = dtproxy.dom.bgImg();
 
+  componentDidMount() {
+    this.bgImg.onerror = () => {
+      alert("error loading image, check the url and try again")
+      this.switchRef.switchOff()
+    }
+  }
+
   addCustomBG(val) {
     this.saveSrc = this.bgImg.src;
     this.bgImg.src = val;
   }
 
   revertBG() {
-    this.bgImg.src = this.saveSrc;
+    if (this.saveSrc) {
+      this.bgImg.src = this.saveSrc;
+    }
   }
 
   turnOn = initialLoad => {
     if (settings.stored.custom.bg) {
-      this.isOn = true;
       this.addCustomBG(settings.stored.custom.bg);
       return;
     }
@@ -37,29 +44,30 @@ export default class CustomBG extends Component {
   };
 
   turnOff = () => {
-    this.isOn = false;
     this.revertBG();
     this.setState({ showModal: false });
   };
 
   save = val => {
-    settings.save("custom", "bg", val);
+    let success = settings.save("custom", "bg", val);
 
-    // disable the switch if the value is empty/null/undefined
-    if (!val) {
-      this.turnOff();
-      return;
-    }
-
-    if (this.isOn) {
+    if (val && success) {
       this.addCustomBG(val);
+      this.setState({ showModal: false });
     }
-    this.setState({ showModal: false });
+
+    // if custom bg is empty we should disable the switch 
+    if (!settings.stored.custom.bg) {
+      this.switchRef.switchOff()
+    }
+    
+    return success
   };
 
   render(props, state) {
     return (
       <MenuSwitch
+        ref={e => this.switchRef = e}
         id="dubplus-custom-bg"
         section="Customize"
         menuTitle="Custom Background Image"
