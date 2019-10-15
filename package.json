@@ -12,7 +12,8 @@
     "build": "node tasks/rollup.config.js",
     "beta": "BUILD=beta node tasks/rollup.config.js",
     "release": "BUILD=release node tasks/rollup.config.js",
-    "start": "WATCH=true node tasks/rollup.config.js"
+    "start": "WATCH=true node tasks/rollup.config.js",
+    "start:firefox": "web-ext run --source-dir ./extensions/Firefox"
   },
   "husky": {
     "hooks": {

@@ -10,17 +10,17 @@ const SongPreview = ({ song }) => {
     return null;
   }
   return (
-    <p class="dubplus-song-preview">
+    <p className="dubplus-song-preview">
       {song.images && song.images.thumbnail ? (
-        <span class="dubplus-song-preview__image">
+        <span className="dubplus-song-preview__image">
           <img src={song.images.thumbnail} />
         </span>
       ) : null}
-      <span class="dubplus-song-preview__title">
+      <span className="dubplus-song-preview__title">
         <small>Your next track:</small>
         {song.name}
       </span>
-      <span class="dubplus-song-preview__length">
+      <span className="dubplus-song-preview__length">
         {convertMStoTime(song.songLength)}
       </span>
     </p>

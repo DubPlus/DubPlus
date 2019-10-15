@@ -14391,15 +14391,15 @@ var DubPlus = (function () {
     }
 
     return h("p", {
-      class: "dubplus-song-preview"
+      className: "dubplus-song-preview"
     }, song.images && song.images.thumbnail ? h("span", {
-      class: "dubplus-song-preview__image"
+      className: "dubplus-song-preview__image"
     }, h("img", {
       src: song.images.thumbnail
     })) : null, h("span", {
-      class: "dubplus-song-preview__title"
+      className: "dubplus-song-preview__title"
     }, h("small", null, "Your next track:"), song.name), h("span", {
-      class: "dubplus-song-preview__length"
+      className: "dubplus-song-preview__length"
     }, convertMStoTime(song.songLength)));
   };
 
@@ -14872,7 +14872,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571110681084);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571113223077);
     document.head.appendChild(link);
   }
   /**

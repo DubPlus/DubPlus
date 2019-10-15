@@ -26,3 +26,18 @@ When building and/or minifying JS and Sass, the tasks inject the Rawgit url base
 `npm run ext-zip` - Zips the `extensions/Chrome` and `extensions/Firefox` folders
 
 `npm start` - start watch mode which compiles both JS and Sass on each save
+
+### Developing
+
+During local development it's best to run it as an extension.  
+
+Run `npm run ext` first
+
+*Chrome*    
+on Chrome you can easily do this by going to `chrome://extensions/`, turning on developer mode and then loading unpacked extension
+
+*Firefox*
+install firefox's [web-ext](https://www.npmjs.com/package/web-ext) npm package globally
+then run `npm run start:firefox`
+
+`javascript:var i,d=document,s=d.createElement('script');s.src="//cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/dubplus.min.js";d.body.appendChild(s);void(0);`
