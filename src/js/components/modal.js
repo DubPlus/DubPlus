@@ -45,6 +45,7 @@ export default class Modal extends Component {
     let result = this.props.onConfirm(this.textarea.value);
     if (result) {
       this.props.onClose();
+      this.setState({error: false})
     } else {
       this.setState({error: true})
     }
@@ -62,7 +63,7 @@ export default class Modal extends Component {
             </div>
             <div className="content">
               <p>{props.content || ""}</p>
-              {state.error && <p>{props.errorMsg}</p>}
+              {state.error && <p style="color:#ff7070">{props.errorMsg}</p>}
               {props.placeholder && (
                 <textarea
                   ref={c => (this.textarea = c)}

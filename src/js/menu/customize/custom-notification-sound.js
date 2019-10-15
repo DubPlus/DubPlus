@@ -3,8 +3,36 @@ import { MenuSwitch, MenuPencil } from "@/components/menuItems.js";
 import settings from "@/utils/UserSettings.js";
 import dtproxy from "@/utils/DTProxy.js";
 
+/*
+  Interaction model
+  
+  # Extension start up (first load)
+  - check if there is an audio url in saved options
+  - if so -> check if a playable url -> set as chat sound
+  - if can't play, turn off option
+
+  # Turn on from user click
+  - if no saved setting, show modal
+  - else turn on (see above for turn on process)
+
+  # Modal Save
+  - if switch is on
+    - check if new url is playable, set it as chat sound
+  - else
+    - show error message in modal. User will either have to fix
+      it or his cancel to get out of the modal
+
+  # Modal Cancel
+  - close modal
+  - if setting is empty, or cant play sound, turn off switch
+
+*/
+
+
 const modalMessage =
   "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to Dubtrack's default sound";
+
+const processError = "Error saving new url, check url and try again"
 
 /**
  * Custom Notification Sound
@@ -12,7 +40,7 @@ const modalMessage =
 export default class CustomSound extends Component {
   state = {
     showModal: false,
-    errorMsg: ""
+    errorMsg: processError
   }
 
   badUrlError = "You've entered an invalid sound url! Please make sure you are entering the full, direct url to the file. IE: https://example.com/sweet-sound.mp3"
@@ -27,7 +55,6 @@ export default class CustomSound extends Component {
       return;
     } else if (initialLoad) {
       this.switchRef.switchOff()
-      return
     }
 
     if (!initialLoad) {
@@ -41,29 +68,35 @@ export default class CustomSound extends Component {
   };
 
   save = val => { 
-    // if value was empty then we turn off the switch
-    if (val.trim() === "") {
-      settings.save("custom", "notificationSound", val)
-      this.switchRef.switchOff()
-      return true;
+    const newVal = val.trim()
+    let success = settings.save("custom", "notificationSound", newVal);
+    if (!success) {
+      this.setState({errorMsg: processError})
+      return false;
     }
 
-    // Check if valid sound url
-    if (soundManager.canPlayURL(val)) {
-      settings.save("custom", "notificationSound", val)
-      dtproxy.setChatSoundUrl(val);
-      this.setState({ showModal: false });
-      return true
-    } else {
-      settings.save("custom", "notificationSound", "")
-      this.setState({errorMsg: this.badUrlError})
-      return false
+    if (this.switchRef.state.on) {
+      // Check if valid sound url
+      if (soundManager.canPlayURL(newVal)) {
+        dtproxy.setChatSoundUrl(newVal);
+        this.setState({ showModal: false });
+        return true
+      } else {
+        this.setState({errorMsg: this.badUrlError})
+        return false
+      }
     }
+    
+    this.setState({ showModal: false });
+    return true
   };
 
   onCancel = () => {
     this.setState({ showModal: false });
-    if (!settings.stored.custom.notificationSound) {
+
+    const {notificationSound } = settings.stored.custom;
+
+    if (!notificationSound || !soundManager.canPlayURL(notificationSound)) {
       this.switchRef.switchOff()
     }
   };

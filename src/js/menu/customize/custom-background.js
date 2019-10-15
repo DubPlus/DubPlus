@@ -83,14 +83,15 @@ export default class CustomBG extends Component {
   };
 
   save = val => {
-    let success = settings.save("custom", "bg", val.trim());
+    const newVal = val.trim()
+    let success = settings.save("custom", "bg", newVal);
     if (!success) {
       return false;
     }
 
     if (this.switchRef.state.on) {
       if (settings.stored.custom.bg) {
-        this.addCustomBG(val);
+        this.addCustomBG(newVal);
       } else {
         this.turnOff();
         return true;

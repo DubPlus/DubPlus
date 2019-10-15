@@ -11096,6 +11096,10 @@ var DubPlus = (function () {
 
         if (result) {
           _this.props.onClose();
+
+          _this.setState({
+            error: false
+          });
         } else {
           _this.setState({
             error: true
@@ -11136,7 +11140,9 @@ var DubPlus = (function () {
           className: "title"
         }, h("h1", null, " ", props.title || "Dub+")), h("div", {
           className: "content"
-        }, h("p", null, props.content || ""), state.error && h("p", null, props.errorMsg), props.placeholder && h("textarea", {
+        }, h("p", null, props.content || ""), state.error && h("p", {
+          style: "color:#ff7070"
+        }, props.errorMsg), props.placeholder && h("textarea", {
           ref: function ref(c) {
             return _this2.textarea = c;
           },
@@ -14866,7 +14872,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571106075276);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571108986149);
     document.head.appendChild(link);
   }
   /**
@@ -15138,7 +15144,8 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_this), "save", function (val) {
-        var success = userSettings.save("custom", "bg", val.trim());
+        var newVal = val.trim();
+        var success = userSettings.save("custom", "bg", newVal);
 
         if (!success) {
           return false;
@@ -15146,7 +15153,7 @@ var DubPlus = (function () {
 
         if (_this.switchRef.state.on) {
           if (userSettings.stored.custom.bg) {
-            _this.addCustomBG(val);
+            _this.addCustomBG(newVal);
           } else {
             _this.turnOff();
 
@@ -15209,7 +15216,33 @@ var DubPlus = (function () {
     return CustomBG;
   }(m);
 
+  /*
+    Interaction model
+    
+    # Extension start up (first load)
+    - check if there is an audio url in saved options
+    - if so -> check if a playable url -> set as chat sound
+    - if can't play, turn off option
+
+    # Turn on from user click
+    - if no saved setting, show modal
+    - else turn on (see above for turn on process)
+
+    # Modal Save
+    - if switch is on
+      - check if new url is playable, set it as chat sound
+    - else
+      - show error message in modal. User will either have to fix
+        it or his cancel to get out of the modal
+
+    # Modal Cancel
+    - close modal
+    - if setting is empty, or cant play sound, turn off switch
+
+  */
+
   var modalMessage = "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to Dubtrack's default sound";
+  var processError = "Error saving new url, check url and try again";
   /**
    * Custom Notification Sound
    */
@@ -15234,7 +15267,7 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_this), "state", {
         showModal: false,
-        errorMsg: ""
+        errorMsg: processError
       });
 
       _defineProperty(_assertThisInitialized(_this), "badUrlError", "You've entered an invalid sound url! Please make sure you are entering the full, direct url to the file. IE: https://example.com/sweet-sound.mp3");
@@ -15249,8 +15282,6 @@ var DubPlus = (function () {
           return;
         } else if (initialLoad) {
           _this.switchRef.switchOff();
-
-          return;
         }
 
         if (!initialLoad) {
@@ -15270,34 +15301,41 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_this), "save", function (val) {
-        // if value was empty then we turn off the switch
-        if (val.trim() === "") {
-          userSettings.save("custom", "notificationSound", val);
+        var newVal = val.trim();
+        var success = userSettings.save("custom", "notificationSound", newVal);
 
-          _this.switchRef.switchOff();
-
-          return true;
-        } // Check if valid sound url
-
-
-        if (soundManager.canPlayURL(val)) {
-          userSettings.save("custom", "notificationSound", val);
-          proxy.setChatSoundUrl(val);
-
+        if (!success) {
           _this.setState({
-            showModal: false
-          });
-
-          return true;
-        } else {
-          userSettings.save("custom", "notificationSound", "");
-
-          _this.setState({
-            errorMsg: _this.badUrlError
+            errorMsg: processError
           });
 
           return false;
         }
+
+        if (_this.switchRef.state.on) {
+          // Check if valid sound url
+          if (soundManager.canPlayURL(newVal)) {
+            proxy.setChatSoundUrl(newVal);
+
+            _this.setState({
+              showModal: false
+            });
+
+            return true;
+          } else {
+            _this.setState({
+              errorMsg: _this.badUrlError
+            });
+
+            return false;
+          }
+        }
+
+        _this.setState({
+          showModal: false
+        });
+
+        return true;
       });
 
       _defineProperty(_assertThisInitialized(_this), "onCancel", function () {
@@ -15305,7 +15343,9 @@ var DubPlus = (function () {
           showModal: false
         });
 
-        if (!userSettings.stored.custom.notificationSound) {
+        var notificationSound = userSettings.stored.custom.notificationSound;
+
+        if (!notificationSound || !soundManager.canPlayURL(notificationSound)) {
           _this.switchRef.switchOff();
         }
       });
