@@ -14872,7 +14872,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571108986149);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571110611724);
     document.head.appendChild(link);
   }
   /**
@@ -15106,7 +15106,7 @@ var DubPlus = (function () {
 
         _this.revertBG();
 
-        alert("error loading image, edit the url and try again");
+        alert("error loading image \"".concat(userSettings.stored.custom.bg, "\", edit the url and try again"));
       });
 
       _defineProperty(_assertThisInitialized(_this), "addCustomBG", function (val) {

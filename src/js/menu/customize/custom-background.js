@@ -51,7 +51,7 @@ export default class CustomBG extends Component {
   handleError = () => {
     this.switchRef.switchOff();
     this.revertBG();
-    alert("error loading image, edit the url and try again");
+    alert(`error loading image "${settings.stored.custom.bg}", edit the url and try again`);
   };
 
   addCustomBG = val => {
