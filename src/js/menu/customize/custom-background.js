@@ -3,6 +3,35 @@ import { MenuSwitch, MenuPencil } from "@/components/menuItems.js";
 import settings from "@/utils/UserSettings.js";
 import dtproxy from "@/utils/DTProxy.js";
 
+/*
+  Interaction model
+  
+  # Extension start up (first load)
+  - check if user has turned this option on
+  - if so, try loading custom bg
+  - if for some reason the switch is on but saved data is empty, turn it off
+
+  # On error
+  - if image doesn't load
+    - show alert with error message
+    - turn off switch
+
+  # Turn on from user click
+  - if there's a saved setting
+    - load BG image
+  - if not
+    - show modal to enter an image
+
+  # Modal Save
+  - if switch is on and val is not empty, try loading the bg image
+  - if switch is on and val is empty, revert to the original bg image
+  - close modal
+
+  # Modal Cancel
+  - close modal
+
+*/
+
 /**
  * Custom Background
  */
@@ -13,34 +42,36 @@ export default class CustomBG extends Component {
 
   // this returns the DOM element for the background image
   bgImg = dtproxy.dom.bgImg();
-
+  
   componentDidMount() {
-    this.bgImg.onerror = () => {
-      alert("error loading image, check the url and try again")
-      // remove the bad url from stored settings
-      settings.save("custom", "bg", "");
-      // and then turn off the switch
-      this.switchRef.switchOff()
-    }
+    this.dubBgImg = this.bgImg.src
+    this.bgImg.onerror = this.handleError
   }
 
-  addCustomBG(val) {
-    this.saveSrc = this.bgImg.src;
+  handleError = () => {
+    this.switchRef.switchOff();
+    this.revertBG();
+    alert("error loading image, edit the url and try again");
+  };
+
+  addCustomBG = val => {
     this.bgImg.src = val;
-  }
+  };
 
-  revertBG() {
-    if (this.saveSrc) {
-      this.bgImg.src = this.saveSrc;
-    }
-  }
+  revertBG = () => {
+    this.bgImg.src = this.dubBgImg;
+  };
 
   turnOn = initialLoad => {
     if (settings.stored.custom.bg) {
       this.addCustomBG(settings.stored.custom.bg);
       return;
+    } else {
+      this.switchRef.switchOff();
     }
 
+    // if there is no saved setting
+    // and User clicked to turn it on
     if (!initialLoad) {
       this.setState({ showModal: true });
     }
@@ -52,32 +83,33 @@ export default class CustomBG extends Component {
   };
 
   save = val => {
-    let success = settings.save("custom", "bg", val);
-
-    if (val && success) {
-      this.addCustomBG(val);
-      this.setState({ showModal: false });
+    let success = settings.save("custom", "bg", val.trim());
+    if (!success) {
+      return false;
     }
 
-    // if custom bg is empty we should disable the switch 
-    if (!settings.stored.custom.bg) {
-      this.switchRef.switchOff()
+    if (this.switchRef.state.on) {
+      if (settings.stored.custom.bg) {
+        this.addCustomBG(val);
+      } else {
+        this.turnOff();
+        return true;
+      }
     }
-    
-    return success
+
+    this.setState({ showModal: false });
+
+    return true;
   };
 
   onCancel = () => {
     this.setState({ showModal: false });
-    if (!settings.stored.custom.bg) {
-      this.switchRef.switchOff()
-    }
   };
 
   render(props, state) {
     return (
       <MenuSwitch
-        ref={e => this.switchRef = e}
+        ref={e => (this.switchRef = e)}
         id="dubplus-custom-bg"
         section="Customize"
         menuTitle="Custom Background Image"
@@ -93,6 +125,9 @@ export default class CustomBG extends Component {
           value={settings.stored.custom.bg || ""}
           placeholder="https://example.com/big-image.jpg"
           maxlength="500"
+          errorMsg={
+            "An error occured trying to save your image url, please check it and try again"
+          }
           onCancel={this.onCancel}
           onConfirm={this.save}
         />

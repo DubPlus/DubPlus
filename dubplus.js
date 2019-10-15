@@ -14866,7 +14866,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571029112735);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571106075276);
     document.head.appendChild(link);
   }
   /**
@@ -15038,6 +15038,35 @@ var DubPlus = (function () {
     return CustomCSS;
   }(m);
 
+  /*
+    Interaction model
+    
+    # Extension start up (first load)
+    - check if user has turned this option on
+    - if so, try loading custom bg
+    - if for some reason the switch is on but saved data is empty, turn it off
+
+    # On error
+    - if image doesn't load
+      - show alert with error message
+      - turn off switch
+
+    # Turn on from user click
+    - if there's a saved setting
+      - load BG image
+    - if not
+      - show modal to enter an image
+
+    # Modal Save
+    - if switch is on and val is not empty, try loading the bg image
+    - if switch is on and val is empty, revert to the original bg image
+    - close modal
+
+    # Modal Cancel
+    - close modal
+
+  */
+
   /**
    * Custom Background
    */
@@ -15066,12 +15095,32 @@ var DubPlus = (function () {
 
       _defineProperty(_assertThisInitialized(_this), "bgImg", proxy.dom.bgImg());
 
+      _defineProperty(_assertThisInitialized(_this), "handleError", function () {
+        _this.switchRef.switchOff();
+
+        _this.revertBG();
+
+        alert("error loading image, edit the url and try again");
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "addCustomBG", function (val) {
+        _this.bgImg.src = val;
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "revertBG", function () {
+        _this.bgImg.src = _this.dubBgImg;
+      });
+
       _defineProperty(_assertThisInitialized(_this), "turnOn", function (initialLoad) {
         if (userSettings.stored.custom.bg) {
           _this.addCustomBG(userSettings.stored.custom.bg);
 
           return;
-        }
+        } else {
+          _this.switchRef.switchOff();
+        } // if there is no saved setting
+        // and User clicked to turn it on
+
 
         if (!initialLoad) {
           _this.setState({
@@ -15089,32 +15138,33 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_this), "save", function (val) {
-        var success = userSettings.save("custom", "bg", val);
+        var success = userSettings.save("custom", "bg", val.trim());
 
-        if (val && success) {
-          _this.addCustomBG(val);
-
-          _this.setState({
-            showModal: false
-          });
-        } // if custom bg is empty we should disable the switch 
-
-
-        if (!userSettings.stored.custom.bg) {
-          _this.switchRef.switchOff();
+        if (!success) {
+          return false;
         }
 
-        return success;
+        if (_this.switchRef.state.on) {
+          if (userSettings.stored.custom.bg) {
+            _this.addCustomBG(val);
+          } else {
+            _this.turnOff();
+
+            return true;
+          }
+        }
+
+        _this.setState({
+          showModal: false
+        });
+
+        return true;
       });
 
       _defineProperty(_assertThisInitialized(_this), "onCancel", function () {
         _this.setState({
           showModal: false
         });
-
-        if (!userSettings.stored.custom.bg) {
-          _this.switchRef.switchOff();
-        }
       });
 
       return _this;
@@ -15123,37 +15173,17 @@ var DubPlus = (function () {
     _createClass(CustomBG, [{
       key: "componentDidMount",
       value: function componentDidMount() {
-        var _this2 = this;
-
-        this.bgImg.onerror = function () {
-          alert("error loading image, check the url and try again"); // remove the bad url from stored settings
-
-          userSettings.save("custom", "bg", ""); // and then turn off the switch
-
-          _this2.switchRef.switchOff();
-        };
-      }
-    }, {
-      key: "addCustomBG",
-      value: function addCustomBG(val) {
-        this.saveSrc = this.bgImg.src;
-        this.bgImg.src = val;
-      }
-    }, {
-      key: "revertBG",
-      value: function revertBG() {
-        if (this.saveSrc) {
-          this.bgImg.src = this.saveSrc;
-        }
+        this.dubBgImg = this.bgImg.src;
+        this.bgImg.onerror = this.handleError;
       }
     }, {
       key: "render",
       value: function render(props, state) {
-        var _this3 = this;
+        var _this2 = this;
 
         return h(MenuSwitch, {
           ref: function ref(e) {
-            return _this3.switchRef = e;
+            return _this2.switchRef = e;
           },
           id: "dubplus-custom-bg",
           section: "Customize",
@@ -15169,6 +15199,7 @@ var DubPlus = (function () {
           value: userSettings.stored.custom.bg || "",
           placeholder: "https://example.com/big-image.jpg",
           maxlength: "500",
+          errorMsg: "An error occured trying to save your image url, please check it and try again",
           onCancel: this.onCancel,
           onConfirm: this.save
         }));
