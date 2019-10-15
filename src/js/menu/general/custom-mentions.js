@@ -19,23 +19,26 @@ export default class CustomMentions extends Component {
         var reg = new RegExp("\\b" + v.trim() + "\\b", "i");
         return reg.test(content);
       });
-      if (dtproxy.getSessionId() !== e.user.userInfo.userid && inUsers) {
+      if (dtproxy.sessionId() !== e.user.userInfo.userid && inUsers) {
         dtproxy.playChatSound();
       }
     }
   };
 
   saveCustomMentions = val => {
-    settings.save("custom", "custom_mentions", val);
-    this.setState({ custom: val });
+    const success = settings.save("custom", "custom_mentions", val);
+    if (success) { 
+      this.setState({ custom: val });
+    }
+    return success
   };
 
   turnOn = () => {
-    dtproxy.onChatMessage(this.customMentionCheck);
+    dtproxy.events.onChatMessage(this.customMentionCheck);
   };
 
   turnOff = () => {
-    dtproxy.offChatMessage(this.customMentionCheck);
+    dtproxy.events.offChatMessage(this.customMentionCheck);
   };
 
   render(props, { custom }) {

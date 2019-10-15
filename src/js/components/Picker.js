@@ -2,7 +2,8 @@ import { h, render, Component } from "preact";
 import twitchSpriteSheet from "@/utils/emotes/twitch-spritesheet";
 import bttvSpriteSheet from "@/utils/emotes/bttv-spritesheet";
 import { emojiNames } from "@/utils/emotes/emoji";
-import Portal from "preact-portal/src/preact-portal";
+// import Portal from "preact-portal/src/preact-portal";
+import Portal from "@/utils/Portal.js"
 import dtproxy from "@/utils/DTProxy.js";
 import KEYS from "@/utils/keys";
 
@@ -24,9 +25,14 @@ class Picker extends Component {
     twitchShow: false
   };
 
+  componentWillMount() {
+    this.chatWidget = dtproxy.dom.chatInputContainer();
+  }
+
   fillChat(val) {
-    dtproxy.chatInput().value += ` :${val}:`;
-    dtproxy.chatInput().focus();
+    const input = dtproxy.dom.chatInput();
+    input.value += ` :${val}:`;
+    input.focus();
     this.setState({
       emojiShow: false,
       twitchShow: false
@@ -148,14 +154,14 @@ class Picker extends Component {
           className="dp-emoji-picker-icon fa fa-smile-o"
           onClick={this.toggleEmoji}
         >
-          <Portal into=".pusher-chat-widget-input">
+          <Portal into={this.chatWidget}>
             <div className={`dp-emoji-picker ${emojiShow ? "show" : ""}`}>
               {this.emojiList()}
             </div>
           </Portal>
         </span>
         <span className="dp-twitch-picker-icon" onClick={this.toggleTwitch}>
-          <Portal into=".pusher-chat-widget-input">
+          <Portal into={this.chatWidget}>
             <div
               className={`dp-emoji-picker twitch-bttv-picker ${
                 twitchShow ? "show" : ""

@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.0] - 2019-02-xx
+## [2.0.0] - 2019-10-xx
 ### Changes
 - removed any use or dependency of jQuery
 - switched to RollupJS for building
@@ -13,9 +13,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - We've drastically reduced the amount of Twitch emotes supported to only a handful of Twitch channels and the global ones. We're now using way less memory so we no longer need to store emote data in localStorage or indexedDB. We also no longer call the Twitch or BTTV emote APIs directly. Emotes are bundled with the extension as JSON data and spritesheets. A separate repo has been setup to update and create the spritesheets and JSON.
 
 ### New!
-- `emoji and twitch+bttv pickers`! look for the 2 new icons in the chat input next to the markdown info icon. 
+- `preview next song` - places a small banner above the chat input that shows the next song you have in the room queue
+- `emoji and twitch/bttv pickers`! look for the 2 new icons in the chat input next to the markdown info icon. 
 - `Hide gif-selfie` switch in the UI section. Toggles the icon in the chat input so you gain a little extra room
 - `Filter playlists in grabs` - Adds 'filter as you type' functionality to the 'create a new playlist' input inside the grab to playlist popup
+
 - on the dev side we've added [husky](https://www.npmjs.com/package/husky) to ensure everything is rebuilt before committing and after merging
 
 ### Fixed
@@ -24,6 +26,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 - Tasty emote support
+
 
 -------
 

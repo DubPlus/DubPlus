@@ -7,14 +7,14 @@ import dtproxy from "@/utils/DTProxy.js";
 
 export default class ChatNotification extends Component {
   state = {
-    showWarning : false,
-    warnTitle : '',
-    warnContent: ''
-  }
+    showWarning: false,
+    warnTitle: "",
+    warnContent: ""
+  };
 
   notifyOnMention(e) {
     var content = e.message;
-    var user = dtproxy.getUserName().toLowerCase();
+    var user = dtproxy.userName().toLowerCase();
     var mentionTriggers = ["@" + user];
 
     if (
@@ -28,14 +28,13 @@ export default class ChatNotification extends Component {
     }
 
     var mentionTriggersTest = mentionTriggers.some(function(v) {
-      var reg = new RegExp("\\b" + v.trim() + "\\b", "i");
-      return reg.test(content);
+      return content.toLowerCase().indexOf(v.toLowerCase().trim()) >= 0; 
     });
 
     if (
       mentionTriggersTest &&
       !this.isActiveTab &&
-      dtproxy.getSessionId() !== e.user.userInfo.userid
+      dtproxy.sessionId() !== e.user.userInfo.userid
     ) {
       showNotification({
         title: `Message from ${e.user.username}`,
@@ -47,7 +46,7 @@ export default class ChatNotification extends Component {
   turnOn = () => {
     notifyCheckPermission((status, reason) => {
       if (status === true) {
-        dtproxy.onChatMessage(this.notifyOnMention);
+        dtproxy.events.onChatMessage(this.notifyOnMention);
       } else {
         // call MenuSwitch's switchOff with noTrack=true argument
         this.switchRef.switchOff(true);
@@ -62,10 +61,10 @@ export default class ChatNotification extends Component {
 
   closeModal = () => {
     this.setState({ showWarning: false });
-  }
+  };
 
   turnOff = () => {
-    dtproxy.offChatMessage(this.notifyOnMention);
+    dtproxy.events.offChatMessage(this.notifyOnMention);
   };
 
   render(props, state) {

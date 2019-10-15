@@ -33,15 +33,20 @@ var defaults = {
     "dubplus-snow": false,
     "dubplus-custom-css": false,
     "dubplus-hide-selfie" : false,
-    "dubplus-disable-video" : false
+    "dubplus-disable-video" : false,
+    "dubplus-playlist-filter" : false,
+    "dubplus-auto-afk": false,
+    "custom_mentions" : false
   },
 
   "custom": {
-    "customAfkMessage": "",
+    "customAfkMessage": "[AFK] I'm not here right now.",
     "dj_notification": 1,
     "css": "",
     "bg" : "",
-    "notificationSound": ""
+    "notificationSound": "",
+    "auto_afk_wait" : 30,
+    "custom_mentions" : ""
   }
 };
 
@@ -67,13 +72,16 @@ class UserSettings {
    * @param {String} type The section of the stored values. i.e. "menu", "options", "custom"
    * @param {String} optionName the key name of the option to store
    * @param {String|Boolean} value the new setting value to store
+   * @returns {Boolean} whether it succeeded or not
    */
   save(type, optionName, value) {
     this.stored[type][optionName] = value;
     try {
       localStorage.setItem('dubplusUserSettings', JSON.stringify(this.stored));
+      return true
     } catch(err) {
       console.error(`an error occured saving dubplus to localStorage`, err);
+      return false
     }
   }
 }

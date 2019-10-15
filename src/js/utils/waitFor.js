@@ -33,17 +33,45 @@ function arrayDeepCheck(arr, startingScope){
 }
 
 /**
+ *
+ * @param {String} selector
+ * @returns Boolean
+ */
+function checkNode(selector) {
+  return document.querySelector(selector) !== null
+}
+
+/**
+ * Loop through array and check if the selectors matches an existing node
+ * if any selector in the list is false, then we fail because ALL have to exist
+ *
+ * @param {Array} selectors
+ * @returns Boolean
+ */
+function arrayCheckNode(selectors) {
+  for (let i = 0; i < selectors.length; i++) {
+    if ( !checkNode(selectors[i]) ) {
+      console.log(selectors[i], 'is not found yet');
+      return false;
+    }
+  }
+  return true
+}
+
+/**
+ * @typedef OptionsObject
+ * @type {Object}
+ * @property {number} interval how often to ping
+ * @property {number} seconds  how long to ping for
+ * @property {boolean} isNode switches to checking if node exists
+ */
+
+/**
  * pings for the existence of var/function for # seconds until it's defined
  * runs callback once found and stops pinging
- * @param {string|array} waitingFor          what you are waiting for
- * @param {object}       options             optional options to pass
- *                       options.interval    how often to ping
- *                       options.seconds     how long to ping for
- *                       options.isNode      switches to checking if node exists
- *                       
- * @return {object}                    2 functions:
- *                  .then(fn)          will run fn only when item successfully found.  This also starts the ping process
- *                  .fail(fn)          will run fn only when is never found in the time given
+ * @param {string|array} waitingFor what you are waiting for
+ * @param {OptionsObject} options optional options to pass
+ * @returns {Promise}
  */
 function WaitFor(waitingFor, options) {
   if ( typeof waitingFor !== "string" && !Array.isArray(waitingFor) ) {
@@ -58,12 +86,12 @@ function WaitFor(waitingFor, options) {
   };
 
   var opts = Object.assign({}, defaults, options);
-  var checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
-  
+  var checkFunc = function(){}
+
   if (opts.isNode) {
-    checkFunc = function(selector){
-      return typeof document.querySelector(selector) !== null
-    }
+    checkFunc = Array.isArray(waitingFor) ? arrayCheckNode : checkNode;
+  } else {
+    checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
   }
 
   var tryCount = 0;

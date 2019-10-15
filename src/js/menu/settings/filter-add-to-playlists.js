@@ -3,17 +3,27 @@ import { MenuSwitch } from "@/components/menuItems.js";
 import dtproxy from "@/utils/DTProxy.js";
 
 function handleKeyup(e) {
-  if (e.target.id === 'playlist-input') {
-    let list = dtproxy.grabPlaylists();
-    list.forEach(function(li){
-      let check = li.textContent.indexOf(e.target.value) >= 0;
-      li.style.display = check ? 'block' : 'none';
+  if (e.target.id === "playlist-input") {
+    let list = dtproxy.dom.grabPlaylists();
+    if (!list.length) {
+      return;
+    }
+    let ul = list[0].parentElement;
+    if (!ul.style.height) {
+      ul.style.height = ul.offsetHeight + "px";
+    }
+    ul.scrollTop = 0
+    let lcVal = e.target.value.toLowerCase();
+    list.forEach(function(li) {
+      let liText = li.textContent.toLowerCase();
+      let check = liText.indexOf(lcVal) >= 0;
+      li.style.display = check ? "block" : "none";
     });
   }
 }
 
 function turnOn() {
-  // the playlist is part of a DOM element that gets added and removed so we 
+  // the playlist is part of a DOM element that gets added and removed so we
   // can't bind directly to it, we need to use delegation.
   document.body.addEventListener("keyup", handleKeyup);
 }

@@ -3,27 +3,24 @@ import { MenuSwitch, MenuPencil } from "@/components/menuItems.js";
 import settings from "@/utils/UserSettings.js";
 import dtproxy from "@/utils/DTProxy.js";
 
-/**
- *
- * Away From Keyboard autoresponder
- */
 export default class AFK extends Component {
   state = {
     canSend: true,
-    afkMessage: settings.stored.custom.customAfkMessage
-  };
+    afkMessage : settings.stored.custom.customAfkMessage
+  }
 
-  afk_chat_respond = e => {
+  afkRespond = e => {
     if (!this.state.canSend) {
       return; // do nothing until it's back to true
     }
+
     var content = e.message;
-    var user = dtproxy.getUserName();
+    var user = dtproxy.userName();
     if (
       content.indexOf("@" + user) >= 0 &&
-      dtproxy.getSessionId() !== e.user.userInfo.userid
+      dtproxy.sessionId() !== e.user.userInfo.userid
     ) {
-      var chatInput = dtproxy.chatInput();
+      var chatInput = dtproxy.dom.chatInput();
       if (this.state.afkMessage) {
         chatInput.value = "[AFK] " + this.state.afkMessage;
       } else {
@@ -35,27 +32,29 @@ export default class AFK extends Component {
       // so we don't spam chat, we pause the auto respond for 30sec
       this.setState({ canSend: false });
 
-      // allow AFK responses after 30sec
       setTimeout(() => {
-        this.setState({ canSend: true });
+         this.setState({ canSend: true });
       }, 30000);
     }
-  };
+  }
 
   turnOn = () => {
-    dtproxy.onChatMessage(this.afk_chat_respond);
-  };
+    dtproxy.events.onChatMessage(this.afkRespond);
+  }
 
   turnOff = () => {
-    dtproxy.offChatMessage(this.afk_chat_respond);
-  };
+    dtproxy.events.offChatMessage(this.afkRespond);
+  }
 
   saveAFKmessage = val => {
-    settings.save("custom", "customAfkMessage", val);
-    this.setState({ afkMessage: val });
-  };
+    const success = settings.save("custom", "customAfkMessage", val);
+    if (success) {
+      this.setState({ afkMessage: val });
+    }
+    return success;
+  }
 
-  render(props, { afkMessage }) {
+  render() {
     return (
       <MenuSwitch
         id="dubplus-afk"
@@ -69,10 +68,11 @@ export default class AFK extends Component {
           title="Custom AFK Message"
           section="General"
           content="Enter a custom Away From Keyboard [AFK] message here"
-          value={afkMessage}
+          value={this.state.afkMessage}
           placeholder="Be right back!"
           maxlength="255"
           onConfirm={this.saveAFKmessage}
+          errorMsg={"An error occured saving your AFK message"}
         />
       </MenuSwitch>
     );

@@ -1,5 +1,6 @@
 # TODO
 - plan out CI possibilities
+- setup language coming from json
 
 ## Beta test
 
@@ -49,4 +50,13 @@ This should always be a child of the MenuSwitch. It's handles loading a modal an
 `@prop placeholder` - Sample text inside the TextArea of the Modal
 `@prop onConfirm` - function to run when user hits confirm
 
+### `MenuSimple`
+Use this to render a non-switch menu item like the fullscreen menu option (which
+I think is the only one using it for now)
 
+`@prop id` -  the dom ID name, usually dubplus-*
+`@prop desc` -  description of the menu item used in the title attr
+`@prop icon` -  icon to be used
+`@prop menuTitle` -  text to display in the menu
+`@prop onClick` -  the function to run on click
+`@prop href` - optionally, if you provide this it will render an anchor element

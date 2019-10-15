@@ -126,703 +126,6 @@ var DubPlus = (function () {
     throw new TypeError("Invalid attempt to spread non-iterable instance");
   }
 
-  var VNode = function VNode() {};
-
-  var options = {};
-
-  var stack = [];
-
-  var EMPTY_CHILDREN = [];
-
-  function h(nodeName, attributes) {
-  	var children = EMPTY_CHILDREN,
-  	    lastSimple,
-  	    child,
-  	    simple,
-  	    i;
-  	for (i = arguments.length; i-- > 2;) {
-  		stack.push(arguments[i]);
-  	}
-  	if (attributes && attributes.children != null) {
-  		if (!stack.length) stack.push(attributes.children);
-  		delete attributes.children;
-  	}
-  	while (stack.length) {
-  		if ((child = stack.pop()) && child.pop !== undefined) {
-  			for (i = child.length; i--;) {
-  				stack.push(child[i]);
-  			}
-  		} else {
-  			if (typeof child === 'boolean') child = null;
-
-  			if (simple = typeof nodeName !== 'function') {
-  				if (child == null) child = '';else if (typeof child === 'number') child = String(child);else if (typeof child !== 'string') simple = false;
-  			}
-
-  			if (simple && lastSimple) {
-  				children[children.length - 1] += child;
-  			} else if (children === EMPTY_CHILDREN) {
-  				children = [child];
-  			} else {
-  				children.push(child);
-  			}
-
-  			lastSimple = simple;
-  		}
-  	}
-
-  	var p = new VNode();
-  	p.nodeName = nodeName;
-  	p.children = children;
-  	p.attributes = attributes == null ? undefined : attributes;
-  	p.key = attributes == null ? undefined : attributes.key;
-
-  	return p;
-  }
-
-  function extend(obj, props) {
-    for (var i in props) {
-      obj[i] = props[i];
-    }return obj;
-  }
-
-  function applyRef(ref, value) {
-    if (ref != null) {
-      if (typeof ref == 'function') ref(value);else ref.current = value;
-    }
-  }
-
-  var defer = typeof Promise == 'function' ? Promise.resolve().then.bind(Promise.resolve()) : setTimeout;
-
-  var IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i;
-
-  var items = [];
-
-  function enqueueRender(component) {
-  	if (!component._dirty && (component._dirty = true) && items.push(component) == 1) {
-  		(defer)(rerender);
-  	}
-  }
-
-  function rerender() {
-  	var p;
-  	while (p = items.pop()) {
-  		if (p._dirty) renderComponent(p);
-  	}
-  }
-
-  function isSameNodeType(node, vnode, hydrating) {
-  	if (typeof vnode === 'string' || typeof vnode === 'number') {
-  		return node.splitText !== undefined;
-  	}
-  	if (typeof vnode.nodeName === 'string') {
-  		return !node._componentConstructor && isNamedNode(node, vnode.nodeName);
-  	}
-  	return hydrating || node._componentConstructor === vnode.nodeName;
-  }
-
-  function isNamedNode(node, nodeName) {
-  	return node.normalizedNodeName === nodeName || node.nodeName.toLowerCase() === nodeName.toLowerCase();
-  }
-
-  function getNodeProps(vnode) {
-  	var props = extend({}, vnode.attributes);
-  	props.children = vnode.children;
-
-  	var defaultProps = vnode.nodeName.defaultProps;
-  	if (defaultProps !== undefined) {
-  		for (var i in defaultProps) {
-  			if (props[i] === undefined) {
-  				props[i] = defaultProps[i];
-  			}
-  		}
-  	}
-
-  	return props;
-  }
-
-  function createNode(nodeName, isSvg) {
-  	var node = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', nodeName) : document.createElement(nodeName);
-  	node.normalizedNodeName = nodeName;
-  	return node;
-  }
-
-  function removeNode(node) {
-  	var parentNode = node.parentNode;
-  	if (parentNode) parentNode.removeChild(node);
-  }
-
-  function setAccessor(node, name, old, value, isSvg) {
-  	if (name === 'className') name = 'class';
-
-  	if (name === 'key') ; else if (name === 'ref') {
-  		applyRef(old, null);
-  		applyRef(value, node);
-  	} else if (name === 'class' && !isSvg) {
-  		node.className = value || '';
-  	} else if (name === 'style') {
-  		if (!value || typeof value === 'string' || typeof old === 'string') {
-  			node.style.cssText = value || '';
-  		}
-  		if (value && typeof value === 'object') {
-  			if (typeof old !== 'string') {
-  				for (var i in old) {
-  					if (!(i in value)) node.style[i] = '';
-  				}
-  			}
-  			for (var i in value) {
-  				node.style[i] = typeof value[i] === 'number' && IS_NON_DIMENSIONAL.test(i) === false ? value[i] + 'px' : value[i];
-  			}
-  		}
-  	} else if (name === 'dangerouslySetInnerHTML') {
-  		if (value) node.innerHTML = value.__html || '';
-  	} else if (name[0] == 'o' && name[1] == 'n') {
-  		var useCapture = name !== (name = name.replace(/Capture$/, ''));
-  		name = name.toLowerCase().substring(2);
-  		if (value) {
-  			if (!old) node.addEventListener(name, eventProxy, useCapture);
-  		} else {
-  			node.removeEventListener(name, eventProxy, useCapture);
-  		}
-  		(node._listeners || (node._listeners = {}))[name] = value;
-  	} else if (name !== 'list' && name !== 'type' && !isSvg && name in node) {
-  		try {
-  			node[name] = value == null ? '' : value;
-  		} catch (e) {}
-  		if ((value == null || value === false) && name != 'spellcheck') node.removeAttribute(name);
-  	} else {
-  		var ns = isSvg && name !== (name = name.replace(/^xlink:?/, ''));
-
-  		if (value == null || value === false) {
-  			if (ns) node.removeAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase());else node.removeAttribute(name);
-  		} else if (typeof value !== 'function') {
-  			if (ns) node.setAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase(), value);else node.setAttribute(name, value);
-  		}
-  	}
-  }
-
-  function eventProxy(e) {
-  	return this._listeners[e.type](e);
-  }
-
-  var mounts = [];
-
-  var diffLevel = 0;
-
-  var isSvgMode = false;
-
-  var hydrating = false;
-
-  function flushMounts() {
-  	var c;
-  	while (c = mounts.shift()) {
-  		if (c.componentDidMount) c.componentDidMount();
-  	}
-  }
-
-  function diff(dom, vnode, context, mountAll, parent, componentRoot) {
-  	if (!diffLevel++) {
-  		isSvgMode = parent != null && parent.ownerSVGElement !== undefined;
-
-  		hydrating = dom != null && !('__preactattr_' in dom);
-  	}
-
-  	var ret = idiff(dom, vnode, context, mountAll, componentRoot);
-
-  	if (parent && ret.parentNode !== parent) parent.appendChild(ret);
-
-  	if (! --diffLevel) {
-  		hydrating = false;
-
-  		if (!componentRoot) flushMounts();
-  	}
-
-  	return ret;
-  }
-
-  function idiff(dom, vnode, context, mountAll, componentRoot) {
-  	var out = dom,
-  	    prevSvgMode = isSvgMode;
-
-  	if (vnode == null || typeof vnode === 'boolean') vnode = '';
-
-  	if (typeof vnode === 'string' || typeof vnode === 'number') {
-  		if (dom && dom.splitText !== undefined && dom.parentNode && (!dom._component || componentRoot)) {
-  			if (dom.nodeValue != vnode) {
-  				dom.nodeValue = vnode;
-  			}
-  		} else {
-  			out = document.createTextNode(vnode);
-  			if (dom) {
-  				if (dom.parentNode) dom.parentNode.replaceChild(out, dom);
-  				recollectNodeTree(dom, true);
-  			}
-  		}
-
-  		out['__preactattr_'] = true;
-
-  		return out;
-  	}
-
-  	var vnodeName = vnode.nodeName;
-  	if (typeof vnodeName === 'function') {
-  		return buildComponentFromVNode(dom, vnode, context, mountAll);
-  	}
-
-  	isSvgMode = vnodeName === 'svg' ? true : vnodeName === 'foreignObject' ? false : isSvgMode;
-
-  	vnodeName = String(vnodeName);
-  	if (!dom || !isNamedNode(dom, vnodeName)) {
-  		out = createNode(vnodeName, isSvgMode);
-
-  		if (dom) {
-  			while (dom.firstChild) {
-  				out.appendChild(dom.firstChild);
-  			}
-  			if (dom.parentNode) dom.parentNode.replaceChild(out, dom);
-
-  			recollectNodeTree(dom, true);
-  		}
-  	}
-
-  	var fc = out.firstChild,
-  	    props = out['__preactattr_'],
-  	    vchildren = vnode.children;
-
-  	if (props == null) {
-  		props = out['__preactattr_'] = {};
-  		for (var a = out.attributes, i = a.length; i--;) {
-  			props[a[i].name] = a[i].value;
-  		}
-  	}
-
-  	if (!hydrating && vchildren && vchildren.length === 1 && typeof vchildren[0] === 'string' && fc != null && fc.splitText !== undefined && fc.nextSibling == null) {
-  		if (fc.nodeValue != vchildren[0]) {
-  			fc.nodeValue = vchildren[0];
-  		}
-  	} else if (vchildren && vchildren.length || fc != null) {
-  			innerDiffNode(out, vchildren, context, mountAll, hydrating || props.dangerouslySetInnerHTML != null);
-  		}
-
-  	diffAttributes(out, vnode.attributes, props);
-
-  	isSvgMode = prevSvgMode;
-
-  	return out;
-  }
-
-  function innerDiffNode(dom, vchildren, context, mountAll, isHydrating) {
-  	var originalChildren = dom.childNodes,
-  	    children = [],
-  	    keyed = {},
-  	    keyedLen = 0,
-  	    min = 0,
-  	    len = originalChildren.length,
-  	    childrenLen = 0,
-  	    vlen = vchildren ? vchildren.length : 0,
-  	    j,
-  	    c,
-  	    f,
-  	    vchild,
-  	    child;
-
-  	if (len !== 0) {
-  		for (var i = 0; i < len; i++) {
-  			var _child = originalChildren[i],
-  			    props = _child['__preactattr_'],
-  			    key = vlen && props ? _child._component ? _child._component.__key : props.key : null;
-  			if (key != null) {
-  				keyedLen++;
-  				keyed[key] = _child;
-  			} else if (props || (_child.splitText !== undefined ? isHydrating ? _child.nodeValue.trim() : true : isHydrating)) {
-  				children[childrenLen++] = _child;
-  			}
-  		}
-  	}
-
-  	if (vlen !== 0) {
-  		for (var i = 0; i < vlen; i++) {
-  			vchild = vchildren[i];
-  			child = null;
-
-  			var key = vchild.key;
-  			if (key != null) {
-  				if (keyedLen && keyed[key] !== undefined) {
-  					child = keyed[key];
-  					keyed[key] = undefined;
-  					keyedLen--;
-  				}
-  			} else if (min < childrenLen) {
-  					for (j = min; j < childrenLen; j++) {
-  						if (children[j] !== undefined && isSameNodeType(c = children[j], vchild, isHydrating)) {
-  							child = c;
-  							children[j] = undefined;
-  							if (j === childrenLen - 1) childrenLen--;
-  							if (j === min) min++;
-  							break;
-  						}
-  					}
-  				}
-
-  			child = idiff(child, vchild, context, mountAll);
-
-  			f = originalChildren[i];
-  			if (child && child !== dom && child !== f) {
-  				if (f == null) {
-  					dom.appendChild(child);
-  				} else if (child === f.nextSibling) {
-  					removeNode(f);
-  				} else {
-  					dom.insertBefore(child, f);
-  				}
-  			}
-  		}
-  	}
-
-  	if (keyedLen) {
-  		for (var i in keyed) {
-  			if (keyed[i] !== undefined) recollectNodeTree(keyed[i], false);
-  		}
-  	}
-
-  	while (min <= childrenLen) {
-  		if ((child = children[childrenLen--]) !== undefined) recollectNodeTree(child, false);
-  	}
-  }
-
-  function recollectNodeTree(node, unmountOnly) {
-  	var component = node._component;
-  	if (component) {
-  		unmountComponent(component);
-  	} else {
-  		if (node['__preactattr_'] != null) applyRef(node['__preactattr_'].ref, null);
-
-  		if (unmountOnly === false || node['__preactattr_'] == null) {
-  			removeNode(node);
-  		}
-
-  		removeChildren(node);
-  	}
-  }
-
-  function removeChildren(node) {
-  	node = node.lastChild;
-  	while (node) {
-  		var next = node.previousSibling;
-  		recollectNodeTree(node, true);
-  		node = next;
-  	}
-  }
-
-  function diffAttributes(dom, attrs, old) {
-  	var name;
-
-  	for (name in old) {
-  		if (!(attrs && attrs[name] != null) && old[name] != null) {
-  			setAccessor(dom, name, old[name], old[name] = undefined, isSvgMode);
-  		}
-  	}
-
-  	for (name in attrs) {
-  		if (name !== 'children' && name !== 'innerHTML' && (!(name in old) || attrs[name] !== (name === 'value' || name === 'checked' ? dom[name] : old[name]))) {
-  			setAccessor(dom, name, old[name], old[name] = attrs[name], isSvgMode);
-  		}
-  	}
-  }
-
-  var recyclerComponents = [];
-
-  function createComponent(Ctor, props, context) {
-  	var inst,
-  	    i = recyclerComponents.length;
-
-  	if (Ctor.prototype && Ctor.prototype.render) {
-  		inst = new Ctor(props, context);
-  		Component.call(inst, props, context);
-  	} else {
-  		inst = new Component(props, context);
-  		inst.constructor = Ctor;
-  		inst.render = doRender;
-  	}
-
-  	while (i--) {
-  		if (recyclerComponents[i].constructor === Ctor) {
-  			inst.nextBase = recyclerComponents[i].nextBase;
-  			recyclerComponents.splice(i, 1);
-  			return inst;
-  		}
-  	}
-
-  	return inst;
-  }
-
-  function doRender(props, state, context) {
-  	return this.constructor(props, context);
-  }
-
-  function setComponentProps(component, props, renderMode, context, mountAll) {
-  	if (component._disable) return;
-  	component._disable = true;
-
-  	component.__ref = props.ref;
-  	component.__key = props.key;
-  	delete props.ref;
-  	delete props.key;
-
-  	if (typeof component.constructor.getDerivedStateFromProps === 'undefined') {
-  		if (!component.base || mountAll) {
-  			if (component.componentWillMount) component.componentWillMount();
-  		} else if (component.componentWillReceiveProps) {
-  			component.componentWillReceiveProps(props, context);
-  		}
-  	}
-
-  	if (context && context !== component.context) {
-  		if (!component.prevContext) component.prevContext = component.context;
-  		component.context = context;
-  	}
-
-  	if (!component.prevProps) component.prevProps = component.props;
-  	component.props = props;
-
-  	component._disable = false;
-
-  	if (renderMode !== 0) {
-  		if (renderMode === 1 || options.syncComponentUpdates !== false || !component.base) {
-  			renderComponent(component, 1, mountAll);
-  		} else {
-  			enqueueRender(component);
-  		}
-  	}
-
-  	applyRef(component.__ref, component);
-  }
-
-  function renderComponent(component, renderMode, mountAll, isChild) {
-  	if (component._disable) return;
-
-  	var props = component.props,
-  	    state = component.state,
-  	    context = component.context,
-  	    previousProps = component.prevProps || props,
-  	    previousState = component.prevState || state,
-  	    previousContext = component.prevContext || context,
-  	    isUpdate = component.base,
-  	    nextBase = component.nextBase,
-  	    initialBase = isUpdate || nextBase,
-  	    initialChildComponent = component._component,
-  	    skip = false,
-  	    snapshot = previousContext,
-  	    rendered,
-  	    inst,
-  	    cbase;
-
-  	if (component.constructor.getDerivedStateFromProps) {
-  		state = extend(extend({}, state), component.constructor.getDerivedStateFromProps(props, state));
-  		component.state = state;
-  	}
-
-  	if (isUpdate) {
-  		component.props = previousProps;
-  		component.state = previousState;
-  		component.context = previousContext;
-  		if (renderMode !== 2 && component.shouldComponentUpdate && component.shouldComponentUpdate(props, state, context) === false) {
-  			skip = true;
-  		} else if (component.componentWillUpdate) {
-  			component.componentWillUpdate(props, state, context);
-  		}
-  		component.props = props;
-  		component.state = state;
-  		component.context = context;
-  	}
-
-  	component.prevProps = component.prevState = component.prevContext = component.nextBase = null;
-  	component._dirty = false;
-
-  	if (!skip) {
-  		rendered = component.render(props, state, context);
-
-  		if (component.getChildContext) {
-  			context = extend(extend({}, context), component.getChildContext());
-  		}
-
-  		if (isUpdate && component.getSnapshotBeforeUpdate) {
-  			snapshot = component.getSnapshotBeforeUpdate(previousProps, previousState);
-  		}
-
-  		var childComponent = rendered && rendered.nodeName,
-  		    toUnmount,
-  		    base;
-
-  		if (typeof childComponent === 'function') {
-
-  			var childProps = getNodeProps(rendered);
-  			inst = initialChildComponent;
-
-  			if (inst && inst.constructor === childComponent && childProps.key == inst.__key) {
-  				setComponentProps(inst, childProps, 1, context, false);
-  			} else {
-  				toUnmount = inst;
-
-  				component._component = inst = createComponent(childComponent, childProps, context);
-  				inst.nextBase = inst.nextBase || nextBase;
-  				inst._parentComponent = component;
-  				setComponentProps(inst, childProps, 0, context, false);
-  				renderComponent(inst, 1, mountAll, true);
-  			}
-
-  			base = inst.base;
-  		} else {
-  			cbase = initialBase;
-
-  			toUnmount = initialChildComponent;
-  			if (toUnmount) {
-  				cbase = component._component = null;
-  			}
-
-  			if (initialBase || renderMode === 1) {
-  				if (cbase) cbase._component = null;
-  				base = diff(cbase, rendered, context, mountAll || !isUpdate, initialBase && initialBase.parentNode, true);
-  			}
-  		}
-
-  		if (initialBase && base !== initialBase && inst !== initialChildComponent) {
-  			var baseParent = initialBase.parentNode;
-  			if (baseParent && base !== baseParent) {
-  				baseParent.replaceChild(base, initialBase);
-
-  				if (!toUnmount) {
-  					initialBase._component = null;
-  					recollectNodeTree(initialBase, false);
-  				}
-  			}
-  		}
-
-  		if (toUnmount) {
-  			unmountComponent(toUnmount);
-  		}
-
-  		component.base = base;
-  		if (base && !isChild) {
-  			var componentRef = component,
-  			    t = component;
-  			while (t = t._parentComponent) {
-  				(componentRef = t).base = base;
-  			}
-  			base._component = componentRef;
-  			base._componentConstructor = componentRef.constructor;
-  		}
-  	}
-
-  	if (!isUpdate || mountAll) {
-  		mounts.push(component);
-  	} else if (!skip) {
-
-  		if (component.componentDidUpdate) {
-  			component.componentDidUpdate(previousProps, previousState, snapshot);
-  		}
-  	}
-
-  	while (component._renderCallbacks.length) {
-  		component._renderCallbacks.pop().call(component);
-  	}if (!diffLevel && !isChild) flushMounts();
-  }
-
-  function buildComponentFromVNode(dom, vnode, context, mountAll) {
-  	var c = dom && dom._component,
-  	    originalComponent = c,
-  	    oldDom = dom,
-  	    isDirectOwner = c && dom._componentConstructor === vnode.nodeName,
-  	    isOwner = isDirectOwner,
-  	    props = getNodeProps(vnode);
-  	while (c && !isOwner && (c = c._parentComponent)) {
-  		isOwner = c.constructor === vnode.nodeName;
-  	}
-
-  	if (c && isOwner && (!mountAll || c._component)) {
-  		setComponentProps(c, props, 3, context, mountAll);
-  		dom = c.base;
-  	} else {
-  		if (originalComponent && !isDirectOwner) {
-  			unmountComponent(originalComponent);
-  			dom = oldDom = null;
-  		}
-
-  		c = createComponent(vnode.nodeName, props, context);
-  		if (dom && !c.nextBase) {
-  			c.nextBase = dom;
-
-  			oldDom = null;
-  		}
-  		setComponentProps(c, props, 1, context, mountAll);
-  		dom = c.base;
-
-  		if (oldDom && dom !== oldDom) {
-  			oldDom._component = null;
-  			recollectNodeTree(oldDom, false);
-  		}
-  	}
-
-  	return dom;
-  }
-
-  function unmountComponent(component) {
-
-  	var base = component.base;
-
-  	component._disable = true;
-
-  	if (component.componentWillUnmount) component.componentWillUnmount();
-
-  	component.base = null;
-
-  	var inner = component._component;
-  	if (inner) {
-  		unmountComponent(inner);
-  	} else if (base) {
-  		if (base['__preactattr_'] != null) applyRef(base['__preactattr_'].ref, null);
-
-  		component.nextBase = base;
-
-  		removeNode(base);
-  		recyclerComponents.push(component);
-
-  		removeChildren(base);
-  	}
-
-  	applyRef(component.__ref, null);
-  }
-
-  function Component(props, context) {
-  	this._dirty = true;
-
-  	this.context = context;
-
-  	this.props = props;
-
-  	this.state = this.state || {};
-
-  	this._renderCallbacks = [];
-  }
-
-  extend(Component.prototype, {
-  	setState: function setState(state, callback) {
-  		if (!this.prevState) this.prevState = this.state;
-  		this.state = extend(extend({}, this.state), typeof state === 'function' ? state(this.state, this.props) : state);
-  		if (callback) this._renderCallbacks.push(callback);
-  		enqueueRender(this);
-  	},
-  	forceUpdate: function forceUpdate(callback) {
-  		if (callback) this._renderCallbacks.push(callback);
-  		renderComponent(this, 2);
-  	},
-  	render: function render() {}
-  });
-
-  function render(vnode, parent, merge) {
-    return diff(merge, vnode, {}, false, parent, false);
-  }
-
   /**
    * Pure JS version of jQuery's $.getScript
    * 
@@ -853,6 +156,69 @@ var DubPlus = (function () {
     prior.parentNode.insertBefore(script, prior);
   }
 
+  /**
+   * Writing my own simplified polyfill for fetch in order to keep the library size
+   * small. Only including the things that I need. The current polyfill is a little 
+   * too big: https://github.com/github/fetch/blob/master/fetch.js
+   * because Rollup tree shaking only works on import/export
+   */
+
+  /**
+   * @class ResponsePolyfill
+   * a polyfill for the Response object returned from Fetch
+   * https://developer.mozilla.org/en-US/docs/Web/API/Response
+   */
+  var ResponsePolyfill =
+  /*#__PURE__*/
+  function () {
+    function ResponsePolyfill(data) {
+      _classCallCheck(this, ResponsePolyfill);
+
+      this.data = data;
+    }
+
+    _createClass(ResponsePolyfill, [{
+      key: "json",
+      value: function json() {
+        var _this = this;
+
+        return new Promise(function (resolve, reject) {
+          try {
+            var resp = JSON.parse(_this.data);
+            resolve(resp);
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+    }]);
+
+    return ResponsePolyfill;
+  }();
+  /**
+   * @param {String} url
+   * @returns {Promise}
+   */
+
+
+  function fetchPolyfill(url) {
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+
+      xhr.onload = function () {
+        resolve(new ResponsePolyfill(xhr.responseText));
+      };
+
+      xhr.onerror = function () {
+        reject();
+      };
+
+      xhr.open("GET", url);
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.send();
+    });
+  }
+
   function polyfills () {
     // Element.remove() polyfill
     // from:https://github.com/jserz/js_piece/blob/master/DOM/ChildNode/remove()/remove().md
@@ -877,11 +243,29 @@ var DubPlus = (function () {
       // load Promise polyfill for IE because we are still supporting it
       getScript("https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js");
     }
+    /**
+     * Dubtrack loads lodash into the global namespace right now so we are able
+     * to use it, but if they ever remove it then we can load it here so things
+     * don't break. If they do remove it we'll eventually move to an npm
+     * installed lodash and only importing the functions we need
+     */
+
+
+    if (typeof window._ === "undefined") {
+      console.log("DubPlus: loading lodash from CDN");
+      getScript("https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js");
+    }
 
     if (window.NodeList && !NodeList.prototype.forEach) {
       NodeList.prototype.forEach = Array.prototype.forEach;
     }
+
+    if (!window.fetch) {
+      window.fetch = fetchPolyfill;
+    }
   }
+
+  var n,u,t,i,r,o,f={},e$1=[],c=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|^--/i;function s(n,l){for(var u in l)n[u]=l[u];return n}function a(n){var l=n.parentNode;l&&l.removeChild(n);}function h(n,l,u){var t,i,r,o,f=arguments;if(l=s({},l),arguments.length>3)for(u=[u],t=3;t<arguments.length;t++)u.push(f[t]);if(null!=u&&(l.children=u),null!=n&&null!=n.defaultProps)for(i in n.defaultProps)void 0===l[i]&&(l[i]=n.defaultProps[i]);return o=l.key,null!=(r=l.ref)&&delete l.ref,null!=o&&delete l.key,v(n,l,o,r)}function v(l,u,t,i){var r={type:l,props:u,key:t,ref:i,__k:null,__p:null,__b:0,__e:null,l:null,__c:null,constructor:void 0};return n.vnode&&n.vnode(r),r}function p(){return {}}function d(n){return n.children}function y(n){if(null==n||"boolean"==typeof n)return null;if("string"==typeof n||"number"==typeof n)return v(null,n,null,null);if(null!=n.__e||null!=n.__c){var l=v(n.type,n.props,n.key,null);return l.__e=n.__e,l}return n}function m(n,l){this.props=n,this.context=l;}function w(n,l){if(null==l)return n.__p?w(n.__p,n.__p.__k.indexOf(n)+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return "function"==typeof n.type?w(n):null}function g(n){var l,u;if(null!=(n=n.__p)&&null!=n.__c){for(n.__e=n.__c.base=null,l=0;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e){n.__e=n.__c.base=u.__e;break}return g(n)}}function k(l){(!l.__d&&(l.__d=!0)&&1===u.push(l)||i!==n.debounceRendering)&&(i=n.debounceRendering,(n.debounceRendering||t)(_));}function _(){var n,l,t,i,r,o,f,e;for(u.sort(function(n,l){return l.__v.__b-n.__v.__b});n=u.pop();)n.__d&&(t=void 0,i=void 0,o=(r=(l=n).__v).__e,f=l.__P,e=l.u,l.u=!1,f&&(t=[],i=$(f,r,s({},r),l.__n,void 0!==f.ownerSVGElement,null,t,e,null==o?w(r):o),j(t,r),i!=o&&g(r)));}function b(n,l,u,t,i,r,o,c,s){var h,v,p,d,y,m,g,k=u&&u.__k||e$1,_=k.length;if(c==f&&(c=null!=r?r[0]:_?w(u,0):null),h=0,l.__k=x(l.__k,function(u){if(null!=u){if(u.__p=l,u.__b=l.__b+1,null===(p=k[h])||p&&u.key==p.key&&u.type===p.type)k[h]=void 0;else for(v=0;v<_;v++){if((p=k[v])&&u.key==p.key&&u.type===p.type){k[v]=void 0;break}p=null;}if(d=$(n,u,p=p||f,t,i,r,o,null,c,s),(v=u.ref)&&p.ref!=v&&(g||(g=[])).push(v,u.__c||d,u),null!=d){if(null==m&&(m=d),null!=u.l)d=u.l,u.l=null;else if(r==p||d!=c||null==d.parentNode){n:if(null==c||c.parentNode!==n)n.appendChild(d);else{for(y=c,v=0;(y=y.nextSibling)&&v<_;v+=2)if(y==d)break n;n.insertBefore(d,c);}"option"==l.type&&(n.value="");}c=d.nextSibling,"function"==typeof l.type&&(l.l=d);}}return h++,u}),l.__e=m,null!=r&&"function"!=typeof l.type)for(h=r.length;h--;)null!=r[h]&&a(r[h]);for(h=_;h--;)null!=k[h]&&D(k[h],k[h]);if(g)for(h=0;h<g.length;h++)A(g[h],g[++h],g[++h]);}function x(n,l,u){if(null==u&&(u=[]),null==n||"boolean"==typeof n)l&&u.push(l(null));else if(Array.isArray(n))for(var t=0;t<n.length;t++)x(n[t],l,u);else u.push(l?l(y(n)):n);return u}function C(n,l,u,t,i){var r;for(r in u)r in l||N(n,r,null,u[r],t);for(r in l)i&&"function"!=typeof l[r]||"value"===r||"checked"===r||u[r]===l[r]||N(n,r,l[r],u[r],t);}function P(n,l,u){"-"===l[0]?n.setProperty(l,u):n[l]="number"==typeof u&&!1===c.test(l)?u+"px":null==u?"":u;}function N(n,l,u,t,i){var r,o,f,e,c;if("key"===(l=i?"className"===l?"class":l:"class"===l?"className":l)||"children"===l);else if("style"===l)if(r=n.style,"string"==typeof u)r.cssText=u;else{if("string"==typeof t&&(r.cssText="",t=null),t)for(o in t)u&&o in u||P(r,o,"");if(u)for(f in u)t&&u[f]===t[f]||P(r,f,u[f]);}else"o"===l[0]&&"n"===l[1]?(e=l!==(l=l.replace(/Capture$/,"")),c=l.toLowerCase(),l=(c in n?c:l).slice(2),u?(t||n.addEventListener(l,T,e),(n.t||(n.t={}))[l]=u):n.removeEventListener(l,T,e)):"list"!==l&&"tagName"!==l&&"form"!==l&&!i&&l in n?n[l]=null==u?"":u:"function"!=typeof u&&"dangerouslySetInnerHTML"!==l&&(l!==(l=l.replace(/^xlink:?/,""))?null==u||!1===u?n.removeAttributeNS("http://www.w3.org/1999/xlink",l.toLowerCase()):n.setAttributeNS("http://www.w3.org/1999/xlink",l.toLowerCase(),u):null==u||!1===u?n.removeAttribute(l):n.setAttribute(l,u));}function T(l){return this.t[l.type](n.event?n.event(l):l)}function $(l,u,t,i,r,o,f,e,c,a){var h,v,p,y,w,g,k,_,C,P,N=u.type;if(void 0!==u.constructor)return null;(h=n.__b)&&h(u);try{n:if("function"==typeof N){if(_=u.props,C=(h=N.contextType)&&i[h.__c],P=h?C?C.props.value:h.__p:i,t.__c?k=(v=u.__c=t.__c).__p=v.__E:("prototype"in N&&N.prototype.render?u.__c=v=new N(_,P):(u.__c=v=new m(_,P),v.constructor=N,v.render=H),C&&C.sub(v),v.props=_,v.state||(v.state={}),v.context=P,v.__n=i,p=v.__d=!0,v.__h=[]),null==v.__s&&(v.__s=v.state),null!=N.getDerivedStateFromProps&&s(v.__s==v.state?v.__s=s({},v.__s):v.__s,N.getDerivedStateFromProps(_,v.__s)),p)null==N.getDerivedStateFromProps&&null!=v.componentWillMount&&v.componentWillMount(),null!=v.componentDidMount&&f.push(v);else{if(null==N.getDerivedStateFromProps&&null==e&&null!=v.componentWillReceiveProps&&v.componentWillReceiveProps(_,P),!e&&null!=v.shouldComponentUpdate&&!1===v.shouldComponentUpdate(_,v.__s,P)){for(v.props=_,v.state=v.__s,v.__d=!1,v.__v=u,u.__e=null!=c?c!==t.__e?c:t.__e:null,u.__k=t.__k,h=0;h<u.__k.length;h++)u.__k[h]&&(u.__k[h].__p=u);break n}null!=v.componentWillUpdate&&v.componentWillUpdate(_,v.__s,P);}for(y=v.props,w=v.state,v.context=P,v.props=_,v.state=v.__s,(h=n.__r)&&h(u),v.__d=!1,v.__v=u,v.__P=l,h=v.render(v.props,v.state,v.context),u.__k=x(null!=h&&h.type==d&&null==h.key?h.props.children:h),null!=v.getChildContext&&(i=s(s({},i),v.getChildContext())),p||null==v.getSnapshotBeforeUpdate||(g=v.getSnapshotBeforeUpdate(y,w)),b(l,u,t,i,r,o,f,c,a),v.base=u.__e;h=v.__h.pop();)v.__s&&(v.state=v.__s),h.call(v);p||null==y||null==v.componentDidUpdate||v.componentDidUpdate(y,w,g),k&&(v.__E=v.__p=null);}else u.__e=z(t.__e,u,t,i,r,o,f,a);(h=n.diffed)&&h(u);}catch(l){n.__e(l,u,t);}return u.__e}function j(l,u){for(var t;t=l.pop();)try{t.componentDidMount();}catch(l){n.__e(l,t.__v);}n.__c&&n.__c(u);}function z(n,l,u,t,i,r,o,c){var s,a,h,v,p=u.props,d=l.props;if(i="svg"===l.type||i,null==n&&null!=r)for(s=0;s<r.length;s++)if(null!=(a=r[s])&&(null===l.type?3===a.nodeType:a.localName===l.type)){n=a,r[s]=null;break}if(null==n){if(null===l.type)return document.createTextNode(d);n=i?document.createElementNS("http://www.w3.org/2000/svg",l.type):document.createElement(l.type),r=null;}return null===l.type?p!==d&&(null!=r&&(r[r.indexOf(n)]=null),n.data=d):l!==u&&(null!=r&&(r=e$1.slice.call(n.childNodes)),h=(p=u.props||f).dangerouslySetInnerHTML,v=d.dangerouslySetInnerHTML,c||(v||h)&&(v&&h&&v.__html==h.__html||(n.innerHTML=v&&v.__html||"")),C(n,d,p,i,c),l.__k=l.props.children,v||b(n,l,u,t,"foreignObject"!==l.type&&i,r,o,f,c),c||("value"in d&&void 0!==d.value&&d.value!==n.value&&(n.value=null==d.value?"":d.value),"checked"in d&&void 0!==d.checked&&d.checked!==n.checked&&(n.checked=d.checked))),n}function A(l,u,t){try{"function"==typeof l?l(u):l.current=u;}catch(l){n.__e(l,t);}}function D(l,u,t){var i,r,o;if(n.unmount&&n.unmount(l),(i=l.ref)&&A(i,null,u),t||"function"==typeof l.type||(t=null!=(r=l.__e)),l.__e=l.l=null,null!=(i=l.__c)){if(i.componentWillUnmount)try{i.componentWillUnmount();}catch(l){n.__e(l,u);}i.base=i.__P=null;}if(i=l.__k)for(o=0;o<i.length;o++)i[o]&&D(i[o],u,t);null!=r&&a(r);}function H(n,l,u){return this.constructor(n,u)}function I(l,u,t){var i,o,c;n.__p&&n.__p(l,u),o=(i=t===r)?null:t&&t.__k||u.__k,l=h(d,null,[l]),c=[],$(u,i?u.__k=l:(t||u).__k=l,o||f,f,void 0!==u.ownerSVGElement,t&&!i?[t]:o?null:e$1.slice.call(u.childNodes),c,!1,t||f,i),j(c,l);}function L(n,l){I(n,l,r);}function M(n,l){return l=s(s({},n.props),l),arguments.length>2&&(l.children=e$1.slice.call(arguments,2)),v(n.type,l,l.key||n.key,l.ref||n.ref)}function O(n){var l={},u={__c:"__cC"+o++,__p:n,Consumer:function(n,l){return n.children(l)},Provider:function(n){var t,i=this;return this.getChildContext||(t=[],this.getChildContext=function(){return l[u.__c]=i,l},this.shouldComponentUpdate=function(i){n.value!==i.value&&(l[u.__c].props.value=i.value,t.some(function(n){n.__P&&(n.context=i.value,k(n));}));},this.sub=function(n){t.push(n);var l=n.componentWillUnmount;n.componentWillUnmount=function(){t.splice(t.indexOf(n),1),l&&l.call(n);};}),n.children}};return u.Consumer.contextType=u,u}n={},m.prototype.setState=function(n,l){var u=this.__s!==this.state&&this.__s||(this.__s=s({},this.state));("function"!=typeof n||(n=n(u,this.props)))&&s(u,n),null!=n&&this.__v&&(this.u=!1,l&&this.__h.push(l),k(this));},m.prototype.forceUpdate=function(n){this.__v&&(n&&this.__h.push(n),this.u=!0,k(this));},m.prototype.render=d,u=[],t="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,i=n.debounceRendering,n.__e=function(n,l,u){for(var t;l=l.__p;)if((t=l.__c)&&!t.__p)try{if(t.constructor&&null!=t.constructor.getDerivedStateFromError)t.setState(t.constructor.getDerivedStateFromError(n));else{if(null==t.componentDidCatch)continue;t.componentDidCatch(n);}return k(t.__E=t)}catch(l){n=l;}throw n},r=f,o=0;
 
   /**
    * Takes a string  representation of a variable or object and checks if it's
@@ -921,17 +305,48 @@ var DubPlus = (function () {
     return true;
   }
   /**
+   *
+   * @param {String} selector
+   * @returns Boolean
+   */
+
+
+  function checkNode(selector) {
+    return document.querySelector(selector) !== null;
+  }
+  /**
+   * Loop through array and check if the selectors matches an existing node
+   * if any selector in the list is false, then we fail because ALL have to exist
+   *
+   * @param {Array} selectors
+   * @returns Boolean
+   */
+
+
+  function arrayCheckNode(selectors) {
+    for (var i = 0; i < selectors.length; i++) {
+      if (!checkNode(selectors[i])) {
+        console.log(selectors[i], 'is not found yet');
+        return false;
+      }
+    }
+
+    return true;
+  }
+  /**
+   * @typedef OptionsObject
+   * @type {Object}
+   * @property {number} interval how often to ping
+   * @property {number} seconds  how long to ping for
+   * @property {boolean} isNode switches to checking if node exists
+   */
+
+  /**
    * pings for the existence of var/function for # seconds until it's defined
    * runs callback once found and stops pinging
-   * @param {string|array} waitingFor          what you are waiting for
-   * @param {object}       options             optional options to pass
-   *                       options.interval    how often to ping
-   *                       options.seconds     how long to ping for
-   *                       options.isNode      switches to checking if node exists
-   *                       
-   * @return {object}                    2 functions:
-   *                  .then(fn)          will run fn only when item successfully found.  This also starts the ping process
-   *                  .fail(fn)          will run fn only when is never found in the time given
+   * @param {string|array} waitingFor what you are waiting for
+   * @param {OptionsObject} options optional options to pass
+   * @returns {Promise}
    */
 
 
@@ -949,12 +364,13 @@ var DubPlus = (function () {
       isNode: false
     };
     var opts = Object.assign({}, defaults, options);
-    var checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
+
+    var checkFunc = function checkFunc() {};
 
     if (opts.isNode) {
-      checkFunc = function checkFunc(selector) {
-        return typeof document.querySelector(selector) !== null;
-      };
+      checkFunc = Array.isArray(waitingFor) ? arrayCheckNode : checkNode;
+    } else {
+      checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
     }
 
     var tryCount = 0;
@@ -984,339 +400,622 @@ var DubPlus = (function () {
     });
   }
 
-  var DTProxy =
-  /*#__PURE__*/
-  function () {
-    function DTProxy() {
-      _classCallCheck(this, DTProxy);
+  /**
+   * Proxy for anything that uses `window.Dubtrack` global object
+   */
+
+  var DTGlobal = {
+    /**
+     * Begins polling of window object for the existence of a set of global
+     * variables.
+     *
+     * @returns {Promise}
+     */
+    loadCheck: function loadCheck() {
+      var checkList = ["Dubtrack.session.id", "Dubtrack.room.chat", "Dubtrack.Events", "Dubtrack.room.player", "Dubtrack.helpers.cookie", "Dubtrack.room.model", "Dubtrack.room.users", "Dubtrack.config"];
+      return new WaitFor(checkList, {
+        seconds: 120
+      });
+    },
+
+    /**
+     * Session Id is the same as User ID apparently
+     *
+     * @returns {string}
+     */
+    sessionId: function sessionId() {
+      return Dubtrack.session.id;
+    },
+
+    /**
+     * pass through of session id which is the same as user id
+     *
+     * @returns {string}
+     */
+    userId: function userId() {
+      return this.sessionId();
+    },
+
+    /**
+     * get the current logged in user name
+     *
+     * @returns {string}
+     */
+    userName: function userName() {
+      return Dubtrack.session.get("username");
+    },
+
+    /**
+     * get current room's name from the URL. Just the name and not other part
+     * of the URL and no slashes
+     *
+     * @returns {string}
+     */
+    roomUrlName: function roomUrlName() {
+      return Dubtrack.room.model.get("roomUrl");
+    },
+
+    /**
+     * returns the current room's id
+     *
+     * @returns {string}
+     */
+    roomId: function roomId() {
+      return Dubtrack.room.model.id;
+    },
+
+    /**
+     * set volume of room's player
+     *
+     * @param {number} vol - number between 0 - 100
+     */
+    setVolume: function setVolume(vol) {
+      Dubtrack.room.player.setVolume(vol);
+      Dubtrack.room.player.updateVolumeBar();
+    },
+
+    /**
+     * get the current volume of the room's player
+     *
+     * @returns {number}
+     */
+    getVolume: function getVolume() {
+      return Dubtrack.playerController.volume;
+    },
+
+    /**
+     * get the current mute state of the room's player
+     *
+     * @returns {boolean}
+     */
+    isMuted: function isMuted() {
+      return Dubtrack.room.player.muted_player;
+    },
+
+    /**
+     * mute the room's player
+     *
+     */
+    mutePlayer: function mutePlayer() {
+      Dubtrack.room.player.mutePlayer();
+    },
+
+    /**
+     * Get the path of the mp3 file that is used for notifications
+     *
+     * @returns {string}
+     */
+    getChatSoundUrl: function getChatSoundUrl() {
+      return Dubtrack.room.chat.mentionChatSound.url;
+    },
+
+    /**
+     * set the mp3 file that is used for notifications
+     *
+     * @param {string} url - the url of the mp3 file
+     */
+    setChatSoundUrl: function setChatSoundUrl(url) {
+      Dubtrack.room.chat.mentionChatSound.url = url;
+    },
+
+    /**
+     * play the notification sound
+     *
+     */
+    playChatSound: function playChatSound() {
+      Dubtrack.room.chat.mentionChatSound.play();
+    },
+
+    /**
+     * This will take whatever text inside the input and send it to the chat
+     *
+     */
+    sendChatMessage: function sendChatMessage() {
+      Dubtrack.room.chat.sendMessage();
+    },
+
+    /**
+     * check if a user has mod (or higher) priviledges.
+     *
+     * @param {string} userid - any user's id, defaults to current logged in user
+     */
+    modCheck: function modCheck() {
+      var userid = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Dubtrack.session.id;
+      return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
+    },
+
+    /**
+     * Get room's "display grabs in chat" setting
+     *
+     * @returns {boolean}
+     */
+    displayUserGrab: function displayUserGrab() {
+      return Dubtrack.room.model.get("displayUserGrab");
+    },
+
+    /**
+     * get song info for the currently playing song
+     *
+     * @returns {object}
+     */
+    getActiveSong: function getActiveSong() {
+      return Dubtrack.room.player.activeSong.get("songInfo");
+    },
+
+    /**
+     * get the name of the song that's currently playing in the room
+     *
+     * @returns {string}
+     */
+    getSongName: function getSongName() {
+      return this.getActiveSong().name;
+    },
+
+    /**
+     * Get current playing song's platform ID (aka fkid)
+     *
+     * @returns {string} should only ever return "youtube" or "soundcloud"
+     */
+    getSongFKID: function getSongFKID() {
+      return this.getActiveSong().fkid;
+    },
+
+    /**
+     * Get the Dubtrack ID for current song.
+     *
+     * @returns {string}
+     */
+    getDubSong: function getDubSong() {
+      return Dubtrack.helpers.cookie.get("dub-song");
+    },
+
+    /**
+     * returns whether user has "updub"-ed or "downdub"-ed current song
+     *
+     * @returns {string|null} "updub", "downdub", or null if no vote was cast
+     */
+    getVoteType: function getVoteType() {
+      return Dubtrack.helpers.cookie.get("dub-" + Dubtrack.room.model.id);
+    },
+
+    /**
+     * get the name of the current DJ
+     *
+     * @returns {string}
+     */
+    getCurrentDJ: function getCurrentDJ() {
+      var user = Dubtrack.room.users.collection.findWhere({
+        userid: Dubtrack.room.player.activeSong.attributes.song.userid
+      });
+
+      if (user) {
+        return user.attributes._user.username;
+      }
+    },
+
+    /**
+     * get a user in the room's info
+     *
+     * @param {string} userid
+     * @returns {object}
+     */
+    getUserInfo: function getUserInfo(userid) {
+      return Dubtrack.room.users.collection.findWhere({
+        userid: userid
+      });
     }
+  };
 
-    _createClass(DTProxy, [{
-      key: "loadCheck",
-      value: function loadCheck() {
-        var checkList = ["Dubtrack.session.id", "Dubtrack.room.chat", "Dubtrack.Events", "Dubtrack.room.player", "Dubtrack.helpers.cookie", "Dubtrack.room.model", "Dubtrack.room.users"];
-        return new WaitFor(checkList, {
-          seconds: 120
-        });
-      }
-    }, {
-      key: "activeDubsAPI",
-      value: function activeDubsAPI() {
-        return "https://api.dubtrack.fm/room/".concat(this.getRoomId(), "/playlist/active/dubs");
-      }
-    }, {
-      key: "userDataAPI",
-      value: function userDataAPI(userid) {
-        return "https://api.dubtrack.fm/user/" + userid;
-      }
-    }, {
-      key: "getSessionId",
-      value: function getSessionId() {
-        return Dubtrack.session.id;
-      }
-      /**
-       * get the current logged in user name
-       */
+  /******************************************************************
+   * API urls and calls
+   */
 
-    }, {
-      key: "getUserName",
-      value: function getUserName() {
-        return Dubtrack.session.get("username");
-      }
-    }, {
-      key: "getRoomUrl",
-      value: function getRoomUrl() {
-        return Dubtrack.room.model.get("roomUrl");
-      }
-    }, {
-      key: "getRoomId",
-      value: function getRoomId() {
-        return Dubtrack.room.model.id;
-      }
-    }, {
-      key: "setVolume",
-      value: function setVolume(vol) {
-        Dubtrack.room.player.setVolume(vol);
-        Dubtrack.room.player.updateVolumeBar();
-      }
-    }, {
-      key: "getVolume",
-      value: function getVolume() {
-        return Dubtrack.playerController.volume;
-      }
-    }, {
-      key: "isMuted",
-      value: function isMuted() {
-        return Dubtrack.room.player.muted_player;
-      }
-    }, {
-      key: "mutePlayer",
-      value: function mutePlayer() {
-        Dubtrack.room.player.mutePlayer();
-      }
-    }, {
-      key: "getChatSoundUrl",
-      value: function getChatSoundUrl() {
-        return Dubtrack.room.chat.mentionChatSound.url;
-      }
-    }, {
-      key: "setChatSoundUrl",
-      value: function setChatSoundUrl(url) {
-        Dubtrack.room.chat.mentionChatSound.url = url;
-      }
-    }, {
-      key: "playChatSound",
-      value: function playChatSound() {
-        Dubtrack.room.chat.mentionChatSound.play();
-      }
-    }, {
-      key: "sendChatMessage",
-      value: function sendChatMessage() {
-        Dubtrack.room.chat.sendMessage();
-      }
-    }, {
-      key: "modCheck",
-      value: function modCheck() {
-        var userid = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Dubtrack.session.id;
-        return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
-      }
-    }, {
-      key: "displayUserGrab",
-      value: function displayUserGrab() {
-        return Dubtrack.room.model.get("displayUserGrab");
-      }
-    }, {
-      key: "getSongName",
-      value: function getSongName() {
-        return Dubtrack.room.player.activeSong.attributes.songInfo.name;
-      }
-      /**
-       * Get the Dubtrack ID for current song.
-       */
+  var DTProxyAPIs = {
+    /**
+     * makes fetch call and handles the first response
+     *
+     * @private
+     */
+    _fetch: function _fetch(url) {
+      return fetch(url).then(function (resp) {
+        return resp.json();
+      });
+    },
 
-    }, {
-      key: "getDubSong",
-      value: function getDubSong() {
-        return Dubtrack.helpers.cookie.get("dub-song");
-      }
-      /**
-       * Get song data for the current song
-       */
+    /**
+     * Make api call to get data for all the songs in the room's active queue
+     *
+     * @returns {Promise} returns a fetch promise which already resolves response.json()
+     */
+    getRoomQueue: function getRoomQueue() {
+      var api = Dubtrack.config.apiUrl + Dubtrack.config.urls.roomQueueDetails.replace(":id", DTGlobal.roomId());
+      return this._fetch(api);
+    },
 
-    }, {
-      key: "getActiveSong",
-      value: function getActiveSong() {
-        return Dubtrack.room.player.activeSong.get("song");
-      }
-      /**
-       * returns wether user has "updub" or "downdub" current song
-       */
+    /**
+     * make api call to get data for a specific song
+     *
+     * @param {string} songID
+     * @returns {Promise} returns a fetch promise which already resolves response.json()
+     */
+    getSongData: function getSongData(songID) {
+      var api = Dubtrack.config.apiUrl + Dubtrack.config.urls.song;
+      return this._fetch("".concat(api, "/").concat(songID));
+    },
 
-    }, {
-      key: "getVoteType",
-      value: function getVoteType() {
-        return Dubtrack.helpers.cookie.get("dub-" + Dubtrack.room.model.id);
-      }
-    }, {
-      key: "getCurrentDJ",
-      value: function getCurrentDJ() {
-        return Dubtrack.room.users.collection.findWhere({
-          userid: Dubtrack.room.player.activeSong.attributes.song.userid
-        }).attributes._user.username;
-      }
-    }, {
-      key: "getUserInfo",
-      value: function getUserInfo(userid) {
-        return Dubtrack.room.users.collection.findWhere({
-          userid: userid
-        });
-      }
-      /******************************************************************
-       * Dubtrack Events
-       */
+    /**
+     * Makes API call to get the dubs for the currently playing song in a room
+     *
+     * @returns {Promise} returns a fetch promise which already resolves response.json()
+     */
+    getActiveDubs: function getActiveDubs() {
+      // `https://api.dubtrack.fm/room/${this.getRoomId()}/playlist/active/dubs`;
+      var apiBase = Dubtrack.config.apiUrl;
+      var path = Dubtrack.config.urls.dubsPlaylistActive.replace(":id", DTGlobal.roomId()).replace(":playlistid", "active");
+      return this._fetch(apiBase + path);
+    },
 
-      /**
-       * When the room's current song changes and a new song comes on
-       * @param {function} cb callback function to bind to playlist-update
-       */
+    /**
+     * returns the API url to get a users info
+     *
+     * @param {string} userid - current logged in user id
+     * @returns {Promise} returns a fetch promise which already resolves response.json()
+     */
+    getUserData: function getUserData(userid) {
+      var api = Dubtrack.config.apiUrl + Dubtrack.config.urls.user + "/" + userid;
+      return this._fetch(api);
+    },
 
-    }, {
-      key: "onPlaylistUpdate",
-      value: function onPlaylistUpdate(cb) {
-        Dubtrack.Events.bind("realtime:room_playlist-update", cb);
-      }
-    }, {
-      key: "offPlaylistUpdate",
-      value: function offPlaylistUpdate(cb) {
-        Dubtrack.Events.unbind("realtime:room_playlist-update", cb);
-      }
-      /**
-       * When a user up/down votes (aka dub) a song
-       */
+    /**
+     * fetch data from api about the current room user is in
+     *
+     * @returns {Promise} returns a fetch promise which already resolves response.json()
+     */
+    roomInfo: function roomInfo() {
+      var api = Dubtrack.config.apiUrl + "/room/" + DTGlobal.roomUrlName();
+      return this._fetch(api);
+    },
 
-    }, {
-      key: "onSongVote",
-      value: function onSongVote(cb) {
-        Dubtrack.Events.bind("realtime:room_playlist-dub", cb);
-      }
-    }, {
-      key: "offSongVote",
-      value: function offSongVote(cb) {
-        Dubtrack.Events.unbind("realtime:room_playlist-dub", cb);
-      }
-      /**
-       * When a new chat message comes in
-       */
+    /**
+     * Form the url string for the avatar of a user
+     *
+     * @param {string} userid
+     * @returns {string}
+     */
+    userImage: function userImage(userid) {
+      return "".concat(Dubtrack.config.apiUrl, "/user/").concat(userid, "/image");
+    },
 
-    }, {
-      key: "onChatMessage",
-      value: function onChatMessage(cb) {
-        Dubtrack.Events.bind("realtime:chat-message", cb);
-      }
-    }, {
-      key: "offChatMessage",
-      value: function offChatMessage(cb) {
-        Dubtrack.Events.unbind("realtime:chat-message", cb);
-      }
-      /**
-       * When any user in the room grabs a song
-       */
+    /**
+     * Get the track info of a SoundCloud track
+     *
+     * @param {string} scID - the soundcloud Id (known as fkid in Dubtrack)
+     * @returns {Promise} returns a fetch promise which already resolves response.json()
+     */
+    getSCtrackInfo: function getSCtrackInfo(scID) {
+      var url = "https://api.soundcloud.com/tracks/".concat(scID, "?client_id=").concat(Dubtrack.config.keys.soundcloud);
+      return fetch(url).then(function (resp) {
+        return resp.json();
+      });
+    }
+  };
 
-    }, {
-      key: "onSongGrab",
-      value: function onSongGrab(cb) {
-        Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", cb);
-      }
-    }, {
-      key: "offSongGrab",
-      value: function offSongGrab(cb) {
-        Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", cb);
-      }
-    }, {
-      key: "onUserLeave",
-      value: function onUserLeave(cb) {
-        Dubtrack.Events.bind("realtime:user-leave", cb);
-      }
-    }, {
-      key: "offUserLeave",
-      value: function offUserLeave(cb) {
-        Dubtrack.Events.unbind("realtime:user-leave", cb);
-      }
-    }, {
-      key: "onNewPM",
-      value: function onNewPM(cb) {
-        Dubtrack.Events.bind("realtime:new-message", cb);
-      }
-    }, {
-      key: "offNewPM",
-      value: function offNewPM(cb) {
-        Dubtrack.Events.unbind("realtime:new-message", cb);
-      }
-      /******************************************************************
-       * Functions that depend on, or return, DOM elements
-       * for now I'm only proying DOM elements used across multiple files
-       * Except if they are just used as Preact's render target:  render(<Elem>, target)
-       */
+  /******************************************************************
+   * DOM Elements
+   */
+  var DTProxyDOM = {
+    /**
+     * Returns the chat input element
+     *
+     * @returns {HTMLElement}
+     */
+    chatInput: function chatInput() {
+      return document.getElementById("chat-txt-message");
+    },
 
-    }, {
-      key: "chatInput",
-      value: function chatInput() {
-        return document.getElementById("chat-txt-message");
-      }
-    }, {
-      key: "chatList",
-      value: function chatList() {
-        return document.querySelector("ul.chat-main");
-      }
-    }, {
-      key: "allChatTexts",
-      value: function allChatTexts() {
-        return document.querySelectorAll(".chat-main .text");
-      } // this is the little input that's in the grabs popup
+    /**
+     * get the <ul> containing all the chat messages
+     *
+     * @returns {HTMLUListElement}
+     */
+    chatList: function chatList() {
+      return document.querySelector("ul.chat-main");
+    },
 
-    }, {
-      key: "playlistInput",
-      value: function playlistInput() {
-        return document.getElementById("playlist-input");
-      } // this is the list of playlists in the grab popup
+    /**
+     * Returns all of the elements that hold the chat text
+     * this will remain a function because it changes often
+     *
+     * @returns {NodeList}
+     */
+    allChatTexts: function allChatTexts() {
+      return document.querySelectorAll(".chat-main .text");
+    },
 
-    }, {
-      key: "grabPlaylists",
-      value: function grabPlaylists() {
-        return document.querySelectorAll(".playlist-list-action li");
-      }
-      /**
-       * Get the current minutes remaining of the song playing
-       */
+    /**
+     * returns the little input that's in the grabs popup
+     * this gets created/destroyed often so should remain a function
+     *
+     * @returns {HTMLInputElement}
+     */
+    playlistInput: function playlistInput() {
+      return document.getElementById("playlist-input");
+    },
 
-    }, {
-      key: "getRemainingTime",
-      value: function getRemainingTime() {
-        return parseInt(document.querySelector("#player-controller .currentTime span.min").textContent);
-      } // booth duration?
+    /**
+     * returns the <li> in the grab popup
+     * this gets created/destroyed often so should remain a function
+     *
+     * @returns {NodeList}
+     */
+    grabPlaylists: function grabPlaylists() {
+      return document.querySelectorAll(".playlist-list-action li");
+    },
 
-    }, {
-      key: "getQueuePosition",
-      value: function getQueuePosition() {
-        return parseInt(this.getQueuePositionElem().textContent);
-      } // booth duration?
+    /**
+     * get the element that holds the text of the currently playing track in
+     * the bottom player bar
+     *
+     * @returns {HTMLElement} think it's a span but that doesn't matter
+     */
+    getCurrentSongElem: function getCurrentSongElem() {
+      return document.querySelector(".currentSong");
+    },
 
-    }, {
-      key: "getQueuePositionElem",
-      value: function getQueuePositionElem() {
-        return document.querySelector(".queue-position");
-      }
-    }, {
-      key: "getPMmsg",
-      value: function getPMmsg(messageid) {
-        return document.querySelector(".message-item[data-messageid=\"".concat(messageid, "\"]"));
-      }
-    }, {
-      key: "upVote",
-      value: function upVote() {
-        return document.querySelector(".dubup");
-      }
-    }, {
-      key: "downVote",
-      value: function downVote() {
-        return document.querySelector(".dubdown");
-      }
-    }, {
-      key: "grabBtn",
-      value: function grabBtn() {
-        return document.querySelector(".add-to-playlist-button");
-      }
-    }, {
-      key: "userPMs",
-      value: function userPMs() {
-        return document.querySelector(".user-messages");
-      }
-    }, {
-      key: "bgImg",
-      value: function bgImg() {
-        return document.querySelector(".backstretch-item img");
-      }
-    }, {
-      key: "hideVideoBtn",
-      value: function hideVideoBtn() {
-        return document.querySelector(".hideVideo-el");
-      }
-      /*
-        some more DOM elements being access but only has render targets for Preact
-        going to leave them out for now
-         document.querySelector('.player_sharing')
-        document.querySelector(".chat-text-box-icons")
-        document.querySelector(".header-right-navigation")
-        document.querySelector(".pusher-chat-widget-input");
-        document.querySelector("#room-main-player-container");
-       */
+    /**
+     * Get the current minutes remaining of the song playing
+     *
+     * @returns {number}
+     */
+    getRemainingTime: function getRemainingTime() {
+      return parseInt(document.querySelector("#player-controller .currentTime span.min").textContent);
+    },
 
-    }]);
+    /**
+     * get the queue position
+     *
+     * @returns {string}
+     */
+    getQueuePosition: function getQueuePosition() {
+      return parseInt(document.querySelector(".queue-position").textContent);
+    },
 
-    return DTProxy;
-  }();
+    /**
+     * Get the html element of a specific private message
+     *
+     * @param {string} messageid
+     * @returns {HTMLElement}
+     */
+    getPMmsg: function getPMmsg(messageid) {
+      return document.querySelector(".message-item[data-messageid=\"".concat(messageid, "\"]"));
+    },
 
-  var proxy = new DTProxy();
+    /**
+     * the anchor element for the up dub button
+     * 
+     * @returns {HTMLAnchorElement}
+     */
+    upVote: function upVote() {
+      return document.querySelector(".dubup");
+    },
+
+    /**
+     * get the anchor element for the down dub button
+     * 
+     * @returns {HTMLAnchorElement}
+     */
+    downVote: function downVote() {
+      return document.querySelector(".dubdown");
+    },
+
+    /**
+     * get the add to playlist "grab" button, the one with the heart icon
+     * 
+     * @returns {HTMLElement}
+     */
+    grabBtn: function grabBtn() {
+      return document.querySelector(".add-to-playlist-button");
+    },
+
+    /**
+     * Returns the element that triggers the opening the private messages sidebar
+     *
+     * @returns {HTMLElement}
+     */
+    userPMs: function userPMs() {
+      return document.querySelector(".user-messages");
+    },
+
+    /**
+     * returns the full size background img element
+     * 
+     * @returns {HTMLImageElement}
+     */
+    bgImg: function bgImg() {
+      return document.querySelector(".backstretch-item img");
+    },
+
+    /*START.NOT_EXT*/
+
+    /**
+     * returns the element used to hide/show the video
+     *
+     * @returns {HTMLElement}
+     */
+    hideVideoBtn: function hideVideoBtn() {
+      return document.querySelector(".hideVideo-el");
+    },
+
+    /*END.NOT_EXT*/
+
+    /**
+     * Returns the chat input's containing element
+     *
+     * @returns {HTMLElement}
+     */
+    chatInputContainer: function chatInputContainer() {
+      return document.querySelector(".pusher-chat-widget-input");
+    }
+  };
+
+  var DTProxyEvents = {
+    /**
+     * Subscribe to the room's current song changes including when a new song comes on
+     *
+     * @param {function} cb callback function to bind to playlist-update
+     */
+    onPlaylistUpdate: function onPlaylistUpdate(cb) {
+      Dubtrack.Events.on("realtime:room_playlist-update", cb);
+    },
+
+    /**
+     * unsubscribe to playlist updates
+     *
+     * @param {function} cb
+     */
+    offPlaylistUpdate: function offPlaylistUpdate(cb) {
+      Dubtrack.Events.off("realtime:room_playlist-update", cb);
+    },
+
+    /**
+     * Subscribe to changes in the current room's queue
+     *
+     * @param {function} cb
+     */
+    onQueueUpdate: function onQueueUpdate(cb) {
+      Dubtrack.Events.on("realtime:room_playlist-queue-update", cb);
+    },
+
+    /**
+     * Unsubscribe to changes in the current room's queue
+     *
+     * @param {function} cb
+     */
+    offQueueUpdate: function offQueueUpdate(cb) {
+      Dubtrack.Events.off("realtime:room_playlist-queue-update", cb);
+    },
+
+    /**
+     * Subscribe to when a user up/down votes (aka dub) a song
+     *
+     * @param {function} cb
+     */
+    onSongVote: function onSongVote(cb) {
+      Dubtrack.Events.on("realtime:room_playlist-dub", cb);
+    },
+
+    /**
+     * Unbsubscribe to song vote event
+     *
+     * @param {function} cb
+     */
+    offSongVote: function offSongVote(cb) {
+      Dubtrack.Events.off("realtime:room_playlist-dub", cb);
+    },
+
+    /**
+     * Subscribe when a new chat message comes in
+     *
+     * @param {function} cb
+     */
+    onChatMessage: function onChatMessage(cb) {
+      Dubtrack.Events.on("realtime:chat-message", cb);
+    },
+
+    /**
+     * Unsubscribe to new chat messages event
+     *
+     * @param {function} cb
+     */
+    offChatMessage: function offChatMessage(cb) {
+      Dubtrack.Events.off("realtime:chat-message", cb);
+    },
+
+    /**
+     * subscribe to when any user in the room grabs a song
+     *
+     * @param {function} cb
+     */
+    onSongGrab: function onSongGrab(cb) {
+      Dubtrack.Events.on("realtime:room_playlist-queue-update-grabs", cb);
+    },
+
+    /**
+     * Unsubscribe to when any user in the room grabs a song
+     *
+     * @param {function} cb
+     */
+    offSongGrab: function offSongGrab(cb) {
+      Dubtrack.Events.off("realtime:room_playlist-queue-update-grabs", cb);
+    },
+
+    /**
+     * Subscribe to user leave event
+     *
+     * @param {function} cb
+     */
+    onUserLeave: function onUserLeave(cb) {
+      Dubtrack.Events.on("realtime:user-leave", cb);
+    },
+
+    /**
+     * Unsubscribe to user leave event
+     *
+     * @param {function} cb
+     */
+    offUserLeave: function offUserLeave(cb) {
+      Dubtrack.Events.off("realtime:user-leave", cb);
+    },
+
+    /**
+     * Subscribe to new private message
+     *
+     * @param {function} cb
+     */
+    onNewPM: function onNewPM(cb) {
+      Dubtrack.Events.on("realtime:new-message", cb);
+    },
+
+    /**
+     * Unsubscribe to new private message
+     *
+     * @param {function} cb
+     */
+    offNewPM: function offNewPM(cb) {
+      Dubtrack.Events.off("realtime:new-message", cb);
+    }
+  };
+
+  /**
+   * In order to prepare for the future alpha changes and the possibility that
+   * Dubtrack might alter this object of data we rely on, I am planning to funnel
+   * all interaction with Dubtrack through this "proxy" (for lack of better word)
+   */
+
+  var proxy = DTGlobal;
+  proxy.api = DTProxyAPIs;
+  proxy.dom = DTProxyDOM;
+  proxy.events = DTProxyEvents;
 
   /*global Dubtrack*/
 
@@ -1337,11 +1036,13 @@ var DubPlus = (function () {
   };
 
   var snooze = function snooze() {
-    if (!eventUtils.snoozed && !proxy.isMuted() && proxy.getVolume() > 2) {
-      eventUtils.currentVol = proxy.getVolume();
+    var vol = proxy.getVolume();
+
+    if (!eventUtils.snoozed && !proxy.isMuted() && vol > 2) {
+      eventUtils.currentVol = vol;
       proxy.mutePlayer();
       eventUtils.snoozed = true;
-      proxy.onPlaylistUpdate(eventSongAdvance);
+      proxy.events.onPlaylistUpdate(eventSongAdvance);
     } else if (eventUtils.snoozed) {
       proxy.setVolume(eventUtils.currentVol);
       eventUtils.snoozed = false;
@@ -1352,7 +1053,6 @@ var DubPlus = (function () {
     position: "absolute",
     font: "1rem/1.5 proxima-nova,sans-serif",
     display: "block",
-    left: "-33px",
     cursor: "pointer",
     borderRadius: "1.5rem",
     padding: "8px 16px",
@@ -1384,17 +1084,17 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Snooze)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         show: false
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "showTooltip", function () {
+      _defineProperty(_assertThisInitialized(_this), "showTooltip", function () {
         _this.setState({
           show: true
         });
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "hideTooltip", function () {
+      _defineProperty(_assertThisInitialized(_this), "hideTooltip", function () {
         _this.setState({
           show: false
         });
@@ -1404,32 +1104,43 @@ var DubPlus = (function () {
     }
 
     _createClass(Snooze, [{
+      key: "updateLeft",
+      value: function updateLeft() {
+        if (css.left) {
+          return css;
+        }
+
+        var left = this.snoozeRef.getBoundingClientRect().left;
+        css.left = left + "px";
+        return css;
+      }
+    }, {
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
+        var _this2 = this;
+
         return h("span", {
+          ref: function ref(s) {
+            return _this2.snoozeRef = s;
+          },
           className: "icon-mute snooze_btn",
           onClick: snooze,
           onMouseOver: this.showTooltip,
           onMouseOut: this.hideTooltip
         }, state.show && h("div", {
           className: "snooze_tooltip",
-          style: css
+          style: this.updateLeft()
         }, "Mute current song"));
       }
     }]);
 
     return Snooze;
-  }(Component);
-
-  function snooze$1 () {
-    render(h(Snooze, null), document.querySelector(".player_sharing"));
-  }
+  }(m);
 
   var css$1 = {
     position: 'absolute',
     font: '1rem/1.5 proxima-nova,sans-serif',
     display: 'block',
-    left: '-33px',
     cursor: 'pointer',
     borderRadius: '1.5rem',
     padding: '8px 16px',
@@ -1461,12 +1172,12 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(ETA)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         show: false,
         booth_time: ''
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "showTooltip", function () {
+      _defineProperty(_assertThisInitialized(_this), "showTooltip", function () {
         var tooltipText = _this.getEta();
 
         _this.setState({
@@ -1475,7 +1186,7 @@ var DubPlus = (function () {
         });
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "hideTooltip", function () {
+      _defineProperty(_assertThisInitialized(_this), "hideTooltip", function () {
         _this.setState({
           show: false
         });
@@ -1494,25 +1205,37 @@ var DubPlus = (function () {
         return booth_time >= 0 ? booth_time : 'You\'re not in the queue';
       }
     }, {
+      key: "updateLeft",
+      value: function updateLeft() {
+        if (css$1.left) {
+          return css$1;
+        }
+
+        var left = this.etaRef.getBoundingClientRect().left;
+        css$1.left = left + "px";
+        return css$1;
+      }
+    }, {
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
+        var _this2 = this;
+
         return h("span", {
           className: "icon-history eta_tooltip_t",
+          ref: function ref(s) {
+            return _this2.etaRef = s;
+          },
           onMouseOver: this.showTooltip,
           onMouseOut: this.hideTooltip
         }, this.state.show && h("span", {
           className: "eta_tooltip",
-          style: css$1
+          style: this.updateLeft()
         }, this.state.booth_time));
       }
     }]);
 
     return ETA;
-  }(Component);
-
-  function eta () {
-    render(h(ETA, null), document.querySelector('.player_sharing'));
-  }
+  }(m);
 
   var twitchSpriteSheet = {
     "\\:-?\\)": {
@@ -10948,108 +10671,28 @@ var DubPlus = (function () {
     }
   };
 
-  /** Redirect rendering of descendants into the given CSS selector.
-   *  @example
-   *    <Portal into="body">
-   *      <div>I am rendered into document.body</div>
-   *    </Portal>
-   */
+  var t$1,r$1,u$1=[],i$1=n.__r;n.__r=function(n){i$1&&i$1(n),t$1=0,(r$1=n.__c).__H&&(r$1.__H.t=A$1(r$1.__H.t));};var f$1=n.diffed;n.diffed=function(n){f$1&&f$1(n);var t=n.__c;if(t){var r=t.__H;r&&(r.u=(r.u.some(function(n){n.ref&&(n.ref.current=n.createHandle());}),[]),r.i=A$1(r.i));}};var o$1=n.unmount;function e$2(t){n.__h&&n.__h(r$1);var u=r$1.__H||(r$1.__H={o:[],t:[],i:[],u:[]});return t>=u.o.length&&u.o.push({}),u.o[t]}function c$1(n){return a$1(q,n)}function a$1(n,u,i){var f=e$2(t$1++);return f.__c||(f.__c=r$1,f.v=[i?i(u):q(void 0,u),function(t){var r=n(f.v[0],t);f.v[0]!==r&&(f.v[0]=r,f.__c.setState({}));}]),f.v}function v$1(n,u){var i=e$2(t$1++);h$1(i.m,u)&&(i.v=n,i.m=u,r$1.__H.t.push(i),T$1(r$1));}function m$1(n,u){var i=e$2(t$1++);h$1(i.m,u)&&(i.v=n,i.m=u,r$1.__H.i.push(i));}function d$1(n){return l(function(){return {current:n}},[])}function p$1(n,u,i){var f=e$2(t$1++);h$1(f.m,i)&&(f.m=i,r$1.__H.u.push({ref:n,createHandle:u}));}function l(n,r){var u=e$2(t$1++);return h$1(u.m,r)?(u.m=r,u.p=n,u.v=n()):u.v}function s$1(n,t){return l(function(){return n},t)}function y$1(n){var u=r$1.context[n.__c];if(!u)return n.__p;var i=e$2(t$1++);return null==i.v&&(i.v=!0,u.sub(r$1)),u.props.value}function _$1(t,r){n.useDebugValue&&n.useDebugValue(r?r(t):t);}n.unmount=function(n){o$1&&o$1(n);var t=n.__c;if(t){var r=t.__H;r&&r.o.forEach(function(n){return n.l&&n.l()});}};var T$1=function(){};function g$1(){u$1.some(function(n){n.s=!1,n.__P&&(n.__H.t=A$1(n.__H.t));}),u$1=[];}if("undefined"!=typeof window){var w$1=n.requestAnimationFrame;T$1=function(t){(!t.s&&(t.s=!0)&&1===u$1.push(t)||w$1!==n.requestAnimationFrame)&&(w$1=n.requestAnimationFrame,(n.requestAnimationFrame||function(n){var t=function(){clearTimeout(r),cancelAnimationFrame(u),setTimeout(n);},r=setTimeout(t,100),u=requestAnimationFrame(t);})(g$1));};}function A$1(n){return n.forEach(E),n.forEach(F),[]}function E(n){n.l&&n.l();}function F(n){var t=n.v();"function"==typeof t&&(n.l=t);}function h$1(n,t){return !n||t.some(function(t,r){return t!==n[r]})}function q(n,t){return "function"==typeof t?t(n):t}
 
-  var Portal =
-  /*#__PURE__*/
-  function (_Component) {
-    _inherits(Portal, _Component);
+  var n$1 = /*#__PURE__*/Object.freeze({
+    useState: c$1,
+    useReducer: a$1,
+    useEffect: v$1,
+    useLayoutEffect: m$1,
+    useRef: d$1,
+    useImperativeHandle: p$1,
+    useMemo: l,
+    useCallback: s$1,
+    useContext: y$1,
+    useDebugValue: _$1
+  });
 
-    function Portal() {
-      _classCallCheck(this, Portal);
+  function d$2(n,t){for(var r in t)n[r]=t[r];return n}function p$2(n){var t=n.parentNode;t&&t.removeChild(n);}var h$2=n.__e;function m$2(){this.t=[];}function y$2(n){var t,e,o;function i(i){if(t||(t=n()).then(function(n){e=n.default;},function(n){o=n;}),o)throw o;if(!e)throw t;return h(e,i)}return i.displayName="Lazy",i.o=!0,i}n.__e=function(n,t,r){if(n.then&&r)for(var e,o=t;o=o.__p;)if((e=o.__c)&&e.i)return r&&(t.__e=r.__e,t.__k=r.__k),void e.i(n);h$2(n,t,r);},(m$2.prototype=new m).i=function(n){var t=this;t.t.push(n);var r=function(){t.t[t.t.indexOf(n)]=t.t[t.t.length-1],t.t.pop(),0==t.t.length&&(D(t.props.fallback),t.__v.__e=null,t.__v.__k=t.state.u,t.setState({u:null}));};null==t.state.u&&(t.setState({u:t.__v.__k}),function n(t){for(var r=0;r<t.length;r++){var e=t[r];null!=e&&("function"!=typeof e.type&&e.__e?p$2(e.__e):e.__k&&n(e.__k));}}(t.__v.__k),t.__v.__k=[]),n.then(r,r);},m$2.prototype.render=function(n,t){return t.u?n.fallback:n.children};var g$2="undefined"!=typeof Symbol&&Symbol.for&&Symbol.for("react.element")||60103,x$1=/^(?:accent|alignment|arabic|baseline|cap|clip|color|fill|flood|font|glyph|horiz|marker|overline|paint|stop|strikethrough|stroke|text|underline|unicode|units|v|vector|vert|word|writing|x)[A-Z]/,C$1=n.event;function E$1(n){return S.bind(null,n)}function _$2(n,t,r){if(null==t.__k)for(;t.firstChild;)p$2(t.firstChild);return I(n,t),"function"==typeof r&&r(),n?n.__c:null}n.event=function(n){return C$1&&(n=C$1(n)),n.persist=function(){},n.nativeEvent=n};var w$2=function(){};function A$2(n){var t=this,r=n.container,o=h(w$2,{context:t.context},n.vnode);return t.l&&t.l!==r&&(t.s.parentNode&&t.l.removeChild(t.s),D(t.v),t.p=!1),n.vnode?t.p?(r.__k=t.__k,I(o,r),t.__k=r.__k):(t.s=document.createTextNode(""),L("",r),r.insertBefore(t.s,r.firstChild),t.p=!0,t.l=r,I(o,r,t.s),t.__k=this.s.__k):t.p&&(t.s.parentNode&&t.l.removeChild(t.s),D(t.v)),t.v=o,t.componentWillUnmount=function(){t.s.parentNode&&t.l.removeChild(t.s),D(t.v);},null}function k$1(n,t){return h(A$2,{vnode:n,container:t})}w$2.prototype.getChildContext=function(){return this.props.context},w$2.prototype.render=function(n){return n.children};var F$1=function(n,t){return n?x(n).map(t):null},N$1={map:F$1,forEach:F$1,count:function(n){return n?x(n).length:0},only:function(n){if(1!==(n=x(n)).length)throw new Error("Children.only() expects only one child.");return n[0]},toArray:x};function S(){for(var n=[],t=arguments.length;t--;)n[t]=arguments[t];var r=h.apply(void 0,n),e=r.type,o=r.props;return "function"!=typeof e&&(o.defaultValue&&(o.value||0===o.value||(o.value=o.defaultValue),delete o.defaultValue),Array.isArray(o.value)&&o.multiple&&"select"===e&&(x(o.children).forEach(function(n){-1!=o.value.indexOf(n.props.value)&&(n.props.selected=!0);}),delete o.value),function(n,t){var r,e,o;for(o in t)if(r=x$1.test(o))break;if(r)for(o in e=n.props={},t)e[x$1.test(o)?o.replace(/([A-Z0-9])/,"-$1").toLowerCase():o]=t[o];}(r,o)),r.preactCompatNormalized=!1,R(r)}function R(n){return n.preactCompatNormalized=!0,function(n){var t=n.props;(t.class||t.className)&&(z$1.enumerable="className"in t,t.className&&(t.class=t.className),Object.defineProperty(t,"className",z$1));}(n),n}function U(n){return O$1(n)?R(M.apply(null,arguments)):n}function O$1(n){return !!n&&n.$$typeof===g$2}function j$1(n){return !!n.__k&&(I(null,n),!0)}var z$1={configurable:!0,get:function(){return this.class}};function M$1(n,t){for(var r in n)if("__source"!==r&&!(r in t))return !0;for(var e in t)if("__source"!==e&&n[e]!==t[e])return !0;return !1}function P$1(n){return n&&(n.base||1===n.nodeType&&n)||null}var W=function(n){function t(t){n.call(this,t),this.isPureReactComponent=!0;}return n&&(t.__proto__=n),(t.prototype=Object.create(n&&n.prototype)).constructor=t,t.prototype.shouldComponentUpdate=function(n,t){return M$1(this.props,n)||M$1(this.state,t)},t}(m);function Z(n,t){function r(n){var r=this.props.ref,e=r==n.ref;return !e&&r&&(r.call?r(null):r.current=null),(t?!t(this.props,n):M$1(this.props,n))||!e}function e(t){return this.shouldComponentUpdate=r,h(n,d$2({},t))}return e.prototype.isReactComponent=!0,e.displayName="Memo("+(n.displayName||n.name)+")",e.o=!0,e}function D$1(n){function t(t){var r=t.ref;return delete t.ref,n(t,r)}return t.prototype.isReactComponent=!0,t.o=!0,t.displayName="ForwardRef("+(n.displayName||n.name)+")",t}function L$1(n,t){n["UNSAFE_"+t]&&!n[t]&&Object.defineProperty(n,t,{configurable:!1,get:function(){return this["UNSAFE_"+t]},set:function(n){this["UNSAFE_"+t]=n;}});}m.prototype.isReactComponent={};var T$2=n.vnode;n.vnode=function(n){n.$$typeof=g$2,function(t){var r=n.type,e=n.props;if(e&&"string"==typeof r){var o={};for(var i in e)/^on(Ani|Tra)/.test(i)&&(e[i.toLowerCase()]=e[i],delete e[i]),o[i.toLowerCase()]=i;if(o.ondoubleclick&&(e.ondblclick=e[o.ondoubleclick],delete e[o.ondoubleclick]),o.onbeforeinput&&(e.onbeforeinput=e[o.onbeforeinput],delete e[o.onbeforeinput]),o.onchange&&("textarea"===r||"input"===r.toLowerCase()&&!/^fil|che|ra/i.test(e.type))){var u=o.oninput||"oninput";e[u]||(e[u]=e[o.onchange],delete e[o.onchange]);}}}();var t=n.type;t&&t.o&&n.ref&&(n.props.ref=n.ref,n.ref=null),"function"==typeof t&&!t.h&&t.prototype&&(L$1(t.prototype,"componentWillMount"),L$1(t.prototype,"componentWillReceiveProps"),L$1(t.prototype,"componentWillUpdate"),t.h=!0),T$2&&T$2(n);};var V=function(n,t){return n(t)};d$2({version:"16.8.0",Children:N$1,render:_$2,hydrate:_$2,unmountComponentAtNode:j$1,createPortal:k$1,createElement:S,createContext:O,createFactory:E$1,cloneElement:U,createRef:p,Fragment:d,isValidElement:O$1,findDOMNode:P$1,Component:m,PureComponent:W,memo:Z,forwardRef:D$1,unstable_batchedUpdates:V,Suspense:m$2,lazy:y$2},n$1);
 
-      return _possibleConstructorReturn(this, _getPrototypeOf(Portal).apply(this, arguments));
-    }
-
-    _createClass(Portal, [{
-      key: "componentDidUpdate",
-      value: function componentDidUpdate(props) {
-        for (var i in props) {
-          if (props[i] !== this.props[i]) {
-            return setTimeout(this.renderLayer);
-          }
-        }
-      }
-    }, {
-      key: "componentDidMount",
-      value: function componentDidMount() {
-        this.isMounted = true;
-        this.renderLayer = this.renderLayer.bind(this);
-        this.renderLayer();
-      }
-    }, {
-      key: "componentWillUnmount",
-      value: function componentWillUnmount() {
-        this.renderLayer(false);
-        this.isMounted = false;
-        if (this.remote) this.remote.parentNode.removeChild(this.remote);
-      }
-    }, {
-      key: "findNode",
-      value: function findNode(node) {
-        return typeof node === 'string' ? document.querySelector(node) : node;
-      }
-    }, {
-      key: "renderLayer",
-      value: function renderLayer() {
-        var show = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-        if (!this.isMounted) return; // clean up old node if moving bases:
-
-        if (this.props.into !== this.intoPointer) {
-          this.intoPointer = this.props.into;
-
-          if (this.into && this.remote) {
-            this.remote = render(h(PortalProxy, null), this.into, this.remote);
-          }
-
-          this.into = this.findNode(this.props.into);
-        }
-
-        this.remote = render(h(PortalProxy, {
-          context: this.context
-        }, show && this.props.children || null), this.into, this.remote);
-      }
-    }, {
-      key: "render",
-      value: function render$$1() {
-        return null;
-      }
-    }]);
-
-    return Portal;
-  }(Component); // high-order component that renders its first child if it exists.
-
-  var PortalProxy =
-  /*#__PURE__*/
-  function (_Component2) {
-    _inherits(PortalProxy, _Component2);
-
-    function PortalProxy() {
-      _classCallCheck(this, PortalProxy);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(PortalProxy).apply(this, arguments));
-    }
-
-    _createClass(PortalProxy, [{
-      key: "getChildContext",
-      value: function getChildContext() {
-        return this.props.context;
-      }
-    }, {
-      key: "render",
-      value: function render$$1(_ref) {
-        var children = _ref.children;
-        return children && children[0] || null;
-      }
-    }]);
-
-    return PortalProxy;
-  }(Component);
+  var Portal = function Portal(_ref) {
+    var children = _ref.children,
+        into = _ref.into;
+    return k$1(children, into);
+  };
 
   function isIE() {
     var ua = window.navigator.userAgent;
@@ -11117,12 +10760,12 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Picker)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         emojiShow: false,
         twitchShow: false
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleEmoji", function () {
+      _defineProperty(_assertThisInitialized(_this), "toggleEmoji", function () {
         _this.setState(function (prevState) {
           return {
             emojiShow: !prevState.emojiShow,
@@ -11131,7 +10774,7 @@ var DubPlus = (function () {
         });
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleTwitch", function () {
+      _defineProperty(_assertThisInitialized(_this), "toggleTwitch", function () {
         _this.setState(function (prevState) {
           return {
             emojiShow: false,
@@ -11140,7 +10783,7 @@ var DubPlus = (function () {
         });
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleKeyup", function (e) {
+      _defineProperty(_assertThisInitialized(_this), "handleKeyup", function (e) {
         var key = e.code;
 
         if ((_this.state.emojiShow || _this.state.twitchShow) && key === KEYS.esc) {
@@ -11155,10 +10798,16 @@ var DubPlus = (function () {
     }
 
     _createClass(Picker, [{
+      key: "componentWillMount",
+      value: function componentWillMount() {
+        this.chatWidget = proxy.dom.chatInputContainer();
+      }
+    }, {
       key: "fillChat",
       value: function fillChat(val) {
-        proxy.chatInput().value += " :".concat(val, ":");
-        proxy.chatInput().focus();
+        var input = proxy.dom.chatInput();
+        input.value += " :".concat(val, ":");
+        input.focus();
         this.setState({
           emojiShow: false,
           twitchShow: false
@@ -11254,7 +10903,7 @@ var DubPlus = (function () {
       }
     }, {
       key: "render",
-      value: function render$$1(props, _ref) {
+      value: function render(props, _ref) {
         var emojiShow = _ref.emojiShow,
             twitchShow = _ref.twitchShow;
         return h("div", {
@@ -11263,14 +10912,14 @@ var DubPlus = (function () {
           className: "dp-emoji-picker-icon fa fa-smile-o",
           onClick: this.toggleEmoji
         }, h(Portal, {
-          into: ".pusher-chat-widget-input"
+          into: this.chatWidget
         }, h("div", {
           className: "dp-emoji-picker ".concat(emojiShow ? "show" : "")
         }, this.emojiList()))), h("span", {
           className: "dp-twitch-picker-icon",
           onClick: this.toggleTwitch
         }, h(Portal, {
-          into: ".pusher-chat-widget-input"
+          into: this.chatWidget
         }, h("div", {
           className: "dp-emoji-picker twitch-bttv-picker ".concat(twitchShow ? "show" : "")
         }, this.twitchList().concat(this.bttvList())))));
@@ -11278,10 +10927,10 @@ var DubPlus = (function () {
     }]);
 
     return Picker;
-  }(Component);
+  }(m);
 
   function SetupPicker () {
-    render(h(Picker, null), document.querySelector(".chat-text-box-icons"));
+    I(h(Picker, null), document.querySelector(".chat-text-box-icons"));
   }
 
   /**
@@ -11317,14 +10966,19 @@ var DubPlus = (function () {
       "dubplus-snow": false,
       "dubplus-custom-css": false,
       "dubplus-hide-selfie": false,
-      "dubplus-disable-video": false
+      "dubplus-disable-video": false,
+      "dubplus-playlist-filter": false,
+      "dubplus-auto-afk": false,
+      "custom_mentions": false
     },
     "custom": {
-      "customAfkMessage": "",
+      "customAfkMessage": "[AFK] I'm not here right now.",
       "dj_notification": 1,
       "css": "",
       "bg": "",
-      "notificationSound": ""
+      "notificationSound": "",
+      "auto_afk_wait": 30,
+      "custom_mentions": ""
     }
   };
 
@@ -11354,6 +11008,7 @@ var DubPlus = (function () {
      * @param {String} type The section of the stored values. i.e. "menu", "options", "custom"
      * @param {String} optionName the key name of the option to store
      * @param {String|Boolean} value the new setting value to store
+     * @returns {Boolean} whether it succeeded or not
      */
 
 
@@ -11364,8 +11019,10 @@ var DubPlus = (function () {
 
         try {
           localStorage.setItem('dubplusUserSettings', JSON.stringify(this.stored));
+          return true;
         } catch (err) {
           console.error("an error occured saving dubplus to localStorage", err);
+          return false;
         }
       }
     }]);
@@ -11415,7 +11072,11 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Modal)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "keyUpHandler", function (e) {
+      _defineProperty(_assertThisInitialized(_this), "state", {
+        error: false
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "keyUpHandler", function (e) {
         // save and close when user presses enter
         // considering removing this though
         if (e.keyCode === 13) {
@@ -11430,10 +11091,20 @@ var DubPlus = (function () {
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "confirmClick", function () {
-        _this.props.onConfirm(_this.textarea.value);
+      _defineProperty(_assertThisInitialized(_this), "confirmClick", function () {
+        var result = _this.props.onConfirm(_this.textarea.value);
 
-        _this.props.onClose();
+        if (result) {
+          _this.props.onClose();
+
+          _this.setState({
+            error: false
+          });
+        } else {
+          _this.setState({
+            error: true
+          });
+        }
       });
 
       return _this;
@@ -11455,12 +11126,12 @@ var DubPlus = (function () {
       }
     }, {
       key: "render",
-      value: function render$$1(props) {
+      value: function render(props, state) {
         var _this2 = this;
 
         var closeButtonText = !props.onConfirm ? "close" : "cancel";
         return props.open ? h(Portal, {
-          into: "body"
+          into: document.body
         }, h("div", {
           className: "dp-modal"
         }, h("aside", {
@@ -11469,7 +11140,9 @@ var DubPlus = (function () {
           className: "title"
         }, h("h1", null, " ", props.title || "Dub+")), h("div", {
           className: "content"
-        }, h("p", null, props.content || ""), props.placeholder && h("textarea", {
+        }, h("p", null, props.content || ""), state.error && h("p", {
+          style: "color:#ff7070"
+        }, props.errorMsg), props.placeholder && h("textarea", {
           ref: function ref(c) {
             return _this2.textarea = c;
           },
@@ -11488,7 +11161,7 @@ var DubPlus = (function () {
     }]);
 
     return Modal;
-  }(Component);
+  }(m);
 
   /**
    * Class wrapper for Google Analytics
@@ -11556,11 +11229,11 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(MenuSection)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         section: userSettings.stored.menu[_this.props.settingsKey] || "open"
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleSection", function (e) {
+      _defineProperty(_assertThisInitialized(_this), "toggleSection", function (e) {
         _this.setState(function (prevState) {
           var newState = prevState.section === "open" ? "closed" : "open";
           userSettings.save("menu", _this.props.settingsKey, newState);
@@ -11575,7 +11248,7 @@ var DubPlus = (function () {
 
     _createClass(MenuSection, [{
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
         var _cn = ["dubplus-menu-section"];
 
         if (state.section === "closed") {
@@ -11594,7 +11267,7 @@ var DubPlus = (function () {
     }]);
 
     return MenuSection;
-  }(Component);
+  }(m);
   /**
    * Component to render a simple row like the fullscreen menu option
    * @param {object} props
@@ -11602,7 +11275,8 @@ var DubPlus = (function () {
    * @param {string} props.desc description of the menu item used in the title attr
    * @param {string} props.icon icon to be used
    * @param {string} props.menuTitle text to display in the menu
-   * @param {Function} props.onClick text to display in the menu
+   * @param {Function} props.onClick function to run on click
+   * @param {string} props.href if provided will render an anchor instead
    */
 
   function MenuSimple(props) {
@@ -11610,6 +11284,18 @@ var DubPlus = (function () {
 
     if (props.className) {
       _cn.push(props.className);
+    }
+
+    if (props.href) {
+      return h("li", {
+        class: "dubplus-menu-icon"
+      }, h("span", {
+        class: "fa fa-".concat(props.icon)
+      }), h("a", {
+        href: props.href,
+        class: "dubplus-menu-label",
+        target: "_blank"
+      }, props.menuTitle));
     }
 
     return h("li", {
@@ -11629,6 +11315,15 @@ var DubPlus = (function () {
    * parent menu item.
    *
    * MenuPencil must always by a child of MenuSwitch.
+   * @param {string} props.section which section of the menu this is in
+   * @param {string} props.title the modal title
+   * @param {string} props.content  the description below the title
+   * @param {string} props.value prepopulate the value of the text area
+   * @param {number|string} props.maxLength  the max length of characters allowed in the text field
+   * @param {string} props.placeholder the text area placeholder if there is no value
+   * @param {boolean} props.showModal turns modal on/off directlt
+   * @param {function} props.onConfirm 
+   * @param {function} props.onCancel
    */
 
   var MenuPencil =
@@ -11649,19 +11344,19 @@ var DubPlus = (function () {
 
       _this2 = _possibleConstructorReturn(this, (_getPrototypeOf3 = _getPrototypeOf(MenuPencil)).call.apply(_getPrototypeOf3, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "state", {
+      _defineProperty(_assertThisInitialized(_this2), "state", {
         open: false
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "loadModal", function () {
+      _defineProperty(_assertThisInitialized(_this2), "loadModal", function () {
         _this2.setState({
           open: true
         });
 
-        track.menuClick(_this2.props.section + " section", _this2.props.id + " edit");
+        track.menuClick(_this2.props.section + " section", _this2.props.title + " edit");
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "closeModal", function () {
+      _defineProperty(_assertThisInitialized(_this2), "closeModal", function () {
         _this2.setState({
           open: false
         });
@@ -11671,7 +11366,7 @@ var DubPlus = (function () {
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "checkVal", function (val) {
+      _defineProperty(_assertThisInitialized(_this2), "checkVal", function (val) {
         var limit = parseInt(_this2.props.maxlength, 10);
 
         if (isNaN(limit)) {
@@ -11683,7 +11378,7 @@ var DubPlus = (function () {
         } // now we don't have to check val length inside every option
 
 
-        _this2.props.onConfirm(val);
+        return _this2.props.onConfirm(val);
       });
 
       return _this2;
@@ -11691,7 +11386,7 @@ var DubPlus = (function () {
 
     _createClass(MenuPencil, [{
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
         return h("span", {
           onClick: this.loadModal,
           className: "fa fa-pencil extra-icon"
@@ -11703,13 +11398,14 @@ var DubPlus = (function () {
           value: props.value,
           maxlength: props.maxlength,
           onConfirm: this.checkVal,
-          onClose: this.closeModal
+          onClose: this.closeModal,
+          errorMsg: props.errorMsg
         }));
       }
     }]);
 
     return MenuPencil;
-  }(Component);
+  }(m);
   var MenuSwitch =
   /*#__PURE__*/
   function (_Component3) {
@@ -11728,11 +11424,11 @@ var DubPlus = (function () {
 
       _this3 = _possibleConstructorReturn(this, (_getPrototypeOf4 = _getPrototypeOf(MenuSwitch)).call.apply(_getPrototypeOf4, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "state", {
+      _defineProperty(_assertThisInitialized(_this3), "state", {
         on: userSettings.stored.options[_this3.props.id] || false
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "switchOn", function () {
+      _defineProperty(_assertThisInitialized(_this3), "switchOn", function () {
         _this3.props.turnOn(false);
 
         userSettings.save("options", _this3.props.id, true);
@@ -11744,7 +11440,7 @@ var DubPlus = (function () {
         track.menuClick(_this3.props.section + " section", _this3.props.id + " on");
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "switchOff", function () {
+      _defineProperty(_assertThisInitialized(_this3), "switchOff", function () {
         var noTrack = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
         _this3.props.turnOff();
@@ -11760,7 +11456,7 @@ var DubPlus = (function () {
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "toggleSwitch", function () {
+      _defineProperty(_assertThisInitialized(_this3), "toggleSwitch", function () {
         if (_this3.state.on) {
           _this3.switchOff();
         } else {
@@ -11775,13 +11471,14 @@ var DubPlus = (function () {
       key: "componentDidMount",
       value: function componentDidMount() {
         if (this.state.on) {
-          // The "true" argument is so you can tell if component was activated on first load or not
+          // The "true" argument is so you can tell if component 
+          // was activated on first load or not
           this.props.turnOn(true);
         }
       }
     }, {
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
         var _cn = ["dubplus-switch"];
 
         if (state.on) {
@@ -11811,12 +11508,7 @@ var DubPlus = (function () {
     }]);
 
     return MenuSwitch;
-  }(Component);
-
-  /**
-   *
-   * Away From Keyboard autoresponder
-   */
+  }(m);
 
   var AFK =
   /*#__PURE__*/
@@ -11836,21 +11528,21 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(AFK)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         canSend: true,
         afkMessage: userSettings.stored.custom.customAfkMessage
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "afk_chat_respond", function (e) {
+      _defineProperty(_assertThisInitialized(_this), "afkRespond", function (e) {
         if (!_this.state.canSend) {
           return; // do nothing until it's back to true
         }
 
         var content = e.message;
-        var user = proxy.getUserName();
+        var user = proxy.userName();
 
-        if (content.indexOf("@" + user) >= 0 && proxy.getSessionId() !== e.user.userInfo.userid) {
-          var chatInput = proxy.chatInput();
+        if (content.indexOf("@" + user) >= 0 && proxy.sessionId() !== e.user.userInfo.userid) {
+          var chatInput = proxy.dom.chatInput();
 
           if (_this.state.afkMessage) {
             chatInput.value = "[AFK] " + _this.state.afkMessage;
@@ -11862,8 +11554,7 @@ var DubPlus = (function () {
 
           _this.setState({
             canSend: false
-          }); // allow AFK responses after 30sec
-
+          });
 
           setTimeout(function () {
             _this.setState({
@@ -11873,20 +11564,24 @@ var DubPlus = (function () {
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        proxy.onChatMessage(_this.afk_chat_respond);
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function () {
+        proxy.events.onChatMessage(_this.afkRespond);
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        proxy.offChatMessage(_this.afk_chat_respond);
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
+        proxy.events.offChatMessage(_this.afkRespond);
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveAFKmessage", function (val) {
-        userSettings.save("custom", "customAfkMessage", val);
+      _defineProperty(_assertThisInitialized(_this), "saveAFKmessage", function (val) {
+        var success = userSettings.save("custom", "customAfkMessage", val);
 
-        _this.setState({
-          afkMessage: val
-        });
+        if (success) {
+          _this.setState({
+            afkMessage: val
+          });
+        }
+
+        return success;
       });
 
       return _this;
@@ -11894,8 +11589,7 @@ var DubPlus = (function () {
 
     _createClass(AFK, [{
       key: "render",
-      value: function render$$1(props, _ref) {
-        var afkMessage = _ref.afkMessage;
+      value: function render() {
         return h(MenuSwitch, {
           id: "dubplus-afk",
           section: "General",
@@ -11907,16 +11601,17 @@ var DubPlus = (function () {
           title: "Custom AFK Message",
           section: "General",
           content: "Enter a custom Away From Keyboard [AFK] message here",
-          value: afkMessage,
+          value: this.state.afkMessage,
           placeholder: "Be right back!",
           maxlength: "255",
-          onConfirm: this.saveAFKmessage
+          onConfirm: this.saveAFKmessage,
+          errorMsg: "An error occured saving your AFK message"
         }));
       }
     }]);
 
     return AFK;
-  }(Component);
+  }(m);
 
   /**
    * Menu item for Autovote
@@ -11940,24 +11635,24 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Autovote)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dubup", proxy.upVote());
+      _defineProperty(_assertThisInitialized(_this), "dubup", proxy.dom.upVote());
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dubdown", proxy.downVote());
+      _defineProperty(_assertThisInitialized(_this), "dubdown", proxy.dom.downVote());
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "advance_vote", function () {
-        var event = document.createEvent('HTMLEvents');
-        event.initEvent('click', true, false);
+      _defineProperty(_assertThisInitialized(_this), "advance_vote", function () {
+        var event = document.createEvent("HTMLEvents");
+        event.initEvent("click", true, false);
 
         _this.dubup.dispatchEvent(event);
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "voteCheck", function (obj) {
+      _defineProperty(_assertThisInitialized(_this), "voteCheck", function (obj) {
         if (obj.startTime < 2) {
           _this.advance_vote();
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (e) {
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function (e) {
         var song = proxy.getActiveSong();
         var dubCookie = proxy.getVoteType();
         var dubsong = proxy.getDubSong();
@@ -11967,15 +11662,15 @@ var DubPlus = (function () {
         } // Only cast the vote if user hasn't already voted
 
 
-        if (!_this.dubup.classList.contains('voted') && !_this.dubdown.classList.contains('voted') && !dubCookie) {
+        if (!_this.dubup.classList.contains("voted") && !_this.dubdown.classList.contains("voted") && !dubCookie) {
           _this.advance_vote();
         }
 
-        proxy.onPlaylistUpdate(_this.voteCheck);
+        proxy.events.onPlaylistUpdate(_this.voteCheck);
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function (e) {
-        proxy.offPlaylistUpdate(_this.voteCheck);
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function (e) {
+        proxy.events.offPlaylistUpdate(_this.voteCheck);
       });
 
       return _this;
@@ -11983,7 +11678,7 @@ var DubPlus = (function () {
 
     _createClass(Autovote, [{
       key: "render",
-      value: function render$$1() {
+      value: function render() {
         return h(MenuSwitch, {
           id: "dubplus-autovote",
           section: "General",
@@ -11996,7 +11691,7 @@ var DubPlus = (function () {
     }]);
 
     return Autovote;
-  }(Component);
+  }(m);
 
   var TWITCH_SS_W$1 = 837;
   var TWITCH_SS_H$1 = 819;
@@ -12199,18 +11894,18 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(AutocompleteEmoji)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         isOn: false,
         matches: []
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "renderTo", document.querySelector(".pusher-chat-widget-input"));
+      _defineProperty(_assertThisInitialized(_this), "renderTo", document.querySelector(".pusher-chat-widget-input"));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatInput", proxy.chatInput());
+      _defineProperty(_assertThisInitialized(_this), "chatInput", proxy.dom.chatInput());
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "selectedItem", null);
+      _defineProperty(_assertThisInitialized(_this), "selectedItem", null);
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "checkInput", function (e) {
+      _defineProperty(_assertThisInitialized(_this), "checkInput", function (e) {
         // we want to ignore keyups that don't output anything
         var key = e.code;
 
@@ -12245,7 +11940,7 @@ var DubPlus = (function () {
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateChatInput", function (emote) {
+      _defineProperty(_assertThisInitialized(_this), "updateChatInput", function (emote) {
         var focusBack = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
         var inputText = _this.chatInput.value.split(" ");
@@ -12261,7 +11956,7 @@ var DubPlus = (function () {
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "keyboardNav", function (e) {
+      _defineProperty(_assertThisInitialized(_this), "keyboardNav", function (e) {
         if (_this.state.matches.length === 0) {
           return true;
         }
@@ -12301,7 +11996,7 @@ var DubPlus = (function () {
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (e) {
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function (e) {
         _this.setState({
           isOn: true
         }); // relying on Dubtrack.fm's lodash being globally available
@@ -12315,7 +12010,7 @@ var DubPlus = (function () {
         _this.chatInput.addEventListener("keyup", _this.debouncedCheckInput);
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function (e) {
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function (e) {
         _this.setState({
           isOn: false
         });
@@ -12444,7 +12139,7 @@ var DubPlus = (function () {
       }
     }, {
       key: "render",
-      value: function render$$1(props, _ref) {
+      value: function render(props, _ref) {
         var isOn = _ref.isOn,
             matches = _ref.matches;
         return h(MenuSwitch, {
@@ -12464,7 +12159,7 @@ var DubPlus = (function () {
     }]);
 
     return AutocompleteEmoji;
-  }(Component);
+  }(m);
 
   /**
    * Simple string parser based on Douglas Crockford's JSON.parse
@@ -12548,7 +12243,7 @@ var DubPlus = (function () {
    */
 
   function getLatestChatNode() {
-    var list = proxy.allChatTexts();
+    var list = proxy.dom.allChatTexts();
 
     if (list.length > 0) {
       return list[list.length - 1];
@@ -12717,15 +12412,15 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Emotes)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        document.body.classList.add('dubplus-emotes-on');
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function () {
+        document.body.classList.add("dubplus-emotes-on");
 
         _this.begin();
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function (e) {
-        document.body.classList.remove('dubplus-emotes-on');
-        proxy.offChatMessage(beginReplace);
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function (e) {
+        document.body.classList.remove("dubplus-emotes-on");
+        proxy.events.offChatMessage(beginReplace);
       });
 
       return _this;
@@ -12735,13 +12430,13 @@ var DubPlus = (function () {
       key: "begin",
       value: function begin() {
         // when first turning it on, it replaces ALL of the emotes in chat history
-        beginReplace(proxy.chatList()); // then it sets up replacing emotes on new chat messages
+        beginReplace(proxy.dom.chatList()); // then it sets up replacing emotes on new chat messages
 
-        proxy.onChatMessage(beginReplace);
+        proxy.events.onChatMessage(beginReplace);
       }
     }, {
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
         return h(MenuSwitch, {
           id: "dubplus-emotes",
           section: "General",
@@ -12754,7 +12449,7 @@ var DubPlus = (function () {
     }]);
 
     return Emotes;
-  }(Component);
+  }(m);
 
   /**
    * Custom mentions
@@ -12778,11 +12473,11 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(CustomMentions)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         custom: userSettings.stored.custom.custom_mentions
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "customMentionCheck", function (e) {
+      _defineProperty(_assertThisInitialized(_this), "customMentionCheck", function (e) {
         var content = e.message;
 
         if (_this.state.custom) {
@@ -12793,26 +12488,30 @@ var DubPlus = (function () {
             return reg.test(content);
           });
 
-          if (proxy.getSessionId() !== e.user.userInfo.userid && inUsers) {
+          if (proxy.sessionId() !== e.user.userInfo.userid && inUsers) {
             proxy.playChatSound();
           }
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveCustomMentions", function (val) {
-        userSettings.save("custom", "custom_mentions", val);
+      _defineProperty(_assertThisInitialized(_this), "saveCustomMentions", function (val) {
+        var success = userSettings.save("custom", "custom_mentions", val);
 
-        _this.setState({
-          custom: val
-        });
+        if (success) {
+          _this.setState({
+            custom: val
+          });
+        }
+
+        return success;
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        proxy.onChatMessage(_this.customMentionCheck);
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function () {
+        proxy.events.onChatMessage(_this.customMentionCheck);
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        proxy.offChatMessage(_this.customMentionCheck);
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
+        proxy.events.offChatMessage(_this.customMentionCheck);
       });
 
       return _this;
@@ -12820,7 +12519,7 @@ var DubPlus = (function () {
 
     _createClass(CustomMentions, [{
       key: "render",
-      value: function render$$1(props, _ref) {
+      value: function render(props, _ref) {
         var custom = _ref.custom;
         return h(MenuSwitch, {
           id: "custom_mentions",
@@ -12842,7 +12541,7 @@ var DubPlus = (function () {
     }]);
 
     return CustomMentions;
-  }(Component);
+  }(m);
 
   /**
    * Menu item for ChatCleaner
@@ -12866,13 +12565,13 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(ChatCleaner)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         maxChats: userSettings.stored.custom.chat_cleaner || 500,
         showModal: false
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chatCleanerCheck", function (e) {
-        var totalChats = Array.from(proxy.chatList().children);
+      _defineProperty(_assertThisInitialized(_this), "chatCleanerCheck", function (e) {
+        var totalChats = Array.from(proxy.dom.chatList().children);
         var max = parseInt(_this.state.maxChats, 10);
 
         if (isNaN(totalChats.length) || isNaN(max) || !totalChats.length || totalChats.length < max) {
@@ -12890,19 +12589,23 @@ var DubPlus = (function () {
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "saveAmount", function (value) {
+      _defineProperty(_assertThisInitialized(_this), "saveAmount", function (value) {
         var chatItems = parseInt(value, 10);
         var amount = !isNaN(chatItems) ? chatItems : 500;
-        userSettings.save("custom", "chat_cleaner", amount); // default to 500
+        var success = userSettings.save("custom", "chat_cleaner", amount); // default to 500
 
-        _this.setState({
-          maxChats: value,
-          showModal: false
-        });
+        if (success) {
+          _this.setState({
+            maxChats: value,
+            showModal: false
+          });
+        }
+
+        return success;
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (initialLoad) {
-        proxy.onChatMessage(_this.chatCleanerCheck);
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function (initialLoad) {
+        proxy.events.onChatMessage(_this.chatCleanerCheck);
 
         if (!initialLoad && !userSettings.stored.custom.chat_cleaner) {
           _this.setState({
@@ -12911,8 +12614,8 @@ var DubPlus = (function () {
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        proxy.offChatMessage(_this.chatCleanerCheck);
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
+        proxy.events.offChatMessage(_this.chatCleanerCheck);
       });
 
       return _this;
@@ -12920,7 +12623,7 @@ var DubPlus = (function () {
 
     _createClass(ChatCleaner, [{
       key: "render",
-      value: function render$$1() {
+      value: function render() {
         return h(MenuSwitch, {
           id: "chat-cleaner",
           section: "General",
@@ -12942,7 +12645,7 @@ var DubPlus = (function () {
     }]);
 
     return ChatCleaner;
-  }(Component);
+  }(m);
 
   /* global Dubtrack */
   var isActiveTab = true;
@@ -13043,16 +12746,16 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(ChatNotification)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         showWarning: false,
-        warnTitle: '',
-        warnContent: ''
+        warnTitle: "",
+        warnContent: ""
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function () {
         notifyCheckPermission(function (status, reason) {
           if (status === true) {
-            proxy.onChatMessage(_this.notifyOnMention);
+            proxy.events.onChatMessage(_this.notifyOnMention);
           } else {
             // call MenuSwitch's switchOff with noTrack=true argument
             _this.switchRef.switchOff(true);
@@ -13066,14 +12769,14 @@ var DubPlus = (function () {
         });
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "closeModal", function () {
+      _defineProperty(_assertThisInitialized(_this), "closeModal", function () {
         _this.setState({
           showWarning: false
         });
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        proxy.offChatMessage(_this.notifyOnMention);
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
+        proxy.events.offChatMessage(_this.notifyOnMention);
       });
 
       return _this;
@@ -13083,7 +12786,7 @@ var DubPlus = (function () {
       key: "notifyOnMention",
       value: function notifyOnMention(e) {
         var content = e.message;
-        var user = proxy.getUserName().toLowerCase();
+        var user = proxy.userName().toLowerCase();
         var mentionTriggers = ["@" + user];
 
         if (userSettings.stored.options.custom_mentions && userSettings.stored.custom.custom_mentions) {
@@ -13092,11 +12795,10 @@ var DubPlus = (function () {
         }
 
         var mentionTriggersTest = mentionTriggers.some(function (v) {
-          var reg = new RegExp("\\b" + v.trim() + "\\b", "i");
-          return reg.test(content);
+          return content.toLowerCase().indexOf(v.toLowerCase().trim()) >= 0;
         });
 
-        if (mentionTriggersTest && !this.isActiveTab && proxy.getSessionId() !== e.user.userInfo.userid) {
+        if (mentionTriggersTest && !this.isActiveTab && proxy.sessionId() !== e.user.userInfo.userid) {
           showNotification({
             title: "Message from ".concat(e.user.username),
             content: content
@@ -13105,7 +12807,7 @@ var DubPlus = (function () {
       }
     }, {
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
         var _this2 = this;
 
         return h(MenuSwitch, {
@@ -13128,7 +12830,7 @@ var DubPlus = (function () {
     }]);
 
     return ChatNotification;
-  }(Component);
+  }(m);
 
   var PMNotifications =
   /*#__PURE__*/
@@ -13148,16 +12850,16 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(PMNotifications)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         showWarning: false,
         warnTitle: "",
         warnContent: ""
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function () {
         notifyCheckPermission(function (status, reason) {
           if (status === true) {
-            proxy.onNewPM(_this.notify);
+            proxy.events.onNewPM(_this.notify);
           } else {
             // call MenuSwitch's switchOff with noTrack=true argument
             _this.switchRef.switchOff(true);
@@ -13171,14 +12873,14 @@ var DubPlus = (function () {
         });
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "closeModal", function () {
+      _defineProperty(_assertThisInitialized(_this), "closeModal", function () {
         _this.setState({
           showWarning: false
         });
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        proxy.offNewPM(_this.notify);
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
+        proxy.events.offNewPM(_this.notify);
       });
 
       return _this;
@@ -13187,7 +12889,7 @@ var DubPlus = (function () {
     _createClass(PMNotifications, [{
       key: "notify",
       value: function notify(e) {
-        var userid = proxy.getSessionId();
+        var userid = proxy.userId();
 
         if (userid === e.userid) {
           return;
@@ -13197,9 +12899,9 @@ var DubPlus = (function () {
           title: "You have a new PM",
           ignoreActiveTab: true,
           callback: function callback() {
-            proxy.userPMs().click();
+            proxy.dom.userPMs().click();
             setTimeout(function () {
-              proxy.getPMmsg(e.messageid).click();
+              proxy.dom.getPMmsg(e.messageid).click();
             }, 500);
           },
           wait: 10000
@@ -13207,7 +12909,7 @@ var DubPlus = (function () {
       }
     }, {
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
         var _this2 = this;
 
         return h(MenuSwitch, {
@@ -13230,7 +12932,7 @@ var DubPlus = (function () {
     }]);
 
     return PMNotifications;
-  }(Component);
+  }(m);
 
   var DJNotification =
   /*#__PURE__*/
@@ -13250,25 +12952,29 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(DJNotification)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         canNotify: false,
-        notifyOn: userSettings.stored.custom.dj_notification
+        notifyOn: userSettings.stored.custom["dj-notification"]
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "savePosition", function (value) {
+      _defineProperty(_assertThisInitialized(_this), "savePosition", function (value) {
         var int = parseInt(value, 10);
         var amount = !isNaN(int) ? int : 2; // set default to position 2 in the queue
 
-        userSettings.save("custom", "dj_notification", amount);
+        var success = userSettings.save("custom", "dj-notification", amount);
 
-        _this.setState({
-          notifyOn: value
-        });
+        if (success) {
+          _this.setState({
+            notifyOn: value
+          });
+        }
+
+        return success;
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "djNotificationCheck", function (e) {
+      _defineProperty(_assertThisInitialized(_this), "djNotificationCheck", function (e) {
         if (!_this.canNotify || e.startTime > 2) return;
-        var queuePos = proxy.getQueuePosition();
+        var queuePos = proxy.dom.getQueuePosition();
         var positionParse = parseInt(queuePos, 10);
         var position = e.startTime < 0 && !isNaN(positionParse) ? positionParse - 1 : positionParse;
 
@@ -13285,7 +12991,7 @@ var DubPlus = (function () {
         proxy.playChatSound();
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function () {
         notifyCheckPermission(function (status, reason) {
           if (status === true) {
             _this.setState({
@@ -13293,11 +12999,11 @@ var DubPlus = (function () {
             });
           }
         });
-        proxy.onPlaylistUpdate(_this.djNotificationCheck);
+        proxy.events.onPlaylistUpdate(_this.djNotificationCheck);
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        proxy.offPlaylistUpdate(_this.djNotificationCheck);
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
+        proxy.events.offPlaylistUpdate(_this.djNotificationCheck);
       });
 
       return _this;
@@ -13305,7 +13011,7 @@ var DubPlus = (function () {
 
     _createClass(DJNotification, [{
       key: "render",
-      value: function render$$1() {
+      value: function render() {
         var _this2 = this;
 
         return h(MenuSwitch, {
@@ -13331,7 +13037,7 @@ var DubPlus = (function () {
     }]);
 
     return DJNotification;
-  }(Component);
+  }(m);
 
   /*  Snowfall pure js
       https://github.com/loktar00/JQuery-Snowfall/blob/master/src/snowfall.js
@@ -13637,7 +13343,7 @@ var DubPlus = (function () {
     };
   }();
 
-  var options$1 = {
+  var options = {
     round: true,
     shadow: true,
     flakeCount: 50,
@@ -13665,17 +13371,17 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(SnowSwitch)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function () {
         var target = document.getElementById('snow-container');
 
         if (!target) {
           _this.makeContainer();
         }
 
-        snowFall.snow(document.getElementById('snow-container'), options$1);
+        snowFall.snow(document.getElementById('snow-container'), options);
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
         var target = document.getElementById('snow-container');
 
         if (target) {
@@ -13696,7 +13402,7 @@ var DubPlus = (function () {
       }
     }, {
       key: "render",
-      value: function render$$1() {
+      value: function render() {
         var _this2 = this;
 
         return h(MenuSwitch, {
@@ -13714,7 +13420,7 @@ var DubPlus = (function () {
     }]);
 
     return SnowSwitch;
-  }(Component);
+  }(m);
 
   var rain = {}; // Rain settings
 
@@ -13914,7 +13620,7 @@ var DubPlus = (function () {
       }
     }, {
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
         return h(MenuSwitch, {
           id: "dubplus-rain",
           section: "General",
@@ -13927,46 +13633,7 @@ var DubPlus = (function () {
     }]);
 
     return RainSwitch;
-  }(Component);
-
-  /**
-   * Wrapper around XMLHttpRequest with added ability to trigger a custom event 
-   * when the ajax request is complete. The event will be attached to the window 
-   * object. It returns a promise.
-   * 
-   * @param {String} url 
-   * @param {Object} headers object of xhr headers to add to the request
-   * @returns {Promise}
-   */
-  function getJSON(url) {
-    var headers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    return new Promise(function (resolve, reject) {
-      var xhr = new XMLHttpRequest();
-
-      xhr.onload = function () {
-        try {
-          var resp = JSON.parse(xhr.responseText);
-          resolve(resp);
-        } catch (e) {
-          reject(e);
-        }
-      };
-
-      xhr.onerror = function () {
-        reject();
-      };
-
-      xhr.open('GET', url);
-
-      for (var property in headers) {
-        if (headers.hasOwnProperty(property)) {
-          xhr.setRequestHeader(property, headers[property]);
-        }
-      }
-
-      xhr.send();
-    });
-  }
+  }(m);
 
   var DubsInfoListItem = function DubsInfoListItem(_ref) {
     var data = _ref.data,
@@ -13979,7 +13646,7 @@ var DubPlus = (function () {
     }, h("div", {
       className: "dubinfo-image"
     }, h("img", {
-      src: "https://api.dubtrack.fm/user/".concat(data.userid, "/image")
+      src: proxy.api.userImage(data.userid)
     })), h("span", {
       className: "dubinfo-text"
     }, "@", data.username));
@@ -14009,9 +13676,9 @@ var DubPlus = (function () {
         var elem;
 
         if (whichVote === "up") {
-          elem = document.querySelector(".dubup");
+          elem = proxy.dom.upVote();
         } else if (whichVote === "down") {
-          elem = document.querySelector(".dubdown");
+          elem = proxy.dom.downVote();
         } else {
           return;
         }
@@ -14022,7 +13689,7 @@ var DubPlus = (function () {
     }, {
       key: "updateChat",
       value: function updateChat(str) {
-        var chat = document.getElementById("chat-txt-message");
+        var chat = proxy.dom.chatInput();
         chat.value = str;
         chat.focus();
       }
@@ -14041,7 +13708,7 @@ var DubPlus = (function () {
       }
     }, {
       key: "render",
-      value: function render$$1(_ref2) {
+      value: function render(_ref2) {
         var type = _ref2.type,
             isMod = _ref2.isMod;
         var notYetMsg = "No ".concat(type, " have been casted yet!");
@@ -14060,7 +13727,7 @@ var DubPlus = (function () {
           containerCss.push("dubinfo-no-dubs");
         }
 
-        if (type === 'downdubs' && !isMod) {
+        if (type === "downdubs" && !isMod) {
           containerCss.push("dubinfo-unauthorized");
         }
 
@@ -14074,7 +13741,7 @@ var DubPlus = (function () {
     }]);
 
     return DubsInfo;
-  }(Component);
+  }(m);
 
   var ShowDubsOnHover =
   /*#__PURE__*/
@@ -14094,7 +13761,7 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(ShowDubsOnHover)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         isOn: false,
         showWarning: false,
         upDubs: [],
@@ -14102,39 +13769,39 @@ var DubPlus = (function () {
         grabs: []
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "userIsMod", proxy.modCheck());
+      _defineProperty(_assertThisInitialized(_this), "userIsMod", proxy.modCheck());
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function () {
         _this.setState({
           isOn: true
         }, _this.resetDubs);
 
-        proxy.onSongVote(_this.dubWatcher);
-        proxy.onSongGrab(_this.grabWatcher);
-        proxy.onUserLeave(_this.dubUserLeaveWatcher);
-        proxy.onPlaylistUpdate(_this.resetDubs);
-        proxy.onPlaylistUpdate(_this.resetGrabs);
+        proxy.events.onSongVote(_this.dubWatcher);
+        proxy.events.onSongGrab(_this.grabWatcher);
+        proxy.events.onUserLeave(_this.dubUserLeaveWatcher);
+        proxy.events.onPlaylistUpdate(_this.resetDubs);
+        proxy.events.onPlaylistUpdate(_this.resetGrabs);
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
         _this.setState({
           isOn: false
         });
 
-        proxy.offSongVote(_this.dubWatcher);
-        proxy.offSongGrab(_this.grabWatcher);
-        proxy.offUserLeave(_this.dubUserLeaveWatcher);
-        proxy.offPlaylistUpdate(_this.resetDubs);
-        proxy.offPlaylistUpdate(_this.resetGrabs);
+        proxy.events.offSongVote(_this.dubWatcher);
+        proxy.events.offSongGrab(_this.grabWatcher);
+        proxy.events.offUserLeave(_this.dubUserLeaveWatcher);
+        proxy.events.offPlaylistUpdate(_this.resetDubs);
+        proxy.events.offPlaylistUpdate(_this.resetGrabs);
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "closeModal", function () {
+      _defineProperty(_assertThisInitialized(_this), "closeModal", function () {
         _this.setState({
           showWarning: false
         });
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dubWatcher", function (e) {
+      _defineProperty(_assertThisInitialized(_this), "dubWatcher", function (e) {
         var _this$state = _this.state,
             upDubs = _this$state.upDubs,
             downDubs = _this$state.downDubs;
@@ -14202,7 +13869,7 @@ var DubPlus = (function () {
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "grabWatcher", function (e) {
+      _defineProperty(_assertThisInitialized(_this), "grabWatcher", function (e) {
         // only add Grab if it doesn't exist in the array already
         if (_this.state.grabs.filter(function (el) {
           return el.userid === e.user._id;
@@ -14220,7 +13887,7 @@ var DubPlus = (function () {
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dubUserLeaveWatcher", function (e) {
+      _defineProperty(_assertThisInitialized(_this), "dubUserLeaveWatcher", function (e) {
         var newUpDubs = _this.state.upDubs.filter(function (el) {
           return el.userid !== e.user._id;
         });
@@ -14240,14 +13907,14 @@ var DubPlus = (function () {
         });
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "resetDubs", function () {
+      _defineProperty(_assertThisInitialized(_this), "resetDubs", function () {
         _this.setState({
           upDubs: [],
           downDubs: []
         }, _this.handleReset);
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "resetGrabs", function () {
+      _defineProperty(_assertThisInitialized(_this), "resetGrabs", function () {
         _this.setState({
           grabs: []
         });
@@ -14262,7 +13929,7 @@ var DubPlus = (function () {
         var _this2 = this;
 
         // if they don't exist, we can check the user api directly
-        var userInfo = getJSON(proxy.userDataAPI(userid));
+        var userInfo = proxy.api.getUserData(userid);
         userInfo.then(function (json) {
           var data = json.data;
 
@@ -14273,13 +13940,13 @@ var DubPlus = (function () {
             };
 
             _this2.setState(function (prevState) {
-              if (whichVote === 'down') {
+              if (whichVote === "down") {
                 return {
                   downDubs: [].concat(_toConsumableArray(prevState.downDubs), [user])
                 };
               }
 
-              if (whichVote === 'up') {
+              if (whichVote === "up") {
                 return {
                   upDubs: [].concat(_toConsumableArray(prevState.upDubs), [user])
                 };
@@ -14299,7 +13966,7 @@ var DubPlus = (function () {
         var _this3 = this;
 
         // get the current active dubs in the room via api
-        var roomDubs = getJSON(proxy.activeDubsAPI());
+        var roomDubs = proxy.api.getActiveDubs();
         roomDubs.then(function (json) {
           // loop through all the upDubs in the room and add them to our local state
           if (json.data && json.data.upDubs) {
@@ -14316,7 +13983,7 @@ var DubPlus = (function () {
 
               if (!checkUser || !checkUser.attributes) {
                 // if they don't exist, we can check the user api directly
-                _this3.getUserData(e.userid, 'up');
+                _this3.getUserData(e.userid, "up");
 
                 return;
               }
@@ -14349,7 +14016,7 @@ var DubPlus = (function () {
               var checkUsers = proxy.getUserInfo(e.userid);
 
               if (!checkUsers || !checkUsers.attributes) {
-                _this3.getUserData(e.userid, 'down');
+                _this3.getUserData(e.userid, "down");
 
                 return;
               }
@@ -14369,22 +14036,23 @@ var DubPlus = (function () {
             });
           }
         }).catch(function (err) {
-          console.error(err);
+          // console.error(err);
+          console.log('error getting active dubs, maybe no songs playing');
         });
       }
     }, {
       key: "componentWillMount",
       value: function componentWillMount() {
-        this.upElem = proxy.upVote().parentElement;
-        this.upElem.classList.add('dubplus-updub-btn');
-        this.downElem = proxy.downVote().parentElement;
-        this.downElem.classList.add('dubplus-downdub-btn');
-        this.grabElem = proxy.grabBtn().parentElement;
-        this.grabElem.classList.add('dubplus-grab-btn');
+        this.upElem = proxy.dom.upVote().parentElement;
+        this.upElem.classList.add("dubplus-updub-btn");
+        this.downElem = proxy.dom.downVote().parentElement;
+        this.downElem.classList.add("dubplus-downdub-btn");
+        this.grabElem = proxy.dom.grabBtn().parentElement;
+        this.grabElem.classList.add("dubplus-grab-btn");
       }
     }, {
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
         return h(MenuSwitch, {
           id: "dubplus-dubs-hover",
           section: "General",
@@ -14418,21 +14086,21 @@ var DubPlus = (function () {
     }]);
 
     return ShowDubsOnHover;
-  }(Component);
+  }(m);
 
   function chatMessage(username, song) {
-    var li = document.createElement('li');
+    var li = document.createElement("li");
     li.className = "dubplus-chat-system dubplus-chat-system-downdub";
-    var div = document.createElement('div');
+    var div = document.createElement("div");
     div.className = "chatDelete";
 
     div.onclick = function (e) {
       return e.currentTarget.parentElement.remove();
     };
 
-    var span = document.createElement('span');
+    var span = document.createElement("span");
     span.className = "icon-close";
-    var text = document.createElement('div');
+    var text = document.createElement("div");
     text.className = "text";
     text.textContent = "@".concat(username, " has downdubbed your song ").concat(song);
     div.appendChild(span);
@@ -14459,16 +14127,16 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(DowndubInChat)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function () {
         if (!proxy.modCheck()) {
           return;
         }
 
-        proxy.onSongVote(_this.downdubWatcher);
+        proxy.events.onSongVote(_this.downdubWatcher);
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        proxy.offSongVote(_this.downdubWatcher);
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
+        proxy.events.offSongVote(_this.downdubWatcher);
       });
 
       return _this;
@@ -14477,17 +14145,21 @@ var DubPlus = (function () {
     _createClass(DowndubInChat, [{
       key: "downdubWatcher",
       value: function downdubWatcher(e) {
-        var user = proxy.getUserName();
+        var user = proxy.userName();
         var currentDj = proxy.getCurrentDJ();
+
+        if (!currentDj) {
+          return;
+        }
 
         if (user === currentDj && e.dubtype === "downdub") {
           var newChat = chatMessage(e.user.username, proxy.getSongName());
-          proxy.chatList().appendChild(newChat);
+          proxy.dom.chatList().appendChild(newChat);
         }
       }
     }, {
       key: "render",
-      value: function render$$1() {
+      value: function render() {
         return h(MenuSwitch, {
           id: "dubplus-downdubs",
           section: "General",
@@ -14500,7 +14172,7 @@ var DubPlus = (function () {
     }]);
 
     return DowndubInChat;
-  }(Component);
+  }(m);
 
   function chatMessage$1(username, song) {
     var li = document.createElement("li");
@@ -14541,12 +14213,12 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(UpdubsInChat)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        proxy.onSongVote(_this.updubWatcher);
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function () {
+        proxy.events.onSongVote(_this.updubWatcher);
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        proxy.offSongVote(_this.updubWatcher);
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
+        proxy.events.offSongVote(_this.updubWatcher);
       });
 
       return _this;
@@ -14555,17 +14227,21 @@ var DubPlus = (function () {
     _createClass(UpdubsInChat, [{
       key: "updubWatcher",
       value: function updubWatcher(e) {
-        var user = proxy.getUserName();
+        var user = proxy.userName();
         var currentDj = proxy.getCurrentDJ();
+
+        if (!currentDj) {
+          return;
+        }
 
         if (user === currentDj && e.dubtype === "updub") {
           var newChat = chatMessage$1(e.user.username, proxy.getSongName());
-          proxy.chatList().appendChild(newChat);
+          proxy.dom.chatList().appendChild(newChat);
         }
       }
     }, {
       key: "render",
-      value: function render$$1() {
+      value: function render() {
         return h(MenuSwitch, {
           id: "dubplus-updubs",
           section: "General",
@@ -14578,21 +14254,21 @@ var DubPlus = (function () {
     }]);
 
     return UpdubsInChat;
-  }(Component);
+  }(m);
 
   function chatMessage$2(username, song) {
-    var li = document.createElement('li');
+    var li = document.createElement("li");
     li.className = "dubplus-chat-system dubplus-chat-system-grab";
-    var div = document.createElement('div');
+    var div = document.createElement("div");
     div.className = "chatDelete";
 
     div.onclick = function (e) {
       return e.currentTarget.parentElement.remove();
     };
 
-    var span = document.createElement('span');
+    var span = document.createElement("span");
     span.className = "icon-close";
-    var text = document.createElement('div');
+    var text = document.createElement("div");
     text.className = "text";
     text.textContent = "@".concat(username, " has grabbed your song ").concat(song);
     div.appendChild(span);
@@ -14619,32 +14295,50 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(GrabsInChat)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function () {
-        proxy.onSongGrab(_this.grabChatWatcher);
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function () {
+        proxy.events.onSongGrab(_this.grabChatWatcher);
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        proxy.offSongGrab(_this.grabChatWatcher);
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
+        proxy.events.offSongGrab(_this.grabChatWatcher);
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "grabChatWatcher", function (e) {
+        if (proxy.displayUserGrab()) {
+          // if the room has turned on its own "show grab in chat" setting
+          // then we no longer need to listen to grabs
+          proxy.events.offSongGrab(_this.grabChatWatcher); // a nd we turn switch off
+
+          _this.switchRef.switchOff(true);
+
+          return;
+        }
+
+        var user = proxy.userName();
+        var currentDj = proxy.getCurrentDJ();
+
+        if (!currentDj) {
+          return;
+        }
+
+        if (user === currentDj) {
+          var newChat = chatMessage$2(e.user.username, proxy.getSongName());
+          proxy.dom.chatList().appendChild(newChat);
+        }
       });
 
       return _this;
     }
 
     _createClass(GrabsInChat, [{
-      key: "grabChatWatcher",
-      value: function grabChatWatcher(e) {
-        var user = proxy.getUserName();
-        var currentDj = proxy.getCurrentDJ();
-
-        if (user === currentDj && !proxy.displayUserGrab()) {
-          var newChat = chatMessage$2(e.user.username, proxy.getSongName());
-          proxy.chatList().appendChild(newChat);
-        }
-      }
-    }, {
       key: "render",
-      value: function render$$1() {
+      value: function render() {
+        var _this2 = this;
+
         return h(MenuSwitch, {
+          ref: function ref(s) {
+            return _this2.switchRef = s;
+          },
           id: "dubplus-grabschat",
           section: "General",
           menuTitle: "Grabs in Chat",
@@ -14656,14 +14350,198 @@ var DubPlus = (function () {
     }]);
 
     return GrabsInChat;
-  }(Component);
+  }(m);
+
+  /**
+   * Takes time in milliseconds and converts it to a H:MM:SS format
+   *  The hours is not left padded
+   * 
+   * @export
+   * @param {String|Number} duration
+   * @returns {String}
+   */
+  function convertMStoTime(duration) {
+    if (!duration) {
+      return ""; // just in case songLength is missing for some reason
+    }
+
+    var seconds = parseInt(duration / 1000 % 60, 10);
+    var minutes = parseInt(duration / (1000 * 60) % 60, 10);
+    var hours = parseInt(duration / (1000 * 60 * 60) % 24, 10);
+
+    if (isNaN(seconds) || isNaN(minutes) || isNaN(hours)) {
+      return "";
+    }
+
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    if (hours) {
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      return hours + ":" + minutes + ":" + seconds;
+    }
+
+    return minutes + ":" + seconds;
+  }
+
+  var SongPreview = function SongPreview(_ref) {
+    var song = _ref.song;
+
+    if (!song) {
+      return null;
+    }
+
+    return h("p", {
+      class: "dubplus-song-preview"
+    }, song.images && song.images.thumbnail ? h("span", {
+      class: "dubplus-song-preview__image"
+    }, h("img", {
+      src: song.images.thumbnail
+    })) : null, h("span", {
+      class: "dubplus-song-preview__title"
+    }, h("small", null, "Your next track:"), song.name), h("span", {
+      class: "dubplus-song-preview__length"
+    }, convertMStoTime(song.songLength)));
+  };
+
+  var PreviewNextSong =
+  /*#__PURE__*/
+  function (_Component) {
+    _inherits(PreviewNextSong, _Component);
+
+    function PreviewNextSong() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      _classCallCheck(this, PreviewNextSong);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(PreviewNextSong)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+      _defineProperty(_assertThisInitialized(_this), "state", {
+        isOn: false,
+        nextSong: null
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "findNextSong", function () {
+        proxy.api.getRoomQueue().then(function (json) {
+          var data = window._.get(json, "data", []);
+
+          var next = data.filter(function (track) {
+            return track.userid === _this.userid;
+          });
+
+          if (next.length > 0) {
+            _this.getSongInfo(next[0].songid);
+
+            return;
+          }
+
+          _this.setState({
+            nextSong: null
+          });
+        }).catch(function (err) {
+          _this.setState({
+            nextSong: null
+          });
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "getSongInfo", function (songId) {
+        proxy.api.getSongData(songId).then(function (json) {
+          var name = window._.get(json, "data.name");
+
+          if (name) {
+            _this.setState({
+              nextSong: json.data
+            });
+
+            return;
+          }
+
+          _this.setState({
+            nextSong: null
+          });
+        }).catch(function (err) {
+          _this.setState({
+            nextSong: null
+          });
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function () {
+        _this.setState({
+          isOn: true
+        });
+
+        _this.findNextSong();
+
+        proxy.events.onPlaylistUpdate(_this.findNextSong);
+        proxy.events.onQueueUpdate(_this.findNextSong);
+        document.body.classList.add("dplus-song-preview");
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
+        _this.setState({
+          isOn: false
+        });
+
+        proxy.events.offPlaylistUpdate(_this.findNextSong);
+        proxy.events.offQueueUpdate(_this.findNextSong);
+        document.body.classList.remove("dplus-song-preview");
+      });
+
+      return _this;
+    }
+
+    _createClass(PreviewNextSong, [{
+      key: "componentWillMount",
+      value: function componentWillMount() {
+        // add an empty span on mount to give Portal something to render to
+        var widget = proxy.dom.chatInputContainer();
+        var span = document.createElement("span");
+        span.id = "dp-song-prev-target";
+        widget.parentNode.insertBefore(span, widget);
+        this.renderTo = document.getElementById("dp-song-prev-target");
+        this.userid = proxy.userId();
+      }
+      /**
+       * Go through the room's playlist queue and look for the ID of the current
+       * logged in User
+       */
+
+    }, {
+      key: "render",
+      value: function render(props, _ref2) {
+        var isOn = _ref2.isOn,
+            nextSong = _ref2.nextSong;
+        return h(MenuSwitch, {
+          id: "dubplus-preview-next-song",
+          section: "General",
+          menuTitle: "Preview Next Song",
+          desc: "Show the next song you have queued up without having to look in your queue",
+          turnOn: this.turnOn,
+          turnOff: this.turnOff
+        }, isOn ? h(Portal, {
+          into: this.renderTo
+        }, h(SongPreview, {
+          song: nextSong
+        })) : null);
+      }
+    }]);
+
+    return PreviewNextSong;
+  }(m);
 
   var GeneralSection = function GeneralSection() {
     return h(MenuSection, {
       id: "dubplus-general",
       title: "General",
       settingsKey: "general"
-    }, h(Autovote, null), h(AFK, null), h(AutocompleteEmoji, null), h(Emotes, null), h(CustomMentions, null), h(ChatCleaner, null), h(ChatNotification, null), h(PMNotifications, null), h(DJNotification, null), h(ShowDubsOnHover, null), h(DowndubInChat, null), h(UpdubsInChat, null), h(GrabsInChat, null), h(SnowSwitch, null), h(RainSwitch, null));
+    }, h(Autovote, null), h(AFK, null), h(AutocompleteEmoji, null), h(Emotes, null), h(CustomMentions, null), h(ChatCleaner, null), h(ChatNotification, null), h(PMNotifications, null), h(DJNotification, null), h(ShowDubsOnHover, null), h(DowndubInChat, null), h(UpdubsInChat, null), h(GrabsInChat, null), h(PreviewNextSong, null), h(SnowSwitch, null), h(RainSwitch, null));
   };
 
   /**
@@ -14742,33 +14620,10 @@ var DubPlus = (function () {
   };
 
   function turnOn$2() {
-    document.body.classList.add('dubplus-chat-only');
-  }
-
-  function turnOff$2() {
-    document.body.classList.remove('dubplus-chat-only');
-  }
-  /**
-   * Hide Video
-   */
-
-
-  var HideVideo = function HideVideo() {
-    return h(MenuSwitch, {
-      id: "dubplus-chat-only",
-      section: "User Interface",
-      menuTitle: "Hide Video",
-      desc: "Toggles hiding the video box",
-      turnOn: turnOn$2,
-      turnOff: turnOff$2
-    });
-  };
-
-  function turnOn$3() {
     document.body.classList.add('dubplus-hide-avatars');
   }
 
-  function turnOff$3() {
+  function turnOff$2() {
     document.body.classList.remove('dubplus-hide-avatars');
   }
   /**
@@ -14782,16 +14637,16 @@ var DubPlus = (function () {
       section: "User Interface",
       menuTitle: "Hide Avatars",
       desc: "Toggle hiding user avatars in the chat box.",
-      turnOn: turnOn$3,
-      turnOff: turnOff$3
+      turnOn: turnOn$2,
+      turnOff: turnOff$2
     });
   };
 
-  function turnOn$4() {
+  function turnOn$3() {
     document.body.classList.add('dubplus-hide-bg');
   }
 
-  function turnOff$4() {
+  function turnOff$3() {
     document.body.classList.remove('dubplus-hide-bg');
   }
   /**
@@ -14805,16 +14660,16 @@ var DubPlus = (function () {
       section: "User Interface",
       menuTitle: "Hide Background",
       desc: "Toggle hiding background image.",
-      turnOn: turnOn$4,
-      turnOff: turnOff$4
+      turnOn: turnOn$3,
+      turnOff: turnOff$3
     });
   };
 
-  function turnOn$5() {
+  function turnOn$4() {
     document.body.classList.add('dubplus-show-timestamp');
   }
 
-  function turnOff$5() {
+  function turnOff$4() {
     document.body.classList.remove('dubplus-show-timestamp');
   }
 
@@ -14824,16 +14679,16 @@ var DubPlus = (function () {
       section: "User Interface",
       menuTitle: "Show Timestamps",
       desc: "Toggle always showing chat message timestamps.",
-      turnOn: turnOn$5,
-      turnOff: turnOff$5
+      turnOn: turnOn$4,
+      turnOff: turnOff$4
     });
   };
 
-  function turnOn$6() {
+  function turnOn$5() {
     document.body.classList.add('dubplus-hide-selfie');
   }
 
-  function turnOff$6() {
+  function turnOff$5() {
     document.body.classList.remove('dubplus-hide-selfie');
   }
   /**
@@ -14847,10 +14702,35 @@ var DubPlus = (function () {
       section: "User Interface",
       menuTitle: "Hide Gif-Selfie",
       desc: "Toggles hiding the gif selfie icon",
+      turnOn: turnOn$5,
+      turnOff: turnOff$5
+    });
+  };
+
+  function turnOn$6() {
+    document.body.classList.add('dubplus-chat-only');
+  }
+
+  function turnOff$6() {
+    document.body.classList.remove('dubplus-chat-only');
+  }
+  /**
+   * Hide Video
+   */
+
+
+  var HideVideo = function HideVideo() {
+    return h(MenuSwitch, {
+      id: "dubplus-chat-only",
+      section: "User Interface",
+      menuTitle: "Hide Video",
+      desc: "Toggles hiding the video box",
       turnOn: turnOn$6,
       turnOff: turnOff$6
     });
   };
+
+  /*END.NOT_EXT*/
 
   var UISection = function UISection() {
     return h(MenuSection, {
@@ -14861,11 +14741,11 @@ var DubPlus = (function () {
   };
 
   function handleKeyup(e) {
-    if (e.code === KEYS.space) {
+    if (e.code !== KEYS.space) {
       return;
     }
 
-    var tag = event.target.tagName.toLowerCase();
+    var tag = e.target.tagName.toLowerCase();
 
     if (tag !== "input" && tag !== "textarea") {
       proxy.mutePlayer();
@@ -14917,17 +14797,31 @@ var DubPlus = (function () {
   };
 
   function handleKeyup$1(e) {
-    if (e.target.id === 'playlist-input') {
-      var list = proxy.grabPlaylists();
+    if (e.target.id === "playlist-input") {
+      var list = proxy.dom.grabPlaylists();
+
+      if (!list.length) {
+        return;
+      }
+
+      var ul = list[0].parentElement;
+
+      if (!ul.style.height) {
+        ul.style.height = ul.offsetHeight + "px";
+      }
+
+      ul.scrollTop = 0;
+      var lcVal = e.target.value.toLowerCase();
       list.forEach(function (li) {
-        var check = li.textContent.indexOf(e.target.value) >= 0;
-        li.style.display = check ? 'block' : 'none';
+        var liText = li.textContent.toLowerCase();
+        var check = liText.indexOf(lcVal) >= 0;
+        li.style.display = check ? "block" : "none";
       });
     }
   }
 
   function turnOn$9() {
-    // the playlist is part of a DOM element that gets added and removed so we 
+    // the playlist is part of a DOM element that gets added and removed so we
     // can't bind directly to it, we need to use delegation.
     document.body.addEventListener("keyup", handleKeyup$1);
   }
@@ -14978,7 +14872,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1551073008891);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571110681084);
     document.head.appendChild(link);
   }
   /**
@@ -14997,14 +14891,13 @@ var DubPlus = (function () {
     document.head.appendChild(link);
   }
 
-  var css$2 = {
+  var cssHelper = {
     load: load,
     loadExternal: loadExternal
   };
 
   function turnOn$a() {
-    var location = proxy.getRoomUrl();
-    var roomAjax = getJSON("https://api.dubtrack.fm/room/" + location);
+    var roomAjax = proxy.api.roomInfo();
     roomAjax.then(function (json) {
       var content = json.data.description; // for backwards compatibility with dubx we're checking for both @dubx and @dubplus and @dub+
 
@@ -15019,7 +14912,7 @@ var DubPlus = (function () {
         return;
       }
 
-      css$2.loadExternal(communityCSSUrl, "dubplus-comm-theme");
+      cssHelper.loadExternal(communityCSSUrl, "dubplus-comm-theme");
     });
   }
 
@@ -15064,17 +14957,17 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(CustomCSS)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isOn", false);
+      _defineProperty(_assertThisInitialized(_this), "isOn", false);
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         showModal: false
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (initialLoad) {
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function (initialLoad) {
         // if a valid custom css file exists then we can load it
         if (userSettings.stored.custom.css) {
           _this.isOn = true;
-          css$2.loadExternal(userSettings.stored.custom.css, "dubplus-custom-css");
+          cssHelper.loadExternal(userSettings.stored.custom.css, "dubplus-custom-css");
           return;
         } // if you turn this option on but the stored value is empty then we should
         // bring up a modal ... BUT not initial load of the extension
@@ -15087,7 +14980,7 @@ var DubPlus = (function () {
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
         _this.isOn = false;
         var link = document.querySelector(".dubplus-custom-css");
 
@@ -15098,7 +14991,7 @@ var DubPlus = (function () {
         _this.closeModal();
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "save", function () {
+      _defineProperty(_assertThisInitialized(_this), "save", function () {
         var val = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
         userSettings.save("custom", "css", val); // disable the switch if the value is empty/null/undefined
 
@@ -15109,13 +15002,13 @@ var DubPlus = (function () {
         }
 
         if (_this.isOn) {
-          css$2.loadExternal(userSettings.stored.custom.css, "dubplus-custom-css");
+          cssHelper.loadExternal(userSettings.stored.custom.css, "dubplus-custom-css");
         }
 
         _this.closeModal();
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "closeModal", function () {
+      _defineProperty(_assertThisInitialized(_this), "closeModal", function () {
         _this.setState({
           showModal: false
         });
@@ -15126,7 +15019,7 @@ var DubPlus = (function () {
 
     _createClass(CustomCSS, [{
       key: "render",
-      value: function render$$1() {
+      value: function render() {
         return h(MenuSwitch, {
           id: "dubplus-custom-css",
           section: "Customize",
@@ -15149,7 +15042,36 @@ var DubPlus = (function () {
     }]);
 
     return CustomCSS;
-  }(Component);
+  }(m);
+
+  /*
+    Interaction model
+    
+    # Extension start up (first load)
+    - check if user has turned this option on
+    - if so, try loading custom bg
+    - if for some reason the switch is on but saved data is empty, turn it off
+
+    # On error
+    - if image doesn't load
+      - show alert with error message
+      - turn off switch
+
+    # Turn on from user click
+    - if there's a saved setting
+      - load BG image
+    - if not
+      - show modal to enter an image
+
+    # Modal Save
+    - if switch is on and val is not empty, try loading the bg image
+    - if switch is on and val is empty, revert to the original bg image
+    - close modal
+
+    # Modal Cancel
+    - close modal
+
+  */
 
   /**
    * Custom Background
@@ -15173,22 +15095,38 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(CustomBG)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isOn", false);
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         showModal: false
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "bgImg", proxy.bgImg());
+      _defineProperty(_assertThisInitialized(_this), "bgImg", proxy.dom.bgImg());
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (initialLoad) {
+      _defineProperty(_assertThisInitialized(_this), "handleError", function () {
+        _this.switchRef.switchOff();
+
+        _this.revertBG();
+
+        alert("error loading image \"".concat(userSettings.stored.custom.bg, "\", edit the url and try again"));
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "addCustomBG", function (val) {
+        _this.bgImg.src = val;
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "revertBG", function () {
+        _this.bgImg.src = _this.dubBgImg;
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function (initialLoad) {
         if (userSettings.stored.custom.bg) {
-          _this.isOn = true;
-
           _this.addCustomBG(userSettings.stored.custom.bg);
 
           return;
-        }
+        } else {
+          _this.switchRef.switchOff();
+        } // if there is no saved setting
+        // and User clicked to turn it on
+
 
         if (!initialLoad) {
           _this.setState({
@@ -15197,9 +15135,7 @@ var DubPlus = (function () {
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        _this.isOn = false;
-
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
         _this.revertBG();
 
         _this.setState({
@@ -15207,19 +15143,32 @@ var DubPlus = (function () {
         });
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "save", function (val) {
-        userSettings.save("custom", "bg", val); // disable the switch if the value is empty/null/undefined
+      _defineProperty(_assertThisInitialized(_this), "save", function (val) {
+        var newVal = val.trim();
+        var success = userSettings.save("custom", "bg", newVal);
 
-        if (!val) {
-          _this.turnOff();
-
-          return;
+        if (!success) {
+          return false;
         }
 
-        if (_this.isOn) {
-          _this.addCustomBG(val);
+        if (_this.switchRef.state.on) {
+          if (userSettings.stored.custom.bg) {
+            _this.addCustomBG(newVal);
+          } else {
+            _this.turnOff();
+
+            return true;
+          }
         }
 
+        _this.setState({
+          showModal: false
+        });
+
+        return true;
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "onCancel", function () {
         _this.setState({
           showModal: false
         });
@@ -15229,20 +15178,20 @@ var DubPlus = (function () {
     }
 
     _createClass(CustomBG, [{
-      key: "addCustomBG",
-      value: function addCustomBG(val) {
-        this.saveSrc = this.bgImg.src;
-        this.bgImg.src = val;
-      }
-    }, {
-      key: "revertBG",
-      value: function revertBG() {
-        this.bgImg.src = this.saveSrc;
+      key: "componentDidMount",
+      value: function componentDidMount() {
+        this.dubBgImg = this.bgImg.src;
+        this.bgImg.onerror = this.handleError;
       }
     }, {
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
+        var _this2 = this;
+
         return h(MenuSwitch, {
+          ref: function ref(e) {
+            return _this2.switchRef = e;
+          },
           id: "dubplus-custom-bg",
           section: "Customize",
           menuTitle: "Custom Background Image",
@@ -15257,16 +15206,43 @@ var DubPlus = (function () {
           value: userSettings.stored.custom.bg || "",
           placeholder: "https://example.com/big-image.jpg",
           maxlength: "500",
+          errorMsg: "An error occured trying to save your image url, please check it and try again",
+          onCancel: this.onCancel,
           onConfirm: this.save
         }));
       }
     }]);
 
     return CustomBG;
-  }(Component);
+  }(m);
 
-  var DubtrackDefaultSound = "/assets/music/user_ping.mp3";
+  /*
+    Interaction model
+    
+    # Extension start up (first load)
+    - check if there is an audio url in saved options
+    - if so -> check if a playable url -> set as chat sound
+    - if can't play, turn off option
+
+    # Turn on from user click
+    - if no saved setting, show modal
+    - else turn on (see above for turn on process)
+
+    # Modal Save
+    - if switch is on
+      - check if new url is playable, set it as chat sound
+    - else
+      - show error message in modal. User will either have to fix
+        it or his cancel to get out of the modal
+
+    # Modal Cancel
+    - close modal
+    - if setting is empty, or cant play sound, turn off switch
+
+  */
+
   var modalMessage = "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to Dubtrack's default sound";
+  var processError = "Error saving new url, check url and try again";
   /**
    * Custom Notification Sound
    */
@@ -15289,62 +15265,88 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(CustomSound)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isOn", false);
-
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         showModal: false,
-        modalMessage: modalMessage
+        errorMsg: processError
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOn", function (initialLoad) {
-        if (userSettings.stored.custom.notificationSound) {
-          _this.isOn = true;
-          proxy.setChatSoundUrl(userSettings.stored.custom.notificationSound);
+      _defineProperty(_assertThisInitialized(_this), "badUrlError", "You've entered an invalid sound url! Please make sure you are entering the full, direct url to the file. IE: https://example.com/sweet-sound.mp3");
+
+      _defineProperty(_assertThisInitialized(_this), "DubtrackDefaultSound", proxy.getChatSoundUrl());
+
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function (initialLoad) {
+        var notificationSound = userSettings.stored.custom.notificationSound;
+
+        if (notificationSound && soundManager.canPlayURL(notificationSound)) {
+          proxy.setChatSoundUrl(notificationSound);
           return;
+        } else if (initialLoad) {
+          _this.switchRef.switchOff();
         }
 
         if (!initialLoad) {
           _this.setState({
             showModal: true,
-            modalMessage: modalMessage
+            errorMsg: _this.badUrlError
           });
         }
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turnOff", function () {
-        _this.isOn = false;
-        proxy.setChatSoundUrl(DubtrackDefaultSound);
+      _defineProperty(_assertThisInitialized(_this), "turnOff", function () {
+        proxy.setChatSoundUrl(_this.DubtrackDefaultSound);
 
         _this.setState({
           showModal: false
         });
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "save", function (val) {
-        // Check if valid sound url
-        if (soundManager.canPlayURL(val)) {
-          userSettings.save("custom", "notificationSound", val);
-        } else {
+      _defineProperty(_assertThisInitialized(_this), "save", function (val) {
+        var newVal = val.trim();
+        var success = userSettings.save("custom", "notificationSound", newVal);
+
+        if (!success) {
           _this.setState({
-            modalMessage: "You've entered an invalid sound url! Please make sure you are entering the full, direct url to the file. IE: https://example.com/sweet-sound.mp3",
-            showModal: true
+            errorMsg: processError
           });
 
-          return;
+          return false;
         }
 
-        if (_this.isOn) {
-          proxy.setChatSoundUrl(val);
+        if (_this.switchRef.state.on) {
+          // Check if valid sound url
+          if (soundManager.canPlayURL(newVal)) {
+            proxy.setChatSoundUrl(newVal);
+
+            _this.setState({
+              showModal: false
+            });
+
+            return true;
+          } else {
+            _this.setState({
+              errorMsg: _this.badUrlError
+            });
+
+            return false;
+          }
         }
 
         _this.setState({
           showModal: false
         });
+
+        return true;
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "onCancel", function () {
-        if (!userSettings.stored.custom.notificationSound) {
-          _this.turnOff();
+      _defineProperty(_assertThisInitialized(_this), "onCancel", function () {
+        _this.setState({
+          showModal: false
+        });
+
+        var notificationSound = userSettings.stored.custom.notificationSound;
+
+        if (!notificationSound || !soundManager.canPlayURL(notificationSound)) {
+          _this.switchRef.switchOff();
         }
       });
 
@@ -15353,8 +15355,13 @@ var DubPlus = (function () {
 
     _createClass(CustomSound, [{
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
+        var _this2 = this;
+
         return h(MenuSwitch, {
+          ref: function ref(e) {
+            return _this2.switchRef = e;
+          },
           id: "dubplus-custom-notification-sound",
           section: "Customize",
           menuTitle: "Custom Notification Sound",
@@ -15365,18 +15372,19 @@ var DubPlus = (function () {
           showModal: state.showModal,
           title: "Custom Notification Sound",
           section: "Customize",
-          content: state.modalMessage,
+          content: modalMessage,
           value: userSettings.stored.custom.notificationSound || "",
           placeholder: "https://example.com/sweet-sound.mp3",
           maxlength: "500",
           onConfirm: this.save,
-          onCancel: this.onCancel
+          onCancel: this.onCancel,
+          errorMsg: this.state.errorMsg
         }));
       }
     }]);
 
     return CustomSound;
-  }(Component);
+  }(m);
 
   var CustomizeSection = function CustomizeSection() {
     return h(MenuSection, {
@@ -15390,12 +15398,29 @@ var DubPlus = (function () {
    * DubPlus Menu Container
    */
 
+  function ExtraButtons() {
+    return h("span", null, h(ETA, null), h(Snooze, null));
+  }
+
+  function addButtons() {
+    // icon-twitter  icon-facebook
+    var shareWait = new WaitFor([".player_sharing", ".icon-twitter", ".icon-facebook"], {
+      seconds: 120,
+      isNode: true
+    });
+    shareWait.then(function () {
+      var holder = document.createElement('span');
+      holder.id = "dubplus-button-holder";
+      document.querySelector(".player_sharing").appendChild(holder);
+      I(h(ExtraButtons, null), holder);
+    });
+  }
+
   var DubPlusMenu = function DubPlusMenu() {
     setTimeout(function () {
       // load this async so it doesn't block the rest of the menu render
       // since these buttons are completely independent from the menu
-      snooze$1();
-      eta();
+      addButtons();
       SetupPicker();
     }, 10);
     return h("section", {
@@ -15406,39 +15431,23 @@ var DubPlus = (function () {
       id: "dubplus-contacts",
       title: "Contacts",
       settingsKey: "contact"
-    }, h("li", {
-      class: "dubplus-menu-icon"
-    }, h("span", {
-      class: "fa fa-bug"
-    }), h("a", {
-      href: "https://discord.gg/XUkG3Qy",
-      class: "dubplus-menu-label",
-      target: "_blank"
-    }, "Report bugs on Discord")), h("li", {
-      class: "dubplus-menu-icon"
-    }, h("span", {
-      class: "fa fa-reddit-alien"
-    }), h("a", {
-      href: "https://www.reddit.com/r/DubPlus/",
-      class: "dubplus-menu-label",
-      target: "_blank"
-    }, "Reddit")), h("li", {
-      class: "dubplus-menu-icon"
-    }, h("span", {
-      class: "fa fa-facebook"
-    }), h("a", {
-      href: "https://facebook.com/DubPlusScript",
-      class: "dubplus-menu-label",
-      target: "_blank"
-    }, "Facebook")), h("li", {
-      class: "dubplus-menu-icon"
-    }, h("span", {
-      class: "fa fa-twitter"
-    }), h("a", {
-      href: "https://twitter.com/DubPlusScript",
-      class: "dubplus-menu-label",
-      target: "_blank"
-    }, "Twitter"))));
+    }, h(MenuSimple, {
+      icon: "bug",
+      menuTitle: "Report bugs on Discord",
+      href: "https://discord.gg/XUkG3Qy"
+    }), h(MenuSimple, {
+      icon: "reddit-alien",
+      menuTitle: "Reddit",
+      href: "https://www.reddit.com/r/DubPlus/"
+    }), h(MenuSimple, {
+      icon: "facebook",
+      menuTitle: "Facebook",
+      href: "https://facebook.com/DubPlusScript"
+    }), h(MenuSimple, {
+      icon: "twitter",
+      menuTitle: "Twitter",
+      href: "https://twitter.com/DubPlusScript"
+    })));
   };
 
   var waitingStyles = {
@@ -15487,11 +15496,11 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(LoadingNotice)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         mainStyles: waitingStyles
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dismiss", function () {
+      _defineProperty(_assertThisInitialized(_this), "dismiss", function () {
         _this.setState(function (prevState, props) {
           return {
             mainStyles: Object.assign({}, prevState.mainStyles, {
@@ -15526,7 +15535,7 @@ var DubPlus = (function () {
       }
     }, {
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
         return h("div", {
           style: state.mainStyles,
           onClick: this.dismiss
@@ -15542,7 +15551,7 @@ var DubPlus = (function () {
     }]);
 
     return LoadingNotice;
-  }(Component);
+  }(m);
 
   var MenuIcon =
   /*#__PURE__*/
@@ -15562,12 +15571,17 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(MenuIcon)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         open: false
       });
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggle", function () {
+      _defineProperty(_assertThisInitialized(_this), "toggle", function () {
         var menu = document.querySelector('.dubplus-menu');
+
+        if (!menu) {
+          console.warn("menu not built yet, try again");
+          return;
+        }
 
         if (_this.state.open) {
           menu.classList.remove('dubplus-menu-open');
@@ -15589,7 +15603,7 @@ var DubPlus = (function () {
 
     _createClass(MenuIcon, [{
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
         return h("div", {
           className: "dubplus-icon",
           onClick: this.toggle
@@ -15601,9 +15615,9 @@ var DubPlus = (function () {
     }]);
 
     return MenuIcon;
-  }(Component);
+  }(m);
 
-  polyfills(); // the extension loads the CSS from the load script so we don't need to
+  polyfills();
   // do it here. This is for people who load the script via bookmarklet or userscript
 
   var isExtension = document.getElementById("dubplus-script-ext");
@@ -15611,8 +15625,8 @@ var DubPlus = (function () {
   if (!isExtension) {
     setTimeout(function () {
       // start the loading of the CSS asynchronously
-      css$2.loadExternal("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
-      css$2.load("/css/dubplus.css");
+      cssHelper.loadExternal("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+      cssHelper.load("/css/dubplus.css");
     }, 10);
   }
 
@@ -15634,7 +15648,7 @@ var DubPlus = (function () {
 
       _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(DubPlusContainer)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-      _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      _defineProperty(_assertThisInitialized(_this), "state", {
         loading: true,
         error: false,
         errorMsg: "",
@@ -15657,7 +15671,7 @@ var DubPlus = (function () {
               error: false
             });
           }).catch(function () {
-            if (!proxy.getSessionId()) {
+            if (!proxy.sessionId()) {
               _this2.showError("You're not logged in. Please login to use Dub+.");
             } else {
               _this2.showError("Something happed, refresh and try again");
@@ -15668,7 +15682,7 @@ var DubPlus = (function () {
           return;
         }
 
-        if (!proxy.getSessionId()) {
+        if (!proxy.sessionId()) {
           this.showError("You're not logged in. Please login to use Dub+.");
         } else {
           this.showError("Dub+ is already loaded");
@@ -15685,7 +15699,7 @@ var DubPlus = (function () {
       }
     }, {
       key: "render",
-      value: function render$$1(props, state) {
+      value: function render(props, state) {
         var _this3 = this;
 
         if (state.loading) {
@@ -15715,15 +15729,18 @@ var DubPlus = (function () {
     }]);
 
     return DubPlusContainer;
-  }(Component);
+  }(m);
 
-  render(h(DubPlusContainer, null), document.body);
-  var navWait = new WaitFor(".header-right-navigation .user-messages", {
-    seconds: 60,
+  I(h(DubPlusContainer, null), document.body);
+  var navWait = new WaitFor([".header-right-navigation .user-messages", ".header-right-navigation .user-info"], {
+    seconds: 120,
     isNode: true
   });
   navWait.then(function () {
-    render(h(MenuIcon, null), document.querySelector(".header-right-navigation"));
+    var holder = document.createElement('span');
+    holder.id = "dubplus-icon-holder";
+    document.querySelector(".header-right-navigation").appendChild(holder);
+    I(h(MenuIcon, null), holder);
   }); // PKGINFO is inserted by the rollup build process
 
   var index = {

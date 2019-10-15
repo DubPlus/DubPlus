@@ -12,7 +12,7 @@ export default class PMNotifications extends Component {
   };
 
   notify(e) {
-    var userid = dtproxy.getSessionId();
+    var userid = dtproxy.userId();
     if (userid === e.userid) {
       return;
     }
@@ -20,9 +20,9 @@ export default class PMNotifications extends Component {
       title: "You have a new PM",
       ignoreActiveTab: true,
       callback: function() {
-        dtproxy.userPMs().click();
+        dtproxy.dom.userPMs().click();
         setTimeout(function() {
-          dtproxy.getPMmsg(e.messageid).click();
+          dtproxy.dom.getPMmsg(e.messageid).click();
         }, 500);
       },
       wait: 10000
@@ -32,7 +32,7 @@ export default class PMNotifications extends Component {
   turnOn = () => {
     notifyCheckPermission((status, reason) => {
       if (status === true) {
-        dtproxy.onNewPM(this.notify);
+        dtproxy.events.onNewPM(this.notify);
       } else {
         // call MenuSwitch's switchOff with noTrack=true argument
         this.switchRef.switchOff(true);
@@ -50,7 +50,7 @@ export default class PMNotifications extends Component {
   };
 
   turnOff = () => {
-    dtproxy.offNewPM(this.notify);
+    dtproxy.events.offNewPM(this.notify);
   };
 
   render(props, state) {

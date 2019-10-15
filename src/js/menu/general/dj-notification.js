@@ -7,20 +7,23 @@ import dtproxy from "@/utils/DTProxy.js";
 export default class DJNotification extends Component {
   state = {
     canNotify: false,
-    notifyOn: settings.stored.custom.dj_notification
+    notifyOn: settings.stored.custom["dj-notification"]
   };
 
   savePosition = value => {
     var int = parseInt(value, 10);
     let amount = !isNaN(int) ? int : 2; // set default to position 2 in the queue
-    settings.save("custom", "dj_notification", amount);
-    this.setState({ notifyOn: value });
+    const success = settings.save("custom", "dj-notification", amount);
+    if (success) {
+      this.setState({ notifyOn: value });
+    }
+    return success
   };
 
   djNotificationCheck = e => {
     if (!this.canNotify || e.startTime > 2) return;
 
-    let queuePos = dtproxy.getQueuePosition();
+    let queuePos = dtproxy.dom.getQueuePosition();
     var positionParse = parseInt(queuePos, 10);
     var position =
       e.startTime < 0 && !isNaN(positionParse)
@@ -45,11 +48,11 @@ export default class DJNotification extends Component {
         this.setState({ canNotify: true });
       }
     });
-    dtproxy.onPlaylistUpdate(this.djNotificationCheck);
+    dtproxy.events.onPlaylistUpdate(this.djNotificationCheck);
   };
 
   turnOff = () => {
-    dtproxy.offPlaylistUpdate(this.djNotificationCheck);
+    dtproxy.events.offPlaylistUpdate(this.djNotificationCheck);
   };
 
   render() {

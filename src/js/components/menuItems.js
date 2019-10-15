@@ -50,13 +50,29 @@ export class MenuSection extends Component {
  * @param {string} props.desc description of the menu item used in the title attr
  * @param {string} props.icon icon to be used
  * @param {string} props.menuTitle text to display in the menu
- * @param {Function} props.onClick text to display in the menu
+ * @param {Function} props.onClick function to run on click
+ * @param {string} props.href if provided will render an anchor instead
  */
 export function MenuSimple(props) {
   let _cn = ["dubplus-menu-icon"];
   // combine with ones that were passed through
   if (props.className) {
     _cn.push(props.className);
+  }
+
+  if (props.href) {
+    return (
+      <li class="dubplus-menu-icon">
+        <span class={`fa fa-${props.icon}`} />
+        <a
+          href={props.href}
+          class="dubplus-menu-label"
+          target="_blank"
+        >
+          {props.menuTitle}
+        </a>
+      </li>
+    );
   }
 
   return (
@@ -78,6 +94,15 @@ export function MenuSimple(props) {
  * parent menu item.
  *
  * MenuPencil must always by a child of MenuSwitch.
+ * @param {string} props.section which section of the menu this is in
+ * @param {string} props.title the modal title
+ * @param {string} props.content  the description below the title
+ * @param {string} props.value prepopulate the value of the text area
+ * @param {number|string} props.maxLength  the max length of characters allowed in the text field
+ * @param {string} props.placeholder the text area placeholder if there is no value
+ * @param {boolean} props.showModal turns modal on/off directlt
+ * @param {function} props.onConfirm 
+ * @param {function} props.onCancel
  */
 export class MenuPencil extends Component {
   state = {
@@ -86,7 +111,7 @@ export class MenuPencil extends Component {
 
   loadModal = () => {
     this.setState({ open: true });
-    track.menuClick(this.props.section + " section", this.props.id + " edit");
+    track.menuClick(this.props.section + " section", this.props.title + " edit");
   };
 
   closeModal = () => {
@@ -107,7 +132,7 @@ export class MenuPencil extends Component {
     }
 
     // now we don't have to check val length inside every option
-    this.props.onConfirm(val);
+    return this.props.onConfirm(val);
   };
 
   render(props, state) {
@@ -122,6 +147,7 @@ export class MenuPencil extends Component {
           maxlength={props.maxlength}
           onConfirm={this.checkVal}
           onClose={this.closeModal}
+          errorMsg={props.errorMsg}
         />
       </span>
     );
@@ -135,7 +161,8 @@ export class MenuSwitch extends Component {
 
   componentDidMount() {
     if (this.state.on) {
-      // The "true" argument is so you can tell if component was activated on first load or not
+      // The "true" argument is so you can tell if component 
+      // was activated on first load or not
       this.props.turnOn(true);
     }
   }

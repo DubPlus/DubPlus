@@ -1,9 +1,8 @@
 import { h, Component } from "preact";
 import { MenuSwitch } from "@/components/menuItems.js";
 import Modal from "@/components/modal";
-import getJSON from "@/utils/getJSON.js";
 import DubsInfo from "./show-dubs-info";
-import Portal from "preact-portal/src/preact-portal";
+import Portal from "@/utils/Portal.js"
 import dtproxy from "@/utils/DTProxy.js";
 
 export default class ShowDubsOnHover extends Component {
@@ -13,28 +12,28 @@ export default class ShowDubsOnHover extends Component {
     upDubs: [],
     downDubs: [],
     grabs: []
-  }
+  };
 
-  userIsMod = dtproxy.modCheck()
-  
+  userIsMod = dtproxy.modCheck();
+
   turnOn = () => {
-    this.setState({isOn: true}, this.resetDubs);
+    this.setState({ isOn: true }, this.resetDubs);
 
-    dtproxy.onSongVote(this.dubWatcher);
-    dtproxy.onSongGrab(this.grabWatcher);
-    dtproxy.onUserLeave(this.dubUserLeaveWatcher);
-    dtproxy.onPlaylistUpdate(this.resetDubs);
-    dtproxy.onPlaylistUpdate(this.resetGrabs);
-  }
+    dtproxy.events.onSongVote(this.dubWatcher);
+    dtproxy.events.onSongGrab(this.grabWatcher);
+    dtproxy.events.onUserLeave(this.dubUserLeaveWatcher);
+    dtproxy.events.onPlaylistUpdate(this.resetDubs);
+    dtproxy.events.onPlaylistUpdate(this.resetGrabs);
+  };
 
   turnOff = () => {
-    this.setState({isOn: false});
+    this.setState({ isOn: false });
 
-    dtproxy.offSongVote(this.dubWatcher);
-    dtproxy.offSongGrab(this.grabWatcher);
-    dtproxy.offUserLeave(this.dubUserLeaveWatcher);
-    dtproxy.offPlaylistUpdate(this.resetDubs);
-    dtproxy.offPlaylistUpdate(this.resetGrabs);
+    dtproxy.events.offSongVote(this.dubWatcher);
+    dtproxy.events.offSongGrab(this.grabWatcher);
+    dtproxy.events.offUserLeave(this.dubUserLeaveWatcher);
+    dtproxy.events.offPlaylistUpdate(this.resetDubs);
+    dtproxy.events.offPlaylistUpdate(this.resetGrabs);
   };
 
   closeModal = () => {
@@ -46,7 +45,7 @@ export default class ShowDubsOnHover extends Component {
    * Stores the user info of who has dubbed the current song in local state
    */
   dubWatcher = e => {
-    let {upDubs, downDubs} = this.state;
+    let { upDubs, downDubs } = this.state;
 
     let user = {
       userid: e.user._id,
@@ -54,7 +53,8 @@ export default class ShowDubsOnHover extends Component {
     };
 
     if (e.dubtype === "updub") {
-      let userNotUpdubbed = upDubs.filter(el => el.userid === e.user._id).length === 0;
+      let userNotUpdubbed =
+        upDubs.filter(el => el.userid === e.user._id).length === 0;
       // If user has not updubbed, we add them them to it
       if (userNotUpdubbed) {
         this.setState(prevState => {
@@ -63,16 +63,20 @@ export default class ShowDubsOnHover extends Component {
       }
 
       // then remove them from downdubs
-      let userDowndubbed = downDubs.filter(el => el.userid === e.user._id).length > 0;
+      let userDowndubbed =
+        downDubs.filter(el => el.userid === e.user._id).length > 0;
       if (userDowndubbed) {
         this.setState(prevState => {
-          return { downDubs: prevState.downDubs.filter(el => el.userid !== e.user._id) };
+          return {
+            downDubs: prevState.downDubs.filter(el => el.userid !== e.user._id)
+          };
         });
       }
     }
-    
+
     if (e.dubtype === "downdub") {
-      let userNotDowndub = downDubs.filter(el => el.userid === e.user._id).length === 0;
+      let userNotDowndub =
+        downDubs.filter(el => el.userid === e.user._id).length === 0;
       // is user has not downdubbed, then we add them
       if (userNotDowndub && this.userIsMod) {
         this.setState(prevState => {
@@ -81,10 +85,13 @@ export default class ShowDubsOnHover extends Component {
       }
 
       //Remove user from from updubs
-      let userUpdubbed = upDubs.filter(el => el.userid === e.user._id).length > 0;
+      let userUpdubbed =
+        upDubs.filter(el => el.userid === e.user._id).length > 0;
       if (userUpdubbed) {
         this.setState(prevState => {
-          return { upDubs: prevState.upDubs.filter(el => el.userid !== e.user._id) };
+          return {
+            upDubs: prevState.upDubs.filter(el => el.userid !== e.user._id)
+          };
         });
       }
     }
@@ -98,8 +105,8 @@ export default class ShowDubsOnHover extends Component {
     // only add Grab if it doesn't exist in the array already
     if (this.state.grabs.filter(el => el.userid === e.user._id).length <= 0) {
       let user = {
-          userid: e.user._id,
-          username: e.user.username
+        userid: e.user._id,
+        username: e.user.username
       };
       this.setState(prevState => {
         return { grabs: [...prevState.grabs, user] };
@@ -112,7 +119,9 @@ export default class ShowDubsOnHover extends Component {
    */
   dubUserLeaveWatcher = e => {
     let newUpDubs = this.state.upDubs.filter(el => el.userid !== e.user._id);
-    let newDownDubs = this.state.downDubs.filter(el => el.userid !== e.user._id);
+    let newDownDubs = this.state.downDubs.filter(
+      el => el.userid !== e.user._id
+    );
     let newGrabs = this.state.grabs.filter(el => el.userid !== e.user._id);
     this.setState({
       upDubs: newUpDubs,
@@ -123,7 +132,7 @@ export default class ShowDubsOnHover extends Component {
 
   getUserData(userid, whichVote) {
     // if they don't exist, we can check the user api directly
-    let userInfo = getJSON(dtproxy.userDataAPI(userid));
+    let userInfo = dtproxy.api.getUserData(userid);
     userInfo.then(json => {
       let data = json.data;
       if (data && data.userinfo && data.userinfo.username) {
@@ -132,12 +141,12 @@ export default class ShowDubsOnHover extends Component {
           username: data.userinfo.username
         };
         this.setState(prevState => {
-          if (whichVote === 'down') {
+          if (whichVote === "down") {
             return {
               downDubs: [...prevState.downDubs, user]
             };
           }
-          if (whichVote === 'up') {
+          if (whichVote === "up") {
             return {
               upDubs: [...prevState.upDubs, user]
             };
@@ -153,70 +162,78 @@ export default class ShowDubsOnHover extends Component {
    */
   handleReset() {
     // get the current active dubs in the room via api
-    const roomDubs = getJSON(dtproxy.activeDubsAPI());
+    const roomDubs = dtproxy.api.getActiveDubs();
 
-    roomDubs.then(json => {
-      // loop through all the upDubs in the room and add them to our local state
-      if (json.data && json.data.upDubs) {
-        json.data.upDubs.forEach(e => {
-          // Dub already casted (usually from autodub)
-          if (this.state.upDubs.filter(el => el.userid === e.userid).length > 0) {
-            return;
-          }
+    roomDubs
+      .then(json => {
+        // loop through all the upDubs in the room and add them to our local state
+        if (json.data && json.data.upDubs) {
+          json.data.upDubs.forEach(e => {
+            // Dub already casted (usually from autodub)
+            if (
+              this.state.upDubs.filter(el => el.userid === e.userid).length > 0
+            ) {
+              return;
+            }
 
-          // to get username we check for user info in the DT room's user collection
-          let checkUser = dtproxy.getUserInfo(e.userid);
-          if (!checkUser || !checkUser.attributes) {
-            // if they don't exist, we can check the user api directly
-            this.getUserData(e.userid, 'up');
-            return;
-          }
-          
-          if (checkUser.attributes._user.username) {
-            let user = {
-              userid: e.userid,
-              username: checkUser.attributes._user.username
-            };
-            this.setState(prevState => {
-              return {
-                upDubs: [...prevState.upDubs, user]
+            // to get username we check for user info in the DT room's user collection
+            let checkUser = dtproxy.getUserInfo(e.userid);
+            if (!checkUser || !checkUser.attributes) {
+              // if they don't exist, we can check the user api directly
+              this.getUserData(e.userid, "up");
+              return;
+            }
+
+            if (checkUser.attributes._user.username) {
+              let user = {
+                userid: e.userid,
+                username: checkUser.attributes._user.username
               };
-            });
-          }
-        });
-      }
+              this.setState(prevState => {
+                return {
+                  upDubs: [...prevState.upDubs, user]
+                };
+              });
+            }
+          });
+        }
 
-      //Only let mods or higher access down dubs
-      if (json.data && json.data.downDubs && this.userIsMod) {
-        json.data.downDubs.forEach(e => {
-          //Dub already casted
-          if (this.state.downDubs.filter(el => el.userid === e.userid).length > 0) {
-            return;
-          }
+        //Only let mods or higher access down dubs
+        if (json.data && json.data.downDubs && this.userIsMod) {
+          json.data.downDubs.forEach(e => {
+            //Dub already casted
+            if (
+              this.state.downDubs.filter(el => el.userid === e.userid).length >
+              0
+            ) {
+              return;
+            }
 
-          let checkUsers = dtproxy.getUserInfo(e.userid);
-          if (!checkUsers || !checkUsers.attributes) {
-            this.getUserData(e.userid, 'down');
-            return;
-          }
+            let checkUsers = dtproxy.getUserInfo(e.userid);
+            if (!checkUsers || !checkUsers.attributes) {
+              this.getUserData(e.userid, "down");
+              return;
+            }
 
-          if (checkUsers.attributes._user.username) {
-            let user = {
-              userid: e.userid,
-              username: checkUsers.attributes._user.username
-            };
-            this.setState(prevState => {
-              return {
-                downDubs: [...prevState.downDubs, user]
+            if (checkUsers.attributes._user.username) {
+              let user = {
+                userid: e.userid,
+                username: checkUsers.attributes._user.username
               };
-            });
-          }
-        });
-      }
-    }).catch(function(err){
-      console.error(err);
-    });
-  };
+              this.setState(prevState => {
+                return {
+                  downDubs: [...prevState.downDubs, user]
+                };
+              });
+            }
+          });
+        }
+      })
+      .catch(function(err) {
+        // console.error(err);
+        console.log('error getting active dubs, maybe no songs playing')
+      });
+  }
 
   resetDubs = () => {
     this.setState(
@@ -229,18 +246,18 @@ export default class ShowDubsOnHover extends Component {
   };
 
   resetGrabs = () => {
-    this.setState({grabs: []});
-  }
+    this.setState({ grabs: [] });
+  };
 
   componentWillMount() {
-    this.upElem = dtproxy.upVote().parentElement;
-    this.upElem.classList.add('dubplus-updub-btn');
-    
-    this.downElem = dtproxy.downVote().parentElement;
-    this.downElem.classList.add('dubplus-downdub-btn');
+    this.upElem = dtproxy.dom.upVote().parentElement;
+    this.upElem.classList.add("dubplus-updub-btn");
 
-    this.grabElem = dtproxy.grabBtn().parentElement;
-    this.grabElem.classList.add('dubplus-grab-btn');
+    this.downElem = dtproxy.dom.downVote().parentElement;
+    this.downElem.classList.add("dubplus-downdub-btn");
+
+    this.grabElem = dtproxy.dom.grabBtn().parentElement;
+    this.grabElem.classList.add("dubplus-grab-btn");
   }
 
   render(props, state) {
@@ -259,31 +276,23 @@ export default class ShowDubsOnHover extends Component {
           content="Please note that this feature is currently still in development. We are waiting on the ability to pull grab vote information from Dubtrack on load. Until then the only grabs you will be able to see are those you are present in the room for."
           onClose={this.closeModal}
         />
-        {
-          state.isOn ? (
-            <>
-              <Portal into={this.upElem}>
-                <DubsInfo
-                  type="updubs"
-                  dubs={state.upDubs}
-                />
-              </Portal>
-              <Portal into={this.downElem}>
-                <DubsInfo
-                  type="downdubs"
-                  isMod={this.userIsMod}
-                  dubs={state.downDubs}
-                />
-              </Portal>
-              <Portal into={this.grabElem}>
-                <DubsInfo
-                  type="grabs"
-                  dubs={state.grabs}
-                />
-              </Portal>
-            </>
-            ) : null
-          }
+        {state.isOn ? (
+          <>
+            <Portal into={this.upElem}>
+              <DubsInfo type="updubs" dubs={state.upDubs} />
+            </Portal>
+            <Portal into={this.downElem}>
+              <DubsInfo
+                type="downdubs"
+                isMod={this.userIsMod}
+                dubs={state.downDubs}
+              />
+            </Portal>
+            <Portal into={this.grabElem}>
+              <DubsInfo type="grabs" dubs={state.grabs} />
+            </Portal>
+          </>
+        ) : null}
       </MenuSwitch>
     );
   }

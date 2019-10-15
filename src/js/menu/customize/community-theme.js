@@ -1,12 +1,10 @@
 import { h } from "preact";
 import { MenuSwitch } from "@/components/menuItems.js";
 import css from "@/utils/css";
-import getJSON from "@/utils/getJSON";
 import dtproxy from "@/utils/DTProxy.js";
 
 function turnOn() {
-  var location = dtproxy.getRoomUrl();
-  let roomAjax = getJSON("https://api.dubtrack.fm/room/" + location);
+  let roomAjax = dtproxy.api.roomInfo();
   roomAjax.then(json => {
     var content = json.data.description;
 

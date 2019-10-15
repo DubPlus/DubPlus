@@ -5,13 +5,13 @@ const sync = require('child_process').spawnSync;
 const log = require('./colored-console.js');
 
 /*
-  --release
-  add this to the END to force jsDelivr to point to DubPlus/DubPlus/master
-  example: node ./tasks bundle --release
+  BUILD=release
+  add this to the FRONT to force jsDelivr to point to DubPlus/DubPlus/master
+  example: BUILD=release node ./tasks bundle
   
-  --local URL
-  add this flag to the END to use given URL during testing (like localhost)
-  example: node ./tasks sass --local http://localhost:3001
+  BUILD=beta
+  add this to the FRONT to force jsDelivr to point to DubPlus/DubPlus/beta
+  example: BUILD=beta node ./tasks bundle
  */
 
 var releaseFlag = process.env.BUILD === "release";
@@ -30,7 +30,7 @@ if (CURRENT_BRANCH === 'master' || releaseFlag) {
   // if we're in master that means we're ready to send a PR to the
   // main repo and we should always be set to DubPlus/DubPlus
   CURRENT_REPO = 'DubPlus';
-  resourceSrc = `https://cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus`;
+  resourceSrc = 'https://dubplus.github.io/DubPlus';
 } else if (CURRENT_BRANCH === 'beta' || betaFlag) {
   // DubPlus/DubPlus@beta
   CURRENT_REPO = 'DubPlus';
@@ -46,8 +46,10 @@ if (CURRENT_BRANCH === 'master' || releaseFlag) {
   resourceSrc = `https://cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus@${CURRENT_BRANCH}`;
 }
 
-var payload = `//cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus@${CURRENT_BRANCH}/dubplus.min.js`;
-var jsBookmarklet = `javascript:var i,d=document,s=d.createElement('script');s.src="${payload}";d.body.appendChild(s);void(0);`;
+// might need to switch to commit hashes so that we overcome jsDelivr's cache
+// var dubplusCommitHash = sync('git', ['log','-n','1','--pretty=format:%H','--','dubplus.min.js'], {encoding : "UTF-8"}).stdout;
+var payload = `${resourceSrc}/dubplus.min.js`;
+var jsBookmarklet = `javascript:var d=document,s=d.createElement('script');s.src="${payload}";d.body.appendChild(s);void(0);`;
 
 log.info('****************************************************************');
 console.log(`Current Github User is: ${yellow(CURRENT_REPO)}`);

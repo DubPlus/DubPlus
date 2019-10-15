@@ -1,6 +1,6 @@
-import {h, Component} from 'preact';
-import {MenuSwitch} from '@/components/menuItems.js';
-import chatReplace from '@/utils/emotes/chat-replace.js';
+import { h, Component } from "preact";
+import { MenuSwitch } from "@/components/menuItems.js";
+import chatReplace from "@/utils/emotes/chat-replace.js";
 import dtproxy from "@/utils/DTProxy.js";
 
 /**********************************************************************
@@ -8,26 +8,24 @@ import dtproxy from "@/utils/DTProxy.js";
  */
 
 export default class Emotes extends Component {
-
   turnOn = () => {
-    document.body.classList.add('dubplus-emotes-on');
+    document.body.classList.add("dubplus-emotes-on");
     this.begin();
-  }
+  };
 
   begin() {
     // when first turning it on, it replaces ALL of the emotes in chat history
-    chatReplace(dtproxy.chatList());
+    chatReplace(dtproxy.dom.chatList());
     // then it sets up replacing emotes on new chat messages
-    dtproxy.onChatMessage(chatReplace);
-  }
-  
-  turnOff = (e) => {
-    document.body.classList.remove('dubplus-emotes-on');
-    dtproxy.offChatMessage(chatReplace);
+    dtproxy.events.onChatMessage(chatReplace);
   }
 
+  turnOff = e => {
+    document.body.classList.remove("dubplus-emotes-on");
+    dtproxy.events.offChatMessage(chatReplace);
+  };
 
-  render(props,state){
+  render(props, state) {
     return (
       <MenuSwitch
         id="dubplus-emotes"
@@ -35,8 +33,8 @@ export default class Emotes extends Component {
         menuTitle="Emotes"
         desc="Adds twitch and bttv emotes in chat."
         turnOn={this.turnOn}
-        turnOff={this.turnOff}>
-      </MenuSwitch>
-    )
+        turnOff={this.turnOff}
+      />
+    );
   }
 }

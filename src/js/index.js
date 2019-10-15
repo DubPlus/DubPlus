@@ -1,6 +1,8 @@
 "use strict";
-import { h, render, Component } from "preact";
 import polyfills from "@/utils/polyfills";
+polyfills();
+
+import { h, render, Component } from "preact";
 import DubPlusMenu from "@/menu/index.js";
 import Modal from "@/components/modal.js";
 import WaitFor from "@/utils/waitFor.js";
@@ -9,8 +11,6 @@ import cssHelper from "@/utils/css.js";
 import MenuIcon from "@/components/MenuIcon.js";
 import track from "@/utils/analytics.js";
 import dtproxy from "@/utils/DTProxy.js";
-
-polyfills();
 
 // the extension loads the CSS from the load script so we don't need to
 // do it here. This is for people who load the script via bookmarklet or userscript
@@ -45,7 +45,7 @@ class DubPlusContainer extends Component {
           });
         })
         .catch(() => {
-          if (!dtproxy.getSessionId()) {
+          if (!dtproxy.sessionId()) {
             this.showError("You're not logged in. Please login to use Dub+.");
           } else {
             this.showError("Something happed, refresh and try again");
@@ -55,7 +55,7 @@ class DubPlusContainer extends Component {
       return;
     }
 
-    if (!dtproxy.getSessionId()) {
+    if (!dtproxy.sessionId()) {
       this.showError("You're not logged in. Please login to use Dub+.");
     } else {
       this.showError("Dub+ is already loaded");
@@ -98,12 +98,22 @@ class DubPlusContainer extends Component {
 
 render(<DubPlusContainer />, document.body);
 
-let navWait = new WaitFor(".header-right-navigation .user-messages", {
-  seconds: 60,
-  isNode: true
-});
+let navWait = new WaitFor(
+  [
+    ".header-right-navigation .user-messages",
+    ".header-right-navigation .user-info"
+  ],
+  {
+    seconds: 120,
+    isNode: true
+  }
+);
 navWait.then(() => {
-  render(<MenuIcon />, document.querySelector(".header-right-navigation"));
+  const holder = document.createElement('span');
+  holder.id = "dubplus-icon-holder";
+  document.querySelector(".header-right-navigation").appendChild(holder)
+
+  render(<MenuIcon />, holder);
 });
 
 // PKGINFO is inserted by the rollup build process
