@@ -40,7 +40,6 @@ export default class CustomBG extends Component {
     showModal: false
   };
 
-  // this returns the DOM element for the background image
   bgImg = dtproxy.dom.bgImg();
   
   componentDidMount() {
@@ -49,9 +48,11 @@ export default class CustomBG extends Component {
   }
 
   handleError = () => {
-    this.switchRef.switchOff();
-    this.revertBG();
-    alert(`error loading image "${settings.stored.custom.bg}", edit the url and try again`);
+    if (this.switchRef.state.on && this.bgImg.src !== this.dubBgImg) {
+      this.switchRef.switchOff();
+      this.revertBG();
+      alert(`error loading image "${settings.stored.custom.bg}", edit the url and try again`);
+    }
   };
 
   addCustomBG = val => {

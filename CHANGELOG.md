@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.0] - 2019-10-xx
+## [2.0.0] - 2019-10-14
 ### Changes
 - removed any use or dependency of jQuery
 - switched to RollupJS for building

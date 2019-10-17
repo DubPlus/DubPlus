@@ -6,11 +6,13 @@ const execSync = require('child_process').execSync;
  * @return {undefined}
  */
 module.exports = function doZip(dir){
+  const extDir = process.cwd() + '/extensions';
+  console.log(`${extDir}/${dir}`);
+  
   var options = {
-    cwd: process.cwd() + '/extensions',
     stdio:'inherit'
   };
   // zip [options] zipfile files-to-zip
   // file extension '.zip' assumed, leave it out
-  execSync(`cd ${dir}; zip -vr ../DubPlus-${dir}-Extension * -x "*.DS_Store"`,options);
+  execSync(`zip -vr -b ${extDir}/${dir} DubPlus-${dir}-Extension * -x "*.DS_Store"`, options);
 };

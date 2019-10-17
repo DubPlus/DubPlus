@@ -6,8 +6,6 @@
   "scripts": {
     "sass": "node ./tasks/sassbundle",
     "ext": "IS_EXT=true node tasks/rollup.config.js && node ./tasks/extensions",
-    "ext-zip": "node ./tasks ext-zip",
-    "ext-deploy": "node ./tasks ext-deploy",
     "test": "jest -i ./tests --config ./tests/jest.config.js",
     "build": "node tasks/rollup.config.js",
     "beta": "BUILD=beta node tasks/rollup.config.js",
