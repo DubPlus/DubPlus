@@ -14,45 +14,27 @@
   font-size: small; }
 
 .dubplus-icon-spinning .dubplus-icon img {
-  -webkit-animation-name: spin;
-          animation-name: spin;
-  -webkit-animation-duration: 750ms;
-          animation-duration: 750ms;
-  -webkit-animation-iteration-count: infinite;
-          animation-iteration-count: infinite;
-  -webkit-animation-timing-function: ease;
-          animation-timing-function: ease; }
-
-@-webkit-keyframes spin {
-  from {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg); }
-  to {
-    -webkit-transform: rotate(360deg);
-            transform: rotate(360deg); } }
+  animation-name: spin;
+  animation-duration: 750ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease; }
 
 @keyframes spin {
   from {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg); }
+    transform: rotate(0deg); }
   to {
-    -webkit-transform: rotate(360deg);
-            transform: rotate(360deg); } }
+    transform: rotate(360deg); } }
 
 .dubplus-menu {
   position: fixed;
   z-index: 999;
   background-color: rgba(10, 10, 10, 0.98);
-  -webkit-transition: -webkit-transform 0.3s;
-  transition: -webkit-transform 0.3s;
   transition: transform 0.3s;
-  transition: transform 0.3s, -webkit-transform 0.3s;
   width: 255px;
   overflow-y: auto;
   top: 58px;
   right: 0;
-  -webkit-transform: translateX(255px);
-          transform: translateX(255px);
+  transform: translateX(255px);
   box-sizing: border-box;
   color: #999;
   font-family: "Trebuchet MS", Helvetica, sans-serif;
@@ -65,8 +47,7 @@
     color: #999; }
 
 .dubplus-menu.dubplus-menu-open {
-  -webkit-transform: translate3d(15px, 0, 0);
-          transform: translate3d(15px, 0, 0); }
+  transform: translate3d(15px, 0, 0); }
 
 .dubplus-menu-header {
   padding: 12px 15px;
@@ -80,7 +61,6 @@
   padding: 0 15px;
   border-bottom: 1px solid #222;
   max-height: 500px;
-  -webkit-transition: max-height 0.3s;
   transition: max-height 0.3s;
   overflow: hidden;
   margin: 0;
@@ -146,10 +126,7 @@
   background: #333;
   border: 2px solid #444;
   cursor: pointer;
-  -webkit-transition: -webkit-transform 0.8s cubic-bezier(1, 0, 0.5, 0);
-  transition: -webkit-transform 0.8s cubic-bezier(1, 0, 0.5, 0);
-  transition: transform 0.8s cubic-bezier(1, 0, 0.5, 0);
-  transition: transform 0.8s cubic-bezier(1, 0, 0.5, 0), -webkit-transform 0.8s cubic-bezier(1, 0, 0.5, 0); }
+  transition: transform 0.8s cubic-bezier(1, 0, 0.5, 0); }
 
 .dubplus-switcher {
   display: inline-block;
@@ -161,10 +138,7 @@
   z-index: 2;
   top: 0;
   background: #eb008b;
-  -webkit-transition: -webkit-transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
-  transition: -webkit-transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
-  transition: transform 0.2s cubic-bezier(0.8, 0, 0.05, 1);
-  transition: transform 0.2s cubic-bezier(0.8, 0, 0.05, 1), -webkit-transform 0.2s cubic-bezier(0.8, 0, 0.05, 1); }
+  transition: transform 0.2s cubic-bezier(0.8, 0, 0.05, 1); }
 
 .dubplus-switch-on .dubplus-switch-bg {
   background: #666;
@@ -173,8 +147,7 @@
 .dubplus-switch-on .dubplus-switcher {
   background: #6fcbdc;
   border: 2px solid #6fcbdc;
-  -webkit-transform: translateX(10px);
-          transform: translateX(10px); }
+  transform: translateX(10px); }
 
 .dubplus-switch .dubplus-menu-label,
 .dubplus-menu-icon .dubplus-menu-label {
@@ -377,8 +350,7 @@
   display: none;
   width: 19px;
   height: 21px;
-  -webkit-transform: translateY(4px);
-          transform: translateY(4px); }
+  transform: translateY(4px); }
 
 .dubplus-emotes-on .dp-twitch-picker-icon {
   display: inline-block; }
@@ -397,7 +369,6 @@
   width: 100%;
   left: 0;
   max-height: 0;
-  -webkit-transition: max-height 0.25s;
   transition: max-height 0.25s;
   overflow: hidden; }
   .dp-emoji-picker.show {
@@ -413,16 +384,15 @@
       background-color: rgba(255, 255, 255, 0.3); }
 
 .emoji-picker-image {
-  background-image: url(https://cdn.jsdelivr.net/gh/coryshaw1/DubPlus@beta_fixes/Repo_Info_Username/images/emoji-spritesheet.png); }
+  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/emoji-spritesheet.png); }
 
 .twitch-picker-image {
-  background-image: url(https://cdn.jsdelivr.net/gh/coryshaw1/DubPlus@beta_fixes/Repo_Info_Username/images/twitch-spritesheet.png); }
+  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/twitch-spritesheet.png); }
 
 .bttv-picker-image {
-  background-image: url(https://cdn.jsdelivr.net/gh/coryshaw1/DubPlus@beta_fixes/Repo_Info_Username/images/bttv-spritesheet.png); }
+  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/bttv-spritesheet.png); }
 
 .dubplus-split-chat .chat-main li:nth-child(2n) {
-  background: -webkit-linear-gradient(left, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
   background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
   box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
   width: 100%; }
@@ -430,7 +400,6 @@
     right: 1.7em !important; }
 
 .dubplus-split-chat .split {
-  background: -webkit-linear-gradient(left, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
   background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
   box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
   width: 100%; }
@@ -445,13 +414,10 @@
  */
 #autocomplete-preview {
   overflow: auto;
-  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
+  -ms-flex-direction: row;
+      flex-direction: row;
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
   position: absolute;
@@ -520,7 +486,6 @@
   border: 1px solid #202020;
   border-bottom: 1px solid #878c8e;
   max-height: 164px;
-  -webkit-transition: max-height 0.4s;
   transition: max-height 0.4s; }
 
 #chat .chat-container .chat-messages .chat-main li .activity-row .text img.twitch-emote {
@@ -537,7 +502,7 @@
   padding: 5px;
   border-radius: 3px;
   cursor: pointer;
-  background-image: url(https://cdn.jsdelivr.net/gh/coryshaw1/DubPlus@beta_fixes/Repo_Info_Username/images/twitch-spritesheet.png);
+  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/twitch-spritesheet.png);
   background-repeat: no-repeat; }
 
 .bttv-previews .ac-image {
@@ -545,7 +510,7 @@
   padding: 5px;
   border-radius: 3px;
   cursor: pointer;
-  background-image: url(https://cdn.jsdelivr.net/gh/coryshaw1/DubPlus@beta_fixes/Repo_Info_Username/images/bttv-spritesheet.png);
+  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/bttv-spritesheet.png);
   background-repeat: no-repeat; }
 
 .dubplus-chat-only .left_section {
@@ -593,7 +558,6 @@
   width: 100%;
   min-width: 175px;
   z-index: 10001;
-  -webkit-transition: max-height 0.4s;
   transition: max-height 0.4s; }
   #player-controller .right .dubinfo-preview.dubinfo-updubs, #player-controller .right .dubinfo-preview.dubinfo-grabs {
     border-radius: 0.4rem 0.4rem 0.4rem 0; }
@@ -615,13 +579,10 @@
     background-repeat: no-repeat;
     background-size: 25px;
     cursor: pointer;
-    display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    -ms-flex-direction: row;
+        flex-direction: row;
     float: none;
     margin: 0;
     padding: 6px 10px;
@@ -631,9 +592,8 @@
     #player-controller .right .dubinfo-preview .dubinfo-preview-item:focus {
       outline: none; }
   #player-controller .right .dubinfo-preview .dubinfo-text {
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
+    -ms-flex: 1;
+        flex: 1;
     font-size: 0.8em;
     padding-left: 20px;
     overflow: hidden;
@@ -702,25 +662,20 @@
   bottom: 40px; }
 
 .dubplus-song-preview {
-  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-direction: row;
+      flex-direction: row;
+  -ms-flex-align: center;
+      align-items: center;
   background-color: black; }
   .dubplus-song-preview__length {
     justify-self: flex-end;
     margin-left: 10px;
     padding-right: 10px; }
   .dubplus-song-preview__title {
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
+    -ms-flex: 1;
+        flex: 1;
     line-height: 1.2;
     font-size: 0.85em; }
     .dubplus-song-preview__title small {
