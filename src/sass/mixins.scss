@@ -122,6 +122,14 @@
           font-size: 10px;
       }
     }
+
+    @if $role == "owner"{
+      .user-role-icon {
+        background: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus/images/dubplus.svg);
+        background-size: cover;
+        display: inline-block;
+      }
+    }
   }
 }
 
