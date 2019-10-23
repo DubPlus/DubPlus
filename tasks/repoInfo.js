@@ -15,7 +15,7 @@ const log = require('./colored-console.js');
  */
 
 var releaseFlag = process.env.BUILD === "release";
-var betaFlag = process.env.BUILD === "beta";
+var betaFlag = process.env.BUILD === "beta" || true;
 
 /******************************************************************
  * Get the current branch name to be passed as a variable

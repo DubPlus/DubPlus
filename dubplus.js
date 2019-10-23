@@ -10975,7 +10975,7 @@ var DubPlus = (function () {
     function UserSettings() {
       _classCallCheck(this, UserSettings);
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh//DubPlus@beta_fixes/DubPlus_Logo_Owners");
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta");
 
       var _savedSettings = localStorage.getItem('dubplusUserSettings');
 
@@ -20787,7 +20787,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571874586713);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571875109812);
     document.head.appendChild(link);
   }
   /**
