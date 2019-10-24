@@ -122,6 +122,14 @@
           font-size: 10px;
       }
     }
+
+    @if $role == "owner"{
+      .user-role-icon {
+        background: url(https://dub.plus/assets/img/logo.svg);
+        background-size: cover;
+        display: inline-block;
+      }
+    }
   }
 }
 
