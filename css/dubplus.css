@@ -413,13 +413,13 @@
       background-color: rgba(255, 255, 255, 0.3); }
 
 .emoji-picker-image {
-  background-image: url(https://cdn.jsdelivr.net/gh/coryshaw1/DubPlus@beta_fixes/Repo_Info_Username/images/emoji-spritesheet.png); }
+  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/emoji-spritesheet.png); }
 
 .twitch-picker-image {
-  background-image: url(https://cdn.jsdelivr.net/gh/coryshaw1/DubPlus@beta_fixes/Repo_Info_Username/images/twitch-spritesheet.png); }
+  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/twitch-spritesheet.png); }
 
 .bttv-picker-image {
-  background-image: url(https://cdn.jsdelivr.net/gh/coryshaw1/DubPlus@beta_fixes/Repo_Info_Username/images/bttv-spritesheet.png); }
+  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/bttv-spritesheet.png); }
 
 .dubplus-split-chat .chat-main li:nth-child(2n) {
   background: -webkit-linear-gradient(left, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
@@ -537,7 +537,7 @@
   padding: 5px;
   border-radius: 3px;
   cursor: pointer;
-  background-image: url(https://cdn.jsdelivr.net/gh/coryshaw1/DubPlus@beta_fixes/Repo_Info_Username/images/twitch-spritesheet.png);
+  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/twitch-spritesheet.png);
   background-repeat: no-repeat; }
 
 .bttv-previews .ac-image {
@@ -545,7 +545,7 @@
   padding: 5px;
   border-radius: 3px;
   cursor: pointer;
-  background-image: url(https://cdn.jsdelivr.net/gh/coryshaw1/DubPlus@beta_fixes/Repo_Info_Username/images/bttv-spritesheet.png);
+  background-image: url(https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta/images/bttv-spritesheet.png);
   background-repeat: no-repeat; }
 
 .dubplus-chat-only .left_section {
