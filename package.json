@@ -12,12 +12,14 @@
     "build": "node tasks/rollup.config.js",
     "beta": "BUILD=beta node tasks/rollup.config.js",
     "release": "BUILD=release node tasks/rollup.config.js",
-    "start": "WATCH=true node tasks/rollup.config.js"
+    "start": "WATCH=true node tasks/rollup.config.js",
+    "start:firefox": "web-ext run --source-dir ./extensions/Firefox",
+    "husky_build" : "npm test && npm run build && git add ."
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm test && npm run build && git add .",
-      "post-merge": "npm test && npm run build && git add ."
+      "pre-commit": "./tasks/checkSrc.sh npm run husky_build",
+      "post-merge": "./tasks/checkSrc.sh npm run husky_build"
     }
   },
   "repository": {
