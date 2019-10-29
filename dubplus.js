@@ -10988,7 +10988,7 @@ var DubPlus = (function () {
     function UserSettings() {
       _classCallCheck(this, UserSettings);
 
-      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta");
+      _defineProperty(this, "srcRoot", "https://cdn.jsdelivr.net/gh/FranciscoG/DubPlus@bugfix/dj-notification");
 
       var _savedSettings = localStorage.getItem('dubplusUserSettings');
 
@@ -12973,7 +12973,7 @@ var DubPlus = (function () {
       });
 
       _defineProperty(_assertThisInitialized(_this), "djNotificationCheck", function (e) {
-        if (!_this.canNotify || e.startTime > 2) return;
+        if (!_this.state.canNotify || e.startTime > 2) return;
         var queuePos = proxy.dom.getQueuePosition();
         var positionParse = parseInt(queuePos, 10);
         var position = e.startTime < 0 && !isNaN(positionParse) ? positionParse - 1 : positionParse;
@@ -12991,7 +12991,7 @@ var DubPlus = (function () {
         proxy.playChatSound();
       });
 
-      _defineProperty(_assertThisInitialized(_this), "turnOn", function () {
+      _defineProperty(_assertThisInitialized(_this), "turnOn", function (initialLoad) {
         notifyCheckPermission(function (status, reason) {
           if (status === true) {
             _this.setState({
@@ -14872,7 +14872,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1572316730088);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1572318133010);
     document.head.appendChild(link);
   }
   /**

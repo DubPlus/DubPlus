@@ -21,7 +21,7 @@ export default class DJNotification extends Component {
   };
 
   djNotificationCheck = e => {
-    if (!this.canNotify || e.startTime > 2) return;
+    if (!this.state.canNotify || e.startTime > 2) return;
 
     let queuePos = dtproxy.dom.getQueuePosition();
     var positionParse = parseInt(queuePos, 10);
@@ -42,7 +42,7 @@ export default class DJNotification extends Component {
     dtproxy.playChatSound();
   };
 
-  turnOn = () => {
+  turnOn = initialLoad => {
     notifyCheckPermission((status, reason) => {
       if (status === true) {
         this.setState({ canNotify: true });
