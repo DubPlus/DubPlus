@@ -14872,7 +14872,7 @@ var DubPlus = (function () {
       return;
     }
 
-    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1571276269409);
+    var link = makeLink(className, userSettings.srcRoot + cssFile + "?" + 1572316655629);
     document.head.appendChild(link);
   }
   /**
@@ -15044,35 +15044,6 @@ var DubPlus = (function () {
     return CustomCSS;
   }(m);
 
-  /*
-    Interaction model
-    
-    # Extension start up (first load)
-    - check if user has turned this option on
-    - if so, try loading custom bg
-    - if for some reason the switch is on but saved data is empty, turn it off
-
-    # On error
-    - if image doesn't load
-      - show alert with error message
-      - turn off switch
-
-    # Turn on from user click
-    - if there's a saved setting
-      - load BG image
-    - if not
-      - show modal to enter an image
-
-    # Modal Save
-    - if switch is on and val is not empty, try loading the bg image
-    - if switch is on and val is empty, revert to the original bg image
-    - close modal
-
-    # Modal Cancel
-    - close modal
-
-  */
-
   /**
    * Custom Background
    */
@@ -15099,24 +15070,19 @@ var DubPlus = (function () {
         showModal: false
       });
 
-      _defineProperty(_assertThisInitialized(_this), "bgImg", proxy.dom.bgImg());
-
-      _defineProperty(_assertThisInitialized(_this), "handleError", function () {
-        if (_this.switchRef.state.on && _this.bgImg.src !== _this.dubBgImg) {
-          _this.switchRef.switchOff();
-
-          _this.revertBG();
-
-          alert("error loading image \"".concat(userSettings.stored.custom.bg, "\", edit the url and try again"));
-        }
-      });
-
       _defineProperty(_assertThisInitialized(_this), "addCustomBG", function (val) {
-        _this.bgImg.src = val;
+        var img = document.createElement("div");
+        img.className = "dubplus-custom-bg";
+        img.style.backgroundImage = "url(".concat(val, ")");
+        document.body.appendChild(img);
       });
 
       _defineProperty(_assertThisInitialized(_this), "revertBG", function () {
-        _this.bgImg.src = _this.dubBgImg;
+        var img = document.querySelector('.dubplus-custom-bg');
+
+        if (img) {
+          document.body.removeChild(img);
+        }
       });
 
       _defineProperty(_assertThisInitialized(_this), "turnOn", function (initialLoad) {
@@ -15180,12 +15146,6 @@ var DubPlus = (function () {
     }
 
     _createClass(CustomBG, [{
-      key: "componentDidMount",
-      value: function componentDidMount() {
-        this.dubBgImg = this.bgImg.src;
-        this.bgImg.onerror = this.handleError;
-      }
-    }, {
       key: "render",
       value: function render(props, state) {
         var _this2 = this;
@@ -15609,66 +15569,10 @@ var DubPlus = (function () {
         return h("div", {
           className: "dubplus-icon",
           onClick: this.toggle
-        }, h("svg", {
-          version: "1.1",
-          xmlns: "http://www.w3.org/2000/svg",
-          x: "0",
-          y: "0",
-          viewBox: "0 0 2078.496 2083.914",
-          "enable-background": "new 0 0 2078.496 2083.914"
-        }, h("rect", {
-          x: "769.659",
-          y: "772.445",
-          "fill-rule": "evenodd",
-          "clip-rule": "evenodd",
-          fill: "#660078",
-          width: "539.178",
-          height: "539.178"
-        }), h("g", null, h("rect", {
-          x: "1308.837",
-          y: "772.445",
-          "fill-rule": "evenodd",
-          "clip-rule": "evenodd",
-          fill: "#EB008B",
-          width: "537.488",
-          height: "539.178"
-        }), h("polygon", {
-          fill: "#EB008B",
-          points: "2045.015,1042.035 1845.324,1311.625 1845.324,772.446 \t"
-        })), h("g", null, h("rect", {
-          x: "232.172",
-          y: "772.445",
-          "fill-rule": "evenodd",
-          "clip-rule": "evenodd",
-          fill: "#EB008B",
-          width: "537.487",
-          height: "539.178"
-        }), h("polygon", {
-          fill: "#EB008B",
-          points: "33.481,1042.034 233.172,772.445 233.172,1311.623 \t"
-        })), h("g", null, h("rect", {
-          x: "769.659",
-          y: "1311.624",
-          "fill-rule": "evenodd",
-          "clip-rule": "evenodd",
-          fill: "#6FCBDC",
-          width: "539.178",
-          height: "537.487"
-        }), h("polygon", {
-          fill: "#6FCBDC",
-          points: "1039.248,2047.802 769.659,1848.111 1308.837,1848.111 \t"
-        })), h("g", null, h("rect", {
-          x: "769.659",
-          y: "234.958",
-          "fill-rule": "evenodd",
-          "clip-rule": "evenodd",
-          fill: "#6FCBDC",
-          width: "539.178",
-          height: "537.487"
-        }), h("polygon", {
-          fill: "#6FCBDC",
-          points: "1039.249,35.268 1308.837,235.958 769.659,235.958 \t"
-        }))));
+        }, h("img", {
+          src: "https://dub.plus/assets/img/logo.svg",
+          alt: "DubPlus Icon"
+        }));
       }
     }]);
 

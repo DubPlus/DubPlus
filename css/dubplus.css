@@ -302,6 +302,10 @@
     font-weight: 700;
     font-family: proxima-nova,sans-serif;
     font-size: 10px; }
+  #chat .chat-container ul.chat-main li.user-560892bf8e9cb60300550aa2 .stream-item-content .activity-row .username .user-role-icon {
+    background: url(https://dub.plus/assets/img/logo.svg);
+    background-size: cover;
+    display: inline-block; }
 
 #avatar-list .user-mbsurfer p.dubs:hover:before {
   content: "Dub+ Owner  -  ";
@@ -337,6 +341,10 @@
     font-weight: 700;
     font-family: proxima-nova,sans-serif;
     font-size: 10px; }
+  #chat .chat-container ul.chat-main li.user-56008425621a9e0300317238 .stream-item-content .activity-row .username .user-role-icon {
+    background: url(https://dub.plus/assets/img/logo.svg);
+    background-size: cover;
+    display: inline-block; }
 
 #avatar-list .user-disco-g p.dubs:hover:before {
   content: "Dub+ Owner  -  ";
@@ -697,5 +705,13 @@
   z-index: -999998;
   position: fixed;
   background-size: cover;
+  background-position-x: center;
+  background-position-y: center;
+  background-attachment: fixed;
   top: 0;
-  left: 0; }
+  left: 0;
+  display: none; }
+
+@media screen and (min-width: 48em) {
+  .dubplus-custom-bg {
+    display: block; } }

@@ -5,9 +5,11 @@ const { uglify } = require("rollup-plugin-uglify");
 const replace = require("rollup-plugin-replace");
 const sassTasks = require("./sassbundle.js");
 const stripCode = require("rollup-plugin-strip-code");
+const extenstion = require("./extensions");
 
-const watchMode = process.env.WATCH === "true";
-const isExtension = process.env.IS_EXT && process.env.IS_EXT === "true";
+const { WATCH, IS_EXT } = process.env;
+const isWatching = WATCH && WATCH === "true";
+const isExtension = IS_EXT && IS_EXT === "true";
 
 // our own custom module
 var gitInfo = require("./repoInfo.js");
@@ -115,7 +117,8 @@ const inputOptions = {
           stripCode({
             start_comment: "START.NOT_EXT",
             end_comment: "END.NOT_EXT"
-          })
+          }),
+          extenstion.plugin()
         ]
       : []),
     ...defaultPlugins,
@@ -129,6 +132,18 @@ const outputOptions = {
   format: "iife",
   name: "DubPlus"
 };
+
+// this doesn't work yet
+if (isWatching) {
+  rollup.watch({
+    ...inputOptions,
+    output: [outputOptions],
+    watch: {
+      include: 'src/**'
+    }
+  })
+  return;
+}
 
 /***********************************************
  * This builds the regular version

@@ -40,9 +40,13 @@ if (CURRENT_BRANCH === 'master' || releaseFlag) {
    * Get the github user name 
    * github.com/DubPlus/DubPlus/branch
    *            ^^^^^^^ I want to get this 
+   * 
+   * TODO check if url starts with 'git' or 'http'
    */
   var gitURL = sync('git', ['config', '--get', 'remote.origin.url'], {encoding : "UTF-8"});
-  CURRENT_REPO = gitURL.stdout.split(":")[1].split("/")[0];
+  CURRENT_REPO = gitURL.stdout.indexOf("git@") === 0
+    ? gitURL.stdout.split(":")[1].split("/")[0]
+    : gitURL.stdout.split("/")[gitURL.stdout.split("/").length - 2];
   resourceSrc = `https://cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus@${CURRENT_BRANCH}`;
 }
 
