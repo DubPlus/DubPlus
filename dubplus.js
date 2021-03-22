@@ -191,7 +191,7 @@ prepEmoji.loadTwitchEmotes = function () {
   this.shouldUpdateAPIs('twitch', function (update) {
     if (update) {
       console.log('dub+', 'twitch', 'loading from api');
-      var twApi = new GetJSON('https://api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded', { 'Accept': 'application/vnd.twitchtv.v5+json', 'Client-ID': 'z5bpa7x6y717dsw28qnmcooolzm2js' });
+      var twApi = new GetJSON('https://cors-anywhere.herokuapp.com/api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded', { 'Accept': 'application/vnd.twitchtv.v5+json', 'Client-ID': 'z5bpa7x6y717dsw28qnmcooolzm2js' });
       twApi.done(function (data) {
         var json = JSON.parse(data);
         var twitchEmotes = {};
@@ -3243,7 +3243,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1616418004722')
+}).call(this,'1616418086473')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
