@@ -36,11 +36,11 @@ myModule.djNotificationCheck = function (e) {
     ignoreActiveTab: true,
     wait : 10000
   });
-  Dubtrack.room.chat.mentionChatSound.play();
+  QueUp.room.chat.mentionChatSound.play();
 };
 
 myModule.turnOn = function () {
-  Dubtrack.Events.bind("realtime:room_playlist-update", this.djNotificationCheck);
+  QueUp.Events.bind("realtime:room_playlist-update", this.djNotificationCheck);
 };
 
 myModule.extra = function () {
@@ -55,7 +55,7 @@ myModule.extra = function () {
 };
 
 myModule.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:room_playlist-update", this.djNotificationCheck);
+  QueUp.Events.unbind("realtime:room_playlist-update", this.djNotificationCheck);
 };
 
 module.exports = myModule;

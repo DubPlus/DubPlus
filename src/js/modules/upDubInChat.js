@@ -11,9 +11,9 @@ myModule.description = "Toggle showing updubs in the chat box";
 myModule.category = "General";
 
 myModule.updubWatcher = function(e) {
-  var user = Dubtrack.session.get('username');
-  var currentDj = Dubtrack.room.users.collection.findWhere({
-    userid: Dubtrack.room.player.activeSong.attributes.song.userid
+  var user = QueUp.session.get('username');
+  var currentDj = QueUp.room.users.collection.findWhere({
+    userid: QueUp.room.player.activeSong.attributes.song.userid
   }).attributes._user.username;
 
   if(user === currentDj && e.dubtype === 'updub'){
@@ -23,7 +23,7 @@ myModule.updubWatcher = function(e) {
           <span class="icon-close"></span>
         </div>
         <div class="text">
-          @${e.user.username} has updubbed your song ${Dubtrack.room.player.activeSong.attributes.songInfo.name}
+          @${e.user.username} has updubbed your song ${QueUp.room.player.activeSong.attributes.songInfo.name}
         </div>
       </li>`;
 
@@ -32,7 +32,7 @@ myModule.updubWatcher = function(e) {
 };
 
 myModule.turnOn = function() {
-  Dubtrack.Events.bind("realtime:room_playlist-dub", this.updubWatcher);
+  QueUp.Events.bind("realtime:room_playlist-dub", this.updubWatcher);
 
   // add this function to our global dubplus object so that chat
   // items can be deleted
@@ -45,7 +45,7 @@ myModule.turnOn = function() {
 };
 
 myModule.turnOff = function() {
-  Dubtrack.Events.unbind("realtime:room_playlist-dub", this.updubWatcher);
+  QueUp.Events.unbind("realtime:room_playlist-dub", this.updubWatcher);
 };
 
 module.exports = myModule;

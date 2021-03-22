@@ -60,13 +60,13 @@ if (!window.dubplus) {
   // checking to see if these items exist before initializing the script
   // instead of just picking an arbitrary setTimeout and hoping for the best
   var checkList = [
-    'Dubtrack.session.id',
-    'Dubtrack.room.chat',
-    'Dubtrack.Events',
-    'Dubtrack.room.player',
-    'Dubtrack.helpers.cookie',
-    'Dubtrack.room.model',
-    'Dubtrack.room.users',
+    'QueUp.session.id',
+    'QueUp.room.chat',
+    'QueUp.Events',
+    'QueUp.room.player',
+    'QueUp.helpers.cookie',
+    'QueUp.room.model',
+    'QueUp.room.users',
   ];
   
   var _dubplusWaiting = new WaitFor(checkList, { seconds : 10}); // 10sec should be more than enough
@@ -77,7 +77,7 @@ if (!window.dubplus) {
       $('.dubplus-waiting').remove();
     })
     .fail(function(){
-      if (!Dubtrack.session.id) {
+      if (!QueUp.session.id) {
         errorModal('You\'re not logged in. Please login to use Dub+.');
       } else {
         $('.dubplus-waiting span').text('Something happed, refresh and try again');
@@ -86,7 +86,7 @@ if (!window.dubplus) {
 
 } else {
 
-  if (!Dubtrack.session.id) {
+  if (!QueUp.session.id) {
     errorModal('You\'re not logged in. Please login to use Dub+.');
   } else {
     errorModal('Dub+ is already loaded');

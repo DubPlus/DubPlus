@@ -31,14 +31,14 @@ myModule.customMentionCheck = function(e) {
       var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
       return reg.test(content); 
     });
-    if(Dubtrack.session.id !== e.user.userInfo.userid && inUsers){
-      Dubtrack.room.chat.mentionChatSound.play();
+    if(QueUp.session.id !== e.user.userInfo.userid && inUsers){
+      QueUp.room.chat.mentionChatSound.play();
     }
   }
 };
 
 myModule.turnOn = function() {
-  Dubtrack.Events.bind("realtime:chat-message", this.customMentionCheck);
+  QueUp.Events.bind("realtime:chat-message", this.customMentionCheck);
 };
 
 
@@ -54,7 +54,7 @@ myModule.extra = function() {
 };
 
 myModule.turnOff = function() {
-  Dubtrack.Events.unbind("realtime:chat-message", this.customMentionCheck);
+  QueUp.Events.unbind("realtime:chat-message", this.customMentionCheck);
 };
 
 module.exports = myModule;

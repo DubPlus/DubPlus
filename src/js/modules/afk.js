@@ -21,9 +21,9 @@ var afk_chat_respond = function(e) {
     return; // do nothing until it's back to true
   }
   var content = e.message;
-  var user = Dubtrack.session.get('username');
+  var user = QueUp.session.get('username');
   
-  if (content.indexOf('@'+user) > -1 && Dubtrack.session.id !== e.user.userInfo.userid) {
+  if (content.indexOf('@'+user) > -1 && QueUp.session.id !== e.user.userInfo.userid) {
   
     if (settings.custom.customAfkMessage) {
       $('#chat-txt-message').val('[AFK] '+ settings.custom.customAfkMessage);
@@ -31,7 +31,7 @@ var afk_chat_respond = function(e) {
       $('#chat-txt-message').val("[AFK] I'm not here right now.");
     }
     
-    Dubtrack.room.chat.sendMessage();
+    QueUp.room.chat.sendMessage();
     afk_module.canSend = false;
 
     setTimeout(()=> {
@@ -41,11 +41,11 @@ var afk_chat_respond = function(e) {
 };
 
 afk_module.turnOn = function(){
-  Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
+  QueUp.Events.bind("realtime:chat-message", afk_chat_respond);
 };
 
 afk_module.turnOff = function() {
-  Dubtrack.Events.unbind("realtime:chat-message", afk_chat_respond);
+  QueUp.Events.unbind("realtime:chat-message", afk_chat_respond);
 };
 
 var saveAFKmessage = function() {

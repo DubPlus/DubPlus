@@ -69,7 +69,7 @@ if (!window.dubplus) {
 
   // checking to see if these items exist before initializing the script
   // instead of just picking an arbitrary setTimeout and hoping for the best
-  var checkList = ['Dubtrack.session.id', 'Dubtrack.room.chat', 'Dubtrack.Events', 'Dubtrack.room.player', 'Dubtrack.helpers.cookie', 'Dubtrack.room.model', 'Dubtrack.room.users'];
+  var checkList = ['QueUp.session.id', 'QueUp.room.chat', 'QueUp.Events', 'QueUp.room.player', 'QueUp.helpers.cookie', 'QueUp.room.model', 'QueUp.room.users'];
 
   var _dubplusWaiting = new _waitFor2.default(checkList, { seconds: 10 }); // 10sec should be more than enough
 
@@ -77,7 +77,7 @@ if (!window.dubplus) {
     init();
     $('.dubplus-waiting').remove();
   }).fail(function () {
-    if (!Dubtrack.session.id) {
+    if (!QueUp.session.id) {
       errorModal('You\'re not logged in. Please login to use Dub+.');
     } else {
       $('.dubplus-waiting span').text('Something happed, refresh and try again');
@@ -85,7 +85,7 @@ if (!window.dubplus) {
   });
 } else {
 
-  if (!Dubtrack.session.id) {
+  if (!QueUp.session.id) {
     errorModal('You\'re not logged in. Please login to use Dub+.');
   } else {
     errorModal('Dub+ is already loaded');
@@ -952,7 +952,7 @@ exportSettings.srcRoot = _RESOURCE_SRC_;
 
 module.exports = exportSettings;
 
-}).call(this,'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus')
+}).call(this,'https://cdn.jsdelivr.net/gh//DubPlus')
 },{}],9:[function(require,module,exports){
 'use strict';
 
@@ -979,9 +979,9 @@ var afk_chat_respond = function afk_chat_respond(e) {
     return; // do nothing until it's back to true
   }
   var content = e.message;
-  var user = Dubtrack.session.get('username');
+  var user = QueUp.session.get('username');
 
-  if (content.indexOf('@' + user) > -1 && Dubtrack.session.id !== e.user.userInfo.userid) {
+  if (content.indexOf('@' + user) > -1 && QueUp.session.id !== e.user.userInfo.userid) {
 
     if (settings.custom.customAfkMessage) {
       $('#chat-txt-message').val('[AFK] ' + settings.custom.customAfkMessage);
@@ -989,7 +989,7 @@ var afk_chat_respond = function afk_chat_respond(e) {
       $('#chat-txt-message').val("[AFK] I'm not here right now.");
     }
 
-    Dubtrack.room.chat.sendMessage();
+    QueUp.room.chat.sendMessage();
     afk_module.canSend = false;
 
     setTimeout(function () {
@@ -999,11 +999,11 @@ var afk_chat_respond = function afk_chat_respond(e) {
 };
 
 afk_module.turnOn = function () {
-  Dubtrack.Events.bind("realtime:chat-message", afk_chat_respond);
+  QueUp.Events.bind("realtime:chat-message", afk_chat_respond);
 };
 
 afk_module.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:chat-message", afk_chat_respond);
+  QueUp.Events.unbind("realtime:chat-message", afk_chat_respond);
 };
 
 var saveAFKmessage = function saveAFKmessage() {
@@ -1217,7 +1217,7 @@ var chatInputKeydownFunc = function chatInputKeydownFunc(e) {
 
   // Manually send the keycodes if the preview popup isn't visible
   if (isValidKey && emptyPreview) {
-    return Dubtrack.room.chat.ncKeyDown({ 'which': e.keyCode });
+    return QueUp.room.chat.ncKeyDown({ 'which': e.keyCode });
   }
 
   // stop default behaviors of special keys so we can use them in preview
@@ -1229,7 +1229,7 @@ var chatInputKeydownFunc = function chatInputKeydownFunc(e) {
 myModule.turnOn = function () {
   previewList.init();
   //Only remove keydown for Dubtrack native autocomplete to work
-  Dubtrack.room.chat.delegateEvents(_.omit(Dubtrack.room.chat.events, ['keydown #chat-txt-message']));
+  QueUp.room.chat.delegateEvents(_.omit(QueUp.room.chat.events, ['keydown #chat-txt-message']));
 
   $(document.body).on('keydown', "#chat-txt-message", chatInputKeydownFunc);
   $(document.body).on('keyup', "#chat-txt-message", chatInputKeyupFunc);
@@ -1237,7 +1237,7 @@ myModule.turnOn = function () {
 
 myModule.turnOff = function () {
   previewList.stop();
-  Dubtrack.room.chat.delegateEvents(Dubtrack.room.chat.events);
+  QueUp.room.chat.delegateEvents(QueUp.room.chat.events);
   $(document.body).off('keydown', "#chat-txt-message", chatInputKeydownFunc);
   $(document.body).off('keyup', "#chat-txt-message", chatInputKeyupFunc);
 };
@@ -1258,9 +1258,9 @@ autovote.category = "General";
 // add any custom functions to this module
 
 var advance_vote = function advance_vote() {
-  if (Dubtrack && Dubtrack.playerController && Dubtrack.playerController.voteUp) {
+  if (QueUp && QueUp.playerController && QueUp.playerController.voteUp) {
     console.log('voting');
-    Dubtrack.playerController.voteUp.click();
+    QueUp.playerController.voteUp.click();
   }
 };
 
@@ -1273,15 +1273,15 @@ var voteCheck = function voteCheck(obj) {
 /*******************************************************/
 
 autovote.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:room_playlist-update", voteCheck);
+  QueUp.Events.unbind("realtime:room_playlist-update", voteCheck);
 };
 
 autovote.turnOn = function () {
-  var song = Dubtrack.room.player.activeSong.get('song');
-  var dubCookie = Dubtrack.helpers.cookie.get('dub-' + Dubtrack.room.model.get("_id"));
-  var dubsong = Dubtrack.helpers.cookie.get('dub-song');
+  var song = QueUp.room.player.activeSong.get('song');
+  var dubCookie = QueUp.helpers.cookie.get('dub-' + QueUp.room.model.get("_id"));
+  var dubsong = QueUp.helpers.cookie.get('dub-song');
 
-  if (!Dubtrack.room || !song || song.songid !== dubsong) {
+  if (!QueUp.room || !song || song.songid !== dubsong) {
     dubCookie = false;
   }
   //Only cast the vote if user hasn't already voted
@@ -1289,7 +1289,7 @@ autovote.turnOn = function () {
     advance_vote();
   }
 
-  Dubtrack.Events.bind("realtime:room_playlist-update", voteCheck);
+  QueUp.Events.bind("realtime:room_playlist-update", voteCheck);
 };
 
 module.exports = autovote;
@@ -1328,7 +1328,7 @@ myModule.chatCleanerCheck = function (e) {
 };
 
 myModule.turnOn = function () {
-  Dubtrack.Events.bind("realtime:chat-message", this.chatCleanerCheck);
+  QueUp.Events.bind("realtime:chat-message", this.chatCleanerCheck);
 };
 
 myModule.extra = function () {
@@ -1343,7 +1343,7 @@ myModule.extra = function () {
 };
 
 myModule.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:chat-message", this.chatCleanerCheck);
+  QueUp.Events.unbind("realtime:chat-message", this.chatCleanerCheck);
 };
 
 module.exports = myModule;
@@ -1364,7 +1364,7 @@ myModule.category = "General";
 
 myModule.notifyOnMention = function (e) {
   var content = e.message;
-  var user = Dubtrack.session.get('username').toLowerCase();
+  var user = QueUp.session.get('username').toLowerCase();
   var mentionTriggers = ['@' + user];
 
   if (settings.options.custom_mentions && settings.custom.custom_mentions) {
@@ -1377,7 +1377,7 @@ myModule.notifyOnMention = function (e) {
     return reg.test(content);
   });
 
-  if (mentionTriggersTest && !this.isActiveTab && Dubtrack.session.id !== e.user.userInfo.userid) {
+  if (mentionTriggersTest && !this.isActiveTab && QueUp.session.id !== e.user.userInfo.userid) {
     (0, _notify.showNotification)({
       title: "Message from " + e.user.username,
       content: content
@@ -1390,7 +1390,7 @@ myModule.turnOn = function () {
 
   (0, _notify.notifyCheckPermission)(function (granted) {
     if (granted === true) {
-      Dubtrack.Events.bind("realtime:chat-message", _this.notifyOnMention);
+      QueUp.Events.bind("realtime:chat-message", _this.notifyOnMention);
     } else {
       // turn back off until it's granted
       _this.toggleAndSave(_this.id, false);
@@ -1399,7 +1399,7 @@ myModule.turnOn = function () {
 };
 
 myModule.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:chat-message", this.notifyOnMention);
+  QueUp.Events.unbind("realtime:chat-message", this.notifyOnMention);
 };
 
 module.exports = myModule;
@@ -1422,7 +1422,7 @@ myModule.description = "Toggle Community CSS theme.";
 myModule.category = "Customize";
 
 myModule.turnOn = function () {
-  var location = Dubtrack.room.model.get('roomUrl');
+  var location = QueUp.room.model.get('roomUrl');
   $.ajax({
     type: 'GET',
     url: 'https://api.dubtrack.fm/room/' + location
@@ -1607,14 +1607,14 @@ myModule.customMentionCheck = function (e) {
       var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
       return reg.test(content);
     });
-    if (Dubtrack.session.id !== e.user.userInfo.userid && inUsers) {
-      Dubtrack.room.chat.mentionChatSound.play();
+    if (QueUp.session.id !== e.user.userInfo.userid && inUsers) {
+      QueUp.room.chat.mentionChatSound.play();
     }
   }
 };
 
 myModule.turnOn = function () {
-  Dubtrack.Events.bind("realtime:chat-message", this.customMentionCheck);
+  QueUp.Events.bind("realtime:chat-message", this.customMentionCheck);
 };
 
 myModule.extra = function () {
@@ -1629,7 +1629,7 @@ myModule.extra = function () {
 };
 
 myModule.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:chat-message", this.customMentionCheck);
+  QueUp.Events.unbind("realtime:chat-message", this.customMentionCheck);
 };
 
 module.exports = myModule;
@@ -1654,13 +1654,13 @@ var saveCustomNotificationSound = function saveCustomNotificationSound() {
   var content = $('.dp-modal textarea').val();
   if (content === '' || !content) {
     options.saveOption('custom', 'notificationSound', '');
-    Dubtrack.room.chat.mentionChatSound.url = DubtrackDefaultSound;
+    QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
     return;
   }
 
   // Check if valid sound url
   if (soundManager.canPlayURL(content)) {
-    Dubtrack.room.chat.mentionChatSound.url = content;
+    QueUp.room.chat.mentionChatSound.url = content;
   } else {
     setTimeout(function () {
       var that = myModule;
@@ -1668,7 +1668,7 @@ var saveCustomNotificationSound = function saveCustomNotificationSound() {
         title: 'Dub+ Error',
         content: "You've entered an invalid sound url! Please make sure you are entering the full, direct url to the file. IE: https://example.com/sweet-sound.mp3"
       });
-      Dubtrack.room.chat.mentionChatSound.url = DubtrackDefaultSound;
+      QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
       that.optionState = false;
       that.toggleAndSave(that.id, false);
     }, 100);
@@ -1699,12 +1699,12 @@ myModule.turnOn = function () {
   if (!settings.custom.notificationSound || settings.custom.notificationSound === '') {
     this.extra();
   } else {
-    Dubtrack.room.chat.mentionChatSound.url = settings.custom.notificationSound;
+    QueUp.room.chat.mentionChatSound.url = settings.custom.notificationSound;
   }
 };
 
 myModule.turnOff = function () {
-  Dubtrack.room.chat.mentionChatSound.url = DubtrackDefaultSound;
+  QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
 };
 
 module.exports = myModule;
@@ -1750,11 +1750,11 @@ myModule.djNotificationCheck = function (e) {
     ignoreActiveTab: true,
     wait: 10000
   });
-  Dubtrack.room.chat.mentionChatSound.play();
+  QueUp.room.chat.mentionChatSound.play();
 };
 
 myModule.turnOn = function () {
-  Dubtrack.Events.bind("realtime:room_playlist-update", this.djNotificationCheck);
+  QueUp.Events.bind("realtime:room_playlist-update", this.djNotificationCheck);
 };
 
 myModule.extra = function () {
@@ -1769,7 +1769,7 @@ myModule.extra = function () {
 };
 
 myModule.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:room_playlist-update", this.djNotificationCheck);
+  QueUp.Events.unbind("realtime:room_playlist-update", this.djNotificationCheck);
 };
 
 module.exports = myModule;
@@ -1796,24 +1796,24 @@ myModule.description = "Toggle showing downdubs in the chat box (mods only)";
 myModule.category = "General";
 
 myModule.downdubWatcher = function (e) {
-  var user = Dubtrack.session.get('username');
-  var currentDj = Dubtrack.room.users.collection.findWhere({
-    userid: Dubtrack.room.player.activeSong.attributes.song.userid
+  var user = QueUp.session.get('username');
+  var currentDj = QueUp.room.users.collection.findWhere({
+    userid: QueUp.room.player.activeSong.attributes.song.userid
   }).attributes._user.username;
 
   if (user === currentDj && e.dubtype === 'downdub') {
-    var newChat = "\n      <li class=\"dubplus-chat-system dubplus-chat-system-downdub\">\n        <div class=\"chatDelete\" onclick=\"dubplus.deleteChatMessageClientSide(this)\">\n          <span class=\"icon-close\"></span>\n        </div>\n        <div class=\"text\">\n          @" + e.user.username + " has downdubbed your song " + Dubtrack.room.player.activeSong.attributes.songInfo.name + "\n        </div>\n      </li>";
+    var newChat = "\n      <li class=\"dubplus-chat-system dubplus-chat-system-downdub\">\n        <div class=\"chatDelete\" onclick=\"dubplus.deleteChatMessageClientSide(this)\">\n          <span class=\"icon-close\"></span>\n        </div>\n        <div class=\"text\">\n          @" + e.user.username + " has downdubbed your song " + QueUp.room.player.activeSong.attributes.songInfo.name + "\n        </div>\n      </li>";
 
     $('ul.chat-main').append(newChat);
   }
 };
 
 myModule.turnOn = function () {
-  if (!(0, _modcheck2.default)(Dubtrack.session.id)) {
+  if (!(0, _modcheck2.default)(QueUp.session.id)) {
     return;
   }
 
-  Dubtrack.Events.bind("realtime:room_playlist-dub", this.downdubWatcher);
+  QueUp.Events.bind("realtime:room_playlist-dub", this.downdubWatcher);
 
   // add this function to our global dubplus object so that downdubbed chat
   // items can be deleted
@@ -1825,7 +1825,7 @@ myModule.turnOn = function () {
 };
 
 myModule.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:room_playlist-dub", this.downdubWatcher);
+  QueUp.Events.unbind("realtime:room_playlist-dub", this.downdubWatcher);
 };
 
 module.exports = myModule;
@@ -1910,11 +1910,11 @@ emote_module.turnOn = function () {
     } else {
         replaceTextWithEmote();
     }
-    Dubtrack.Events.bind("realtime:chat-message", replaceTextWithEmote);
+    QueUp.Events.bind("realtime:chat-message", replaceTextWithEmote);
 };
 
 emote_module.turnOff = function () {
-    Dubtrack.Events.unbind("realtime:chat-message", replaceTextWithEmote);
+    QueUp.Events.unbind("realtime:chat-message", replaceTextWithEmote);
 };
 
 module.exports = emote_module;
@@ -2000,20 +2000,20 @@ myModule.description = "Toggle showing grabs in the chat box";
 myModule.category = "General";
 
 myModule.grabChatWatcher = function (e) {
-  var user = Dubtrack.session.get('username');
-  var currentDj = Dubtrack.room.users.collection.findWhere({
-    userid: Dubtrack.room.player.activeSong.attributes.song.userid
+  var user = QueUp.session.get('username');
+  var currentDj = QueUp.room.users.collection.findWhere({
+    userid: QueUp.room.player.activeSong.attributes.song.userid
   }).attributes._user.username;
 
-  if (user === currentDj && !Dubtrack.room.model.get('displayUserGrab')) {
-    var newChat = "\n      <li class=\"dubplus-chat-system dubplus-chat-system-grab\">\n        <div class=\"chatDelete\" onclick=\"dubplus.deleteChatMessageClientSide(this)\">\n          <span class=\"icon-close\"></span>\n        </div>\n        <div class=\"text\">\n          @" + e.user.username + " has grabbed your song " + Dubtrack.room.player.activeSong.attributes.songInfo.name + "\n        </div>\n      </li>";
+  if (user === currentDj && !QueUp.room.model.get('displayUserGrab')) {
+    var newChat = "\n      <li class=\"dubplus-chat-system dubplus-chat-system-grab\">\n        <div class=\"chatDelete\" onclick=\"dubplus.deleteChatMessageClientSide(this)\">\n          <span class=\"icon-close\"></span>\n        </div>\n        <div class=\"text\">\n          @" + e.user.username + " has grabbed your song " + QueUp.room.player.activeSong.attributes.songInfo.name + "\n        </div>\n      </li>";
 
     $('ul.chat-main').append(newChat);
   }
 };
 
 myModule.turnOn = function () {
-  Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
+  QueUp.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
 
   // add this function to our global dubplus object so that chat
   // items can be deleted
@@ -2025,7 +2025,7 @@ myModule.turnOn = function () {
 };
 
 myModule.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
+  QueUp.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
 };
 
 module.exports = myModule;
@@ -2156,7 +2156,7 @@ myModule.description = "Enable desktop notifications when a user receives a priv
 myModule.category = "General";
 
 myModule.pmNotify = function (e) {
-  var userid = Dubtrack.session.get('_id');
+  var userid = QueUp.session.get('_id');
   if (userid === e.userid) {
     return;
   }
@@ -2178,7 +2178,7 @@ myModule.turnOn = function () {
 
   (0, _notify.notifyCheckPermission)(function (granted) {
     if (granted === true) {
-      Dubtrack.Events.bind("realtime:new-message", _this.pmNotify);
+      QueUp.Events.bind("realtime:new-message", _this.pmNotify);
     } else {
       // turn back off until it's granted
       _this.toggleAndSave(_this.id, false);
@@ -2187,7 +2187,7 @@ myModule.turnOn = function () {
 };
 
 myModule.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:new-message", this.pmNotify);
+  QueUp.Events.unbind("realtime:new-message", this.pmNotify);
 };
 
 module.exports = myModule;
@@ -2418,11 +2418,11 @@ dubshover.showDubsOnHover = function () {
   var that = this;
   this.resetDubs();
 
-  Dubtrack.Events.bind("realtime:room_playlist-dub", this.dubWatcher.bind(this));
-  Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabWatcher.bind(this));
-  Dubtrack.Events.bind("realtime:user-leave", this.dubUserLeaveWatcher.bind(this));
-  Dubtrack.Events.bind("realtime:room_playlist-update", this.resetDubs.bind(this));
-  Dubtrack.Events.bind("realtime:room_playlist-update", this.resetGrabs.bind(this)); //TODO: Remove when we can hit the api for all grabs of current playing song
+  QueUp.Events.bind("realtime:room_playlist-dub", this.dubWatcher.bind(this));
+  QueUp.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabWatcher.bind(this));
+  QueUp.Events.bind("realtime:user-leave", this.dubUserLeaveWatcher.bind(this));
+  QueUp.Events.bind("realtime:room_playlist-update", this.resetDubs.bind(this));
+  QueUp.Events.bind("realtime:room_playlist-update", this.resetGrabs.bind(this)); //TODO: Remove when we can hit the api for all grabs of current playing song
 
   var dubupEl = $('.dubup').first().parent('li');
   var dubdownEl = $('.dubdown').first().parent('li');
@@ -2501,7 +2501,7 @@ dubshover.showDubsOnHover = function () {
       html = '<ul id="dubinfo-preview" class="dubinfo-show dubplus-updubs-hover" style="border-color: ' + dubupBackground + '">';
 
       window.dubplus.dubs.upDubs.forEach(function (val) {
-        html += '<li class="preview-dubinfo-item users-previews dubplus-updubs-hover">' + '<div class="dubinfo-image">' + '<img src="https://api.dubtrack.fm/user/' + val.userid + '/image">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
+        html += '<li class="preview-dubinfo-item users-previews dubplus-updubs-hover">' + '<div class="dubinfo-image">' + '<img src="https://images.queup.dev/user/avatar/' + val.userid + '">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
       });
       html += '</ul>';
     } else {
@@ -2564,11 +2564,11 @@ dubshover.showDubsOnHover = function () {
     var dubdownBackground = $('.dubdown').hasClass('voted') ? $('.dubdown').css('background-color') : $('.dubdown').find('.icon-arrow-down').css('color');
     var html;
 
-    if ((0, _modcheck2.default)(Dubtrack.session.id)) {
+    if ((0, _modcheck2.default)(QueUp.session.id)) {
       if (window.dubplus.dubs.downDubs.length > 0) {
         html = '<ul id="dubinfo-preview" class="dubinfo-show dubplus-downdubs-hover" style="border-color: ' + dubdownBackground + '">';
         window.dubplus.dubs.downDubs.forEach(function (val) {
-          html += '<li class="preview-dubinfo-item users-previews dubplus-downdubs-hover">' + '<div class="dubinfo-image">' + '<img src="https://api.dubtrack.fm/user/' + val.userid + '/image">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
+          html += '<li class="preview-dubinfo-item users-previews dubplus-downdubs-hover">' + '<div class="dubinfo-image">' + '<img src="https://images.queup.dev/user/avatar/' + val.userid + '">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
         });
         html += '</ul>';
       } else {
@@ -2640,7 +2640,7 @@ dubshover.showDubsOnHover = function () {
       html = '<ul id="dubinfo-preview" class="dubinfo-show dubplus-grabs-hover" style="border-color: ' + grabsBackground + '">';
 
       window.dubplus.dubs.grabs.forEach(function (val) {
-        html += '<li class="preview-dubinfo-item users-previews dubplus-grabs-hover">' + '<div class="dubinfo-image">' + '<img src="https://api.dubtrack.fm/user/' + val.userid + '/image">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
+        html += '<li class="preview-dubinfo-item users-previews dubplus-grabs-hover">' + '<div class="dubinfo-image">' + '<img src="https://images.queup.dev/user/avatar/' + val.userid + '">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
       });
       html += '</ul>';
     } else {
@@ -2696,11 +2696,11 @@ dubshover.showDubsOnHover = function () {
 };
 
 dubshover.stopDubsOnHover = function () {
-  Dubtrack.Events.unbind("realtime:room_playlist-dub", this.dubWatcher);
-  Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabWatcher);
-  Dubtrack.Events.unbind("realtime:user-leave", this.dubUserLeaveWatcher);
-  Dubtrack.Events.unbind("realtime:room_playlist-update", this.resetDubs);
-  Dubtrack.Events.unbind("realtime:room_playlist-update", this.resetGrabs); //TODO: Remove when we can hit the api for all grabs of current playing song
+  QueUp.Events.unbind("realtime:room_playlist-dub", this.dubWatcher);
+  QueUp.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabWatcher);
+  QueUp.Events.unbind("realtime:user-leave", this.dubUserLeaveWatcher);
+  QueUp.Events.unbind("realtime:room_playlist-update", this.resetDubs);
+  QueUp.Events.unbind("realtime:room_playlist-update", this.resetGrabs); //TODO: Remove when we can hit the api for all grabs of current playing song
 };
 
 dubshover.dubUserLeaveWatcher = function (e) {
@@ -2787,7 +2787,7 @@ dubshover.dubWatcher = function (e) {
     //If dub already casted
     if ($.grep(window.dubplus.dubs.downDubs, function (el) {
       return el.userid === e.user._id;
-    }).length <= 0 && (0, _modcheck2.default)(Dubtrack.session.id)) {
+    }).length <= 0 && (0, _modcheck2.default)(QueUp.session.id)) {
       window.dubplus.dubs.downDubs.push({
         userid: e.user._id,
         username: e.user.username
@@ -2807,15 +2807,15 @@ dubshover.dubWatcher = function (e) {
     }
   }
 
-  var msSinceSongStart = new Date() - new Date(Dubtrack.room.player.activeSong.attributes.song.played);
+  var msSinceSongStart = new Date() - new Date(QueUp.room.player.activeSong.attributes.song.played);
   if (msSinceSongStart < 1000) {
     return;
   }
 
-  if (window.dubplus.dubs.upDubs.length !== Dubtrack.room.player.activeSong.attributes.song.updubs) {
+  if (window.dubplus.dubs.upDubs.length !== QueUp.room.player.activeSong.attributes.song.updubs) {
     // console.log("Updubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
     this.resetDubs();
-  } else if ((0, _modcheck2.default)(Dubtrack.session.id) && window.dubplus.dubs.downDubs.length !== Dubtrack.room.player.activeSong.attributes.song.downdubs) {
+  } else if ((0, _modcheck2.default)(QueUp.session.id) && window.dubplus.dubs.downDubs.length !== QueUp.room.player.activeSong.attributes.song.downdubs) {
     // console.log("Downdubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
     this.resetDubs();
   }
@@ -2833,7 +2833,7 @@ dubshover.resetDubs = function () {
   window.dubplus.dubs.downDubs = [];
   // window.dubplus.dubs.grabs: [] //TODO: Uncomment this when we can hit the api for all grabs of current playing song
 
-  var dubsURL = "https://api.dubtrack.fm/room/" + Dubtrack.room.model.id + "/playlist/active/dubs";
+  var dubsURL = "https://api.queup.dev/room/" + QueUp.room.model.id + "/playlist/active/dubs";
   $.getJSON(dubsURL, function (response) {
     response.data.upDubs.forEach(function (e) {
       //Dub already casted (usually from autodub)
@@ -2844,14 +2844,14 @@ dubshover.resetDubs = function () {
       }
 
       var username;
-      if (!Dubtrack.room.users.collection.findWhere({ userid: e.userid }) || !Dubtrack.room.users.collection.findWhere({ userid: e.userid }).attributes) {
-        $.getJSON("https://api.dubtrack.fm/user/" + e.userid, function (response) {
+      if (!QueUp.room.users.collection.findWhere({ userid: e.userid }) || !QueUp.room.users.collection.findWhere({ userid: e.userid }).attributes) {
+        $.getJSON("https://api.queup.dev/user/" + e.userid, function (response) {
           if (response && response.userinfo) {
             username = response.userinfo.username;
           }
         });
       } else {
-        username = Dubtrack.room.users.collection.findWhere({ userid: e.userid }).attributes._user.username;
+        username = QueUp.room.users.collection.findWhere({ userid: e.userid }).attributes._user.username;
       }
 
       if (!username) {
@@ -2870,13 +2870,13 @@ dubshover.resetDubs = function () {
             return;
         }
          var username;
-        if(!Dubtrack.room.users.collection.findWhere({userid: e.userid}) || !Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes) {
+        if(!QueUp.room.users.collection.findWhere({userid: e.userid}) || !QueUp.room.users.collection.findWhere({userid: e.userid}).attributes) {
             $.getJSON("https://api.dubtrack.fm/user/" + e.userid, function(response){
                 username = response.userinfo.username;
             });
         }
         else{
-            username = Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes._user.username;
+            username = QueUp.room.users.collection.findWhere({userid: e.userid}).attributes._user.username;
         }
          window.dubplus.dubs.grabs.push({
             userid: e.userid,
@@ -2885,7 +2885,7 @@ dubshover.resetDubs = function () {
     });*/
 
     //Only let mods or higher access down dubs
-    if ((0, _modcheck2.default)(Dubtrack.session.id)) {
+    if ((0, _modcheck2.default)(QueUp.session.id)) {
       response.data.downDubs.forEach(function (e) {
         //Dub already casted
         if ($.grep(window.dubplus.dubs.downDubs, function (el) {
@@ -2895,17 +2895,17 @@ dubshover.resetDubs = function () {
         }
 
         var username;
-        if (!Dubtrack.room.users.collection.findWhere({ userid: e.userid }) || !Dubtrack.room.users.collection.findWhere({ userid: e.userid }).attributes) {
-          $.getJSON("https://api.dubtrack.fm/user/" + e.userid, function (response) {
+        if (!QueUp.room.users.collection.findWhere({ userid: e.userid }) || !QueUp.room.users.collection.findWhere({ userid: e.userid }).attributes) {
+          $.getJSON("https://api.queup.dev/user/" + e.userid, function (response) {
             username = response.userinfo.username;
           });
         } else {
-          username = Dubtrack.room.users.collection.findWhere({ userid: e.userid }).attributes._user.username;
+          username = QueUp.room.users.collection.findWhere({ userid: e.userid }).attributes._user.username;
         }
 
         window.dubplus.dubs.downDubs.push({
           userid: e.userid,
-          username: Dubtrack.room.users.collection.findWhere({ userid: e.userid }).attributes._user.username
+          username: QueUp.room.users.collection.findWhere({ userid: e.userid }).attributes._user.username
         });
       });
     }
@@ -2996,7 +2996,7 @@ var eventUtils = {
 var eventSongAdvance = function eventSongAdvance(e) {
   if (e.startTime < 2) {
     if (eventUtils.snoozed) {
-      Dubtrack.room.player.setVolume(eventUtils.currentVol);
+      QueUp.room.player.setVolume(eventUtils.currentVol);
       eventUtils.snoozed = false;
     }
     return true;
@@ -3004,14 +3004,14 @@ var eventSongAdvance = function eventSongAdvance(e) {
 };
 
 var snooze = function snooze() {
-  if (!eventUtils.snoozed && !Dubtrack.room.player.muted_player && Dubtrack.playerController.volume > 2) {
-    eventUtils.currentVol = Dubtrack.playerController.volume;
-    Dubtrack.room.player.mutePlayer();
+  if (!eventUtils.snoozed && !QueUp.room.player.muted_player && QueUp.playerController.volume > 2) {
+    eventUtils.currentVol = QueUp.playerController.volume;
+    QueUp.room.player.mutePlayer();
     eventUtils.snoozed = true;
-    Dubtrack.Events.bind("realtime:room_playlist-update", eventSongAdvance);
+    QueUp.Events.bind("realtime:room_playlist-update", eventSongAdvance);
   } else if (eventUtils.snoozed) {
-    Dubtrack.room.player.setVolume(eventUtils.currentVol);
-    Dubtrack.room.player.updateVolumeBar();
+    QueUp.room.player.setVolume(eventUtils.currentVol);
+    QueUp.room.player.updateVolumeBar();
     eventUtils.snoozed = false;
   }
 };
@@ -3083,7 +3083,7 @@ myModule.turnOn = function () {
   $(document).bind('keypress.key32', function (event) {
     var tag = event.target.tagName.toLowerCase();
     if (event.which === 32 && tag !== 'input' && tag !== 'textarea') {
-      Dubtrack.room.player.mutePlayer();
+      QueUp.room.player.mutePlayer();
     }
   });
 };
@@ -3134,20 +3134,20 @@ myModule.description = "Toggle showing updubs in the chat box";
 myModule.category = "General";
 
 myModule.updubWatcher = function (e) {
-  var user = Dubtrack.session.get('username');
-  var currentDj = Dubtrack.room.users.collection.findWhere({
-    userid: Dubtrack.room.player.activeSong.attributes.song.userid
+  var user = QueUp.session.get('username');
+  var currentDj = QueUp.room.users.collection.findWhere({
+    userid: QueUp.room.player.activeSong.attributes.song.userid
   }).attributes._user.username;
 
   if (user === currentDj && e.dubtype === 'updub') {
-    var newChat = "\n      <li class=\"dubplus-chat-system dubplus-chat-system-updub\">\n        <div class=\"chatDelete\" onclick=\"dubplus.deleteChatMessageClientSide(this)\">\n          <span class=\"icon-close\"></span>\n        </div>\n        <div class=\"text\">\n          @" + e.user.username + " has updubbed your song " + Dubtrack.room.player.activeSong.attributes.songInfo.name + "\n        </div>\n      </li>";
+    var newChat = "\n      <li class=\"dubplus-chat-system dubplus-chat-system-updub\">\n        <div class=\"chatDelete\" onclick=\"dubplus.deleteChatMessageClientSide(this)\">\n          <span class=\"icon-close\"></span>\n        </div>\n        <div class=\"text\">\n          @" + e.user.username + " has updubbed your song " + QueUp.room.player.activeSong.attributes.songInfo.name + "\n        </div>\n      </li>";
 
     $('ul.chat-main').append(newChat);
   }
 };
 
 myModule.turnOn = function () {
-  Dubtrack.Events.bind("realtime:room_playlist-dub", this.updubWatcher);
+  QueUp.Events.bind("realtime:room_playlist-dub", this.updubWatcher);
 
   // add this function to our global dubplus object so that chat
   // items can be deleted
@@ -3159,7 +3159,7 @@ myModule.turnOn = function () {
 };
 
 myModule.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:room_playlist-dub", this.updubWatcher);
+  QueUp.Events.unbind("realtime:room_playlist-dub", this.updubWatcher);
 };
 
 module.exports = myModule;
@@ -3243,7 +3243,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1545665217342')
+}).call(this,'1616418004722')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
@@ -3382,7 +3382,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function (userid) {
-  return Dubtrack.helpers.isDubtrackAdmin(userid) || Dubtrack.room.users.getIfOwner(userid) || Dubtrack.room.users.getIfManager(userid) || Dubtrack.room.users.getIfMod(userid);
+  return QueUp.helpers.isSiteAdmin(userid) || QueUp.room.users.getIfOwner(userid) || QueUp.room.users.getIfManager(userid) || QueUp.room.users.getIfMod(userid);
 };
 
 },{}],44:[function(require,module,exports){
@@ -3553,7 +3553,7 @@ function preload() {
 
   var dpText = ['display: table-cell', 'width: 10000px', 'padding-top:5px'].join(";");
 
-  var preloadHTML = '\n    <div class="dubplus-waiting" style="' + waitingStyles + '">\n      <div style="' + dpIcon + '">\n        <img src="' + settings.srcRoot + '/images/dubplus.svg" alt="DubPlus icon">\n      </div>\n      <span style="' + dpText + '">\n        Waiting for Dubtrack...\n      </span>\n    </div>\n  ';
+  var preloadHTML = '\n    <div class="dubplus-waiting" style="' + waitingStyles + '">\n      <div style="' + dpIcon + '">\n        <img src="' + settings.srcRoot + '/images/dubplus.svg" alt="DubPlus icon">\n      </div>\n      <span style="' + dpText + '">\n        Waiting for QueUp...\n      </span>\n    </div>\n  ';
 
   document.body.insertAdjacentHTML('afterbegin', preloadHTML);
 }

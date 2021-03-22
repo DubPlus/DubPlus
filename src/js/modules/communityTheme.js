@@ -13,7 +13,7 @@ myModule.description = "Toggle Community CSS theme.";
 myModule.category = "Customize";
 
 myModule.turnOn = function(){
-  var location = Dubtrack.room.model.get('roomUrl');
+  var location = QueUp.room.model.get('roomUrl');
   $.ajax({
     type: 'GET',
     url: 'https://api.dubtrack.fm/room/'+location,

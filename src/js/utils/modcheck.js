@@ -3,8 +3,8 @@
  */
 /*global Dubtrack */
 export default function(userid){
-  return Dubtrack.helpers.isDubtrackAdmin(userid) ||
-    Dubtrack.room.users.getIfOwner(userid) ||
-    Dubtrack.room.users.getIfManager(userid) ||
-    Dubtrack.room.users.getIfMod(userid);
+  return QueUp.helpers.isSiteAdmin(userid) ||
+    QueUp.room.users.getIfOwner(userid) ||
+    QueUp.room.users.getIfManager(userid) ||
+    QueUp.room.users.getIfMod(userid);
 }

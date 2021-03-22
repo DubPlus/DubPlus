@@ -28,11 +28,11 @@ dubshover.showDubsOnHover = function(){
   var that = this;
   this.resetDubs();
 
-  Dubtrack.Events.bind("realtime:room_playlist-dub", this.dubWatcher.bind(this));
-  Dubtrack.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabWatcher.bind(this));
-  Dubtrack.Events.bind("realtime:user-leave", this.dubUserLeaveWatcher.bind(this));
-  Dubtrack.Events.bind("realtime:room_playlist-update", this.resetDubs.bind(this));
-  Dubtrack.Events.bind("realtime:room_playlist-update", this.resetGrabs.bind(this)); //TODO: Remove when we can hit the api for all grabs of current playing song
+  QueUp.Events.bind("realtime:room_playlist-dub", this.dubWatcher.bind(this));
+  QueUp.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabWatcher.bind(this));
+  QueUp.Events.bind("realtime:user-leave", this.dubUserLeaveWatcher.bind(this));
+  QueUp.Events.bind("realtime:room_playlist-update", this.resetDubs.bind(this));
+  QueUp.Events.bind("realtime:room_playlist-update", this.resetGrabs.bind(this)); //TODO: Remove when we can hit the api for all grabs of current playing song
 
   var dubupEl = $('.dubup').first().parent('li');
   var dubdownEl = $('.dubdown').first().parent('li');
@@ -105,7 +105,7 @@ dubshover.showDubsOnHover = function(){
       window.dubplus.dubs.upDubs.forEach(function(val){
         html += '<li class="preview-dubinfo-item users-previews dubplus-updubs-hover">' +
               '<div class="dubinfo-image">' +
-                  '<img src="https://api.dubtrack.fm/user/' + val.userid + '/image">' +
+                  '<img src="https://images.queup.dev/user/avatar/' + val.userid + '">' +
               '</div>' +
               '<span class="dubinfo-text">@' + val.username + '</span>' +
           '</li>';
@@ -171,13 +171,13 @@ dubshover.showDubsOnHover = function(){
     var dubdownBackground = $('.dubdown').hasClass('voted') ? $('.dubdown').css('background-color') : $('.dubdown').find('.icon-arrow-down').css('color');
     var html;
 
-    if(userIsAtLeastMod(Dubtrack.session.id)){
+    if(userIsAtLeastMod(QueUp.session.id)){
       if(window.dubplus.dubs.downDubs.length > 0){
           html = '<ul id="dubinfo-preview" class="dubinfo-show dubplus-downdubs-hover" style="border-color: '+dubdownBackground+'">';
           window.dubplus.dubs.downDubs.forEach(function(val){
             html += '<li class="preview-dubinfo-item users-previews dubplus-downdubs-hover">' +
                         '<div class="dubinfo-image">' +
-                            '<img src="https://api.dubtrack.fm/user/' + val.userid + '/image">' +
+                            '<img src="https://images.queup.dev/user/avatar/' + val.userid + '">' +
                         '</div>' +
                         '<span class="dubinfo-text">@' + val.username + '</span>' +
                     '</li>';
@@ -255,7 +255,7 @@ dubshover.showDubsOnHover = function(){
       window.dubplus.dubs.grabs.forEach(function(val){
         html += '<li class="preview-dubinfo-item users-previews dubplus-grabs-hover">' +
             '<div class="dubinfo-image">' +
-                '<img src="https://api.dubtrack.fm/user/' + val.userid + '/image">' +
+                '<img src="https://images.queup.dev/user/avatar/' + val.userid + '">' +
             '</div>' +
             '<span class="dubinfo-text">@' + val.username + '</span>' +
         '</li>';
@@ -320,11 +320,11 @@ dubshover.showDubsOnHover = function(){
 };
 
 dubshover.stopDubsOnHover = function(){
-  Dubtrack.Events.unbind("realtime:room_playlist-dub", this.dubWatcher);
-  Dubtrack.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabWatcher);
-  Dubtrack.Events.unbind("realtime:user-leave", this.dubUserLeaveWatcher);
-  Dubtrack.Events.unbind("realtime:room_playlist-update", this.resetDubs);
-  Dubtrack.Events.unbind("realtime:room_playlist-update", this.resetGrabs); //TODO: Remove when we can hit the api for all grabs of current playing song
+  QueUp.Events.unbind("realtime:room_playlist-dub", this.dubWatcher);
+  QueUp.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabWatcher);
+  QueUp.Events.unbind("realtime:user-leave", this.dubUserLeaveWatcher);
+  QueUp.Events.unbind("realtime:room_playlist-update", this.resetDubs);
+  QueUp.Events.unbind("realtime:room_playlist-update", this.resetGrabs); //TODO: Remove when we can hit the api for all grabs of current playing song
 };
 
 
@@ -399,7 +399,7 @@ dubshover.dubWatcher = function(e){
   } else if (e.dubtype === 'downdub'){
 
     //If dub already casted
-    if($.grep(window.dubplus.dubs.downDubs, function(el){ return el.userid === e.user._id; }).length <= 0 && userIsAtLeastMod(Dubtrack.session.id)){
+    if($.grep(window.dubplus.dubs.downDubs, function(el){ return el.userid === e.user._id; }).length <= 0 && userIsAtLeastMod(QueUp.session.id)){
         window.dubplus.dubs.downDubs.push({
           userid: e.user._id,
           username: e.user.username
@@ -418,14 +418,14 @@ dubshover.dubWatcher = function(e){
 
   }
 
-  var msSinceSongStart = new Date() - new Date(Dubtrack.room.player.activeSong.attributes.song.played);
+  var msSinceSongStart = new Date() - new Date(QueUp.room.player.activeSong.attributes.song.played);
   if(msSinceSongStart < 1000) {return;}
 
-  if(window.dubplus.dubs.upDubs.length !== Dubtrack.room.player.activeSong.attributes.song.updubs){
+  if(window.dubplus.dubs.upDubs.length !== QueUp.room.player.activeSong.attributes.song.updubs){
     // console.log("Updubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
     this.resetDubs();
   }
-  else if(userIsAtLeastMod(Dubtrack.session.id) && window.dubplus.dubs.downDubs.length !== Dubtrack.room.player.activeSong.attributes.song.downdubs){
+  else if(userIsAtLeastMod(QueUp.session.id) && window.dubplus.dubs.downDubs.length !== QueUp.room.player.activeSong.attributes.song.downdubs){
     // console.log("Downdubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
     this.resetDubs();
   }
@@ -443,7 +443,7 @@ dubshover.resetDubs = function(){
   window.dubplus.dubs.downDubs = [];
   // window.dubplus.dubs.grabs: [] //TODO: Uncomment this when we can hit the api for all grabs of current playing song
 
-  var dubsURL = "https://api.dubtrack.fm/room/" + Dubtrack.room.model.id + "/playlist/active/dubs";
+  var dubsURL = "https://api.queup.dev/room/" + QueUp.room.model.id + "/playlist/active/dubs";
   $.getJSON(dubsURL, (response)=>{
     response.data.upDubs.forEach((e)=>{
       //Dub already casted (usually from autodub)
@@ -452,15 +452,15 @@ dubshover.resetDubs = function(){
       }
 
       var username;
-      if(!Dubtrack.room.users.collection.findWhere({userid: e.userid}) || 
-         !Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes) {
-          $.getJSON("https://api.dubtrack.fm/user/" + e.userid, function(response){
+      if(!QueUp.room.users.collection.findWhere({userid: e.userid}) || 
+         !QueUp.room.users.collection.findWhere({userid: e.userid}).attributes) {
+          $.getJSON("https://api.queup.dev/user/" + e.userid, function(response){
               if(response && response.userinfo) {
                 username = response.userinfo.username;
               }
           });
       } else {
-        username = Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes._user.username;
+        username = QueUp.room.users.collection.findWhere({userid: e.userid}).attributes._user.username;
       }
 
       if(!username) { return; }
@@ -478,13 +478,13 @@ dubshover.resetDubs = function(){
         }
 
         var username;
-        if(!Dubtrack.room.users.collection.findWhere({userid: e.userid}) || !Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes) {
+        if(!QueUp.room.users.collection.findWhere({userid: e.userid}) || !QueUp.room.users.collection.findWhere({userid: e.userid}).attributes) {
             $.getJSON("https://api.dubtrack.fm/user/" + e.userid, function(response){
                 username = response.userinfo.username;
             });
         }
         else{
-            username = Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes._user.username;
+            username = QueUp.room.users.collection.findWhere({userid: e.userid}).attributes._user.username;
         }
 
         window.dubplus.dubs.grabs.push({
@@ -494,7 +494,7 @@ dubshover.resetDubs = function(){
     });*/
 
     //Only let mods or higher access down dubs
-    if(userIsAtLeastMod(Dubtrack.session.id)){
+    if(userIsAtLeastMod(QueUp.session.id)){
       response.data.downDubs.forEach(function(e){
         //Dub already casted
         if($.grep(window.dubplus.dubs.downDubs, function(el){ return el.userid === e.userid; }).length > 0){
@@ -502,18 +502,18 @@ dubshover.resetDubs = function(){
         }
 
         var username;
-        if(!Dubtrack.room.users.collection.findWhere({userid: e.userid}) || !Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes) {
-            $.getJSON("https://api.dubtrack.fm/user/" + e.userid, function(response){
+        if(!QueUp.room.users.collection.findWhere({userid: e.userid}) || !QueUp.room.users.collection.findWhere({userid: e.userid}).attributes) {
+            $.getJSON("https://api.queup.dev/user/" + e.userid, function(response){
                 username = response.userinfo.username;
             });
         }
         else{
-            username = Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes._user.username;
+            username = QueUp.room.users.collection.findWhere({userid: e.userid}).attributes._user.username;
         }
 
         window.dubplus.dubs.downDubs.push({
             userid: e.userid,
-            username: Dubtrack.room.users.collection.findWhere({userid: e.userid}).attributes._user.username
+            username: QueUp.room.users.collection.findWhere({userid: e.userid}).attributes._user.username
         });
       });
     }

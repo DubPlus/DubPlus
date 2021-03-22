@@ -15,13 +15,13 @@ var saveCustomNotificationSound = function() {
   var content = $('.dp-modal textarea').val();
   if (content === '' || !content) {
     options.saveOption('custom', 'notificationSound', '');
-    Dubtrack.room.chat.mentionChatSound.url = DubtrackDefaultSound;
+    QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
     return;
   }
 
   // Check if valid sound url
   if (soundManager.canPlayURL(content)) {
-    Dubtrack.room.chat.mentionChatSound.url = content;
+    QueUp.room.chat.mentionChatSound.url = content;
   } else {
     setTimeout(function() {
       var that = myModule;
@@ -29,7 +29,7 @@ var saveCustomNotificationSound = function() {
         title: 'Dub+ Error',
         content: "You've entered an invalid sound url! Please make sure you are entering the full, direct url to the file. IE: https://example.com/sweet-sound.mp3"
       });
-      Dubtrack.room.chat.mentionChatSound.url = DubtrackDefaultSound;
+      QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
       that.optionState = false;
       that.toggleAndSave(that.id, false);
     }, 100);
@@ -61,12 +61,12 @@ myModule.turnOn = function() {
   if (!settings.custom.notificationSound || settings.custom.notificationSound === '') {
     this.extra();
   } else {
-    Dubtrack.room.chat.mentionChatSound.url = settings.custom.notificationSound;
+    QueUp.room.chat.mentionChatSound.url = settings.custom.notificationSound;
   }
 };
 
 myModule.turnOff = function() {
-  Dubtrack.room.chat.mentionChatSound.url = DubtrackDefaultSound;
+  QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
 };
 
 module.exports = myModule;

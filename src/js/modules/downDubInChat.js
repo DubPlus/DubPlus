@@ -13,9 +13,9 @@ myModule.description = "Toggle showing downdubs in the chat box (mods only)";
 myModule.category = "General";
 
 myModule.downdubWatcher = function(e) {
-  var user = Dubtrack.session.get('username');
-  var currentDj = Dubtrack.room.users.collection.findWhere({
-    userid: Dubtrack.room.player.activeSong.attributes.song.userid
+  var user = QueUp.session.get('username');
+  var currentDj = QueUp.room.users.collection.findWhere({
+    userid: QueUp.room.player.activeSong.attributes.song.userid
   }).attributes._user.username;
 
   if(user === currentDj && e.dubtype === 'downdub'){
@@ -25,7 +25,7 @@ myModule.downdubWatcher = function(e) {
           <span class="icon-close"></span>
         </div>
         <div class="text">
-          @${e.user.username} has downdubbed your song ${Dubtrack.room.player.activeSong.attributes.songInfo.name}
+          @${e.user.username} has downdubbed your song ${QueUp.room.player.activeSong.attributes.songInfo.name}
         </div>
       </li>`;
 
@@ -34,11 +34,11 @@ myModule.downdubWatcher = function(e) {
 };
 
 myModule.turnOn = function() {
-  if(!userIsAtLeastMod(Dubtrack.session.id)) {
+  if(!userIsAtLeastMod(QueUp.session.id)) {
     return;
   }
 
-  Dubtrack.Events.bind("realtime:room_playlist-dub", this.downdubWatcher);
+  QueUp.Events.bind("realtime:room_playlist-dub", this.downdubWatcher);
 
   // add this function to our global dubplus object so that downdubbed chat
   // items can be deleted
@@ -51,7 +51,7 @@ myModule.turnOn = function() {
 };
 
 myModule.turnOff = function() {
-  Dubtrack.Events.unbind("realtime:room_playlist-dub", this.downdubWatcher);
+  QueUp.Events.unbind("realtime:room_playlist-dub", this.downdubWatcher);
 };
 
 module.exports = myModule;
