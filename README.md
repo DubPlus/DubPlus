@@ -1,5 +1,5 @@
 # DubPlus
-Dub+ - A Dubtrack.fm script/extension for added features and customizations
+Dub+ - A Dubtrack.fm and QueUp.net script/extension for added features and customizations
 
 ### Contributing
 

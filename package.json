@@ -1,7 +1,7 @@
 {
   "name": "DubPlus",
-  "version": "0.2.0",
-  "description": "Dub+ - A simple script/extension for Dubtrack.fm",
+  "version": "0.3.0",
+  "description": "Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net",
   "main": "dubplus.js",
   "scripts": {
     "build": "node ./tasks",

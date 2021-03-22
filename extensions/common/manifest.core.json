@@ -3,7 +3,7 @@
   "name": "DubPlus",
   "short_name": "Dub+",
   "author": "Dub+ Devs",
-  "description": "Dub+ - A Dubtrack.fm script/extension for added features and customizations",
+  "description": "Dub+ - A Dubtrack.fm and QueUp.net script/extension for added features and customizations",
   "homepage_url": "https://dub.plus/",
   "browser_action": {
     "default_icon": "icons/48.png"
@@ -11,7 +11,8 @@
   "content_scripts": [
     {
       "matches": [
-        "*://*.dubtrack.fm/join/*"
+        "*://*.dubtrack.fm/join/*",
+        "*://*.queup.net/join/*"
       ],
       "js": [
         "scripts/jquery.js",

@@ -641,7 +641,7 @@ module.exports = function () {
   (0, _eta2.default)();
 };
 
-}).call(this,'{"name":"DubPlus","version":"0.2.0","description":"Dub+ - A simple script/extension for Dubtrack.fm","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+}).call(this,'{"name":"DubPlus","version":"0.3.0","description":"Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
@@ -1425,7 +1425,7 @@ myModule.turnOn = function () {
   var location = QueUp.room.model.get('roomUrl');
   $.ajax({
     type: 'GET',
-    url: 'https://api.dubtrack.fm/room/' + location
+    url: 'https://api.queup.net/room/' + location
   }).done(function (e) {
     var content = e.data.description;
 
@@ -3243,7 +3243,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1616418875543')
+}).call(this,'1616419467313')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
