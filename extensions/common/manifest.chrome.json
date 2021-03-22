@@ -6,6 +6,10 @@
     "https://dubtrack.fm/*",
     "http://*.dubtrack.fm/*",
     "https://*.dubtrack.fm/*",
+    "http://queup.net/*",
+    "https://queup.net/*",
+    "http://*.queup.net/*",
+    "https://*.queup.net/*",
     "https://www.google-analytics.com/",
     "storage"
   ],

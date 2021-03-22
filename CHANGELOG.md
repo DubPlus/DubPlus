@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.0] - 2021-03-22
+- Port to QueUp.net
+
 ## [0.2.0] - 2018-12-21
 ### Fixed
 - Fix autovote not voting

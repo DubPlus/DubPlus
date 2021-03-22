@@ -16,7 +16,7 @@ myModule.turnOn = function(){
   var location = QueUp.room.model.get('roomUrl');
   $.ajax({
     type: 'GET',
-    url: 'https://api.dubtrack.fm/room/'+location,
+    url: 'https://api.queup.net/room/'+location,
   }).done(function(e) {
     var content = e.data.description;
     
