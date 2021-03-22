@@ -22,7 +22,7 @@ var eventUtils = {
 var eventSongAdvance = function(e) {
   if (e.startTime < 2) {
     if (eventUtils.snoozed) {
-        Dubtrack.room.player.setVolume(eventUtils.currentVol);
+        QueUp.room.player.setVolume(eventUtils.currentVol);
         eventUtils.snoozed = false;
     }
     return true;
@@ -30,14 +30,14 @@ var eventSongAdvance = function(e) {
 };
 
 var snooze = function() {
-  if (!eventUtils.snoozed && !Dubtrack.room.player.muted_player && Dubtrack.playerController.volume > 2) {
-    eventUtils.currentVol = Dubtrack.playerController.volume;
-    Dubtrack.room.player.mutePlayer();
+  if (!eventUtils.snoozed && !QueUp.room.player.muted_player && QueUp.playerController.volume > 2) {
+    eventUtils.currentVol = QueUp.playerController.volume;
+    QueUp.room.player.mutePlayer();
     eventUtils.snoozed = true;
-    Dubtrack.Events.bind("realtime:room_playlist-update", eventSongAdvance);
+    QueUp.Events.bind("realtime:room_playlist-update", eventSongAdvance);
   } else if (eventUtils.snoozed) {
-    Dubtrack.room.player.setVolume(eventUtils.currentVol);
-    Dubtrack.room.player.updateVolumeBar();
+    QueUp.room.player.setVolume(eventUtils.currentVol);
+    QueUp.room.player.updateVolumeBar();
     eventUtils.snoozed = false;
   }
 };

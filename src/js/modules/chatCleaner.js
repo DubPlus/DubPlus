@@ -29,7 +29,7 @@ myModule.chatCleanerCheck = function (e) {
 };
 
 myModule.turnOn = function () {
-  Dubtrack.Events.bind("realtime:chat-message", this.chatCleanerCheck);
+  QueUp.Events.bind("realtime:chat-message", this.chatCleanerCheck);
 };
 
 myModule.extra = function () {
@@ -44,7 +44,7 @@ myModule.extra = function () {
 };
 
 myModule.turnOff = function () {
-  Dubtrack.Events.unbind("realtime:chat-message", this.chatCleanerCheck);
+  QueUp.Events.unbind("realtime:chat-message", this.chatCleanerCheck);
 };
 
 module.exports = myModule;

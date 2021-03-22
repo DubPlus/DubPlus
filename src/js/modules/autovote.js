@@ -9,9 +9,9 @@ autovote.category = "General";
 // add any custom functions to this module
 
 var advance_vote = function() {
-  if (Dubtrack && Dubtrack.playerController && Dubtrack.playerController.voteUp) {
+  if (QueUp && QueUp.playerController && QueUp.playerController.voteUp) {
     console.log('voting');
-    Dubtrack.playerController.voteUp.click();
+    QueUp.playerController.voteUp.click();
   }
 };
 
@@ -24,15 +24,15 @@ var voteCheck = function (obj) {
 /*******************************************************/
 
 autovote.turnOff = function() {
-  Dubtrack.Events.unbind("realtime:room_playlist-update", voteCheck);
+  QueUp.Events.unbind("realtime:room_playlist-update", voteCheck);
 };
 
 autovote.turnOn = function(){
-  var song = Dubtrack.room.player.activeSong.get('song');
-  var dubCookie = Dubtrack.helpers.cookie.get('dub-' + Dubtrack.room.model.get("_id"));
-  var dubsong = Dubtrack.helpers.cookie.get('dub-song');
+  var song = QueUp.room.player.activeSong.get('song');
+  var dubCookie = QueUp.helpers.cookie.get('dub-' + QueUp.room.model.get("_id"));
+  var dubsong = QueUp.helpers.cookie.get('dub-song');
 
-  if (!Dubtrack.room || !song || song.songid !== dubsong) {
+  if (!QueUp.room || !song || song.songid !== dubsong) {
     dubCookie = false;
   }
   //Only cast the vote if user hasn't already voted
@@ -40,7 +40,7 @@ autovote.turnOn = function(){
     advance_vote();
   }
 
-  Dubtrack.Events.bind("realtime:room_playlist-update", voteCheck);
+  QueUp.Events.bind("realtime:room_playlist-update", voteCheck);
 };
 
 

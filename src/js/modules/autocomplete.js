@@ -196,7 +196,7 @@ var chatInputKeydownFunc = function(e){
 
   // Manually send the keycodes if the preview popup isn't visible
   if ( isValidKey && emptyPreview) {
-    return Dubtrack.room.chat.ncKeyDown({'which': e.keyCode});
+    return QueUp.room.chat.ncKeyDown({'which': e.keyCode});
   }
 
   // stop default behaviors of special keys so we can use them in preview
@@ -208,7 +208,7 @@ var chatInputKeydownFunc = function(e){
 myModule.turnOn = function() {
   previewList.init();
   //Only remove keydown for Dubtrack native autocomplete to work
-  Dubtrack.room.chat.delegateEvents(_.omit(Dubtrack.room.chat.events, ['keydown #chat-txt-message']));
+  QueUp.room.chat.delegateEvents(_.omit(QueUp.room.chat.events, ['keydown #chat-txt-message']));
 
   $(document.body).on('keydown', "#chat-txt-message", chatInputKeydownFunc);
   $(document.body).on('keyup', "#chat-txt-message", chatInputKeyupFunc);
@@ -216,7 +216,7 @@ myModule.turnOn = function() {
 
 myModule.turnOff = function() {
   previewList.stop();
-  Dubtrack.room.chat.delegateEvents(Dubtrack.room.chat.events);
+  QueUp.room.chat.delegateEvents(QueUp.room.chat.events);
   $(document.body).off('keydown', "#chat-txt-message", chatInputKeydownFunc);
   $(document.body).off('keyup', "#chat-txt-message", chatInputKeyupFunc);
 };

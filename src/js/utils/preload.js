@@ -38,7 +38,7 @@ export default function preload() {
         <img src="${settings.srcRoot}/images/dubplus.svg" alt="DubPlus icon">
       </div>
       <span style="${dpText}">
-        Waiting for Dubtrack...
+        Waiting for QueUp...
       </span>
     </div>
   `;

@@ -71,11 +71,11 @@ emote_module.turnOn = function(){
   } else {
     replaceTextWithEmote();
   }
-  Dubtrack.Events.bind("realtime:chat-message", replaceTextWithEmote);
+  QueUp.Events.bind("realtime:chat-message", replaceTextWithEmote);
 };
 
 emote_module.turnOff = function(){
-  Dubtrack.Events.unbind("realtime:chat-message", replaceTextWithEmote);
+  QueUp.Events.unbind("realtime:chat-message", replaceTextWithEmote);
 };
 
 

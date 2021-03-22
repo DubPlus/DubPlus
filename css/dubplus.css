@@ -269,12 +269,12 @@
 #avatar-list .user-mbsurfer {
   color: #89BE6C !important; }
 
-#chat .chat-container ul.chat-main li.user-560892bf8e9cb60300550aa2 .stream-item-content .activity-row .username {
+#chat .chat-container ul.chat-main li.user-6055496b5f0ee20006d74d4e .stream-item-content .activity-row .username {
   color: #89BE6C !important;
   text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.5); }
-  #chat .chat-container ul.chat-main li.user-560892bf8e9cb60300550aa2 .stream-item-content .activity-row .username:before {
+  #chat .chat-container ul.chat-main li.user-6055496b5f0ee20006d74d4e .stream-item-content .activity-row .username:before {
     content: "\f055  \f132" !important; }
-  #chat .chat-container ul.chat-main li.user-560892bf8e9cb60300550aa2 .stream-item-content .activity-row .username:before {
+  #chat .chat-container ul.chat-main li.user-6055496b5f0ee20006d74d4e .stream-item-content .activity-row .username:before {
     font-family: "FontAwesome";
     font-style: normal;
     font-weight: normal;
@@ -285,56 +285,17 @@
     display: inline-block;
     text-decoration: inherit;
     margin-right: 5px; }
-  #chat .chat-container ul.chat-main li.user-560892bf8e9cb60300550aa2 .stream-item-content .activity-row .username:hover:before {
+  #chat .chat-container ul.chat-main li.user-6055496b5f0ee20006d74d4e .stream-item-content .activity-row .username:hover:before {
     content: "Dub+" !important;
     font-weight: 700;
     font-family: proxima-nova,sans-serif;
     font-size: 10px; }
-  #chat .chat-container ul.chat-main li.user-560892bf8e9cb60300550aa2 .stream-item-content .activity-row .username .user-role-icon {
+  #chat .chat-container ul.chat-main li.user-6055496b5f0ee20006d74d4e .stream-item-content .activity-row .username .user-role-icon {
     background: url(https://dub.plus/assets/img/logo.svg);
     background-size: cover;
     display: inline-block; }
 
 #avatar-list .user-mbsurfer p.dubs:hover:before {
-  content: "Dub+ Owner  -  ";
-  font-weight: 700 !important;
-  color: #89BE6C !important; }
-
-#avatar-list .user-ciscog .dubs:before {
-  content: "Dub+ TEAM  -  ";
-  font-weight: 700 !important;
-  color: #89BE6C !important; }
-
-#avatar-list .user-ciscog {
-  color: #89BE6C !important; }
-
-#chat .chat-container ul.chat-main li.user-56008425621a9e0300317238 .stream-item-content .activity-row .username {
-  color: #89BE6C !important;
-  text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.5); }
-  #chat .chat-container ul.chat-main li.user-56008425621a9e0300317238 .stream-item-content .activity-row .username:before {
-    content: "\f055  \f132" !important; }
-  #chat .chat-container ul.chat-main li.user-56008425621a9e0300317238 .stream-item-content .activity-row .username:before {
-    font-family: "FontAwesome";
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-    display: inline-block;
-    text-decoration: inherit;
-    margin-right: 5px; }
-  #chat .chat-container ul.chat-main li.user-56008425621a9e0300317238 .stream-item-content .activity-row .username:hover:before {
-    content: "Dub+" !important;
-    font-weight: 700;
-    font-family: proxima-nova,sans-serif;
-    font-size: 10px; }
-  #chat .chat-container ul.chat-main li.user-56008425621a9e0300317238 .stream-item-content .activity-row .username .user-role-icon {
-    background: url(https://dub.plus/assets/img/logo.svg);
-    background-size: cover;
-    display: inline-block; }
-
-#avatar-list .user-ciscog p.dubs:hover:before {
   content: "Dub+ Owner  -  ";
   font-weight: 700 !important;
   color: #89BE6C !important; }

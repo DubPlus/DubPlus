@@ -11,7 +11,7 @@ myModule.category = "General";
 
 myModule.notifyOnMention = function(e){
   var content = e.message;
-  var user = Dubtrack.session.get('username').toLowerCase();
+  var user = QueUp.session.get('username').toLowerCase();
   var mentionTriggers = ['@'+user];
 
   if (settings.options.custom_mentions && settings.custom.custom_mentions) {
@@ -24,7 +24,7 @@ myModule.notifyOnMention = function(e){
     return reg.test(content); 
   });
   
-  if (mentionTriggersTest && !this.isActiveTab && Dubtrack.session.id !== e.user.userInfo.userid) {
+  if (mentionTriggersTest && !this.isActiveTab && QueUp.session.id !== e.user.userInfo.userid) {
     showNotification({
       title: `Message from ${e.user.username}`, 
       content: content
@@ -36,7 +36,7 @@ myModule.turnOn = function(){
 
   notifyCheckPermission((granted)=>{
     if (granted === true) {
-      Dubtrack.Events.bind("realtime:chat-message", this.notifyOnMention);
+      QueUp.Events.bind("realtime:chat-message", this.notifyOnMention);
     } else {
       // turn back off until it's granted
       this.toggleAndSave(this.id, false);
@@ -46,7 +46,7 @@ myModule.turnOn = function(){
 };
 
 myModule.turnOff = function() {
-  Dubtrack.Events.unbind("realtime:chat-message", this.notifyOnMention );
+  QueUp.Events.unbind("realtime:chat-message", this.notifyOnMention );
 };
 
 module.exports = myModule;

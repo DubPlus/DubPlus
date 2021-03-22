@@ -8,7 +8,7 @@ myModule.description = "Enable desktop notifications when a user receives a priv
 myModule.category = "General";
 
 myModule.pmNotify = function(e){
-  var userid = Dubtrack.session.get('_id');
+  var userid = QueUp.session.get('_id');
   if (userid === e.userid) {return;}
   showNotification({
     title : 'You have a new PM', 
@@ -27,7 +27,7 @@ myModule.turnOn = function(){
 
   notifyCheckPermission((granted)=>{
     if (granted === true) {
-      Dubtrack.Events.bind("realtime:new-message", this.pmNotify);
+      QueUp.Events.bind("realtime:new-message", this.pmNotify);
     } else {
       // turn back off until it's granted
       this.toggleAndSave(this.id, false);
@@ -37,7 +37,7 @@ myModule.turnOn = function(){
 };
 
 myModule.turnOff = function() {
-  Dubtrack.Events.unbind("realtime:new-message", this.pmNotify );
+  QueUp.Events.unbind("realtime:new-message", this.pmNotify );
 };
 
 module.exports = myModule;
