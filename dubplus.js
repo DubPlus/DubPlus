@@ -952,7 +952,7 @@ exportSettings.srcRoot = _RESOURCE_SRC_;
 
 module.exports = exportSettings;
 
-}).call(this,'https://cdn.jsdelivr.net/gh//DubPlus')
+}).call(this,'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus')
 },{}],9:[function(require,module,exports){
 'use strict';
 
@@ -3243,7 +3243,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1616418086473')
+}).call(this,'1616418875543')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
