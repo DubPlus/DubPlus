@@ -641,7 +641,7 @@ module.exports = function () {
   (0, _eta2.default)();
 };
 
-}).call(this,'{"name":"DubPlus","version":"0.3.0","description":"Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+}).call(this,'{"name":"DubPlus","version":"3.0.0.0","description":"Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
@@ -2501,7 +2501,7 @@ dubshover.showDubsOnHover = function () {
       html = '<ul id="dubinfo-preview" class="dubinfo-show dubplus-updubs-hover" style="border-color: ' + dubupBackground + '">';
 
       window.dubplus.dubs.upDubs.forEach(function (val) {
-        html += '<li class="preview-dubinfo-item users-previews dubplus-updubs-hover">' + '<div class="dubinfo-image">' + '<img src="https://images.queup.dev/user/avatar/' + val.userid + '">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
+        html += '<li class="preview-dubinfo-item users-previews dubplus-updubs-hover">' + '<div class="dubinfo-image">' + '<img src="https://api.queup.net/user/' + val.userid + '/image">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
       });
       html += '</ul>';
     } else {
@@ -2568,7 +2568,7 @@ dubshover.showDubsOnHover = function () {
       if (window.dubplus.dubs.downDubs.length > 0) {
         html = '<ul id="dubinfo-preview" class="dubinfo-show dubplus-downdubs-hover" style="border-color: ' + dubdownBackground + '">';
         window.dubplus.dubs.downDubs.forEach(function (val) {
-          html += '<li class="preview-dubinfo-item users-previews dubplus-downdubs-hover">' + '<div class="dubinfo-image">' + '<img src="https://images.queup.dev/user/avatar/' + val.userid + '">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
+          html += '<li class="preview-dubinfo-item users-previews dubplus-downdubs-hover">' + '<div class="dubinfo-image">' + '<img src="https://api.queup.net/user/' + val.userid + '/image">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
         });
         html += '</ul>';
       } else {
@@ -2640,7 +2640,7 @@ dubshover.showDubsOnHover = function () {
       html = '<ul id="dubinfo-preview" class="dubinfo-show dubplus-grabs-hover" style="border-color: ' + grabsBackground + '">';
 
       window.dubplus.dubs.grabs.forEach(function (val) {
-        html += '<li class="preview-dubinfo-item users-previews dubplus-grabs-hover">' + '<div class="dubinfo-image">' + '<img src="https://images.queup.dev/user/avatar/' + val.userid + '">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
+        html += '<li class="preview-dubinfo-item users-previews dubplus-grabs-hover">' + '<div class="dubinfo-image">' + '<img src="https://api.queup.net/user/' + val.userid + '/image">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
       });
       html += '</ul>';
     } else {
@@ -3243,7 +3243,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1616419467313')
+}).call(this,'1616536585014')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 

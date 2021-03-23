@@ -105,7 +105,7 @@ dubshover.showDubsOnHover = function(){
       window.dubplus.dubs.upDubs.forEach(function(val){
         html += '<li class="preview-dubinfo-item users-previews dubplus-updubs-hover">' +
               '<div class="dubinfo-image">' +
-                  '<img src="https://images.queup.dev/user/avatar/' + val.userid + '">' +
+                  '<img src="https://api.queup.net/user/' + val.userid + '/image">' +
               '</div>' +
               '<span class="dubinfo-text">@' + val.username + '</span>' +
           '</li>';
@@ -177,7 +177,7 @@ dubshover.showDubsOnHover = function(){
           window.dubplus.dubs.downDubs.forEach(function(val){
             html += '<li class="preview-dubinfo-item users-previews dubplus-downdubs-hover">' +
                         '<div class="dubinfo-image">' +
-                            '<img src="https://images.queup.dev/user/avatar/' + val.userid + '">' +
+                            '<img src="https://api.queup.net/user/' + val.userid + '/image">' +
                         '</div>' +
                         '<span class="dubinfo-text">@' + val.username + '</span>' +
                     '</li>';
@@ -255,7 +255,7 @@ dubshover.showDubsOnHover = function(){
       window.dubplus.dubs.grabs.forEach(function(val){
         html += '<li class="preview-dubinfo-item users-previews dubplus-grabs-hover">' +
             '<div class="dubinfo-image">' +
-                '<img src="https://images.queup.dev/user/avatar/' + val.userid + '">' +
+                '<img src="https://api.queup.net/user/' + val.userid + '/image">' +
             '</div>' +
             '<span class="dubinfo-text">@' + val.username + '</span>' +
         '</li>';
