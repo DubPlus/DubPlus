@@ -35,12 +35,10 @@ var options = {
 function setupB(shouldMin){
   var b = browserify(options);
   b.on('log', function (msg) { console.log(msg); });
+  b.transform(babelify, {presets: ["@babel/preset-env"]});
 
-  if (shouldMin) {
-    b.transform(babelify, {presets: ["es2015", "babili"]});
-  } else {
-    b.transform(babelify, {presets: ["es2015"]});
-  }
+  if (shouldMin)
+    b.transform('uglifyify', { global: true  })
 
   return b;
 }

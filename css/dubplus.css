@@ -26,7 +26,8 @@
   right: 0;
   -webkit-transform: translateX(255px);
           transform: translateX(255px);
-  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
   color: #999;
   font-family: 'Trebuchet MS', Helvetica, sans-serif;
   font-size: 13px;
@@ -178,7 +179,8 @@
     margin-left: auto;
     margin-right: auto;
     position: relative;
-    box-shadow: 0 0 5px #000;
+    -webkit-box-shadow: 0 0 5px #000;
+            box-shadow: 0 0 5px #000;
     background: #111;
     color: #fff;
     width: 500px; }
@@ -301,17 +303,19 @@
   color: #89BE6C !important; }
 
 .dubplus-split-chat .chat-main li:nth-child(2n) {
-  background: -webkit-linear-gradient(left, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+  background: -webkit-gradient(linear, left top, right top, from(rgba(155, 157, 160, 0.1)), to(rgba(0, 0, 0, 0)));
   background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
-  box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
+  -webkit-box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
+          box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
   width: 100%; }
   .dubplus-split-chat .chat-main li:nth-child(2n) .chatDelete {
     right: 1.7em !important; }
 
 .dubplus-split-chat .split {
-  background: -webkit-linear-gradient(left, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+  background: -webkit-gradient(linear, left top, right top, from(rgba(155, 157, 160, 0.1)), to(rgba(0, 0, 0, 0)));
   background: linear-gradient(to right, rgba(155, 157, 160, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
-  box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
+  -webkit-box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
+          box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
   width: 100%; }
 
 .dubplus-split-chat .splitfix {

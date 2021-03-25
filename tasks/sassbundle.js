@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const sass = require('node-sass');
-const postcss = require('postcss');
+const postcss = require('postcss')
 const autoprefixer = require('autoprefixer');
 const prefixer = postcss([ autoprefixer ]);
 const log = require('./colored-console.js');
