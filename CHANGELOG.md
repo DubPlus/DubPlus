@@ -2,7 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.1] - 2021-03-25
+### Changed
+- Update all npm packages to latest
+- Update JS build and minification to support latest packages
+- Update SASS build to support latest packages
+
+### Fixed
+- Fix Twitch Global emotes, BetterTTV Global emotes, and top 200 most popular FrankerFaceZ emotes from not loading
+- Fix Rain animation from not loading and giving an "invalid invocation" error
+
 ## [0.3.0] - 2021-03-22
+### Added
 - Port to QueUp.net
 
 ## [0.2.0] - 2018-12-21
