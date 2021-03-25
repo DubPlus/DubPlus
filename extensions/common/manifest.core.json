@@ -15,7 +15,6 @@
         "*://*.queup.net/join/*"
       ],
       "js": [
-        "scripts/jquery.js",
         "scripts/loader.js"
       ],
       "run_at": "document_end"

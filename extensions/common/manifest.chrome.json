@@ -9,9 +9,7 @@
     "http://queup.net/*",
     "https://queup.net/*",
     "http://*.queup.net/*",
-    "https://*.queup.net/*",
-    "https://www.google-analytics.com/",
-    "storage"
+    "https://*.queup.net/*"
   ],
   
   "web_accessible_resources": [
