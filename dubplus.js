@@ -191,19 +191,16 @@ prepEmoji.loadTwitchEmotes = function () {
   this.shouldUpdateAPIs('twitch', function (update) {
     if (update) {
       console.log('dub+', 'twitch', 'loading from api');
-      var twApi = new GetJSON('https://cors-anywhere.herokuapp.com/api.twitch.tv/kraken/chat/emoticon_images', 'twitch:loaded', { 'Accept': 'application/vnd.twitchtv.v5+json', 'Client-ID': 'z5bpa7x6y717dsw28qnmcooolzm2js' });
+      var twApi = new GetJSON('//cdn.jsdelivr.net/gh/Jiiks/BetterDiscordApp/data/emotedata_twitch_global.json', 'twitch:loaded');
       twApi.done(function (data) {
         var json = JSON.parse(data);
         var twitchEmotes = {};
-        json.emoticons.forEach(function (e) {
-          if (!twitchEmotes[e.code]) {
+        for (var emote in json.emotes) {
+          if (!twitchEmotes[emote]) {
             // if emote doesn't exist, add it
-            twitchEmotes[e.code] = e.id;
-          } else if (e.emoticon_set === null) {
-            // override if it's a global emote (null set = global emote)
-            twitchEmotes[e.code] = e.id;
+            twitchEmotes[emote] = json.emotes[emote].image_id;
           }
-        });
+        }
         localStorage.setItem('twitch_api_timestamp', Date.now().toString());
         ldb.set('twitch_api', JSON.stringify(twitchEmotes));
         prepEmoji.processTwitchEmotes(twitchEmotes);
@@ -228,11 +225,11 @@ prepEmoji.loadBTTVEmotes = function () {
   this.shouldUpdateAPIs('bttv', function (update) {
     if (update) {
       console.log('dub+', 'bttv', 'loading from api');
-      var bttvApi = new GetJSON('//api.betterttv.net/2/emotes', 'bttv:loaded');
+      var bttvApi = new GetJSON('//api.betterttv.net/3/cached/emotes/global', 'bttv:loaded');
       bttvApi.done(function (data) {
         var json = JSON.parse(data);
         var bttvEmotes = {};
-        json.emotes.forEach(function (e) {
+        json.forEach(function (e) {
           if (!bttvEmotes[e.code]) {
             // if emote doesn't exist, add it
             bttvEmotes[e.code] = e.id;
@@ -274,7 +271,7 @@ prepEmoji.loadFrankerFacez = function () {
   this.shouldUpdateAPIs('frankerfacez', function (update) {
     if (update) {
       console.log('dub+', 'frankerfacez', 'loading from api');
-      var frankerFacezApi = new GetJSON('//cdn.jsdelivr.net/gh/Jiiks/BetterDiscordApp/data/emotedata_ffz.json', 'frankerfacez:loaded');
+      var frankerFacezApi = new GetJSON('//api.frankerfacez.com/v1/emoticons?per_page=200&private=off&sort=count-desc', 'frankerfacez:loaded');
       frankerFacezApi.done(function (data) {
         var frankerFacez = JSON.parse(data);
         localStorage.setItem('frankerfacez_api_timestamp', Date.now().toString());
@@ -350,8 +347,15 @@ prepEmoji.processTastyEmotes = function (data) {
 };
 
 prepEmoji.processFrankerFacez = function (data) {
-  for (var code in data) {
-    if (data.hasOwnProperty(code)) {
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = data.emoticons[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var emoticon = _step.value;
+
+      var code = emoticon.name;
       var _key = code.toLowerCase().replace('~', '-');
 
       if (code.indexOf(':') >= 0) {
@@ -366,9 +370,23 @@ prepEmoji.processFrankerFacez = function (data) {
         _key = _key.replace(/([()])/g, "");
       }
 
-      this.frankerFacez.emotes[_key] = data[code];
+      this.frankerFacez.emotes[_key] = emoticon.id;
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
     }
   }
+
   this.frankerfacezJSONLoaded = true;
   this.emojiEmotes = this.emojiEmotes.concat(Object.keys(this.frankerFacez.emotes));
 };
@@ -641,7 +659,7 @@ module.exports = function () {
   (0, _eta2.default)();
 };
 
-}).call(this,'{"name":"DubPlus","version":"3.0.0.0","description":"Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
+}).call(this,'{"name":"DubPlus","version":"3.0.0.1","description":"Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net","author":"DubPlus","license":"MIT","homepage":"https://dub.plus"}')
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 'use strict';
 
@@ -3243,7 +3261,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1616536585014')
+}).call(this,'1616683078364')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
