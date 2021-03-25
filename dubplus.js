@@ -2251,11 +2251,9 @@ rain.turnOff = function () {
 };
 
 rain.bindCanvas = function () {
-  this.requestAnimFrame = function () {
-    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
-      window.setTimeout(callback, 1000 / 60);
-    };
-  }();
+  var windowAnimFram = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame;
+
+  this.requestAnimFrame = windowAnimFram ? windowAnimFram.bind(window) : null;
 
   var canvas = document.getElementById('dubPlusRainCanvas');
 
@@ -3261,7 +3259,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this,'1616683078364')
+}).call(this,'1616683570377')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 'use strict';
 
