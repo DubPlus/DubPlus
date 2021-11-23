@@ -7,6 +7,7 @@ module.exports = {
   category : "General",
 
   doSnow : function(){
+    $(document).snowfall('clear');
     $(document).snowfall({
       round: true,
       shadow: true,
@@ -32,6 +33,7 @@ module.exports = {
     } else {
       this.doSnow();
     }
+    window.addEventListener('resize', this.doSnow, true);
   },
 
   turnOff : function(){
@@ -39,6 +41,7 @@ module.exports = {
       // checking to avoid errors if you quickly switch it on/off before plugin
       // is loaded in the turnOn function
       $(document).snowfall('clear');
+      window.removeEventListener('resize', this.doSnow, true);
     }
   }
 

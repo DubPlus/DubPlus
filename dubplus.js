@@ -677,7 +677,7 @@ module.exports = function () {
   (0, _eta.default)();
 };
 
-}).call(this)}).call(this,'{"name":"DubPlus","version":"0.3.0","description":"Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net","author":"DubPlus","license":"MIT","homepage":"https://dub.plus","browserslist":["> 1%","last 2 versions"]}')
+}).call(this)}).call(this,'{"name":"DubPlus","version":"0.3.1","description":"Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net","author":"DubPlus","license":"MIT","homepage":"https://dub.plus","browserslist":["> 1%","last 2 versions"]}')
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
 "use strict";
 
@@ -3053,6 +3053,8 @@ module.exports = {
   description: "Make it snow!",
   category: "General",
   doSnow: function doSnow() {
+    console.log('doSnow');
+    $(document).snowfall('clear');
     $(document).snowfall({
       round: true,
       shadow: true,
@@ -3077,12 +3079,15 @@ module.exports = {
     } else {
       this.doSnow();
     }
+
+    window.addEventListener('resize', this.doSnow, true);
   },
   turnOff: function turnOff() {
     if ($.snowfall) {
       // checking to avoid errors if you quickly switch it on/off before plugin
       // is loaded in the turnOn function
       $(document).snowfall('clear');
+      window.removeEventListener('resize', this.doSnow, true);
     }
   }
 };
@@ -3267,7 +3272,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this)}).call(this,'1616688257439')
+}).call(this)}).call(this,'1637698932681')
 },{"../lib/settings.js":8}],41:[function(require,module,exports){
 "use strict";
 
