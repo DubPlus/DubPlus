@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.2] - 2021-11-23
+### Fixed
+- Fix snow animation breaking on window resize
+
 ## [0.3.1] - 2021-03-25
 ### Changed
 - Update all npm packages to latest
