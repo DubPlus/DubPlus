@@ -34,7 +34,7 @@
     "fs-extra": "^9.1.0",
     "git-repo-info": "^2.1.1",
     "node-sass": "^5.0.0",
-    "postcss": "^8.2.8",
+    "postcss": "^8.2.13",
     "request": "^2.88.2",
     "uglifyify": "^5.0.2",
     "watchify": "^4.0.0"
