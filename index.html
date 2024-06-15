@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + Svelte</title>
+    <style>
+      body {
+        background-color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div class="header-right-navigation">
+        
+      </div>
+      <div id="player-controller">
+        <div class="left">
+          <ul>
+            <li class="infoContainer display-block">
+              <div class="currentTime">
+                <span class="min">02</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="queue-position">5</div>
+      <div class="player_sharing"></div>
+    </div>
+    <div id="dubplus-container"></div>
+    <script type="module" src="/public/mock-queup.js"></script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

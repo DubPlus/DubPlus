@@ -1,6 +1,7 @@
 {
-  "name": "DubPlus",
-  "version": "0.3.4",
+  "name": "dubplus",
+  "version": "0.4.0",
+  "type": "module",
   "description": "Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net",
   "main": "dubplus.js",
   "engines": {
@@ -8,7 +9,9 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "build": "node ./tasks",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "build-release": "node ./tasks --release",
     "watch": "node ./tasks watch",
     "bundle": "node ./tasks bundle",
@@ -41,15 +44,16 @@
     "postcss": "^8.4.39",
     "uglifyify": "^5.0.2",
     "watchify": "^4.0.0",
-    "web-ext": "^8.2.0"
+    "web-ext": "^8.2.0",
+    "@sveltejs/vite-plugin-svelte": "^3.1.0",
+    "svelte": "^5.0.0-next.154",
+    "vite": "^5.2.0"
   },
   "browserslist": [
     "> 1%",
     "last 2 versions"
   ],
   "dependencies": {
-    "@babel/core": "^7.24.7",
-    "node-fetch": "^2.7.0",
-    "sass": "^1.77.6"
+    "eslint-plugin-svelte": "^2.36.0-next.13"
   }
 }
