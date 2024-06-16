@@ -36,7 +36,7 @@ try {
 }
 const intialSettings = Object.assign({}, defaults, savedSettings);
 
-intialSettings.srcRoot = import.meta.env.resource_url;
+intialSettings.srcRoot = import.meta.env.RESOURCE_URL;
 
 /**
  * @type {Settings}

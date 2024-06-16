@@ -1,7 +1,7 @@
 <script>
-  import MenuHeader from "./MenuHeader.svelte";
-  import MenuSection from "./MenuSection.svelte";
-  import MenuLink from "./MenuLink.svelte";
+  import MenuHeader from "../MenuHeader.svelte";
+  import MenuSection from "../MenuSection.svelte";
+  import MenuLink from "../MenuLink.svelte";
 </script>
 
 <MenuHeader settingsId="contact" name="Contact" />

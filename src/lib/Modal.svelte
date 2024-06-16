@@ -1,17 +1,7 @@
 <script>
   import { onMount } from "svelte";
-  /**
-   * @typedef {object} ModalProps
-   * @property {string} [title]
-   * @property {string} [content] text that goes under the title
-   * @property {string} [value] value to be displayed and edited in the textarea
-   * @property {string} [placeholder] placeholder text for the textarea
-   * @property {number} [maxlength]
-   * @property {() => void} [onConfirm]
-   * @property {boolean} show
-   */
 
-  /** @type {ModalProps} */
+  /** @type {import('../global').ModalProps} */
   let {
     title = "Dub+",
     content = "",
@@ -19,7 +9,7 @@
     placeholder = "",
     maxlength = 999,
     onConfirm,
-    show
+    show,
   } = $props();
 
   /** @type {HTMLDialogElement} */
@@ -35,7 +25,7 @@
     if (show && dialog) {
       dialog.showModal();
     }
-	});
+  });
 </script>
 
 <dialog id="dubplus-dialog" class="dp-modal">
@@ -43,7 +33,7 @@
   <div class="dp-modal--content content">
     <p>{content}</p>
     {#if placeholder || value}
-      <textarea {placeholder} {maxlength}>
+      <textarea {placeholder} maxlength={maxlength < 999 ? maxlength : 999}>
         {value}
       </textarea>
     {/if}
@@ -53,15 +43,15 @@
       <button
         onclick={() => {
           dialog.close();
-          show = false;
+          // show = false;
         }}
         class="dp-modal--cancel cancel">cancel</button
       >
       <button
         onclick={() => {
           dialog.close();
-          show = false;
-          onConfirm();
+          // show = false;
+          onConfirm(value);
         }}
         class="dp-modal--confirm confirm">okay</button
       >
@@ -69,7 +59,7 @@
       <button
         onclick={() => {
           dialog.close();
-          show = false;
+          // show = false;
         }}
         class="dp-modal--cancel cancel">close</button
       >
@@ -88,7 +78,7 @@
     background: #111;
     color: #fff;
     width: 500px;
-    font-family: 'Trebuchet MS', Helvetica, sans-serif;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
     padding: 0;
     border: none;
   }
