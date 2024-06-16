@@ -1,25 +1,29 @@
 <script>
   import { onMount } from "svelte";
-  import { addSnooze } from "./snooze";
-  import { addETA } from "./eta";
-  import { addMenuIcon } from "./menu-icon";
+  import MenuIcon from "./MenuIcon.svelte";
   import { loadExternalCss } from "../utils/css";
-  import Contact from "./Contact.svelte";
+  import Contact from "./sections/Contact.svelte";
+  import General from "./sections/General.svelte";
+  import Eta from "./Eta.svelte";
+  import Snooze from "./Snooze.svelte";
 
   onMount(() => {
     loadExternalCss(
       "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
       "dp-font-awesome",
     );
-    addSnooze();
-    addETA();
-    addMenuIcon();
     document.querySelector("html").classList.add("dubplus");
   });
 </script>
 
+<!-- these components are teleported to different parts of the UI -->
+<MenuIcon />
+<Eta />
+<Snooze />
+<!-- this is the main menu -->
 <section class="dubplus-menu">
   <p class="dubplus-menu-header">Dub+ Options</p>
+  <General />
   <Contact />
 </section>
 
