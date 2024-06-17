@@ -10,6 +10,28 @@
   --dubplus-menu-width: 255px;
 }
 
+.dubplus-btn-player {
+  /* clear button styles */
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+
+  /* mimic site's icon styles from .player_sharing */
+  font-size: 1.5rem;
+  margin-right: 1.5rem;
+  font-family: icomoon;
+  speak: none;
+  font-style: normal;
+  font-weight: 400;
+  font-variant: normal;
+  text-transform: none;
+  text-align: center;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 [data-dp-tooltip] {
   position: relative;
   cursor: pointer;

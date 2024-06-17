@@ -27,7 +27,7 @@
       }
       return true;
     }
-  };
+  }
 
   function snooze() {
     if (
@@ -51,15 +51,24 @@
       window.QueUp.room.player.updateVolumeBar();
       eventUtils.snoozed = false;
     }
-  };
+  }
 </script>
 
 <button
   use:teleport={".player_sharing"}
   type="button"
-  class="icon-mute snooze_btn"
+  class="icon-mute snooze_btn dubplus-btn-player"
   data-dp-tooltip="Mute current song"
   onclick={snooze}
 >
-  Mute current song
+  <span>1</span>
 </button>
+
+<style>
+  span {
+    content: "1";
+    vertical-align: top;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+</style>

@@ -1,21 +1,191 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Svelte</title>
+    <title>QueUp demo page for Dub+</title>
     <style>
+      /*
+        These are not exactly the ones QueUp uses, but they are close enough.
+        I got them free from icomoon.io which is where QueUp got theirs from.
+        but they use ones they payed for I think.
+      */
+      @font-face {
+        font-family: "icomoon";
+        src: url("./public/fonts/icomoon.eot");
+        src: url("./public/fonts/icomoon.eot#iefix") format("embedded-opentype"),
+          url("./public/fonts/icomoon.ttf") format("truetype"),
+          url("./public/fonts/icomoon.woff") format("woff"),
+          url("./public/fonts/icomoon.svg#icomoon") format("svg");
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        font-size: 100%;
+      }
       body {
         background-color: #333;
+        margin: 0;
+        padding: 0;
+        padding-top: 3.6rem;
+        background-color: rgb(243, 192, 255);
+      }
+      .icon-history:before {
+        content: "\e94d";
+      }
+      .icon-mute:before {
+        content: "\ea2a";
+      }
+
+      #chat
+        .chat-container
+        .chat-messages
+        .chat-main
+        li.supporter
+        span.user-role-icon,
+      #chat .chat-container .chat-messages .chat-main li.user-banned .image_row,
+      #chat
+        .chat-container
+        .chat-messages
+        .chat-main
+        li.verified
+        span.user-role-icon,
+      #main_avatar_room
+        #main-user-list-room
+        #avatar-list
+        li.supporter
+        span.user-role-icon,
+      #main_avatar_room
+        #main-user-list-room
+        #avatar-list
+        li.verified
+        span.user-role-icon,
+      #player-controller
+        .left
+        ul
+        li.infoContainer
+        .infoContainerInner
+        .currentDJSong.supporter
+        span.user-role-icon,
+      #player-controller
+        .left
+        ul
+        li.infoContainer
+        .infoContainerInner
+        .currentDJSong.verified
+        span.user-role-icon,
+      #profileMainSection-container.supporter
+        #profileMainSection
+        .profileView
+        .infoProfile
+        .usernameContainer:before,
+      #profileMainSection-container.verified
+        #profileMainSection
+        .profileView
+        .infoProfile
+        .usernameContainer:before,
+      .autolink:not(.autolink-image):after,
+      [class*=" icon-"],
+      [class^="icon-"],
+      body.video-hidden:not(.no-song-playing)
+        #main_player
+        .player_container
+        #room-main-player-container:before {
+        font-family: "icomoon";
+        speak: none;
+        font-style: normal;
+        font-weight: 400;
+        font-variant: normal;
+        text-transform: none;
+        text-align: center;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      ul,
+      ol {
+        list-style: none;
+        margin: 0;
+      }
+      header {
+        padding: 0.8rem 1rem;
+        background-color: #222;
+        color: #fff;
+        min-height: 57px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 99;
+      }
+      .header-right-navigation {
+        display: flex;
+        justify-content: flex-end;
+      }
+      #player-controller {
+        background-color: rgba(47, 47, 47, 0.5);
+        color: #fff;
+
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 99;
+        height: 3.5rem;
+        z-index: 18;
+
+        display: flex;
+        .right {
+          width: 24rem;
+        }
+        .left {
+          flex: 1;
+        }
+      }
+      .infoContainer {
+        padding: 0 0 0 3.5rem;
+        height: 100;
+        width: 100%;
+      }
+      #main_player {
+        border-radius: 1rem;
+        position: relative;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.7);
+        display: block;
+        z-index: 1;
+        min-height: 31rem;
+        width: 65vw;
+      }
+
+      .player_container {
+        padding-bottom: 56%;
+        background-color: blue;
+      }
+
+      .player_sharing {
+        margin-top: 1.1rem;
+        button {
+          color: #fff;
+        }
       }
     </style>
   </head>
   <body>
     <div>
-      <div class="header-right-navigation">
-        
-      </div>
+      <header>
+        <div class="header-right-navigation"></div>
+      </header>
+
+      <section id="main_player">
+        <div class="player_container"></div>
+        <section class="player_sharing"></section>
+      </section>
+
       <div id="player-controller">
         <div class="left">
           <ul>
@@ -26,12 +196,14 @@
             </li>
           </ul>
         </div>
+        <div class="right">
+          <div class="queue-position">5</div>
+        </div>
       </div>
-      <div class="queue-position">5</div>
-      <div class="player_sharing"></div>
     </div>
+
     <div id="dubplus-container"></div>
-    <script type="module" src="/public/mock-queup.js"></script>
+    <script type="module" src="/mock-queup.js"></script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

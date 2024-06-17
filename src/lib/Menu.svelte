@@ -19,8 +19,8 @@
 
 <!-- these components are teleported to different parts of the UI -->
 <MenuIcon />
-<Eta />
 <Snooze />
+<Eta />
 <!-- this is the main menu -->
 <section class="dubplus-menu">
   <p class="dubplus-menu-header">Dub+ Options</p>

@@ -1,5 +1,4 @@
 <script>
-  import Modal from "./Modal.svelte";
   import Switch from "./Switch.svelte";
   import { onMount } from "svelte";
   import { saveSetting, settings } from "./settings.svelte";
@@ -18,8 +17,9 @@
   /**
    * @type {MenuItemProps}
    */
-  let { id, label, description, customize, onToggle, init } =
-    $props();
+  let { id, label, description, customize, onToggle, init } = $props();
+
+  let isOn = $state(settings.options[id] ? "ON" : "OFF");
 
   onMount(() => {
     if (init) init();
@@ -49,14 +49,17 @@
   }
 </script>
 
-<li {id} title={description}>
-  <Switch {label} {onToggle} isOn={settings.options[id]} />
+<li {id} title={`${isOn} - ${description}`}>
+  <Switch
+    {label}
+    onToggle={(state) => {
+      onToggle(state);
+      isOn = state ? "ON" : "OFF";
+    }}
+    isOn={settings.options[id]}
+  />
   {#if customize}
-    <button
-      onclick={openEditModal}
-      type="button"
-      class="fa fa-pencil"
-    >
+    <button onclick={openEditModal} type="button" class="fa fa-pencil">
       edit
     </button>
   {/if}
