@@ -50,6 +50,12 @@ function addProperties() {
         onceEvents[event] = onceEvents[event] || [];
         onceEvents[event].push(callback);
       },
+      unbind: (event, callback) => {
+        console.log("unbind", event);
+        onceEvents[event] = (onceEvents[event] || []).filter(
+          (cb) => cb !== callback
+        );
+      },
     },
     helpers: { cookie: {} },
     playerController: {

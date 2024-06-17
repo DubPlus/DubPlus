@@ -2,21 +2,21 @@
   /**
    * @typedef {object} SwitchProps
    * @property {string} label
+   * @property {boolean} isOn
    * @property {(state: boolean) => void} onToggle
    */
 
   /**
    * @type {SwitchProps} props
    */
-  let { label, onToggle } = $props();
+  let { label, onToggle, isOn } = $props();
 
-  let checked = $state(false);
+  let checked = $state(isOn);
 
   /**
    * @param {KeyboardEvent} event
    */
   function handleKeydown(event) {
-    // Only do something when space or return is pressed
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       checked = !checked;

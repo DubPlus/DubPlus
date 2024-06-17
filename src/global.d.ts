@@ -1,3 +1,4 @@
+export type SettingsSections = "option" | "menu" | "custom";
 
 export interface Song {
   _id: string;
@@ -21,6 +22,7 @@ export interface Song {
 export interface QueUp {
   session: {
     id: string;
+    get: (name: string) => any;
   };
   room: {
     chat: {
@@ -65,6 +67,7 @@ declare global {
 // I had to move these here because it's used in multiple
 // files and I couldn't do that with jsdoc
 export interface ModalProps {
+  id: string;
   title?: string;
   content?: string;
   value?: string;
@@ -77,5 +80,5 @@ export interface ModalProps {
    * (for informational modals)
    */
   onCancel?: () => void;
-  show: boolean;
+  open?: boolean;
 }

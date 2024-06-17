@@ -24,6 +24,7 @@ const defaults = {
   // this will store custom strings for options like custom css, afk message, etc
   custom: {},
 
+  // this will store the domain and path to some dubplus assets
   srcRoot: "",
 };
 
@@ -53,11 +54,23 @@ function persist() {
 
 /**
  *
- * @param {"option" | "menu" | "custom"} section
+ * @param {import("../global").SettingsSections} section
  * @param {string} property
- * @param {string|number|boolean|Array<string|number|boolean>} value
+ * @param {any} value
  */
 export function saveSetting(section, property, value) {
-  settings[section][property] = value;
+  switch (section) {
+    case "option":
+      settings.options[property] = value;
+      break;
+    case "menu":
+      settings.menu[property] = value;
+      break;
+    case "custom":
+      settings.custom[property] = value;
+      break;
+    default:
+      throw new Error(`Invalid section ${section}`);
+  }
   persist();
 }
