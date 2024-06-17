@@ -1,16 +1,6 @@
 <script>
   import { onMount } from "svelte";
-
-  /** @type {import('../global').ModalProps} */
-  let {
-    title = "Dub+",
-    content = "",
-    value = "",
-    placeholder = "",
-    maxlength = 999,
-    onConfirm,
-    show,
-  } = $props();
+  import { modalState } from "./modalState.svelte";
 
   /** @type {HTMLDialogElement} */
   let dialog; // Reference to the dialog tag
@@ -19,39 +9,45 @@
     dialog = /**@type {HTMLDialogElement}*/ (
       document.getElementById("dubplus-dialog")
     );
+
+    dialog.addEventListener("close", () => {
+      modalState.open = false;
+    });
   });
 
   $effect(() => {
-    if (show && dialog) {
+    if (modalState.open && dialog && !dialog.open) {
       dialog.showModal();
     }
   });
 </script>
 
 <dialog id="dubplus-dialog" class="dp-modal">
-  <h1>{title}</h1>
+  <h1>{modalState.title}</h1>
   <div class="dp-modal--content content">
-    <p>{content}</p>
-    {#if placeholder || value}
-      <textarea {placeholder} maxlength={maxlength < 999 ? maxlength : 999}>
-        {value}
+    <p>{modalState.content}</p>
+    {#if modalState.placeholder || modalState.value}
+      <textarea 
+        bind:value={modalState.value}
+        placeholder="{modalState.placeholder}" 
+        maxlength={modalState.maxlength < 999 ? modalState.maxlength : 999}>
       </textarea>
     {/if}
   </div>
   <div class="dp-modal--buttons buttons">
-    {#if typeof onConfirm === "function"}
+    {#if typeof modalState.onConfirm === "function"}
       <button
         onclick={() => {
           dialog.close();
-          // show = false;
+          modalState.open = false;
         }}
         class="dp-modal--cancel cancel">cancel</button
       >
       <button
         onclick={() => {
           dialog.close();
-          // show = false;
-          onConfirm(value);
+          modalState.open = false;
+          modalState.onConfirm(modalState.value);
         }}
         class="dp-modal--confirm confirm">okay</button
       >
@@ -59,7 +55,7 @@
       <button
         onclick={() => {
           dialog.close();
-          // show = false;
+          modalState.open = false;
         }}
         class="dp-modal--cancel cancel">close</button
       >

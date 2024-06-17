@@ -1,6 +1,9 @@
 <script>
   import Modal from "./Modal.svelte";
   import Switch from "./Switch.svelte";
+  import { onMount } from "svelte";
+  import { saveSetting, settings } from "./settings.svelte";
+  import { modalState } from "./modalState.svelte";
 
   /**
    * @typedef {object} MenuItemProps
@@ -8,44 +11,54 @@
    * @property {string} label
    * @property {string} description
    * @property {(state: boolean) => void} onToggle
-   * @property {(value: string) => void} [onSaveCustom]
-   * @property {import('../global').ModalProps} [modalProps]
+   * @property {() => void} [init]
+   * @property {import('../global').ModalProps} [customize]
    */
 
   /**
-   * @type {MenuItemProps} props
+   * @type {MenuItemProps}
    */
-  let {
-    id,
-    label,
-    description,
-    onSaveCustom,
-    modalProps,
-    onToggle
-  } = $props();
-  let showModal = $state(false)
+  let { id, label, description, customize, onToggle, init } =
+    $props();
+
+  onMount(() => {
+    if (init) init();
+
+    if (settings.options[id]) {
+      onToggle(true);
+    }
+  });
+
+  function openEditModal() {
+    modalState.id = customize.id;
+    modalState.title = customize.title;
+    modalState.content = customize.content;
+    modalState.placeholder = customize.placeholder;
+    modalState.maxlength = customize.maxlength;
+    modalState.value = settings.custom[customize.id] || "";
+    modalState.onConfirm = (value) => {
+      saveSetting("custom", modalState.id, value);
+    };
+    modalState.onCancel = () => {
+      modalState.open = false;
+    };
+
+    // this must always go last to ensure the data above
+    // is set before the modal is opened
+    modalState.open = true;
+  }
 </script>
 
 <li {id} title={description}>
-  <Switch 
-    label={label} 
-    onToggle={onToggle}
-   />
-  {#if onSaveCustom}
-    <button 
-      onclick={() => showModal = true}
-      type="button" 
-      class="fa fa-pencil">
+  <Switch {label} {onToggle} isOn={settings.options[id]} />
+  {#if customize}
+    <button
+      onclick={openEditModal}
+      type="button"
+      class="fa fa-pencil"
+    >
+      edit
     </button>
-    <Modal
-      {...modalProps}
-      show={showModal}
-      onConfirm={(value) => {
-        onSaveCustom(value);
-        showModal = false;
-      }}
-      onCancel={() => showModal = false}
-    />
   {/if}
 </li>
 
@@ -54,5 +67,15 @@
     display: flex;
     align-items: center;
     margin: 10px 0;
+    justify-content: space-between;
+  }
+
+  button {
+    appearance: none;
+    background: none;
+    border: none;
+    padding: 0;
+    color: #fff;
+    cursor: pointer;
   }
 </style>

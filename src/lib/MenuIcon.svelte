@@ -17,4 +17,23 @@
 </button>
 
 <style>
+  /* This is the Dub+ icon in the top right that's always showing
+and triggers the open/close of Dub+ */
+  .dubplus-icon {
+    /* clear button styles */
+    background: none;
+    border: none;
+    appearance: none;
+    padding: none;
+
+    width: 26px;
+    font-size: 1.2rem;
+    line-height: 1.2;
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    vertical-align: bottom;
+    margin-left: 1rem;
+
+  }
 </style>
