@@ -7,6 +7,11 @@ import { settings } from "../settings.svelte";
 
 let canSend = true;
 
+/**
+ *
+ * @param {{message: string, user : { userInfo: { userid: string}}}} e
+ * @returns {void}
+ */
 function afk_chat_respond(e) {
   if (!canSend) {
     return; // do nothing until it's back to true
@@ -15,7 +20,7 @@ function afk_chat_respond(e) {
   const user = window.QueUp.session.get("username");
 
   if (
-    content.indexOf("@" + user) > -1 &&
+    content.includes(`@ ${user}`) &&
     window.QueUp.session.id !== e.user.userInfo.userid
   ) {
     /**

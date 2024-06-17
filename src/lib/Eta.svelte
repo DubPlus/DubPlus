@@ -1,6 +1,6 @@
 <script>
   import { teleport } from "./actions/teleport";
-  let eta = $state('ETA');
+  let eta = $state("ETA");
 
   /**
    * @returns {string}
@@ -27,11 +27,10 @@
 <button
   use:teleport={".player_sharing"}
   type="button"
-  class="icon-history eta_tooltip_t"
+  class="icon-history eta_tooltip_t dubplus-btn-player"
   data-dp-tooltip={eta}
   onmouseenter={() => {
     eta = getEta();
   }}
 >
-  ETA
 </button>

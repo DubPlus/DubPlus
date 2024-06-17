@@ -24,11 +24,11 @@ and triggers the open/close of Dub+ */
     background: none;
     border: none;
     appearance: none;
-    padding: none;
+    padding: 0;
+
 
     width: 26px;
-    font-size: 1.2rem;
-    line-height: 1.2;
+    height: 26px;
     cursor: pointer;
     position: relative;
     display: inline-block;

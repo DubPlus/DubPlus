@@ -58,7 +58,7 @@
   .dubplus-switch {
     position: relative;
     padding: 1px;
-    height: 12px;
+    height: 16px;
     width: 29px;
     border-radius: 20px;
     background: #333;
@@ -73,7 +73,7 @@
     vertical-align: middle;
     position: absolute;
     z-index: 2;
-    top: 1px;
+    top: 0;
     left: 2px;
     background: var(--dubplus-primary-color);
     transition: left 0.2s cubic-bezier(0.8, 0, 0.05, 1);
@@ -84,6 +84,6 @@
   [role="switch"][aria-checked="true"] .dubplus-switch span {
     background: var(--dubplus-secondary-color);
     border-color: var(--dubplus-secondary-color);
-    left: 17px;
+    left: 13px;
   }
 </style>
