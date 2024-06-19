@@ -1,12 +1,19 @@
 /**
  *
  * @param {HTMLElement} node
- * @param {string} containerSelector
+ * @param {[string, ("append" | "prepend")?]} containerSelector
  * @returns {{destroy: () => void}}
  */
-export function teleport(node, containerSelector) {
-  const teleportContainer = document.querySelector(containerSelector);
-  teleportContainer.appendChild(node);
+export function teleport(node, [selector, position = "append"]) {
+  const teleportContainer = document.querySelector(selector);
+  if (!teleportContainer) {
+    throw new Error(`teleport container not found: ${selector}`);
+  }
+  if (position === "append") {
+    teleportContainer.appendChild(node);
+  } else {
+    teleportContainer.prepend(node);
+  }
 
   return {
     destroy() {

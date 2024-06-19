@@ -2,7 +2,7 @@
   import { waitFor } from "./utils/waitFor";
   import Loading from "./lib/Loading.svelte";
   import Modal from "./lib/Modal.svelte";
-  import Menu from "./lib/Menu.svelte";
+  import Menu from "./lib/menu/Menu.svelte";
   import { modalState } from "./lib/modalState.svelte";
 
   /** @type {"loading" | "ready" | "loggedout" | "error"} */

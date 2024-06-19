@@ -3,10 +3,17 @@ const QueUp = {};
 
 window.QueUp = QueUp;
 
-/** @type {{[eventName: string]: Array<(e: AnalyserOptions) => void>}} */
+window.emojify = {
+  emojiNames: [],
+  defaultConfig: {
+    img_dir: "",
+  },
+};
+
+/** @type {{[eventName: string]: Array<(e: any) => void>}} */
 const events = {};
 
-/** @type {{[eventName: string]: Array<(e: AnalyserOptions) => void>}} */
+/** @type {{[eventName: string]: Array<(e: any) => void>}} */
 const onceEvents = {};
 
 // delay adding properties to the QueUp object
@@ -20,6 +27,11 @@ function addProperties() {
       chat: {
         sendMessage: () => {
           console.log("sendMessage");
+        },
+        events: {},
+        delegateEvents: (events) => {
+          console.log("delegateEvents", events);
+          this.events = events;
         },
       },
       player: {
@@ -52,9 +64,9 @@ function addProperties() {
       },
       unbind: (event, callback) => {
         console.log("unbind", event);
-        onceEvents[event] = (onceEvents[event] || []).filter(
-          (cb) => cb !== callback
-        );
+        if (events[event]) {
+          events[event] = events[event].filter((cb) => cb !== callback);
+        }
       },
     },
     helpers: { cookie: {} },

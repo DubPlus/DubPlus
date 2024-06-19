@@ -1,5 +1,5 @@
 <script>
-  import { teleport } from "./actions/teleport";
+  import { teleport } from "../actions/teleport";
   let eta = $state("ETA");
 
   /**
@@ -25,7 +25,7 @@
 </script>
 
 <button
-  use:teleport={".player_sharing"}
+  use:teleport={[".player_sharing"]}
   type="button"
   class="icon-history eta_tooltip_t dubplus-btn-player"
   data-dp-tooltip={eta}
