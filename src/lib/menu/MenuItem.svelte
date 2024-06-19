@@ -1,8 +1,8 @@
 <script>
-  import Switch from "./Switch.svelte";
+  import Switch from "../Switch.svelte";
   import { onMount } from "svelte";
-  import { saveSetting, settings } from "./settings.svelte";
-  import { modalState } from "./modalState.svelte";
+  import { saveSetting, settings } from "../settings.svelte";
+  import { modalState } from "../modalState.svelte";
 
   /**
    * @typedef {object} MenuItemProps
@@ -11,7 +11,7 @@
    * @property {string} description
    * @property {(state: boolean) => void} onToggle
    * @property {() => void} [init]
-   * @property {import('../global').ModalProps} [customize]
+   * @property {import('../../global').ModalProps} [customize]
    */
 
   /**
@@ -60,7 +60,7 @@
   />
   {#if customize}
     <button onclick={openEditModal} type="button" class="fa fa-pencil">
-      edit
+      <span class="sr-only">Edit</span>
     </button>
   {/if}
 </li>
@@ -80,5 +80,8 @@
     padding: 0;
     color: #fff;
     cursor: pointer;
+
+    height: 100%;
+    width: 9%;
   }
 </style>

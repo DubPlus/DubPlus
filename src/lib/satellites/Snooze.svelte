@@ -1,5 +1,5 @@
 <script>
-  import { teleport } from "./actions/teleport";
+  import { teleport } from "../actions/teleport";
 
   /**
    * Snooze
@@ -55,7 +55,7 @@
 </script>
 
 <button
-  use:teleport={".player_sharing"}
+  use:teleport={[".player_sharing"]}
   type="button"
   class="icon-mute snooze_btn dubplus-btn-player"
   data-dp-tooltip="Mute current song"

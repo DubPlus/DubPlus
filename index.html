@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QueUp demo page for Dub+</title>
     <style>
+      @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700,700i");
       /*
         These are not exactly the ones QueUp uses, but they are close enough.
         I got them free from icomoon.io which is where QueUp got theirs from.
@@ -26,13 +27,16 @@
       }
       html {
         font-size: 100%;
+        height: 100%;
       }
       body {
+        height: 100%;
         background-color: #333;
         margin: 0;
         padding: 0;
         padding-top: 3.6rem;
         background-color: rgb(243, 192, 255);
+        font: 1rem/1.5 Open Sans,sans-serif;
       }
       .icon-history:before {
         content: "\e94d";
@@ -121,6 +125,21 @@
         left: 0;
         width: 100%;
         z-index: 99;
+        display: flex;
+        justify-content: space-between;
+      }
+      .header-left-navigation {
+        a {
+          color: inherit;
+          padding: 3px;
+          display: inline-block;
+          border: 1px solid #fff;
+          border-radius: 3px;
+          text-decoration: none;
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.1)
+          }
+        }
       }
       .header-right-navigation {
         display: flex;
@@ -173,37 +192,122 @@
           color: #fff;
         }
       }
+
+      .main-room-wrapper {
+        display: flex;
+        height: calc(100% - 7rem);
+      }
+      .right_section {
+        padding: 20px;
+        flex: 1;
+      }
+      .chat-main {
+        background: rgba(0, 0, 0, 0.7);
+        height: 100%;
+        color: #fff;
+        padding: 10px;
+      }
+      .pusher-chat-widget-input {
+        position: relative;
+        height: 50px;
+        input {
+          width: 100%;
+          display: block;
+          padding-right: 20px;
+          background: transparent;
+          border: none;
+          height: 100%;
+        }
+        .chat-text-box-icons {
+          position: absolute;
+          right: 0;
+          top: 0;
+          z-index: 2;
+        }
+      }
     </style>
   </head>
   <body>
-    <div>
-      <header>
-        <div class="header-right-navigation"></div>
-      </header>
+    <header>
+      <div class="header-left-navigation">
+        copy this <a id="bookmarklet" href="">bookmarklet</a> to try it out on QueUp
+      </div>
+      <div class="header-right-navigation"></div>
+    </header>
 
-      <section id="main_player">
-        <div class="player_container"></div>
-        <section class="player_sharing"></section>
-      </section>
+    <div class="main-room-wrapper">
+      <div class="left_section">
+        <section id="main_player">
+          <div class="player_container"></div>
+          <section class="player_sharing"></section>
+        </section>
+      </div>
+      <div class="right_section">
+        <ul class="chat-main">
+          <li>
+            <div class="text">hello</div>
+          </li>
+        </ul>
 
-      <div id="player-controller">
-        <div class="left">
-          <ul>
-            <li class="infoContainer display-block">
-              <div class="currentTime">
-                <span class="min">02</span>
-              </div>
-            </li>
-          </ul>
+        <div class="pusher-chat-widget-input">
+          <input
+            type="text"
+            id="chat-txt-message"
+            name="message"
+            rows="1"
+            placeholder="Join the conversation"
+            autocomplete="off"
+            maxlength="255"
+          />
+          <div class="chat-text-box-icons">
+            <button
+              type="button"
+              class="send-chat-button icon-chevron"
+              title="Send chat message"
+            >send</button>
+          </div>
         </div>
-        <div class="right">
-          <div class="queue-position">5</div>
-        </div>
+      </div>
+    </div>
+
+    <div id="player-controller">
+      <div class="left">
+        <ul>
+          <li class="infoContainer display-block">
+            <div class="currentTime">
+              <span class="min">02</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="right">
+        <div class="queue-position">5</div>
       </div>
     </div>
 
     <div id="dubplus-container"></div>
     <script type="module" src="/mock-queup.js"></script>
-    <script type="module" src="/src/main.js"></script>
+    <script id="main-script" type="module" src="/src/main.js"></script>
+    <script>
+      !function() {
+        const bookmarklet = document.getElementById('bookmarklet');
+        const script = document.getElementById('main-script');
+        const src = script.src.replace(/\?t=\d+$/, ''); // remove the cache buster
+        bookmarklet.href = `
+          javascript:var s=document.createElement('script');s.type="module";s.src='${src}';document.body.appendChild(s);void(0);
+        `;
+
+        // const chatInput = document.getElementById('chat-txt-message');
+        // chatInput.addEventListener('keyup', function(e) {
+        //   console.log('keyup', e.target.selectionStart, e.target.selectionEnd);
+        // });
+        // chatInput.addEventListener('click', function(e) {
+        //   console.log('click', e.target.selectionStart, e.target.selectionEnd);
+        // });
+        // chatInput.addEventListener('focus', function(e) {
+        //   console.log('focus', e.target.selectionStart, e.target.selectionEnd);
+        // });
+      }();
+    </script>
   </body>
 </html>

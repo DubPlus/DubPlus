@@ -1,12 +1,13 @@
 <script>
   import { onMount } from "svelte";
   import MenuIcon from "./MenuIcon.svelte";
-  import { loadExternalCss } from "../utils/css";
-  import Contact from "./sections/Contact.svelte";
-  import General from "./sections/General.svelte";
-  import Eta from "./Eta.svelte";
-  import Snooze from "./Snooze.svelte";
-  import Modal from "./Modal.svelte";
+  import { loadExternalCss } from "../../utils/css";
+  import Contact from "../sections/Contact.svelte";
+  import General from "../sections/General.svelte";
+  import Eta from "../satellites/Eta.svelte";
+  import Snooze from "../satellites/Snooze.svelte";
+  import Modal from "../Modal.svelte";
+  import EmojiPreview from "../emoji/EmojiPreview.svelte";
 
   onMount(() => {
     loadExternalCss(
@@ -17,16 +18,20 @@
   });
 </script>
 
-<!-- these components are teleported to different parts of the UI -->
+<!-- these components are satellites that are controlled by Svelte but
+  placed outside of the root menu container -->
 <MenuIcon />
 <Snooze />
 <Eta />
+<EmojiPreview />
 <!-- this is the main menu -->
 <section class="dubplus-menu">
   <p class="dubplus-menu-header">Dub+ Options</p>
   <General />
   <Contact />
 </section>
+
+<!-- One Modal that is controlled via the modalState -->
 <Modal />
 
 <style>
@@ -62,6 +67,6 @@
 
   /* this is toggled in MenuIcon component */
   .dubplus-menu:global(.dubplus-menu-open) {
-    transform: translate3d(15px, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
 </style>

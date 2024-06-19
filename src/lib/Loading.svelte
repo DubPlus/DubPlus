@@ -4,7 +4,7 @@
    * All of the styles are inlined here so we can load this component faster
    * and discard them after since they will no longer be needed.
    */
-  import { settings } from "./settings.svelte.js";
+  import Logo from "./menu/Logo.svelte";
 
   /** @type {{ text?: string }} */
   let { text = "Waiting for QueUp..." } = $props();
@@ -30,10 +30,7 @@
 
 <div class="dubplus-waiting" style={waitingStyles}>
   <div style="width: 26px; margin-right:5px">
-    <img 
-      style="display: block; width: 100%;"
-      src="{settings.srcRoot}/images/dubplus.svg" 
-      alt="DubPlus icon" />
+    <Logo />
   </div>
   <span style="flex: 1;">{text}</span>
 </div>

@@ -27,6 +27,9 @@ export interface QueUp {
   room: {
     chat: {
       sendMessage: () => void;
+      delegateEvents: (events: {[key: string]: string}) => void;
+      events: { [key: string]: string };
+      ncKeyDown: (e: Partial<KeyboardEvent>) => void;
     };
     player: {
       muted_player: boolean;
@@ -60,8 +63,20 @@ export interface QueUp {
 
 }
 
+interface Emojify {
+  defaultConfig: {
+    img_dir: string
+  };
+  emojiNames: string[]
+}
+
+interface LDB {
+  get: (key: string, cb: (value: string) => void) => void;
+  set: (key: string, value: string) => void;
+}
+
 declare global {
-  interface Window { QueUp: QueUp; }
+  interface Window { QueUp: QueUp; emojify: Emojify; ldb: LDB; }
 }
 
 // I had to move these here because it's used in multiple
