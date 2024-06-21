@@ -1,3 +1,5 @@
+import { logInfo } from "./logger";
+
 /**
  * Looks for a property to exist in the provided starting scope. Handles
  * nested property lookups.
@@ -39,7 +41,7 @@ function arrayDeepCheck(arr, startingScope = window) {
 
   for (let i = 0; i < arr.length; i++) {
     if (!deepCheck(arr[i], scope)) {
-      console.log(arr[i], "is not found yet");
+      logInfo(arr[i], "is not found yet");
       return false;
     }
   }

@@ -8,6 +8,7 @@
   import Snooze from "../satellites/Snooze.svelte";
   import Modal from "../Modal.svelte";
   import EmojiPreview from "../emoji/EmojiPreview.svelte";
+  import { t } from "../stores/i18n.svelte";
 
   onMount(() => {
     loadExternalCss(
@@ -26,7 +27,7 @@
 <EmojiPreview />
 <!-- this is the main menu -->
 <section class="dubplus-menu">
-  <p class="dubplus-menu-header">Dub+ Options</p>
+  <p class="dubplus-menu-header">{t("Menu.title")}</p>
   <General />
   <Contact />
 </section>

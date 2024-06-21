@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
-  import { modalState } from "./modalState.svelte";
+  import { modalState } from "./stores/modalState.svelte";
+  import { t } from "./stores/i18n.svelte";
 
   /** @type {HTMLDialogElement} */
   let dialog; // Reference to the dialog tag
@@ -10,6 +11,7 @@
       document.getElementById("dubplus-dialog")
     );
 
+    // this handles the closing via the ESC key
     dialog.addEventListener("close", () => {
       modalState.open = false;
     });
@@ -27,10 +29,11 @@
   <div class="dp-modal--content content">
     <p>{modalState.content}</p>
     {#if modalState.placeholder || modalState.value}
-      <textarea 
+      <textarea
         bind:value={modalState.value}
-        placeholder="{modalState.placeholder}" 
-        maxlength={modalState.maxlength < 999 ? modalState.maxlength : 999}>
+        placeholder={modalState.placeholder}
+        maxlength={modalState.maxlength < 999 ? modalState.maxlength : 999}
+      >
       </textarea>
     {/if}
   </div>
@@ -41,7 +44,7 @@
           dialog.close();
           modalState.open = false;
         }}
-        class="dp-modal--cancel cancel">cancel</button
+        class="dp-modal--cancel cancel">{t("Modal.cancel")}</button
       >
       <button
         onclick={() => {
@@ -49,7 +52,7 @@
           modalState.open = false;
           modalState.onConfirm(modalState.value);
         }}
-        class="dp-modal--confirm confirm">okay</button
+        class="dp-modal--confirm confirm">{t("Modal.confirm")}</button
       >
     {:else}
       <button
@@ -57,7 +60,7 @@
           dialog.close();
           modalState.open = false;
         }}
-        class="dp-modal--cancel cancel">close</button
+        class="dp-modal--cancel cancel">{t("Modal.close")}</button
       >
     {/if}
   </div>

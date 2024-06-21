@@ -12,6 +12,11 @@ export const emojiState = $state({
   emojiList: [],
 });
 
+export function reset() {
+  emojiState.selectedIndex = 0;
+  emojiState.emojiList = [];
+}
+
 /**
  * @param {import("./emoji").Emoji[]} listArray
  */

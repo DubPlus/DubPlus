@@ -8,8 +8,8 @@ function voteCheck() {
  */
 export const autovote = {
   id: "dubplus-autovote",
-  label: "Autovote",
-  description: "Toggles auto upvoting for every song",
+  label: "dubplus-autovote.label",
+  description: "dubplus-autovote.description",
   category: "General",
   turnOff() {
     window.QueUp.Events.unbind("realtime:room_playlist-update", voteCheck);

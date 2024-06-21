@@ -1,14 +1,15 @@
 /**
  * Autocomplete Emojis/Emotes
  */
-import { dubplus_emoji } from "../../utils/emoji";
+import { dubplus_emoji } from "../emoji/emoji";
 import {
   decrement,
   emojiState,
   increment,
   setEmojiList,
+  reset,
 } from "../emoji/emojiState.svelte";
-import { settings } from "../settings.svelte";
+import { settings } from "../stores/settings.svelte";
 
 const KEYS = {
   up: "ArrowUp",
@@ -24,12 +25,30 @@ const KEYS = {
 };
 
 const keyCharMin = 3; // when to start showing previews
+let acPreview = document.querySelector("#autocomplete-preview");
 
 /**
- *
  * @param {HTMLInputElement} inputEl
  */
-function checkInput(inputEl) {
+function getSelection(inputEl) {
+  const currentText = inputEl.value;
+  const cursorPos = inputEl.selectionStart;
+  let goLeft = cursorPos - 1;
+  while (currentText[goLeft] !== " " && goLeft > 0) {
+    goLeft--;
+  }
+  let goRight = cursorPos;
+  while (currentText[goRight] !== " " && goRight < currentText.length) {
+    goRight++;
+  }
+  return [goLeft, goRight];
+}
+
+/**
+ * @param {KeyboardEvent | MouseEvent} e
+ */
+function checkInput(e) {
+  const inputEl = /**@type {HTMLInputElement}*/ (e.target);
   const currentText = inputEl.value;
   const cursorPos = inputEl.selectionStart;
 
@@ -52,6 +71,8 @@ function checkInput(inputEl) {
       settings.options["dubplus-autocomplete"]
     );
     setEmojiList(list);
+  } else {
+    reset();
   }
 }
 
@@ -61,7 +82,6 @@ function checkInput(inputEl) {
  * @returns
  */
 function chatInputKeyupFunc(e) {
-  const acPreview = document.querySelector("#autocomplete-preview");
   const hasItems = acPreview.children.length > 0;
 
   if (e.key === KEYS.up && hasItems) {
@@ -80,18 +100,21 @@ function chatInputKeyupFunc(e) {
   if ((e.key === KEYS.enter || e.key === KEYS.tab) && hasItems) {
     e.preventDefault();
     const selected = emojiState.emojiList[emojiState.selectedIndex];
-    // previewList.updateChatInput();
-    setEmojiList([]);
+    const inputEl = /**@type {HTMLInputElement}*/ (e.target);
+    const [start, end] = getSelection(inputEl);
+    const target = inputEl.value.substring(start, end);
+    inputEl.value = inputEl.value.replace(target, selected.text);
+    reset();
     return;
   }
 
   // just clear the preview if we hit escape
   if (e.key === KEYS.esc && hasItems) {
-    setEmojiList([]);
+    reset();
     return;
   }
 
-  checkInput(/** @type {HTMLInputElement} */ (e.target));
+  checkInput(e);
 }
 
 /**
@@ -100,8 +123,7 @@ function chatInputKeyupFunc(e) {
  * @returns
  */
 function chatInputKeydownFunc(e) {
-  const emptyPreview =
-    document.querySelector("#autocomplete-preview").children.length === 0;
+  const emptyPreview = acPreview.children.length === 0;
 
   const isValidKey = [KEYS.tab, KEYS.enter, KEYS.up, KEYS.down].includes(e.key);
 
@@ -121,11 +143,12 @@ function chatInputKeydownFunc(e) {
  */
 export const autocomplete = {
   id: "dubplus-autocomplete",
-  label: "Autocomplete Emoji",
+  label: "dubplus-autocomplete.label",
   category: "General",
-  description:
-    "Toggle autocompleting emojis and emotes. Shows a preview box in the chat",
+  description: "dubplus-autocomplete.description",
   turnOn() {
+    acPreview = document.querySelector("#autocomplete-preview");
+    reset();
     // Only remove keydown for Dubtrack native autocomplete to work
     const omitted = structuredClone(window.QueUp.room.chat.events);
     delete omitted["keydown #chat-txt-message"];
@@ -133,6 +156,7 @@ export const autocomplete = {
     const chatInput = document.getElementById("chat-txt-message");
     chatInput.addEventListener("keydown", chatInputKeydownFunc);
     chatInput.addEventListener("keyup", chatInputKeyupFunc);
+    chatInput.addEventListener("click", checkInput);
   },
 
   turnOff() {
@@ -141,5 +165,6 @@ export const autocomplete = {
     const chatInput = document.getElementById("chat-txt-message");
     chatInput.removeEventListener("keydown", chatInputKeydownFunc);
     chatInput.removeEventListener("keyup", chatInputKeyupFunc);
+    chatInput.removeEventListener("click", checkInput);
   },
 };

@@ -2,7 +2,7 @@
   import MenuHeader from "../menu/MenuHeader.svelte";
   import MenuSection from "../menu/MenuSection.svelte";
   import MenuItem from "../menu/MenuItem.svelte";
-  import { saveSetting } from "../settings.svelte";
+  import { saveSetting } from "../stores/settings.svelte";
   import { general } from "../modules";
 </script>
 

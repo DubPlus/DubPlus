@@ -1,4 +1,4 @@
-import { settings } from "../lib/settings.svelte.js";
+import { settings } from "../lib/stores/settings.svelte.js";
 
 /**
  * @param {string} className

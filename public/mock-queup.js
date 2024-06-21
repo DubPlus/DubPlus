@@ -33,6 +33,7 @@ function addProperties() {
           console.log("delegateEvents", events);
           this.events = events;
         },
+        ncKeyDown: (e) => {},
       },
       player: {
         muted_player: false,
