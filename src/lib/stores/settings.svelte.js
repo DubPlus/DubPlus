@@ -1,3 +1,5 @@
+import { logError } from "../../utils/logger";
+
 const STORAGE_KEY = "dubplusUserSettings";
 
 /**
@@ -33,7 +35,7 @@ let savedSettings = {};
 try {
   savedSettings = JSON.parse(localStorage.getItem(STORAGE_KEY));
 } catch (e) {
-  console.error("Error parsing user settings", e);
+  logError("Error parsing user settings", e);
 }
 const intialSettings = Object.assign({}, defaults, savedSettings);
 
@@ -48,13 +50,13 @@ function persist() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   } catch (e) {
-    console.error("Error saving user settings", e);
+    logError("Error saving user settings", e);
   }
 }
 
 /**
  *
- * @param {import("../global").SettingsSections} section
+ * @param {import("../../global").SettingsSections} section
  * @param {string} property
  * @param {any} value
  */

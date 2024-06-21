@@ -1,5 +1,5 @@
 <script>
-  import { settings, saveSetting } from "../settings.svelte";
+  import { settings, saveSetting } from "../stores/settings.svelte";
   /**
    * @typedef {object} MenuHeaderProps
    * @property {string} props.settingsId

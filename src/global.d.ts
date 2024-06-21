@@ -30,6 +30,9 @@ export interface QueUp {
       delegateEvents: (events: {[key: string]: string}) => void;
       events: { [key: string]: string };
       ncKeyDown: (e: Partial<KeyboardEvent>) => void;
+      mentionChatSound: {
+        play: () => void;
+      }
     };
     player: {
       muted_player: boolean;
@@ -88,7 +91,7 @@ export interface ModalProps {
   value?: string;
   placeholder?: string;
   maxlength?: number;
-  onConfirm?: (value: string) => void;
+  onConfirm?: (value: string) => boolean;
   /**
    * Callback for when the modal is closed
    * either via cancel or confirm without editing
@@ -96,4 +99,10 @@ export interface ModalProps {
    */
   onCancel?: () => void;
   open?: boolean;
+}
+
+export interface QueUpUser {
+  userInfo: {
+    userid: string
+  }
 }

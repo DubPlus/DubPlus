@@ -3,7 +3,20 @@
   import { emojiState } from "./emojiState.svelte";
 
   $effect(() => {
-    console.log(emojiState);
+    if (
+      emojiState.emojiList.length > 0 &&
+      typeof emojiState.selectedIndex === "number"
+    ) {
+      // scroll the li element into view
+      const selected = document.querySelector(".preview-item.selected");
+      if (selected) {
+        selected.scrollIntoView({
+          block: "nearest",
+          inline: "nearest",
+          behavior: "smooth",
+        });
+      }
+    }
   });
 </script>
 
@@ -12,16 +25,19 @@
   id="autocomplete-preview"
   class:ac-show={emojiState.emojiList.length > 0}
 >
-  {#each emojiState.emojiList as { src, text, platform, alt }, i}
-    <li class={`preview-item ${platform}-previews`}>
+  {#each emojiState.emojiList as { src, text, platform, alt }, i (src)}
+    <li
+      class={`preview-item ${platform}-previews`}
+      class:selected={i === emojiState.selectedIndex}
+    >
       <div class="ac-image">
         <img {src} {alt} title={alt} />
       </div>
       <span class="ac-text">{text}</span>
       {#if i === emojiState.selectedIndex}
-        <div class="ac-list-press-enter">
-          press <kbd>enter</kbd> to select
-        </div>
+        <span class="ac-list-press-enter">
+          press <kbd>enter</kbd> or <kbd>tab</kbd> to select
+        </span>
       {/if}
     </li>
   {/each}
@@ -34,7 +50,7 @@
  * bttv logo white: https://i.imgur.com/oTfAI0O.png
  */
 
-  #autocomplete-preview {
+  ul {
     overflow: auto;
     display: block;
     position: absolute;
@@ -48,25 +64,28 @@
     margin: 0;
   }
 
-  #autocomplete-preview li {
+  li {
     display: block;
     padding: 6px 10px;
     margin: 0;
+    color: #fff;
   }
 
-  #autocomplete-preview li:hover,
-  #autocomplete-preview li.selected {
+  li:hover,
+  li.selected {
     background-color: #555;
   }
 
-  #autocomplete-preview li:focus {
+  li:focus {
     outline: none;
   }
 
-  #autocomplete-preview .preview-item {
+  .preview-item {
     background-repeat: no-repeat;
     background-size: 25px;
     background-position: 98% center;
+    display: flex;
+    align-items: center;
   }
 
   :global(.twitch-previews) {
@@ -85,47 +104,30 @@
     background-image: url(https://i.imgur.com/DuJfI4T.png);
   }
 
-  #autocomplete-preview span {
+  .ac-text {
     font-size: 0.8em;
-    display: inline-block;
     padding-left: 20px;
-    position: relative;
-    top: -7px;
   }
 
-  #autocomplete-preview .ac-image {
+  .ac-image {
     width: 1.4em;
-    display: inline-block;
   }
-  #autocomplete-preview .ac-image img {
+
+  img {
     width: 100%;
     height: auto;
   }
 
-  .users-preview .ac-image {
-    border-radius: 100%;
-  }
-
-  #autocomplete-preview.ac-show {
+  .ac-show {
     border: 1px solid #202020;
     border-bottom: 1px solid #878c8e;
     max-height: 164px;
     transition: 0.4s;
   }
 
-  .twitch-emote.emoji,
-  .bttv-emote.emoji {
-    max-width: 1.75rem !important;
-    height: auto !important;
-  }
-
-  /* 
-  tasty emotes get a specific Width and Height from the API 
-  The max width is 75px
-*/
-  .tasty-emote.emoji {
-    max-width: 75px !important;
-    width: auto !important;
-    height: auto !important;
+  .ac-list-press-enter {
+    flex: 1;
+    text-align: center;
+    font-size: 0.8em;
   }
 </style>

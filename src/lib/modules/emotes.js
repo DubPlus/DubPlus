@@ -3,7 +3,7 @@
  * Adds additional Twitch, BTTV, and FrankerFaceZ emotes to chat.
  * Tasty emotes are not supported at this time.
  */
-import { dubplus_emoji } from "../../utils/emoji.js";
+import { dubplus_emoji } from "../emoji/emoji";
 
 /**
  *
@@ -31,8 +31,8 @@ function replaceTwitch(html) {
   const _regex = dubplus_emoji.twitch.chatRegex;
   const emoted = html.replace(_regex, function (matched, p1) {
     const key = p1.toLowerCase();
-    if (dubplus_emoji.twitch.emotesMap[key]) {
-      const id = dubplus_emoji.twitch.emotesMap[key];
+    if (dubplus_emoji.twitch.emotesMap.has(key)) {
+      const id = dubplus_emoji.twitch.emotesMap.get(key);
       const src = dubplus_emoji.twitch.template(id);
       return makeImage("twitch", src, key);
     } else {
@@ -53,8 +53,8 @@ function replaceBttv(html) {
   const _regex = dubplus_emoji.bttv.chatRegex;
   const emoted = html.replace(_regex, function (matched, p1) {
     const key = p1.toLowerCase();
-    if (dubplus_emoji.bttv.emotesMap[key]) {
-      const id = dubplus_emoji.bttv.emotesMap[key];
+    if (dubplus_emoji.bttv.emotesMap.has(key)) {
+      const id = dubplus_emoji.bttv.emotesMap.get(key);
       const src = dubplus_emoji.bttv.template(id);
       return makeImage("bttv", src, key);
     } else {
@@ -75,8 +75,8 @@ function replaceFranker(html) {
   const _regex = dubplus_emoji.frankerFacez.chatRegex;
   const emoted = html.replace(_regex, function (matched, p1) {
     const key = p1.toLowerCase();
-    if (dubplus_emoji.frankerFacez.emotesMap[key]) {
-      const id = dubplus_emoji.frankerFacez.emotesMap[key];
+    if (dubplus_emoji.frankerFacez.emotesMap.has(key)) {
+      const id = dubplus_emoji.frankerFacez.emotesMap.get(key);
       const src = dubplus_emoji.frankerFacez.template(id);
       return makeImage("frankerFacez", src, key);
     } else {
@@ -105,8 +105,8 @@ function replaceTextWithEmote() {
  */
 export const emotes = {
   id: "dubplus-emotes",
-  label: "Emotes",
-  description: "Adds twitch and bttv emotes in chat.",
+  label: "dubplus-emotes.label",
+  description: "dubplus-emotes.description",
   category: "General",
   turnOn() {
     dubplus_emoji

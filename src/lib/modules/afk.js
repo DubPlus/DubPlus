@@ -1,4 +1,5 @@
-import { settings } from "../settings.svelte";
+import { settings } from "../stores/settings.svelte";
+import { t } from "../stores/i18n.svelte";
 /**
  * AFK -  Away from Keyboard
  * Toggles the afk auto response on/off
@@ -31,7 +32,7 @@ function afk_chat_respond(e) {
     if (settings.custom.customAfkMessage) {
       chatInput.value = `[AFK] ${settings.custom.customAfkMessage}`;
     } else {
-      chatInput.value = "[AFK] I'm not here right now.";
+      chatInput.value = `[AFK] ${t("dubplus-afk.modal.placeholder")}`;
     }
 
     window.QueUp.room.chat.sendMessage();
@@ -49,8 +50,8 @@ function afk_chat_respond(e) {
  */
 export const afk = {
   id: "dubplus-afk",
-  label: "AFK Auto-respond",
-  description: "Toggle Away from Keyboard and customize AFK message.",
+  label: "dubplus-afk.label",
+  description: "dubplus-afk.description",
   category: "General",
   turnOn() {
     window.QueUp.Events.bind("realtime:chat-message", afk_chat_respond);
@@ -60,9 +61,9 @@ export const afk = {
   },
   custom: {
     id: "customAfkMessage",
-    title: "Custom AFK Message",
-    content: "Enter a custom Away From Keyboard [AFK] message here",
-    placeholder: "Be right back!",
+    title: "dubplus-afk.modal.title",
+    content: "dubplus-afk.modal.content",
+    placeholder: "dubplus-afk.modal.placeholder",
     maxlength: 255,
   },
 };

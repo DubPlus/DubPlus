@@ -1,5 +1,6 @@
 <script>
   import { teleport } from "../actions/teleport";
+  import { t } from "../stores/i18n.svelte";
 
   /**
    * Snooze
@@ -58,7 +59,7 @@
   use:teleport={[".player_sharing"]}
   type="button"
   class="icon-mute snooze_btn dubplus-btn-player"
-  data-dp-tooltip="Mute current song"
+  data-dp-tooltip={t("Snooze.tooltip")}
   onclick={snooze}
 >
   <span>1</span>

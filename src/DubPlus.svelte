@@ -3,7 +3,8 @@
   import Loading from "./lib/Loading.svelte";
   import Modal from "./lib/Modal.svelte";
   import Menu from "./lib/menu/Menu.svelte";
-  import { modalState } from "./lib/modalState.svelte";
+  import { modalState } from "./lib/stores/modalState.svelte";
+  import { t } from "./lib/stores/i18n.svelte";
 
   /** @type {"loading" | "ready" | "loggedout" | "error"} */
   let status = $state("loading");
@@ -35,8 +36,8 @@
    * @param {string} content
    */
   function showErrorModal(content) {
-    modalState.id = "";
-    modalState.title = "Dub+ Error";
+    modalState.id = "dubplus-loading-error";
+    modalState.title = t("Error.modal.title");
     modalState.content = content;
 
     modalState.onCancel = () => {
@@ -50,9 +51,9 @@
 
   $effect(() => {
     if (status === "loggedout") {
-      showErrorModal("You're not logged in. Please login to use Dub+.");
+      showErrorModal(t("Error.modal.loggedout"));
     } else if (status === "error") {
-      showErrorModal("Something went wrong starting Dub+. Please refresh and try again.");
+      showErrorModal(t("Error.unknown"));
     }
   });
 </script>
