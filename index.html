@@ -5,12 +5,13 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QueUp demo page for Dub+</title>
+    <link rel="stylesheet" href="/css/main.css" />
     <style>
       @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700,700i");
       /*
         These are not exactly the ones QueUp uses, but they are close enough.
         I got them free from icomoon.io which is where QueUp got theirs from.
-        but they use ones they payed for I think.
+        but i had to find and build the icon set myself
       */
       @font-face {
         font-family: "icomoon";
@@ -20,283 +21,618 @@
           url("./public/fonts/icomoon.woff") format("woff"),
           url("./public/fonts/icomoon.svg#icomoon") format("svg");
       }
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-      html {
-        font-size: 100%;
-        height: 100%;
-      }
-      body {
-        height: 100%;
-        background-color: #333;
-        margin: 0;
-        padding: 0;
-        padding-top: 3.6rem;
-        background-color: rgb(243, 192, 255);
-        font: 1rem/1.5 Open Sans,sans-serif;
-      }
+
       .icon-history:before {
         content: "\e94d";
       }
       .icon-mute:before {
         content: "\ea2a";
       }
-
-      #chat
-        .chat-container
-        .chat-messages
-        .chat-main
-        li.supporter
-        span.user-role-icon,
-      #chat .chat-container .chat-messages .chat-main li.user-banned .image_row,
-      #chat
-        .chat-container
-        .chat-messages
-        .chat-main
-        li.verified
-        span.user-role-icon,
-      #main_avatar_room
-        #main-user-list-room
-        #avatar-list
-        li.supporter
-        span.user-role-icon,
-      #main_avatar_room
-        #main-user-list-room
-        #avatar-list
-        li.verified
-        span.user-role-icon,
-      #player-controller
-        .left
-        ul
-        li.infoContainer
-        .infoContainerInner
-        .currentDJSong.supporter
-        span.user-role-icon,
-      #player-controller
-        .left
-        ul
-        li.infoContainer
-        .infoContainerInner
-        .currentDJSong.verified
-        span.user-role-icon,
-      #profileMainSection-container.supporter
-        #profileMainSection
-        .profileView
-        .infoProfile
-        .usernameContainer:before,
-      #profileMainSection-container.verified
-        #profileMainSection
-        .profileView
-        .infoProfile
-        .usernameContainer:before,
-      .autolink:not(.autolink-image):after,
-      [class*=" icon-"],
-      [class^="icon-"],
-      body.video-hidden:not(.no-song-playing)
-        #main_player
-        .player_container
-        #room-main-player-container:before {
-        font-family: "icomoon";
-        speak: none;
-        font-style: normal;
-        font-weight: 400;
-        font-variant: normal;
-        text-transform: none;
-        text-align: center;
-        line-height: 1;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
+      .icon-message:before {
+        content: "\e901";
       }
-      ul,
-      ol {
-        list-style: none;
-        margin: 0;
+      .icon-chevron:before {
+        content: "\e900";
       }
-      header {
-        padding: 0.8rem 1rem;
-        background-color: #222;
-        color: #fff;
-        min-height: 57px;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 99;
-        display: flex;
-        justify-content: space-between;
+      .icon-reload:before {
+        content: "\e901";
       }
-      .header-left-navigation {
-        a {
-          color: inherit;
-          padding: 3px;
-          display: inline-block;
-          border: 1px solid #fff;
-          border-radius: 3px;
-          text-decoration: none;
-          &:hover {
-            background-color: rgba(255, 255, 255, 0.1)
-          }
-        }
+      .icon-facebook:before {
+        content: "\ea90";
       }
-      .header-right-navigation {
-        display: flex;
-        justify-content: flex-end;
+      .icon-twitter:before {
+        content: "\e902";
       }
-      #player-controller {
-        background-color: rgba(47, 47, 47, 0.5);
-        color: #fff;
-
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        z-index: 99;
-        height: 3.5rem;
-        z-index: 18;
-
-        display: flex;
-        .right {
-          width: 24rem;
-        }
-        .left {
-          flex: 1;
-        }
+      .icon-reload:before {
+        content: "\ea2e";
       }
-      .infoContainer {
-        padding: 0 0 0 3.5rem;
-        height: 100;
-        width: 100%;
+      .icon-heart:before {
+        content: "\e903";
       }
-      #main_player {
-        border-radius: 1rem;
-        position: relative;
-        padding: 1rem;
-        background: rgba(0, 0, 0, 0.7);
-        display: block;
-        z-index: 1;
-        min-height: 31rem;
-        width: 65vw;
+      .icon-upvote:before {
+        content: "\e905";
+      }
+      .icon-downvote:before {
+        content: "\e904";
+      }
+      .icon-playlist:before {
+        content: "\e9bb";
+      }
+      .icon-chat:before {
+        content: "\e906";
+      }
+      .icon-chatsettings:before {
+        content: "\e907";
       }
 
-      .player_container {
-        padding-bottom: 56%;
-        background-color: blue;
-      }
-
-      .player_sharing {
-        margin-top: 1.1rem;
-        button {
-          color: #fff;
-        }
-      }
-
-      .main-room-wrapper {
-        display: flex;
-        height: calc(100% - 7rem);
-      }
-      .right_section {
-        padding: 20px;
-        flex: 1;
-      }
-      .chat-main {
-        background: rgba(0, 0, 0, 0.7);
-        height: 100%;
-        color: #fff;
-        padding: 10px;
-      }
-      .pusher-chat-widget-input {
-        position: relative;
-        height: 50px;
-        input {
-          width: 100%;
-          display: block;
-          padding-right: 20px;
-          background: transparent;
-          border: none;
-          height: 100%;
-        }
-        .chat-text-box-icons {
-          position: absolute;
-          right: 0;
-          top: 0;
-          z-index: 2;
-        }
+      /* QueUp uses a custom JS lib for scrolling which I didn't feel like importing
+      and settings up so just enabling scrolling here */
+      #chat .chat-container .chat-messages {
+        overflow: scroll;
       }
     </style>
   </head>
   <body>
-    <header>
+    <header id="header-global">
+      <div class="left-menu-toggle">
+        <span class="icon-menu"></span>
+        <span class="icon-chevron"></span>
+      </div>
       <div class="header-left-navigation">
-        copy this <a id="bookmarklet" href="">bookmarklet</a> to try it out on QueUp
+        <a href="/" class="navigate lobby-link">Lobby</a>
+        <a
+          href="/"
+          class="navigate room-active-link active-room"
+          id="main-room-active-link"
+          ><span class="icon-chevron"></span
+          ><span class="room-name">Demo room for Dub+ development</span></a
+        >
       </div>
-      <div class="header-right-navigation"></div>
-    </header>
-
-    <div class="main-room-wrapper">
-      <div class="left_section">
-        <section id="main_player">
-          <div class="player_container"></div>
-          <section class="player_sharing"></section>
-        </section>
+      <div id="header_login">
+        <a href="/login" id="login-link">LOGIN</a
+        ><a href="/signup" id="signup-link">SIGN UP</a>
       </div>
-      <div class="right_section">
-        <ul class="chat-main">
-          <li>
-            <div class="text">hello</div>
-          </li>
-        </ul>
-
-        <div class="pusher-chat-widget-input">
-          <input
-            type="text"
-            id="chat-txt-message"
-            name="message"
-            rows="1"
-            placeholder="Join the conversation"
-            autocomplete="off"
-            maxlength="255"
-          />
-          <div class="chat-text-box-icons">
-            <button
-              type="button"
-              class="send-chat-button icon-chevron"
-              title="Send chat message"
-            >send</button>
-          </div>
+      <div class="header-right-navigation">
+        <div class="user-info">
+          <span>Username</span>
+          <figure class="user-image">
+            <img
+              src="https://api.queup.net/user/654ee5a3a9d4e50006987572/image"
+              alt=""
+              title=""
+              class="cursor-pointer"
+            />
+          </figure>
+        </div>
+        <div class="user-messages">
+          <span class="message-counter" style="display: none"></span
+          ><span class="icon-message"></span>
         </div>
       </div>
-    </div>
+    </header>
 
-    <div id="player-controller">
-      <div class="left">
-        <ul>
-          <li class="infoContainer display-block">
-            <div class="currentTime">
-              <span class="min">02</span>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <div class="right">
-        <div class="queue-position">5</div>
-      </div>
-    </div>
+    <section class="main-page-container">
+      <section id="main-section">
+        <section
+          id="main-room"
+          class="queup-section"
+          style="visibility: visible"
+        >
+          <div class="main-room-wrapper">
+            <section class="left_section">
+              <div class="main-player-wrapper">
+                <section id="main_player">
+                  <div class="player_header">
+                    <span class="skip-el">Skip</span>
+                    <span class="displayVideo-el active">Video</span>
+                    <span class="display-queue">Room Queue</span>
+                    <span class="room-info-display">Info</span>
+                    <span
+                      class="display-mods-controls"
+                      style="display: inline-block"
+                      >Mod</span
+                    >
+                    <span class="edit-room" style="display: none"
+                      ><i class="icon-chatsettings"></i
+                    ></span>
+                  </div>
+                  <div class="player_container">
+                    <div id="custom_iframe_embed" style="display: none"></div>
+                    <div id="custom_iframe_embed_error" style="display: none">
+                      Invalid embed url
+                    </div>
+                    <div id="room-main-player-container">
+                      <div id="room-main-player-container-youtube" class="">
+                        <!-- <iframe
+                          id="ytPlayer"
+                          type="text/html"
+                          frameborder="0"
+                          allow="autoplay; encrypted-media; fullscreen"
+                          title="... and On"
+                          width="100%"
+                          height="100%"
+                          src="https://www.youtube.com/embed/PIIW4bZXqR4?controls=1&amp;rel=0&amp;showinfo=0&amp;autoplay=0&amp;modestbranding=1&amp;output=embed&amp;wmode=transparent&amp;playsinline=1&amp;iv_load_policy=3&amp;html5=1&amp;is_html5_mobile_device=1&amp;disablekb=1&amp;frameborder=0&amp;enablejsapi=1"
+                          allowfullscreen="true"
+                        ></iframe> -->
+                      </div>
+                    </div>
+                  </div>
+                  <section class="player_sharing">
+                    <div class="player-controller-container">
+                      <div class="mute">
+                        <span class="icon-mute"></span>
+                        <span class="icon-sound-alt"></span>
+                      </div>
+                      <div class="volume-controller-container">
+                        <div
+                          id="volume-div"
+                          class="ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
+                        >
+                          <div
+                            class="ui-slider-range ui-corner-all ui-widget-header ui-slider-range-min"
+                            style="width: 61%"
+                          ></div>
+                          <span
+                            tabindex="0"
+                            class="ui-slider-handle ui-corner-all ui-state-default"
+                            style="left: 61%"
+                          ></span>
+                        </div>
+                      </div>
+                      <span
+                        title="Refresh song"
+                        class="icon-reload refresh-el show"
+                      ></span>
+                    </div>
+                    <span class="icon-facebook"></span>
+                    <span class="icon-twitter"></span>
+                  </section>
+                  <div class="play-song-link-container">
+                    <div class="play-song-link-browser">
+                      <i class="icon-play"></i> Queue a song
+                      <span class="queue-info"></span>
+                    </div>
+                    <div
+                      class="play-song-link leave-button active-queue-display"
+                    >
+                      Leave queue
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </section>
+            <section class="right_section">
+              <section id="chat" class="show-deletion-toggle">
+                <div class="chat_tools">
+                  <span class="display-chat icon-chat active"></span
+                  ><span class="display-room-users icon-people"
+                    ><i class="room-user-counter">14</i
+                    ><i class="room-guest-counter">+2</i></span
+                  ><span class="display-chat-settings icon-chatsettings"></span>
+                </div>
+                <div class="chat-container">
+                  <div class="hidden" id="sound-notification"></div>
+                  <div
+                    class="chat-messages ps-container ps-theme-default ps-active-y"
+                  >
+                    <ul class="chat-main">
+                      <li class="current-chat-user chat-id-abc-123">
+                        <div class="stream-item-content">
+                          <div class="chatDelete">
+                            <span class="icon-close"></span>
+                          </div>
+                          <div class="image_row">
+                            <img
+                              src="https://api.queup.net/user/654ee5a3a9d4e50006987572/image"
+                              alt="CoolBot"
+                              title="CoolBot"
+                              class="cursor-pointer"
+                            />
+                          </div>
+                          <div class="activity-row">
+                            <div class="username">
+                              <span class="user-role-icon"></span>CoolBot<span
+                                class="user-role"
+                              ></span>
+                            </div>
+                            <div class="text">
+                              <p>This is the chat message screen</p>
+                            </div>
+                            <div class="meta-info">
+                              <span class="username">CoolBot </span
+                              ><i class="icon-dot"></i
+                              ><span class="timeinfo"
+                                ><time
+                                  class="timeago"
+                                  datetime="2024-06-21T15:45:43.312Z"
+                                  title="6/21/2024, 11:45:43 AM"
+                                  >28 minutes ago</time
+                                ></span
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                      <li class="admin chat-id-abc-123">
+                        <div class="stream-item-content">
+                          <div class="chatDelete">
+                            <span class="icon-close"></span>
+                          </div>
+                          <div class="image_row">
+                            <img
+                              src="https://api.queup.net/user/654ee5a3a9d4e50006987572/image"
+                              alt="Grandad"
+                              title="Grandad"
+                              class="cursor-pointer"
+                            />
+                          </div>
+                          <div class="activity-row">
+                            <div class="username">
+                              <span class="user-role-icon"></span>Grandad<span
+                                class="user-role"
+                                >admin</span
+                              >
+                            </div>
+                            <div class="text">
+                              <p>
+                                this is what a chat from an admin looks like
+                              </p>
+                            </div>
+                            <div class="meta-info">
+                              <span class="username">Grandad </span
+                              ><i class="icon-dot"></i
+                              ><span class="timeinfo"
+                                ><time
+                                  class="timeago"
+                                  datetime="2024-06-21T15:46:39.128Z"
+                                  title="6/21/2024, 11:46:39 AM"
+                                  >27 minutes ago</time
+                                ></span
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                      <li class="chat-id-abc-123">
+                        <div class="stream-item-content">
+                          <div class="chatDelete">
+                            <span class="icon-close"></span>
+                          </div>
+                          <div class="image_row">
+                            <img
+                              src="https://api.queup.net/user/654ee5a3a9d4e50006987572/image"
+                              alt="robotFunk"
+                              title="robotFunk"
+                              class="cursor-pointer"
+                            />
+                          </div>
+                          <div class="activity-row">
+                            <div class="username">
+                              <span class="user-role-icon"></span>robotFunk<span
+                                class="user-role"
+                              ></span>
+                            </div>
+                            <div class="text">
+                              <p>
+                                This message mentions a user
+                                <span class="username-handle mentioned"
+                                  >@CoolBot</span
+                                >
+                              </p>
+                            </div>
+                            <div class="meta-info">
+                              <span class="username">robotFunk </span
+                              ><i class="icon-dot"></i
+                              ><span class="timeinfo"
+                                ><time
+                                  class="timeago"
+                                  datetime="2024-06-21T15:46:52.131Z"
+                                  title="6/21/2024, 11:46:52 AM"
+                                  >27 minutes ago</time
+                                ></span
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+
+                      <li
+                        class="chat-id-abc-123 chat-id-abc-123 chat-id-abc-123"
+                      >
+                        <div class="stream-item-content">
+                          <div class="chatDelete">
+                            <span class="icon-close"></span>
+                          </div>
+                          <div class="image_row">
+                            <img
+                              src="https://api.queup.net/user/654ee5a3a9d4e50006987572/image"
+                              alt="derpybot"
+                              title="derpybot"
+                              class="cursor-pointer"
+                            />
+                          </div>
+                          <div class="activity-row">
+                            <div class="username">
+                              <span class="user-role-icon"></span>derpybot<span
+                                class="user-role"
+                              ></span>
+                            </div>
+                            <div class="text">
+                              <p>Props on the track! 🔥 +prop=🔥</p>
+                              <p>
+                                <span class="username-handle">@theDJ</span>
+                                now has 285 props :🔥:
+                              </p>
+                              <p>
+                                'Reload - Amenity (Unofficial Video)', queued by
+                                theDJ received 1 prop
+                                <img
+                                  align="absmiddle"
+                                  alt=":fist:"
+                                  class="emoji"
+                                  src="https://www.queup.net/assets/emoji/apple/fist.png"
+                                  title=":fist:"
+                                />
+                                <img
+                                  align="absmiddle"
+                                  alt=":heart:"
+                                  class="emoji"
+                                  src="https://www.queup.net/assets/emoji/apple/heart.png"
+                                  title=":heart:"
+                                />
+                                <img
+                                  align="absmiddle"
+                                  alt=":musical_note:"
+                                  class="emoji"
+                                  src="https://www.queup.net/assets/emoji/apple/musical_note.png"
+                                  title=":musical_note:"
+                                />
+                              </p>
+                            </div>
+                            <div class="meta-info">
+                              <span class="username">derpybot </span
+                              ><i class="icon-dot"></i
+                              ><span class="timeinfo"
+                                ><time
+                                  class="timeago"
+                                  datetime="2024-06-21T16:05:19.980Z"
+                                  title="6/21/2024, 12:05:19 PM"
+                                  >7 minutes ago</time
+                                ></span
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+
+                      <li class="chat-id-abc-123 chat-id-abc-123">
+                        <div class="stream-item-content">
+                          <div class="chatDelete">
+                            <span class="icon-close"></span>
+                          </div>
+                          <div class="image_row">
+                            <img
+                              src="https://api.queup.net/user/654ee5a3a9d4e50006987572/image"
+                              alt="derpybot"
+                              title="derpybot"
+                              class="cursor-pointer"
+                            />
+                          </div>
+                          <div class="activity-row">
+                            <div class="username">
+                              <span class="user-role-icon"></span>derpybot<span
+                                class="user-role"
+                              ></span>
+                            </div>
+                            <div class="text">
+                              <p>
+                                <a
+                                  href="https://i.imgur.com/BMYLBdo.gif"
+                                  class="autolink autolink-image"
+                                  target="_blank"
+                                  ><img
+                                    src="https://images.queup.net/chat/?url=https%3A%2F%2Fi.imgur.com%2FBMYLBdo.gif"
+                                /></a>
+                                One of my favorite tracks, nice play
+                                <span class="username-handle mentioned"
+                                  >@CoolBot</span
+                                >
+                              </p>
+                              <p>
+                                <span class="username-handle mentioned"
+                                  >@CoolBot</span
+                                >
+                                now has 7 props
+                                <img
+                                  align="absmiddle"
+                                  alt=":star2:"
+                                  class="emoji"
+                                  src="/assets/emoji/apple/star2.png"
+                                  title=":star2:"
+                                />
+                              </p>
+                            </div>
+                            <div class="meta-info">
+                              <span class="username">derpybot </span
+                              ><i class="icon-dot"></i
+                              ><span class="timeinfo"
+                                ><time
+                                  class="timeago"
+                                  datetime="2024-06-21T16:08:07.629Z"
+                                  title="6/21/2024, 12:08:07 PM"
+                                  >5 minutes ago</time
+                                ></span
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                    <div
+                      class="ps-scrollbar-x-rail"
+                      style="left: 0px; bottom: -2995px"
+                    >
+                      <div
+                        class="ps-scrollbar-x"
+                        tabindex="0"
+                        style="left: 0px; width: 0px"
+                      ></div>
+                    </div>
+                    <div
+                      class="ps-scrollbar-y-rail"
+                      style="top: 2998px; right: 3px; height: 712px"
+                    >
+                      <div
+                        class="ps-scrollbar-y"
+                        tabindex="0"
+                        style="top: 576px; height: 136px"
+                      ></div>
+                    </div>
+                  </div>
+                  <div class="pusher-chat-widget-input">
+                    <div id="new-messages-counter" style="display: none">
+                      <span class="messages-display"></span>
+                      <i class="icon-arrow-down2"></i>
+                    </div>
+                    <div class="nc-container" style="display: none">
+                      <div class="tip-container">
+                        <span class="tip-navigate"
+                          ><key class="icon-upvote"></key> &amp;
+                          <key class="icon-downvote"></key> /
+                          <key>TAB</key> (navigate)</span
+                        ><span class="tip-complete"
+                          ><key>ENTER</key> (complete)</span
+                        ><span class="tip-close"><key>ESC</key> (close)</span>
+                      </div>
+                      <ul
+                        class="ps-container ps-theme-default"
+                        data-ps-id="9c122ad6-2018-0adb-02eb-f45b3187454a"
+                      >
+                        <div
+                          class="ps-scrollbar-x-rail"
+                          style="left: 0px; bottom: 3px"
+                        >
+                          <div
+                            class="ps-scrollbar-x"
+                            tabindex="0"
+                            style="left: 0px; width: 0px"
+                          ></div>
+                        </div>
+                        <div
+                          class="ps-scrollbar-y-rail"
+                          style="top: 0px; right: 3px"
+                        >
+                          <div
+                            class="ps-scrollbar-y"
+                            tabindex="0"
+                            style="top: 0px; height: 0px"
+                          ></div>
+                        </div>
+                      </ul>
+                    </div>
+                    <input
+                      type="text"
+                      id="chat-txt-message"
+                      name="message"
+                      rows="1"
+                      placeholder="Join the conversation"
+                      autocomplete="off"
+                      maxlength="255"
+                    />
+                    <pre id="chat-height-calculator" style="">_</pre>
+                    <div class="chat-text-box-icons">
+                      <span
+                        class="send-chat-button icon-chevron"
+                        title="Send chat message"
+                      ></span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </section>
+          </div>
+        </section>
+        <section id="player-controller">
+          <div class="right">
+            <ul>
+              <li class="display-browser remove-if-banned">
+                <a class="display-browser"
+                  ><span class="icon-playlist"></span
+                  ><span class="queue-position">5</span
+                  ><span class="queue-position-split" style="display: inline"
+                    >/</span
+                  ><span class="queue-total">6</span
+                  ><span class="queue-in-waitlist"></span
+                ></a>
+              </li>
+              <li
+                class="add-to-playlist remove-if-banned remove-if-iframe display-block dubplus-grabs-hover"
+              >
+                <a class="add-to-playlist-button"
+                  ><span class="icon-heart"></span
+                  ><span class="grab-counter">0</span></a
+                >
+              </li>
+              <li
+                class="remove-if-banned remove-if-iframe display-block dubplus-updubs-hover"
+              >
+                <a class="dubup"
+                  ><span class="icon-upvote"></span
+                  ><span class="dub-counter">5</span></a
+                >
+              </li>
+              <li
+                class="remove-if-banned remove-if-iframe display-block dubplus-downdubs-hover"
+              >
+                <a class="dubdown"
+                  ><span class="icon-downvote"></span
+                  ><span class="dub-counter">0</span></a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="left">
+            <ul>
+              <li class="imgEl">
+                <img
+                  src="https://api.queup.net/user/654ee5a3a9d4e50006987572/image"
+                  alt="Someone"
+                  title="Someone"
+                  class="cursor-pointer"
+                />
+              </li>
+              <li class="infoContainer display-block">
+                <div class="infoContainerInner">
+                  <div
+                    class="progressBg"
+                    style="width: 4.52559%; overflow: hidden"
+                  ></div>
+                  <span class="currentDJSong supporter creator"
+                    ><div class="username">Someone</div>
+                    is playing</span
+                  ><span class="currentSong">Song title</span>
+                  <div class="currentTime">
+                    <span class="min">07</span>:<span class="sec">02</span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </section>
+      </section>
+    </section>
 
     <div id="dubplus-container"></div>
     <script type="module" src="/mock-queup.js"></script>
     <script id="main-script" type="module" src="/src/main.js"></script>
     <script>
-      !function() {
-        const bookmarklet = document.getElementById('bookmarklet');
-        const script = document.getElementById('main-script');
-        const src = script.src.replace(/\?t=\d+$/, ''); // remove the cache buster
-        bookmarklet.href = `
-          javascript:var s=document.createElement('script');s.type="module";s.src='${src}';document.body.appendChild(s);void(0);
-        `;
-
+      !(function () {
+        // const bookmarklet = document.getElementById("bookmarklet");
+        // const script = document.getElementById("main-script");
+        // const src = script.src.replace(/\?t=\d+$/, ""); // remove the cache buster
+        // bookmarklet.href = `
+        //   javascript:var s=document.createElement('script');s.type="module";s.src='${src}';document.body.appendChild(s);void(0);
+        // `;
         // const chatInput = document.getElementById('chat-txt-message');
         // chatInput.addEventListener('keyup', function(e) {
         //   console.log('keyup', e.target.selectionStart, e.target.selectionEnd);
@@ -307,7 +643,7 @@
         // chatInput.addEventListener('focus', function(e) {
         //   console.log('focus', e.target.selectionStart, e.target.selectionEnd);
         // });
-      }();
+      })();
     </script>
   </body>
 </html>
