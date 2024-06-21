@@ -4,7 +4,7 @@
 </script>
 
 <button
-  use:teleport={[".header-right-navigation"]}
+  use:teleport={{ to: ".header-right-navigation" }}
   type="button"
   class="dubplus-icon"
   onclick={() => {
@@ -26,7 +26,6 @@ and triggers the open/close of Dub+ */
     appearance: none;
     padding: 0;
 
-
     width: 26px;
     height: 26px;
     cursor: pointer;
@@ -34,6 +33,5 @@ and triggers the open/close of Dub+ */
     display: inline-block;
     vertical-align: bottom;
     margin-left: 1rem;
-
   }
 </style>

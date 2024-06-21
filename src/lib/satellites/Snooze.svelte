@@ -56,7 +56,7 @@
 </script>
 
 <button
-  use:teleport={[".player_sharing"]}
+  use:teleport={{ to: ".player_sharing" }}
   type="button"
   class="icon-mute snooze_btn dubplus-btn-player"
   data-dp-tooltip={t("Snooze.tooltip")}
