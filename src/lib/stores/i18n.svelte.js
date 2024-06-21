@@ -1,4 +1,5 @@
 import { translations } from "../../translation";
+import { logError } from "../../utils/logger";
 
 export const locale = $state({
   current: "en",
@@ -21,8 +22,14 @@ export function translate(loc, key, vars) {
     text = translations["en"][key];
   }
 
+  // if we STILL don't have text, just return the key
+  // and also log the error. This is useful in case
+  // so we can override the translation by putting
+  // the text we want as the key. We shouldn't do that
+  // but it could prove useful in some cases
   if (!text) {
-    throw new Error(`No translation found for ${loc}.${key}`);
+    logError(`No translation found for ${loc}.${key}`);
+    return key;
   }
 
   // replace any variables
@@ -34,13 +41,6 @@ export function translate(loc, key, vars) {
   return text;
 }
 
-// export const t = derived(
-//   locale,
-//   ($locale) =>
-//     (key, vars = {}) =>
-//       translate($locale, key, vars)
-// );
-
 /**
  *
  * @param {string} key
@@ -49,4 +49,20 @@ export function translate(loc, key, vars) {
  */
 export function t(key, vars = {}) {
   return translate(locale.current, key, vars);
+}
+
+/**
+ * @param {string} loc
+ * @returns {string}
+ */
+export function normalizeLocale(loc) {
+  // all english locales get the same translation
+  if (loc.startsWith("en")) {
+    return "en";
+  }
+  // all spanish locales get the same translation
+  if (loc.startsWith("es")) {
+    return "es";
+  }
+  return loc;
 }

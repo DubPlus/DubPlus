@@ -86,5 +86,9 @@ export const translations = {
     "dj_notification.notification.content":
       "You will be DJing shortly! Make sure your song is set!",
     "dj_notification.modal.validation": "Please enter a valid number",
+
+    "dubplus-dubs-hover.label": "Show Dubs on Hover",
+    "dubplus-dubs-hover.description":
+      "Show who dubs a song when hovering over the dubs count",
   },
 };

@@ -41,11 +41,20 @@ export interface QueUp {
       updateVolumeBar: () => void;
       activeSong: {
         get: (name: string) => Song;
+        // attributes.song.played
+        attributes: {
+          song: {
+            played: number;
+            updubs: number;
+            downdubs: number;
+          }
+        }
       }
     };
     model: {
       get: (name: string) => any;
     };
+    // TODO: actually type this
     users: any;
   }
   Events: {
@@ -58,6 +67,7 @@ export interface QueUp {
       get: (name: string) => string;
       set: (name: string, value: string, days: number) => void;
     };
+    isSiteAdmin: (userid: string) => boolean;
   },
   playerController: {
     volume: number;

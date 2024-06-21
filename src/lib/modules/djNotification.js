@@ -7,8 +7,9 @@ import { settings } from "../stores/settings.svelte";
  * Sends a notification when the your position in the queue
  * is equal (or lower) than the value user set in the settings.
  *
- * current track is position 0 so if you want to be notified when you're next
- * you would use position 1.
+ * examples:
+ * if you want to be notified when you're next you would use position 1.
+ * if you want to be notified when you started playing you would use position 0.
  * @param {{startTime: number}} e
  * @returns
  */

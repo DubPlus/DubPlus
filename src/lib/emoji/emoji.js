@@ -222,7 +222,7 @@ export const dubplus_emoji = {
     // grab it from the twitch API
     return this.shouldUpdateAPIs("twitch").then((shouldUpdate) => {
       if (shouldUpdate) {
-        logInfo("dub+", "twitch", "loading from api");
+        logInfo("twitch", "loading from api");
         return fetchTwitchEmotes()
           .then((json) => {
             /**
@@ -242,7 +242,7 @@ export const dubplus_emoji = {
           .catch((err) => logError(err));
       } else {
         return ldbGet("twitch_api").then((data) => {
-          logInfo("dub+", "twitch", "loading from IndexedDB");
+          logInfo("twitch", "loading from IndexedDB");
           /**
            * @type {{[emote: string]: string}}
            */
@@ -264,7 +264,7 @@ export const dubplus_emoji = {
     // grab it from the bttv API
     return this.shouldUpdateAPIs("bttv").then((shouldUpdate) => {
       if (shouldUpdate) {
-        logInfo("dub+", "bttv", "loading from api");
+        logInfo("bttv", "loading from api");
         return fetchBTTVEmotes()
           .then((json) => {
             /**
@@ -285,7 +285,7 @@ export const dubplus_emoji = {
           .catch((err) => logError(err));
       } else {
         return ldbGet("bttv_api").then((data) => {
-          logInfo("dub+", "bttv", "loading from IndexedDB");
+          logInfo("bttv", "loading from IndexedDB");
           /**
            * @type {{[emote: string]: string}}
            */
@@ -303,7 +303,7 @@ export const dubplus_emoji = {
     if (this.tastyJSONLoaded) {
       return Promise.resolve();
     }
-    logInfo("dub+", "tasty", "loading from api");
+    logInfo("tasty", "loading from api");
     // since we control this API we should always have it load from remote
     return fetch(import.meta.env.srcRoot + "/emotes/tastyemotes.json")
       .then((res) => res.json())
@@ -325,7 +325,7 @@ export const dubplus_emoji = {
     // grab it from the frankerfacez API
     return this.shouldUpdateAPIs("frankerfacez").then((shouldUpdate) => {
       if (shouldUpdate) {
-        logInfo("dub+", "frankerfacez", "loading from api");
+        logInfo("frankerfacez", "loading from api");
         return fetchFrankerFacezEmotes()
           .then((json) => {
             const frankerFacez = json;
@@ -339,7 +339,7 @@ export const dubplus_emoji = {
           .catch((err) => logError(err));
       } else {
         return ldbGet("frankerfacez_api").then((data) => {
-          logInfo("dub+", "frankerfacez", "loading from IndexedDB");
+          logInfo("frankerfacez", "loading from IndexedDB");
           const savedData = JSON.parse(data);
           dubplus_emoji.processFrankerFacez(savedData);
         });

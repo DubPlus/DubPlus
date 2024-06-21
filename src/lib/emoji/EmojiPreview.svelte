@@ -21,7 +21,7 @@
 </script>
 
 <ul
-  use:teleport={[".pusher-chat-widget-input", "prepend"]}
+  use:teleport={{ to: ".pusher-chat-widget-input", position: "prepend" }}
   id="autocomplete-preview"
   class:ac-show={emojiState.emojiList.length > 0}
 >
