@@ -9,6 +9,9 @@
   import Modal from "../Modal.svelte";
   import EmojiPreview from "../emoji/EmojiPreview.svelte";
   import { t } from "../stores/i18n.svelte";
+  import DubsInfo from "../satellites/DubsInfo.svelte";
+  import { settings } from "../stores/settings.svelte";
+  import Snow from "../satellites/Snow.svelte";
 
   onMount(() => {
     loadExternalCss(
@@ -19,12 +22,25 @@
   });
 </script>
 
-<!-- these components are satellites that are controlled by Svelte but
-  placed outside of the root menu container -->
+<!-- 
+  these components are satellites that are controlled by Svelte but
+  placed outside of the root menu container 
+-->
 <MenuIcon />
 <Snooze />
 <Eta />
-<EmojiPreview />
+{#if settings.options["dubplus-autocomplete"]}
+  <EmojiPreview />
+{/if}
+{#if settings.options["dubplus-dubs-hover"]}
+  <DubsInfo dubType="updub" />
+  <DubsInfo dubType="downdub" />
+  <DubsInfo dubType="grab" />
+{/if}
+{#if settings.options["dubplus-snow"]}
+  <Snow />
+{/if}
+
 <!-- this is the main menu -->
 <section class="dubplus-menu">
   <p class="dubplus-menu-header">{t("Menu.title")}</p>

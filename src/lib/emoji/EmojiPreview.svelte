@@ -110,12 +110,14 @@
   }
 
   .ac-image {
-    width: 1.4em;
+    width: 30px;
+    height: 30px;
   }
 
   img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: contain;
   }
 
   .ac-show {

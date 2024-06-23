@@ -7,6 +7,11 @@ import { chatCleaner } from "./chatCleaner";
 import { chatNotifications } from "./chatNotifications";
 import { pmNotifications } from "./pmNotifications";
 import { djNotification } from "./djNotification";
+import { showDubsOnHover } from "./showDubsOnHover";
+import { downdubsInChat } from "./downDubInChat";
+import { upDubInChat } from "./upDubInChat";
+import { grabsInChat } from "./grabsInChat";
+import { snow } from "./snow";
 
 export const general = [
   autovote,
@@ -18,4 +23,9 @@ export const general = [
   chatNotifications,
   pmNotifications,
   djNotification,
+  showDubsOnHover,
+  downdubsInChat,
+  upDubInChat,
+  grabsInChat,
+  snow,
 ];

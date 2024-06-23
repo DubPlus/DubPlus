@@ -3,6 +3,7 @@
  * Adds additional Twitch, BTTV, and FrankerFaceZ emotes to chat.
  * Tasty emotes are not supported at this time.
  */
+import { CHAT_MESSAGE } from "../../events-constants";
 import { dubplus_emoji } from "../emoji/emoji";
 
 /**
@@ -116,10 +117,10 @@ export const emotes = {
       .then(() => {
         replaceTextWithEmote();
       });
-    window.QueUp.Events.bind("realtime:chat-message", replaceTextWithEmote);
+    window.QueUp.Events.bind(CHAT_MESSAGE, replaceTextWithEmote);
   },
 
   turnOff() {
-    window.QueUp.Events.unbind("realtime:chat-message", replaceTextWithEmote);
+    window.QueUp.Events.unbind(CHAT_MESSAGE, replaceTextWithEmote);
   },
 };

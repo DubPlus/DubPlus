@@ -1,6 +1,7 @@
 import { notifyCheckPermission, showNotification } from "../../utils/notify";
 import { settings } from "../stores/settings.svelte";
 import { t } from "../stores/i18n.svelte";
+import { NEW_PM_MESSAGE } from "../../events-constants";
 
 /**
  *
@@ -46,7 +47,7 @@ export const pmNotifications = {
   turnOn() {
     notifyCheckPermission()
       .then(() => {
-        window.QueUp.Events.bind("realtime:new-message", pmNotify);
+        window.QueUp.Events.bind(NEW_PM_MESSAGE, pmNotify);
       })
       .catch((err) => {
         // turn back off until it's granted
@@ -54,6 +55,6 @@ export const pmNotifications = {
       });
   },
   turnOff() {
-    window.QueUp.Events.unbind("realtime:new-message", pmNotify);
+    window.QueUp.Events.unbind(NEW_PM_MESSAGE, pmNotify);
   },
 };
