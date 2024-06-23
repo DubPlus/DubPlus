@@ -1,3 +1,4 @@
+import { CHAT_MESSAGE } from "../../events-constants";
 import { t } from "../stores/i18n.svelte";
 import { settings } from "../stores/settings.svelte";
 
@@ -38,10 +39,10 @@ export const chatCleaner = {
     },
   },
   turnOn() {
-    window.QueUp.Events.bind("realtime:chat-message", chatCleanerCheck);
+    window.QueUp.Events.bind(CHAT_MESSAGE, chatCleanerCheck);
   },
 
   turnOff() {
-    window.QueUp.Events.unbind("realtime:chat-message", chatCleanerCheck);
+    window.QueUp.Events.unbind(CHAT_MESSAGE, chatCleanerCheck);
   },
 };

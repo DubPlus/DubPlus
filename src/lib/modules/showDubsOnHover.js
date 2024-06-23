@@ -1,6 +1,13 @@
 import { logError } from "../../utils/logger.js";
 import { isMod } from "../../utils/modcheck.js";
 import { dubsState } from "../stores/dubsState.svelte.js";
+import {
+  DUB,
+  GRAB,
+  PLAYLIST_UPDATE,
+  USER_LEAVE,
+} from "../../events-constants.js";
+import { activeDubs, userData } from "../api.js";
 
 /**
  * @param {string} userid
@@ -19,7 +26,7 @@ function getUserName(userid) {
     }
 
     // or try getting it via the API
-    fetch(`https://api.queup.dev/user/${userid}`)
+    fetch(userData(userid))
       .then((response) => response.json())
       .then((response) => {
         if (response?.userinfo?.username) {
@@ -102,7 +109,7 @@ function resetDubs() {
   dubsState.upDubs = [];
   dubsState.grabs = [];
 
-  const dubsURL = `https://api.queup.dev/room/${window.QueUp.room.model.id}/playlist/active/dubs`;
+  const dubsURL = activeDubs(window.QueUp.room.model.id);
   fetch(dubsURL)
     .then((response) => response.json())
     .then((response) => {
@@ -134,11 +141,8 @@ function dubWatcher(e) {
     dubsState.downDubs = dubsState.downDubs.filter(
       (el) => el.userid !== e.user._id
     );
-  } else if (e.dubtype === "downdub") {
-    if (
-      !dubsState.downDubs.find((el) => el.userid === e.user._id) &&
-      isMod(window.QueUp.session.id)
-    ) {
+  } else if (e.dubtype === "downdub" && isMod(window.QueUp.session.id)) {
+    if (!dubsState.downDubs.find((el) => el.userid === e.user._id)) {
       dubsState.downDubs.push({
         userid: e.user._id,
         username: e.user.username,
@@ -146,7 +150,7 @@ function dubWatcher(e) {
     }
 
     //Remove user from other dubtype if exists
-    dubsState.upDubs = dubsState.downDubs.filter(
+    dubsState.upDubs = dubsState.upDubs.filter(
       (el) => el.userid !== e.user._id
     );
   }
@@ -155,10 +159,12 @@ function dubWatcher(e) {
     Date.now() - window.QueUp.room.player.activeSong.attributes.song.played;
 
   // not sure why we are checking this, maybe to give the API time to update?
+  // if the song started less than 1 second ago, don't reset the dubs
   if (msSinceSongStart < 1000) {
     return;
   }
 
+  // if the dubs don't match the API, reset them
   if (
     dubsState.upDubs.length !==
     window.QueUp.room.player.activeSong.attributes.song.updubs
@@ -174,8 +180,7 @@ function dubWatcher(e) {
 }
 
 /**
- * @param {{dubtype: string; user: { _id: string; username: string}}} e
- * @returns
+ * @param {{user: { _id: string; username: string}}} e
  */
 function grabWatcher(e) {
   if (!dubsState.grabs.find((el) => el.userid === e.user._id)) {
@@ -186,6 +191,9 @@ function grabWatcher(e) {
   }
 }
 
+/**
+ * @param {{user: { _id: string; username: string}}} e
+ */
 function dubUserLeaveWatcher(e) {
   // remove from up dubs
   dubsState.upDubs = dubsState.upDubs.filter((el) => el.userid !== e.user._id);
@@ -207,28 +215,22 @@ export const showDubsOnHover = {
   category: "General",
   turnOn() {
     resetDubs();
-    window.QueUp.Events.bind("realtime:room_playlist-dub", dubWatcher);
-    window.QueUp.Events.bind(
-      "realtime:room_playlist-queue-update-grabs",
-      grabWatcher
-    );
-    window.QueUp.Events.bind("realtime:user-leave", dubUserLeaveWatcher);
-    window.QueUp.Events.bind("realtime:room_playlist-update", resetDubs);
+    window.QueUp.Events.bind(DUB, dubWatcher);
+    window.QueUp.Events.bind(GRAB, grabWatcher);
+    window.QueUp.Events.bind(USER_LEAVE, dubUserLeaveWatcher);
+    window.QueUp.Events.bind(PLAYLIST_UPDATE, resetDubs);
   },
 
   turnOff() {
-    window.QueUp.Events.unbind("realtime:room_playlist-dub", dubWatcher);
-    window.QueUp.Events.unbind(
-      "realtime:room_playlist-queue-update-grabs",
-      grabWatcher
-    );
-    window.QueUp.Events.unbind("realtime:user-leave", dubUserLeaveWatcher);
-    window.QueUp.Events.unbind("realtime:room_playlist-update", resetDubs);
+    window.QueUp.Events.unbind(DUB, dubWatcher);
+    window.QueUp.Events.unbind(GRAB, grabWatcher);
+    window.QueUp.Events.unbind(USER_LEAVE, dubUserLeaveWatcher);
+    window.QueUp.Events.unbind(PLAYLIST_UPDATE, resetDubs);
   },
 };
 
 /*******************************/
-
+/*
 dubshover.showDubsOnHover = function () {
   var that = this;
 
@@ -590,3 +592,4 @@ dubshover.showDubsOnHover = function () {
     });
   });
 };
+*/

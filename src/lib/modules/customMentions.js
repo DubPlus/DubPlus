@@ -1,3 +1,4 @@
+import { CHAT_MESSAGE } from "../../events-constants";
 import { settings } from "../stores/settings.svelte";
 /**
  * Custom Mentions
@@ -45,9 +46,9 @@ export const customMentions = {
   },
 
   turnOn() {
-    window.QueUp.Events.bind("realtime:chat-message", customMentionCheck);
+    window.QueUp.Events.bind(CHAT_MESSAGE, customMentionCheck);
   },
   turnOff() {
-    window.QueUp.Events.unbind("realtime:chat-message", customMentionCheck);
+    window.QueUp.Events.unbind(CHAT_MESSAGE, customMentionCheck);
   },
 };

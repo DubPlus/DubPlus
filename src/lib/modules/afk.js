@@ -1,5 +1,6 @@
 import { settings } from "../stores/settings.svelte";
 import { t } from "../stores/i18n.svelte";
+import { CHAT_MESSAGE } from "../../events-constants";
 /**
  * AFK -  Away from Keyboard
  * Toggles the afk auto response on/off
@@ -54,10 +55,10 @@ export const afk = {
   description: "dubplus-afk.description",
   category: "General",
   turnOn() {
-    window.QueUp.Events.bind("realtime:chat-message", afk_chat_respond);
+    window.QueUp.Events.bind(CHAT_MESSAGE, afk_chat_respond);
   },
   turnOff() {
-    window.QueUp.Events.unbind("realtime:chat-message", afk_chat_respond);
+    window.QueUp.Events.unbind(CHAT_MESSAGE, afk_chat_respond);
   },
   custom: {
     id: "customAfkMessage",

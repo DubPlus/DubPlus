@@ -21,6 +21,9 @@ export interface Song {
 
 export interface QueUp {
   session: {
+    /**
+     * This is the current logged in user's userid
+     */
     id: string;
     get: (name: string) => any;
   };
@@ -41,18 +44,22 @@ export interface QueUp {
       updateVolumeBar: () => void;
       activeSong: {
         get: (name: string) => Song;
-        // attributes.song.played
         attributes: {
           song: {
             played: number;
             updubs: number;
             downdubs: number;
+            userid: string;
+          };
+          songInfo: {
+            name: string;
           }
         }
       }
     };
     model: {
       get: (name: string) => any;
+      id: string;
     };
     // TODO: actually type this
     users: any;
@@ -89,7 +96,7 @@ interface LDB {
 }
 
 declare global {
-  interface Window { QueUp: QueUp; emojify: Emojify; ldb: LDB; }
+  interface Window { QueUp: QueUp; emojify: Emojify; ldb: LDB; snowStorm: any; }
 }
 
 // I had to move these here because it's used in multiple

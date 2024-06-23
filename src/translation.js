@@ -90,5 +90,24 @@ export const translations = {
     "dubplus-dubs-hover.label": "Show Dubs on Hover",
     "dubplus-dubs-hover.description":
       "Show who dubs a song when hovering over the dubs count",
+
+    "dubplus-downdubs.label": "Downdubs in Chat (mods only)",
+    "dubplus-downdubs.description":
+      "Toggle showing downdubs in the chat box (mods only)",
+    "dubplus-downdubs.chat-message":
+      "@{{username}} has downdubbed your song {{song_name}}",
+
+    "dubplus-updubs.label": "Updubs in Chat",
+    "dubplus-updubs.description": "Toggle showing updubs in the chat box",
+    "dubplus-updubs.chat-message":
+      "@{{username}} has updubbed your song {{song_name}}",
+
+    "dubplus-grabschat.label": "Grabs in Chat",
+    "dubplus-grabschat.description": "Toggle showing grabs in the chat box",
+    "dubplus-grabschat.chat-message":
+      "@{{username}} has grabbed your song {{song_name}}",
+
+    "dubplus-snow.label": "Snow",
+    "dubplus-snow.description": "Make it snow!",
   },
 };

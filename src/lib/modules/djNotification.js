@@ -1,3 +1,4 @@
+import { PLAYLIST_UPDATE } from "../../events-constants";
 import { logError, logInfo } from "../../utils/logger";
 import { showNotification } from "../../utils/notify";
 import { t } from "../stores/i18n.svelte";
@@ -69,15 +70,9 @@ export const djNotification = {
     },
   },
   turnOn() {
-    window.QueUp.Events.bind(
-      "realtime:room_playlist-update",
-      djNotificationCheck
-    );
+    window.QueUp.Events.bind(PLAYLIST_UPDATE, djNotificationCheck);
   },
   turnOff() {
-    window.QueUp.Events.unbind(
-      "realtime:room_playlist-update",
-      djNotificationCheck
-    );
+    window.QueUp.Events.unbind(PLAYLIST_UPDATE, djNotificationCheck);
   },
 };
