@@ -21,14 +21,18 @@ export const translations = {
       "Sorry this browser does not support desktop notifications.  Please update your browser to the lastest version",
 
     "Menu.title": "Dub+ Options",
-    "General.title": "General",
-    "Contact.title": "Contact",
-    "Contact.bugs": "Report bugs on Discord",
+    "general.title": "General",
+    "user-interface.title": "User Interface",
+    "settings.title": "Settings",
+    "customize.title": "Customize",
+    "contact.title": "Contact",
+    "contact.bugs": "Report bugs on Discord",
 
     "Switch.on": "On",
     "Switch.off": "Off",
 
     // this text is only read by screen readers but we should still translate it
+    // it is the label of the little pencil icon
     "MenuItem.edit": "Edit",
 
     "dubplus-autovote.label": "Autovote",
@@ -109,5 +113,39 @@ export const translations = {
 
     "dubplus-snow.label": "Snow",
     "dubplus-snow.description": "Make it snow!",
+
+    "dubplus-rain.label": "Rain",
+    "dubplus-rain.description": "Make it rain!",
+
+    "dubplus-fullscreen.label": "Fullscreen",
+    "dubplus-fullscreen.description": "Toggle fullscreen video mode",
+
+    "dubplus-split-chat.label": "Split Chat",
+    "dubplus-split-chat.description": "Toggle Split Chat UI enhancement",
+
+    "dubplus-video-only.label": "Hide Chat",
+    "dubplus-video-only.description": "Toggles hiding the chat box",
+
+    "dubplus-chat-only.label": "Hide Video",
+    "dubplus-chat-only.description": "Toggles hiding the video box",
+
+    "dubplus-hide-avatars.label": "Hide Avatars",
+    "dubplus-hide-avatars.description":
+      "Toggle hiding user avatars in the chat box",
+
+    "dubplus-hide-bg.label": "Hide Background",
+    "dubplus-hide-bg.description": "Toggle hiding background image",
+
+    "dubplus-show-timestamp.label": "Show Timestamps",
+    "dubplus-show-timestamp.description":
+      "Toggle always showing chat message timestamps",
+
+    "dubplus-spacebar-mute.label": "Spacebar Mute",
+    "dubplus-spacebar-mute.description":
+      "Turn on/off the ability to mute current song with the spacebar",
+
+    "warn_redirect.label": "Warn on Navigation",
+    "warn_redirect.description":
+      "Warns you when accidentally clicking on a link that takes you out of QueUp",
   },
 };

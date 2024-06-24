@@ -3,13 +3,13 @@
   import MenuSection from "../menu/MenuSection.svelte";
   import MenuItem from "../menu/MenuSwitch.svelte";
   import { saveSetting } from "../stores/settings.svelte";
-  import { general } from "../modules";
+  import { settings as settingsModules } from "../modules";
   import { t } from "../stores/i18n.svelte";
 </script>
 
-<MenuHeader settingsId="general" name={t("general.title")} />
-<MenuSection settingsId="general">
-  {#each general as module}
+<MenuHeader settingsId="settings" name={t("settings.title")} />
+<MenuSection settingsId="settings">
+  {#each settingsModules as module}
     <MenuItem
       id={module.id}
       label={module.label}
