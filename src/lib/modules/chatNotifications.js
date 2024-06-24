@@ -10,11 +10,13 @@ function notifyOnMention(e) {
   const user = window.QueUp.session.get("username").toLowerCase();
   let mentionTriggers = ["@" + user];
 
+  const customMentions = settings.options["custom-mentions"];
+
   // is custom mentions enabled AND user has entered text in the custom mentions modal
-  if (settings.options.custom_mentions && settings.custom.custom_mentions) {
+  if (customMentions?.enabled && customMentions?.value) {
     //add custom mention triggers to array
     mentionTriggers = mentionTriggers
-      .concat(settings.custom.custom_mentions.split(","))
+      .concat(customMentions.value.split(","))
       .map((v) => v.trim());
   }
 
@@ -39,10 +41,10 @@ function notifyOnMention(e) {
  * @type {import("./module").DubPlusModule}
  */
 export const chatNotifications = {
-  id: "mention_notifications",
-  label: "mention_notifications.label",
-  description: "mention_notifications.description",
-  category: "General",
+  id: "mention-notifications",
+  label: "mention-notifications.label",
+  description: "mention-notifications.description",
+  category: "general",
 
   turnOn() {
     notifyCheckPermission()
@@ -51,7 +53,7 @@ export const chatNotifications = {
       })
       .catch(() => {
         // turn back off until it's granted
-        settings.options[this.id] = false;
+        settings.options[this.id].enabled = false;
       });
   },
 

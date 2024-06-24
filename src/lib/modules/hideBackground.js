@@ -5,9 +5,9 @@
  * @type {import("./module").DubPlusModule}
  */
 export const hideBackground = {
-  id: "dubplus-hide-bg",
-  label: "dubplus-hide-bg.label",
-  description: "dubplus-hide-bg.description",
+  id: "hide-bg",
+  label: "hide-bg.label",
+  description: "hide-bg.description",
   category: "user-interface",
   turnOn() {
     document.body.classList.add("dubplus-hide-bg");

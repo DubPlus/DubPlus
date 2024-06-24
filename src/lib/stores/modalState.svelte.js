@@ -7,6 +7,9 @@ export const modalState = $state({
   value: "",
   placeholder: "",
   maxlength: 999,
+  validation: () => {
+    return true;
+  },
   onConfirm: () => {
     return true;
   },
@@ -31,4 +34,5 @@ export function updateModalState(nextState) {
       return true;
     });
   modalState.onCancel = nextState.onCancel || (() => {});
+  modalState.validation = nextState.validation || (() => true);
 }

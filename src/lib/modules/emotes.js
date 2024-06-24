@@ -105,10 +105,10 @@ function replaceTextWithEmote() {
  * @type {import("./module").DubPlusModule}
  */
 export const emotes = {
-  id: "dubplus-emotes",
-  label: "dubplus-emotes.label",
-  description: "dubplus-emotes.description",
-  category: "General",
+  id: "emotes",
+  label: "emotes.label",
+  description: "emotes.description",
+  category: "general",
   turnOn() {
     dubplus_emoji
       .loadTwitchEmotes()

@@ -9,9 +9,9 @@ import { logInfo } from "../../utils/logger";
  * @type {import("./module").DubPlusModule}
  */
 export const fullscreen = {
-  id: "dubplus-fullscreen",
-  label: "dubplus-fullscreen.label",
-  description: "dubplus-fullscreen.description",
+  id: "fullscreen",
+  label: "fullscreen.label",
+  description: "fullscreen.description",
   category: "user-interface",
   altIcon: "arrows-alt",
   onClick() {

@@ -4,9 +4,9 @@
  * @type {import("./module").DubPlusModule}
  */
 export const hideAvatars = {
-  id: "dubplus-hide-avatars",
-  label: "dubplus-hide-avatars.label",
-  description: "dubplus-hide-avatars.description",
+  id: "hide-avatars",
+  label: "hide-avatars.label",
+  description: "hide-avatars.description",
   category: "user-interface",
   turnOn() {
     document.body.classList.add("dubplus-hide-avatars");

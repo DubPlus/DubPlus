@@ -15,9 +15,9 @@ function handleMute(e) {
  * @type {import("./module").DubPlusModule}
  */
 export const spacebarMute = {
-  id: "dubplus-spacebar-mute",
-  label: "dubplus-spacebar-mute.label",
-  description: "dubplus-spacebar-mute.description",
+  id: "spacebar-mute",
+  label: "spacebar-mute.label",
+  description: "spacebar-mute.description",
   category: "settings",
   turnOn() {
     document.addEventListener("keypress", handleMute);

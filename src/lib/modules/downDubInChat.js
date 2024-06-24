@@ -19,7 +19,7 @@ function downdubWatcher(e) {
   if (isUserTheDJ && e.dubtype === "downdub") {
     insertQueupChat(
       "dubplus-chat-system-downdub",
-      t("dubplus-downdubs.chat-message", {
+      t("downdubs-in-chat.chat-message", {
         username: e.user.username,
         song_name: window.QueUp.room.player.activeSong.attributes.songInfo.name,
       })
@@ -28,10 +28,10 @@ function downdubWatcher(e) {
 }
 
 export const downdubsInChat = {
-  id: "dubplus-downdubs",
-  label: "dubplus-downdubs.label",
-  description: "dubplus-downdubs.description",
-  category: "General",
+  id: "downdubs-in-chat",
+  label: "downdubs-in-chat.label",
+  description: "downdubs-in-chat.description",
+  category: "general",
   turnOn() {
     if (isMod(window.QueUp.session.id)) {
       window.QueUp.Events.bind("realtime:room_playlist-dub", downdubWatcher);

@@ -227,10 +227,10 @@ class RainEffect {
 }
 
 export const rain = {
-  id: "dubplus-rain",
-  label: "dubplus-rain.label",
-  description: "dubplus-rain.description",
-  category: "General",
+  id: "rain",
+  label: "rain.label",
+  description: "rain.description",
+  category: "general",
   turnOn() {
     this.rainEffect = new RainEffect();
     this.rainEffect.start();

@@ -14,7 +14,7 @@ function pmNotify(e) {
     return;
   }
   showNotification({
-    title: t("dubplus_pm_notifications.notification.title"),
+    title: t("pm-notifications.notification.title"),
     ignoreActiveTab: true,
     callback: function () {
       /**
@@ -40,10 +40,10 @@ function pmNotify(e) {
  * @type {import("./module").DubPlusModule}
  */
 export const pmNotifications = {
-  id: "dubplus_pm_notifications",
-  label: "dubplus_pm_notifications.label",
-  description: "dubplus_pm_notifications.description",
-  category: "General",
+  id: "pm-notifications",
+  label: "pm-notifications.label",
+  description: "pm-notifications.description",
+  category: "general",
   turnOn() {
     notifyCheckPermission()
       .then(() => {
@@ -51,7 +51,7 @@ export const pmNotifications = {
       })
       .catch((err) => {
         // turn back off until it's granted
-        settings.options[this.id] = false;
+        settings.options[this.id].enabled = false;
       });
   },
   turnOff() {

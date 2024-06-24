@@ -30,10 +30,10 @@ function afk_chat_respond(e) {
      */
     const chatInput = document.querySelector("#chat-txt-message");
 
-    if (settings.custom.customAfkMessage) {
-      chatInput.value = `[AFK] ${settings.custom.customAfkMessage}`;
+    if (settings.options.afk?.value) {
+      chatInput.value = `[AFK] ${settings.options.afk.value}`;
     } else {
-      chatInput.value = `[AFK] ${t("dubplus-afk.modal.placeholder")}`;
+      chatInput.value = `[AFK] ${t("afk.modal.placeholder")}`;
     }
 
     window.QueUp.room.chat.sendMessage();
@@ -50,10 +50,10 @@ function afk_chat_respond(e) {
  * @type {import("./module").DubPlusModule}
  */
 export const afk = {
-  id: "dubplus-afk",
-  label: "dubplus-afk.label",
-  description: "dubplus-afk.description",
-  category: "General",
+  id: "afk",
+  label: "afk.label",
+  description: "afk.description",
+  category: "general",
   turnOn() {
     window.QueUp.Events.bind(CHAT_MESSAGE, afk_chat_respond);
   },
@@ -62,9 +62,9 @@ export const afk = {
   },
   custom: {
     id: "customAfkMessage",
-    title: "dubplus-afk.modal.title",
-    content: "dubplus-afk.modal.content",
-    placeholder: "dubplus-afk.modal.placeholder",
+    title: "afk.modal.title",
+    content: "afk.modal.content",
+    placeholder: "afk.modal.placeholder",
     maxlength: 255,
   },
 };

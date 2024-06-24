@@ -5,7 +5,7 @@ import { settings } from "../stores/settings.svelte";
 function chatCleanerCheck() {
   const chatMessages = document.querySelectorAll("ul.chat-main > li");
 
-  const limit = parseInt(settings.custom.chat_cleaner, 10);
+  const limit = parseInt(settings.options["chat-cleaner"]?.value, 10);
 
   if (!chatMessages?.length || isNaN(limit) || chatMessages.length < limit) {
     return;
@@ -23,7 +23,7 @@ export const chatCleaner = {
   id: "chat-cleaner",
   label: "chat-cleaner.label",
   description: "chat-cleaner.description",
-  category: "General",
+  category: "general",
   custom: {
     id: "chat_cleaner",
     title: "chat-cleaner.modal.title",

@@ -12,7 +12,7 @@
    * @property {(state: boolean) => void} onToggle
    * @property {() => void} [init]
    * @property {import('../../global').ModalProps} [customize]
-   * 
+   *
    */
 
   /**
@@ -20,12 +20,10 @@
    */
   let { id, label, description, customize, onToggle, init } = $props();
 
-  let isOn = $state(settings.options[id] ? "ON" : "OFF");
-
   onMount(() => {
     if (init) init();
 
-    if (settings.options[id]) {
+    if (settings.options[id]?.enabled) {
       onToggle(true);
     }
   });
@@ -37,18 +35,16 @@
       content: t(customize.content),
       placeholder: t(customize.placeholder),
       maxlength: customize.maxlength,
-      value: settings.custom[customize.id] || "",
+      value: settings.options[id]?.value || "",
+      validation: customize.validation,
       onConfirm: (value) => {
-        if (
-          typeof customize.onConfirm === "function" &&
-          customize.onConfirm(value)
-        ) {
-          saveSetting("custom", customize.id, value);
+        saveSetting("custom", customize.id, value);
+        if (typeof customize.onConfirm === "function") {
+          customize.onConfirm(value);
         }
-        return true;
       },
       onCancel: () => {
-        modalState.open = false;
+        if (typeof customize.onCancel === "function") customize.onCancel();
       },
     });
 
@@ -56,14 +52,17 @@
   }
 </script>
 
-<li {id} title={`${isOn} - ${t(description)}`}>
+<li {id} title={t(description)}>
   <Switch
     label={t(label)}
     onToggle={(state) => {
+      if (customize && state === true && !settings.options[id]?.value) {
+          openEditModal();
+          return;
+      }
       onToggle(state);
-      isOn = state ? t("Switch.on") : t("Switch.off");
     }}
-    isOn={settings.options[id]}
+    isOn={settings.options[id]?.enabled}
   />
   {#if customize}
     <button onclick={openEditModal} type="button" class="fa fa-pencil">

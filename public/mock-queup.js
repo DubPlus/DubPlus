@@ -1,5 +1,13 @@
 /** @type {import('../src/global').QueUp} */
-const QueUp = {};
+const QueUp = {
+  room: {
+    chat: {
+      mentionChatSound: {
+        url: "/assets/music/user_ping.mp3",
+      },
+    },
+  },
+};
 
 window.QueUp = QueUp;
 
@@ -34,6 +42,9 @@ function addProperties() {
           this.events = events;
         },
         ncKeyDown: (e) => {},
+        mentionChatSound: {
+          url: "/assets/music/user_ping.mp3",
+        },
       },
       player: {
         muted_player: false,
@@ -94,3 +105,9 @@ function triggerEvent(eventName, data) {
     delete onceEvents[eventName];
   }
 }
+
+window.soundManager = {
+  canPlayURL: (url) => {
+    return url.startsWith("http");
+  },
+};
