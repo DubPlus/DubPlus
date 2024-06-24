@@ -2,10 +2,16 @@
   import MenuHeader from "../menu/MenuHeader.svelte";
   import MenuSection from "../menu/MenuSection.svelte";
   import MenuItem from "../menu/MenuSwitch.svelte";
-  import { saveSetting } from "../stores/settings.svelte";
+  import { saveSetting, settings } from "../stores/settings.svelte";
   import { userInterface } from "../modules";
   import { t } from "../stores/i18n.svelte";
   import MenuAction from "../menu/MenuAction.svelte";
+
+  userInterface.forEach((module) => {
+    if (!settings.options[module.id]?.enabled) {
+      settings.options[module.id] = { enabled: false };
+    };
+  });
 </script>
 
 <MenuHeader settingsId="user-interface" name={t("user-interface.title")} />

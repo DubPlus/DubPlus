@@ -14,6 +14,7 @@
   import Snow from "../satellites/Snow.svelte";
   import UserInterface from "../sections/UserInterface.svelte";
   import Settings from "../sections/Settings.svelte";
+  import Customize from "../sections/Customize.svelte";
 
   onMount(() => {
     loadExternalCss(
@@ -31,15 +32,15 @@
 <MenuIcon />
 <Snooze />
 <Eta />
-{#if settings.options["dubplus-autocomplete"]}
+{#if settings.options.autocomplete?.enabled}
   <EmojiPreview />
 {/if}
-{#if settings.options["dubplus-dubs-hover"]}
+{#if settings.options["dubs-hover"]?.enabled}
   <DubsInfo dubType="updub" />
   <DubsInfo dubType="downdub" />
   <DubsInfo dubType="grab" />
 {/if}
-{#if settings.options["dubplus-snow"]}
+{#if settings.options.snow?.enabled}
   <Snow />
 {/if}
 
@@ -49,6 +50,7 @@
   <General />
   <UserInterface />
   <Settings />
+  <Customize />
   <Contact />
 </section>
 

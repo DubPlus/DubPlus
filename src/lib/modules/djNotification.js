@@ -22,14 +22,14 @@ function djNotificationCheck(e) {
   if (isNaN(currentPosition)) {
     // this is important. if we can't parse it then we can't do anything
     logError(
-      "djNotification",
+      "dj-notification",
       "Could not parse current position:",
       currentPosition
     );
     return;
   }
 
-  let parseSetting = parseInt(settings.custom.dj_notification, 10);
+  let parseSetting = parseInt(settings.options["dj-notification"].value, 10);
   if (isNaN(parseSetting)) {
     // if this is NaN then we should default to 2
     parseSetting = 2;
@@ -38,8 +38,8 @@ function djNotificationCheck(e) {
 
   if (currentPosition <= parseSetting) {
     showNotification({
-      title: t("dj_notification.notification.title"),
-      content: t("dj_notification.notification.content"),
+      title: t("dj-notification.notification.title"),
+      content: t("dj-notification.notification.content"),
       ignoreActiveTab: true,
       wait: 10000,
     });
@@ -51,19 +51,19 @@ function djNotificationCheck(e) {
  * @type {import("./module").DubPlusModule}
  */
 export const djNotification = {
-  id: "dj_notification",
-  label: "dj_notification.label",
-  description: "dj_notification.description",
-  category: "General",
+  id: "dj-notification",
+  label: "dj-notification.label",
+  description: "dj-notification.description",
+  category: "general",
   custom: {
-    id: "dj_notification",
-    title: "dj_notification.modal.title",
-    content: "dj_notification.modal.content",
+    id: "dj-notification",
+    title: "dj-notification.modal.title",
+    content: "dj-notification.modal.content",
     placeholder: "2",
     maxlength: 2,
     onConfirm: (value) => {
       if (/[^0-9]+/.test(value.trim())) {
-        window.alert(t("dj_notification.modal.validation"));
+        window.alert(t("dj-notification.modal.validation"));
         return false;
       }
       return true;

@@ -9,10 +9,10 @@ function voteCheck() {
  * @type {import("./module").DubPlusModule}
  */
 export const autovote = {
-  id: "dubplus-autovote",
-  label: "dubplus-autovote.label",
-  description: "dubplus-autovote.description",
-  category: "General",
+  id: "autovote",
+  label: "autovote.label",
+  description: "autovote.description",
+  category: "general",
   turnOff() {
     window.QueUp.Events.unbind(PLAYLIST_UPDATE, voteCheck);
   },

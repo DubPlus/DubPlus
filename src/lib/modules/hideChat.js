@@ -6,9 +6,9 @@
  * @type {import("./module").DubPlusModule}
  */
 export const hideChat = {
-  id: "dubplus-video-only",
-  label: "dubplus-video-only.label",
-  description: "dubplus-video-only.description",
+  id: "hide-chat",
+  label: "hide-chat.label",
+  description: "hide-chat.description",
   category: "user-interface",
   turnOn() {
     document.body.classList.add("dubplus-video-only");

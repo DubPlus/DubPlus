@@ -13,9 +13,9 @@ function unloader(e) {
  * @type {import("./module").DubPlusModule}
  */
 export const warnOnNavigation = {
-  id: "warn_redirect",
-  label: "warn_redirect.label",
-  description: "warn_redirect.description",
+  id: "warn-redirect",
+  label: "warn-redirect.label",
+  description: "warn-redirect.description",
   category: "settings",
   turnOn() {
     window.addEventListener("beforeunload", unloader);

@@ -3,6 +3,8 @@
   import { modalState } from "./stores/modalState.svelte";
   import { t } from "./stores/i18n.svelte";
 
+  let errorMessage = $state('');
+
   /** @type {HTMLDialogElement} */
   let dialog; // Reference to the dialog tag
 
@@ -36,6 +38,9 @@
       >
       </textarea>
     {/if}
+    {#if errorMessage}
+      <p class="dp-modal--error">{errorMessage}</p>
+    {/if}
   </div>
   <div class="dp-modal--buttons buttons">
     {#if typeof modalState.onConfirm === "function"}
@@ -48,9 +53,15 @@
       >
       <button
         onclick={() => {
-          dialog.close();
-          modalState.open = false;
-          modalState.onConfirm(modalState.value);
+          const isValidOrErrorMessage = modalState.validation(modalState.value);
+          if (isValidOrErrorMessage === true) {
+            dialog.close();
+            modalState.open = false;
+            modalState.onConfirm(modalState.value);
+            errorMessage = '';
+          } else {
+            errorMessage = isValidOrErrorMessage
+          }
         }}
         class="dp-modal--confirm confirm">{t("Modal.confirm")}</button
       >
@@ -59,6 +70,7 @@
         onclick={() => {
           dialog.close();
           modalState.open = false;
+          errorMessage = '';
         }}
         class="dp-modal--cancel cancel">{t("Modal.close")}</button
       >
@@ -109,6 +121,10 @@
     border: transparent;
     font-size: inherit;
     resize: vertical;
+  }
+
+  .dp-modal--error {
+    color: red;
   }
 
   .buttons {

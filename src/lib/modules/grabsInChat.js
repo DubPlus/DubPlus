@@ -19,7 +19,7 @@ function grabChatWatcher(e) {
   if (isUserTheDJ && !window.QueUp.room.model.get("displayUserGrab")) {
     insertQueupChat(
       "dubplus-chat-system-updub",
-      t("dubplus-grabschat.chat-message", {
+      t("grabs-in-chat.chat-message", {
         username: e.user.username,
         song_name: window.QueUp.room.player.activeSong.attributes.songInfo.name,
       })
@@ -28,10 +28,10 @@ function grabChatWatcher(e) {
 }
 
 export const grabsInChat = {
-  id: "dubplus-grabschat",
-  label: "dubplus-grabschat.label",
-  description: "dubplus-grabschat.description",
-  category: "General",
+  id: "grabs-in-chat",
+  label: "grabs-in-chat.label",
+  description: "grabs-in-chat.description",
+  category: "general",
   turnOn() {
     window.QueUp.Events.bind(
       "realtime:room_playlist-queue-update-grabs",

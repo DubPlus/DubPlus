@@ -12,12 +12,13 @@ import { settings } from "../stores/settings.svelte";
  * @param {{message: string, user: import('../../global.d.ts').QueUpUser}} e
  */
 function customMentionCheck(e) {
+  const customMentionsSettings = settings.options["custom-mentions"];
   if (
-    settings.custom.custom_mentions &&
+    customMentionsSettings?.enabled &&
     // we only want to play the sound if the message is not from the current user
     window.QueUp.session.id !== e.user.userInfo.userid
   ) {
-    const customMentions = settings.custom.custom_mentions.split(",");
+    const customMentions = customMentionsSettings.value.split(",");
     const shouldPlaySound = customMentions.some(function (v) {
       const reg = new RegExp("\\b" + v.trim() + "\\b", "i");
       return reg.test(e.message);
@@ -33,15 +34,15 @@ function customMentionCheck(e) {
  * @type {import('./module').DubPlusModule}
  */
 export const customMentions = {
-  id: "custom_mentions",
-  label: "custom_mentions.label",
-  description: "custom_mentions.description",
-  category: "General",
+  id: "custom-mentions",
+  label: "custom-mentions.label",
+  description: "custom-mentions.description",
+  category: "general",
   custom: {
-    id: "custom_mentions",
-    title: "custom_mentions.modal.title",
-    content: "custom_mentions.modal.content",
-    placeholder: "custom_mentions.modal.placeholder",
+    id: "custom-mentions",
+    title: "custom-mentions.modal.title",
+    content: "custom-mentions.modal.content",
+    placeholder: "custom-mentions.modal.placeholder",
     maxlength: 255,
   },
 

@@ -68,7 +68,7 @@ function checkInput(e) {
     // start filtering emojis
     const list = dubplus_emoji.findMatchingEmotes(
       str.substring(1).trim(),
-      settings.options["dubplus-autocomplete"]
+      settings.options.autocomplete.enabled
     );
     setEmojiList(list);
   } else {
@@ -142,10 +142,10 @@ function chatInputKeydownFunc(e) {
  * @type {import("./module").DubPlusModule}
  */
 export const autocomplete = {
-  id: "dubplus-autocomplete",
-  label: "dubplus-autocomplete.label",
-  category: "General",
-  description: "dubplus-autocomplete.description",
+  id: "autocomplete",
+  label: "autocomplete.label",
+  category: "general",
+  description: "autocomplete.description",
   turnOn() {
     acPreview = document.querySelector("#autocomplete-preview");
     reset();

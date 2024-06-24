@@ -35,6 +35,7 @@ export interface QueUp {
       ncKeyDown: (e: Partial<KeyboardEvent>) => void;
       mentionChatSound: {
         play: () => void;
+        url: string;
       }
     };
     player: {
@@ -96,7 +97,14 @@ interface LDB {
 }
 
 declare global {
-  interface Window { QueUp: QueUp; emojify: Emojify; ldb: LDB; snowStorm: any; }
+  interface Window { 
+    QueUp: QueUp; 
+    emojify: Emojify; 
+    ldb: LDB; 
+    soundManager: {
+      canPlayURL: (url: string) => boolean;
+    };
+  }
 }
 
 // I had to move these here because it's used in multiple
@@ -108,11 +116,19 @@ export interface ModalProps {
   value?: string;
   placeholder?: string;
   maxlength?: number;
-  onConfirm?: (value: string) => boolean;
+  /**
+   * 
+   * @param value The value of the input
+   * @returns true = validation passed, string = error message
+   */
+  validation?: (value: string) => string | true;
+  /**
+   * Callback for when the modal is confirmed
+   */
+  onConfirm?: (value: string) => void;
   /**
    * Callback for when the modal is closed
-   * either via cancel or confirm without editing
-   * (for informational modals)
+   * either via "cancel" or "ok" button for informational modals
    */
   onCancel?: () => void;
   open?: boolean;

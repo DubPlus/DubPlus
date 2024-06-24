@@ -19,7 +19,7 @@ function updubWatcher(e) {
   if (isUserTheDJ && e.dubtype === "updub") {
     insertQueupChat(
       "dubplus-chat-system-updub",
-      t("dubplus-updubs.chat-message", {
+      t("updubs-in-chat.chat-message", {
         username: e.user.username,
         song_name: window.QueUp.room.player.activeSong.attributes.songInfo.name,
       })
@@ -28,10 +28,10 @@ function updubWatcher(e) {
 }
 
 export const upDubInChat = {
-  id: "dubplus-updubs",
-  label: "dubplus-updubs.label",
-  description: "dubplus-updubs.description",
-  category: "General",
+  id: "updubs-in-chat",
+  label: "updubs-in-chat.label",
+  description: "updubs-in-chat.description",
+  category: "general",
   turnOn() {
     window.QueUp.Events.bind("realtime:room_playlist-dub", updubWatcher);
   },

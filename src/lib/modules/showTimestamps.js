@@ -4,9 +4,9 @@
  * @type {import("./module").DubPlusModule}
  */
 export const showTimestamps = {
-  id: "dubplus-show-timestamp",
-  label: "dubplus-show-timestamp.label",
-  description: "dubplus-show-timestamp.description",
+  id: "show-timestamps",
+  label: "show-timestamps.label",
+  description: "show-timestamps.description",
   category: "user-interface",
   turnOn() {
     document.body.classList.add("dubplus-show-timestamp");

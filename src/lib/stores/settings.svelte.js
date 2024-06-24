@@ -1,15 +1,27 @@
-import { logError } from "../../utils/logger";
+import { logError, logInfo } from "../../utils/logger";
+import { migrate } from "../../utils/settings-migrate-v2";
 
-const STORAGE_KEY = "dubplusUserSettings";
+const STORAGE_KEY_OLD = "dubplusUserSettings";
+const STORAGE_KEY_NEW = "dubplusUserSettingsV2";
 
 /**
  * @typedef {object} Settings
+ * @property {{[key: string]: {enabled: boolean; value?: string}}} options
+ * @property {{[key: string]: string}} menu will be either "open" or "closed"
+ * @property {string} srcRoot
+ */
+
+/**
+ * @typedef {object} OldSettings
  * @property {{[key: string]: boolean}} options
  * @property {{[key: string]: string}} menu will be either "open" or "closed"
  * @property {{[key: string]: string}} custom
  * @property {string} srcRoot
  */
 
+/**
+ * @type {Settings}
+ */
 const defaults = {
   // this will store all the on/off states
   options: {},
@@ -23,21 +35,40 @@ const defaults = {
     contact: "open",
   },
 
-  // this will store custom strings for options like custom css, afk message, etc
-  custom: {},
-
   // this will store the domain and path to some dubplus assets
   srcRoot: "",
 };
 
-// load saved settings from local storage on startup
-let savedSettings = {};
-try {
-  savedSettings = JSON.parse(localStorage.getItem(STORAGE_KEY));
-} catch (e) {
-  logError("Error parsing user settings", e);
+/**
+ * @return {Settings}
+ */
+function loadSettings() {
+  // try loading the v2 settings first
+  // if that doesn't exist, try the old settings and migrate them
+
+  try {
+    const v2Settings = JSON.parse(localStorage.getItem(STORAGE_KEY_NEW));
+    if (v2Settings) {
+      return /**@type {Settings}*/ (v2Settings);
+    }
+  } catch (e) {
+    logInfo("Error loading v2 settings", e);
+  }
+
+  try {
+    const oldSettings = JSON.parse(localStorage.getItem(STORAGE_KEY_OLD));
+    if (oldSettings) {
+      return migrate(/**@type {OldSettings}*/ (oldSettings));
+    }
+  } catch (e) {
+    logInfo("Error loading old settings", e);
+  }
+
+  // @ts-ignore this will get merged with the defaults
+  return {};
 }
-const intialSettings = Object.assign({}, defaults, savedSettings);
+
+const intialSettings = Object.assign({}, defaults, loadSettings());
 
 intialSettings.srcRoot = import.meta.env.RESOURCE_URL;
 
@@ -48,9 +79,10 @@ export let settings = $state(intialSettings);
 
 function persist() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    // we always store to the newer version of the settings
+    localStorage.setItem(STORAGE_KEY_NEW, JSON.stringify(settings));
   } catch (e) {
-    logError("Error saving user settings", e);
+    logError("Error saving user settings:", e);
   }
 }
 
@@ -61,18 +93,23 @@ function persist() {
  * @param {any} value
  */
 export function saveSetting(section, property, value) {
-  switch (section) {
-    case "option":
-      settings.options[property] = value;
-      break;
-    case "menu":
-      settings.menu[property] = value;
-      break;
-    case "custom":
-      settings.custom[property] = value;
-      break;
-    default:
-      throw new Error(`Invalid section ${section}`);
+  if (section === "option") {
+    settings.options[property].enabled = value;
+    persist();
+    return;
   }
-  persist();
+
+  if (section === "custom") {
+    settings.options[property].value = value;
+    persist();
+    return;
+  }
+
+  if (section === "menu") {
+    settings.menu[property] = value;
+    persist();
+    return;
+  }
+
+  throw new Error(`Invalid section: "${section}"`);
 }

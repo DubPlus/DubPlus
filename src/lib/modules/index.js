@@ -22,6 +22,10 @@ import { hideBackground } from "./hideBackground";
 import { showTimestamps } from "./showTimestamps";
 import { spacebarMute } from "./spacebarMute";
 import { warnOnNavigation } from "./warnOnNavigation";
+import { communityTheme } from "./communityTheme";
+import { customCss } from "./customCSS";
+import { customBackground } from "./customBackground";
+import { customNotificationSound } from "./customNotificationSound";
 
 /**
  * @type {import("./module").DubPlusModule[]}
@@ -65,4 +69,9 @@ export const settings = [spacebarMute, warnOnNavigation];
 /**
  * @type {import("./module").DubPlusModule[]}
  */
-export const customize = [];
+export const customize = [
+  communityTheme,
+  customCss,
+  customBackground,
+  customNotificationSound,
+];

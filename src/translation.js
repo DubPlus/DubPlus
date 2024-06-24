@@ -35,32 +35,30 @@ export const translations = {
     // it is the label of the little pencil icon
     "MenuItem.edit": "Edit",
 
-    "dubplus-autovote.label": "Autovote",
-    "dubplus-autovote.description": "Toggles auto upvoting for every song",
+    "autovote.label": "Autovote",
+    "autovote.description": "Toggles auto upvoting for every song",
 
-    "dubplus-afk.label": "AFK Auto-respond",
-    "dubplus-afk.description":
-      "Toggle Away from Keyboard and customize AFK message.",
-    "dubplus-afk.modal.title": "Custom AFK Message",
-    "dubplus-afk.modal.content":
+    "afk.label": "AFK Auto-respond",
+    "afk.description": "Toggle Away from Keyboard and customize AFK message.",
+    "afk.modal.title": "Custom AFK Message",
+    "afk.modal.content":
       "Enter a custom Away From Keyboard [AFK] message here. Message will be prefixed with '[AFK]'",
-    "dubplus-afk.modal.placeholder": "Be right back!",
+    "afk.modal.placeholder": "Be right back!",
 
-    "dubplus-emotes.label": "Emotes",
-    "dubplus-emotes.description":
-      "Adds Twitch, Bttv, and FrankerFacez emotes in chat.",
+    "emotes.label": "Emotes",
+    "emotes.description": "Adds Twitch, Bttv, and FrankerFacez emotes in chat.",
 
-    "dubplus-autocomplete.label": "Autocomplete Emoji",
-    "dubplus-autocomplete.description":
+    "autocomplete.label": "Autocomplete Emoji",
+    "autocomplete.description":
       "Toggle autocompleting emojis and emotes. Shows a preview box in the chat",
 
-    "custom_mentions.label": "Custom Mentions",
-    "custom_mentions.description":
+    "custom-mentions.label": "Custom Mentions",
+    "custom-mentions.description":
       "Toggle using custom mentions to trigger sounds in chat",
-    "custom_mentions.modal.title": "Custom Mentions",
-    "custom_mentions.modal.content":
+    "custom-mentions.modal.title": "Custom Mentions",
+    "custom-mentions.modal.content":
       "Add your custom mention triggers here (separate by comma)",
-    "custom_mentions.modal.placeholder":
+    "custom-mentions.modal.placeholder":
       "separate, custom mentions, by, comma, :heart:",
 
     "chat-cleaner.label": "Chat Cleaner",
@@ -71,81 +69,108 @@ export const translations = {
       "Please specify the number of most recent chat items that will remain in your chat history",
     "chat-cleaner.modal.validation": "Please enter a valid number",
 
-    "mention_notifications.label": "Notification on Mentions",
-    "mention_notifications.description":
+    "mention-notifications.label": "Notification on Mentions",
+    "mention-notifications.description":
       "Enable desktop notifications when a user mentions you in chat",
 
-    "dubplus_pm_notifications.label": "Notification on PM",
-    "dubplus_pm_notifications.description":
+    "pm-notifications.label": "Notification on PM",
+    "pm-notifications.description":
       "Enable desktop notifications when a user receives a private message",
-    "dubplus_pm_notifications.notification.title": "You have a new PM",
+    "pm-notifications.notification.title": "You have a new PM",
 
-    "dj_notification.label": "DJ Notification",
-    "dj_notification.description":
+    "dj-notification.label": "DJ Notification",
+    "dj-notification.description":
       "Get a notification when you are coming up to be the DJ",
-    "dj_notification.modal.title": "DJ Notification",
-    "dj_notification.modal.content":
+    "dj-notification.modal.title": "DJ Notification",
+    "dj-notification.modal.content":
       "Please specify the position in queue you want to be notified at",
-    "dj_notification.notification.title": "DJ Alert!",
-    "dj_notification.notification.content":
+    "dj-notification.notification.title": "DJ Alert!",
+    "dj-notification.notification.content":
       "You will be DJing shortly! Make sure your song is set!",
-    "dj_notification.modal.validation": "Please enter a valid number",
+    "dj-notification.modal.validation": "Please enter a valid number",
 
-    "dubplus-dubs-hover.label": "Show Dubs on Hover",
-    "dubplus-dubs-hover.description":
+    "dubs-hover.label": "Show Dubs on Hover",
+    "dubs-hover.description":
       "Show who dubs a song when hovering over the dubs count",
 
-    "dubplus-downdubs.label": "Downdubs in Chat (mods only)",
-    "dubplus-downdubs.description":
+    "downdubs-in-chat.label": "Downdubs in Chat (mods only)",
+    "downdubs-in-chat.description":
       "Toggle showing downdubs in the chat box (mods only)",
-    "dubplus-downdubs.chat-message":
+    "downdubs-in-chat.chat-message":
       "@{{username}} has downdubbed your song {{song_name}}",
 
-    "dubplus-updubs.label": "Updubs in Chat",
-    "dubplus-updubs.description": "Toggle showing updubs in the chat box",
-    "dubplus-updubs.chat-message":
+    "updubs-in-chat.label": "Updubs in Chat",
+    "updubs-in-chat.description": "Toggle showing updubs in the chat box",
+    "updubs-in-chat.chat-message":
       "@{{username}} has updubbed your song {{song_name}}",
 
-    "dubplus-grabschat.label": "Grabs in Chat",
-    "dubplus-grabschat.description": "Toggle showing grabs in the chat box",
-    "dubplus-grabschat.chat-message":
+    "grabs-in-chat.label": "Grabs in Chat",
+    "grabs-in-chat.description": "Toggle showing grabs in the chat box",
+    "grabs-in-chat.chat-message":
       "@{{username}} has grabbed your song {{song_name}}",
 
-    "dubplus-snow.label": "Snow",
-    "dubplus-snow.description": "Make it snow!",
+    "snow.label": "Snow",
+    "snow.description": "Make it snow!",
 
-    "dubplus-rain.label": "Rain",
-    "dubplus-rain.description": "Make it rain!",
+    "rain.label": "Rain",
+    "rain.description": "Make it rain!",
 
-    "dubplus-fullscreen.label": "Fullscreen",
-    "dubplus-fullscreen.description": "Toggle fullscreen video mode",
+    "fullscreen.label": "Fullscreen",
+    "fullscreen.description": "Toggle fullscreen video mode",
 
-    "dubplus-split-chat.label": "Split Chat",
-    "dubplus-split-chat.description": "Toggle Split Chat UI enhancement",
+    "split-chat.label": "Split Chat",
+    "split-chat.description": "Toggle Split Chat UI enhancement",
 
-    "dubplus-video-only.label": "Hide Chat",
-    "dubplus-video-only.description": "Toggles hiding the chat box",
+    "hide-chat.label": "Hide Chat",
+    "hide-chat.description": "Toggles hiding the chat box",
 
-    "dubplus-chat-only.label": "Hide Video",
-    "dubplus-chat-only.description": "Toggles hiding the video box",
+    "hide-video.label": "Hide Video",
+    "hide-video.description": "Toggles hiding the video box",
 
-    "dubplus-hide-avatars.label": "Hide Avatars",
-    "dubplus-hide-avatars.description":
-      "Toggle hiding user avatars in the chat box",
+    "hide-avatars.label": "Hide Avatars",
+    "hide-avatars.description": "Toggle hiding user avatars in the chat box",
 
-    "dubplus-hide-bg.label": "Hide Background",
-    "dubplus-hide-bg.description": "Toggle hiding background image",
+    "hide-bg.label": "Hide Background",
+    "hide-bg.description": "Toggle hiding background image",
 
-    "dubplus-show-timestamp.label": "Show Timestamps",
-    "dubplus-show-timestamp.description":
+    "show-timestamps.label": "Show Timestamps",
+    "show-timestamps.description":
       "Toggle always showing chat message timestamps",
 
-    "dubplus-spacebar-mute.label": "Spacebar Mute",
-    "dubplus-spacebar-mute.description":
+    "spacebar-mute.label": "Spacebar Mute",
+    "spacebar-mute.description":
       "Turn on/off the ability to mute current song with the spacebar",
 
-    "warn_redirect.label": "Warn on Navigation",
-    "warn_redirect.description":
+    "warn-redirect.label": "Warn on Navigation",
+    "warn-redirect.description":
       "Warns you when accidentally clicking on a link that takes you out of QueUp",
+
+    "community-theme.label": "Community Theme",
+    "community-theme.description": "Toggle Community CSS theme",
+
+    "custom-css.label": "Custom CSS",
+    "custom-css.description": "Add your own custom CSS.",
+    "custom-css.modal.title": "Custom CSS",
+    "custom-css.modal.content": "Enter a url location for your custom css",
+    "custom-css.modal.placeholder": "https://example.com/example.css",
+    "custom-css.modal.validation": "Invalid URL",
+
+    "custom-bg.label": "Custom Background",
+    "custom-bg.description": "Add your own custom background.",
+    "custom-bg.modal.title": "Custom Background Image",
+    "custom-bg.modal.content":
+      "Enter the full URL of an image. We recommend using a .jpg file. Leave blank to remove the current background image",
+    "custom-bg.modal.placeholder": "https://example.com/big-image.jpg",
+
+    "custom-notification-sound.label": "Custom Notification Sound",
+    "custom-notification-sound.description":
+      "Change the notification sound to a custom one.",
+    "custom-notification-sound.modal.title": "Custom Notification Sound",
+    "custom-notification-sound.modal.content":
+      "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to QueUp's default sound",
+    "custom-notification-sound.modal.placeholder":
+      "https://example.com/sweet-sound.mp3",
+    "custom-notification-sound.modal.validation":
+      "Can't play sound from this URL. Please enter a valid URL to an MP3 file.",
   },
 };

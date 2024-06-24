@@ -1,22 +1,22 @@
 <script>
   import MenuHeader from "../menu/MenuHeader.svelte";
   import MenuSection from "../menu/MenuSection.svelte";
-  import MenuItem from "../menu/MenuSwitch.svelte";
+  import MenuSwitch from "../menu/MenuSwitch.svelte";
   import { saveSetting, settings } from "../stores/settings.svelte";
-  import { general } from "../modules";
+  import { customize } from "../modules";
   import { t } from "../stores/i18n.svelte";
 
-  general.forEach((module) => {
+  customize.forEach((module) => {
     if (!settings.options[module.id]?.enabled) {
       settings.options[module.id] = { enabled: false };
     };
   });
 </script>
 
-<MenuHeader settingsId="general" name={t("general.title")} />
-<MenuSection settingsId="general">
-  {#each general as module}
-    <MenuItem
+<MenuHeader settingsId="customize" name={t("customize.title")} />
+<MenuSection settingsId="customize">
+  {#each customize as module}
+    <MenuSwitch
       id={module.id}
       label={module.label}
       description={module.description}
