@@ -12,6 +12,8 @@
   import DubsInfo from "../satellites/DubsInfo.svelte";
   import { settings } from "../stores/settings.svelte";
   import Snow from "../satellites/Snow.svelte";
+  import UserInterface from "../sections/UserInterface.svelte";
+  import Settings from "../sections/Settings.svelte";
 
   onMount(() => {
     loadExternalCss(
@@ -45,6 +47,8 @@
 <section class="dubplus-menu">
   <p class="dubplus-menu-header">{t("Menu.title")}</p>
   <General />
+  <UserInterface />
+  <Settings />
   <Contact />
 </section>
 

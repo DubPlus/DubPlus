@@ -12,7 +12,20 @@ import { downdubsInChat } from "./downDubInChat";
 import { upDubInChat } from "./upDubInChat";
 import { grabsInChat } from "./grabsInChat";
 import { snow } from "./snow";
+import { rain } from "./rain";
+import { fullscreen } from "./fullscreen";
+import { splitChat } from "./splitchat";
+import { hideChat } from "./hideChat";
+import { hideVideo } from "./hideVideo";
+import { hideAvatars } from "./hideAvatars";
+import { hideBackground } from "./hideBackground";
+import { showTimestamps } from "./showTimestamps";
+import { spacebarMute } from "./spacebarMute";
+import { warnOnNavigation } from "./warnOnNavigation";
 
+/**
+ * @type {import("./module").DubPlusModule[]}
+ */
 export const general = [
   autovote,
   afk,
@@ -28,4 +41,28 @@ export const general = [
   upDubInChat,
   grabsInChat,
   snow,
+  rain,
 ];
+
+/**
+ * @type {import("./module").DubPlusModule[]}
+ */
+export const userInterface = [
+  fullscreen,
+  splitChat,
+  hideChat,
+  hideVideo,
+  hideAvatars,
+  hideBackground,
+  showTimestamps,
+];
+
+/**
+ * @type {import("./module").DubPlusModule[]}
+ */
+export const settings = [spacebarMute, warnOnNavigation];
+
+/**
+ * @type {import("./module").DubPlusModule[]}
+ */
+export const customize = [];

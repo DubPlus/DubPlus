@@ -5,17 +5,18 @@
   import { modalState, updateModalState } from "../stores/modalState.svelte";
   import { t } from "../stores/i18n.svelte";
   /**
-   * @typedef {object} MenuItemProps
+   * @typedef {object} MenuSwitchProps
    * @property {string} id
    * @property {string} label
    * @property {string} description
    * @property {(state: boolean) => void} onToggle
    * @property {() => void} [init]
    * @property {import('../../global').ModalProps} [customize]
+   * 
    */
 
   /**
-   * @type {MenuItemProps}
+   * @type {MenuSwitchProps}
    */
   let { id, label, description, customize, onToggle, init } = $props();
 

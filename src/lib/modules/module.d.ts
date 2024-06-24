@@ -9,8 +9,8 @@ export interface DubPlusModule {
   label: string;
   description: string;
   category: string;
-  turnOff: () => void;
-  turnOn: () => void;
+  turnOff?: () => void;
+  turnOn?: () => void;
   /**
    * Optionally run some code when Dub+ is loaded
    */
@@ -20,6 +20,17 @@ export interface DubPlusModule {
    * if the feature has an edit modal, this object will be used to create the modal
    */
   custom?: ModalProps
+
+  /**
+   * If this is provided then instead of the menu item rendering
+   * a switch, it will render this icon instead.
+   */
+  altIcon?: string;
+  /**
+   * This pairs with the altIcon property. If this is provided then
+   * the altIcon will be clickable and this function will be called
+   */
+  onClick?: () => void;
 }
 
 

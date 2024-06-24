@@ -2,14 +2,15 @@
   import MenuHeader from "../menu/MenuHeader.svelte";
   import MenuSection from "../menu/MenuSection.svelte";
   import MenuLink from "../menu/MenuLink.svelte";
+  import { t } from "../stores/i18n.svelte";
 </script>
 
-<MenuHeader settingsId="contact" name="Contact" />
+<MenuHeader settingsId="contact" name={t("contact.title")} />
 <MenuSection settingsId="contact">
   <MenuLink
     icon="bug"
     href="https://discord.gg/XUkG3Qy"
-    text="Report bugs on Discord"
+    text={t("contact.bugs")}
   />
   <MenuLink
     icon="reddit-alien"
