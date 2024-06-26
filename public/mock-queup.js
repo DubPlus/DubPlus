@@ -1,11 +1,117 @@
+const CURRENT_USER_NAME = "demo-user";
+const CURRENT_USER_ID = "user-123";
+const ROOM_ID = "room-123";
+
 /** @type {import('../src/global').QueUp} */
 const QueUp = {
+  session: {
+    // id: CURRENT_USER_ID,
+    get(key) {
+      if (key === "username") {
+        return CURRENT_USER_NAME;
+      }
+    },
+  },
   room: {
     chat: {
+      sendMessage() {
+        const input = document.getElementById("chat-txt-message");
+        const message = input.value;
+        input.value = "";
+        /**
+         * @type {import('../src/global').ChatMessageEvent}
+         */
+        const chatMessage = {
+          message,
+          user: {
+            username: CURRENT_USER_NAME,
+            userInfo: {
+              userid: CURRENT_USER_ID,
+            },
+          },
+        };
+        makeChatMessage(message, chatMessage.user.username);
+        triggerEvent("realtime:chat-message", chatMessage);
+      },
+      events: {},
+      delegateEvents(events) {
+        console.log("delegateEvents", events);
+        this.events = events;
+      },
+      ncKeyDown: (e) => {},
       mentionChatSound: {
         url: "/assets/music/user_ping.mp3",
+        play() {
+          console.log("mentionChatSound.play");
+        },
       },
     },
+    player: {
+      muted_player: false,
+      mutePlayer() {
+        console.log("player muted");
+        this.muted_player = true;
+      },
+      setVolume(volume) {
+        console.log("setVolume", volume);
+        window.QueUp.playerController.volume = volume;
+      },
+      updateVolumeBar() {
+        console.log("updateVolumeBar");
+      },
+    },
+    model: {
+      id: ROOM_ID,
+    },
+    users: {
+      getIfOwner() {
+        return false;
+      },
+      getIfManager() {
+        return false;
+      },
+      getIfMod() {
+        return true;
+      },
+      collection: {
+        findWhere() {
+          return {
+            attributes: {
+              _user: {
+                username: CURRENT_USER_ID,
+              },
+            },
+          };
+        },
+      },
+    },
+  },
+  Events: {
+    bind(event, callback) {
+      console.log("bind", event);
+      events[event] = events[event] || [];
+      events[event].push(callback);
+    },
+    once(event, callback) {
+      console.log("once", event);
+      onceEvents[event] = onceEvents[event] || [];
+      onceEvents[event].push(callback);
+    },
+    unbind(event, callback) {
+      console.log("unbind", event);
+      if (events[event]) {
+        events[event] = events[event].filter((cb) => cb !== callback);
+      }
+    },
+  },
+  helpers: {
+    cookie: {},
+    isSiteAdmin() {
+      return false;
+    },
+  },
+  playerController: {
+    volume: 5,
   },
 };
 
@@ -24,69 +130,10 @@ const events = {};
 /** @type {{[eventName: string]: Array<(e: any) => void>}} */
 const onceEvents = {};
 
-// delay adding properties to the QueUp object
-// so we can see the loading spinner
+// this will force the loading spinner to show so we can
+// make sure that works
 function addProperties() {
-  const QueupProps = {
-    session: {
-      id: "user-123",
-    },
-    room: {
-      chat: {
-        sendMessage: () => {
-          console.log("sendMessage");
-        },
-        events: {},
-        delegateEvents: (events) => {
-          console.log("delegateEvents", events);
-          this.events = events;
-        },
-        ncKeyDown: (e) => {},
-        mentionChatSound: {
-          url: "/assets/music/user_ping.mp3",
-        },
-      },
-      player: {
-        muted_player: false,
-        mutePlayer: () => {
-          console.log("player muted");
-          this.muted_player = true;
-        },
-        setVolume: (volume) => {
-          console.log("setVolume", volume);
-          window.QueUp.playerController.volume = volume;
-        },
-        updateVolumeBar: () => {
-          console.log("updateVolumeBar");
-        },
-      },
-      model: {},
-      users: {},
-    },
-    Events: {
-      bind(event, callback) {
-        console.log("bind", event);
-        events[event] = events[event] || [];
-        events[event].push(callback);
-      },
-      once: (event, callback) => {
-        console.log("once", event);
-        onceEvents[event] = onceEvents[event] || [];
-        onceEvents[event].push(callback);
-      },
-      unbind: (event, callback) => {
-        console.log("unbind", event);
-        if (events[event]) {
-          events[event] = events[event].filter((cb) => cb !== callback);
-        }
-      },
-    },
-    helpers: { cookie: {} },
-    playerController: {
-      volume: 5,
-    },
-  };
-  Object.assign(QueUp, QueupProps);
+  window.QueUp.session.id = CURRENT_USER_ID;
 }
 window.setTimeout(addProperties, 2000);
 
@@ -111,3 +158,75 @@ window.soundManager = {
     return url.startsWith("http");
   },
 };
+
+/**
+ *
+ * @param {KeyboardEvent} e
+ */
+function onChatKeyUp(e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const message = e.target.value;
+    e.target.value = "";
+
+    const notSelf = message.trim().startsWith("user:");
+    /**
+     * @type {import('../src/global').ChatMessageEvent}
+     */
+    const chatMessage = {
+      message,
+      user: {
+        username: notSelf ? "different-user" : CURRENT_USER_NAME,
+        userInfo: {
+          userid: notSelf ? "user-456" : CURRENT_USER_ID,
+        },
+      },
+    };
+    makeChatMessage(message, chatMessage.user.username);
+    triggerEvent("realtime:chat-message", chatMessage);
+  }
+}
+
+document
+  .getElementById("chat-txt-message")
+  .addEventListener("keyup", onChatKeyUp);
+
+function makeChatMessage(message, username) {
+  const li = document.createElement("li");
+  li.classList.add("current-chat-user", "chat-id-abc-123");
+
+  li.innerHTML = `<div class="stream-item-content">
+        <div class="chatDelete">
+          <span class="icon-close"></span>
+        </div>
+        <div class="image_row">
+          <img
+            src="https://api.queup.net/user/654ee5a3a9d4e50006987572/image"
+            alt="${username}"
+            title="${username}"
+            class="cursor-pointer"
+          />
+        </div>
+        <div class="activity-row">
+          <div class="username">
+            <span class="user-role-icon"></span>${username}<span class="user-role"></span>
+          </div>
+          <div class="text">
+            <p>${message}</p>
+          </div>
+          <div class="meta-info">
+            <span class="username">${username} </span>
+              <i class="icon-dot"></i>
+              <span class="timeinfo">
+                <time
+                  class="timeago"
+                  datetime="2024-06-21T15:45:43.312Z"
+                  title="6/21/2024, 11:45:43 AM"
+                  >28 minutes ago</time>
+              </span>
+          </div>
+        </div>
+      </div>
+    `;
+  document.querySelector(".chat-main").appendChild(li);
+}

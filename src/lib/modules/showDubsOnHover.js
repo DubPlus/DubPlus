@@ -114,7 +114,7 @@ function resetDubs() {
     .then((response) => response.json())
     .then((response) => {
       updateUpdubs(response.data.upDubs);
-      updateGrabs(response.data.grabs);
+      // updateGrabs(response.data.grabs);
 
       //Only let mods or higher access down dubs
       if (isMod(window.QueUp.session.id)) {

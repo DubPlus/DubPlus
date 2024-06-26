@@ -11,7 +11,7 @@ let canSend = true;
 
 /**
  *
- * @param {{message: string, user : { userInfo: { userid: string}}}} e
+ * @param {import("../../global").ChatMessageEvent} e
  * @returns {void}
  */
 function afk_chat_respond(e) {
@@ -22,7 +22,7 @@ function afk_chat_respond(e) {
   const user = window.QueUp.session.get("username");
 
   if (
-    content.includes(`@ ${user}`) &&
+    content.includes(`@${user}`) &&
     window.QueUp.session.id !== e.user.userInfo.userid
   ) {
     /**
@@ -30,8 +30,8 @@ function afk_chat_respond(e) {
      */
     const chatInput = document.querySelector("#chat-txt-message");
 
-    if (settings.options.afk?.value) {
-      chatInput.value = `[AFK] ${settings.options.afk.value}`;
+    if (settings.options.afk?.custom) {
+      chatInput.value = `[AFK] ${settings.options.afk.custom}`;
     } else {
       chatInput.value = `[AFK] ${t("afk.modal.placeholder")}`;
     }
@@ -61,7 +61,6 @@ export const afk = {
     window.QueUp.Events.unbind(CHAT_MESSAGE, afk_chat_respond);
   },
   custom: {
-    id: "customAfkMessage",
     title: "afk.modal.title",
     content: "afk.modal.content",
     placeholder: "afk.modal.placeholder",

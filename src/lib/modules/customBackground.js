@@ -2,11 +2,8 @@
  * Custom Background
  * Add your own custom background
  */
-
-import { logError } from "../../utils/logger";
 import { t } from "../stores/i18n.svelte";
-import { modalState, updateModalState } from "../stores/modalState.svelte";
-import { saveSetting, settings } from "../stores/settings.svelte";
+import { settings } from "../stores/settings.svelte";
 
 /**
  *
@@ -30,7 +27,6 @@ export const customBackground = {
   description: "custom-bg.description",
   category: "customize",
   custom: {
-    id: "custom-bg",
     title: "custom-bg.modal.title",
     content: "custom-bg.modal.content",
     placeholder: "custom-bg.modal.placeholder",
@@ -46,18 +42,18 @@ export const customBackground = {
       return true;
     },
     onConfirm(value) {
-      document.querySelector(`.${this.id}`)?.remove();
+      document.querySelector(`.${customBackground.id}`)?.remove();
       if (!value) {
         // a blank value means the user wanted to remove the background image
         return;
       }
       // validation already happened so we can trust this value
-      document.body.appendChild(makeBGdiv(value, this.id));
+      document.body.appendChild(makeBGdiv(value, customBackground.id));
     },
   },
   turnOn() {
     document.querySelector(`.${this.id}`)?.remove();
-    const savedCustomBG = settings.options[this.id]?.value;
+    const savedCustomBG = settings.custom[this.id];
     if (savedCustomBG) {
       document.body.appendChild(makeBGdiv(savedCustomBG, this.id));
     }

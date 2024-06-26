@@ -1,5 +1,6 @@
 <script>
   import { teleport } from "../actions/teleport";
+  import { t } from "../stores/i18n.svelte";
   import { emojiState } from "./emojiState.svelte";
 
   $effect(() => {
@@ -36,7 +37,7 @@
       <span class="ac-text">{text}</span>
       {#if i === emojiState.selectedIndex}
         <span class="ac-list-press-enter">
-          press <kbd>enter</kbd> or <kbd>tab</kbd> to select
+          {t("autocomplete.preview.select")}
         </span>
       {/if}
     </li>

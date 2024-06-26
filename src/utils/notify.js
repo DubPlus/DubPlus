@@ -1,13 +1,12 @@
 /* global Dubtrack */
 import { updateModalState } from "../lib/stores/modalState.svelte";
 import { activeTabState } from "../lib/stores/activeTabState.svelte";
+import { t } from "../lib/stores/i18n.svelte";
 
 function onDenyDismiss() {
   updateModalState({
-    id: "notify_denied",
-    title: "Desktop Notifications",
-    content:
-      "You have dismissed or chosen to deny the request to allow desktop notifications. Reset this choice by clearing your cache for the site.",
+    title: t("Notifcation.permission.title"),
+    content: t("Notification.permission.denied"),
     open: true,
   });
 }
@@ -18,10 +17,8 @@ export function notifyCheckPermission() {
     if (!("Notification" in window)) {
       updateModalState({
         open: true,
-        id: "notify_not_supported",
-        title: "Desktop Notifications",
-        content:
-          "Sorry this browser does not support desktop notifications.  Please use the latest version of Chrome or FireFox",
+        title: t("Notifcation.permission.title"),
+        content: t("Notification.permission.notSupported"),
       });
       reject(false);
       return;
@@ -67,7 +64,7 @@ export function showNotification(opts) {
     content: "",
     ignoreActiveTab: false,
     callback: null,
-    wait: 5000,
+    wait: 10000,
   };
   const options = Object.assign({}, defaults, opts);
 

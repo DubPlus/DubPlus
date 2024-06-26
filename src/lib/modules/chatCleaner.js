@@ -2,15 +2,23 @@ import { CHAT_MESSAGE } from "../../events-constants";
 import { t } from "../stores/i18n.svelte";
 import { settings } from "../stores/settings.svelte";
 
-function chatCleanerCheck() {
+const MODULE_ID = "chat-cleaner";
+
+/**
+ * @param {string} n
+ */
+function chatCleanerCheck(n) {
+  // these will be ordered from oldest to newest
   const chatMessages = document.querySelectorAll("ul.chat-main > li");
 
-  const limit = parseInt(settings.options["chat-cleaner"]?.value, 10);
+  const limit = parseInt(n ?? settings.custom[MODULE_ID], 10);
 
   if (!chatMessages?.length || isNaN(limit) || chatMessages.length < limit) {
     return;
   }
 
+  // if our limit is 100 and we have 110 message, we want to remove the first 10,
+  // deleting elements at index 0 -> 9
   for (let i = 0; i < chatMessages.length - limit; i++) {
     chatMessages[i].remove();
   }
@@ -20,25 +28,29 @@ function chatCleanerCheck() {
  * @type {import('./module').DubPlusModule}
  */
 export const chatCleaner = {
-  id: "chat-cleaner",
-  label: "chat-cleaner.label",
-  description: "chat-cleaner.description",
+  id: MODULE_ID,
+  label: `${MODULE_ID}.label`,
+  description: `${MODULE_ID}.description`,
   category: "general",
   custom: {
-    id: "chat_cleaner",
-    title: "chat-cleaner.modal.title",
-    content: "chat-cleaner.modal.content",
-    placeholder: "500",
+    title: `${MODULE_ID}.modal.title`,
+    content: `${MODULE_ID}.modal.content`,
+    placeholder: `${MODULE_ID}.modal.placeholder`,
     maxlength: 5,
-    onConfirm: (value) => {
-      if (/[^0-9]+/.test(value.trim())) {
-        window.alert(t("chat-cleaner.modal.validation"));
-        return false;
+    validation(val) {
+      if (/[^0-9]+/g.test(val)) {
+        return t(`${MODULE_ID}.modal.validation`);
       }
       return true;
     },
+    onConfirm: (value) => {
+      if (settings.options[MODULE_ID]) {
+        chatCleanerCheck(value);
+      }
+    },
   },
   turnOn() {
+    chatCleanerCheck(undefined);
     window.QueUp.Events.bind(CHAT_MESSAGE, chatCleanerCheck);
   },
 

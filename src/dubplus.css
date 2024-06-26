@@ -8,6 +8,10 @@
   --dubplus-font-family: "Trebuchet MS", Helvetica, sans-serif;
 
   --dubplus-menu-width: 255px;
+
+  --queup-magenta: #f0f;
+  --queup-aqua: #0ff;
+  --queup-green: #b3e790;
 }
 
 .dubplus-btn-player {

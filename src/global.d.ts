@@ -1,5 +1,11 @@
 export type SettingsSections = "option" | "menu" | "custom";
 
+export interface Settings {
+  options: { [key: string]: boolean };
+  menu: { [key: string]: string };
+  custom: { [key: string]: string };
+}
+
 export interface Song {
   _id: string;
   created: number;
@@ -30,7 +36,7 @@ export interface QueUp {
   room: {
     chat: {
       sendMessage: () => void;
-      delegateEvents: (events: {[key: string]: string}) => void;
+      delegateEvents: (events: { [key: string]: string }) => void;
       events: { [key: string]: string };
       ncKeyDown: (e: Partial<KeyboardEvent>) => void;
       mentionChatSound: {
@@ -97,10 +103,10 @@ interface LDB {
 }
 
 declare global {
-  interface Window { 
-    QueUp: QueUp; 
-    emojify: Emojify; 
-    ldb: LDB; 
+  interface Window {
+    QueUp: QueUp;
+    emojify: Emojify;
+    ldb: LDB;
     soundManager: {
       canPlayURL: (url: string) => boolean;
     };
@@ -110,7 +116,6 @@ declare global {
 // I had to move these here because it's used in multiple
 // files and I couldn't do that with jsdoc
 export interface ModalProps {
-  id: string;
   title?: string;
   content?: string;
   value?: string;
@@ -135,7 +140,13 @@ export interface ModalProps {
 }
 
 export interface QueUpUser {
+  username: string;
   userInfo: {
     userid: string
   }
+}
+
+export interface ChatMessageEvent {
+  message: string;
+  user: QueUpUser;
 }

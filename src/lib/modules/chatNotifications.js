@@ -1,10 +1,12 @@
-/* global Dubtrack */
-
 import { notifyCheckPermission, showNotification } from "../../utils/notify";
 import { settings } from "../stores/settings.svelte";
 import { activeTabState } from "../stores/activeTabState.svelte";
 import { CHAT_MESSAGE } from "../../events-constants";
 
+/**
+ *
+ * @param {import("../../global").ChatMessageEvent} e
+ */
 function notifyOnMention(e) {
   const content = e.message;
   const user = window.QueUp.session.get("username").toLowerCase();
@@ -13,10 +15,13 @@ function notifyOnMention(e) {
   const customMentions = settings.options["custom-mentions"];
 
   // is custom mentions enabled AND user has entered text in the custom mentions modal
-  if (customMentions?.enabled && customMentions?.value) {
+  if (
+    settings.options["custom-mentions"] &&
+    settings.custom["custom-mentions"]
+  ) {
     //add custom mention triggers to array
     mentionTriggers = mentionTriggers
-      .concat(customMentions.value.split(","))
+      .concat(settings.custom["custom-mentions"].split(","))
       .map((v) => v.trim());
   }
 
@@ -53,7 +58,7 @@ export const chatNotifications = {
       })
       .catch(() => {
         // turn back off until it's granted
-        settings.options[this.id].enabled = false;
+        settings.options[this.id] = false;
       });
   },
 

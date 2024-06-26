@@ -1,5 +1,3 @@
-import { settings } from "../lib/stores/settings.svelte.js";
-
 /**
  * @param {string} className
  * @param {string} fileName
@@ -22,19 +20,24 @@ const makeLink = function (className, fileName) {
  *
  * @param {string} cssFile    the css file location
  * @param {string} className  class name for element
- * @returns {void}
+ * @returns {Promise<void>}
  */
-export function load(cssFile, className) {
-  if (document.querySelector(`link.${className}`)) {
-    // prevent from adding the same css file twice
-    return;
-  }
-  const link = makeLink(
-    className,
-    // TIME_STAMP is created during build time
-    settings.srcRoot + cssFile + "?" + import.meta.env.TIME_STAMP
-  );
-  document.head.appendChild(link);
+export function loadCSS(cssFile, className) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`link.${className}`)) {
+      // prevent from adding the same css file twice
+      resolve();
+      return;
+    }
+    const link = makeLink(
+      className,
+      // TIME_STAMP is created during build time
+      import.meta.env.srcRoot + cssFile + "?" + import.meta.env.TIME_STAMP
+    );
+    link.onload = (e) => resolve();
+    link.onerror = reject;
+    document.head.appendChild(link);
+  });
 }
 
 /**

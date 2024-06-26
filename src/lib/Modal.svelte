@@ -3,7 +3,7 @@
   import { modalState } from "./stores/modalState.svelte";
   import { t } from "./stores/i18n.svelte";
 
-  let errorMessage = $state('');
+  let errorMessage = $state("");
 
   /** @type {HTMLDialogElement} */
   let dialog; // Reference to the dialog tag
@@ -48,6 +48,7 @@
         onclick={() => {
           dialog.close();
           modalState.open = false;
+          errorMessage = "";
         }}
         class="dp-modal--cancel cancel">{t("Modal.cancel")}</button
       >
@@ -58,22 +59,24 @@
             dialog.close();
             modalState.open = false;
             modalState.onConfirm(modalState.value);
-            errorMessage = '';
+            errorMessage = "";
           } else {
-            errorMessage = isValidOrErrorMessage
+            errorMessage = isValidOrErrorMessage;
           }
         }}
-        class="dp-modal--confirm confirm">{t("Modal.confirm")}</button
-      >
+        class="dp-modal--confirm confirm"
+        >{t("Modal.confirm")}
+      </button>
     {:else}
       <button
         onclick={() => {
           dialog.close();
           modalState.open = false;
-          errorMessage = '';
+          errorMessage = "";
         }}
-        class="dp-modal--cancel cancel">{t("Modal.close")}</button
-      >
+        class="dp-modal--cancel cancel"
+        >{t("Modal.close")}
+      </button>
     {/if}
   </div>
 </dialog>

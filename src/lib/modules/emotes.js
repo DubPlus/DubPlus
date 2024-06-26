@@ -102,6 +102,29 @@ function replaceTextWithEmote() {
 }
 
 /**
+ * run this when the user enables the settings to look through all chat
+ * message and replace emotes
+ */
+function replaceAll() {
+  /**
+   * @type {NodeListOf<HTMLLIElement>}
+   */
+  const chatTarget = document.querySelectorAll(".chat-main li");
+  if (!chatTarget?.length) {
+    return;
+  }
+  chatTarget.forEach((li) => {
+    const text = li.querySelector(".text");
+    if (text) {
+      let processedHTML = replaceTwitch(text.innerHTML);
+      processedHTML = replaceBttv(processedHTML);
+      processedHTML = replaceFranker(processedHTML);
+      text.innerHTML = processedHTML;
+    }
+  });
+}
+
+/**
  * @type {import("./module").DubPlusModule}
  */
 export const emotes = {
@@ -115,9 +138,9 @@ export const emotes = {
       .then(() => dubplus_emoji.loadBTTVEmotes())
       .then(() => dubplus_emoji.loadFrankerFacez())
       .then(() => {
-        replaceTextWithEmote();
+        replaceAll();
+        window.QueUp.Events.bind(CHAT_MESSAGE, replaceTextWithEmote);
       });
-    window.QueUp.Events.bind(CHAT_MESSAGE, replaceTextWithEmote);
   },
 
   turnOff() {

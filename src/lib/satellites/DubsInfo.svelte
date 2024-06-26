@@ -4,6 +4,7 @@
   import { userImage } from "../api.js";
   import { getDubCount } from "../stores/dubsState.svelte";
   import { logError } from "../../utils/logger.js";
+  import { t } from "../stores/i18n.svelte.js";
 
   /**
    * @typedef {object} DubsInfoProps
@@ -28,7 +29,7 @@
   function onHover() {
     const rect = hoverTarget.getBoundingClientRect();
     positionRight = window.innerWidth - rect.right;
-    positionBottom = rect.height - 1;
+    positionBottom = rect.height - 2;
     display = "block";
   }
 
@@ -73,7 +74,7 @@
     const chatInput = /**@type {HTMLInputElement}*/ (
       document.querySelector("#chat-txt-message")
     );
-    chatInput.value = `@${username} `;
+    chatInput.value = `${chatInput.value}@${username} `.trimStart();
     chatInput.focus();
   }
 </script>
@@ -81,7 +82,7 @@
 <div
   id={`dubplus-${dubType}s-container`}
   use:teleport={{ to: "body" }}
-  class="dubplus-dubs-container"
+  class={`dubplus-dubs-container dubplus-${dubType}s-container`}
   style={`bottom: ${positionBottom}px; right: ${positionRight}px; display: ${display};`}
   onmouseleave={() => (display = "none")}
   role="none"
@@ -110,8 +111,11 @@
       {/each}
     {:else}
       <li>
-        <!-- TODO: move text to translate.js -->
-        No {dubType}s have been casted yet!
+        {#if dubType === "updub" || dubType === "downdub"}
+          {t("dubs-hover.no-votes", { dubType })}
+        {:else}
+          {t("dubs-hover.no-grabs", { dubType })}
+        {/if}
       </li>
     {/if}
   </ul>
@@ -119,16 +123,27 @@
 
 <style>
   .dubplus-dubs-container {
-    display: none;
     position: fixed;
     overflow-y: auto;
     overflow-x: visible;
     height: 150px;
-    width: 200px;
+    width: 180px;
     z-index: 100001;
     background-color: rgba(0, 0, 0, 0.9);
     border: 1px solid white;
+    border-radius: 0.4rem 0.4rem 0 0;
+    border-bottom: none;
   }
+  :global(.dubplus-updubs-container) {
+    border-color: var(--queup-aqua) !important;
+  }
+  :global(.dubplus-downdubs-container) {
+    border-color: var(--queup-magenta) !important;
+  }
+  :global(.dubplus-grabs-container) {
+    border-color: var(--queup-green) !important;
+  }
+
   ul {
     display: block;
     padding: 0;
@@ -143,5 +158,41 @@
     align-items: center;
     justify-self: center;
     text-align: center;
+  }
+  .preview-dubinfo-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+  }
+
+  .dubinfo-image {
+    width: 1.4em;
+    border-radius: 10%;
+    overflow: hidden;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  button {
+    appearance: none;
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
+    flex: 1;
+
+    font-size: 0.8em;
+    padding-left: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
   }
 </style>

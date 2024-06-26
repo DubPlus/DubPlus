@@ -9,7 +9,7 @@
    * @property {string} id
    * @property {string} label
    * @property {string} description
-   * @property {(state: boolean) => void} onToggle
+   * @property {(state: boolean, onMount?: boolean) => void} onToggle
    * @property {() => void} [init]
    * @property {import('../../global').ModalProps} [customize]
    *
@@ -23,22 +23,22 @@
   onMount(() => {
     if (init) init();
 
-    if (settings.options[id]?.enabled) {
-      onToggle(true);
+    if (settings.options[id]) {
+      onToggle(true, true);
     }
   });
 
   function openEditModal() {
+    console.log("openEditModal", settings.options[id]);
     updateModalState({
-      id: customize.id,
       title: t(customize.title),
       content: t(customize.content),
       placeholder: t(customize.placeholder),
       maxlength: customize.maxlength,
-      value: settings.options[id]?.value || "",
+      value: settings.custom[id] || "",
       validation: customize.validation,
       onConfirm: (value) => {
-        saveSetting("custom", customize.id, value);
+        saveSetting("custom", id, value);
         if (typeof customize.onConfirm === "function") {
           customize.onConfirm(value);
         }
@@ -56,13 +56,15 @@
   <Switch
     label={t(label)}
     onToggle={(state) => {
-      if (customize && state === true && !settings.options[id]?.value) {
+      // When turning on a feature that requires a custom value, and that
+      // value hasn't been set by the user yet, then we popup the modal
+      if (customize && state === true && !settings.custom[id]) {
           openEditModal();
           return;
       }
       onToggle(state);
     }}
-    isOn={settings.options[id]?.enabled}
+    isOn={settings.options[id]}
   />
   {#if customize}
     <button onclick={openEditModal} type="button" class="fa fa-pencil">

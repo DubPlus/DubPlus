@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.0] - 2024-?-?
+This is a complete rewrite of the code switching from the old jQuery spaghetti code to Svelte 5. See this [PR](https://github.com/DubPlus/DubPlus/pull/110) for more details. Also caught some existing bugs while updating.
+
+### Fixed
+- Fullscreen not working
+
 ## [0.3.4] - 2024-07-05
 ### Fixed
 - fixed [custom background bug](https://github.com/DubPlus/DubPlus/issues/87)

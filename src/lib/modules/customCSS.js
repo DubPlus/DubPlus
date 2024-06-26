@@ -16,7 +16,6 @@ export const customCss = {
   description: "custom-css.description",
   category: "customize",
   custom: {
-    id: "custom-css",
     title: "custom-css.modal.title",
     content: "custom-css.modal.content",
     placeholder: "custom-css.modal.placeholder",
@@ -33,19 +32,19 @@ export const customCss = {
       return true;
     },
     onConfirm(value) {
-      document.querySelector(`.${this.id}`)?.remove();
+      document.querySelector(`.${customCss.id}`)?.remove();
       if (!value) {
         // a blank value means the user wanted to remove the custom CSS
-        settings.options[this.id].enabled = false; // turn it back off
+        settings.options[customCss.id] = false; // turn it back off
         return;
       }
 
-      loadExternalCss(value, this.id);
+      loadExternalCss(value, customCss.id);
     },
   },
   turnOn() {
-    if (settings.options[this.id]?.value) {
-      loadExternalCss(settings.options[this.id].value, this.id);
+    if (settings.custom[this.id]) {
+      loadExternalCss(settings.custom[this.id], this.id);
     }
   },
 
