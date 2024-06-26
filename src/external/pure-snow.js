@@ -12,24 +12,26 @@ const SNOWFLAKES_COUNT = 200;
 
 let snowflakesCount = SNOWFLAKES_COUNT; // Snowflake count, can be overwritten by attrs
 let baseCSS = "";
-let bodyHeightPx = null;
-let pageHeightVh = null;
 
-function setHeightVariables() {
-  bodyHeightPx = document.body.offsetHeight;
-  pageHeightVh = (100 * bodyHeightPx) / window.innerHeight;
+/**
+ * We always want the snow to be full screen so this will always be 100vh
+ */
+const pageHeightVh = 100;
+
+function getSnowConatiner() {
+  return document.getElementById("snow-container");
 }
 
 // get params set in snow div
 function getSnowAttributes() {
-  const snowWrapper = document.getElementById("snow");
+  const snowWrapper = getSnowConatiner();
   snowflakesCount = Number(snowWrapper?.dataset?.count || snowflakesCount);
 }
 
 // Creating snowflakes
 function generateSnow(snowDensity = 200) {
   snowDensity -= 1;
-  const snowWrapper = document.getElementById("snow");
+  const snowWrapper = getSnowConatiner();
   snowWrapper.innerHTML = "";
   for (let i = 0; i < snowDensity; i++) {
     let board = document.createElement("div");
@@ -119,7 +121,6 @@ function generateSnowCSS(snowDensity = 200) {
 
 // Load the rules and execute after the DOM loads
 export function createSnow() {
-  setHeightVariables();
   getSnowAttributes();
   generateSnowCSS(snowflakesCount);
   generateSnow(snowflakesCount);

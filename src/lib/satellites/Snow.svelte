@@ -14,11 +14,12 @@
 
 </script>
 
-<div use:teleport={{to: "body"}} id="snow"></div>
+<div use:teleport={{to: "body"}} id="snow-container"></div>
 
 <style>
-  #snow {
+  #snow-container {
     height: 100vw;
+    width: 100vw;
   }
   :global(.snowflake) {
     position: absolute;

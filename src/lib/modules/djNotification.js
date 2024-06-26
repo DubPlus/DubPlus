@@ -29,7 +29,7 @@ function djNotificationCheck(e) {
     return;
   }
 
-  let parseSetting = parseInt(settings.options["dj-notification"].value, 10);
+  let parseSetting = parseInt(settings.custom["dj-notification"], 10);
   if (isNaN(parseSetting)) {
     // if this is NaN then we should default to 2
     parseSetting = 2;
@@ -56,7 +56,6 @@ export const djNotification = {
   description: "dj-notification.description",
   category: "general",
   custom: {
-    id: "dj-notification",
     title: "dj-notification.modal.title",
     content: "dj-notification.modal.content",
     placeholder: "2",

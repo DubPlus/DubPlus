@@ -51,7 +51,7 @@ export const pmNotifications = {
       })
       .catch((err) => {
         // turn back off until it's granted
-        settings.options[this.id].enabled = false;
+        settings.options[this.id] = false;
       });
   },
   turnOff() {

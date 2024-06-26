@@ -7,8 +7,8 @@
   import { t } from "../stores/i18n.svelte";
 
   settingsModules.forEach((module) => {
-    if (!settings.options[module.id]?.enabled) {
-      settings.options[module.id] = { enabled: false };
+    if (!settings.options[module.id]) {
+      settings.options[module.id] = false;
     };
   });
 </script>
@@ -22,11 +22,13 @@
       description={module.description}
       init={module.init}
       customize={module.custom}
-      onToggle={(on) => {
+      onToggle={(on, onMount) => {
         if (on) module.turnOn();
         else module.turnOff();
 
-        saveSetting("option", module.id, on);
+        if (!onMount) {
+          saveSetting("option", module.id, on);
+        }
       }}
     />
   {/each}

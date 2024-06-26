@@ -68,7 +68,7 @@ function checkInput(e) {
     // start filtering emojis
     const list = dubplus_emoji.findMatchingEmotes(
       str.substring(1).trim(),
-      settings.options.autocomplete.enabled
+      settings.options.autocomplete
     );
     setEmojiList(list);
   } else {

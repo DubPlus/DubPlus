@@ -21,7 +21,6 @@ export const modalState = $state({
  * @param {import('../../global').ModalProps} nextState
  */
 export function updateModalState(nextState) {
-  modalState.id = nextState.id;
   modalState.open = nextState.open ?? false;
   modalState.title = nextState.title || "Dub+";
   modalState.content = nextState.content || "";

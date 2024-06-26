@@ -5,22 +5,7 @@ const STORAGE_KEY_OLD = "dubplusUserSettings";
 const STORAGE_KEY_NEW = "dubplusUserSettingsV2";
 
 /**
- * @typedef {object} Settings
- * @property {{[key: string]: {enabled: boolean; value?: string}}} options
- * @property {{[key: string]: string}} menu will be either "open" or "closed"
- * @property {string} srcRoot
- */
-
-/**
- * @typedef {object} OldSettings
- * @property {{[key: string]: boolean}} options
- * @property {{[key: string]: string}} menu will be either "open" or "closed"
- * @property {{[key: string]: string}} custom
- * @property {string} srcRoot
- */
-
-/**
- * @type {Settings}
+ * @type {import("../../global").Settings}
  */
 const defaults = {
   // this will store all the on/off states
@@ -35,12 +20,11 @@ const defaults = {
     contact: "open",
   },
 
-  // this will store the domain and path to some dubplus assets
-  srcRoot: "",
+  custom: {},
 };
 
 /**
- * @return {Settings}
+ * @return {import("../../global").Settings}
  */
 function loadSettings() {
   // try loading the v2 settings first
@@ -49,19 +33,21 @@ function loadSettings() {
   try {
     const v2Settings = JSON.parse(localStorage.getItem(STORAGE_KEY_NEW));
     if (v2Settings) {
-      return /**@type {Settings}*/ (v2Settings);
+      return /**@type {import("../../global").Settings}*/ (v2Settings);
     }
   } catch (e) {
-    logInfo("Error loading v2 settings", e);
+    logInfo("Error loading v2 settings, trying old settings. Error:", e);
   }
 
   try {
     const oldSettings = JSON.parse(localStorage.getItem(STORAGE_KEY_OLD));
     if (oldSettings) {
-      return migrate(/**@type {OldSettings}*/ (oldSettings));
+      return migrate(
+        /**@type {import("../../global").Settings}*/ (oldSettings)
+      );
     }
   } catch (e) {
-    logInfo("Error loading old settings", e);
+    logInfo("Error loading old settings:", e);
   }
 
   // @ts-ignore this will get merged with the defaults
@@ -69,13 +55,12 @@ function loadSettings() {
 }
 
 const intialSettings = Object.assign({}, defaults, loadSettings());
-
-intialSettings.srcRoot = import.meta.env.RESOURCE_URL;
-
+console.log("intialSettings", structuredClone(intialSettings));
 /**
- * @type {Settings}
+ * @type {import("../../global").Settings}
  */
 export let settings = $state(intialSettings);
+console.log("settings", settings);
 
 function persist() {
   try {
@@ -94,13 +79,13 @@ function persist() {
  */
 export function saveSetting(section, property, value) {
   if (section === "option") {
-    settings.options[property].enabled = value;
+    settings.options[property] = value;
     persist();
     return;
   }
 
   if (section === "custom") {
-    settings.options[property].value = value;
+    settings.custom[property] = value;
     persist();
     return;
   }

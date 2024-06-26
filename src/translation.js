@@ -5,7 +5,7 @@ export const translations = {
     "Modal.close": "close",
 
     "Error.modal.title": "Dub+ Error",
-    "Error.loggedOut": "You're not logged in. Please login to use Dub+.",
+    "Error.modal.loggedout": "You're not logged in. Please login to use Dub+.",
     "Error.unknown":
       "Something went wrong starting Dub+. Please refresh and try again.",
 
@@ -51,6 +51,7 @@ export const translations = {
     "autocomplete.label": "Autocomplete Emoji",
     "autocomplete.description":
       "Toggle autocompleting emojis and emotes. Shows a preview box in the chat",
+    "autocomplete.preview.select": "press enter or tab to select",
 
     "custom-mentions.label": "Custom Mentions",
     "custom-mentions.description":
@@ -63,11 +64,12 @@ export const translations = {
 
     "chat-cleaner.label": "Chat Cleaner",
     "chat-cleaner.description":
-      "Automatically only keep a designated number of chat items while clearing older ones, keeping CPU stress down",
+      "Help keep CPU stress down by setting a limit of how many chat messages to keep in the chat box, deleting older messages.",
     "chat-cleaner.modal.title": "Chat Cleaner",
     "chat-cleaner.modal.content":
       "Please specify the number of most recent chat items that will remain in your chat history",
     "chat-cleaner.modal.validation": "Please enter a valid number",
+    "chat-cleaner.modal.placeholder": "500",
 
     "mention-notifications.label": "Notification on Mentions",
     "mention-notifications.description":
@@ -92,6 +94,8 @@ export const translations = {
     "dubs-hover.label": "Show Dubs on Hover",
     "dubs-hover.description":
       "Show who dubs a song when hovering over the dubs count",
+    "dubs-hover.no-votes": "No {{dubType}}s have been casted yet!",
+    "dubs-hover.no-grabs": "No one has grabbed this song yet!",
 
     "downdubs-in-chat.label": "Downdubs in Chat (mods only)",
     "downdubs-in-chat.description":

@@ -32,15 +32,15 @@
 <MenuIcon />
 <Snooze />
 <Eta />
-{#if settings.options.autocomplete?.enabled}
+{#if settings.options.autocomplete}
   <EmojiPreview />
 {/if}
-{#if settings.options["dubs-hover"]?.enabled}
+{#if settings.options["dubs-hover"]}
   <DubsInfo dubType="updub" />
   <DubsInfo dubType="downdub" />
   <DubsInfo dubType="grab" />
 {/if}
-{#if settings.options.snow?.enabled}
+{#if settings.options.snow}
   <Snow />
 {/if}
 

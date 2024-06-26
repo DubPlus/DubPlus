@@ -6,12 +6,18 @@
   import { modalState } from "./lib/stores/modalState.svelte";
   import { t, locale, normalizeLocale } from "./lib/stores/i18n.svelte";
   import { onMount, onDestroy } from "svelte";
+  import { loadCSS } from "./utils/css";
 
   /** @type {"loading" | "ready" | "loggedout" | "error"} */
   let status = $state("loading");
 
   function setLocale() {
     locale.current = normalizeLocale(navigator.language || "en");
+  }
+
+  // load Dub+ styles
+  if (!import.meta.env.DEV) {
+    loadCSS("/css/dubplus.css", "dubplus-css");
   }
 
   onMount(() => {
@@ -22,7 +28,6 @@
   onDestroy(() => {
     window.removeEventListener("languagechange", setLocale);
   });
-
 
   const checkList = [
     "QueUp.session.id",
@@ -51,7 +56,6 @@
    * @param {string} content
    */
   function showErrorModal(content) {
-    modalState.id = "dubplus-loading-error";
     modalState.title = t("Error.modal.title");
     modalState.content = content;
 

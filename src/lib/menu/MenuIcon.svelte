@@ -18,7 +18,7 @@
 
 <style>
   /* This is the Dub+ icon in the top right that's always showing
-and triggers the open/close of Dub+ */
+     and triggers the open/close of Dub+ */
   .dubplus-icon {
     /* clear button styles */
     background: none;

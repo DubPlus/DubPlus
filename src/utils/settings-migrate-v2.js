@@ -1,19 +1,4 @@
-/**
- * @typedef {object} NewSettings
- * @property {{[key: string]: {enabled: boolean; value?: string}}} options
- * @property {{[key: string]: string}} menu will be either "open" or "closed"
- * @property {string} srcRoot
- */
-
 import { logError, logInfo } from "./logger";
-
-/**
- * @typedef {object} OldSettings
- * @property {{[key: string]: boolean}} options
- * @property {{[key: string]: string}} menu will be either "open" or "closed"
- * @property {{[key: string]: string}} custom
- * @property {string} srcRoot
- */
 
 const optionsKeyMap = {
   "dubplus-autovote": "autovote",
@@ -60,25 +45,25 @@ const customKeyMap = {
 
 /**
  *
- * @param {OldSettings} oldSettings
- * @returns {NewSettings}
+ * @param {import("../global").Settings} oldSettings
+ * @returns {import("../global").Settings}
  */
 export function migrate(oldSettings) {
   logInfo("Old Settings", oldSettings);
 
   /**
-   * @type {NewSettings}
+   * @type {import("../global").Settings}
    */
   const newOptions = {
     options: {},
     menu: { ...oldSettings.menu },
-    srcRoot: oldSettings.srcRoot,
+    custom: {},
   };
 
   for (const [oldKey, boolValue] of Object.entries(oldSettings.options)) {
     const newKey = optionsKeyMap[oldKey];
     try {
-      newOptions.options[newKey] = { enabled: boolValue };
+      newOptions.options[newKey] = boolValue;
     } catch (e) {
       logError(
         "Error converting options",
@@ -93,10 +78,7 @@ export function migrate(oldSettings) {
   for (const [oldKey, stringValue] of Object.entries(oldSettings.custom)) {
     const newKey = customKeyMap[oldKey];
     try {
-      newOptions.options[newKey] = {
-        enabled: newOptions.options[newKey]?.enabled || false,
-        value: stringValue,
-      };
+      newOptions.custom[newKey] = stringValue;
     } catch (e) {
       logError(
         "Error converting custom",
