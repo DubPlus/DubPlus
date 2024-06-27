@@ -9,8 +9,7 @@ import { NEW_PM_MESSAGE } from "../../events-constants";
  * @returns
  */
 function pmNotify(e) {
-  const userid = window.QueUp.session.get("_id");
-  if (userid === e.userid) {
+  if (window.QueUp.session.id === e.userid) {
     return;
   }
   showNotification({

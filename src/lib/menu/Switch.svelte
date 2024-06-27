@@ -3,20 +3,22 @@
    * @typedef {object} SwitchProps
    * @property {string} label
    * @property {boolean} isOn
+   * @property {boolean} [disabled]
    * @property {(state: boolean) => void} onToggle
    */
 
   /**
    * @type {SwitchProps} props
    */
-  let { label, onToggle, isOn } = $props();
+  let { label, onToggle, isOn, disabled } = $props();
 
-  let checked = $state(isOn);
+  let checked = $state(!disabled ? isOn : false);
 
   /**
    * @param {KeyboardEvent} event
    */
   function handleKeydown(event) {
+    if (disabled) return;
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       checked = !checked;
@@ -25,6 +27,7 @@
   }
 
   function handleClick() {
+    if (disabled) return;
     checked = !checked;
     onToggle(checked);
   }

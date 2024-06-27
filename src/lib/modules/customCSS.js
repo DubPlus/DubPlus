@@ -8,6 +8,8 @@ import { t } from "../stores/i18n.svelte";
 import { settings } from "../stores/settings.svelte";
 
 /**
+ * Custom CSS
+ * loads an external CSS file
  * @type {import("./module").DubPlusModule}
  */
 export const customCss = {
@@ -25,7 +27,8 @@ export const customCss = {
         // we allow blank value to remove the custom CSS
         return true;
       }
-      if (!value.startsWith("http")) {
+      // basic validation that it's a url starting with http and ends with .css
+      if (!/^http.+\.css$/.test(value)) {
         return t("custom-css.modal.validation");
       }
 

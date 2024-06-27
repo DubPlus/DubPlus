@@ -1,8 +1,3 @@
-/**
- * Emotes
- * Adds additional Twitch, BTTV, and FrankerFaceZ emotes to chat.
- * Tasty emotes are not supported at this time.
- */
 import { CHAT_MESSAGE } from "../../events-constants";
 import { dubplus_emoji } from "../emoji/emoji";
 
@@ -87,35 +82,21 @@ function replaceFranker(html) {
   return emoted;
 }
 
-function replaceTextWithEmote() {
-  const chatTarget = document.querySelector(".chat-main li:last-child .text");
-
-  if (!chatTarget?.innerHTML) {
-    return;
-  } // nothing to do
-
-  // Twitch first
-  let processedHTML = replaceTwitch(chatTarget.innerHTML);
-  processedHTML = replaceBttv(processedHTML);
-  processedHTML = replaceFranker(processedHTML);
-  chatTarget.innerHTML = processedHTML;
-}
-
 /**
- * run this when the user enables the settings to look through all chat
- * message and replace emotes
+ * run this when a new chat message is received
+ * and only replaces emotes in the last message
  */
-function replaceAll() {
-  /**
-   * @type {NodeListOf<HTMLLIElement>}
-   */
-  const chatTarget = document.querySelectorAll(".chat-main li");
-  if (!chatTarget?.length) {
+function replaceTextWithEmote() {
+  const chats = document.querySelectorAll(
+    ".chat-main li:not([data-emote-processed])"
+  );
+  if (!chats?.length) {
     return;
   }
-  chatTarget.forEach((li) => {
+  chats.forEach((li) => {
+    li.setAttribute("data-emote-processed", "true");
     const text = li.querySelector(".text");
-    if (text) {
+    if (text?.innerHTML) {
       let processedHTML = replaceTwitch(text.innerHTML);
       processedHTML = replaceBttv(processedHTML);
       processedHTML = replaceFranker(processedHTML);
@@ -125,6 +106,10 @@ function replaceAll() {
 }
 
 /**
+ * Emotes
+ * This module adds support for converting :emote: text into images.
+ * Currently it only supports: Twitch, BTTV, and FrankerFaceZ emotes.
+ * Tasty emotes are not supported at this time.
  * @type {import("./module").DubPlusModule}
  */
 export const emotes = {
@@ -138,7 +123,7 @@ export const emotes = {
       .then(() => dubplus_emoji.loadBTTVEmotes())
       .then(() => dubplus_emoji.loadFrankerFacez())
       .then(() => {
-        replaceAll();
+        replaceTextWithEmote();
         window.QueUp.Events.bind(CHAT_MESSAGE, replaceTextWithEmote);
       });
   },

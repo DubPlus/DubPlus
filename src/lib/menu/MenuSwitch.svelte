@@ -4,11 +4,13 @@
   import { saveSetting, settings } from "../stores/settings.svelte";
   import { modalState, updateModalState } from "../stores/modalState.svelte";
   import { t } from "../stores/i18n.svelte";
+  import { isMod } from "../../utils/modcheck";
   /**
    * @typedef {object} MenuSwitchProps
    * @property {string} id
    * @property {string} label
    * @property {string} description
+   * @property {boolean} [modOnly]
    * @property {(state: boolean, onMount?: boolean) => void} onToggle
    * @property {() => void} [init]
    * @property {import('../../global').ModalProps} [customize]
@@ -18,13 +20,15 @@
   /**
    * @type {MenuSwitchProps}
    */
-  let { id, label, description, customize, onToggle, init } = $props();
+  let { id, label, description, customize, onToggle, init, modOnly } = $props();
 
   onMount(() => {
     if (init) init();
 
     if (settings.options[id]) {
-      onToggle(true, true);
+      // check user mod status if this is a mod only feature
+      const status = modOnly ? isMod(window.QueUp.session.id) : true;
+      onToggle(status, true);
     }
   });
 
@@ -52,8 +56,12 @@
   }
 </script>
 
-<li {id} title={t(description)}>
+<li 
+  {id} 
+  title={t(description)} 
+  class:disabled={modOnly && !isMod(window.QueUp.session.id)}>
   <Switch
+    disabled={modOnly && !isMod(window.QueUp.session.id)}
     label={t(label)}
     onToggle={(state) => {
       // When turning on a feature that requires a custom value, and that
@@ -91,5 +99,12 @@
 
     height: 100%;
     width: 9%;
+  }
+
+  .disabled {
+    opacity: 0.5;
+  }
+  .disabled:hover {
+    cursor: not-allowed;
   }
 </style>

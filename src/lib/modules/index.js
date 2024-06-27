@@ -4,7 +4,7 @@ import { emotes } from "./emotes";
 import { autocomplete } from "./autocomplete";
 import { customMentions } from "./customMentions";
 import { chatCleaner } from "./chatCleaner";
-import { chatNotifications } from "./chatNotifications";
+import { mentionNotifications } from "./mentionNotifications";
 import { pmNotifications } from "./pmNotifications";
 import { djNotification } from "./djNotification";
 import { showDubsOnHover } from "./showDubsOnHover";
@@ -37,7 +37,7 @@ export const general = [
   autocomplete,
   customMentions,
   chatCleaner,
-  chatNotifications,
+  mentionNotifications,
   pmNotifications,
   djNotification,
   showDubsOnHover,

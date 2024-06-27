@@ -32,6 +32,7 @@ export const downdubsInChat = {
   label: "downdubs-in-chat.label",
   description: "downdubs-in-chat.description",
   category: "general",
+  modOnly: true,
   turnOn() {
     if (isMod(window.QueUp.session.id)) {
       window.QueUp.Events.bind("realtime:room_playlist-dub", downdubWatcher);
