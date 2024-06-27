@@ -9,6 +9,7 @@ export interface DubPlusModule {
   label: string;
   description: string;
   category: string;
+  modOnly?: boolean;
   turnOff?: () => void;
   turnOn?: () => void;
   /**

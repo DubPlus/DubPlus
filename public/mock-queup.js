@@ -112,6 +112,11 @@ const QueUp = {
   },
   playerController: {
     volume: 5,
+    voteUp: {
+      click() {
+        document.querySelector(".dubup").classList.add("voted");
+      },
+    },
   },
 };
 

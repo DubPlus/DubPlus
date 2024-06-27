@@ -43,9 +43,12 @@ function notifyOnMention(e) {
 }
 
 /**
+ * Mention Notifications
+ * When a chat message comes in that contains a @mention to the user's username,
+ * a browser notification will be triggered.
  * @type {import("./module").DubPlusModule}
  */
-export const chatNotifications = {
+export const mentionNotifications = {
   id: "mention-notifications",
   label: "mention-notifications.label",
   description: "mention-notifications.description",
