@@ -37,11 +37,32 @@ function getSelection(inputEl) {
   while (currentText[goLeft] !== " " && goLeft > 0) {
     goLeft--;
   }
+  if (goLeft > 0 && currentText[goLeft] === " ") {
+    goLeft += 1;
+  }
+
   let goRight = cursorPos;
   while (currentText[goRight] !== " " && goRight < currentText.length) {
     goRight++;
   }
+
+  if (goRight !== currentText.length && currentText[goRight] === " ") {
+    goRight -= 1;
+  }
   return [goLeft, goRight];
+}
+
+/**
+ *
+ * @param {HTMLInputElement} inputEl
+ * @param {number} index
+ */
+export function insertEmote(inputEl, index) {
+  const selected = emojiState.emojiList[index];
+  const [start, end] = getSelection(inputEl);
+  const target = inputEl.value.substring(start, end);
+  inputEl.value = inputEl.value.replace(target, `:${selected.text}:`);
+  reset();
 }
 
 /**
@@ -99,12 +120,9 @@ function chatInputKeyupFunc(e) {
   // handle selecting the emoji/emote and replacing the text in chat input
   if ((e.key === KEYS.enter || e.key === KEYS.tab) && hasItems) {
     e.preventDefault();
-    const selected = emojiState.emojiList[emojiState.selectedIndex];
+    e.stopImmediatePropagation();
     const inputEl = /**@type {HTMLInputElement}*/ (e.target);
-    const [start, end] = getSelection(inputEl);
-    const target = inputEl.value.substring(start, end);
-    inputEl.value = inputEl.value.replace(target, selected.text);
-    reset();
+    insertEmote(inputEl, emojiState.selectedIndex);
     return;
   }
 
@@ -139,6 +157,9 @@ function chatInputKeydownFunc(e) {
 }
 
 /**
+ * Autocomplete
+ * This module will allow users to autocomplete emojis/emotes in chat by presenting
+ * a popup window above the chat that users can navigate with the arrow keys and select
  * @type {import("./module").DubPlusModule}
  */
 export const autocomplete = {

@@ -1,5 +1,6 @@
 <script>
   import { teleport } from "../actions/teleport";
+  import { insertEmote } from "../modules/autocomplete";
   import { t } from "../stores/i18n.svelte";
   import { emojiState } from "./emojiState.svelte";
 
@@ -19,6 +20,15 @@
       }
     }
   });
+
+  /**
+   * @param {number} index
+   */
+  function handleClick(index) {
+    const inputEl = /**@type {HTMLInputElement}*/ (document.getElementById("chat-txt-message"));
+    insertEmote(inputEl, index);
+    inputEl.focus();
+  }
 </script>
 
 <ul
@@ -27,9 +37,12 @@
   class:ac-show={emojiState.emojiList.length > 0}
 >
   {#each emojiState.emojiList as { src, text, platform, alt }, i (src)}
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <li
       class={`preview-item ${platform}-previews`}
       class:selected={i === emojiState.selectedIndex}
+      onclick={() => handleClick(i)}
     >
       <div class="ac-image">
         <img {src} {alt} title={alt} />

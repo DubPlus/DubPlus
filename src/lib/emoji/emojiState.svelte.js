@@ -1,7 +1,11 @@
 /**
+ * @typedef {import('./emojiTypes').Emoji} Emoji
+ */
+
+/**
  * @typedef {object} EmojiState
  * @property {number} selectedIndex
- * @property {import("./emoji").Emoji[]} emojiList
+ * @property {Emoji[]} emojiList
  */
 
 /**
@@ -18,7 +22,7 @@ export function reset() {
 }
 
 /**
- * @param {import("./emoji").Emoji[]} listArray
+ * @param {Emoji[]} listArray
  */
 export function setEmojiList(listArray) {
   emojiState.emojiList = listArray;
