@@ -66,7 +66,7 @@ export default defineConfig(({ command, mode }) => {
     build: {
       lib: {
         entry: resolve(__dirname, "/src/main.js"),
-        name: "DubPlus",
+        name: "dubplus",
         fileName: "dubplus",
         formats: ["iife"],
       },
