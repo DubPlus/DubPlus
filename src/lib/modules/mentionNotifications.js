@@ -5,14 +5,12 @@ import { CHAT_MESSAGE } from "../../events-constants";
 
 /**
  *
- * @param {import("../../global").ChatMessageEvent} e
+ * @param {import("../../events").ChatMessageEvent} e
  */
 function notifyOnMention(e) {
   const content = e.message;
   const user = window.QueUp.session.get("username").toLowerCase();
   let mentionTriggers = ["@" + user];
-
-  const customMentions = settings.options["custom-mentions"];
 
   // is custom mentions enabled AND user has entered text in the custom mentions modal
   if (

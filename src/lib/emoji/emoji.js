@@ -305,7 +305,8 @@ export const dubplus_emoji = {
     }
     logInfo("tasty", "loading from api");
     // since we control this API we should always have it load from remote
-    return fetch(import.meta.env.srcRoot + "/emotes/tastyemotes.json")
+    // @ts-ignore
+    return fetch(`${__SRC_ROOT__}/emotes/tastyemotes.json`)
       .then((res) => res.json())
       .then((json) => {
         window.ldb.set("tasty_api", JSON.stringify(json));

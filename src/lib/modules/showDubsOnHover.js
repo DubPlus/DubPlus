@@ -125,7 +125,7 @@ function resetDubs() {
 }
 
 /**
- * @param {{dubtype: string; user: { _id: string; username: string}}} e
+ * @param {import("../../events.js").DubEvent} e
  * @returns
  */
 function dubWatcher(e) {
@@ -180,7 +180,7 @@ function dubWatcher(e) {
 }
 
 /**
- * @param {{user: { _id: string; username: string}}} e
+ * @param {import("../../events.js").GrabEvent} e
  */
 function grabWatcher(e) {
   if (!dubsState.grabs.find((el) => el.userid === e.user._id)) {
@@ -192,7 +192,7 @@ function grabWatcher(e) {
 }
 
 /**
- * @param {{user: { _id: string; username: string}}} e
+ * @param {import("../../events.js").UserLeaveEvent} e
  */
 function dubUserLeaveWatcher(e) {
   // remove from up dubs
