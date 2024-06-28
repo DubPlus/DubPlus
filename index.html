@@ -70,10 +70,37 @@
       #chat .chat-container .chat-messages {
         overflow: scroll;
       }
+
+      @media screen and (max-width: 72em) {
+        body[data-display="player"] {
+          #main-room {
+            .left_section {
+              display: block;
+            }
+            .right_section {
+              display: none;
+            }
+          }
+        }
+        body[data-display="chat"] {
+          #main-room {
+            .left_section {
+              display: none;
+            }
+            .right_section {
+              display: block;
+            }
+          }
+        }
+      }
     </style>
     <script src="/mock-fetch.js"></script>
   </head>
   <body>
+    <menu id="mobile-room-menu">
+      <a href="#" class="player-button active" data-display="player">Player</a>
+      <a href="#" class="chat-button" data-display="chat">Chat</a>
+    </menu>
     <header id="header-global">
       <div class="left-menu-toggle">
         <span class="icon-menu"></span>
@@ -237,7 +264,10 @@
                               ></span>
                             </div>
                             <div class="text">
-                              <p>This is the chat message screen with a <a href="https://www.google.com">link</a></p>
+                              <p>
+                                This is the chat message screen with a
+                                <a href="https://www.google.com">link</a>
+                              </p>
                             </div>
                             <div class="meta-info">
                               <span class="username">CoolBot </span
@@ -275,7 +305,8 @@
                             </div>
                             <div class="text">
                               <p>
-                                Emote example :mrdestructoid: turn emotes on to see this converted into an icon
+                                Emote example :mrdestructoid: turn emotes on to
+                                see this converted into an icon
                               </p>
                             </div>
                             <div class="meta-info">
@@ -444,8 +475,6 @@
                           </div>
                         </div>
                       </li>
-
-          
                     </ul>
                     <div
                       class="ps-scrollbar-x-rail"
