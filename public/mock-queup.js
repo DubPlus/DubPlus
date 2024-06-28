@@ -169,7 +169,10 @@ window.soundManager = {
  * @param {KeyboardEvent} e
  */
 function onChatKeyUp(e) {
-  if (e.key === "Enter") {
+  if (
+    e.key === "Enter" &&
+    !document.querySelector("#autocomplete-preview")?.children?.length
+  ) {
     e.preventDefault();
     const message = e.target.value;
     e.target.value = "";
@@ -235,3 +238,12 @@ function makeChatMessage(message, username) {
     `;
   document.querySelector(".chat-main").appendChild(li);
 }
+
+let open = "player";
+document.querySelectorAll("#mobile-room-menu a").forEach((a) => {
+  const target = a.getAttribute("data-display");
+  a.addEventListener("click", (e) => {
+    e.preventDefault();
+    document.body.setAttribute("data-display", target);
+  });
+});
