@@ -10,7 +10,7 @@ import { settings } from "../stores/settings.svelte";
 const MODULE_ID = "custom-mentions";
 
 /**
- * @param {import("../../global").ChatMessageEvent} e
+ * @param {import("../../events").ChatMessageEvent} e
  */
 function customMentionCheck(e) {
   const enabled = settings.options[MODULE_ID];

@@ -15,9 +15,9 @@
     locale.current = normalizeLocale(navigator.language || "en");
   }
 
-  // load Dub+ styles
+  // load Dub+ styles when not in dev mode
   if (!import.meta.env.DEV) {
-    loadCSS("/css/dubplus.css", "dubplus-css");
+    loadCSS("/dist/dubplus.min.css", "dubplus-css");
   }
 
   onMount(() => {

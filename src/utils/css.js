@@ -14,11 +14,11 @@ const makeLink = function (className, fileName) {
 
 /**
  * Loads a CSS file into <head>.
- * It concats settings.srcRoot with the first argument (cssFile)
+ * It concats __SRC_ROOT__ with the first argument (cssFile)
  * @example:
  * css.load("/options/show_timestamps.css", "show_timestamps_link");
  *
- * @param {string} cssFile    the css file location
+ * @param {string} cssFile    the css file location, should start with a /
  * @param {string} className  class name for element
  * @returns {Promise<void>}
  */
@@ -31,8 +31,8 @@ export function loadCSS(cssFile, className) {
     }
     const link = makeLink(
       className,
-      // TIME_STAMP is created during build time
-      import.meta.env.srcRoot + cssFile + "?" + import.meta.env.TIME_STAMP
+      // @ts-ignore __TIME_STAMP__ is replace by vite
+      `${__SRC_ROOT__}${cssFile}?${__TIME_STAMP__}`
     );
     link.onload = (e) => resolve();
     link.onerror = reject;

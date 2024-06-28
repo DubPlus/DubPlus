@@ -11,7 +11,7 @@ let canSend = true;
 
 /**
  *
- * @param {import("../../global").ChatMessageEvent} e
+ * @param {import("../../events").ChatMessageEvent} e
  * @returns {void}
  */
 function afk_chat_respond(e) {
@@ -30,8 +30,8 @@ function afk_chat_respond(e) {
      */
     const chatInput = document.querySelector("#chat-txt-message");
 
-    if (settings.options.afk?.custom) {
-      chatInput.value = `[AFK] ${settings.options.afk.custom}`;
+    if (settings.custom.afk) {
+      chatInput.value = `[AFK] ${settings.custom.afk}`;
     } else {
       chatInput.value = `[AFK] ${t("afk.modal.placeholder")}`;
     }

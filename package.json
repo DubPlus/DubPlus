@@ -2,8 +2,8 @@
   "name": "dubplus",
   "version": "1.0.0",
   "type": "module",
-  "description": "Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net",
-  "main": "dubplus.js",
+  "description": "Dub+ - A simple script/extension for QueUp.net",
+  "main": "dist/dubplus.min.js",
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
@@ -12,12 +12,6 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "build-release": "node ./tasks --release",
-    "watch": "node ./tasks watch",
-    "bundle": "node ./tasks bundle",
-    "minify": "node ./tasks minify",
-    "min-release": "node ./tasks min --release",
-    "sass": "node ./tasks sass",
     "ext": "node ./tasks ext",
     "ext-zip": "node ./tasks ext-zip",
     "ext-deploy": "node ./tasks ext-deploy",

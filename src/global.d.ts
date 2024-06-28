@@ -145,8 +145,3 @@ export interface QueUpUser {
     userid: string
   }
 }
-
-export interface ChatMessageEvent {
-  message: string;
-  user: QueUpUser;
-}

@@ -5,7 +5,7 @@ import { NEW_PM_MESSAGE } from "../../events-constants";
 
 /**
  *
- * @param {{userid: string, messageid: string}} e
+ * @param {import("../../events").NewMessageEvent} e
  * @returns
  */
 function pmNotify(e) {
