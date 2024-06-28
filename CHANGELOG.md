@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0] - 2024-?-?
 This is a complete rewrite of the code switching from the old jQuery spaghetti code to Svelte 5. See this [PR](https://github.com/DubPlus/DubPlus/pull/110) for more details. Also caught some existing bugs while updating.
 
+### Breaking Changes
+
+I removed the following files from the repo: 
+- `dubplus.js`
+- `dubplus.min.js`
+- `css/dubplus.css`
+- `css/dubplus.min.css`
+
+From now on they will be hosted in the `dist` folder and only the minified versions will be available
+- `dist/dubplus.min.js`
+- `dist/dubplus.min.css`
+
+If you were accessing these files you'll need to update your urls.
+
 ### Fixed
 - Fullscreen not working
 
