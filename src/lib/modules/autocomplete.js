@@ -26,6 +26,7 @@ const KEYS = {
 
 const keyCharMin = 3; // when to start showing previews
 let acPreview = document.querySelector("#autocomplete-preview");
+let originalKeyDownEventHandler;
 
 /**
  * @param {HTMLInputElement} inputEl
@@ -170,10 +171,14 @@ export const autocomplete = {
   turnOn() {
     acPreview = document.querySelector("#autocomplete-preview");
     reset();
-    // Only remove keydown for Dubtrack native autocomplete to work
-    const omitted = structuredClone(window.QueUp.room.chat.events);
-    delete omitted["keydown #chat-txt-message"];
-    window.QueUp.room.chat.delegateEvents(omitted);
+
+    originalKeyDownEventHandler =
+      window.QueUp.room.chat.events["keydown #chat-txt-message"];
+
+    const newEventsObject = { ...window.QueUp.room.chat.events };
+    delete newEventsObject["keydown #chat-txt-message"];
+    window.QueUp.room.chat.delegateEvents(newEventsObject);
+
     const chatInput = document.getElementById("chat-txt-message");
     chatInput.addEventListener("keydown", chatInputKeydownFunc);
     chatInput.addEventListener("keyup", chatInputKeyupFunc);
@@ -181,7 +186,9 @@ export const autocomplete = {
   },
 
   turnOff() {
-    // previewList.stop();
+    reset();
+    window.QueUp.room.chat.events["keydown #chat-txt-message"] =
+      originalKeyDownEventHandler;
     window.QueUp.room.chat.delegateEvents(window.QueUp.room.chat.events);
     const chatInput = document.getElementById("chat-txt-message");
     chatInput.removeEventListener("keydown", chatInputKeydownFunc);

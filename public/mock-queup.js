@@ -33,7 +33,27 @@ const QueUp = {
         makeChatMessage(message, chatMessage.user.username);
         triggerEvent("realtime:chat-message", chatMessage);
       },
-      events: {},
+      events: {
+        "click .send-chat-button": "sendMessage",
+        "click .setOnChatNotifications": "setSoundOn",
+        "click .setOffChatNotifications": "setSoundOff",
+        "click .setMentionChatNotifications": "setSoundMention",
+        "click .disableVideo-el": "disableVideo",
+        "click a.chat-commands": "displayChatHelp",
+        "click #new-messages-counter": "clickChatCounter",
+        "click .display-room-users": "displayRoomUsers",
+        "click .display-chat": "displayChat",
+        "click .display-chat-settings": "displayChatOptions",
+        "click .hideImagesToggle": "hideImageToggleClick",
+        "click .roleColorToggle": "disableRoleColorToggleClick",
+        "click .clearChatToggle": "clearChat",
+        "click #deletedVisibleToggle": "toggleDeletedMessages",
+        "click .emojiConvertionToggle": "toggleEmojiConvertion",
+        "input #chat-txt-message": "ncInput",
+        "keydown #chat-txt-message": "ncKeyDown",
+        "click .nc-container li": "ncNameClicked",
+        "mouseover .nc-container li": "ncNameHovered",
+      },
       delegateEvents(events) {
         console.log("delegateEvents", events);
         this.events = events;
