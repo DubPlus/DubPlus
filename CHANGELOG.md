@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.3] - 2024-07-01
+### Fixed
+- Fixed autocomplete's keydown handler intefering with QueUp's new multiline chat feature
+
+### Chores
+- replaced node-sass with sass (aka dart-sass) because node-sass is deprecated and they tell you to use sass
+
 ## [0.3.2] - 2021-11-23
 ### Fixed
 - Fix snow animation breaking on window resize
