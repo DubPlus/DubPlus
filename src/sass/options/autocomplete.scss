@@ -48,7 +48,7 @@
 }
 
 .tasty-previews {
-  background-image: url(#{$resourceSrc}/emotes/tastycat/21.png);
+  background-image: url(#{getSrc()}/emotes/tastycat/21.png);
 }
 
 .frankerFacez-previews {
