@@ -55,6 +55,12 @@ function errorModal(errorMsg) {
 preload();
 
 if (window.dubplus) {
+  // unbind any listeners before we reload the script
+  for (let key in window.dubplus) {
+    if (typeof window.dubplus[key].turnOff === 'function') {
+      window.dubplus[key].turnOff();
+    }
+  }
   document.querySelector('.dubplus-menu')?.remove();
 }
 
