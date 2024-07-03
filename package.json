@@ -1,8 +1,11 @@
 {
   "name": "DubPlus",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net",
   "main": "dubplus.js",
+  "engines": {
+    "node": ">=12.0.0 <16.0.0"
+  },
   "scripts": {
     "build": "node ./tasks",
     "build-release": "node ./tasks --release",
@@ -33,7 +36,6 @@
     "chalk": "^4.1.0",
     "fs-extra": "^9.1.0",
     "git-repo-info": "^2.1.1",
-    "node-sass": "^5.0.0",
     "postcss": "^8.2.8",
     "request": "^2.88.2",
     "uglifyify": "^5.0.2",
@@ -42,5 +44,9 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ]
+  ],
+  "dependencies": {
+    "@babel/core": "^7.24.7",
+    "sass": "^1.77.6"
+  }
 }
