@@ -1,14 +1,14 @@
-const fs = require("fs");
-const path = require("path");
-const sass = require("sass");
-const postcss = require("postcss");
-const autoprefixer = require("autoprefixer");
+const fs = require('fs');
+const path = require('path');
+const sass = require('sass');
+const postcss = require('postcss');
+const autoprefixer = require('autoprefixer');
 const prefixer = postcss([autoprefixer]);
-const log = require("./colored-console.js");
-const { pathToFileURL } = require("url");
+const log = require('./colored-console.js');
+const { pathToFileURL } = require('url');
 
 // our own custom module
-var gitInfo = require(process.cwd() + "/tasks/repoInfo.js");
+var gitInfo = require(process.cwd() + '/tasks/repoInfo.js');
 console.log(`SASS $resourceSrc set to ${gitInfo.resourceSrc}`);
 
 /*************************************************************************
@@ -18,44 +18,37 @@ console.log(`SASS $resourceSrc set to ${gitInfo.resourceSrc}`);
  * our main SASS file right after
  */
 
-var dataString = `
-$resourceSrc : "${gitInfo.resourceSrc}"; 
-@import './src/sass/dubplus.scss';
-`;
-
 /**
  * @type {import('sass').StringOptions}
  */
 const options = {
   functions: {
-    // Note: in real code, you should use `math.pow()` from the built-in
-    // `sass:math` module.
-    "getSrc()": function (args) {
+    'getSrc()': function (args) {
       return new sass.SassString(gitInfo.resourceSrc);
     },
   },
 };
 
-const file = path.resolve(__dirname, "../src/sass/dubplus.scss");
+const file = path.resolve(__dirname, '../src/sass/dubplus.scss');
 
 function compileSASS() {
   return sass.compileAsync(file, options).then((result) => {
-    fs.writeFileSync("./css/dubplus.css", prefixer.process(result.css));
+    fs.writeFileSync('./css/dubplus.css', prefixer.process(result.css));
   });
 }
 
 function minifySASS() {
   return sass
-    .compileAsync(file, { style: "compressed", ...options })
+    .compileAsync(file, { style: 'compressed', ...options })
     .then((result) => {
-      fs.writeFileSync("./css/dubplus.min.css", prefixer.process(result.css));
+      fs.writeFileSync('./css/dubplus.min.css', prefixer.process(result.css));
     });
 }
 
 function watchingSASS() {
   // create our own sass file watch with node
   fs.watch(
-    "./src/sass",
+    './src/sass',
     {
       recursive: true,
     },
@@ -65,7 +58,7 @@ function watchingSASS() {
         console.log(`file: ${filename}`);
         compileSASS();
       } else {
-        log.error("Filename missing. NOT compiling. Try again");
+        log.error('Filename missing. NOT compiling. Try again');
       }
     }
   );
