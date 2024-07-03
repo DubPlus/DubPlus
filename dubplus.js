@@ -45,45 +45,48 @@ var init = require('./lib/init.js');
 var css = require('./utils/css.js');
 function errorModal(errorMsg) {
   // probably should make a modal with inline styles
-  // or a smaller css file with just modal styles so 
+  // or a smaller css file with just modal styles so
   // we're not loading the whole css for just a modal
-  css.load('/css/dubplus.css');
+  css.load('/css/dubplus.css', 'dubplus-css');
   modal.create({
     title: 'Dub+ Error',
     content: errorMsg
   });
 }
-
-/* globals Dubtrack */
-if (!window.dubplus) {
-  (0, _preload["default"])();
-
-  // checking to see if these items exist before initializing the script
-  // instead of just picking an arbitrary setTimeout and hoping for the best
-  var checkList = ['QueUp.session.id', 'QueUp.room.chat', 'QueUp.Events', 'QueUp.room.player', 'QueUp.helpers.cookie', 'QueUp.room.model', 'QueUp.room.users'];
-  var _dubplusWaiting = new _waitFor["default"](checkList, {
-    seconds: 10
-  }); // 10sec should be more than enough
-
-  _dubplusWaiting.then(function () {
-    init();
-    $('.dubplus-waiting').remove();
-  }).fail(function () {
-    if (!QueUp.session.id) {
-      errorModal('You\'re not logged in. Please login to use Dub+.');
-    } else {
-      $('.dubplus-waiting span').text('Something happed, refresh and try again');
+(0, _preload["default"])();
+if (window.dubplus) {
+  var _document$querySelect;
+  // unbind any listeners before we reload the script
+  for (var key in window.dubplus) {
+    if (typeof window.dubplus[key].turnOff === 'function') {
+      window.dubplus[key].turnOff();
     }
-  });
-} else {
-  if (!QueUp.session.id) {
-    errorModal('You\'re not logged in. Please login to use Dub+.');
-  } else {
-    errorModal('Dub+ is already loaded');
   }
+  (_document$querySelect = document.querySelector('.dubplus-menu')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.remove();
 }
 
-},{"./lib/init.js":4,"./utils/css.js":40,"./utils/modal.js":42,"./utils/preload.js":46,"./utils/waitFor.js":47}],2:[function(require,module,exports){
+/* globals Dubtrack */
+(0, _preload["default"])();
+
+// checking to see if these items exist before initializing the script
+// instead of just picking an arbitrary setTimeout and hoping for the best
+var checkList = ['QueUp.session.id', 'QueUp.room.chat', 'QueUp.Events', 'QueUp.room.player', 'QueUp.helpers.cookie', 'QueUp.room.model', 'QueUp.room.users'];
+var dubplusWaiting = new _waitFor["default"](checkList, {
+  seconds: 10
+}); // 10sec should be more than enough
+
+dubplusWaiting.then(function () {
+  init();
+  $('.dubplus-waiting').remove();
+}).fail(function () {
+  if (!QueUp.session.id) {
+    errorModal("You're not logged in. Please login to use Dub+.");
+  } else {
+    $('.dubplus-waiting span').text('Something happed, refresh and try again');
+  }
+});
+
+},{"./lib/init.js":4,"./utils/css.js":41,"./utils/modal.js":43,"./utils/preload.js":47,"./utils/waitFor.js":48}],2:[function(require,module,exports){
 "use strict";
 
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
@@ -366,7 +369,7 @@ prepEmoji.processFrankerFacez = function (data) {
 };
 module.exports = prepEmoji;
 
-},{"../lib/settings.js":8,"../utils/getJSON.js":41}],3:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/getJSON.js":42}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -577,22 +580,28 @@ exports.PreviewListManager = PreviewListManager;
 "use strict";
 
 var _loadModules = _interopRequireDefault(require("./loadModules.js"));
+var _css = _interopRequireDefault(require("../utils/css.js"));
+var _menu = _interopRequireDefault(require("./menu.js"));
 var _snooze = _interopRequireDefault(require("../modules/snooze.js"));
 var _eta = _interopRequireDefault(require("../modules/eta.js"));
+var _menuEvents = require("./menu-events.js");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
-var css = require('../utils/css.js');
-var menu = require('./menu.js');
 module.exports = function () {
   window.dubplus = JSON.parse(PKGINFO);
+  window.dubplus.toggleMenuSection = _menuEvents.toggleMenuSection;
+  window.dubplus.toggleMenu = _menuEvents.toggleMenu;
+  window.dubplus.onMenuToggle = _menuEvents.onMenuToggle;
+  window.dubplus.onMenuAction = _menuEvents.onMenuAction;
+  window.dubplus.onMenuEdit = _menuEvents.onMenuEdit;
 
   // load our main CSS
-  css.load('/css/dubplus.css');
+  _css["default"].load('/css/dubplus.css', 'dubplus-css');
 
   // add a 'global' css class just in case we need more specificity in our css
-  $('html').addClass('dubplus');
+  document.querySelector('html').classList.add('dubplus');
 
   // Get the opening html for the menu
-  var menuString = menu.beginMenu();
+  var menuContainer = _menu["default"].beginMenu();
 
   // load all our modules into the 'dubplus' global object
   // it also builds the menu dynamically
@@ -600,7 +609,7 @@ module.exports = function () {
   var menuObj = (0, _loadModules["default"])();
 
   // finalize the menu and add it to the UI
-  menu.finishMenu(menuObj, menuString);
+  _menu["default"].finishMenu(menuObj, menuContainer);
 
   // run non-menu related items here:
   (0, _snooze["default"])();
@@ -608,7 +617,7 @@ module.exports = function () {
 };
 
 }).call(this)}).call(this,'{"name":"DubPlus","version":"0.3.3","description":"Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net","engines":{"node":">=12.0.0 <16.0.0"},"author":"DubPlus","license":"MIT","homepage":"https://dub.plus","browserslist":["> 1%","last 2 versions"],"dependencies":{"@babel/core":"^7.24.7","sass":"^1.77.6"}}')
-},{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":40,"./loadModules.js":5,"./menu.js":7}],5:[function(require,module,exports){
+},{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":41,"./loadModules.js":5,"./menu-events.js":6,"./menu.js":7}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -617,19 +626,19 @@ Object.defineProperty(exports, "__esModule", {
 exports["default"] = void 0;
 var options = require('../utils/options.js');
 var dubPlus_modules = require('../modules/index.js');
-var settings = require("../lib/settings.js");
+var settings = require('../lib/settings.js');
 var menu = require('../lib/menu.js');
 var menuObj = {
-  'General': '',
+  General: '',
   'User Interface': '',
-  'Settings': '',
-  'Customize': ''
+  Settings: '',
+  Customize: ''
 };
 
 /**
  * Loads all the modules and initliazes them
  */
-var loadAllModules = function loadAllModules() {
+function loadAllModules() {
   // window.dubplus was created in the init module
 
   dubPlus_modules.forEach(function (mod) {
@@ -641,7 +650,7 @@ var loadAllModules = function loadAllModules() {
     mod.optionState = settings.options[mod.id] || false;
 
     // This is run only once, when the script is loaded.
-    // put anything you want ALWAYS run on Dub+ script load here 
+    // put anything you want ALWAYS run on Dub+ script load here
     if (typeof mod.init === 'function') {
       mod.init.call(mod);
     }
@@ -651,136 +660,114 @@ var loadAllModules = function loadAllModules() {
       mod.turnOn.call(mod);
     }
     var _extraIcon = null;
-    // if module has a defined .extra {function} but does not define the .extraIcon {string} 
+    // if module has a defined .extra {function} but does not define the .extraIcon {string}
     // then we use 'pencil' as the default icon
     if (typeof mod.extra === 'function' && !mod.extraIcon) {
       _extraIcon = 'pencil';
     }
+    if (!menuObj[mod.category]) {
+      menuObj[mod.category] = new DocumentFragment();
+    }
 
     // generate the html for the menu option and add it to the
     // appropriate category
-    menuObj[mod.category] += menu.makeOptionMenu(mod.moduleName, {
+    menuObj[mod.category].appendChild(menu.makeOptionMenu(mod.moduleName, {
       id: mod.id,
       desc: mod.description,
       state: mod.optionState,
       extraIcon: mod.extraIcon || _extraIcon,
       cssClass: mod.menuCssClass || '',
       altIcon: mod.altIcon || null
-    });
+    }));
   });
   return menuObj;
-};
+}
 var _default = loadAllModules;
 exports["default"] = _default;
 
-},{"../lib/menu.js":7,"../lib/settings.js":8,"../modules/index.js":29,"../utils/options.js":45}],6:[function(require,module,exports){
+},{"../lib/menu.js":7,"../lib/settings.js":8,"../modules/index.js":29,"../utils/options.js":46}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = void 0;
+exports.toggleMenuSection = toggleMenuSection;
+exports.onMenuEdit = onMenuEdit;
+exports.onMenuToggle = onMenuToggle;
+exports.onMenuAction = onMenuAction;
+exports.toggleMenu = toggleMenu;
 var options = require('../utils/options.js');
 
 /**
- * Handles the toggling of the menu sections
- * @param  {Element} currentSection The pure DOM element of menu header
- * @return {undefined}
+ * handles opening and closing of a menu section
+ * @param  {string} id The id of the section to toggle
  */
-var toggleMenuSection = function toggleMenuSection(currentSection) {
-  var menuSec = currentSection.nextElementSibling;
-  var icon = currentSection.children[0];
-  var menuName = currentSection.textContent.trim().replace(" ", "-").toLowerCase();
+function toggleMenuSection(id) {
+  var sectionHeader = document.getElementById(id);
+  var icon = sectionHeader.querySelector('.fa');
+  var sectionUL = sectionHeader.nextElementSibling;
+  var menuName = sectionHeader.textContent.trim().replace(' ', '-').toLowerCase();
   var closedClass = 'dubplus-menu-section-closed';
-  var isClosed = $(menuSec).toggleClass(closedClass).hasClass(closedClass);
-  if (isClosed) {
-    // menu is closed
-    $(icon).removeClass('fa-angle-down');
-    $(icon).addClass('fa-angle-right');
-    options.saveOption('menu', menuName, 'closed');
-  } else {
-    // menu is open
-    $(icon).removeClass('fa-angle-right');
-    $(icon).addClass('fa-angle-down');
-    options.saveOption('menu', menuName, 'open');
-  }
-};
+  sectionUL.classList.toggle(closedClass);
+  var isClosed = sectionUL.classList.contains(closedClass);
+  icon.classList.toggle('fa-angle-down');
+  icon.classList.toggle('fa-angle-right');
+  options.saveOption('menu', menuName, isClosed ? 'closed' : 'open');
+}
 
 /**
- * Traverses up the dubplus menu DOM tree until it finds a match to a corresponding function
- * @param  {Element} target DOM Element
- * @return {Object}         our module or null
+ * handles the pencil icon click
+ * @param {string} id
  */
-var traverseMenuDOM = function traverseMenuDOM(target) {
-  // if we've reached the dubplus-menu container then we've gone too far
-  if (!target || $(target).hasClass('dubplus-menu')) {
-    return null;
-  }
-
-  // to handle the opening/closings of our sections
-  if ($(target).hasClass('dubplus-menu-section-header')) {
-    toggleMenuSection(target);
-    return null;
-  }
-
-  // check if a module exists matching current ID
-  var module = window.dubplus[target.id];
-  if (!module) {
-    // recursively try until we get a hit or reach our menu container
-    return traverseMenuDOM(target.parentElement);
-  } else {
-    return module;
-  }
-};
-
-/**
- * Click event handler for the whole menu, delegating events to their proper function
- * @param  {object} ev the click event object
- * @return {undefined}
- */
-var menuDelegator = function menuDelegator(ev) {
-  var mod = traverseMenuDOM(ev.target);
+function onMenuEdit(id) {
+  var mod = window.dubplus[id];
   if (!mod) {
     return;
   }
-
-  // if clicking on the "extra-icon", run module's "extra" function
-  if ($(ev.target).hasClass('extra-icon') && mod.extra) {
+  if (mod.extra) {
     mod.extra.call(mod);
+  }
+}
+
+/**
+ * handles the toggling of the switch
+ * @param {string} id
+ */
+function onMenuToggle(id) {
+  var mod = window.dubplus[id];
+  if (!mod) {
     return;
   }
   if (mod.turnOn && mod.turnOff) {
-    var newOptionState;
+    // if it was off
     if (!mod.optionState) {
-      newOptionState = true;
       mod.turnOn.call(mod);
     } else {
-      newOptionState = false;
       mod.turnOff.call(mod);
     }
-    mod.optionState = newOptionState;
-    options.toggleAndSave(mod.id, newOptionState);
+    mod.optionState = !mod.optionState;
+    options.toggleAndSave(mod.id, mod.optionState);
+  }
+}
+
+/**
+ * handles the action of the menu item (like full screen, etc)
+ * @param {string} id
+ */
+function onMenuAction(id) {
+  var mod = window.dubplus[id];
+  if (!mod) {
     return;
   }
   if (mod.go) {
-    // .go is used for modules that never save state, like fullscreen
     mod.go.call(mod);
   }
-};
-var _default = function _default() {
-  var dpMenu = document.querySelector('.dubplus-menu');
+}
+function toggleMenu() {
+  document.querySelector('.dubplus-menu').classList.toggle('dubplus-menu-open');
+}
 
-  // add event listener to the main menu and delegate
-  dpMenu.addEventListener('click', menuDelegator);
-
-  // hide/show the  menu when you click on the icon in the top right
-  document.querySelector('.dubplus-icon').addEventListener('click', function () {
-    $(dpMenu).toggleClass('dubplus-menu-open');
-  });
-};
-exports["default"] = _default;
-
-},{"../utils/options.js":45}],7:[function(require,module,exports){
+},{"../utils/options.js":46}],7:[function(require,module,exports){
 'use strict';
 
 var _menuEvents = _interopRequireDefault(require("./menu-events.js"));
@@ -788,55 +775,153 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default":
 var settings = require('./settings.js');
 var css = require('../utils/css.js');
 // this is used to set the state of the contact menu section
-var arrow = "down";
-var isClosedClass = "";
-if (settings.menu.contact === "closed") {
-  isClosedClass = "dubplus-menu-section-closed";
-  arrow = "right";
+var arrow = 'down';
+var isClosedClass = '';
+if (settings.menu.contact === 'closed') {
+  isClosedClass = 'dubplus-menu-section-closed';
+  arrow = 'right';
 }
 
-// the contact section is hardcoded and setup up here
-var contactSection = "\n  <div id=\"dubplus-contact\" class=\"dubplus-menu-section-header\">\n      <span class=\"fa fa-angle-".concat(arrow, "\"></span>\n      <p>Contact</p>\n    </div>\n    <ul class=\"dubplus-menu-section ").concat(isClosedClass, "\">\n      <li class=\"dubplus-menu-icon\">\n        <span class=\"fa fa-bug\"></span>\n        <a href=\"https://discord.gg/XUkG3Qy\" class=\"dubplus-menu-label\" target=\"_blank\">Report bugs on Discord</a>\n      </li>\n      <li class=\"dubplus-menu-icon\">\n        <span class=\"fa fa-reddit-alien\"></span>\n        <a href=\"https://www.reddit.com/r/DubPlus/\" class=\"dubplus-menu-label\"  target=\"_blank\">Reddit</a>\n      </li>\n      <li class=\"dubplus-menu-icon\">\n        <span class=\"fa fa-facebook\"></span>\n        <a href=\"https://facebook.com/DubPlusScript\" class=\"dubplus-menu-label\"  target=\"_blank\">Facebook</a>\n      </li>\n      <li class=\"dubplus-menu-icon\">\n        <span class=\"fa fa-twitter\"></span>\n        <a href=\"https://twitter.com/DubPlusScript\" class=\"dubplus-menu-label\"  target=\"_blank\">Twitter</a>\n      </li>\n    </ul>");
+/*
+<div id="dubplus-contact" class="dubplus-menu-section-header">
+  <span class="fa fa-angle-${arrow}"></span>
+  <p>Contact</p>
+</div>
+<ul class="dubplus-menu-section ${isClosedClass}">
+  <li class="dubplus-menu-icon">
+    <span class="fa fa-bug"></span>
+    <a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>
+  </li>
+  <li class="dubplus-menu-icon">
+    <span class="fa fa-reddit-alien"></span>
+    <a href="https://www.reddit.com/r/DubPlus/" class="dubplus-menu-label"  target="_blank">Reddit</a>
+  </li>
+  <li class="dubplus-menu-icon">
+    <span class="fa fa-facebook"></span>
+    <a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>
+  </li>
+  <li class="dubplus-menu-icon">
+    <span class="fa fa-twitter"></span>
+    <a href="https://twitter.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Twitter</a>
+  </li>
+</ul>`;
+*/
+function makeContactSection() {
+  var fragment = new DocumentFragment();
+  var contacts = [{
+    icon: 'bug',
+    link: 'https://discord.gg/XUkG3Qy',
+    text: 'Report bugs on Discord'
+  }, {
+    icon: 'reddit-alien',
+    link: 'https://www.reddit.com/r/DubPlus/',
+    text: 'Reddit'
+  }, {
+    icon: 'facebook',
+    link: 'https://facebook.com/DubPlusScript',
+    text: 'Facebook'
+  }, {
+    icon: 'twitter',
+    link: 'https://twitter.com/DubPlusScript',
+    text: 'Twitter'
+  }];
+  var contactSection = document.createElement('div');
+  contactSection.id = 'dubplus-contact';
+  contactSection.className = 'dubplus-menu-section-header';
+  contactSection.innerHTML = "\n    <span class=\"fa fa-angle-".concat(arrow, "\"></span>\n    <p>Contact</p>\n  ");
+  contactSection.setAttribute('onclick', "window.dubplus.toggleMenuSection('dubplus-contact')");
+  fragment.appendChild(contactSection);
+  var contactList = document.createElement('ul');
+  contactList.className = "dubplus-menu-section ".concat(isClosedClass);
+  contacts.forEach(function (contact) {
+    var contactItem = document.createElement('li');
+    contactItem.className = 'dubplus-menu-icon';
+    contactItem.innerHTML = "\n      <span class=\"fa fa-".concat(contact.icon, "\"></span>\n      <a href=\"").concat(contact.link, "\" class=\"dubplus-menu-label\" target=\"_blank\">").concat(contact.text, "</a>\n    ");
+    contactList.appendChild(contactItem);
+  });
+  fragment.appendChild(contactList);
+  return fragment;
+}
 module.exports = {
   beginMenu: function beginMenu() {
+    var _document$querySelect;
     // load font-awesome icons from CDN to be used in the menu
-    css.loadExternal('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+    css.loadExternal('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css', 'dubplus-font-awesome');
 
-    // add icon to the upper right corner
-    var menuIcon = "<div class=\"dubplus-icon\"><img src=\"".concat(settings.srcRoot, "/images/dubplus.svg\" alt=\"\"></div>");
-    document.querySelector('.header-right-navigation').insertAdjacentHTML('beforeend', menuIcon);
+    /*
+      <div class="dubplus-icon">
+        <img src="images/dubplus.svg" alt="" />
+      </div>
+    */
+    // remove old one:
+    (_document$querySelect = document.querySelector('.dubplus-icon')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.remove();
 
-    // make the menu
-    var dp_menu_html = "\n      <section class=\"dubplus-menu\">\n          <p class=\"dubplus-menu-header\">Dub+ Options</p>";
-    return dp_menu_html;
+    // create new one:
+    var menuIcon = document.createElement('div');
+    menuIcon.className = 'dubplus-icon';
+    var iconImg = document.createElement('img');
+    iconImg.src = "".concat(settings.srcRoot, "/images/dubplus.svg");
+    iconImg.alt = '';
+    menuIcon.appendChild(iconImg);
+    menuIcon.setAttribute('onclick', 'window.dubplus.toggleMenu()');
+    document.querySelector('.header-right-navigation').appendChild(menuIcon);
+
+    /*
+      <section class="dubplus-menu">
+        <p class="dubplus-menu-header">Dub+ Options</p>
+      </section>
+    */
+    var menuContainer = document.createElement('section');
+    menuContainer.className = 'dubplus-menu';
+    var header = document.createElement('p');
+    header.className = 'dubplus-menu-header';
+    header.textContent = 'Dub+ Options';
+    menuContainer.appendChild(header);
+    return menuContainer;
   },
-  finishMenu: function finishMenu(menuObj, menuString) {
+  finishMenu: function finishMenu(menuObj, menuContainer) {
     // dynamically create our menu from strings provided by each module
     for (var category in menuObj) {
-      var fixed = category.replace(" ", "-").toLowerCase();
+      var fixed = category.replace(' ', '-').toLowerCase();
       var menuSettings = settings.menu[fixed];
       var id = 'dubplus-' + fixed;
-      var arrow = "down";
-      var isClosedClass = "";
-      if (menuSettings === "closed") {
-        isClosedClass = "dubplus-menu-section-closed";
-        arrow = "right";
+      var arrow = 'down';
+      var isClosedClass = '';
+      if (menuSettings === 'closed') {
+        isClosedClass = 'dubplus-menu-section-closed';
+        arrow = 'right';
       }
-      menuString += "\n        <div id=\"".concat(id, "\" class=\"dubplus-menu-section-header\">\n          <span class=\"fa fa-angle-").concat(arrow, "\"></span>\n          <p>").concat(category, "</p>\n        </div>\n        <ul class=\"dubplus-menu-section ").concat(isClosedClass, "\">");
-      menuString += menuObj[category];
-      menuString += '</ul>';
+
+      /*
+        <div id="{id}" class="dubplus-menu-section-header" onclick="...">
+          <span class="fa fa-angle-{arrow}"></span>
+          <p>{category}</p>
+        </div>
+        <ul class="dubplus-menu-section {isClosedClass}">
+          {menuObj[category]}
+        </ul>
+      */
+
+      var sectionHeader = document.createElement('div');
+      sectionHeader.id = id;
+      sectionHeader.className = 'dubplus-menu-section-header';
+      var arrowSpan = document.createElement('span');
+      arrowSpan.className = "fa fa-angle-".concat(arrow);
+      var p = document.createElement('p');
+      p.textContent = category;
+      sectionHeader.appendChild(arrowSpan);
+      sectionHeader.appendChild(p);
+      sectionHeader.setAttribute('onclick', "window.dubplus.toggleMenuSection('".concat(id, "')"));
+      var sectionUL = document.createElement('ul');
+      sectionUL.className = "dubplus-menu-section ".concat(isClosedClass);
+      sectionUL.appendChild(menuObj[category]);
+      menuContainer.appendChild(sectionHeader);
+      menuContainer.appendChild(sectionUL);
     }
 
     // contact section last, is already fully formed, not dynamic
-    menuString += contactSection;
-    // final part of the menu string
-    menuString += '</section>';
-
-    // add it to the DOM
-    document.body.insertAdjacentHTML('beforeend', menuString);
-
-    // initialize our click event delegator
-    (0, _menuEvents["default"])();
+    menuContainer.appendChild(makeContactSection());
+    document.body.appendChild(menuContainer);
   },
   makeOptionMenu: function makeOptionMenu(menuTitle, options) {
     var defaults = {
@@ -853,25 +938,63 @@ module.exports = {
       altIcon: null // use a font-awesome icon instead of the switch
     };
     var opts = Object.assign({}, defaults, options);
-    var _extra = '';
-    var _state = opts.state ? 'dubplus-switch-on' : '';
-    if (opts.extraIcon) {
-      _extra = "<span class=\"fa fa-".concat(opts.extraIcon, " extra-icon\"></span>");
-    }
+    var switchState = opts.state ? 'dubplus-switch-on' : '';
 
     // default icon on the left of each menu item is the switch
-    var mainCssClass = "dubplus-switch";
-    var mainIcon = "\n        <div class=\"dubplus-switch-bg\">\n          <div class=\"dubplus-switcher\"></div>\n        </div>";
-    // however, if an "altIcon" is provided, then we use that instead
-    if (opts.altIcon) {
-      mainCssClass = "dubplus-menu-icon";
-      mainIcon = "<span class=\"fa fa-".concat(opts.altIcon, "\"></span>");
+    var mainCssClass = 'dubplus-switch';
+
+    /*
+       --- IF ALT ICON IS DEFINED ---
+      <li id="{opts.id}" class="dubplus-menu-icon dubplus-switch-{on|off} {opts.cssClass}" title="{opts.desc}">
+        <span class="fa fa-{opts.altIcon}"></span>
+        <span class="dubplus-menu-label">{menuTitle}</span>
+      </li>
+       --- ELSE ---
+      <li id="{opts.id}" class="dubplus-switch dubplus-switch-{on|off} {opts.cssClass}" title="{opts.desc}">
+        <!-- IF EXTRA ICON -->
+        <span class="fa fa-{opts.extraIcon} extra-icon"></span>
+        <!-- ENDIF -->
+        <div class="dubplus-switch-bg">
+          <div class="dubplus-switcher"></div>
+        </div>
+        <span class="dubplus-menu-label">{menuTitle}</span>
+      </li>
+    */
+
+    var mainIcon;
+    if (options.altIcon) {
+      mainCssClass = 'dubplus-menu-icon';
+      mainIcon = document.createElement('span');
+      mainIcon.className = "fa fa-".concat(opts.altIcon);
+      mainIcon.setAttribute('onclick', "window.dubplus.onMenuAction('".concat(opts.id, "')"));
+    } else {
+      mainIcon = document.createElement('div');
+      mainIcon.className = 'dubplus-switch-bg';
+      var switcher = document.createElement('div');
+      switcher.className = 'dubplus-switcher';
+      mainIcon.appendChild(switcher);
+      mainIcon.setAttribute('onclick', "window.dubplus.onMenuToggle('".concat(opts.id, "')"));
     }
-    return "\n      <li id=\"".concat(opts.id, "\" class=\"").concat(mainCssClass, " ").concat(_state, " ").concat(opts.cssClass, " title=\"").concat(opts.desc, "\">\n        ").concat(_extra, "\n        ").concat(mainIcon, "\n        <span class=\"dubplus-menu-label\">").concat(menuTitle, "</span>\n      </li>");
+    var li = document.createElement('li');
+    li.id = opts.id;
+    li.className = "".concat(mainCssClass, " ").concat(switchState, " ").concat(opts.cssClass).trim();
+    li.title = opts.desc;
+    if (opts.extraIcon) {
+      var extra = document.createElement('span');
+      extra.className = "fa fa-".concat(opts.extraIcon, " extra-icon");
+      extra.setAttribute('onclick', "window.dubplus.onMenuEdit('".concat(opts.id, "')"));
+      li.appendChild(extra);
+    }
+    li.appendChild(mainIcon);
+    var label = document.createElement('span');
+    label.className = 'dubplus-menu-label';
+    label.textContent = menuTitle;
+    li.appendChild(label);
+    return li;
   }
 };
 
-},{"../utils/css.js":40,"./menu-events.js":6,"./settings.js":8}],8:[function(require,module,exports){
+},{"../utils/css.js":41,"./menu-events.js":6,"./settings.js":8}],8:[function(require,module,exports){
 (function (_RESOURCE_SRC_){(function (){
 "use strict";
 
@@ -963,7 +1086,7 @@ afk_module.extra = function () {
 };
 module.exports = afk_module;
 
-},{"../lib/settings.js":8,"../utils/modal.js":42,"../utils/options.js":45}],10:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":43,"../utils/options.js":46}],10:[function(require,module,exports){
 "use strict";
 
 var _previewList = require("../emojiUtils/previewList.js");
@@ -971,8 +1094,8 @@ var _previewList = require("../emojiUtils/previewList.js");
  * Autocomplete Emojis/Emotes
  */
 /*global _, Dubtrack, emojify*/
-var settings = require("../lib/settings.js");
-var prepEmjoji = require("../emojiUtils/prepEmoji.js");
+var settings = require('../lib/settings.js');
+var prepEmjoji = require('../emojiUtils/prepEmoji.js');
 // because I have a lot of logging on each keypress I made this
 var debugAC = false;
 function log() {
@@ -981,10 +1104,10 @@ function log() {
   }
 }
 var myModule = {};
-myModule.id = "dubplus-autocomplete";
-myModule.moduleName = "Autocomplete Emoji";
-myModule.description = "Toggle autocompleting emojis and emotes.  Shows a preview box in the chat";
-myModule.category = "General";
+myModule.id = 'dubplus-autocomplete';
+myModule.moduleName = 'Autocomplete Emoji';
+myModule.description = 'Toggle autocompleting emojis and emotes.  Shows a preview box in the chat';
+myModule.category = 'General';
 var KEYS = {
   up: 38,
   down: 40,
@@ -1000,7 +1123,7 @@ var KEYS = {
   ctrl: 17
 };
 var keyCharMin = 3; // when to start showing previews
-var inputRegex = new RegExp("(:)([&!()\\+\\-_a-z0-9]+)($|\\s)", "ig");
+var inputRegex = new RegExp('(:)([&!()\\+\\-_a-z0-9]+)($|\\s)', 'ig');
 
 /**************************************************************************
  * A bunch of utility helpers for the emoji preview
@@ -1009,7 +1132,7 @@ var emojiUtils = {
   createPreviewObj: function createPreviewObj(type, id, name) {
     return {
       src: prepEmjoji[type].template(id),
-      text: ":" + name + ":",
+      text: ':' + name + ':',
       alt: name,
       cn: type
     };
@@ -1020,29 +1143,29 @@ var emojiUtils = {
     var _key;
     emojiArray.forEach(function (val) {
       _key = val.toLowerCase();
-      if (typeof prepEmjoji.twitch.emotes[_key] !== "undefined") {
-        listArray.push(self.createPreviewObj("twitch", prepEmjoji.twitch.emotes[_key], val));
+      if (typeof prepEmjoji.twitch.emotes[_key] !== 'undefined') {
+        listArray.push(self.createPreviewObj('twitch', prepEmjoji.twitch.emotes[_key], val));
       }
-      if (typeof prepEmjoji.bttv.emotes[_key] !== "undefined") {
-        listArray.push(self.createPreviewObj("bttv", prepEmjoji.bttv.emotes[_key], val));
+      if (typeof prepEmjoji.bttv.emotes[_key] !== 'undefined') {
+        listArray.push(self.createPreviewObj('bttv', prepEmjoji.bttv.emotes[_key], val));
       }
-      if (typeof prepEmjoji.tasty.emotes[_key] !== "undefined") {
-        listArray.push(self.createPreviewObj("tasty", _key, val));
+      if (typeof prepEmjoji.tasty.emotes[_key] !== 'undefined') {
+        listArray.push(self.createPreviewObj('tasty', _key, val));
       }
-      if (typeof prepEmjoji.frankerFacez.emotes[_key] !== "undefined") {
-        listArray.push(self.createPreviewObj("frankerFacez", prepEmjoji.frankerFacez.emotes[_key], val));
+      if (typeof prepEmjoji.frankerFacez.emotes[_key] !== 'undefined') {
+        listArray.push(self.createPreviewObj('frankerFacez', prepEmjoji.frankerFacez.emotes[_key], val));
       }
       if (emojify.emojiNames.indexOf(_key) >= 0) {
-        listArray.push(self.createPreviewObj("emoji", val, val));
+        listArray.push(self.createPreviewObj('emoji', val, val));
       }
     });
     (0, _previewList.makeList)(listArray);
   },
   filterEmoji: function filterEmoji(str) {
-    var finalStr = str.replace(/([+()])/, "\\$1");
-    var re = new RegExp("^" + finalStr, "i");
+    var finalStr = str.replace(/([+()])/, '\\$1');
+    var re = new RegExp('^' + finalStr, 'i');
     var arrayToUse = emojify.emojiNames || [];
-    if (settings.options["dubplus-emotes"]) {
+    if (settings.options['dubplus-emotes']) {
       arrayToUse = prepEmjoji.emojiEmotes || []; // merged array
     }
     return arrayToUse.filter(function (val) {
@@ -1058,10 +1181,10 @@ var emojiUtils = {
 var previewList = new _previewList.PreviewListManager();
 var shouldClearPreview = function shouldClearPreview(ac, pvStr, current, kMin) {
   var lastChar = current.charAt(current.length - 1);
-  if (pvStr.length < kMin || lastChar === ":" || lastChar === " " || current === "") {
-    pvStr = "";
-    ac.innerHTML = "";
-    ac.className = "";
+  if (pvStr.length < kMin || lastChar === ':' || lastChar === ' ' || current === '') {
+    pvStr = '';
+    ac.innerHTML = '';
+    ac.className = '';
   }
   return pvStr;
 };
@@ -1073,14 +1196,14 @@ var handleMatch = function handleMatch(triggerMatch, currentText, cursorPos, key
 
   var strStart = currentText.lastIndexOf(currentMatch);
   var strEnd = strStart + currentMatch.length;
-  log("cursorPos", cursorPos);
+  log('cursorPos', cursorPos);
   if (cursorPos >= strStart && cursorPos <= strEnd) {
     // twitch and other emoji
-    if (currentMatch && currentMatch.length >= keyCharMin && emoteChar === ":") {
+    if (currentMatch && currentMatch.length >= keyCharMin && emoteChar === ':') {
       emojiUtils.addToPreviewList(emojiUtils.filterEmoji(currentMatch));
     }
   }
-  log("match", triggerMatch, strStart, strEnd);
+  log('match', triggerMatch, strStart, strEnd);
   return {
     start: strStart,
     end: strEnd,
@@ -1088,7 +1211,7 @@ var handleMatch = function handleMatch(triggerMatch, currentText, cursorPos, key
   };
 };
 var chatInputKeyupFunc = function chatInputKeyupFunc(e) {
-  var acPreview = document.querySelector("#autocomplete-preview");
+  var acPreview = document.querySelector('#autocomplete-preview');
   var hasItems = acPreview.children.length > 0;
   if (e.keyCode === KEYS.enter && !hasItems) {
     return; // do nothing
@@ -1105,50 +1228,51 @@ var chatInputKeyupFunc = function chatInputKeyupFunc(e) {
   }
   if ((e.keyCode === KEYS.enter || e.keyCode === KEYS.tab) && hasItems) {
     e.preventDefault();
-    previewList.selected = $(".preview-item.selected").find(".ac-text").text();
+    previewList.selected = $('.preview-item.selected').find('.ac-text').text();
     previewList.updateChatInput();
     return false;
   }
-  var currentText = this.value;
-  var cursorPos = $(this).get(0).selectionStart;
+  var currentText = e.target.value;
+  var cursorPos = e.target.selectionStart;
   var triggerMatch = currentText.match(inputRegex);
-  var previewSearchStr = "";
+  var previewSearchStr = '';
   if (triggerMatch && triggerMatch.length > 0) {
     var matchData = handleMatch(triggerMatch, currentText, cursorPos, keyCharMin);
     previewSearchStr = matchData.currentMatch;
     previewList.data = matchData;
   }
-  log("inKeyup", previewList.data);
+  log('inKeyup', previewList.data);
   shouldClearPreview(acPreview, previewSearchStr, currentText, keyCharMin);
 };
 var chatInputKeydownFunc = function chatInputKeydownFunc(e) {
-  var emptyPreview = !document.querySelector("#autocomplete-preview > li");
-  var isValidKey = _.includes([KEYS.tab, KEYS.enter, KEYS.up, KEYS.down, KEYS.left, KEYS.right], e.keyCode);
-
-  // Manually send the keycodes if the preview popup isn't visible
-  if (emptyPreview || !isValidKey) {
-    QueUp.room.chat.ncKeyDown(e);
+  var hasItems = document.querySelector('#autocomplete-preview > li');
+  var isValidKey = [KEYS.tab, KEYS.enter, KEYS.up, KEYS.down].includes(e.keyCode);
+  var isModifierKey = e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
+  if (!isModifierKey && hasItems && isValidKey) {
+    e.preventDefault();
     return;
   }
 
-  // stop default behaviors of special keys so we can use them in preview
-  if (isValidKey && !emptyPreview) {
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
+  // temporary fix to restore enter key functionality for sending messages
+  // due to the new multiline chat textarea
+  if (!isModifierKey && e.keyCode === KEYS.enter) {
+    window.QueUp.room.chat.sendMessage();
+    window.QueUp.room.chat.resizeTextarea();
+  } else if (!isModifierKey) {
+    window.QueUp.room.chat.ncKeyDown(e);
   }
 };
 myModule.turnOn = function () {
   previewList.init();
-  QueUp.room.chat.delegateEvents(_.omit(QueUp.room.chat.events, ["keydown #chat-txt-message"]));
-  $(document.body).on("keydown", "#chat-txt-message", chatInputKeydownFunc);
-  $(document.body).on("keyup", "#chat-txt-message", chatInputKeyupFunc);
+  QueUp.room.chat.delegateEvents(_.omit(QueUp.room.chat.events, ['keydown #chat-txt-message']));
+  $('#chat-txt-message').on('keydown', chatInputKeydownFunc);
+  $('#chat-txt-message').on('keyup', chatInputKeyupFunc);
 };
 myModule.turnOff = function () {
   previewList.stop();
   QueUp.room.chat.delegateEvents(QueUp.room.chat.events);
-  $(document.body).off("keydown", "#chat-txt-message", chatInputKeydownFunc);
-  $(document.body).off("keyup", "#chat-txt-message", chatInputKeyupFunc);
+  $('#chat-txt-message').off('keydown', chatInputKeydownFunc);
+  $('#chat-txt-message').off('keyup', chatInputKeyupFunc);
 };
 module.exports = myModule;
 
@@ -1241,7 +1365,7 @@ myModule.turnOff = function () {
 };
 module.exports = myModule;
 
-},{"../lib/settings.js":8,"../utils/modal.js":42,"../utils/options.js":45}],13:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":43,"../utils/options.js":46}],13:[function(require,module,exports){
 "use strict";
 
 var _notify = require("../utils/notify.js");
@@ -1287,9 +1411,10 @@ myModule.turnOff = function () {
 };
 module.exports = myModule;
 
-},{"../lib/settings.js":8,"../utils/notify.js":44}],14:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/notify.js":45}],14:[function(require,module,exports){
 "use strict";
 
+var _api = require("../utils/api.js");
 /**
  * Community Theme
  * Toggle Community CSS theme
@@ -1298,15 +1423,15 @@ module.exports = myModule;
 /* global Dubtrack */
 var css = require('../utils/css.js');
 var myModule = {};
-myModule.id = "dubplus-comm-theme";
-myModule.moduleName = "Community Theme";
-myModule.description = "Toggle Community CSS theme.";
-myModule.category = "Customize";
+myModule.id = 'dubplus-comm-theme';
+myModule.moduleName = 'Community Theme';
+myModule.description = 'Toggle Community CSS theme.';
+myModule.category = 'Customize';
 myModule.turnOn = function () {
   var location = QueUp.room.model.get('roomUrl');
   $.ajax({
     type: 'GET',
-    url: 'https://api.queup.net/room/' + location
+    url: "".concat(_api.apiBase, "/room/").concat(location)
   }).done(function (e) {
     var content = e.data.description;
 
@@ -1328,7 +1453,7 @@ myModule.turnOff = function () {
 };
 module.exports = myModule;
 
-},{"../utils/css.js":40}],15:[function(require,module,exports){
+},{"../utils/api.js":40,"../utils/css.js":41}],15:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1385,7 +1510,7 @@ myModule.turnOff = function () {
 };
 module.exports = myModule;
 
-},{"../lib/settings.js":8,"../utils/modal.js":42,"../utils/options.js":45}],16:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":43,"../utils/options.js":46}],16:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1433,7 +1558,7 @@ myModule.turnOff = function () {
 };
 module.exports = myModule;
 
-},{"../lib/settings.js":8,"../utils/css.js":40,"../utils/modal.js":42,"../utils/options.js":45}],17:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/css.js":41,"../utils/modal.js":43,"../utils/options.js":46}],17:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1487,7 +1612,7 @@ myModule.turnOff = function () {
 };
 module.exports = myModule;
 
-},{"../lib/settings.js":8,"../utils/modal.js":42,"../utils/options.js":45}],18:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":43,"../utils/options.js":46}],18:[function(require,module,exports){
 "use strict";
 
 var settings = require("../lib/settings.js");
@@ -1553,7 +1678,7 @@ myModule.turnOff = function () {
 };
 module.exports = myModule;
 
-},{"../lib/settings.js":8,"../utils/modal.js":42,"../utils/options.js":45}],19:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":43,"../utils/options.js":46}],19:[function(require,module,exports){
 "use strict";
 
 var _notify = require("../utils/notify.js");
@@ -1606,7 +1731,7 @@ myModule.turnOff = function () {
 };
 module.exports = myModule;
 
-},{"../lib/settings.js":8,"../utils/modal.js":42,"../utils/notify.js":44,"../utils/options.js":45}],20:[function(require,module,exports){
+},{"../lib/settings.js":8,"../utils/modal.js":43,"../utils/notify.js":45,"../utils/options.js":46}],20:[function(require,module,exports){
 "use strict";
 
 var _modcheck = _interopRequireDefault(require("../utils/modcheck.js"));
@@ -1652,7 +1777,7 @@ myModule.turnOff = function () {
 };
 module.exports = myModule;
 
-},{"../utils/modcheck.js":43}],21:[function(require,module,exports){
+},{"../utils/modcheck.js":44}],21:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1744,23 +1869,51 @@ exports["default"] = _default;
  * This module is not a menu item, it is run once on load
  */
 
-var eta = function eta() {
+function eta() {
+  var tooltip = document.querySelector('.player_sharing .eta_tooltip_t');
+  var div = document.createElement('div');
+  div.className = 'eta_tooltip dubplus-tooltip';
+  div.style.cssText = 'min-width: 150px;position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -33px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9;';
+  var remainingTime = document.querySelector('#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min');
+  var queuePosition = document.querySelector('.queue-position');
+  var queueTotal = document.querySelector('.queue-total');
+  if (!remainingTime.textContent || !queueTotal.textContent) {
+    div.textContent = 'No one is in the queue';
+    tooltip.appendChild(div);
+    return;
+  }
+  if (!queuePosition.textContent) {
+    div.textContent = "You're not in the queue";
+    tooltip.appendChild(div);
+    return;
+  }
+  var current_time = parseInt(remainingTime.textContent);
+  var booth_duration = parseInt(queuePosition.textContent);
   var time = 4;
-  var current_time = parseInt($('#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min').text());
-  var booth_duration = parseInt($('.queue-position').text());
   var booth_time = booth_duration * time - time + current_time;
   if (booth_time >= 0) {
-    $(this).append('<div class="eta_tooltip" style="position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -33px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9;">ETA: ' + booth_time + ' minutes</div>');
+    div.textContent = "ETA: ".concat(booth_time, " minute").concat(booth_time > 1 ? 's' : '');
   } else {
-    $(this).append('<div class="eta_tooltip" style="position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -33px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9;">You\'re not in the queue</div>');
+    div.textContent = "You're not in the queue";
   }
-};
-var hide_eta = function hide_eta() {
-  $(this).empty();
-};
+  tooltip.appendChild(div);
+}
+function hide_eta() {
+  var _document$querySelect;
+  (_document$querySelect = document.querySelector('.eta_tooltip')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.remove();
+}
 function _default() {
-  $('.player_sharing').append('<span class="icon-history eta_tooltip_t"></span>');
-  $('.eta_tooltip_t').mouseover(eta).mouseout(hide_eta);
+  if (document.querySelector('.player_sharing .eta_tooltip_t')) {
+    document.querySelector('.player_sharing .eta_tooltip_t').remove();
+  }
+  window.dubplus.etaTooltipShow = eta;
+  window.dubplus.etaTooltipHide = hide_eta;
+  var etaBtn = document.createElement('span');
+  etaBtn.className = 'icon-history eta_tooltip_t';
+  etaBtn.style.position = 'relative';
+  etaBtn.setAttribute('onmouseover', 'window.dubplus.etaTooltipShow()');
+  etaBtn.setAttribute('onmouseout', 'window.dubplus.etaTooltipHide()');
+  document.querySelector('.player_sharing').appendChild(etaBtn);
 }
 
 },{}],23:[function(require,module,exports){
@@ -1972,7 +2125,7 @@ myModule.turnOff = function () {
 };
 module.exports = myModule;
 
-},{"../utils/notify.js":44}],31:[function(require,module,exports){
+},{"../utils/notify.js":45}],31:[function(require,module,exports){
 "use strict";
 
 var rain = {};
@@ -2129,14 +2282,15 @@ module.exports = rain;
 "use strict";
 
 var _modcheck = _interopRequireDefault(require("../utils/modcheck.js"));
+var _api = require("../utils/api.js");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 /* global Dubtrack */
 var modal = require('../utils/modal.js');
 var dubshover = {};
-dubshover.id = "dubplus-dubs-hover";
-dubshover.moduleName = "Show Dub info on Hover";
-dubshover.description = "Show Dub info on Hover.";
-dubshover.category = "General";
+dubshover.id = 'dubplus-dubs-hover';
+dubshover.moduleName = 'Show Dub info on Hover';
+dubshover.description = 'Show Dub info on Hover.';
+dubshover.category = 'General';
 
 /*******************************/
 
@@ -2156,18 +2310,18 @@ dubshover.grabInfoWarning = function () {
 dubshover.showDubsOnHover = function () {
   var that = this;
   this.resetDubs();
-  QueUp.Events.bind("realtime:room_playlist-dub", this.dubWatcher.bind(this));
-  QueUp.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabWatcher.bind(this));
-  QueUp.Events.bind("realtime:user-leave", this.dubUserLeaveWatcher.bind(this));
-  QueUp.Events.bind("realtime:room_playlist-update", this.resetDubs.bind(this));
-  QueUp.Events.bind("realtime:room_playlist-update", this.resetGrabs.bind(this)); //TODO: Remove when we can hit the api for all grabs of current playing song
+  QueUp.Events.bind('realtime:room_playlist-dub', this.dubWatcher.bind(this));
+  QueUp.Events.bind('realtime:room_playlist-queue-update-grabs', this.grabWatcher.bind(this));
+  QueUp.Events.bind('realtime:user-leave', this.dubUserLeaveWatcher.bind(this));
+  QueUp.Events.bind('realtime:room_playlist-update', this.resetDubs.bind(this));
+  QueUp.Events.bind('realtime:room_playlist-update', this.resetGrabs.bind(this)); //TODO: Remove when we can hit the api for all grabs of current playing song
 
   var dubupEl = $('.dubup').first().parent('li');
   var dubdownEl = $('.dubdown').first().parent('li');
   var grabEl = $('.add-to-playlist-button').first().parent('li');
-  $(dubupEl).addClass("dubplus-updubs-hover");
-  $(dubdownEl).addClass("dubplus-downdubs-hover");
-  $(grabEl).addClass("dubplus-grabs-hover");
+  $(dubupEl).addClass('dubplus-updubs-hover');
+  $(dubdownEl).addClass('dubplus-downdubs-hover');
+  $(grabEl).addClass('dubplus-grabs-hover');
 
   //Show compiled info containers when casting/changing vote
   $(dubupEl).click(function (event) {
@@ -2214,7 +2368,7 @@ dubshover.showDubsOnHover = function () {
   });
   $(dubupEl).mouseenter(function (e) {
     var self = e.currentTarget;
-    if ($("#dubplus-updubs-container").length > 0) {
+    if ($('#dubplus-updubs-container').length > 0) {
       return;
     } //already exists
 
@@ -2222,23 +2376,23 @@ dubshover.showDubsOnHover = function () {
     var dubupBackground = $('.dubup').hasClass('voted') ? $('.dubup').css('background-color') : $('.dubup').find('.icon-arrow-up').css('color');
     var html;
     if (window.dubplus.dubs.upDubs.length > 0) {
-      html = '<ul id="dubinfo-preview" class="dubinfo-show dubplus-updubs-hover" style="border-color: ' + dubupBackground + '">';
+      html = "<ul id=\"dubinfo-preview\" class=\"dubinfo-show dubplus-updubs-hover\" style=\"border-color: ".concat(dubupBackground, "\">");
       window.dubplus.dubs.upDubs.forEach(function (val) {
-        html += '<li class="preview-dubinfo-item users-previews dubplus-updubs-hover">' + '<div class="dubinfo-image">' + '<img src="https://api.queup.net/user/' + val.userid + '/image">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
+        html += "\n          <li class=\"preview-dubinfo-item users-previews dubplus-updubs-hover\">\n            <div class=\"dubinfo-image\">\n              <img src=\"".concat(_api.apiBase, "/user/").concat(val.userid, "/image\">\n            </div>\n            <span class=\"dubinfo-text\">@").concat(val.username, "</span>\n          </li>\n        ");
       });
       html += '</ul>';
     } else {
-      html = '<div id="dubinfo-preview" class="dubinfo-show dubplus-updubs-hover dubplus-no-dubs" style="border-color: ' + dubupBackground + '">' + 'No updubs have been casted yet!' + '</div>';
+      html = "<div id=\"dubinfo-preview\" class=\"dubinfo-show dubplus-updubs-hover dubplus-no-dubs\" style=\"border-color: ".concat(dubupBackground, "\">\n          No updubs have been casted yet!\n        </div>");
     }
     var newEl = document.createElement('div');
     newEl.id = 'dubplus-updubs-container';
     newEl.className = 'dubinfo-show dubplus-updubs-hover';
     newEl.innerHTML = html;
-    newEl.style.visibility = "hidden";
+    newEl.style.visibility = 'hidden';
     document.body.appendChild(newEl);
     var elemRect = self.getBoundingClientRect();
     var bodyRect = document.body.getBoundingClientRect();
-    newEl.style.visibility = "";
+    newEl.style.visibility = '';
     newEl.style.width = infoPaneWidth + 'px';
     newEl.style.top = elemRect.top - 150 + 'px';
 
@@ -2268,7 +2422,7 @@ dubshover.showDubsOnHover = function () {
   });
   $(dubdownEl).mouseenter(function (e) {
     var self = e.currentTarget;
-    if ($("#dubplus-downdubs-container").length > 0) {
+    if ($('#dubplus-downdubs-container').length > 0) {
       return;
     } //already exists
 
@@ -2277,26 +2431,26 @@ dubshover.showDubsOnHover = function () {
     var html;
     if ((0, _modcheck["default"])(QueUp.session.id)) {
       if (window.dubplus.dubs.downDubs.length > 0) {
-        html = '<ul id="dubinfo-preview" class="dubinfo-show dubplus-downdubs-hover" style="border-color: ' + dubdownBackground + '">';
+        html = "<ul id=\"dubinfo-preview\" class=\"dubinfo-show dubplus-downdubs-hover\" style=\"border-color: ".concat(dubdownBackground, "\">");
         window.dubplus.dubs.downDubs.forEach(function (val) {
-          html += '<li class="preview-dubinfo-item users-previews dubplus-downdubs-hover">' + '<div class="dubinfo-image">' + '<img src="https://api.queup.net/user/' + val.userid + '/image">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
+          html += "\n            <li class=\"preview-dubinfo-item users-previews dubplus-downdubs-hover\">\n              <div class=\"dubinfo-image\">\n                <img src=\"".concat(_api.apiBase, "/user/").concat(val.userid, "/image\" />\n              </div>\n              <span class=\"dubinfo-text\">@").concat(val.username, "</span>\n            </li>\n          ");
         });
         html += '</ul>';
       } else {
-        html = '<div id="dubinfo-preview" class="dubinfo-show dubplus-downdubs-hover dubplus-no-dubs" style="border-color: ' + dubdownBackground + '">' + 'No downdubs have been casted yet!' + '</div>';
+        html = "<div id=\"dubinfo-preview\" class=\"dubinfo-show dubplus-downdubs-hover dubplus-no-dubs\" style=\"border-color: ".concat(dubdownBackground, "\">\n          No downdubs have been casted yet!\n          </div>");
       }
     } else {
-      html = '<div id="dubinfo-preview" class="dubinfo-show dubplus-downdubs-hover dubplus-downdubs-unauthorized" style="border-color: ' + dubdownBackground + '">' + 'You must be at least a mod to view downdubs!' + '</div>';
+      html = "<div id=\"dubinfo-preview\" class=\"dubinfo-show dubplus-downdubs-hover dubplus-downdubs-unauthorized\" style=\"border-color: ".concat(dubdownBackground, "\">\n          You must be at least a mod to view downdubs!\n        </div>");
     }
     var newEl = document.createElement('div');
     newEl.id = 'dubplus-downdubs-container';
     newEl.className = 'dubinfo-show dubplus-downdubs-hover';
     newEl.innerHTML = html;
-    newEl.style.visibility = "hidden";
+    newEl.style.visibility = 'hidden';
     document.body.appendChild(newEl);
     var elemRect = self.getBoundingClientRect();
     var bodyRect = document.body.getBoundingClientRect();
-    newEl.style.visibility = "";
+    newEl.style.visibility = '';
     newEl.style.width = infoPaneWidth + 'px';
     newEl.style.top = elemRect.top - 150 + 'px';
 
@@ -2326,7 +2480,7 @@ dubshover.showDubsOnHover = function () {
   });
   $(grabEl).mouseenter(function (e) {
     var self = e.currentTarget;
-    if ($("#dubplus-grabs-container").length > 0) {
+    if ($('#dubplus-grabs-container').length > 0) {
       return;
     } //already exists
 
@@ -2336,21 +2490,21 @@ dubshover.showDubsOnHover = function () {
     if (window.dubplus.dubs.grabs.length > 0) {
       html = '<ul id="dubinfo-preview" class="dubinfo-show dubplus-grabs-hover" style="border-color: ' + grabsBackground + '">';
       window.dubplus.dubs.grabs.forEach(function (val) {
-        html += '<li class="preview-dubinfo-item users-previews dubplus-grabs-hover">' + '<div class="dubinfo-image">' + '<img src="https://api.queup.net/user/' + val.userid + '/image">' + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
+        html += '<li class="preview-dubinfo-item users-previews dubplus-grabs-hover">' + '<div class="dubinfo-image">' + "<img src=\"".concat(_api.apiBase, "/user/").concat(val.userid, "/image\" />") + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
       });
       html += '</ul>';
     } else {
-      html = '<div id="dubinfo-preview" class="dubinfo-show dubplus-grabs-hover dubplus-no-grabs" style="border-color: ' + grabsBackground + '">' + 'This song hasn\'t been grabbed yet!' + '</div>';
+      html = '<div id="dubinfo-preview" class="dubinfo-show dubplus-grabs-hover dubplus-no-grabs" style="border-color: ' + grabsBackground + '">' + "This song hasn't been grabbed yet!" + '</div>';
     }
     var newEl = document.createElement('div');
     newEl.id = 'dubplus-grabs-container';
     newEl.className = 'dubinfo-show dubplus-grabs-hover';
     newEl.innerHTML = html;
-    newEl.style.visibility = "hidden";
+    newEl.style.visibility = 'hidden';
     document.body.appendChild(newEl);
     var elemRect = self.getBoundingClientRect();
     var bodyRect = document.body.getBoundingClientRect();
-    newEl.style.visibility = "";
+    newEl.style.visibility = '';
     newEl.style.width = infoPaneWidth + 'px';
     newEl.style.top = elemRect.top - 150 + 'px';
 
@@ -2380,11 +2534,11 @@ dubshover.showDubsOnHover = function () {
   });
 };
 dubshover.stopDubsOnHover = function () {
-  QueUp.Events.unbind("realtime:room_playlist-dub", this.dubWatcher);
-  QueUp.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabWatcher);
-  QueUp.Events.unbind("realtime:user-leave", this.dubUserLeaveWatcher);
-  QueUp.Events.unbind("realtime:room_playlist-update", this.resetDubs);
-  QueUp.Events.unbind("realtime:room_playlist-update", this.resetGrabs); //TODO: Remove when we can hit the api for all grabs of current playing song
+  QueUp.Events.unbind('realtime:room_playlist-dub', this.dubWatcher);
+  QueUp.Events.unbind('realtime:room_playlist-queue-update-grabs', this.grabWatcher);
+  QueUp.Events.unbind('realtime:user-leave', this.dubUserLeaveWatcher);
+  QueUp.Events.unbind('realtime:room_playlist-update', this.resetDubs);
+  QueUp.Events.unbind('realtime:room_playlist-update', this.resetGrabs); //TODO: Remove when we can hit the api for all grabs of current playing song
 };
 dubshover.dubUserLeaveWatcher = function (e) {
   //Remove user from dub list
@@ -2431,7 +2585,7 @@ dubshover.grabWatcher = function (e) {
   }
 };
 dubshover.updateChatInputWithString = function (str) {
-  $("#chat-txt-message").val(str).focus();
+  $('#chat-txt-message').val(str).focus();
 };
 dubshover.deleteChatMessageClientSide = function (el) {
   $(el).parent('li')[0].remove();
@@ -2506,7 +2660,7 @@ dubshover.resetDubs = function () {
   window.dubplus.dubs.downDubs = [];
   // window.dubplus.dubs.grabs: [] //TODO: Uncomment this when we can hit the api for all grabs of current playing song
 
-  var dubsURL = "https://api.queup.dev/room/" + QueUp.room.model.id + "/playlist/active/dubs";
+  var dubsURL = "".concat(_api.apiBase, "/room/").concat(QueUp.room.model.id, "/playlist/active/dubs");
   $.getJSON(dubsURL, function (response) {
     response.data.upDubs.forEach(function (e) {
       //Dub already casted (usually from autodub)
@@ -2521,7 +2675,7 @@ dubshover.resetDubs = function () {
       }) || !QueUp.room.users.collection.findWhere({
         userid: e.userid
       }).attributes) {
-        $.getJSON("https://api.queup.dev/user/" + e.userid, function (response) {
+        $.getJSON("".concat(_api.apiBase, "/user/").concat(e.userid), function (response) {
           if (response && response.userinfo) {
             username = response.userinfo.username;
           }
@@ -2575,7 +2729,7 @@ dubshover.resetDubs = function () {
         }) || !QueUp.room.users.collection.findWhere({
           userid: e.userid
         }).attributes) {
-          $.getJSON("https://api.queup.dev/user/" + e.userid, function (response) {
+          $.getJSON("".concat(_api.apiBase, "/user/").concat(e.userid), function (response) {
             username = response.userinfo.username;
           });
         } else {
@@ -2612,7 +2766,7 @@ dubshover.turnOff = function () {
 };
 module.exports = dubshover;
 
-},{"../utils/modal.js":42,"../utils/modcheck.js":43}],33:[function(require,module,exports){
+},{"../utils/api.js":40,"../utils/modal.js":43,"../utils/modcheck.js":44}],33:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2648,17 +2802,22 @@ exports["default"] = _default;
  */
 
 /*global Dubtrack*/
-var snooze_tooltip = function snooze_tooltip(e) {
-  $(this).append('<div class="snooze_tooltip" style="position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -33px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9;">Mute current song</div>');
-};
-var hide_snooze_tooltip = function hide_snooze_tooltip() {
-  $('.snooze_tooltip').remove();
-};
+function snooze_tooltip() {
+  var div = document.createElement('div');
+  div.className = 'snooze_tooltip';
+  div.style.cssText = 'min-width: 186px;position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -15px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9';
+  div.textContent = 'Mute current song';
+  document.querySelector('.player_sharing .snooze_btn').appendChild(div);
+}
+function hide_snooze_tooltip() {
+  var _document$querySelect;
+  (_document$querySelect = document.querySelector('.snooze_tooltip')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.remove();
+}
 var eventUtils = {
   currentVol: 50,
   snoozed: false
 };
-var eventSongAdvance = function eventSongAdvance(e) {
+function eventSongAdvance(e) {
   if (e.startTime < 2) {
     if (eventUtils.snoozed) {
       QueUp.room.player.setVolume(eventUtils.currentVol);
@@ -2666,24 +2825,33 @@ var eventSongAdvance = function eventSongAdvance(e) {
     }
     return true;
   }
-};
-var snooze = function snooze() {
+}
+function snooze() {
   if (!eventUtils.snoozed && !QueUp.room.player.muted_player && QueUp.playerController.volume > 2) {
     eventUtils.currentVol = QueUp.playerController.volume;
     QueUp.room.player.mutePlayer();
     eventUtils.snoozed = true;
-    QueUp.Events.bind("realtime:room_playlist-update", eventSongAdvance);
+    QueUp.Events.bind('realtime:room_playlist-update', eventSongAdvance);
   } else if (eventUtils.snoozed) {
     QueUp.room.player.setVolume(eventUtils.currentVol);
     QueUp.room.player.updateVolumeBar();
     eventUtils.snoozed = false;
   }
-};
+}
 function _default() {
-  $('.player_sharing').append('<span class="icon-mute snooze_btn"></span>');
-  $('body').on('mouseover', '.snooze_btn', snooze_tooltip);
-  $('body').on('mouseout', '.snooze_btn', hide_snooze_tooltip);
-  $('body').on('click', '.snooze_btn', snooze);
+  if (document.querySelector('.player_sharing .snooze_btn')) {
+    document.querySelector('.player_sharing .snooze_btn').remove();
+  }
+  window.dubplus.snowTooltipShow = snooze_tooltip;
+  window.dubplus.snoozeTooltipHide = hide_snooze_tooltip;
+  window.dubplus.snoozeClick = snooze;
+  var snoozeBtn = document.createElement('span');
+  snoozeBtn.className = 'icon-mute snooze_btn';
+  snoozeBtn.style.position = 'relative';
+  snoozeBtn.setAttribute('onmouseover', 'window.dubplus.snowTooltipShow()');
+  snoozeBtn.setAttribute('onmouseout', 'window.dubplus.snoozeTooltipHide()');
+  snoozeBtn.setAttribute('onclick', 'window.dubplus.snoozeClick()');
+  document.querySelector('.player_sharing').appendChild(snoozeBtn);
 }
 
 },{}],35:[function(require,module,exports){
@@ -2732,7 +2900,7 @@ module.exports = {
   }
 };
 
-},{"../utils/options.js":45}],36:[function(require,module,exports){
+},{"../utils/options.js":46}],36:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2741,20 +2909,22 @@ module.exports = {
  */
 
 var myModule = {};
-myModule.id = "dubplus-spacebar-mute";
-myModule.moduleName = "Spacebar Mute";
-myModule.description = "Turn on/off the ability to mute current song with the spacebar.";
-myModule.category = "Settings";
+myModule.id = 'dubplus-spacebar-mute';
+myModule.moduleName = 'Spacebar Mute';
+myModule.description = 'Turn on/off the ability to mute current song with the spacebar.';
+myModule.category = 'Settings';
+var clickableTags = ['input', 'textarea', 'button', 'select', 'a'];
+function onSpacebar(event) {
+  var tag = event.target.tagName.toLowerCase();
+  if (event.which === 32 && !clickableTags.includes(tag) && !event.target.isContentEditable) {
+    QueUp.room.player.mutePlayer();
+  }
+}
 myModule.turnOn = function () {
-  $(document).bind('keypress.key32', function (event) {
-    var tag = event.target.tagName.toLowerCase();
-    if (event.which === 32 && tag !== 'input' && tag !== 'textarea') {
-      QueUp.room.player.mutePlayer();
-    }
-  });
+  $(document).on('keypress.key32', onSpacebar);
 };
 myModule.turnOff = function () {
-  $(document).unbind("keypress.key32");
+  $(document).off('keypress.key32', onSpacebar);
 };
 module.exports = myModule;
 
@@ -2846,18 +3016,34 @@ myModule.turnOff = function () {
 module.exports = myModule;
 
 },{}],40:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.apiBase = void 0;
+var apiBase = window.location.hostname.includes('staging') ? 'https://staging-api.queup.dev' : 'https://api.queup.net';
+exports.apiBase = apiBase;
+
+},{}],41:[function(require,module,exports){
 (function (TIME_STAMP){(function (){
 'use strict';
 
-var settings = require("../lib/settings.js");
+var settings = require('../lib/settings.js');
 var makeLink = function makeLink(className, FileName) {
   var link = document.createElement('link');
-  link.rel = "stylesheet";
-  link.type = "text/css";
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
   link.className = className || '';
   link.href = FileName;
   return link;
 };
+function removeLink(className) {
+  var link = document.querySelector("link.".concat(className));
+  if (link) {
+    link.remove();
+  }
+}
 
 /**
  * Loads a CSS file into <head>.  It concats settings.srcRoot with the first argument (cssFile)
@@ -2870,30 +3056,32 @@ var load = function load(cssFile, className) {
   if (!cssFile) {
     return;
   }
-  var link = makeLink(className, settings.srcRoot + cssFile + "?" + TIME_STAMP);
-  document.head.insertAdjacentElement('beforeend', link);
+  removeLink(className);
+  var link = makeLink(className, settings.srcRoot + cssFile + '?' + TIME_STAMP);
+  document.head.appendChild(link);
 };
 
 /**
  * Loads a css file from a full URL in the <head>
  * @param  {String} cssFile   the full url location of a CSS file
  * @param  {String} className a class name to give to the <link> element
- * @return {undefined}           
+ * @return {undefined}
  */
 var loadExternal = function loadExternal(cssFile, className) {
   if (!cssFile) {
     return;
   }
+  removeLink(className);
   var link = makeLink(className, cssFile);
-  document.head.insertAdjacentElement('beforeend', link);
+  document.head.appendChild(link);
 };
 module.exports = {
   load: load,
   loadExternal: loadExternal
 };
 
-}).call(this)}).call(this,'1719927884525')
-},{"../lib/settings.js":8}],41:[function(require,module,exports){
+}).call(this)}).call(this,'1720034736312')
+},{"../lib/settings.js":8}],42:[function(require,module,exports){
 "use strict";
 
 // jQuery's getJSON kept returning errors so making my own with promise-like
@@ -2930,7 +3118,7 @@ var GetJSON = function GetJSON(url, optionalEvent, headers) {
 };
 module.exports = GetJSON;
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 
 function makeButtons(cb) {
@@ -3018,7 +3206,7 @@ module.exports = {
   close: close
 };
 
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3033,7 +3221,7 @@ function _default(userid) {
   return QueUp.helpers.isSiteAdmin(userid) || QueUp.room.users.getIfOwner(userid) || QueUp.room.users.getIfManager(userid) || QueUp.room.users.getIfMod(userid);
 }
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3115,7 +3303,7 @@ function showNotification(opts) {
   setTimeout(n.close.bind(n), options.wait);
 }
 
-},{"../utils/modal.js":42}],45:[function(require,module,exports){
+},{"../utils/modal.js":43}],46:[function(require,module,exports){
 'use strict';
 
 var settings = require("../lib/settings.js");
@@ -3167,7 +3355,7 @@ module.exports = {
   saveOption: saveOption
 };
 
-},{"../lib/settings.js":8}],46:[function(require,module,exports){
+},{"../lib/settings.js":8}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3183,7 +3371,7 @@ function preload() {
   document.body.insertAdjacentHTML('afterbegin', preloadHTML);
 }
 
-},{"../lib/settings.js":8}],47:[function(require,module,exports){
+},{"../lib/settings.js":8}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
