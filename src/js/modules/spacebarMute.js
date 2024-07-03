@@ -4,23 +4,31 @@
  */
 
 var myModule = {};
-myModule.id = "dubplus-spacebar-mute";
-myModule.moduleName = "Spacebar Mute";
-myModule.description = "Turn on/off the ability to mute current song with the spacebar.";
-myModule.category = "Settings";
+myModule.id = 'dubplus-spacebar-mute';
+myModule.moduleName = 'Spacebar Mute';
+myModule.description =
+  'Turn on/off the ability to mute current song with the spacebar.';
+myModule.category = 'Settings';
 
+const clickableTags = ['input', 'textarea', 'button', 'select', 'a'];
 
-myModule.turnOn = function() {
-  $(document).bind('keypress.key32', function(event) {
-    var tag = event.target.tagName.toLowerCase();
-    if (event.which === 32 && tag !== 'input' && tag !== 'textarea') {
-      QueUp.room.player.mutePlayer();
-    }
-  });
+function onSpacebar(event) {
+  var tag = event.target.tagName.toLowerCase();
+  if (
+    event.which === 32 &&
+    !clickableTags.includes(tag) &&
+    !event.target.isContentEditable
+  ) {
+    QueUp.room.player.mutePlayer();
+  }
+}
+
+myModule.turnOn = function () {
+  $(document).on('keypress.key32', onSpacebar);
 };
 
-myModule.turnOff = function() {
-  $(document).unbind("keypress.key32");
+myModule.turnOff = function () {
+  $(document).off('keypress.key32', onSpacebar);
 };
 
 module.exports = myModule;
