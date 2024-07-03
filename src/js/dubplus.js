@@ -43,52 +43,49 @@ import preload from './utils/preload.js';
 
 function errorModal(errorMsg) {
   // probably should make a modal with inline styles
-  // or a smaller css file with just modal styles so 
+  // or a smaller css file with just modal styles so
   // we're not loading the whole css for just a modal
-  css.load('/css/dubplus.css');
+  css.load('/css/dubplus.css', 'dubplus-css');
   modal.create({
     title: 'Dub+ Error',
-    content: errorMsg
+    content: errorMsg,
   });
 }
 
-/* globals Dubtrack */
-if (!window.dubplus) {
+preload();
 
-  preload();
-
-  // checking to see if these items exist before initializing the script
-  // instead of just picking an arbitrary setTimeout and hoping for the best
-  var checkList = [
-    'QueUp.session.id',
-    'QueUp.room.chat',
-    'QueUp.Events',
-    'QueUp.room.player',
-    'QueUp.helpers.cookie',
-    'QueUp.room.model',
-    'QueUp.room.users',
-  ];
-  
-  var _dubplusWaiting = new WaitFor(checkList, { seconds : 10}); // 10sec should be more than enough
-  
-  _dubplusWaiting
-    .then(function(){
-      init();
-      $('.dubplus-waiting').remove();
-    })
-    .fail(function(){
-      if (!QueUp.session.id) {
-        errorModal('You\'re not logged in. Please login to use Dub+.');
-      } else {
-        $('.dubplus-waiting span').text('Something happed, refresh and try again');
-      }
-    });
-
-} else {
-
-  if (!QueUp.session.id) {
-    errorModal('You\'re not logged in. Please login to use Dub+.');
-  } else {
-    errorModal('Dub+ is already loaded');
-  }
+if (window.dubplus) {
+  document.querySelector('.dubplus-menu')?.remove();
 }
+
+/* globals Dubtrack */
+preload();
+
+// checking to see if these items exist before initializing the script
+// instead of just picking an arbitrary setTimeout and hoping for the best
+const checkList = [
+  'QueUp.session.id',
+  'QueUp.room.chat',
+  'QueUp.Events',
+  'QueUp.room.player',
+  'QueUp.helpers.cookie',
+  'QueUp.room.model',
+  'QueUp.room.users',
+];
+
+const dubplusWaiting = new WaitFor(checkList, { seconds: 10 }); // 10sec should be more than enough
+
+dubplusWaiting
+  .then(function () {
+    init();
+    $('.dubplus-waiting').remove();
+  })
+  .fail(function () {
+    if (!QueUp.session.id) {
+      errorModal("You're not logged in. Please login to use Dub+.");
+    } else {
+      $('.dubplus-waiting span').text(
+        'Something happed, refresh and try again'
+      );
+    }
+  });

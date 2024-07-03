@@ -1,104 +1,79 @@
 const options = require('../utils/options.js');
 
 /**
- * Handles the toggling of the menu sections
- * @param  {Element} currentSection The pure DOM element of menu header
- * @return {undefined}
+ * handles opening and closing of a menu section
+ * @param  {string} id The id of the section to toggle
  */
-var toggleMenuSection = function(currentSection) {
-  var menuSec = currentSection.nextElementSibling;
-  var icon = currentSection.children[0];
-  var menuName = currentSection.textContent.trim().replace(" ", "-").toLowerCase();
-  var closedClass = 'dubplus-menu-section-closed';
-  var isClosed = $(menuSec).toggleClass(closedClass).hasClass(closedClass);
-  
-  if (isClosed) {
-    // menu is closed
-    $(icon).removeClass('fa-angle-down');
-    $(icon).addClass('fa-angle-right');
-    options.saveOption( 'menu', menuName , 'closed');
-  } else {
-    // menu is open
-    $(icon).removeClass('fa-angle-right');
-    $(icon).addClass('fa-angle-down');
-    options.saveOption( 'menu', menuName , 'open');
-  }
-};
+export function toggleMenuSection(id) {
+  const sectionHeader = document.getElementById(id);
+  const icon = sectionHeader.querySelector('.fa');
+  const sectionUL = sectionHeader.nextElementSibling;
+
+  const menuName = sectionHeader.textContent
+    .trim()
+    .replace(' ', '-')
+    .toLowerCase();
+
+  const closedClass = 'dubplus-menu-section-closed';
+  sectionUL.classList.toggle(closedClass);
+  const isClosed = sectionUL.classList.contains(closedClass);
+
+  icon.classList.toggle('fa-angle-down');
+  icon.classList.toggle('fa-angle-right');
+
+  options.saveOption('menu', menuName, isClosed ? 'closed' : 'open');
+}
 
 /**
- * Traverses up the dubplus menu DOM tree until it finds a match to a corresponding function
- * @param  {Element} target DOM Element
- * @return {Object}         our module or null
+ * handles the pencil icon click
+ * @param {string} id
  */
-var traverseMenuDOM = function(target) {
-  // if we've reached the dubplus-menu container then we've gone too far
-  if (!target || $(target).hasClass('dubplus-menu')) {
-    return null;
-  }
-
-  // to handle the opening/closings of our sections
-  if ($(target).hasClass('dubplus-menu-section-header')) {
-    toggleMenuSection(target);
-    return null;
-  }
-
-  // check if a module exists matching current ID
-  var module = window.dubplus[target.id];
-
-  if (!module) { 
-    // recursively try until we get a hit or reach our menu container
-    return traverseMenuDOM(target.parentElement);
-  } else {
-    return module;
-  }
-};
-
-/**
- * Click event handler for the whole menu, delegating events to their proper function
- * @param  {object} ev the click event object
- * @return {undefined}
- */
-var menuDelegator = function(ev) {
-
-  var mod = traverseMenuDOM(ev.target);
-  if (!mod) { return; }
-
-  // if clicking on the "extra-icon", run module's "extra" function
-  if ($(ev.target).hasClass('extra-icon') && mod.extra) {
-    mod.extra.call(mod);
+export function onMenuEdit(id) {
+  const mod = window.dubplus[id];
+  if (!mod) {
     return;
   }
+  if (mod.extra) {
+    mod.extra.call(mod);
+  }
+}
 
+/**
+ * handles the toggling of the switch
+ * @param {string} id
+ */
+export function onMenuToggle(id) {
+  const mod = window.dubplus[id];
+  if (!mod) {
+    return;
+  }
   if (mod.turnOn && mod.turnOff) {
-    var newOptionState;
+    // if it was off
     if (!mod.optionState) {
-      newOptionState = true;
       mod.turnOn.call(mod);
     } else {
-      newOptionState = false;
       mod.turnOff.call(mod);
     }
 
-    mod.optionState = newOptionState;
-    options.toggleAndSave(mod.id, newOptionState);
+    mod.optionState = !mod.optionState;
+    options.toggleAndSave(mod.id, mod.optionState);
+  }
+}
+
+/**
+ * handles the action of the menu item (like full screen, etc)
+ * @param {string} id
+ */
+export function onMenuAction(id) {
+  const mod = window.dubplus[id];
+  if (!mod) {
     return;
   }
-
   if (mod.go) {
-    // .go is used for modules that never save state, like fullscreen
     mod.go.call(mod);
   }
-};
+}
 
-
-export default ()=> {
-  var dpMenu = document.querySelector('.dubplus-menu'); 
-
-  // add event listener to the main menu and delegate
-  dpMenu.addEventListener('click', menuDelegator);
-
-  // hide/show the  menu when you click on the icon in the top right
-  document.querySelector('.dubplus-icon').addEventListener('click', function(){
-    $(dpMenu).toggleClass('dubplus-menu-open');
-  });
-};
+export function toggleMenu() {
+  document.querySelector('.dubplus-menu').classList.toggle('dubplus-menu-open');
+}

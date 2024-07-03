@@ -6,49 +6,67 @@
  */
 
 /*global Dubtrack*/
-var snooze_tooltip = function(e) {
-  $(this).append('<div class="snooze_tooltip" style="position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -33px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9;">Mute current song</div>');
-};
+function snooze_tooltip() {
+  const div = document.createElement('div');
+  div.className = 'snooze_tooltip';
+  div.style.cssText =
+    'min-width: 186px;position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -15px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9';
+  div.textContent = 'Mute current song';
+  document.querySelector('.player_sharing .snooze_btn').appendChild(div);
+}
 
-var hide_snooze_tooltip = function() {
-  $('.snooze_tooltip').remove();
-};
+function hide_snooze_tooltip() {
+  document.querySelector('.snooze_tooltip')?.remove();
+}
 
-var eventUtils = {
+const eventUtils = {
   currentVol: 50,
-  snoozed: false
+  snoozed: false,
 };
 
-var eventSongAdvance = function(e) {
+function eventSongAdvance(e) {
   if (e.startTime < 2) {
     if (eventUtils.snoozed) {
-        QueUp.room.player.setVolume(eventUtils.currentVol);
-        eventUtils.snoozed = false;
+      QueUp.room.player.setVolume(eventUtils.currentVol);
+      eventUtils.snoozed = false;
     }
     return true;
   }
-};
+}
 
-var snooze = function() {
-  if (!eventUtils.snoozed && !QueUp.room.player.muted_player && QueUp.playerController.volume > 2) {
+function snooze() {
+  if (
+    !eventUtils.snoozed &&
+    !QueUp.room.player.muted_player &&
+    QueUp.playerController.volume > 2
+  ) {
     eventUtils.currentVol = QueUp.playerController.volume;
     QueUp.room.player.mutePlayer();
     eventUtils.snoozed = true;
-    QueUp.Events.bind("realtime:room_playlist-update", eventSongAdvance);
+    QueUp.Events.bind('realtime:room_playlist-update', eventSongAdvance);
   } else if (eventUtils.snoozed) {
     QueUp.room.player.setVolume(eventUtils.currentVol);
     QueUp.room.player.updateVolumeBar();
     eventUtils.snoozed = false;
   }
-};
-
-export default function() {
-  $('.player_sharing').append('<span class="icon-mute snooze_btn"></span>');
-
-  $('body').on('mouseover', '.snooze_btn', snooze_tooltip);
-  $('body').on('mouseout', '.snooze_btn', hide_snooze_tooltip);
-  $('body').on('click', '.snooze_btn', snooze);
 }
 
+export default function () {
+  if (document.querySelector('.player_sharing .snooze_btn')) {
+    document.querySelector('.player_sharing .snooze_btn').remove();
+  }
 
+  window.dubplus.snowTooltipShow = snooze_tooltip;
+  window.dubplus.snoozeTooltipHide = hide_snooze_tooltip;
+  window.dubplus.snoozeClick = snooze;
 
+  const snoozeBtn = document.createElement('span');
+  snoozeBtn.className = 'icon-mute snooze_btn';
+  snoozeBtn.style.position = 'relative';
+
+  snoozeBtn.setAttribute('onmouseover', 'window.dubplus.snowTooltipShow()');
+  snoozeBtn.setAttribute('onmouseout', 'window.dubplus.snoozeTooltipHide()');
+  snoozeBtn.setAttribute('onclick', 'window.dubplus.snoozeClick()');
+
+  document.querySelector('.player_sharing').appendChild(snoozeBtn);
+}
