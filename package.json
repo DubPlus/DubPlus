@@ -4,7 +4,7 @@
   "description": "Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net",
   "main": "dubplus.js",
   "engines": {
-    "node": ">=12.0.0 <16.0.0"
+    "node": ">=16.0.0"
   },
   "scripts": {
     "build": "node ./tasks",
@@ -16,7 +16,8 @@
     "sass": "node ./tasks sass",
     "ext": "node ./tasks ext",
     "ext-zip": "node ./tasks ext-zip",
-    "ext-deploy": "node ./tasks ext-deploy"
+    "ext-deploy": "node ./tasks ext-deploy",
+    "start:firefox": "npm run ext && web-ext run --source-dir ./extensions/Firefox/"
   },
   "repository": {
     "type": "git",
@@ -39,7 +40,8 @@
     "postcss": "^8.2.8",
     "request": "^2.88.2",
     "uglifyify": "^5.0.2",
-    "watchify": "^4.0.0"
+    "watchify": "^4.0.0",
+    "web-ext": "^8.2.0"
   },
   "browserslist": [
     "> 1%",

@@ -1,5 +1,5 @@
-const spawnSync = require('child_process').spawnSync;
 const log = require('./colored-console.js');
+import webExt from 'web-ext';
 
 /****************************************************
  * Important note
@@ -12,21 +12,15 @@ const log = require('./colored-console.js');
  * this needs API keys i think
  */
 
-function signFFext(){
-  var options = {
+function signFFext() {
+  const options = {
     cwd: process.cwd() + `/extensions/Firefox`,
-    encoding : 'utf8'
+    encoding: 'utf8',
   };
-
-
-  var webext = spawnSync('web-ext', ['sign'], options);
-  var output = webext.stdout;
-
-  var successResponse = "Your add-on has been submitted for review. It passed validation but could not be automatically signed because this is a listed add-on";
-
-  if (output.indexOf(successResponse) > 0) {
-    log.info('success');
-  }
+  webExt.cmd.sign(options).then((result) => {
+    log.info('Firefox extension signed');
+    console.log(result);
+  });
 }
 
 module.exports = signFFext;
