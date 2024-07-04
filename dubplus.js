@@ -616,7 +616,7 @@ module.exports = function () {
   (0, _eta["default"])();
 };
 
-}).call(this)}).call(this,'{"name":"DubPlus","version":"0.3.3","description":"Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net","engines":{"node":">=12.0.0 <16.0.0"},"author":"DubPlus","license":"MIT","homepage":"https://dub.plus","browserslist":["> 1%","last 2 versions"],"dependencies":{"@babel/core":"^7.24.7","sass":"^1.77.6"}}')
+}).call(this)}).call(this,'{"name":"DubPlus","version":"0.3.4","description":"Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net","engines":{"node":">=16.0.0"},"author":"DubPlus","license":"MIT","homepage":"https://dub.plus","browserslist":["> 1%","last 2 versions"],"dependencies":{"@babel/core":"^7.24.7","sass":"^1.77.6"}}')
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":41,"./loadModules.js":5,"./menu-events.js":6,"./menu.js":7}],5:[function(require,module,exports){
 "use strict";
 
@@ -763,6 +763,10 @@ function onMenuAction(id) {
     mod.go.call(mod);
   }
 }
+
+/**
+ * open/close the menu
+ */
 function toggleMenu() {
   document.querySelector('.dubplus-menu').classList.toggle('dubplus-menu-open');
 }
@@ -1461,31 +1465,31 @@ module.exports = myModule;
  * Add your own custom background
  */
 
-var settings = require("../lib/settings.js");
+var settings = require('../lib/settings.js');
 var modal = require('../utils/modal.js');
 var options = require('../utils/options.js');
 var myModule = {};
-myModule.id = "dubplus-custom-bg";
-myModule.moduleName = "Custom Background";
-myModule.description = "Add your own custom background.";
-myModule.category = "Customize";
+myModule.id = 'dubplus-custom-bg';
+myModule.moduleName = 'Custom Background';
+myModule.description = 'Add your own custom background.';
+myModule.category = 'Customize';
 myModule.extraIcon = 'pencil';
 var makeBGdiv = function makeBGdiv(url) {
   return "<div class=\"dubplus-custom-bg\" style=\"background-image: url(".concat(url, ");\"></div>");
 };
 var saveCustomBG = function saveCustomBG() {
   var content = $('.dp-modal textarea').val();
-  if (content === '' || !content) {
+  options.saveOption('custom', 'bg', content || '');
+
+  // if the option is on, update the background
+  if (settings.options[myModule.id]) {
+    // always remove the old one
     $('.dubplus-custom-bg').remove();
-    options.saveOption('custom', 'bg', '');
-    return;
+    // if there is a new one, add it
+    if (content) {
+      $('body').append(makeBGdiv(content));
+    }
   }
-  if (!$('.dubplus-custom-bg').length) {
-    $('body').append(makeBGdiv(content));
-  } else {
-    $('.dubplus-custom-bg').css('background-image', "url(".concat(content, ")"));
-  }
-  options.saveOption('custom', 'bg', content);
 };
 myModule.extra = function () {
   modal.create({
@@ -1499,9 +1503,10 @@ myModule.extra = function () {
 };
 myModule.turnOn = function () {
   // show modal if no image is in settings
-  if (!settings.custom.bg || settings.custom.bg === '') {
+  if (!settings.custom.bg) {
     this.extra();
   } else {
+    $('.dubplus-custom-bg').remove();
     $('body').append(makeBGdiv(settings.custom.bg));
   }
 };
@@ -3080,7 +3085,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this)}).call(this,'1720034736312')
+}).call(this)}).call(this,'1720106264243')
 },{"../lib/settings.js":8}],42:[function(require,module,exports){
 "use strict";
 
