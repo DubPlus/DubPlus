@@ -2,11 +2,15 @@
  * QueUp API wrappers
  */
 
+export const apiBase = window.location.hostname.includes('staging')
+  ? 'https://staging-api.queup.dev'
+  : 'https://api.queup.net';
+
 /**
  * @param {string} userid
  */
 export function userData(userid) {
-  return `https://api.queup.net/user/${userid}`;
+  return `${apiBase}/user/${userid}`;
 }
 
 /**
@@ -14,12 +18,12 @@ export function userData(userid) {
  * @param {string} roomId
  */
 export function activeDubs(roomId) {
-  return `https://api.queup.net/room/${roomId}/playlist/active/dubs`;
+  return `${apiBase}/room/${roomId}/playlist/active/dubs`;
 }
 
 /**
  * @param {string} userid
  */
 export function userImage(userid) {
-  return `https://api.queup.net/user/${userid}/image`;
+  return `${apiBase}/user/${userid}/image`;
 }
