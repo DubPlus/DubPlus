@@ -29,8 +29,8 @@
   these components are satellites that are controlled by Svelte but
   placed outside of the root menu container 
 -->
-<MenuIcon />
 <Snooze />
+<MenuIcon />
 <Eta />
 {#if settings.options.autocomplete}
   <EmojiPreview />
