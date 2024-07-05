@@ -32,3 +32,4 @@ dist-ssr
 .env*
 
 src_old/
+dist/
