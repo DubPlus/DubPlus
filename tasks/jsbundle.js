@@ -1,5 +1,5 @@
-const babelify    = require("babelify");
-const browserify  = require('browserify');
+const babelify = require('babelify');
+const browserify = require('browserify');
 const fs = require('fs');
 
 // our own custom module
@@ -12,6 +12,7 @@ delete pkg.scripts;
 delete pkg.repository;
 delete pkg.bugs;
 delete pkg.devDependencies;
+delete pkg.engines;
 
 console.log(`JS:  _RESOURCE_SRC_ set to ${gitInfo.resourceSrc}`);
 
@@ -20,44 +21,53 @@ console.log(`JS:  _RESOURCE_SRC_ set to ${gitInfo.resourceSrc}`);
  */
 var options = {
   entries: ['./src/js/dubplus.js'],
-  cache : {},
-  packageCache : {},
-  insertGlobalVars: { 
+  cache: {},
+  packageCache: {},
+  insertGlobalVars: {
     // so that we can point to the proper branch during testing or production
-    _RESOURCE_SRC_: function () { return "'" + gitInfo.resourceSrc + "'"; },
+    _RESOURCE_SRC_: function () {
+      return "'" + gitInfo.resourceSrc + "'";
+    },
     // so that we can insert it as a cache busting query string for CSS
-    TIME_STAMP : function() { return  "'" +  Date.now() + "'";},
+    TIME_STAMP: function () {
+      return "'" + Date.now() + "'";
+    },
     // pass our modified pkg info
-    PKGINFO : function() { return  "'" +  JSON.stringify(pkg) + "'"; }
-  }
+    PKGINFO: function () {
+      return "'" + JSON.stringify(pkg) + "'";
+    },
+  },
 };
 
-function setupB(shouldMin){
+function setupB(shouldMin) {
   var b = browserify(options);
-  b.on('log', function (msg) { console.log(msg); });
-  b.transform(babelify, {presets: ["@babel/preset-env"]});
+  b.on('log', function (msg) {
+    console.log(msg);
+  });
+  b.transform(babelify, { presets: ['@babel/preset-env'] });
 
-  if (shouldMin)
-    b.transform('uglifyify', { global: true  })
+  if (shouldMin) b.transform('uglifyify', { global: true });
 
   return b;
 }
 
-function finalize(b, fileOut){
+function finalize(b, fileOut) {
   var out = `./${fileOut}`;
   var mainFile = fs.createWriteStream(out, 'utf8');
-  
+
   b.bundle().pipe(mainFile);
-  
-  return new Promise(function (resolve, reject){
-    mainFile.on('finish', function(){
+
+  return new Promise(function (resolve, reject) {
+    mainFile.on('finish', function () {
       resolve();
     });
-    b.on('error', function(err) { reject(err); });
-    mainFile.on('error', function(err){
+    b.on('error', function (err) {
       reject(err);
     });
-  }); 
+    mainFile.on('error', function (err) {
+      reject(err);
+    });
+  });
 }
 
 function bundle() {
@@ -72,12 +82,12 @@ function makeMin() {
   return finalize(b, 'dubplus.min.js');
 }
 
-function watching(){
+function watching() {
   var watchify = require('watchify');
   var b = setupB(false);
-  // watch our JS with watchify plugin for browserify  
+  // watch our JS with watchify plugin for browserify
   b.plugin(watchify, {});
-  b.on('update', function(ids){
+  b.on('update', function (ids) {
     console.log(ids);
     finalize(b, 'dubplus.js');
   });
@@ -86,7 +96,7 @@ function watching(){
 }
 
 module.exports = {
-  watch : watching,
-  bundle : bundle,
-  minify : makeMin
+  watch: watching,
+  bundle: bundle,
+  minify: makeMin,
 };
