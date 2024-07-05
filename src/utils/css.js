@@ -4,9 +4,9 @@
  * @returns
  */
 const makeLink = function (className, fileName) {
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.type = "text/css";
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
   link.className = className;
   link.href = fileName;
   return link;
@@ -31,7 +31,7 @@ export function loadCSS(cssFile, className) {
     }
     const link = makeLink(
       className,
-      // @ts-ignore __TIME_STAMP__ is replace by vite
+      // @ts-ignore __SRC_ROOT__ && __TIME_STAMP__ are replaced by vite
       `${__SRC_ROOT__}${cssFile}?${__TIME_STAMP__}`
     );
     link.onload = (e) => resolve();
