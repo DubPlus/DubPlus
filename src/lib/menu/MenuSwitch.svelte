@@ -33,7 +33,6 @@
   });
 
   function openEditModal() {
-    console.log("openEditModal", settings.options[id]);
     updateModalState({
       title: t(customize.title),
       content: t(customize.content),
