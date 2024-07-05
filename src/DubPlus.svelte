@@ -8,6 +8,11 @@
   import { onMount, onDestroy } from "svelte";
   import { loadCSS } from "./utils/css";
 
+  window.dubplus = window.dubplus || {};
+
+  // @ts-ignore __PKGINFO__ is injected by the build process
+  window.dubplus = Object.assign(window.dubplus, __PKGINFO__);
+
   /** @type {"loading" | "ready" | "loggedout" | "error"} */
   let status = $state("loading");
 
