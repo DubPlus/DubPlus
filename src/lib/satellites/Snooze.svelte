@@ -66,10 +66,14 @@
 </button>
 
 <style>
+  button::after {
+    width: 186px;
+  }
   span {
     content: "1";
     vertical-align: top;
-    font-size: 0.75rem;
+    font-size: 0.75rem !important;
     font-weight: 700;
+    margin-right: 0 !important;
   }
 </style>
