@@ -1,8 +1,9 @@
-const getRepoInfo = require('git-repo-info');
-const chalk = require('chalk');
+import gitRepoInfo from 'git-repo-info';
+import chalk from 'chalk';
+import { spawnSync } from 'node:child_process';
+import { log } from './colored-console.js';
+
 const yellow = chalk.yellow;
-const sync = require('child_process').spawnSync;
-const log = require('./colored-console.js');
 
 /*
   --release

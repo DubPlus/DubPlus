@@ -1,5 +1,5 @@
-const log = require('./colored-console.js');
 import webExt from 'web-ext';
+import { log } from './colored-console';
 
 /****************************************************
  * our ff addon link: https://addons.mozilla.org/en-US/firefox/addon/dubplus/
@@ -14,7 +14,7 @@ import webExt from 'web-ext';
  * - downloads a signed copy of the extension if the --channel is set to unlisted.
  */
 
-function signFFext() {
+export function signFFext() {
   const options = {
     apiKey: process.env.WEB_EXT_API_KEY,
     apiSecret: process.env.WEB_EXT_API_SECRET,
@@ -27,5 +27,3 @@ function signFFext() {
     console.log(result);
   });
 }
-
-module.exports = signFFext;
