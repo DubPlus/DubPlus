@@ -12,6 +12,7 @@ delete pkg.devDependencies;
 delete pkg.dependencies;
 delete pkg.type;
 delete pkg.browserslist;
+delete pkg.engines;
 
 // this is a fake dubs response to test the dubs module
 const dubsResponse = {
