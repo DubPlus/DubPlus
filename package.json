@@ -13,7 +13,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "ext": "node ./tasks ext",
-    "ext-zip": "node ./tasks ext-zip",
+    "zip": "node ./tasks zip",
     "ext-deploy": "node ./tasks ext-deploy",
     "start:firefox": "npm run ext && web-ext run --source-dir ./extensions/Firefox/"
   },
