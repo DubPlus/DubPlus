@@ -1,11 +1,12 @@
-const request = require("request");
-const log = require("./colored-console.js");
+// const request = require("request");
+import { log } from './colored-console.js';
+import fs from 'node:fs';
 
 /**
  * get google auth token using CODE
  * @return {Promise}
  */
-function getAccessTokenFromCode() {
+export function getAccessTokenFromCode() {
   /***************************************************************************
    * IMPORTANT
    *
@@ -26,7 +27,9 @@ function getAccessTokenFromCode() {
 
   try {
     // if local private.json exists then we can use that instead of env
-    let _priv = require(process.cwd() + "/private.json");
+    let _priv = JSON.parse(
+      fs.readFileSync(process.cwd() + '/private.json', 'utf8')
+    );
     privateInfo.CLIENT_ID = _priv.CLIENT_ID;
     privateInfo.CLIENT_SECRET = _priv.CLIENT_SECRET;
   } catch (ex) {
@@ -35,7 +38,7 @@ function getAccessTokenFromCode() {
 
     for (let key in privateInfo) {
       let p = privateInfo[key];
-      if (typeof p === "undefined" || p === null || p === "") {
+      if (typeof p === 'undefined' || p === null || p === '') {
         log.error(`missing: ${key}`);
         failure = true;
       }
@@ -47,13 +50,13 @@ function getAccessTokenFromCode() {
   }
 
   var options = {
-    url: "https://accounts.google.com/o/oauth2/token",
+    url: 'https://accounts.google.com/o/oauth2/token',
     formData: {
       client_id: privateInfo.CLIENT_ID,
       client_secret: privateInfo.CLIENT_SECRET,
       code: privateInfo.CODE,
-      grant_type: "authorization_code",
-      redirect_uri: "urn:ietf:wg:oauth:2.0:oob",
+      grant_type: 'authorization_code',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
     },
   };
 
@@ -69,14 +72,14 @@ function getAccessTokenFromCode() {
 }
 
 // for this function I'm going to make all required secrets passed via arguments
-function getTokenFromRefresh(clientID, clientSecret, refreshToken) {
+export function getTokenFromRefresh(clientID, clientSecret, refreshToken) {
   var options = {
-    url: "https://accounts.google.com/o/oauth2/token",
+    url: 'https://accounts.google.com/o/oauth2/token',
     formData: {
       client_id: clientID,
       client_secret: clientSecret,
       refresh_token: refreshToken,
-      grant_type: "refresh_token",
+      grant_type: 'refresh_token',
     },
   };
 
@@ -91,20 +94,3 @@ function getTokenFromRefresh(clientID, clientSecret, refreshToken) {
     });
   });
 }
-
-// if we call this module from the command line then we're trying to get a new refresh token
-// make sure you get a new CODE and pass it through env var
-if (require.main === module) {
-  console.log("called from command line");
-  getAccessTokenFromCode()
-    .then(function (body) {
-      log.dir(body);
-    })
-    .catch(function (err) {
-      log.error(err);
-    });
-}
-
-// if we're requiring this module then we're trying to get a new access token using
-// the refresh token
-module.exports = getTokenFromRefresh;

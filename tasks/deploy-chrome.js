@@ -1,7 +1,7 @@
-const request = require("request");
-const googleToken = require("./google-token.js");
-const fs = require("fs");
-const log = require("./colored-console.js");
+// const request = require('request');
+import { getTokenFromRefresh } from './google-token.js';
+import fs from 'node:fs';
+import { log } from './colored-console.js';
 /*******************************************************************
  * setup vars from env or json file
  */
@@ -17,14 +17,16 @@ var privateInfo = {
 // cause I'm lazy and dont want to type out a bunch of large env vars on the command line,
 // I also put them in a git-ignored json file that overrides env vars
 try {
-  privateInfo = require(process.cwd() + "/private.json");
+  privateInfo = JSON.parse(
+    fs.readFileSync(process.cwd() + '/private.json', 'utf8')
+  );
 } catch (ex) {
   // if json didnt work, we need to check if env vars were set at least
   let failure = false;
 
   for (let key in privateInfo) {
     let p = privateInfo[key];
-    if (typeof p === "undefined" || p === null || p === "") {
+    if (typeof p === 'undefined' || p === null || p === '') {
       log.error(`missing env variable: ${key}`);
       failure = true;
     }
@@ -46,11 +48,11 @@ function uploadExtension(tokenResp) {
   var options = {
     url: `https://www.googleapis.com/upload/chromewebstore/v1.1/items/${privateInfo.CHROME_EXT_ITEM_ID}`,
     headers: {
-      "x-goog-api-version": "2",
+      'x-goog-api-version': '2',
       Authorization: `Bearer ${TOKEN}`,
     },
   };
-  var filePath = process.cwd() + "/extensions/DubPlus-Chrome-Extension.zip";
+  var filePath = process.cwd() + '/extensions/DubPlus-Chrome-Extension.zip';
 
   return new Promise(function (resolve, reject) {
     fs.createReadStream(filePath).pipe(
@@ -58,7 +60,7 @@ function uploadExtension(tokenResp) {
         if (err) {
           reject(err);
         } else {
-          log.info("got new token");
+          log.info('got new token');
           itemResponse.TOKEN = TOKEN; // pass through of the token
           resolve(itemResponse);
         }
@@ -75,8 +77,8 @@ function uploadExtension(tokenResp) {
 function publishExt(itemResponse) {
   var resp = JSON.parse(itemResponse.body);
 
-  if (resp.uploadState !== "SUCCESS") {
-    log.error("Error uploading extension");
+  if (resp.uploadState !== 'SUCCESS') {
+    log.error('Error uploading extension');
     log.error(resp.itemError); // should exist if there was an error right?
     process.exit(1);
     return;
@@ -85,8 +87,8 @@ function publishExt(itemResponse) {
   var options = {
     url: `https://www.googleapis.com/chromewebstore/v1.1/items/${privateInfo.CHROME_EXT_ITEM_ID}/publish`,
     headers: {
-      "x-goog-api-version": "2",
-      "Content-Length": 0,
+      'x-goog-api-version': '2',
+      'Content-Length': 0,
       Authorization: `Bearer ${itemResponse.TOKEN}`,
     },
   };
@@ -96,7 +98,7 @@ function publishExt(itemResponse) {
       if (err) {
         reject(err);
       } else {
-        log.info("published extension");
+        log.info('published extension');
         resolve(response);
       }
     });
@@ -114,12 +116,12 @@ function checkPublish(pubResponse) {
     process.exit(1);
   }
 
-  log.info("success!");
+  log.info('success!');
   log.dir(resp);
 }
 
-module.exports = function () {
-  googleToken(
+export default function () {
+  getTokenFromRefresh(
     privateInfo.CLIENT_ID,
     privateInfo.CLIENT_SECRET,
     privateInfo.REFRESH_TOKEN
@@ -131,4 +133,4 @@ module.exports = function () {
       log.error(err);
       process.exit(1);
     });
-};
+}

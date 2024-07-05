@@ -2,24 +2,37 @@
  * This is a task to cross-build our extensions
  * from 'one' common source code
  */
+import fs from 'node:fs';
+import { doZip } from './zip.js';
+import { log } from './colored-console.js';
+import pkg from '../package.json';
 
-const fs = require('fs-extra');
-const doZip = require('./zip.js');
-const log = require('./colored-console.js');
-var pkg = require(process.cwd() + '/package.json');
 const extPath = process.cwd() + '/extensions';
+
+/**
+ *
+ * @param {string} dir
+ */
+function ensureDirSync(dir) {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+}
 
 function rmCommonManifests() {
   ['Chrome', 'Firefox'].forEach(function (dir) {
-    fs.removeSync(`${extPath}/${dir}/manifest.core.json`);
-    fs.removeSync(`${extPath}/${dir}/manifest.chrome.json`);
-    fs.removeSync(`${extPath}/${dir}/manifest.firefox.json`);
+    fs.unlinkSync(`${extPath}/${dir}/manifest.core.json`);
+    fs.unlinkSync(`${extPath}/${dir}/manifest.chrome.json`);
+    fs.unlinkSync(`${extPath}/${dir}/manifest.firefox.json`);
   });
 }
 
 function copyCommonStatic() {
   ['Chrome', 'Firefox'].forEach(function (dir) {
-    fs.copySync(`${extPath}/common`, `${extPath}/${dir}`);
+    fs.cpSync(`${extPath}/common`, `${extPath}/${dir}`, {
+      recursive: true,
+      force: true,
+    });
   });
 }
 
@@ -38,15 +51,25 @@ function parseJSONfile(filename) {
 }
 
 function combine(obj1, obj2, dest) {
-  var finalObj = Object.assign({}, obj1, obj2);
-  var fileContents = JSON.stringify(finalObj, null, 2);
-  fs.writeFileSync(extPath + '/' + dest + '/manifest.json', fileContents);
+  const finalObj = Object.assign({}, obj1, obj2);
+  const fileContents = JSON.stringify(finalObj, null, 2);
+  fs.writeFileSync(
+    extPath + '/' + dest + '/manifest.json',
+    fileContents,
+    'utf8'
+  );
 }
 
 function copyScript() {
   ['Chrome', 'Firefox'].forEach(function (dir) {
-    fs.copySync('./dubplus.js', `${extPath}/${dir}/scripts/dubplus.js`);
-    fs.copySync('./dubplus.min.js', `${extPath}/${dir}/scripts/dubplus.min.js`);
+    fs.copyFileSync(
+      process.cwd() + '/dubplus.js',
+      `${extPath}/${dir}/scripts/dubplus.js`
+    );
+    fs.copyFileSync(
+      process.cwd() + '/dubplus.min.js',
+      `${extPath}/${dir}/scripts/dubplus.min.js`
+    );
   });
 }
 
@@ -63,17 +86,27 @@ function replaceVersionInScript() {
       pkg.version
     );
     // write the file back
-    fs.writeFileSync(`${extPath}/${dir}/scripts/loader.js`, newLoaderScript);
+    fs.writeFileSync(
+      `${extPath}/${dir}/scripts/loader.js`,
+      newLoaderScript,
+      'utf8'
+    );
   });
 }
 
-module.exports = function (shouldZip) {
+export function packExtensions(shouldZip = false) {
   /***********************************************
-   * Create our Chrome and Firefox folders if they
-   * don't exist already
+   * clear out the Chrome and Firefox folders
    */
   ['Chrome', 'Firefox'].forEach(function (dir) {
-    fs.ensureDirSync(`${extPath}/${dir}`);
+    fs.rmSync(`${extPath}/${dir}`, { recursive: true, force: true });
+  });
+
+  /***********************************************
+   * re-create our Chrome and Firefox folders
+   */
+  ['Chrome', 'Firefox'].forEach(function (dir) {
+    fs.mkdirSync(`${extPath}/${dir}`, { recursive: true });
   });
 
   /**********************************************
@@ -89,9 +122,9 @@ module.exports = function (shouldZip) {
    */
 
   console.log('Parsing manifest files and building to appropriate folder');
-  var mCore = parseJSONfile('manifest.core.json');
-  var mChrome = parseJSONfile('manifest.chrome.json');
-  var mFF = parseJSONfile('manifest.firefox.json');
+  const mCore = parseJSONfile('manifest.core.json');
+  const mChrome = parseJSONfile('manifest.chrome.json');
+  const mFF = parseJSONfile('manifest.firefox.json');
 
   // set version number from package.json
   mCore.version = pkg.version;
@@ -112,4 +145,4 @@ module.exports = function (shouldZip) {
     doZip('Chrome');
     doZip('Firefox');
   }
-};
+}
