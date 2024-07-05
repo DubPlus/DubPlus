@@ -1,31 +1,31 @@
 /**
  * Autocomplete Emojis/Emotes
  */
-import { dubplus_emoji } from "../emoji/emoji";
+import { dubplus_emoji } from '../emoji/emoji';
 import {
   decrement,
   emojiState,
   increment,
   setEmojiList,
   reset,
-} from "../emoji/emojiState.svelte";
-import { settings } from "../stores/settings.svelte";
+} from '../emoji/emojiState.svelte';
+import { settings } from '../stores/settings.svelte';
 
 const KEYS = {
-  up: "ArrowUp",
-  down: "ArrowDown",
-  left: "ArrowLeft",
-  right: "ArrowRight",
-  enter: "Enter",
-  esc: "Escape",
-  tab: "Tab",
-  backspace: "Backspace",
-  del: "Delete",
-  space: " ",
+  up: 'ArrowUp',
+  down: 'ArrowDown',
+  left: 'ArrowLeft',
+  right: 'ArrowRight',
+  enter: 'Enter',
+  esc: 'Escape',
+  tab: 'Tab',
+  backspace: 'Backspace',
+  del: 'Delete',
+  space: ' ',
 };
 
 const keyCharMin = 3; // when to start showing previews
-let acPreview = document.querySelector("#autocomplete-preview");
+let acPreview = document.querySelector('#autocomplete-preview');
 let originalKeyDownEventHandler;
 
 /**
@@ -35,19 +35,19 @@ function getSelection(inputEl) {
   const currentText = inputEl.value;
   const cursorPos = inputEl.selectionStart;
   let goLeft = cursorPos - 1;
-  while (currentText[goLeft] !== " " && goLeft > 0) {
+  while (currentText[goLeft] !== ' ' && goLeft > 0) {
     goLeft--;
   }
-  if (goLeft > 0 && currentText[goLeft] === " ") {
+  if (goLeft > 0 && currentText[goLeft] === ' ') {
     goLeft += 1;
   }
 
   let goRight = cursorPos;
-  while (currentText[goRight] !== " " && goRight < currentText.length) {
+  while (currentText[goRight] !== ' ' && goRight < currentText.length) {
     goRight++;
   }
 
-  if (goRight !== currentText.length && currentText[goRight] === " ") {
+  if (goRight !== currentText.length && currentText[goRight] === ' ') {
     goRight -= 1;
   }
   return [goLeft, goRight];
@@ -74,19 +74,19 @@ function checkInput(e) {
   const currentText = inputEl.value;
   const cursorPos = inputEl.selectionStart;
 
-  let str = "";
+  let str = '';
   let goLeft = cursorPos - 1;
-  while (currentText[goLeft] !== " " && goLeft >= 0) {
+  while (currentText[goLeft] !== ' ' && goLeft >= 0) {
     str = currentText[goLeft] + str;
     goLeft--;
   }
   let goRight = cursorPos;
-  while (currentText[goRight] !== " " && goRight < currentText.length) {
+  while (currentText[goRight] !== ' ' && goRight < currentText.length) {
     str = str + currentText[goRight];
     goRight++;
   }
 
-  if (str.startsWith(":") && str.length >= keyCharMin && !str.endsWith(":")) {
+  if (str.startsWith(':') && str.length >= keyCharMin && !str.endsWith(':')) {
     // start filtering emojis
     const list = dubplus_emoji.findMatchingEmotes(
       str.substring(1).trim(),
@@ -143,17 +143,21 @@ function chatInputKeyupFunc(e) {
  */
 function chatInputKeydownFunc(e) {
   const emptyPreview = acPreview.children.length === 0;
-
   const isValidKey = [KEYS.tab, KEYS.enter, KEYS.up, KEYS.down].includes(e.key);
+  const isModifierKey = e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
 
-  // Manually send the keycodes if the preview popup isn't visible
-  if (isValidKey && emptyPreview) {
-    return window.QueUp.room.chat.ncKeyDown({ which: e.keyCode });
+  if (!isModifierKey && !emptyPreview && isValidKey) {
+    e.preventDefault();
+    return;
   }
 
-  // stop default behaviors of special keys so we can use them in preview
-  if (isValidKey && !emptyPreview) {
-    e.preventDefault();
+  // temporary fix to restore enter key functionality for sending messages
+  // due to the new multiline chat textarea
+  if (!isModifierKey && e.key === KEYS.enter) {
+    window.QueUp.room.chat.sendMessage();
+    window.QueUp.room.chat.resizeTextarea();
+  } else if (!isModifierKey) {
+    window.QueUp.room.chat.ncKeyDown(e);
   }
 }
 
@@ -164,35 +168,35 @@ function chatInputKeydownFunc(e) {
  * @type {import("./module").DubPlusModule}
  */
 export const autocomplete = {
-  id: "autocomplete",
-  label: "autocomplete.label",
-  category: "general",
-  description: "autocomplete.description",
+  id: 'autocomplete',
+  label: 'autocomplete.label',
+  category: 'general',
+  description: 'autocomplete.description',
   turnOn() {
-    acPreview = document.querySelector("#autocomplete-preview");
+    acPreview = document.querySelector('#autocomplete-preview');
     reset();
 
     originalKeyDownEventHandler =
-      window.QueUp.room.chat.events["keydown #chat-txt-message"];
+      window.QueUp.room.chat.events['keydown #chat-txt-message'];
 
     const newEventsObject = { ...window.QueUp.room.chat.events };
-    delete newEventsObject["keydown #chat-txt-message"];
+    delete newEventsObject['keydown #chat-txt-message'];
     window.QueUp.room.chat.delegateEvents(newEventsObject);
 
-    const chatInput = document.getElementById("chat-txt-message");
-    chatInput.addEventListener("keydown", chatInputKeydownFunc);
-    chatInput.addEventListener("keyup", chatInputKeyupFunc);
-    chatInput.addEventListener("click", checkInput);
+    const chatInput = document.getElementById('chat-txt-message');
+    chatInput.addEventListener('keydown', chatInputKeydownFunc);
+    chatInput.addEventListener('keyup', chatInputKeyupFunc);
+    chatInput.addEventListener('click', checkInput);
   },
 
   turnOff() {
     reset();
-    window.QueUp.room.chat.events["keydown #chat-txt-message"] =
+    window.QueUp.room.chat.events['keydown #chat-txt-message'] =
       originalKeyDownEventHandler;
     window.QueUp.room.chat.delegateEvents(window.QueUp.room.chat.events);
-    const chatInput = document.getElementById("chat-txt-message");
-    chatInput.removeEventListener("keydown", chatInputKeydownFunc);
-    chatInput.removeEventListener("keyup", chatInputKeyupFunc);
-    chatInput.removeEventListener("click", checkInput);
+    const chatInput = document.getElementById('chat-txt-message');
+    chatInput.removeEventListener('keydown', chatInputKeydownFunc);
+    chatInput.removeEventListener('keyup', chatInputKeyupFunc);
+    chatInput.removeEventListener('click', checkInput);
   },
 };

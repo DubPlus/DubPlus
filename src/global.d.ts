@@ -42,7 +42,8 @@ export interface QueUp {
       mentionChatSound: {
         play: () => void;
         url: string;
-      }
+      },
+      resizeTextarea: () => void;
     };
     player: {
       muted_player: boolean;
