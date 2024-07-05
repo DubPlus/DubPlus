@@ -1,32 +1,31 @@
-const spawnSync = require('child_process').spawnSync;
 const log = require('./colored-console.js');
+import webExt from 'web-ext';
 
 /****************************************************
- * Important note
- * web-ext needs to be installed GLOBALLY
- * npm i web-ext -g
+ * our ff addon link: https://addons.mozilla.org/en-US/firefox/addon/dubplus/
  *
  * more info on web-ext sign
  * https://developer.mozilla.org/en-US/Add-ons/WebExtensions/web-ext_command_reference#web-ext_sign
  *
- * this needs API keys i think
+ * This command:
+ *
+ * - creates a listing for your extension on AMO if --channel is set to listed and the extension isn't listed.
+ * - adds a version to a listed extension if the --channel is set to listed and your extension is listed.
+ * - downloads a signed copy of the extension if the --channel is set to unlisted.
  */
 
-function signFFext(){
-  var options = {
-    cwd: process.cwd() + `/extensions/Firefox`,
-    encoding : 'utf8'
+function signFFext() {
+  const options = {
+    apiKey: process.env.WEB_EXT_API_KEY,
+    apiSecret: process.env.WEB_EXT_API_SECRET,
+    channel: 'listed',
+    timeout: 5 * 1000 * 60, // 5 minutes,
+    uploadSourceCode: process.cwd() + '/extensions/Firefox',
   };
-
-
-  var webext = spawnSync('web-ext', ['sign'], options);
-  var output = webext.stdout;
-
-  var successResponse = "Your add-on has been submitted for review. It passed validation but could not be automatically signed because this is a listed add-on";
-
-  if (output.indexOf(successResponse) > 0) {
-    log.info('success');
-  }
+  webExt.cmd.sign(options).then((result) => {
+    log.info('Firefox extension signed');
+    console.log(result);
+  });
 }
 
 module.exports = signFFext;

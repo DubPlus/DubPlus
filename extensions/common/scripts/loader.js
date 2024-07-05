@@ -1,6 +1,10 @@
-var script = document.createElement('script');
-script.type = 'text/javascript';
-script.async = true;
-script.src = 'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus/dubplus.js';
+const scriptTag = document.createElement('script');
+scriptTag.type = 'text/javascript';
+scriptTag.async = true;
+scriptTag.onerror = function (e) {
+  console.error('Dub+ failed to load', e);
+};
+scriptTag.src =
+  'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus/dubplus.js?version=0.3.4';
 
-document.getElementsByTagName('head')[0].appendChild(script);
+document.head.appendChild(scriptTag);

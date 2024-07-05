@@ -74,6 +74,9 @@ export function onMenuAction(id) {
   }
 }
 
+/**
+ * open/close the menu
+ */
 export function toggleMenu() {
   document.querySelector('.dubplus-menu').classList.toggle('dubplus-menu-open');
 }

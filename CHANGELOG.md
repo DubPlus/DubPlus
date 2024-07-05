@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.4] - 2024-07-05
+### Fixed
+- fixed [custom background bug](https://github.com/DubPlus/DubPlus/issues/87)
+- fixed [Firefox add-on not loading jQuery](https://github.com/DubPlus/DubPlus/issues/112)
+
+### Internal Changes
+- upgraded repo to use Node v20+, npm v10+
+- fixed PostCSS + Autoprefixer build issue due to the upgrade
+
 ## [0.3.3] - 2024-07-01
 ### Fixed
 - Fixed autocomplete's keydown handler intefering with QueUp's new multiline chat feature
