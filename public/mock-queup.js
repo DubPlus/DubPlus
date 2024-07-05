@@ -1,13 +1,13 @@
-const CURRENT_USER_NAME = "demo-user";
-const CURRENT_USER_ID = "user-123";
-const ROOM_ID = "room-123";
+const CURRENT_USER_NAME = 'demo-user';
+const CURRENT_USER_ID = 'user-123';
+const ROOM_ID = 'room-123';
 
 /** @type {import('../src/global').QueUp} */
 const QueUp = {
   session: {
     // id: CURRENT_USER_ID,
     get(key) {
-      if (key === "username") {
+      if (key === 'username') {
         return CURRENT_USER_NAME;
       }
     },
@@ -15,9 +15,9 @@ const QueUp = {
   room: {
     chat: {
       sendMessage() {
-        const input = document.getElementById("chat-txt-message");
+        const input = document.getElementById('chat-txt-message');
         const message = input.value;
-        input.value = "";
+        input.value = '';
         /**
          * @type {import('../src/global').ChatMessageEvent}
          */
@@ -31,53 +31,53 @@ const QueUp = {
           },
         };
         makeChatMessage(message, chatMessage.user.username);
-        triggerEvent("realtime:chat-message", chatMessage);
+        triggerEvent('realtime:chat-message', chatMessage);
       },
       events: {
-        "click .send-chat-button": "sendMessage",
-        "click .setOnChatNotifications": "setSoundOn",
-        "click .setOffChatNotifications": "setSoundOff",
-        "click .setMentionChatNotifications": "setSoundMention",
-        "click .disableVideo-el": "disableVideo",
-        "click a.chat-commands": "displayChatHelp",
-        "click #new-messages-counter": "clickChatCounter",
-        "click .display-room-users": "displayRoomUsers",
-        "click .display-chat": "displayChat",
-        "click .display-chat-settings": "displayChatOptions",
-        "click .hideImagesToggle": "hideImageToggleClick",
-        "click .roleColorToggle": "disableRoleColorToggleClick",
-        "click .clearChatToggle": "clearChat",
-        "click #deletedVisibleToggle": "toggleDeletedMessages",
-        "click .emojiConvertionToggle": "toggleEmojiConvertion",
-        "input #chat-txt-message": "ncInput",
-        "keydown #chat-txt-message": "ncKeyDown",
-        "click .nc-container li": "ncNameClicked",
-        "mouseover .nc-container li": "ncNameHovered",
+        'click .send-chat-button': 'sendMessage',
+        'click .setOnChatNotifications': 'setSoundOn',
+        'click .setOffChatNotifications': 'setSoundOff',
+        'click .setMentionChatNotifications': 'setSoundMention',
+        'click .disableVideo-el': 'disableVideo',
+        'click a.chat-commands': 'displayChatHelp',
+        'click #new-messages-counter': 'clickChatCounter',
+        'click .display-room-users': 'displayRoomUsers',
+        'click .display-chat': 'displayChat',
+        'click .display-chat-settings': 'displayChatOptions',
+        'click .hideImagesToggle': 'hideImageToggleClick',
+        'click .roleColorToggle': 'disableRoleColorToggleClick',
+        'click .clearChatToggle': 'clearChat',
+        'click #deletedVisibleToggle': 'toggleDeletedMessages',
+        'click .emojiConvertionToggle': 'toggleEmojiConvertion',
+        'input #chat-txt-message': 'ncInput',
+        'keydown #chat-txt-message': 'ncKeyDown',
+        'click .nc-container li': 'ncNameClicked',
+        'mouseover .nc-container li': 'ncNameHovered',
       },
       delegateEvents(events) {
-        console.log("delegateEvents", events);
+        console.log('delegateEvents', events);
         this.events = events;
       },
       ncKeyDown: (e) => {},
       mentionChatSound: {
-        url: "/assets/music/user_ping.mp3",
+        url: '/assets/music/user_ping.mp3',
         play() {
-          console.log("mentionChatSound.play");
+          console.log('mentionChatSound.play');
         },
       },
     },
     player: {
       muted_player: false,
       mutePlayer() {
-        console.log("player muted");
+        console.log('player muted');
         this.muted_player = true;
       },
       setVolume(volume) {
-        console.log("setVolume", volume);
+        console.log('setVolume', volume);
         window.QueUp.playerController.volume = volume;
       },
       updateVolumeBar() {
-        console.log("updateVolumeBar");
+        console.log('updateVolumeBar');
       },
     },
     model: {
@@ -108,17 +108,17 @@ const QueUp = {
   },
   Events: {
     bind(event, callback) {
-      console.log("bind", event);
+      console.log('bind', event);
       events[event] = events[event] || [];
       events[event].push(callback);
     },
     once(event, callback) {
-      console.log("once", event);
+      console.log('once', event);
       onceEvents[event] = onceEvents[event] || [];
       onceEvents[event].push(callback);
     },
     unbind(event, callback) {
-      console.log("unbind", event);
+      console.log('unbind', event);
       if (events[event]) {
         events[event] = events[event].filter((cb) => cb !== callback);
       }
@@ -134,7 +134,7 @@ const QueUp = {
     volume: 5,
     voteUp: {
       click() {
-        document.querySelector(".dubup").classList.add("voted");
+        document.querySelector('.dubup').classList.add('voted');
       },
     },
   },
@@ -145,7 +145,7 @@ window.QueUp = QueUp;
 window.emojify = {
   emojiNames: [],
   defaultConfig: {
-    img_dir: "",
+    img_dir: '',
   },
 };
 
@@ -158,7 +158,9 @@ const onceEvents = {};
 // this will force the loading spinner to show so we can
 // make sure that works
 function addProperties() {
-  window.QueUp.session.id = CURRENT_USER_ID;
+  if (!window.test_forceLogout) {
+    window.QueUp.session.id = CURRENT_USER_ID;
+  }
 }
 window.setTimeout(addProperties, 2000);
 
@@ -178,9 +180,11 @@ function triggerEvent(eventName, data) {
   }
 }
 
+window.triggerEvent = triggerEvent;
+
 window.soundManager = {
   canPlayURL: (url) => {
-    return url.startsWith("http");
+    return url.startsWith('http');
   },
 };
 
@@ -190,38 +194,38 @@ window.soundManager = {
  */
 function onChatKeyUp(e) {
   if (
-    e.key === "Enter" &&
-    !document.querySelector("#autocomplete-preview")?.children?.length
+    e.key === 'Enter' &&
+    !document.querySelector('#autocomplete-preview')?.children?.length
   ) {
     e.preventDefault();
     const message = e.target.value;
-    e.target.value = "";
+    e.target.value = '';
 
-    const notSelf = message.trim().startsWith("user:");
+    const notSelf = message.trim().startsWith('user:');
     /**
      * @type {import('../src/global').ChatMessageEvent}
      */
     const chatMessage = {
       message,
       user: {
-        username: notSelf ? "different-user" : CURRENT_USER_NAME,
+        username: notSelf ? 'different-user' : CURRENT_USER_NAME,
         userInfo: {
-          userid: notSelf ? "user-456" : CURRENT_USER_ID,
+          userid: notSelf ? 'user-456' : CURRENT_USER_ID,
         },
       },
     };
     makeChatMessage(message, chatMessage.user.username);
-    triggerEvent("realtime:chat-message", chatMessage);
+    triggerEvent('realtime:chat-message', chatMessage);
   }
 }
 
 document
-  .getElementById("chat-txt-message")
-  .addEventListener("keyup", onChatKeyUp);
+  .getElementById('chat-txt-message')
+  .addEventListener('keyup', onChatKeyUp);
 
 function makeChatMessage(message, username) {
-  const li = document.createElement("li");
-  li.classList.add("current-chat-user", "chat-id-abc-123");
+  const li = document.createElement('li');
+  li.classList.add('current-chat-user', 'chat-id-abc-123');
 
   li.innerHTML = `<div class="stream-item-content">
         <div class="chatDelete">
@@ -256,14 +260,14 @@ function makeChatMessage(message, username) {
         </div>
       </div>
     `;
-  document.querySelector(".chat-main").appendChild(li);
+  document.querySelector('.chat-main').appendChild(li);
 }
 
-let open = "player";
-document.querySelectorAll("#mobile-room-menu a").forEach((a) => {
-  const target = a.getAttribute("data-display");
-  a.addEventListener("click", (e) => {
+let open = 'player';
+document.querySelectorAll('#mobile-room-menu a').forEach((a) => {
+  const target = a.getAttribute('data-display');
+  a.addEventListener('click', (e) => {
     e.preventDefault();
-    document.body.setAttribute("data-display", target);
+    document.body.setAttribute('data-display', target);
   });
 });
