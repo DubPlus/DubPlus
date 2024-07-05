@@ -93,6 +93,7 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     server: {
+      strictPort: true,
       proxy: {
         '/api/room/room-123/playlist/active/dubs': {
           target: 'https://github.com',
