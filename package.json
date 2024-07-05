@@ -35,11 +35,10 @@
     "autoprefixer": "^10.2.5",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
-    "chalk": "^4.1.0",
-    "fs-extra": "^9.1.0",
+    "chalk": "^4.1.2",
+    "fs-extra": "^11.2.0",
     "git-repo-info": "^2.1.1",
-    "postcss": "^8.2.8",
-    "request": "^2.88.2",
+    "postcss": "^8.4.39",
     "uglifyify": "^5.0.2",
     "watchify": "^4.0.0",
     "web-ext": "^8.2.0"
@@ -50,6 +49,7 @@
   ],
   "dependencies": {
     "@babel/core": "^7.24.7",
+    "node-fetch": "^2.7.0",
     "sass": "^1.77.6"
   }
 }
