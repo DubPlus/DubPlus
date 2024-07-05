@@ -1,7 +1,7 @@
-import { defineConfig } from "vite";
-import { svelte } from "@sveltejs/vite-plugin-svelte";
-import pkg from "./package.json";
-import { resolve } from "path";
+import { defineConfig } from 'vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import pkg from './package.json';
+import { resolve } from 'path';
 
 // only want to pass a few things from package, delete the rest
 delete pkg.main;
@@ -16,36 +16,36 @@ delete pkg.browserslist;
 // this is a fake dubs response to test the dubs module
 const dubsResponse = {
   code: 200,
-  message: "OK",
+  message: 'OK',
   data: {
     upDubs: [
       {
-        _id: "abc123",
-        type: "updub",
+        _id: 'abc123',
+        type: 'updub',
         created: 1719292218125,
         updated: 1719292218125,
-        fkid: "abc123",
-        model: "rooms_playlists",
-        userid: "abc123",
+        fkid: 'abc123',
+        model: 'rooms_playlists',
+        userid: 'abc123',
         __v: 0,
       },
     ],
     downDubs: [],
     currentSong: {
-      _id: "6669fae3f6962c00073f8620",
+      _id: '6669fae3f6962c00073f8620',
       created: 1718221537578,
       isActive: true,
       isPlayed: false,
       skipped: false,
       order: 5,
-      roomid: "60553a02aa44080006989621",
+      roomid: '60553a02aa44080006989621',
       songLength: 446000,
       updubs: 6,
       downdubs: 0,
-      userid: "605546871cc35c0006b1d08b",
-      songid: "656f74824851430006005d0c",
-      _user: "605546871cc35c0006b1d08b",
-      _song: "656f74824851430006005d0c",
+      userid: '605546871cc35c0006b1d08b',
+      songid: '656f74824851430006005d0c',
+      _user: '605546871cc35c0006b1d08b',
+      _song: '656f74824851430006005d0c',
       __v: 0,
       played: 1719292219378,
     },
@@ -59,27 +59,34 @@ export default defineConfig(({ command, mode }) => {
     define: {
       __TIME_STAMP__: JSON.stringify(Date.now().toString()),
       __SRC_ROOT__: JSON.stringify(
-        "https://cdn.jsdelivr.net/gh/DubPlus/DubPlus"
+        'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus'
       ),
       __PKGINFO__: JSON.stringify(pkg),
     },
     build: {
+      minify: false,
+      outDir: './',
       lib: {
-        entry: resolve(__dirname, "/src/main.js"),
-        name: "dubplus",
-        fileName: "dubplus",
-        formats: ["iife"],
+        entry: resolve(__dirname, '/src/main.js'),
+        name: 'dubplus',
+        fileName: 'dubplus',
+        formats: ['iife'],
       },
       copyPublicDir: false,
       rollupOptions: {
         output: {
+          // inserts the Dub+ ascii logo and license into the top of the output
           banner: BANNER,
+
+          // makes sure our output CSS file is named dubplus.css
           assetFileNames: (assetInfo) => {
-            if (assetInfo.name === "style.css") return "dubplus.min.css";
+            if (assetInfo.name === 'style.css') return 'dubplus.css';
             return assetInfo.name;
           },
+
+          // makes sure our output JS file is named dubplus.js
           entryFileNames: (chunkInfo) => {
-            if (chunkInfo.name === "main") return "dubplus.min.js";
+            if (chunkInfo.name === 'main') return 'dubplus.js';
             return chunkInfo.name;
           },
         },
@@ -87,20 +94,20 @@ export default defineConfig(({ command, mode }) => {
     },
     server: {
       proxy: {
-        "/api/room/room-123/playlist/active/dubs": {
-          target: "https://github.com",
+        '/api/room/room-123/playlist/active/dubs': {
+          target: 'https://github.com',
           changeOrigin: true,
           selfHandleResponse: true,
           secure: false,
           configure(proxy) {
-            proxy.on("proxyRes", (proxyRes, req, res) => {
+            proxy.on('proxyRes', (proxyRes, req, res) => {
               var body = [];
-              proxyRes.on("data", function (chunk) {
+              proxyRes.on('data', function (chunk) {
                 body.push(chunk);
               });
-              proxyRes.on("end", function () {
+              proxyRes.on('end', function () {
                 body = Buffer.concat(body).toString();
-                res.setHeader("Content-Type", "application/json");
+                res.setHeader('Content-Type', 'application/json');
                 res.end(JSON.stringify(dubsResponse));
               });
             });

@@ -17,25 +17,17 @@ The build script automatically is grabbing your Github Username and your current
 **NOTE:**
 When building and/or minifying JS and Sass, the tasks inject the Rawgit url based on your Github User and branch name when not on the master branch or not using the '-release' tasks. If you're developing locally this is useful so you can point bookmarklets to your current feature dev branch.
 
-`npm run build` - Builds and minifies BOTH js and sass.
+`npm run dev` - starts the Vite development server which loads the mock QueUp page and our extension, watches for file changes (css and js) and reloads
 
-`npm run build-release` - Builds and minifies BOTH js and sass. Sets the Rawgit location variable to /DubPlus/DubPlus/master.
+`npm run build` - creates production builds of the JS and CSS files
 
-`npm run bundle` - runs babel and browserify on JS files
+`npm run ext` - builds the `extensions/Chrome` and `extensions/Firefox` folders.  **does not zip**, use `npm run zip` to zip.
 
-`npm run sass` - compiles sass files
-
-`npm run build` - run both bundle & sass
-
-`npm run minify` - produces minified files for both js and css files.
-
-`npm run min-release` - produces minified files for both js and css files. Sets the Rawgit location variable to /DubPlus/DubPlus/master.
-
-
-`npm run watch` - starts JS and Sass file watching and compiling of each.
-
-`npm run ext` - takes the `extensions/common` folder and builds the `extensions/Chrome` and `extensions/Firefox` folders.  **does not zip**, use `npm run ext-zip` to zip.
-
-`npm run ext-zip` - Zips the `extensions/Chrome` and `extensions/Firefox` folders
+`npm run zip` - Zips the `extensions/Chrome` and `extensions/Firefox` folders
 
 `npm run ext-deploy` - first builds each extension, then zips them, then deploys each extensions to their respective online web stores
+
+`npm run start:firefox` - starts an instance of firefox with our extension loaded so you can test it with Firefox
+
+TODO:
+- figure out a way to develop using `web-ext` in Firefox so we can remove the mock QueUp
