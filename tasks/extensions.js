@@ -66,10 +66,6 @@ function copyScript() {
       process.cwd() + '/dubplus.js',
       `${extPath}/${dir}/scripts/dubplus.js`
     );
-    fs.copyFileSync(
-      process.cwd() + '/dubplus.min.js',
-      `${extPath}/${dir}/scripts/dubplus.min.js`
-    );
   });
 }
 
