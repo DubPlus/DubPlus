@@ -7,15 +7,11 @@ This is a complete rewrite of the code switching from the old jQuery spaghetti c
 
 ### Breaking Changes
 
-I removed the following files from the repo: 
-- `dubplus.js`
+We no longer produce minified versions of our code because we never used them and Chrome and Firefox extensions forbid them anyways:
 - `dubplus.min.js`
-- `css/dubplus.css`
 - `css/dubplus.min.css`
 
-From now on they will be hosted in the `dist` folder and only the minified versions will be available
-- `dist/dubplus.min.js`
-- `dist/dubplus.min.css`
+We no longer have a `css/` folder, the `dubplus.css` is located at the root next to the `dubplus.js` file. This shouldn't affect anyone because the CSS file is loaded direclty by the `dubplus.js` code so no change needed.
 
 If you were accessing these files you'll need to update your urls.
 
