@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.3.4] - 2024-07-04
+## [0.3.4] - 2024-07-05
 ### Fixed
 - fixed [custom background bug](https://github.com/DubPlus/DubPlus/issues/87)
 - fixed [Firefox add-on not loading jQuery](https://github.com/DubPlus/DubPlus/issues/112)
