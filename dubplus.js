@@ -1,9 +1,9 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 
 var _waitFor = _interopRequireDefault(require("./utils/waitFor.js"));
 var _preload = _interopRequireDefault(require("./utils/preload.js"));
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /*
      /$$$$$$$            /$$                
     | $$__  $$          | $$          /$$   
@@ -53,7 +53,7 @@ function errorModal(errorMsg) {
     content: errorMsg
   });
 }
-(0, _preload["default"])();
+(0, _preload.default)();
 if (window.dubplus) {
   var _document$querySelect;
   // unbind any listeners before we reload the script
@@ -62,16 +62,16 @@ if (window.dubplus) {
       window.dubplus[key].turnOff();
     }
   }
-  (_document$querySelect = document.querySelector('.dubplus-menu')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.remove();
+  (_document$querySelect = document.querySelector('.dubplus-menu')) === null || _document$querySelect === void 0 || _document$querySelect.remove();
 }
 
 /* globals Dubtrack */
-(0, _preload["default"])();
+(0, _preload.default)();
 
 // checking to see if these items exist before initializing the script
 // instead of just picking an arbitrary setTimeout and hoping for the best
 var checkList = ['QueUp.session.id', 'QueUp.room.chat', 'QueUp.Events', 'QueUp.room.player', 'QueUp.helpers.cookie', 'QueUp.room.model', 'QueUp.room.users'];
-var dubplusWaiting = new _waitFor["default"](checkList, {
+var dubplusWaiting = new _waitFor.default(checkList, {
   seconds: 10
 }); // 10sec should be more than enough
 
@@ -89,9 +89,9 @@ dubplusWaiting.then(function () {
 },{"./lib/init.js":4,"./utils/css.js":41,"./utils/modal.js":43,"./utils/preload.js":47,"./utils/waitFor.js":48}],2:[function(require,module,exports){
 "use strict";
 
-function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) { n[e] = r[e]; } return n; }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 /* global  emojify */
 
 var GetJSON = require('../utils/getJSON.js');
@@ -400,7 +400,7 @@ function log() {
  *   alt : OPTIONAL, to add to alt and title tag
  * }
  */
-var makeList = function makeList(acArray) {
+var makeList = exports.makeList = function makeList(acArray) {
   function makePreviewContainer(cn) {
     var d = document.createElement('li');
     d.className = cn;
@@ -457,7 +457,6 @@ var makeList = function makeList(acArray) {
   aCp.appendChild(frag);
   aCp.classList.add('ac-show');
 };
-exports.makeList = makeList;
 function isElementInView(el, container) {
   var rect = el.getBoundingClientRect();
   var outerRect = container.getBoundingClientRect();
@@ -473,7 +472,7 @@ function isElementInView(el, container) {
  * It also binds the events that handle navigating through the list
  * and also placing selected text into the chat
  */
-var PreviewListManager = /*#__PURE__*/function () {
+var PreviewListManager = exports.PreviewListManager = /*#__PURE__*/function () {
   function PreviewListManager(data) {
     _classCallCheck(this, PreviewListManager);
     this._data = data || {
@@ -482,7 +481,7 @@ var PreviewListManager = /*#__PURE__*/function () {
       selected: ""
     };
   }
-  _createClass(PreviewListManager, [{
+  return _createClass(PreviewListManager, [{
     key: "data",
     get: function get() {
       return this._data;
@@ -571,9 +570,7 @@ var PreviewListManager = /*#__PURE__*/function () {
       $('#autocomplete-preview').remove();
     }
   }]);
-  return PreviewListManager;
 }();
-exports.PreviewListManager = PreviewListManager;
 
 },{}],4:[function(require,module,exports){
 (function (PKGINFO){(function (){
@@ -585,7 +582,7 @@ var _menu = _interopRequireDefault(require("./menu.js"));
 var _snooze = _interopRequireDefault(require("../modules/snooze.js"));
 var _eta = _interopRequireDefault(require("../modules/eta.js"));
 var _menuEvents = require("./menu-events.js");
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 module.exports = function () {
   window.dubplus = JSON.parse(PKGINFO);
   window.dubplus.toggleMenuSection = _menuEvents.toggleMenuSection;
@@ -595,35 +592,35 @@ module.exports = function () {
   window.dubplus.onMenuEdit = _menuEvents.onMenuEdit;
 
   // load our main CSS
-  _css["default"].load('/css/dubplus.css', 'dubplus-css');
+  _css.default.load('/css/dubplus.css', 'dubplus-css');
 
   // add a 'global' css class just in case we need more specificity in our css
   document.querySelector('html').classList.add('dubplus');
 
   // Get the opening html for the menu
-  var menuContainer = _menu["default"].beginMenu();
+  var menuContainer = _menu.default.beginMenu();
 
   // load all our modules into the 'dubplus' global object
   // it also builds the menu dynamically
   // returns an object to be passed to menu.finish
-  var menuObj = (0, _loadModules["default"])();
+  var menuObj = (0, _loadModules.default)();
 
   // finalize the menu and add it to the UI
-  _menu["default"].finishMenu(menuObj, menuContainer);
+  _menu.default.finishMenu(menuObj, menuContainer);
 
   // run non-menu related items here:
-  (0, _snooze["default"])();
-  (0, _eta["default"])();
+  (0, _snooze.default)();
+  (0, _eta.default)();
 };
 
-}).call(this)}).call(this,'{"name":"DubPlus","version":"0.3.4","description":"Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net","engines":{"node":">=16.0.0"},"author":"DubPlus","license":"MIT","homepage":"https://dub.plus","browserslist":["> 1%","last 2 versions"],"dependencies":{"@babel/core":"^7.24.7","sass":"^1.77.6"}}')
+}).call(this)}).call(this,'{"name":"DubPlus","version":"0.3.4","description":"Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net","author":"DubPlus","license":"MIT","homepage":"https://dub.plus","browserslist":["> 1%","last 2 versions"],"dependencies":{"@babel/core":"^7.24.7","node-fetch":"^3.3.2","sass":"^1.77.6"}}')
 },{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":41,"./loadModules.js":5,"./menu-events.js":6,"./menu.js":7}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = void 0;
+exports.default = void 0;
 var options = require('../utils/options.js');
 var dubPlus_modules = require('../modules/index.js');
 var settings = require('../lib/settings.js');
@@ -682,8 +679,7 @@ function loadAllModules() {
   });
   return menuObj;
 }
-var _default = loadAllModules;
-exports["default"] = _default;
+var _default = exports.default = loadAllModules;
 
 },{"../lib/menu.js":7,"../lib/settings.js":8,"../modules/index.js":29,"../utils/options.js":46}],6:[function(require,module,exports){
 "use strict";
@@ -691,11 +687,11 @@ exports["default"] = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.toggleMenuSection = toggleMenuSection;
+exports.onMenuAction = onMenuAction;
 exports.onMenuEdit = onMenuEdit;
 exports.onMenuToggle = onMenuToggle;
-exports.onMenuAction = onMenuAction;
 exports.toggleMenu = toggleMenu;
+exports.toggleMenuSection = toggleMenuSection;
 var options = require('../utils/options.js');
 
 /**
@@ -775,7 +771,7 @@ function toggleMenu() {
 'use strict';
 
 var _menuEvents = _interopRequireDefault(require("./menu-events.js"));
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 var settings = require('./settings.js');
 var css = require('../utils/css.js');
 // this is used to set the state of the contact menu section
@@ -858,7 +854,7 @@ module.exports = {
       </div>
     */
     // remove old one:
-    (_document$querySelect = document.querySelector('.dubplus-icon')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.remove();
+    (_document$querySelect = document.querySelector('.dubplus-icon')) === null || _document$querySelect === void 0 || _document$querySelect.remove();
 
     // create new one:
     var menuIcon = document.createElement('div');
@@ -1740,7 +1736,7 @@ module.exports = myModule;
 "use strict";
 
 var _modcheck = _interopRequireDefault(require("../utils/modcheck.js"));
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * Show downvotes in chat
  * only mods can use this
@@ -1764,7 +1760,7 @@ myModule.downdubWatcher = function (e) {
   }
 };
 myModule.turnOn = function () {
-  if (!(0, _modcheck["default"])(QueUp.session.id)) {
+  if (!(0, _modcheck.default)(QueUp.session.id)) {
     return;
   }
   QueUp.Events.bind("realtime:room_playlist-dub", this.downdubWatcher);
@@ -1867,7 +1863,7 @@ module.exports = emote_module;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = _default;
+exports.default = _default;
 /**
  * ETA
  *
@@ -1905,7 +1901,7 @@ function eta() {
 }
 function hide_eta() {
   var _document$querySelect;
-  (_document$querySelect = document.querySelector('.eta_tooltip')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.remove();
+  (_document$querySelect = document.querySelector('.eta_tooltip')) === null || _document$querySelect === void 0 || _document$querySelect.remove();
 }
 function _default() {
   if (document.querySelector('.player_sharing .eta_tooltip_t')) {
@@ -2288,7 +2284,7 @@ module.exports = rain;
 
 var _modcheck = _interopRequireDefault(require("../utils/modcheck.js"));
 var _api = require("../utils/api.js");
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /* global Dubtrack */
 var modal = require('../utils/modal.js');
 var dubshover = {};
@@ -2434,7 +2430,7 @@ dubshover.showDubsOnHover = function () {
     var infoPaneWidth = $(dubupEl).innerWidth() + $(dubdownEl).innerWidth();
     var dubdownBackground = $('.dubdown').hasClass('voted') ? $('.dubdown').css('background-color') : $('.dubdown').find('.icon-arrow-down').css('color');
     var html;
-    if ((0, _modcheck["default"])(QueUp.session.id)) {
+    if ((0, _modcheck.default)(QueUp.session.id)) {
       if (window.dubplus.dubs.downDubs.length > 0) {
         html = "<ul id=\"dubinfo-preview\" class=\"dubinfo-show dubplus-downdubs-hover\" style=\"border-color: ".concat(dubdownBackground, "\">");
         window.dubplus.dubs.downDubs.forEach(function (val) {
@@ -2622,7 +2618,7 @@ dubshover.dubWatcher = function (e) {
     //If dub already casted
     if ($.grep(window.dubplus.dubs.downDubs, function (el) {
       return el.userid === e.user._id;
-    }).length <= 0 && (0, _modcheck["default"])(QueUp.session.id)) {
+    }).length <= 0 && (0, _modcheck.default)(QueUp.session.id)) {
       window.dubplus.dubs.downDubs.push({
         userid: e.user._id,
         username: e.user.username
@@ -2648,7 +2644,7 @@ dubshover.dubWatcher = function (e) {
   if (window.dubplus.dubs.upDubs.length !== QueUp.room.player.activeSong.attributes.song.updubs) {
     // console.log("Updubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
     this.resetDubs();
-  } else if ((0, _modcheck["default"])(QueUp.session.id) && window.dubplus.dubs.downDubs.length !== QueUp.room.player.activeSong.attributes.song.downdubs) {
+  } else if ((0, _modcheck.default)(QueUp.session.id) && window.dubplus.dubs.downDubs.length !== QueUp.room.player.activeSong.attributes.song.downdubs) {
     // console.log("Downdubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
     this.resetDubs();
   }
@@ -2720,7 +2716,7 @@ dubshover.resetDubs = function () {
     });*/
 
     //Only let mods or higher access down dubs
-    if ((0, _modcheck["default"])(QueUp.session.id)) {
+    if ((0, _modcheck.default)(QueUp.session.id)) {
       response.data.downDubs.forEach(function (e) {
         //Dub already casted
         if ($.grep(window.dubplus.dubs.downDubs, function (el) {
@@ -2798,7 +2794,7 @@ module.exports = myModule;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = _default;
+exports.default = _default;
 /**
  * Snooze
  * Mutes audio for one song.
@@ -2816,7 +2812,7 @@ function snooze_tooltip() {
 }
 function hide_snooze_tooltip() {
   var _document$querySelect;
-  (_document$querySelect = document.querySelector('.snooze_tooltip')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.remove();
+  (_document$querySelect = document.querySelector('.snooze_tooltip')) === null || _document$querySelect === void 0 || _document$querySelect.remove();
 }
 var eventUtils = {
   currentVol: 50,
@@ -3027,8 +3023,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.apiBase = void 0;
-var apiBase = window.location.hostname.includes('staging') ? 'https://staging-api.queup.dev' : 'https://api.queup.net';
-exports.apiBase = apiBase;
+var apiBase = exports.apiBase = window.location.hostname.includes('staging') ? 'https://staging-api.queup.dev' : 'https://api.queup.net';
 
 },{}],41:[function(require,module,exports){
 (function (TIME_STAMP){(function (){
@@ -3085,7 +3080,7 @@ module.exports = {
   loadExternal: loadExternal
 };
 
-}).call(this)}).call(this,'1720106264243')
+}).call(this)}).call(this,'1720194289241')
 },{"../lib/settings.js":8}],42:[function(require,module,exports){
 "use strict";
 
@@ -3217,7 +3212,7 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = _default;
+exports.default = _default;
 /**
  * Check if a user is at least a mod or above
  */
@@ -3366,7 +3361,7 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = preload;
+exports.default = preload;
 var settings = require('../lib/settings.js');
 function preload() {
   var waitingStyles = ['font-family: \'Trebuchet MS\', Helvetica, sans-serif', 'z-index: 2147483647', 'color: white', 'position: fixed', 'top: 69px', 'right: 13px', 'background: #222', 'padding: 10px', 'line-height: 1', '-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75)', '-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75)', 'box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75)', 'border-radius: 5px', 'overflow: hidden', 'width: 230px'].join(';');
@@ -3382,7 +3377,7 @@ function preload() {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = void 0;
+exports.default = void 0;
 /**
  * Takes a string  representation of a variable or object and checks if it's
  * definied starting at provided scope or default to global window scope.
@@ -3474,7 +3469,6 @@ function WaitFor(waitingFor, options) {
     fail: fail
   };
 }
-var _default = WaitFor;
-exports["default"] = _default;
+var _default = exports.default = WaitFor;
 
 },{}]},{},[1]);
