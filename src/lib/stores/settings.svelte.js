@@ -1,8 +1,8 @@
-import { logError, logInfo } from "../../utils/logger";
-import { migrate } from "../../utils/settings-migrate-v2";
+import { logError, logInfo } from '../../utils/logger';
+import { migrate } from '../../utils/settings-migrate-v2';
 
-const STORAGE_KEY_OLD = "dubplusUserSettings";
-const STORAGE_KEY_NEW = "dubplusUserSettingsV2";
+const STORAGE_KEY_OLD = 'dubplusUserSettings';
+const STORAGE_KEY_NEW = 'dubplusUserSettingsV2';
 
 /**
  * @type {import("../../global").Settings}
@@ -13,11 +13,11 @@ const defaults = {
 
   // this will store the open/close state of the menu sections
   menu: {
-    general: "open",
-    "user-interface": "open",
-    settings: "open",
-    customize: "open",
-    contact: "open",
+    general: 'open',
+    'user-interface': 'open',
+    settings: 'open',
+    customize: 'open',
+    contact: 'open',
   },
 
   custom: {},
@@ -36,7 +36,7 @@ function loadSettings() {
       return /**@type {import("../../global").Settings}*/ (v2Settings);
     }
   } catch (e) {
-    logInfo("Error loading v2 settings, trying old settings. Error:", e);
+    logInfo('Error loading v2 settings, trying old settings. Error:', e);
   }
 
   try {
@@ -47,7 +47,7 @@ function loadSettings() {
       );
     }
   } catch (e) {
-    logInfo("Error loading old settings:", e);
+    logInfo('Error loading old settings:', e);
   }
 
   // @ts-ignore this will get merged with the defaults
@@ -55,19 +55,18 @@ function loadSettings() {
 }
 
 const intialSettings = Object.assign({}, defaults, loadSettings());
-console.log("intialSettings", structuredClone(intialSettings));
+
 /**
  * @type {import("../../global").Settings}
  */
 export let settings = $state(intialSettings);
-console.log("settings", settings);
 
 function persist() {
   try {
     // we always store to the newer version of the settings
     localStorage.setItem(STORAGE_KEY_NEW, JSON.stringify(settings));
   } catch (e) {
-    logError("Error saving user settings:", e);
+    logError('Error saving user settings:', e);
   }
 }
 
@@ -78,19 +77,19 @@ function persist() {
  * @param {any} value
  */
 export function saveSetting(section, property, value) {
-  if (section === "option") {
+  if (section === 'option') {
     settings.options[property] = value;
     persist();
     return;
   }
 
-  if (section === "custom") {
+  if (section === 'custom') {
     settings.custom[property] = value;
     persist();
     return;
   }
 
-  if (section === "menu") {
+  if (section === 'menu') {
     settings.menu[property] = value;
     persist();
     return;
