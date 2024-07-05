@@ -111,6 +111,7 @@ declare global {
     soundManager: {
       canPlayURL: (url: string) => boolean;
     };
+    dubplus: any;
   }
 }
 
