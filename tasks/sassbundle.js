@@ -1,11 +1,10 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const sass = require('sass');
 const postcss = require('postcss');
 const autoprefixer = require('autoprefixer');
 const prefixer = postcss([autoprefixer]);
 const log = require('./colored-console.js');
-const { pathToFileURL } = require('url');
 
 // our own custom module
 var gitInfo = require(process.cwd() + '/tasks/repoInfo.js');
@@ -29,19 +28,44 @@ const options = {
   },
 };
 
-const file = path.resolve(__dirname, '../src/sass/dubplus.scss');
+const sassSourceFile = path.resolve(__dirname, '../src/sass/dubplus.scss');
 
 function compileSASS() {
-  return sass.compileAsync(file, options).then((result) => {
-    fs.writeFileSync('./css/dubplus.css', prefixer.process(result.css));
-  });
+  return sass
+    .compileAsync(sassSourceFile, options)
+    .then((result) => {
+      // need to write this temporary file so that postcss can parse it
+      fs.writeFileSync(process.cwd() + '/css/dubplus.sass.css', result.css);
+      return postcss([autoprefixer]).process(result.css, {
+        from: process.cwd() + '/css/dubplus.sass.scss',
+        to: process.cwd() + '/css/dubplus.css',
+      });
+    })
+    .then((result) => {
+      result.warnings().forEach((warn) => {
+        log.warn(warn.toString());
+      });
+      fs.writeFileSync(process.cwd() + '/css/dubplus.css', result.css);
+      fs.removeSync(process.cwd() + '/css/dubplus.sass.css');
+    });
 }
 
 function minifySASS() {
   return sass
-    .compileAsync(file, { style: 'compressed', ...options })
+    .compileAsync(sassSourceFile, { style: 'compressed', ...options })
     .then((result) => {
-      fs.writeFileSync('./css/dubplus.min.css', prefixer.process(result.css));
+      fs.writeFileSync(process.cwd() + '/css/dubplus.sass.min.css', result.css);
+      return postcss([autoprefixer]).process(result.css, {
+        from: process.cwd() + '/css/dubplus.sass.min.scss',
+        to: process.cwd() + '/css/dubplus.min.css',
+      });
+    })
+    .then((result) => {
+      result.warnings().forEach((warn) => {
+        log.warn(warn.toString());
+      });
+      fs.writeFileSync(process.cwd() + '/css/dubplus.min.css', result.css);
+      fs.removeSync(process.cwd() + '/css/dubplus.sass.min.css');
     });
 }
 

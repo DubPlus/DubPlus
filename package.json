@@ -4,7 +4,8 @@
   "description": "Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net",
   "main": "dubplus.js",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
   },
   "scripts": {
     "build": "node ./tasks",
