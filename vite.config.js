@@ -96,6 +96,14 @@ export default defineConfig(({ command, mode }) => {
     server: {
       strictPort: true,
       proxy: {
+        // for any eomjify requests, always return the same single cat image
+        // this way we dont have to download all the emoji images
+        '/assets/emoji/apple/': {
+          target: 'http://localhost:5173',
+          changeOrigin: false,
+          rewrite: (path) =>
+            path.replace(/\/assets\/emoji\/apple\/.+\.png/, '/images/cat.png'),
+        },
         '/api/room/room-123/playlist/active/dubs': {
           target: 'https://github.com',
           changeOrigin: true,
