@@ -142,13 +142,6 @@ const QueUp = {
 
 window.QueUp = QueUp;
 
-window.emojify = {
-  emojiNames: [],
-  defaultConfig: {
-    img_dir: '',
-  },
-};
-
 /** @type {{[eventName: string]: Array<(e: any) => void>}} */
 const events = {};
 
