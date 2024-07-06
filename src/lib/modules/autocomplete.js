@@ -104,6 +104,7 @@ function checkInput(e) {
  * @returns
  */
 function chatInputKeyupFunc(e) {
+  acPreview = acPreview || document.querySelector('#autocomplete-preview');
   const hasItems = acPreview.children.length > 0;
 
   if (e.key === KEYS.up && hasItems) {
@@ -142,6 +143,7 @@ function chatInputKeyupFunc(e) {
  * @returns
  */
 function chatInputKeydownFunc(e) {
+  acPreview = acPreview || document.querySelector('#autocomplete-preview');
   const emptyPreview = acPreview.children.length === 0;
   const isValidKey = [KEYS.tab, KEYS.enter, KEYS.up, KEYS.down].includes(e.key);
   const isModifierKey = e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
