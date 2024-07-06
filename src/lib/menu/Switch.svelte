@@ -35,7 +35,7 @@
 
 <div
   role="switch"
-  aria-checked={checked}
+  aria-checked={checked ? "true" : "false"}
   tabindex="0"
   onclick={handleClick}
   onkeydown={handleKeydown}
