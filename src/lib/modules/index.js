@@ -27,8 +27,6 @@ import { customCss } from './customCSS';
 import { customBackground } from './customBackground';
 import { customNotificationSound } from './customNotificationSound';
 
-window.dubplus = window.dubplus || {};
-
 /**
  * @type {import("./module").DubPlusModule[]}
  */
@@ -50,10 +48,6 @@ export const general = [
   rain,
 ];
 
-general.forEach((module) => {
-  window.dubplus[module.id] = module;
-});
-
 /**
  * @type {import("./module").DubPlusModule[]}
  */
@@ -67,18 +61,10 @@ export const userInterface = [
   showTimestamps,
 ];
 
-userInterface.forEach((module) => {
-  window.dubplus[module.id] = module;
-});
-
 /**
  * @type {import("./module").DubPlusModule[]}
  */
-export const settings = [spacebarMute, warnOnNavigation];
-
-settings.forEach((module) => {
-  window.dubplus[module.id] = module;
-});
+export const settingsModules = [spacebarMute, warnOnNavigation];
 
 /**
  * @type {import("./module").DubPlusModule[]}
@@ -89,7 +75,3 @@ export const customize = [
   customBackground,
   customNotificationSound,
 ];
-
-customize.forEach((module) => {
-  window.dubplus[module.id] = module;
-});
