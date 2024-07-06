@@ -9,6 +9,8 @@ test.beforeEach(async ({ page }) => {
 
 test('Off state should not autovote', async ({ page }) => {
   // in these test, all features start in the off state
+  const autovote = page.getByRole('switch', { name: 'AutoVote' });
+  await expect(autovote).toHaveAttribute('aria-checked', 'false');
 
   // setup spy to check if voteUp is called when next song starts
   let voteUpClicked = false;
@@ -32,17 +34,11 @@ test('Off state should not autovote', async ({ page }) => {
   expect(voteUpClicked).toBe(false);
 });
 
-test('Turning on autovote', async ({ page }) => {
-  const autovote = page.getByRole('switch', { name: 'AutoVote' });
+test('Turning on should autovote current song and next', async ({ page }) => {
+  let voteUpClicked = 0;
 
-  await autovote.click();
-
-  await expect(autovote).toHaveAttribute('aria-checked', 'true');
-
-  // setup spy to check if voteUp is called when next song starts
-  let voteUpClicked = false;
   function voteUp() {
-    voteUpClicked = true;
+    voteUpClicked += 1;
   }
 
   await page.exposeFunction('voteUp', voteUp);
@@ -51,6 +47,15 @@ test('Turning on autovote', async ({ page }) => {
     window.QueUp.playerController.voteUp.click = voteUp;
   });
 
+  const autovote = page.getByRole('switch', { name: 'AutoVote' });
+
+  await autovote.click();
+
+  await expect(autovote).toHaveAttribute('aria-checked', 'true');
+
+  // it should immediately upvote the current song as soon as you turn it on
+  expect(voteUpClicked).toBe(1);
+
   // trigger a playlist update to test if voteUp is called
   await page.evaluate(() => {
     window.triggerEvent('realtime:room_playlist-update', {
@@ -58,5 +63,6 @@ test('Turning on autovote', async ({ page }) => {
     });
   });
 
-  expect(voteUpClicked).toBe(true);
+  // it should vote again
+  expect(voteUpClicked).toBe(2);
 });
