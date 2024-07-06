@@ -3,7 +3,7 @@
   import MenuSection from "../menu/MenuSection.svelte";
   import MenuItem from "../menu/MenuSwitch.svelte";
   import { saveSetting, settings } from "../stores/settings.svelte";
-  import { settings as settingsModules } from "../modules";
+  import { settingsModules } from "../modules";
   import { t } from "../stores/i18n.svelte";
 
   settingsModules.forEach((module) => {
