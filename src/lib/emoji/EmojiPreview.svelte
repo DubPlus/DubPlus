@@ -25,7 +25,7 @@
    * @param {number} index
    */
   function handleClick(index) {
-    const inputEl = /**@type {HTMLInputElement}*/ (document.getElementById("chat-txt-message"));
+    const inputEl = /**@type {HTMLTextAreaElement}*/ (document.getElementById("chat-txt-message"));
     insertEmote(inputEl, index);
     inputEl.focus();
   }
