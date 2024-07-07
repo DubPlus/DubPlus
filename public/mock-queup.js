@@ -14,6 +14,7 @@ const QueUp = {
   },
   room: {
     chat: {
+      resizeTextarea() {},
       sendMessage() {
         const input = document.getElementById('chat-txt-message');
         const message = input.value;
@@ -188,6 +189,7 @@ window.soundManager = {
 function onChatKeyUp(e) {
   if (
     e.key === 'Enter' &&
+    !e.shiftKey &&
     !document.querySelector('#autocomplete-preview')?.children?.length
   ) {
     e.preventDefault();
