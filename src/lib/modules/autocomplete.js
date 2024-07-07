@@ -10,6 +10,7 @@ import {
   reset,
 } from '../emoji/emojiState.svelte';
 import { settings } from '../stores/settings.svelte';
+import { getSelection, isEdge } from '../emoji/helpers';
 
 const KEYS = {
   up: 'ArrowUp',
@@ -29,38 +30,13 @@ let acPreview = document.querySelector('#autocomplete-preview');
 let originalKeyDownEventHandler;
 
 /**
- * @param {HTMLInputElement} inputEl
- */
-function getSelection(inputEl) {
-  const currentText = inputEl.value;
-  const cursorPos = inputEl.selectionStart;
-  let goLeft = cursorPos - 1;
-  while (currentText[goLeft] !== ' ' && goLeft > 0) {
-    goLeft--;
-  }
-  if (goLeft > 0 && currentText[goLeft] === ' ') {
-    goLeft += 1;
-  }
-
-  let goRight = cursorPos;
-  while (currentText[goRight] !== ' ' && goRight < currentText.length) {
-    goRight++;
-  }
-
-  if (goRight !== currentText.length && currentText[goRight] === ' ') {
-    goRight -= 1;
-  }
-  return [goLeft, goRight];
-}
-
-/**
  *
- * @param {HTMLInputElement} inputEl
+ * @param {HTMLTextAreaElement} inputEl
  * @param {number} index
  */
 export function insertEmote(inputEl, index) {
   const selected = emojiState.emojiList[index];
-  const [start, end] = getSelection(inputEl);
+  const [start, end] = getSelection(inputEl.value, inputEl.selectionStart);
   const target = inputEl.value.substring(start, end);
   inputEl.value = inputEl.value.replace(target, `:${selected.text}:`);
   reset();
@@ -70,18 +46,19 @@ export function insertEmote(inputEl, index) {
  * @param {KeyboardEvent | MouseEvent} e
  */
 function checkInput(e) {
-  const inputEl = /**@type {HTMLInputElement}*/ (e.target);
+  const inputEl = /**@type {HTMLTextAreaElement}*/ (e.target);
   const currentText = inputEl.value;
   const cursorPos = inputEl.selectionStart;
 
   let str = '';
   let goLeft = cursorPos - 1;
-  while (currentText[goLeft] !== ' ' && goLeft >= 0) {
+  while (!isEdge(currentText[goLeft]) && goLeft >= 0) {
     str = currentText[goLeft] + str;
     goLeft--;
   }
+
   let goRight = cursorPos;
-  while (currentText[goRight] !== ' ' && goRight < currentText.length) {
+  while (!isEdge(currentText[goRight]) && goRight < currentText.length) {
     str = str + currentText[goRight];
     goRight++;
   }
@@ -106,6 +83,12 @@ function checkInput(e) {
 function chatInputKeyupFunc(e) {
   acPreview = acPreview || document.querySelector('#autocomplete-preview');
   const hasItems = acPreview.children.length > 0;
+  const isModifierKey = e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
+
+  if (isModifierKey) {
+    // do nothing if a modifier key is pressed
+    return;
+  }
 
   if (e.key === KEYS.up && hasItems) {
     e.preventDefault();
@@ -123,7 +106,7 @@ function chatInputKeyupFunc(e) {
   if ((e.key === KEYS.enter || e.key === KEYS.tab) && hasItems) {
     e.preventDefault();
     e.stopImmediatePropagation();
-    const inputEl = /**@type {HTMLInputElement}*/ (e.target);
+    const inputEl = /**@type {HTMLTextAreaElement}*/ (e.target);
     insertEmote(inputEl, emojiState.selectedIndex);
     return;
   }
