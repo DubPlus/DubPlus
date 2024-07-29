@@ -47,7 +47,7 @@
   pointer-events: none;
   content: attr(data-dp-tooltip);
   left: 0;
-  top: calc(100% + 10px);
+  bottom: calc(100% + 10px);
   border-radius: 1.5rem;
   box-shadow: 0 0 5px 2px rgba(100, 100, 100, 0.6);
   background-color: white;
@@ -59,7 +59,7 @@
 
   font: 1rem/1.5 proxima-nova, sans-serif;
   font-weight: 700;
-  font-size: 13.6px;
+  font-size: var(--dubplus-font-size);
   text-transform: uppercase;
   color: #000;
   text-align: center;
