@@ -92,7 +92,7 @@
     background: #111;
     color: #fff;
     width: 500px;
-    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    font-family: var(--dubplus-font-family);
     padding: 0;
     border: none;
   }
