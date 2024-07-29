@@ -20,11 +20,6 @@
     locale.current = normalizeLocale(navigator.language || "en");
   }
 
-  // load Dub+ from the CDN in production
-  if (!import.meta.env.DEV) {
-    loadCSS("/dubplus.css", "dubplus-css");
-  }
-
   onMount(() => {
     setLocale();
     window.addEventListener("languagechange", setLocale);

@@ -1,6 +1,12 @@
 import './dubplus.css';
 import { mount, unmount } from 'svelte';
 import DubPlus from './DubPlus.svelte';
+import { loadCSS } from './utils/css';
+import { logError } from './utils/logger';
+
+if (!import.meta.env.DEV) {
+  loadCSS('/dubplus.css', 'dubplus-css').catch(logError);
+}
 
 let container = document.getElementById('dubplus-container');
 if (!container) {
