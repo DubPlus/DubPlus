@@ -17,7 +17,7 @@
 
 <style>
   .dubplus-waiting {
-    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    font-family: var(--dubplus-font-family);
     z-index: 2147483647;
     color: white;
     position: fixed;
