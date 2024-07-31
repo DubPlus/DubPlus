@@ -6,7 +6,6 @@
   import { modalState } from "./lib/stores/modalState.svelte";
   import { t, locale, normalizeLocale } from "./lib/stores/i18n.svelte";
   import { onMount, onDestroy } from "svelte";
-  import { loadCSS } from "./utils/css";
 
   window.dubplus = window.dubplus || {};
 
