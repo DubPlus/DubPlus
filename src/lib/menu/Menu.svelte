@@ -1,7 +1,6 @@
 <script>
   import { onMount } from "svelte";
   import MenuIcon from "./MenuIcon.svelte";
-  import { loadExternalCss } from "../../utils/css";
   import Contact from "../sections/Contact.svelte";
   import General from "../sections/General.svelte";
   import Eta from "../satellites/Eta.svelte";
@@ -17,10 +16,6 @@
   import Customize from "../sections/Customize.svelte";
 
   onMount(() => {
-    loadExternalCss(
-      "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
-      "dp-font-awesome",
-    );
     document.querySelector("html").classList.add("dubplus");
   });
 </script>
