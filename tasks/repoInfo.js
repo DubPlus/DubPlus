@@ -22,8 +22,7 @@ let CURRENT_BRANCH = 'master';
 let CURRENT_REPO = 'DubPlus';
 
 /******************************************************************
- * Get the current branch name to be passed as a constiable
- * to JS and Sass builds
+ * Get the current branch name which will be used by JS and Sass builds
  */
 
 // check if git exists on the machine
@@ -41,7 +40,9 @@ if (gitExists.stdout?.includes('git version')) {
     const gitURL = sync('git', ['config', '--get', 'remote.origin.url'], {
       encoding: 'UTF-8',
     });
-    CURRENT_REPO = gitURL.stdout.split(':')[1].split('/')[0];
+    if (gitURL?.stdout) {
+      CURRENT_REPO = gitURL.stdout.split(':')[1].split('/')[0];
+    }
   }
 }
 
