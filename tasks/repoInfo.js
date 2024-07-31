@@ -14,36 +14,39 @@ const log = require('./colored-console.js');
   example: node ./tasks sass --local http://localhost:3001
  */
 
-var args = process.argv;
-var releaseFlag = args[args.length - 1] === '--release';
-var localFlag = args[args.length - 2] === '--local';
+const args = process.argv;
+const releaseFlag = args[args.length - 1] === '--release';
+const localFlag = args[args.length - 2] === '--local';
+
+let CURRENT_BRANCH = 'master';
+let CURRENT_REPO = 'DubPlus';
 
 /******************************************************************
- * Get the current branch name to be passed as a variable
- * to JS and Sass builds
+ * Get the current branch name which will be used by JS and Sass builds
  */
-var info = getRepoInfo();
-var CURRENT_BRANCH = info.branch;
 
+// check if git exists on the machine
+const gitExists = sync('git', ['--version'], { encoding: 'UTF-8' });
+if (gitExists.stdout?.includes('git version')) {
+  const info = getRepoInfo();
+  CURRENT_BRANCH = info.branch;
+  if (CURRENT_BRANCH !== 'master' && !releaseFlag) {
+    /***************************************
+     * Get the github user name
+     * github.com/DubPlus/DubPlus/branch
+     *            ^^^^^^^ I want to get this
+     */
 
-var CURRENT_REPO;
-if (CURRENT_BRANCH === 'master' || releaseFlag) {
-  // if we're in master that means we're ready to send a PR to the
-  // main repo and we should always be set to DubPlus/DubPlus
-  CURRENT_BRANCH = 'master'; // just in case we got here via the releaseFlag
-  CURRENT_REPO = 'DubPlus';
-} else {
-  /***************************************
-   * Get the github user name 
-   * github.com/DubPlus/DubPlus/branch
-   *            ^^^^^^^ I want to get this 
-   */
-  var gitURL = sync('git', ['config', '--get', 'remote.origin.url'], {encoding : "UTF-8"});
-  CURRENT_REPO = gitURL.stdout.split(":")[1].split("/")[0];
+    const gitURL = sync('git', ['config', '--get', 'remote.origin.url'], {
+      encoding: 'UTF-8',
+    });
+    if (gitURL?.stdout) {
+      CURRENT_REPO = gitURL.stdout.split(':')[1].split('/')[0];
+    }
+  }
 }
 
-
-var resourceSrc = `https://cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus`;
+const resourceSrc = `https://cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus`;
 if (localFlag) {
   resourceSrc = args[args.length - 1];
 }
@@ -51,15 +54,14 @@ if (localFlag) {
 var jsBookmarklet = `javascript:var i,s,ss=['//cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus/dubplus.js','//ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js'];for(i=0;i!=ss.length;i++){s=document.createElement('script');s.src=ss[i];document.body.appendChild(s);}void(0);`;
 
 log.info('****************************************************************');
-console.log(`Current Github User is: ${yellow(CURRENT_REPO)}`);
-console.log(`Current branch is: ${yellow(CURRENT_BRANCH)}`);
-console.log(`Rawgit url: ${yellow(resourceSrc)}`);
-console.log('You can create a bookmarklet for this build by copy/pasting this:');
-console.log(yellow(jsBookmarklet));
+console.log(
+  'You can create a bookmarklet for this build by copy/pasting this:'
+);
+console.log(jsBookmarklet);
 log.info('****************************************************************');
 
 module.exports = {
-  branch : CURRENT_BRANCH,
-  user : CURRENT_REPO,
-  resourceSrc : resourceSrc
+  branch: CURRENT_BRANCH,
+  user: CURRENT_REPO,
+  resourceSrc: resourceSrc,
 };
