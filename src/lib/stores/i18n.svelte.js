@@ -1,8 +1,8 @@
-import { translations } from "../../translation";
-import { logError } from "../../utils/logger";
+import { translations } from '../../translation';
+import { logError } from '../../utils/logger';
 
 export const locale = $state({
-  current: "en",
+  current: 'en',
 });
 
 export const locales = Object.keys(translations);
@@ -18,8 +18,8 @@ export function translate(loc, key, vars) {
 
   // default to english if no translation found.
   // we should at least have all text for english.
-  if (!text && loc !== "en") {
-    text = translations["en"][key];
+  if (!text && loc !== 'en') {
+    text = translations['en'][key];
   }
 
   // if we STILL don't have text, just return the key
@@ -34,7 +34,7 @@ export function translate(loc, key, vars) {
 
   // replace any variables
   Object.keys(vars).forEach((item) => {
-    const regex = new RegExp(`{{${item}}}`, "g");
+    const regex = new RegExp(`{{${item}}}`, 'g');
     text = text.replace(regex, vars[item]);
   });
 
@@ -57,12 +57,8 @@ export function t(key, vars = {}) {
  */
 export function normalizeLocale(loc) {
   // all english locales get the same translation
-  if (loc.startsWith("en")) {
-    return "en";
-  }
-  // all spanish locales get the same translation
-  if (loc.startsWith("es")) {
-    return "es";
+  if (loc.startsWith('en')) {
+    return 'en';
   }
   return loc;
 }
