@@ -1,0 +1,109 @@
+<script>
+  import Switch from "./Switch.svelte";
+  import { onMount } from "svelte";
+  import { saveSetting, settings } from "../stores/settings.svelte";
+  import { modalState, updateModalState } from "../stores/modalState.svelte";
+  import { t } from "../stores/i18n.svelte";
+  import { isMod } from "../../utils/modcheck";
+  /**
+   * @typedef {object} MenuSwitchProps
+   * @property {string} id
+   * @property {string} label
+   * @property {string} description
+   * @property {boolean} [modOnly]
+   * @property {(state: boolean, onMount?: boolean) => void} onToggle
+   * @property {() => void} [init]
+   * @property {import('../../global').ModalProps} [customize]
+   *
+   */
+
+  /**
+   * @type {MenuSwitchProps}
+   */
+  let { id, label, description, customize, onToggle, init, modOnly } = $props();
+
+  onMount(() => {
+    if (init) init();
+
+    if (settings.options[id]) {
+      // check user mod status if this is a mod only feature
+      const status = modOnly ? isMod(window.QueUp.session.id) : true;
+      onToggle(status, true);
+    }
+  });
+
+  function openEditModal() {
+    updateModalState({
+      title: t(customize.title),
+      content: t(customize.content),
+      placeholder: t(customize.placeholder),
+      maxlength: customize.maxlength,
+      value: settings.custom[id] || "",
+      validation: customize.validation,
+      onConfirm: (value) => {
+        saveSetting("custom", id, value);
+        if (typeof customize.onConfirm === "function") {
+          customize.onConfirm(value);
+        }
+      },
+      onCancel: () => {
+        if (typeof customize.onCancel === "function") customize.onCancel();
+      },
+    });
+
+    modalState.open = true;
+  }
+</script>
+
+<li 
+  {id} 
+  title={t(description)} 
+  class:disabled={modOnly && !isMod(window.QueUp.session.id)}>
+  <Switch
+    disabled={modOnly && !isMod(window.QueUp.session.id)}
+    label={t(label)}
+    onToggle={(state) => {
+      // When turning on a feature that requires a custom value, and that
+      // value hasn't been set by the user yet, then we popup the modal
+      if (customize && state === true && !settings.custom[id]) {
+          openEditModal();
+          return;
+      }
+      onToggle(state);
+    }}
+    isOn={settings.options[id]}
+  />
+  {#if customize}
+    <button onclick={openEditModal} type="button" class="fa fa-pencil">
+      <span class="sr-only">{t("MenuItem.edit")}</span>
+    </button>
+  {/if}
+</li>
+
+<style>
+  li {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    justify-content: space-between;
+  }
+
+  button {
+    appearance: none;
+    background: none;
+    border: none;
+    padding: 0;
+    color: #fff;
+    cursor: pointer;
+
+    height: 100%;
+    width: 9%;
+  }
+
+  .disabled {
+    opacity: 0.5;
+  }
+  .disabled:hover {
+    cursor: not-allowed;
+  }
+</style>

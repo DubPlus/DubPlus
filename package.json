@@ -1,24 +1,23 @@
 {
-  "name": "DubPlus",
-  "version": "0.3.4",
-  "description": "Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net",
+  "name": "dubplus",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Dub+ - A simple script/extension for QueUp.net",
   "main": "dubplus.js",
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "build": "node ./tasks",
-    "build-release": "node ./tasks --release",
-    "watch": "node ./tasks watch",
-    "bundle": "node ./tasks bundle",
-    "minify": "node ./tasks minify",
-    "min-release": "node ./tasks min --release",
-    "sass": "node ./tasks sass",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "ext": "node ./tasks ext",
-    "ext-zip": "node ./tasks ext-zip",
+    "zip": "node ./tasks zip",
     "ext-deploy": "node ./tasks ext-deploy",
-    "start:firefox": "npm run ext && web-ext run --source-dir ./extensions/Firefox/"
+    "start:firefox": "npm run ext && web-ext run --source-dir ./extensions/Firefox/",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui"
   },
   "repository": {
     "type": "git",
@@ -32,15 +31,13 @@
   "homepage": "https://dub.plus",
   "devDependencies": {
     "@babel/preset-env": "^7.13.12",
-    "autoprefixer": "^10.2.5",
-    "babelify": "^10.0.0",
-    "browserify": "^17.0.0",
-    "chalk": "^4.1.2",
-    "fs-extra": "^11.2.0",
+    "@playwright/test": "^1.45.1",
+    "@sveltejs/vite-plugin-svelte": "^4.0.0-next.5",
+    "@types/node": "^20.14.10",
+    "chalk": "^5.3.0",
     "git-repo-info": "^2.1.1",
-    "postcss": "^8.4.39",
-    "uglifyify": "^5.0.2",
-    "watchify": "^4.0.0",
+    "svelte": "^5.0.0-next.205",
+    "vite": "^5.2.0",
     "web-ext": "^8.2.0"
   },
   "browserslist": [
@@ -48,8 +45,6 @@
     "last 2 versions"
   ],
   "dependencies": {
-    "@babel/core": "^7.24.7",
-    "node-fetch": "^2.7.0",
-    "sass": "^1.77.6"
+    "eslint-plugin-svelte": "^2.36.0-next.13"
   }
 }
