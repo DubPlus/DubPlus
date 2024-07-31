@@ -51,7 +51,7 @@ if (localFlag) {
   resourceSrc = args[args.length - 1];
 }
 
-var jsBookmarklet = `javascript:var i,s,ss=['//cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus/dubplus.js','//ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js'];for(i=0;i!=ss.length;i++){s=document.createElement('script');s.src=ss[i];document.body.appendChild(s);}void(0);`;
+var jsBookmarklet = `javascript:var i,s,ss='//cdn.jsdelivr.net/gh/${CURRENT_REPO}/DubPlus/dubplus.js';s=document.createElement('script');s.src=ss;document.body.appendChild(s);}void(0);`;
 
 log.info('****************************************************************');
 console.log(
