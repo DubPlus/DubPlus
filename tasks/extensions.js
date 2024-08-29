@@ -3,7 +3,6 @@
  * from 'one' common source code
  */
 import fs from 'node:fs';
-import { doZip } from './zip.js';
 import { log } from './colored-console.js';
 import pkg from '../package.json';
 
@@ -90,7 +89,7 @@ function replaceVersionInScript() {
   });
 }
 
-export function packExtensions(shouldZip = false) {
+export function packExtensions() {
   /***********************************************
    * clear out the Chrome and Firefox folders
    */
@@ -136,9 +135,4 @@ export function packExtensions(shouldZip = false) {
   copyScript();
 
   replaceVersionInScript();
-
-  if (shouldZip) {
-    doZip('Chrome');
-    doZip('Firefox');
-  }
 }

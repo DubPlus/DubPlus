@@ -3,7 +3,7 @@
  */
 import { log } from './colored-console.js';
 import { packExtensions } from './extensions.js';
-import { deployExtensions } from './deploy-ext.js';
+import { doZip } from './zip.js';
 
 // find out which task we're running
 const currentTask = process.argv[2];
@@ -15,13 +15,16 @@ switch (currentTask) {
     break;
 
   case 'zip':
-    packExtensions(true);
+    // this does not build the extensions, it just zips them up
+    doZip('Chrome');
+    doZip('Firefox');
     break;
 
-  case 'ext-deploy':
-    packExtensions(true);
-    deployExtensions(arg);
-    break;
+  // TODO: this is outdated and needs to be fixed.
+  // case 'ext-deploy':
+  //   packExtensions(true);
+  //   deployExtensions(arg);
+  //   break;
 
   default:
     log.error(`unknown task: ${currentTask} - exiting...`);

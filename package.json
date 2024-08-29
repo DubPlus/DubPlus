@@ -14,7 +14,6 @@
     "preview": "vite preview",
     "ext": "node ./tasks ext",
     "zip": "node ./tasks zip",
-    "ext-deploy": "node ./tasks ext-deploy",
     "start:firefox": "npm run ext && web-ext run --source-dir ./extensions/Firefox/",
     "test": "playwright test",
     "test:ui": "playwright test --ui"
