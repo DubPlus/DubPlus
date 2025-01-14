@@ -10,7 +10,7 @@
   },
   "content_scripts": [
     {
-      "js": ["scripts/loader.js"],
+      "js": ["dubplus.js"],
       "matches": ["*://*.dubtrack.fm/join/*", "*://*.queup.net/join/*"],
       "run_at": "document_end"
     }
