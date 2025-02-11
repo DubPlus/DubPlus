@@ -21,7 +21,7 @@
 </script>
 
 <!-- 
-  these components are satellites that are controlled by Svelte but
+  these components are controlled by Svelte but
   placed outside of the root menu container 
 -->
 <Snooze />

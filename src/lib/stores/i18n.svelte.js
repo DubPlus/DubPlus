@@ -14,6 +14,7 @@ export const locales = Object.keys(translations);
  * @param {Record<string, string|number|boolean>} vars
  */
 export function translate(loc, key, vars) {
+  // try getting the translated text
   let text = translations[loc][key];
 
   // default to english if no translation found.
@@ -57,6 +58,7 @@ export function t(key, vars = {}) {
  */
 export function normalizeLocale(loc) {
   // all english locales get the same translation
+  // en-US, en-GB, en-CA, en-AU, etc ---> all get "en"
   if (loc.startsWith('en')) {
     return 'en';
   }

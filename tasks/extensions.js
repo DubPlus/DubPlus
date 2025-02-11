@@ -104,6 +104,17 @@ export function packExtensions() {
     fs.mkdirSync(`${extPath}/${dir}`, { recursive: true });
   });
 
+  /***********************************************
+   * copy source files to Chrome and Firefox
+   * Add-on/Extension reviewers need to be able to
+   * inspect the source code, so we need to include
+   * it in the final package. They also need to be
+   * able to build the extension from source.
+   */
+  // ['Chrome', 'Firefox'].forEach(function (dir) {
+  //   fs.mkdirSync(`${extPath}/${dir}`, { recursive: true });
+  // });
+
   /**********************************************
    * First, copy static files from common into
    * both the Chrome and Firefox folder
