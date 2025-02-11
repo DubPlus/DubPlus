@@ -25,7 +25,14 @@ export function reset() {
  * @param {Emoji[]} listArray
  */
 export function setEmojiList(listArray) {
-  emojiState.emojiList = listArray;
+  // make listArray unique by emoji.src and emoji.platform
+  emojiState.emojiList = listArray.filter(
+    (emoji, index, self) =>
+      index ===
+      self.findIndex(
+        (e) => e.src === emoji.src && e.platform === emoji.platform
+      )
+  );
 }
 
 export function decrement() {

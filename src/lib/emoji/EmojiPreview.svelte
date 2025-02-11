@@ -36,7 +36,7 @@
   id="autocomplete-preview"
   class:ac-show={emojiState.emojiList.length > 0}
 >
-  {#each emojiState.emojiList as { src, text, platform, alt }, i (src)}
+  {#each emojiState.emojiList as { src, text, platform, alt }, i (src+platform)}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <li

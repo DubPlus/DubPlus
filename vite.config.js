@@ -66,7 +66,7 @@ export default defineConfig(({ command, mode }) => {
     },
     build: {
       minify: false,
-      outDir: './',
+      outDir: './dist',
       lib: {
         entry: resolve(__dirname, '/src/main.js'),
         name: 'dubplus',
@@ -79,13 +79,8 @@ export default defineConfig(({ command, mode }) => {
           // inserts the Dub+ ascii logo and license into the top of the output
           banner: BANNER,
 
-          // makes sure our output CSS file is named dubplus.css
-          assetFileNames: (assetInfo) => {
-            if (assetInfo.name === 'style.css') return 'dubplus.css';
-            return assetInfo.name;
-          },
-
           // makes sure our output JS file is named dubplus.js
+          // otherwise it would create: dubplus.iife.js
           entryFileNames: (chunkInfo) => {
             if (chunkInfo.name === 'main') return 'dubplus.js';
             return chunkInfo.name;
@@ -93,6 +88,8 @@ export default defineConfig(({ command, mode }) => {
         },
       },
     },
+
+    // this is for the dev server
     server: {
       strictPort: true,
       proxy: {
@@ -106,7 +103,7 @@ export default defineConfig(({ command, mode }) => {
         },
         // mock the active dubs endpoint response
         '/api/room/room-123/playlist/active/dubs': {
-          target: 'https://github.com',
+          target: 'http://localhost:5173',
           changeOrigin: true,
           selfHandleResponse: true,
           secure: false,
