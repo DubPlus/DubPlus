@@ -5,8 +5,9 @@ Dub+ - A Dubtrack.fm and QueUp.net script/extension for added features and custo
 
 - Fork us    
 - Run `npm install` to install packages    
+  - Requires Node 20+
 - Create separate branch(es) to develop in.
-  - only use your fork's `master` to create pull requests from 
+  - only use your fork's `main` to create pull requests from 
 
 ### npm tasks
 
@@ -17,11 +18,9 @@ When building and/or minifying JS and Sass, the tasks inject the Rawgit url base
 
 `npm run build` - creates production builds of the JS and CSS files
 
-`npm run ext` - builds the `extensions/Chrome` and `extensions/Firefox` folders.  **does not zip**, use `npm run zip` to zip.
+`npm run ext` - builds the `extensions/Chrome` and `extensions/Firefox` folders.  **does not zip**
 
 `npm run zip` - Zips the `extensions/Chrome` and `extensions/Firefox` folders
-
-`npm run ext-deploy` - first builds each extension, then zips them, then deploys each extensions to their respective online web stores
 
 `npm run start:firefox` - starts an instance of firefox with our extension loaded so you can test it with Firefox
 
