@@ -26,6 +26,7 @@ import { communityTheme } from './communityTheme';
 import { customCss } from './customCSS';
 import { customBackground } from './customBackground';
 import { customNotificationSound } from './customNotificationSound';
+import { flipInterface } from './flipInterface';
 
 /**
  * @type {import("./module").DubPlusModule[]}
@@ -59,6 +60,7 @@ export const userInterface = [
   hideAvatars,
   hideBackground,
   showTimestamps,
+  flipInterface,
 ];
 
 /**
