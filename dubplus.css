@@ -1,3 +1,4 @@
+@import "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css";
 :root {
   /* colors */
   --dubplus-primary-color: #eb008b;
@@ -13,7 +14,6 @@
   --queup-aqua: #0ff;
   --queup-green: #b3e790;
 }
-
 .dubplus-btn-player {
   /* clear button styles */
   appearance: none;
@@ -35,19 +35,17 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 [data-dp-tooltip] {
   position: relative;
   cursor: pointer;
 }
-
 [data-dp-tooltip]::after {
   position: absolute;
   opacity: 0;
   pointer-events: none;
   content: attr(data-dp-tooltip);
   left: 0;
-  top: calc(100% + 10px);
+  bottom: calc(100% + 10px);
   border-radius: 1.5rem;
   box-shadow: 0 0 5px 2px rgba(100, 100, 100, 0.6);
   background-color: white;
@@ -59,18 +57,16 @@
 
   font: 1rem/1.5 proxima-nova, sans-serif;
   font-weight: 700;
-  font-size: 13.6px;
+  font-size: var(--dubplus-font-size);
   text-transform: uppercase;
   color: #000;
   text-align: center;
 }
-
 [data-dp-tooltip]:hover::after {
   opacity: 0.8;
   transform: translateY(0);
   transition-duration: 300ms;
 }
-
 /* Make the volume controller visible all the time */
 .dubplus
   #main_player
@@ -79,24 +75,19 @@
   .volume-controller-container {
   display: block;
 }
-
 .duration {
   font-size: 14px !important;
   margin-top: 0.5em !important;
 }
-
 /***************************************************************
  * Dub+ menu styles
  */
-
 .dubplus-menu a {
   color: #999;
 }
-
 /***************************************************************
  * User Interface styles
  */
-
 .dubplus-split-chat {
   .chat-main li:nth-child(2n) {
     background: linear-gradient(to right, rgba(155,157,160,0.10) 0%, rgba(0,0,0,0) 100%);
@@ -118,7 +109,6 @@
     right: 1.7em !important;
   }
 }
-
 /* hide the chat and only show the video */
 .dubplus-video-only {
   .right_section {
@@ -134,7 +124,6 @@
     padding-right: 200px !important;
   }
 }
-
 /* turns off the video and only shows the chat */
 .dubplus-chat-only {
   .left_section {
@@ -152,7 +141,6 @@
     max-height: 30rem;
   }
 }
-
 .dubplus-hide-avatars {
   #chat .chat-container .chat-messages .chat-main li .stream-item-content .image_row,
   #header-global .header-right-navigation .user-info .user-image,
@@ -169,21 +157,19 @@
     padding-top: 5px !important;
   }  
 }
-
 .dubplus-hide-bg {
   .backstretch {
     display:none !important;
   }
 }
-
 .dubplus-show-timestamp {
   #chat .timeinfo {
     display: block !important;
     opacity: 1 !important;
   }
 }
-  .dubplus-waiting.svelte-1m63uxu {
-    font-family: "Trebuchet MS", Helvetica, sans-serif;
+  .dubplus-waiting.svelte-16mmbc {
+    font-family: var(--dubplus-font-family);
     z-index: 2147483647;
     color: white;
     position: fixed;
@@ -200,22 +186,22 @@
     align-items: center;
   }
 
-  dialog.svelte-1r2cx79::backdrop {
+  dialog.svelte-1mnr24t::backdrop {
     background: rgba(0, 0, 0, 0.6);
-    animation: svelte-1r2cx79-fade-in 250ms;
+    animation: svelte-1mnr24t-fade-in 250ms;
   }
 
-  dialog.svelte-1r2cx79 {
+  dialog.svelte-1mnr24t {
     box-shadow: 0 0 5px #000;
     background: #111;
     color: #fff;
     width: 500px;
-    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    font-family: var(--dubplus-font-family);
     padding: 0;
     border: none;
   }
 
-  h1.svelte-1r2cx79 {
+  h1.svelte-1mnr24t {
     height: 54px;
     background: #333;
     margin: 0;
@@ -223,17 +209,17 @@
     padding-top: 12px;
     font-weight: 400;
   }
-  .content.svelte-1r2cx79 {
+  .content.svelte-1mnr24t {
     padding: 27px 0;
     font-size: 14px;
   }
 
-  .content.svelte-1r2cx79 p:where(.svelte-1r2cx79) {
+  .content.svelte-1mnr24t p:where(.svelte-1mnr24t) {
     margin: 0;
     padding: 0 16px 16px;
   }
 
-  textarea.svelte-1r2cx79 {
+  textarea.svelte-1mnr24t {
     width: 100% !important;
     min-height: 108px !important;
     background: #333;
@@ -244,16 +230,16 @@
     resize: vertical;
   }
 
-  .dp-modal--error.svelte-1r2cx79 {
+  .dp-modal--error.svelte-1mnr24t {
     color: red;
   }
 
-  .buttons.svelte-1r2cx79 {
+  .buttons.svelte-1mnr24t {
     display: flex;
     justify-content: flex-end;
   }
 
-  button.svelte-1r2cx79 {
+  button.svelte-1mnr24t {
     width: 50%;
     text-align: center;
     padding: 1em 0;
@@ -264,16 +250,16 @@
     cursor: pointer;
   }
 
-  .confirm.svelte-1r2cx79 {
+  .confirm.svelte-1mnr24t {
     background: #0ff;
     color: #555;
   }
 
-  .cancel.svelte-1r2cx79 {
+  .cancel.svelte-1mnr24t {
     background: #333;
   }
 
-  @keyframes svelte-1r2cx79-fade-in {
+  @keyframes svelte-1mnr24t-fade-in {
     from {
       opacity: 0;
     }
@@ -424,11 +410,15 @@
     cursor: not-allowed;
   }
 
-  span.svelte-1a6zdj2 {
+  button.svelte-huywc::after {
+    width: 186px;
+  }
+  span.svelte-huywc {
     content: "1";
     vertical-align: top;
-    font-size: 0.75rem;
+    font-size: 0.75rem !important;
     font-weight: 700;
+    margin-right: 0 !important;
   }
 
   /****************************************************
@@ -631,7 +621,7 @@
   }
 
   /* the main container for the whole menu that slides in */
-  .dubplus-menu.svelte-1rqspoo {
+  .dubplus-menu.svelte-15wjekh {
     position: fixed;
     z-index: 999;
     background-color: rgba(10, 10, 10, 0.98);
@@ -643,15 +633,15 @@
     transform: translateX(var(--dubplus-menu-width));
     box-sizing: border-box;
     color: #999;
-    font-family: "Trebuchet MS", Helvetica, sans-serif;
-    font-size: 13px;
+    font-family: var(--dubplus-font-family);
+    font-size: var(--dubplus-font-size);
     line-height: 1.4;
     padding-bottom: 100px;
     height: calc(100% - 114px);
     overflow-y: auto;
   }
 
-  .dubplus-menu-header.svelte-1rqspoo {
+  .dubplus-menu-header.svelte-15wjekh {
     padding: 12px 15px;
     line-height: 1;
     margin: 0;
@@ -661,6 +651,6 @@
   }
 
   /* this is toggled in MenuIcon component */
-  .dubplus-menu.svelte-1rqspoo.dubplus-menu-open {
+  .dubplus-menu.svelte-15wjekh.dubplus-menu-open {
     transform: translate3d(0, 0, 0);
   }

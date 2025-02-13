@@ -183,3 +183,16 @@
     opacity: 1 !important;
   }
 }
+
+@media screen and (min-width: 72em) {
+  .dubplus-flip-interface {
+    #main-room .left_section {
+      padding-left: 32rem;
+      padding-right: 0;
+    }
+    #main-room .right_section {
+      right: auto;
+      left: 0;
+    }
+  }
+}
