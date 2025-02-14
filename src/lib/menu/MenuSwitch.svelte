@@ -11,8 +11,10 @@
    * @property {string} label
    * @property {string} description
    * @property {boolean} [modOnly]
-   * @property {(state: boolean, onMount?: boolean) => void} onToggle
-   * @property {() => void} [init]
+   * @property {(state: boolean, onMount?: boolean) => void} onToggle `onMount` is `true`
+   * when run from component onMount, `false` when run from a user action
+   * @property {() => void} [init] always runs when the component mounts, whether
+   * the switch is on or off
    * @property {import('../../global').ModalProps} [customize]
    *
    */

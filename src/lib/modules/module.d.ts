@@ -6,12 +6,34 @@ export interface DubPlusModule {
    * the settings.options object
    */
   id: string;
+
+  /**
+   * The name of the module that will be displayed in the menu next to the switch
+   */
   label: string;
+
+  /**
+   * The description of the module that will be displayed when you hover
+   */
   description: string;
+
+  /**
+   * Which part of the menu this module will be displayed in
+   */
   category: string;
+  
   modOnly?: boolean;
-  turnOff?: () => void;
+
+  /**
+   * Runs when the module is enabled
+   */
   turnOn?: () => void;
+
+  /**
+   * Runs when the module is disabled
+   */
+  turnOff?: () => void;
+
   /**
    * Optionally run some code when Dub+ is loaded
    */
@@ -27,6 +49,7 @@ export interface DubPlusModule {
    * a switch, it will render this icon instead.
    */
   altIcon?: string;
+  
   /**
    * This pairs with the altIcon property. If this is provided then
    * the altIcon will be clickable and this function will be called
