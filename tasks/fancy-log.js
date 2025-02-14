@@ -1,5 +1,5 @@
+import chalk from 'chalk';
 // what can I say, I like fancy colors in my console ;-)
-import chalk from chalk
 const boldRed = chalk.bold.red;
 const yellow = chalk.yellow;
 const green = chalk.green;
@@ -11,27 +11,27 @@ const green = chalk.green;
 */
 
 const emoji = {
-  warn: "⚠️",
-  x : "❌",
-  exclamation: "❗️",
+  warn: '⚠️',
+  x: '❌',
+  exclamation: '❗️',
 };
 
 export const log = {
   // show all console.error in bold red
-  error(){
+  error() {
     var args = Array.from(arguments);
     var returnStr = '';
-    args.forEach((e)=>{
+    args.forEach((e) => {
       returnStr += boldRed(e) + ' ';
     });
     console.error(`${emoji.x}  ${returnStr}`);
   },
 
   // show all console.info in green
-  info(){
+  info() {
     var args = Array.from(arguments);
     var returnStr = '';
-    args.forEach((e)=>{
+    args.forEach((e) => {
       returnStr += green(e) + ' ';
     });
     console.info(returnStr);
@@ -40,8 +40,8 @@ export const log = {
   // console dir does NOT pretty print, so this will
   dir() {
     var args = Array.from(arguments);
-    args.forEach((o)=>{
-      console.log(JSON.stringify(o,null, 2));
+    args.forEach((o) => {
+      console.log(JSON.stringify(o, null, 2));
     });
   },
 
@@ -49,14 +49,12 @@ export const log = {
   warn() {
     var args = Array.from(arguments);
     var returnStr = '';
-    args.forEach((e)=>{
+    args.forEach((e) => {
       returnStr += yellow(e) + ' ';
     });
     console.error(`${emoji.warn}  ${returnStr}`);
-  }
-
+  },
 };
-
 
 // uncomment below and run this file directly to see examples:
 // log.error('this is an error with a big X emoji before it');

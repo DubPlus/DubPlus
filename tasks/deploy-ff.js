@@ -1,5 +1,5 @@
 import webExt from 'web-ext';
-import { log } from './colored-console';
+import { log } from './fancy-log';
 
 /****************************************************
  * our ff addon link: https://addons.mozilla.org/en-US/firefox/addon/dubplus/

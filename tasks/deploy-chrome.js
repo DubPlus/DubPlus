@@ -1,7 +1,7 @@
 // const request = require('request');
 import { getTokenFromRefresh } from './google-token.js';
 import fs from 'node:fs';
-import { log } from './colored-console.js';
+import { log } from './fancy-log.js';
 /*******************************************************************
  * setup vars from env or json file
  */

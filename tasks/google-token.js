@@ -1,5 +1,5 @@
 // const request = require("request");
-import { log } from './colored-console.js';
+import { log } from './fancy-log.js';
 import fs from 'node:fs';
 
 /**

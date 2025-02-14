@@ -3,10 +3,13 @@
  * from 'one' common source code
  */
 import fs from 'node:fs';
-import { log } from './colored-console.js';
-import pkg from '../package.json';
+import { log } from './fancy-log.js';
+import pkg from '../package.json' with { type: "json" };
+import manifest from '../extensions/common/manifest.json' with { type: 'json' };
 
 const extPath = process.cwd() + '/extensions';
+
+const BROWSERS = ['Chrome', 'Firefox'];
 
 /**
  *
@@ -18,16 +21,8 @@ function ensureDirSync(dir) {
   }
 }
 
-function rmCommonManifests() {
-  ['Chrome', 'Firefox'].forEach(function (dir) {
-    fs.unlinkSync(`${extPath}/${dir}/manifest.core.json`);
-    fs.unlinkSync(`${extPath}/${dir}/manifest.chrome.json`);
-    fs.unlinkSync(`${extPath}/${dir}/manifest.firefox.json`);
-  });
-}
-
 function copyCommonStatic() {
-  ['Chrome', 'Firefox'].forEach(function (dir) {
+  BROWSERS.forEach(function (dir) {
     fs.cpSync(`${extPath}/common`, `${extPath}/${dir}`, {
       recursive: true,
       force: true,
@@ -35,56 +30,15 @@ function copyCommonStatic() {
   });
 }
 
-function parseJSONfile(filename) {
-  var jsonfile = extPath + '/common/' + filename;
-  var obj = {};
-
-  try {
-    obj = JSON.parse(fs.readFileSync(jsonfile, 'utf8'));
-  } catch (e) {
-    log.error('Error in file: ' + jsonfile);
-    log.dir(e + '\n');
-  }
-
-  return obj;
-}
-
-function combine(obj1, obj2, dest) {
-  const finalObj = Object.assign({}, obj1, obj2);
-  const fileContents = JSON.stringify(finalObj, null, 2);
-  fs.writeFileSync(
-    extPath + '/' + dest + '/manifest.json',
-    fileContents,
-    'utf8'
-  );
-}
-
-function copyScript() {
-  ['Chrome', 'Firefox'].forEach(function (dir) {
+function copyScripts() {
+  BROWSERS.forEach(function (dir) {
     fs.copyFileSync(
       process.cwd() + '/dubplus.js',
       `${extPath}/${dir}/scripts/dubplus.js`
     );
-  });
-}
-
-function replaceVersionInScript() {
-  ['Chrome', 'Firefox'].forEach(function (dir) {
-    // load the 'scripts/loader.js' file
-    const loaderScript = fs.readFileSync(
-      `${extPath}/${dir}/scripts/loader.js`,
-      'utf8'
-    );
-    // replace the version number with the current version
-    const newLoaderScript = loaderScript.replace(
-      /VERSION_REPLACED_BY_BUILD_SCRIPT/g,
-      pkg.version
-    );
-    // write the file back
-    fs.writeFileSync(
-      `${extPath}/${dir}/scripts/loader.js`,
-      newLoaderScript,
-      'utf8'
+    fs.copyFileSync(
+      process.cwd() + '/dubplus.css',
+      `${extPath}/${dir}/css/dubplus.css`
     );
   });
 }
@@ -93,15 +47,19 @@ export function packExtensions() {
   /***********************************************
    * clear out the Chrome and Firefox folders
    */
-  ['Chrome', 'Firefox'].forEach(function (dir) {
+  BROWSERS.forEach(function (dir) {
     fs.rmSync(`${extPath}/${dir}`, { recursive: true, force: true });
   });
 
   /***********************************************
-   * re-create our Chrome and Firefox folders
+   * re-create new Chrome and Firefox folders
    */
-  ['Chrome', 'Firefox'].forEach(function (dir) {
-    fs.mkdirSync(`${extPath}/${dir}`, { recursive: true });
+  BROWSERS.forEach(function (dir) {
+    fs.mkdirSync(`${extPath}/${dir}`);
+    // also make the scripts folder
+    fs.mkdirSync(`${extPath}/${dir}/scripts`);
+    // and css folder
+    fs.mkdirSync(`${extPath}/${dir}/css`);
   });
 
   /***********************************************
@@ -111,7 +69,7 @@ export function packExtensions() {
    * it in the final package. They also need to be
    * able to build the extension from source.
    */
-  // ['Chrome', 'Firefox'].forEach(function (dir) {
+  // BROWSERS.forEach(function (dir) {
   //   fs.mkdirSync(`${extPath}/${dir}`, { recursive: true });
   // });
 
@@ -128,22 +86,10 @@ export function packExtensions() {
    */
 
   console.log('Parsing manifest files and building to appropriate folder');
-  const mCore = parseJSONfile('manifest.core.json');
-  const mChrome = parseJSONfile('manifest.chrome.json');
-  const mFF = parseJSONfile('manifest.firefox.json');
-
+  
   // set version number from package.json
-  mCore.version = pkg.version;
-
-  // combine and export manifest files
-  combine(mCore, mChrome, 'Chrome');
-  combine(mCore, mFF, 'Firefox');
-
-  // remove the common manifests from each folder
-  rmCommonManifests();
+  manifest.version = pkg.version;
 
   // just in case, copy the Dubplus script to each extension folder
   copyScript();
-
-  replaceVersionInScript();
 }
