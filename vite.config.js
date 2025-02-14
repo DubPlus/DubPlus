@@ -54,7 +54,7 @@ const dubsResponse = {
 };
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(() => {
   return {
     plugins: [svelte()],
     define: {
@@ -66,7 +66,20 @@ export default defineConfig(({ command, mode }) => {
     },
     build: {
       minify: false,
-      outDir: './dist',
+
+      // This places the "dubplus.js" and "dubplus.css" files in the root
+      // of this repo. I would move them to a "/dist" folder but for legacy 
+      // support I am leaving them in the root.
+      outDir: '.', 
+      
+      /*************************************************
+       * !! DO NOT CHANGE THIS !!
+       * 'emptyOutDir' must always be 'false'.
+       * If set to 'true', it will delete the entire repo
+       */
+      emptyOutDir: false,
+      /************************************************* */
+      
       lib: {
         entry: resolve(__dirname, '/src/main.js'),
         name: 'dubplus',
