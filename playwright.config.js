@@ -1,6 +1,12 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
 
+// TODO: right now we're testing against the mock queup site.
+// Ideally it would be nice to test against the real queup site.
+// That is more complicated because you'll need at least 2 people
+// logged into a room with songs queued up to trigger some
+// of the events related to song changes.
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
