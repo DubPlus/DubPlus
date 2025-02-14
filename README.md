@@ -1,6 +1,12 @@
 # DubPlus
 Dub+ - A Dubtrack.fm and QueUp.net script/extension for added features and customizations
 
+## How to build the extension
+- First make sure you have installed Node version 20 or higher
+- The run `npm ci` to do a clean install of all dependencies
+- run `npm run ext` to build and pack up the extension that will work in both Chrome and Firefox
+
+
 ### Contributing
 
 - Fork us    

@@ -35,33 +35,45 @@ var dubplus = function() {
     SOFTWARE.
 */
 
+  const DEV = false;
   var is_array = Array.isArray;
+  var index_of = Array.prototype.indexOf;
   var array_from = Array.from;
-  var is_frozen = Object.isFrozen;
   var define_property = Object.defineProperty;
   var get_descriptor = Object.getOwnPropertyDescriptor;
   var get_descriptors = Object.getOwnPropertyDescriptors;
   var object_prototype = Object.prototype;
   var array_prototype = Array.prototype;
   var get_prototype_of = Object.getPrototypeOf;
+  const noop = () => {
+  };
+  function run(fn) {
+    return fn();
+  }
+  function run_all(arr) {
+    for (var i = 0; i < arr.length; i++) {
+      arr[i]();
+    }
+  }
   const DERIVED = 1 << 1;
   const EFFECT = 1 << 2;
   const RENDER_EFFECT = 1 << 3;
   const BLOCK_EFFECT = 1 << 4;
   const BRANCH_EFFECT = 1 << 5;
   const ROOT_EFFECT = 1 << 6;
-  const UNOWNED = 1 << 7;
-  const DISCONNECTED = 1 << 8;
-  const CLEAN = 1 << 9;
-  const DIRTY = 1 << 10;
-  const MAYBE_DIRTY = 1 << 11;
-  const INERT = 1 << 12;
-  const DESTROYED = 1 << 13;
-  const EFFECT_RAN = 1 << 14;
-  const EFFECT_TRANSPARENT = 1 << 15;
-  const HEAD_EFFECT = 1 << 18;
+  const BOUNDARY_EFFECT = 1 << 7;
+  const UNOWNED = 1 << 8;
+  const DISCONNECTED = 1 << 9;
+  const CLEAN = 1 << 10;
+  const DIRTY = 1 << 11;
+  const MAYBE_DIRTY = 1 << 12;
+  const INERT = 1 << 13;
+  const DESTROYED = 1 << 14;
+  const EFFECT_RAN = 1 << 15;
+  const EFFECT_TRANSPARENT = 1 << 16;
+  const HEAD_EFFECT = 1 << 19;
+  const EFFECT_HAS_DERIVED = 1 << 20;
   const STATE_SYMBOL = Symbol("$state");
-  const STATE_FROZEN_SYMBOL = Symbol("$state.frozen");
   const LOADING_ATTR_SYMBOL = Symbol("");
   function equals(value) {
     return value === this.v;
@@ -74,68 +86,173 @@ var dubplus = function() {
   }
   function effect_in_teardown(rune) {
     {
-      throw new Error("effect_in_teardown");
+      throw new Error(`https://svelte.dev/e/effect_in_teardown`);
     }
   }
   function effect_in_unowned_derived() {
     {
-      throw new Error("effect_in_unowned_derived");
+      throw new Error(`https://svelte.dev/e/effect_in_unowned_derived`);
     }
   }
   function effect_orphan(rune) {
     {
-      throw new Error("effect_orphan");
+      throw new Error(`https://svelte.dev/e/effect_orphan`);
     }
   }
   function effect_update_depth_exceeded() {
     {
-      throw new Error("effect_update_depth_exceeded");
+      throw new Error(`https://svelte.dev/e/effect_update_depth_exceeded`);
+    }
+  }
+  function state_descriptors_fixed() {
+    {
+      throw new Error(`https://svelte.dev/e/state_descriptors_fixed`);
+    }
+  }
+  function state_prototype_fixed() {
+    {
+      throw new Error(`https://svelte.dev/e/state_prototype_fixed`);
+    }
+  }
+  function state_unsafe_local_read() {
+    {
+      throw new Error(`https://svelte.dev/e/state_unsafe_local_read`);
     }
   }
   function state_unsafe_mutation() {
     {
-      throw new Error("state_unsafe_mutation");
+      throw new Error(`https://svelte.dev/e/state_unsafe_mutation`);
     }
   }
-  // @__NO_SIDE_EFFECTS__
-  function source(v) {
-    return {
+  let legacy_mode_flag = false;
+  let tracing_mode_flag = false;
+  function enable_legacy_mode_flag() {
+    legacy_mode_flag = true;
+  }
+  const EACH_ITEM_REACTIVE = 1;
+  const EACH_INDEX_REACTIVE = 1 << 1;
+  const EACH_IS_CONTROLLED = 1 << 2;
+  const EACH_IS_ANIMATED = 1 << 3;
+  const EACH_ITEM_IMMUTABLE = 1 << 4;
+  const TEMPLATE_FRAGMENT = 1;
+  const TEMPLATE_USE_IMPORT_NODE = 1 << 1;
+  const UNINITIALIZED = Symbol();
+  function lifecycle_outside_component(name) {
+    {
+      throw new Error(`https://svelte.dev/e/lifecycle_outside_component`);
+    }
+  }
+  let component_context = null;
+  function set_component_context(context) {
+    component_context = context;
+  }
+  function push(props, runes = false, fn) {
+    component_context = {
+      p: component_context,
+      c: null,
+      e: null,
+      m: false,
+      s: props,
+      x: null,
+      l: null
+    };
+    if (legacy_mode_flag && !runes) {
+      component_context.l = {
+        s: null,
+        u: null,
+        r1: [],
+        r2: source(false)
+      };
+    }
+  }
+  function pop(component) {
+    const context_stack_item = component_context;
+    if (context_stack_item !== null) {
+      const component_effects = context_stack_item.e;
+      if (component_effects !== null) {
+        var previous_effect = active_effect;
+        var previous_reaction = active_reaction;
+        context_stack_item.e = null;
+        try {
+          for (var i = 0; i < component_effects.length; i++) {
+            var component_effect = component_effects[i];
+            set_active_effect(component_effect.effect);
+            set_active_reaction(component_effect.reaction);
+            effect(component_effect.fn);
+          }
+        } finally {
+          set_active_effect(previous_effect);
+          set_active_reaction(previous_reaction);
+        }
+      }
+      component_context = context_stack_item.p;
+      context_stack_item.m = true;
+    }
+    return (
+      /** @type {T} */
+      {}
+    );
+  }
+  function is_runes() {
+    return !legacy_mode_flag || component_context !== null && component_context.l === null;
+  }
+  function source(v, stack) {
+    var signal = {
       f: 0,
       // TODO ideally we could skip this altogether, but it causes type errors
       v,
       reactions: null,
       equals,
-      version: 0
+      rv: 0,
+      wv: 0
     };
+    return signal;
+  }
+  function state(v) {
+    return /* @__PURE__ */ push_derived_source(source(v));
   }
   // @__NO_SIDE_EFFECTS__
-  function mutable_source(initial_value) {
+  function mutable_source(initial_value, immutable = false) {
     var _a;
-    const s = /* @__PURE__ */ source(initial_value);
-    s.equals = safe_equals;
-    if (current_component_context !== null && current_component_context.l !== null) {
-      ((_a = current_component_context.l).s ?? (_a.s = [])).push(s);
+    const s = source(initial_value);
+    if (!immutable) {
+      s.equals = safe_equals;
+    }
+    if (legacy_mode_flag && component_context !== null && component_context.l !== null) {
+      ((_a = component_context.l).s ?? (_a.s = [])).push(s);
     }
     return s;
   }
+  // @__NO_SIDE_EFFECTS__
+  function push_derived_source(source2) {
+    if (active_reaction !== null && !untracking && (active_reaction.f & DERIVED) !== 0) {
+      if (derived_sources === null) {
+        set_derived_sources([source2]);
+      } else {
+        derived_sources.push(source2);
+      }
+    }
+    return source2;
+  }
   function set(source2, value) {
-    if (current_reaction !== null && is_runes() && (current_reaction.f & DERIVED) !== 0) {
+    if (active_reaction !== null && !untracking && is_runes() && (active_reaction.f & (DERIVED | BLOCK_EFFECT)) !== 0 && // If the source was created locally within the current derived, then
+    // we allow the mutation.
+    (derived_sources === null || !derived_sources.includes(source2))) {
       state_unsafe_mutation();
     }
+    return internal_set(source2, value);
+  }
+  function internal_set(source2, value) {
     if (!source2.equals(value)) {
+      source2.v;
       source2.v = value;
-      source2.version = increment_version();
+      source2.wv = increment_write_version();
       mark_reactions(source2, DIRTY);
-      if (is_runes() && current_effect !== null && (current_effect.f & CLEAN) !== 0 && (current_effect.f & BRANCH_EFFECT) === 0) {
-        if (new_deps !== null && new_deps.includes(source2)) {
-          set_signal_status(current_effect, DIRTY);
-          schedule_effect(current_effect);
+      if (is_runes() && active_effect !== null && (active_effect.f & CLEAN) !== 0 && (active_effect.f & (BRANCH_EFFECT | ROOT_EFFECT)) === 0) {
+        if (untracked_writes === null) {
+          set_untracked_writes([source2]);
         } else {
-          if (current_untracked_writes === null) {
-            set_current_untracked_writes([source2]);
-          } else {
-            current_untracked_writes.push(source2);
-          }
+          untracked_writes.push(source2);
         }
       }
     }
@@ -150,29 +267,356 @@ var dubplus = function() {
       var reaction = reactions[i];
       var flags = reaction.f;
       if ((flags & DIRTY) !== 0) continue;
-      if (!runes && reaction === current_effect) continue;
+      if (!runes && reaction === active_effect) continue;
       set_signal_status(reaction, status);
       if ((flags & (CLEAN | UNOWNED)) !== 0) {
         if ((flags & DERIVED) !== 0) {
           mark_reactions(
-            /** @type {import('#client').Derived} */
+            /** @type {Derived} */
             reaction,
             MAYBE_DIRTY
           );
         } else {
           schedule_effect(
-            /** @type {import('#client').Effect} */
+            /** @type {Effect} */
             reaction
           );
         }
       }
     }
   }
+  let hydrating = false;
+  function proxy(value, parent = null, prev) {
+    if (typeof value !== "object" || value === null || STATE_SYMBOL in value) {
+      return value;
+    }
+    const prototype = get_prototype_of(value);
+    if (prototype !== object_prototype && prototype !== array_prototype) {
+      return value;
+    }
+    var sources = /* @__PURE__ */ new Map();
+    var is_proxied_array = is_array(value);
+    var version = source(0);
+    if (is_proxied_array) {
+      sources.set("length", source(
+        /** @type {any[]} */
+        value.length
+      ));
+    }
+    var metadata;
+    return new Proxy(
+      /** @type {any} */
+      value,
+      {
+        defineProperty(_, prop, descriptor) {
+          if (!("value" in descriptor) || descriptor.configurable === false || descriptor.enumerable === false || descriptor.writable === false) {
+            state_descriptors_fixed();
+          }
+          var s = sources.get(prop);
+          if (s === void 0) {
+            s = source(descriptor.value);
+            sources.set(prop, s);
+          } else {
+            set(s, proxy(descriptor.value, metadata));
+          }
+          return true;
+        },
+        deleteProperty(target, prop) {
+          var s = sources.get(prop);
+          if (s === void 0) {
+            if (prop in target) {
+              sources.set(prop, source(UNINITIALIZED));
+            }
+          } else {
+            if (is_proxied_array && typeof prop === "string") {
+              var ls = (
+                /** @type {Source<number>} */
+                sources.get("length")
+              );
+              var n = Number(prop);
+              if (Number.isInteger(n) && n < ls.v) {
+                set(ls, n);
+              }
+            }
+            set(s, UNINITIALIZED);
+            update_version(version);
+          }
+          return true;
+        },
+        get(target, prop, receiver) {
+          var _a;
+          if (prop === STATE_SYMBOL) {
+            return value;
+          }
+          var s = sources.get(prop);
+          var exists = prop in target;
+          if (s === void 0 && (!exists || ((_a = get_descriptor(target, prop)) == null ? void 0 : _a.writable))) {
+            s = source(proxy(exists ? target[prop] : UNINITIALIZED, metadata));
+            sources.set(prop, s);
+          }
+          if (s !== void 0) {
+            var v = get(s);
+            return v === UNINITIALIZED ? void 0 : v;
+          }
+          return Reflect.get(target, prop, receiver);
+        },
+        getOwnPropertyDescriptor(target, prop) {
+          var descriptor = Reflect.getOwnPropertyDescriptor(target, prop);
+          if (descriptor && "value" in descriptor) {
+            var s = sources.get(prop);
+            if (s) descriptor.value = get(s);
+          } else if (descriptor === void 0) {
+            var source2 = sources.get(prop);
+            var value2 = source2 == null ? void 0 : source2.v;
+            if (source2 !== void 0 && value2 !== UNINITIALIZED) {
+              return {
+                enumerable: true,
+                configurable: true,
+                value: value2,
+                writable: true
+              };
+            }
+          }
+          return descriptor;
+        },
+        has(target, prop) {
+          var _a;
+          if (prop === STATE_SYMBOL) {
+            return true;
+          }
+          var s = sources.get(prop);
+          var has = s !== void 0 && s.v !== UNINITIALIZED || Reflect.has(target, prop);
+          if (s !== void 0 || active_effect !== null && (!has || ((_a = get_descriptor(target, prop)) == null ? void 0 : _a.writable))) {
+            if (s === void 0) {
+              s = source(has ? proxy(target[prop], metadata) : UNINITIALIZED);
+              sources.set(prop, s);
+            }
+            var value2 = get(s);
+            if (value2 === UNINITIALIZED) {
+              return false;
+            }
+          }
+          return has;
+        },
+        set(target, prop, value2, receiver) {
+          var _a;
+          var s = sources.get(prop);
+          var has = prop in target;
+          if (is_proxied_array && prop === "length") {
+            for (var i = value2; i < /** @type {Source<number>} */
+            s.v; i += 1) {
+              var other_s = sources.get(i + "");
+              if (other_s !== void 0) {
+                set(other_s, UNINITIALIZED);
+              } else if (i in target) {
+                other_s = source(UNINITIALIZED);
+                sources.set(i + "", other_s);
+              }
+            }
+          }
+          if (s === void 0) {
+            if (!has || ((_a = get_descriptor(target, prop)) == null ? void 0 : _a.writable)) {
+              s = source(void 0);
+              set(s, proxy(value2, metadata));
+              sources.set(prop, s);
+            }
+          } else {
+            has = s.v !== UNINITIALIZED;
+            set(s, proxy(value2, metadata));
+          }
+          var descriptor = Reflect.getOwnPropertyDescriptor(target, prop);
+          if (descriptor == null ? void 0 : descriptor.set) {
+            descriptor.set.call(receiver, value2);
+          }
+          if (!has) {
+            if (is_proxied_array && typeof prop === "string") {
+              var ls = (
+                /** @type {Source<number>} */
+                sources.get("length")
+              );
+              var n = Number(prop);
+              if (Number.isInteger(n) && n >= ls.v) {
+                set(ls, n + 1);
+              }
+            }
+            update_version(version);
+          }
+          return true;
+        },
+        ownKeys(target) {
+          get(version);
+          var own_keys = Reflect.ownKeys(target).filter((key2) => {
+            var source3 = sources.get(key2);
+            return source3 === void 0 || source3.v !== UNINITIALIZED;
+          });
+          for (var [key, source2] of sources) {
+            if (source2.v !== UNINITIALIZED && !(key in target)) {
+              own_keys.push(key);
+            }
+          }
+          return own_keys;
+        },
+        setPrototypeOf() {
+          state_prototype_fixed();
+        }
+      }
+    );
+  }
+  function update_version(signal, d = 1) {
+    set(signal, signal.v + d);
+  }
+  var $window;
+  var is_firefox;
+  var first_child_getter;
+  var next_sibling_getter;
+  function init_operations() {
+    if ($window !== void 0) {
+      return;
+    }
+    $window = window;
+    is_firefox = /Firefox/.test(navigator.userAgent);
+    var element_prototype = Element.prototype;
+    var node_prototype = Node.prototype;
+    first_child_getter = get_descriptor(node_prototype, "firstChild").get;
+    next_sibling_getter = get_descriptor(node_prototype, "nextSibling").get;
+    element_prototype.__click = void 0;
+    element_prototype.__className = "";
+    element_prototype.__attributes = null;
+    element_prototype.__styles = null;
+    element_prototype.__e = void 0;
+    Text.prototype.__t = void 0;
+  }
+  function create_text(value = "") {
+    return document.createTextNode(value);
+  }
+  // @__NO_SIDE_EFFECTS__
+  function get_first_child(node) {
+    return first_child_getter.call(node);
+  }
+  // @__NO_SIDE_EFFECTS__
+  function get_next_sibling(node) {
+    return next_sibling_getter.call(node);
+  }
+  function child(node, is_text) {
+    {
+      return /* @__PURE__ */ get_first_child(node);
+    }
+  }
+  function first_child(fragment, is_text) {
+    {
+      var first = (
+        /** @type {DocumentFragment} */
+        /* @__PURE__ */ get_first_child(
+          /** @type {Node} */
+          fragment
+        )
+      );
+      if (first instanceof Comment && first.data === "") return /* @__PURE__ */ get_next_sibling(first);
+      return first;
+    }
+  }
+  function sibling(node, count = 1, is_text = false) {
+    let next_sibling = node;
+    while (count--) {
+      next_sibling = /** @type {TemplateNode} */
+      /* @__PURE__ */ get_next_sibling(next_sibling);
+    }
+    {
+      return next_sibling;
+    }
+  }
+  function clear_text_content(node) {
+    node.textContent = "";
+  }
+  // @__NO_SIDE_EFFECTS__
+  function derived(fn) {
+    var flags = DERIVED | DIRTY;
+    var parent_derived = active_reaction !== null && (active_reaction.f & DERIVED) !== 0 ? (
+      /** @type {Derived} */
+      active_reaction
+    ) : null;
+    if (active_effect === null || parent_derived !== null && (parent_derived.f & UNOWNED) !== 0) {
+      flags |= UNOWNED;
+    } else {
+      active_effect.f |= EFFECT_HAS_DERIVED;
+    }
+    const signal = {
+      ctx: component_context,
+      deps: null,
+      effects: null,
+      equals,
+      f: flags,
+      fn,
+      reactions: null,
+      rv: 0,
+      v: (
+        /** @type {V} */
+        null
+      ),
+      wv: 0,
+      parent: parent_derived ?? active_effect
+    };
+    return signal;
+  }
+  // @__NO_SIDE_EFFECTS__
+  function derived_safe_equal(fn) {
+    const signal = /* @__PURE__ */ derived(fn);
+    signal.equals = safe_equals;
+    return signal;
+  }
+  function destroy_derived_effects(derived2) {
+    var effects = derived2.effects;
+    if (effects !== null) {
+      derived2.effects = null;
+      for (var i = 0; i < effects.length; i += 1) {
+        destroy_effect(
+          /** @type {Effect} */
+          effects[i]
+        );
+      }
+    }
+  }
+  function get_derived_parent_effect(derived2) {
+    var parent = derived2.parent;
+    while (parent !== null) {
+      if ((parent.f & DERIVED) === 0) {
+        return (
+          /** @type {Effect} */
+          parent
+        );
+      }
+      parent = parent.parent;
+    }
+    return null;
+  }
+  function execute_derived(derived2) {
+    var value;
+    var prev_active_effect = active_effect;
+    set_active_effect(get_derived_parent_effect(derived2));
+    {
+      try {
+        destroy_derived_effects(derived2);
+        value = update_reaction(derived2);
+      } finally {
+        set_active_effect(prev_active_effect);
+      }
+    }
+    return value;
+  }
+  function update_derived(derived2) {
+    var value = execute_derived(derived2);
+    var status = (skip_reaction || (derived2.f & UNOWNED) !== 0) && derived2.deps !== null ? MAYBE_DIRTY : CLEAN;
+    set_signal_status(derived2, status);
+    if (!derived2.equals(value)) {
+      derived2.v = value;
+      derived2.wv = increment_write_version();
+    }
+  }
   function validate_effect(rune) {
-    if (current_effect === null && current_reaction === null) {
+    if (active_effect === null && active_reaction === null) {
       effect_orphan();
     }
-    if (current_reaction !== null && (current_reaction.f & UNOWNED) !== 0) {
+    if (active_reaction !== null && (active_reaction.f & UNOWNED) !== 0 && active_effect === null) {
       effect_in_unowned_derived();
     }
     if (is_destroying_effect) {
@@ -191,20 +635,22 @@ var dubplus = function() {
   }
   function create_effect(type, fn, sync, push2 = true) {
     var is_root = (type & ROOT_EFFECT) !== 0;
+    var parent_effect = active_effect;
     var effect2 = {
-      ctx: current_component_context,
+      ctx: component_context,
       deps: null,
-      nodes: null,
+      nodes_start: null,
+      nodes_end: null,
       f: type | DIRTY,
       first: null,
       fn,
       last: null,
       next: null,
-      parent: is_root ? null : current_effect,
+      parent: is_root ? null : parent_effect,
       prev: null,
       teardown: null,
       transitions: null,
-      version: 0
+      wv: 0
     };
     if (sync) {
       var previously_flushing_effect = is_flushing_effect;
@@ -212,19 +658,26 @@ var dubplus = function() {
         set_is_flushing_effect(true);
         update_effect(effect2);
         effect2.f |= EFFECT_RAN;
+      } catch (e) {
+        destroy_effect(effect2);
+        throw e;
       } finally {
         set_is_flushing_effect(previously_flushing_effect);
       }
     } else if (fn !== null) {
       schedule_effect(effect2);
     }
-    var inert = sync && effect2.deps === null && effect2.first === null && effect2.nodes === null && effect2.teardown === null;
+    var inert = sync && effect2.deps === null && effect2.first === null && effect2.nodes_start === null && effect2.teardown === null && (effect2.f & (EFFECT_HAS_DERIVED | BOUNDARY_EFFECT)) === 0;
     if (!inert && !is_root && push2) {
-      if (current_effect !== null) {
-        push_effect(effect2, current_effect);
+      if (parent_effect !== null) {
+        push_effect(effect2, parent_effect);
       }
-      if (current_reaction !== null && (current_reaction.f & DERIVED) !== 0) {
-        push_effect(effect2, current_reaction);
+      if (active_reaction !== null && (active_reaction.f & DERIVED) !== 0) {
+        var derived2 = (
+          /** @type {Derived} */
+          active_reaction
+        );
+        (derived2.effects ?? (derived2.effects = [])).push(effect2);
       }
     }
     return effect2;
@@ -237,14 +690,17 @@ var dubplus = function() {
   }
   function user_effect(fn) {
     validate_effect();
-    var defer = current_effect !== null && (current_effect.f & RENDER_EFFECT) !== 0 && // TODO do we actually need this? removing them changes nothing
-    current_component_context !== null && !current_component_context.m;
+    var defer = active_effect !== null && (active_effect.f & BRANCH_EFFECT) !== 0 && component_context !== null && !component_context.m;
     if (defer) {
       var context = (
-        /** @type {import('#client').ComponentContext} */
-        current_component_context
+        /** @type {ComponentContext} */
+        component_context
       );
-      (context.e ?? (context.e = [])).push(fn);
+      (context.e ?? (context.e = [])).push({
+        fn,
+        effect: active_effect,
+        reaction: active_reaction
+      });
     } else {
       var signal = effect(fn);
       return signal;
@@ -254,10 +710,20 @@ var dubplus = function() {
     validate_effect();
     return render_effect(fn);
   }
-  function effect_root(fn) {
+  function component_root(fn) {
     const effect2 = create_effect(ROOT_EFFECT, fn, true);
-    return () => {
-      destroy_effect(effect2);
+    return (options = {}) => {
+      return new Promise((fulfil) => {
+        if (options.outro) {
+          pause_effect(effect2, () => {
+            destroy_effect(effect2);
+            fulfil(void 0);
+          });
+        } else {
+          destroy_effect(effect2);
+          fulfil(void 0);
+        }
+      });
     };
   }
   function effect(fn) {
@@ -266,8 +732,10 @@ var dubplus = function() {
   function render_effect(fn) {
     return create_effect(RENDER_EFFECT, fn, true);
   }
-  function template_effect(fn) {
-    return render_effect(fn);
+  function template_effect(fn, thunks = [], d = derived) {
+    const deriveds = thunks.map(d);
+    const effect2 = () => fn(...deriveds.map(get));
+    return block(effect2);
   }
   function block(fn, flags = 0) {
     return create_effect(RENDER_EFFECT | BLOCK_EFFECT | flags, fn, true);
@@ -279,26 +747,45 @@ var dubplus = function() {
     var teardown2 = effect2.teardown;
     if (teardown2 !== null) {
       const previously_destroying_effect = is_destroying_effect;
-      const previous_reaction = current_reaction;
+      const previous_reaction = active_reaction;
       set_is_destroying_effect(true);
-      set_current_reaction(null);
+      set_active_reaction(null);
       try {
         teardown2.call(null);
       } finally {
         set_is_destroying_effect(previously_destroying_effect);
-        set_current_reaction(previous_reaction);
+        set_active_reaction(previous_reaction);
       }
+    }
+  }
+  function destroy_effect_children(signal, remove_dom = false) {
+    var effect2 = signal.first;
+    signal.first = signal.last = null;
+    while (effect2 !== null) {
+      var next = effect2.next;
+      destroy_effect(effect2, remove_dom);
+      effect2 = next;
+    }
+  }
+  function destroy_block_effect_children(signal) {
+    var effect2 = signal.first;
+    while (effect2 !== null) {
+      var next = effect2.next;
+      if ((effect2.f & BRANCH_EFFECT) === 0) {
+        destroy_effect(effect2);
+      }
+      effect2 = next;
     }
   }
   function destroy_effect(effect2, remove_dom = true) {
     var removed = false;
-    if ((remove_dom || (effect2.f & HEAD_EFFECT) !== 0) && effect2.nodes !== null) {
-      var node = effect2.nodes.start;
-      var end = effect2.nodes.end;
+    if ((remove_dom || (effect2.f & HEAD_EFFECT) !== 0) && effect2.nodes_start !== null) {
+      var node = effect2.nodes_start;
+      var end = effect2.nodes_end;
       while (node !== null) {
         var next = node === end ? null : (
-          /** @type {import('#client').TemplateNode} */
-          node.nextSibling
+          /** @type {TemplateNode} */
+          /* @__PURE__ */ get_next_sibling(node)
         );
         node.remove();
         node = next;
@@ -308,17 +795,18 @@ var dubplus = function() {
     destroy_effect_children(effect2, remove_dom && !removed);
     remove_reactions(effect2, 0);
     set_signal_status(effect2, DESTROYED);
-    if (effect2.transitions) {
-      for (const transition of effect2.transitions) {
+    var transitions = effect2.transitions;
+    if (transitions !== null) {
+      for (const transition of transitions) {
         transition.stop();
       }
     }
     execute_effect_teardown(effect2);
     var parent = effect2.parent;
-    if (parent !== null && (effect2.f & BRANCH_EFFECT) !== 0 && parent.first !== null) {
+    if (parent !== null && parent.first !== null) {
       unlink_effect(effect2);
     }
-    effect2.next = effect2.prev = effect2.teardown = effect2.ctx = effect2.deps = effect2.parent = effect2.fn = effect2.nodes = null;
+    effect2.next = effect2.prev = effect2.teardown = effect2.ctx = effect2.deps = effect2.fn = effect2.nodes_start = effect2.nodes_end = null;
   }
   function unlink_effect(effect2) {
     var parent = effect2.parent;
@@ -374,8 +862,12 @@ var dubplus = function() {
   function resume_children(effect2, local) {
     if ((effect2.f & INERT) === 0) return;
     effect2.f ^= INERT;
+    if ((effect2.f & CLEAN) === 0) {
+      effect2.f ^= CLEAN;
+    }
     if (check_dirtiness(effect2)) {
-      update_effect(effect2);
+      set_signal_status(effect2, DIRTY);
+      schedule_effect(effect2);
     }
     var child2 = effect2.first;
     while (child2 !== null) {
@@ -390,175 +882,6 @@ var dubplus = function() {
           transition.in();
         }
       }
-    }
-  }
-  const EACH_ITEM_REACTIVE = 1;
-  const EACH_INDEX_REACTIVE = 1 << 1;
-  const EACH_KEYED = 1 << 2;
-  const EACH_IS_CONTROLLED = 1 << 3;
-  const EACH_IS_ANIMATED = 1 << 4;
-  const EACH_IS_STRICT_EQUALS = 1 << 6;
-  const TEMPLATE_FRAGMENT = 1;
-  const TEMPLATE_USE_IMPORT_NODE = 1 << 1;
-  const UNINITIALIZED = Symbol();
-  const PassiveDelegatedEvents = ["touchstart", "touchmove", "touchend"];
-  function proxy(value, immutable = true, parent = null, prev) {
-    if (typeof value === "object" && value != null && !is_frozen(value) && !(STATE_FROZEN_SYMBOL in value)) {
-      if (STATE_SYMBOL in value) {
-        const metadata = (
-          /** @type {import('#client').ProxyMetadata<T>} */
-          value[STATE_SYMBOL]
-        );
-        if (metadata.t === value || metadata.p === value) {
-          return metadata.p;
-        }
-      }
-      const prototype = get_prototype_of(value);
-      if (prototype === object_prototype || prototype === array_prototype) {
-        const proxy2 = new Proxy(value, state_proxy_handler);
-        define_property(value, STATE_SYMBOL, {
-          value: (
-            /** @type {import('#client').ProxyMetadata} */
-            {
-              s: /* @__PURE__ */ new Map(),
-              v: /* @__PURE__ */ source(0),
-              a: is_array(value),
-              i: immutable,
-              p: proxy2,
-              t: value
-            }
-          ),
-          writable: true,
-          enumerable: false
-        });
-        return proxy2;
-      }
-    }
-    return value;
-  }
-  function update_version(signal, d = 1) {
-    set(signal, signal.v + d);
-  }
-  const state_proxy_handler = {
-    defineProperty(target, prop, descriptor) {
-      if (descriptor.value) {
-        const metadata = target[STATE_SYMBOL];
-        const s = metadata.s.get(prop);
-        if (s !== void 0) set(s, proxy(descriptor.value, metadata.i, metadata));
-      }
-      return Reflect.defineProperty(target, prop, descriptor);
-    },
-    deleteProperty(target, prop) {
-      const metadata = target[STATE_SYMBOL];
-      const s = metadata.s.get(prop);
-      const is_array2 = metadata.a;
-      const boolean = delete target[prop];
-      if (is_array2 && boolean) {
-        const ls = metadata.s.get("length");
-        const length = target.length - 1;
-        if (ls !== void 0 && ls.v !== length) {
-          set(ls, length);
-        }
-      }
-      if (s !== void 0) set(s, UNINITIALIZED);
-      if (boolean) {
-        update_version(metadata.v);
-      }
-      return boolean;
-    },
-    get(target, prop, receiver) {
-      var _a;
-      if (prop === STATE_SYMBOL) {
-        return Reflect.get(target, STATE_SYMBOL);
-      }
-      const metadata = target[STATE_SYMBOL];
-      let s = metadata.s.get(prop);
-      if (s === void 0 && (!(prop in target) || ((_a = get_descriptor(target, prop)) == null ? void 0 : _a.writable))) {
-        s = (metadata.i ? source : mutable_source)(proxy(target[prop], metadata.i, metadata));
-        metadata.s.set(prop, s);
-      }
-      if (s !== void 0) {
-        const value = get(s);
-        return value === UNINITIALIZED ? void 0 : value;
-      }
-      return Reflect.get(target, prop, receiver);
-    },
-    getOwnPropertyDescriptor(target, prop) {
-      const descriptor = Reflect.getOwnPropertyDescriptor(target, prop);
-      if (descriptor && "value" in descriptor) {
-        const metadata = target[STATE_SYMBOL];
-        const s = metadata.s.get(prop);
-        if (s) {
-          descriptor.value = get(s);
-        }
-      }
-      return descriptor;
-    },
-    has(target, prop) {
-      var _a;
-      if (prop === STATE_SYMBOL) {
-        return true;
-      }
-      const metadata = target[STATE_SYMBOL];
-      const has = Reflect.has(target, prop);
-      let s = metadata.s.get(prop);
-      if (s !== void 0 || current_effect !== null && (!has || ((_a = get_descriptor(target, prop)) == null ? void 0 : _a.writable))) {
-        if (s === void 0) {
-          s = (metadata.i ? source : mutable_source)(
-            has ? proxy(target[prop], metadata.i, metadata) : UNINITIALIZED
-          );
-          metadata.s.set(prop, s);
-        }
-        const value = get(s);
-        if (value === UNINITIALIZED) {
-          return false;
-        }
-      }
-      return has;
-    },
-    set(target, prop, value, receiver) {
-      const metadata = target[STATE_SYMBOL];
-      let s = metadata.s.get(prop);
-      if (s === void 0) {
-        untrack(() => receiver[prop]);
-        s = metadata.s.get(prop);
-      }
-      if (s !== void 0) {
-        set(s, proxy(value, metadata.i, metadata));
-      }
-      const is_array2 = metadata.a;
-      const not_has = !(prop in target);
-      if (is_array2 && prop === "length") {
-        for (let i = value; i < target.length; i += 1) {
-          const s2 = metadata.s.get(i + "");
-          if (s2 !== void 0) set(s2, UNINITIALIZED);
-        }
-      }
-      target[prop] = value;
-      if (not_has) {
-        if (is_array2) {
-          const ls = metadata.s.get("length");
-          const length = target.length;
-          if (ls !== void 0 && ls.v !== length) {
-            set(ls, length);
-          }
-        }
-        update_version(metadata.v);
-      }
-      return true;
-    },
-    ownKeys(target) {
-      const metadata = target[STATE_SYMBOL];
-      get(metadata.v);
-      return Reflect.ownKeys(target);
-    }
-  };
-  function run(fn) {
-    return fn();
-  }
-  function run_all(arr) {
-    for (var i = 0; i < arr.length; i++) {
-      arr[i]();
     }
   }
   let is_micro_task_queued$1 = false;
@@ -576,85 +899,9 @@ var dubplus = function() {
     }
     current_queued_micro_tasks.push(fn);
   }
-  function flush_tasks() {
-    if (is_micro_task_queued$1) {
-      process_micro_tasks();
-    }
-  }
-  // @__NO_SIDE_EFFECTS__
-  function derived(fn) {
-    let flags = DERIVED | DIRTY;
-    if (current_effect === null) flags |= UNOWNED;
-    const signal = {
-      deps: null,
-      deriveds: null,
-      equals,
-      f: flags,
-      first: null,
-      fn,
-      last: null,
-      reactions: null,
-      v: (
-        /** @type {V} */
-        null
-      ),
-      version: 0
-    };
-    if (current_reaction !== null && (current_reaction.f & DERIVED) !== 0) {
-      var current_derived = (
-        /** @type {import('#client').Derived} */
-        current_reaction
-      );
-      if (current_derived.deriveds === null) {
-        current_derived.deriveds = [signal];
-      } else {
-        current_derived.deriveds.push(signal);
-      }
-    }
-    return signal;
-  }
-  // @__NO_SIDE_EFFECTS__
-  function derived_safe_equal(fn) {
-    const signal = /* @__PURE__ */ derived(fn);
-    signal.equals = safe_equals;
-    return signal;
-  }
-  function destroy_derived_children(derived2) {
-    destroy_effect_children(derived2);
-    var deriveds = derived2.deriveds;
-    if (deriveds !== null) {
-      derived2.deriveds = null;
-      for (var i = 0; i < deriveds.length; i += 1) {
-        destroy_derived(deriveds[i]);
-      }
-    }
-  }
-  function update_derived(derived2) {
-    destroy_derived_children(derived2);
-    var value = update_reaction(derived2);
-    var status = (current_skip_reaction || (derived2.f & UNOWNED) !== 0) && derived2.deps !== null ? MAYBE_DIRTY : CLEAN;
-    set_signal_status(derived2, status);
-    if (!derived2.equals(value)) {
-      derived2.v = value;
-      derived2.version = increment_version();
-    }
-  }
-  function destroy_derived(signal) {
-    destroy_derived_children(signal);
-    remove_reactions(signal, 0);
-    set_signal_status(signal, DESTROYED);
-    signal.first = signal.last = signal.deps = signal.reactions = // @ts-expect-error `signal.fn` cannot be `null` while the signal is alive
-    signal.fn = null;
-  }
-  function lifecycle_outside_component(name) {
-    {
-      throw new Error("lifecycle_outside_component");
-    }
-  }
-  const FLUSH_MICROTASK = 0;
-  const FLUSH_SYNC = 1;
-  let current_scheduler_mode = FLUSH_MICROTASK;
+  let is_throwing_error = false;
   let is_micro_task_queued = false;
+  let last_scheduled_effect = null;
   let is_flushing_effect = false;
   let is_destroying_effect = false;
   function set_is_flushing_effect(value) {
@@ -663,27 +910,33 @@ var dubplus = function() {
   function set_is_destroying_effect(value) {
     is_destroying_effect = value;
   }
-  let current_queued_root_effects = [];
+  let queued_root_effects = [];
   let flush_count = 0;
-  let current_reaction = null;
-  function set_current_reaction(reaction) {
-    current_reaction = reaction;
+  let dev_effect_stack = [];
+  let active_reaction = null;
+  let untracking = false;
+  function set_active_reaction(reaction) {
+    active_reaction = reaction;
   }
-  let current_effect = null;
+  let active_effect = null;
+  function set_active_effect(effect2) {
+    active_effect = effect2;
+  }
+  let derived_sources = null;
+  function set_derived_sources(sources) {
+    derived_sources = sources;
+  }
   let new_deps = null;
   let skipped_deps = 0;
-  let current_untracked_writes = null;
-  function set_current_untracked_writes(value) {
-    current_untracked_writes = value;
+  let untracked_writes = null;
+  function set_untracked_writes(value) {
+    untracked_writes = value;
   }
-  let current_version = 0;
-  let current_skip_reaction = false;
-  let current_component_context = null;
-  function increment_version() {
-    return current_version++;
-  }
-  function is_runes() {
-    return current_component_context !== null && current_component_context.l === null;
+  let write_version = 1;
+  let read_version = 0;
+  let skip_reaction = false;
+  function increment_write_version() {
+    return ++write_version;
   }
   function check_dirtiness(reaction) {
     var _a;
@@ -693,50 +946,137 @@ var dubplus = function() {
     }
     if ((flags & MAYBE_DIRTY) !== 0) {
       var dependencies = reaction.deps;
+      var is_unowned = (flags & UNOWNED) !== 0;
       if (dependencies !== null) {
-        var is_unowned = (flags & UNOWNED) !== 0;
-        for (var i = 0; i < dependencies.length; i++) {
-          var dependency = dependencies[i];
+        var i;
+        var dependency;
+        var is_disconnected = (flags & DISCONNECTED) !== 0;
+        var is_unowned_connected = is_unowned && active_effect !== null && !skip_reaction;
+        var length = dependencies.length;
+        if (is_disconnected || is_unowned_connected) {
+          var derived2 = (
+            /** @type {Derived} */
+            reaction
+          );
+          var parent = derived2.parent;
+          for (i = 0; i < length; i++) {
+            dependency = dependencies[i];
+            if (is_disconnected || !((_a = dependency == null ? void 0 : dependency.reactions) == null ? void 0 : _a.includes(derived2))) {
+              (dependency.reactions ?? (dependency.reactions = [])).push(derived2);
+            }
+          }
+          if (is_disconnected) {
+            derived2.f ^= DISCONNECTED;
+          }
+          if (is_unowned_connected && parent !== null && (parent.f & UNOWNED) === 0) {
+            derived2.f ^= UNOWNED;
+          }
+        }
+        for (i = 0; i < length; i++) {
+          dependency = dependencies[i];
           if (check_dirtiness(
-            /** @type {import('#client').Derived} */
+            /** @type {Derived} */
             dependency
           )) {
             update_derived(
-              /** @type {import('#client').Derived} */
+              /** @type {Derived} */
               dependency
             );
           }
-          if (dependency.version > reaction.version) {
+          if (dependency.wv > reaction.wv) {
             return true;
-          }
-          if (is_unowned) {
-            if (!current_skip_reaction && !((_a = dependency == null ? void 0 : dependency.reactions) == null ? void 0 : _a.includes(reaction))) {
-              (dependency.reactions ?? (dependency.reactions = [])).push(reaction);
-            }
           }
         }
       }
-      set_signal_status(reaction, CLEAN);
+      if (!is_unowned || active_effect !== null && !skip_reaction) {
+        set_signal_status(reaction, CLEAN);
+      }
     }
     return false;
   }
-  function handle_error(error, effect2, component_context) {
+  function propagate_error(error, effect2) {
+    var current = effect2;
+    while (current !== null) {
+      if ((current.f & BOUNDARY_EFFECT) !== 0) {
+        try {
+          current.fn(error);
+          return;
+        } catch {
+          current.f ^= BOUNDARY_EFFECT;
+        }
+      }
+      current = current.parent;
+    }
+    is_throwing_error = false;
+    throw error;
+  }
+  function should_rethrow_error(effect2) {
+    return (effect2.f & DESTROYED) === 0 && (effect2.parent === null || (effect2.parent.f & BOUNDARY_EFFECT) === 0);
+  }
+  function handle_error(error, effect2, previous_effect, component_context2) {
+    if (is_throwing_error) {
+      if (previous_effect === null) {
+        is_throwing_error = false;
+      }
+      if (should_rethrow_error(effect2)) {
+        throw error;
+      }
+      return;
+    }
+    if (previous_effect !== null) {
+      is_throwing_error = true;
+    }
     {
-      throw error;
+      propagate_error(error, effect2);
+      return;
+    }
+  }
+  function schedule_possible_effect_self_invalidation(signal, effect2, root2 = true) {
+    var reactions = signal.reactions;
+    if (reactions === null) return;
+    for (var i = 0; i < reactions.length; i++) {
+      var reaction = reactions[i];
+      if ((reaction.f & DERIVED) !== 0) {
+        schedule_possible_effect_self_invalidation(
+          /** @type {Derived} */
+          reaction,
+          effect2,
+          false
+        );
+      } else if (effect2 === reaction) {
+        if (root2) {
+          set_signal_status(reaction, DIRTY);
+        } else if ((reaction.f & CLEAN) !== 0) {
+          set_signal_status(reaction, MAYBE_DIRTY);
+        }
+        schedule_effect(
+          /** @type {Effect} */
+          reaction
+        );
+      }
     }
   }
   function update_reaction(reaction) {
+    var _a;
     var previous_deps = new_deps;
     var previous_skipped_deps = skipped_deps;
-    var previous_untracked_writes = current_untracked_writes;
-    var previous_reaction = current_reaction;
-    var previous_skip_reaction = current_skip_reaction;
-    new_deps = /** @type {null | import('#client').Value[]} */
+    var previous_untracked_writes = untracked_writes;
+    var previous_reaction = active_reaction;
+    var previous_skip_reaction = skip_reaction;
+    var prev_derived_sources = derived_sources;
+    var previous_component_context = component_context;
+    var previous_untracking = untracking;
+    var flags = reaction.f;
+    new_deps = /** @type {null | Value[]} */
     null;
     skipped_deps = 0;
-    current_untracked_writes = null;
-    current_reaction = (reaction.f & (BRANCH_EFFECT | ROOT_EFFECT)) === 0 ? reaction : null;
-    current_skip_reaction = !is_flushing_effect && (reaction.f & UNOWNED) !== 0;
+    untracked_writes = null;
+    active_reaction = (flags & (BRANCH_EFFECT | ROOT_EFFECT)) === 0 ? reaction : null;
+    skip_reaction = (flags & UNOWNED) !== 0 && (!is_flushing_effect || previous_reaction === null || previous_untracking);
+    derived_sources = null;
+    set_component_context(reaction.ctx);
+    untracking = false;
+    read_version++;
     try {
       var result = (
         /** @type {Function} */
@@ -744,18 +1084,8 @@ var dubplus = function() {
       );
       var deps = reaction.deps;
       if (new_deps !== null) {
-        var dependency;
         var i;
-        if (deps !== null) {
-          var array = skipped_deps === 0 ? new_deps : deps.slice(0, skipped_deps).concat(new_deps);
-          var set2 = array.length > 16 ? new Set(array) : null;
-          for (i = skipped_deps; i < deps.length; i++) {
-            dependency = deps[i];
-            if (set2 !== null ? !set2.has(dependency) : !array.includes(dependency)) {
-              remove_reaction(reaction, dependency);
-            }
-          }
-        }
+        remove_reactions(reaction, skipped_deps);
         if (deps !== null && skipped_deps > 0) {
           deps.length = skipped_deps + new_deps.length;
           for (i = 0; i < new_deps.length; i++) {
@@ -764,52 +1094,68 @@ var dubplus = function() {
         } else {
           reaction.deps = deps = new_deps;
         }
-        if (!current_skip_reaction) {
+        if (!skip_reaction) {
           for (i = skipped_deps; i < deps.length; i++) {
-            dependency = deps[i];
-            var reactions = dependency.reactions;
-            if (reactions === null) {
-              dependency.reactions = [reaction];
-            } else if (reactions[reactions.length - 1] !== reaction && !reactions.includes(reaction)) {
-              reactions.push(reaction);
-            }
+            ((_a = deps[i]).reactions ?? (_a.reactions = [])).push(reaction);
           }
         }
       } else if (deps !== null && skipped_deps < deps.length) {
         remove_reactions(reaction, skipped_deps);
         deps.length = skipped_deps;
       }
+      if (is_runes() && untracked_writes !== null && !untracking && deps !== null && (reaction.f & (DERIVED | MAYBE_DIRTY | DIRTY)) === 0) {
+        for (i = 0; i < /** @type {Source[]} */
+        untracked_writes.length; i++) {
+          schedule_possible_effect_self_invalidation(
+            untracked_writes[i],
+            /** @type {Effect} */
+            reaction
+          );
+        }
+      }
+      if (previous_reaction !== null) {
+        read_version++;
+      }
       return result;
     } finally {
       new_deps = previous_deps;
       skipped_deps = previous_skipped_deps;
-      current_untracked_writes = previous_untracked_writes;
-      current_reaction = previous_reaction;
-      current_skip_reaction = previous_skip_reaction;
+      untracked_writes = previous_untracked_writes;
+      active_reaction = previous_reaction;
+      skip_reaction = previous_skip_reaction;
+      derived_sources = prev_derived_sources;
+      set_component_context(previous_component_context);
+      untracking = previous_untracking;
     }
   }
   function remove_reaction(signal, dependency) {
-    const reactions = dependency.reactions;
-    let reactions_length = 0;
+    let reactions = dependency.reactions;
     if (reactions !== null) {
-      reactions_length = reactions.length - 1;
-      const index2 = reactions.indexOf(signal);
+      var index2 = index_of.call(reactions, signal);
       if (index2 !== -1) {
-        if (reactions_length === 0) {
-          dependency.reactions = null;
+        var new_length = reactions.length - 1;
+        if (new_length === 0) {
+          reactions = dependency.reactions = null;
         } else {
-          reactions[index2] = reactions[reactions_length];
+          reactions[index2] = reactions[new_length];
           reactions.pop();
         }
       }
     }
-    if (reactions_length === 0 && (dependency.f & DERIVED) !== 0) {
+    if (reactions === null && (dependency.f & DERIVED) !== 0 && // Destroying a child effect while updating a parent effect can cause a dependency to appear
+    // to be unused, when in fact it is used by the currently-updating parent. Checking `new_deps`
+    // allows us to skip the expensive work of disconnecting and immediately reconnecting it
+    (new_deps === null || !new_deps.includes(dependency))) {
       set_signal_status(dependency, MAYBE_DIRTY);
       if ((dependency.f & (UNOWNED | DISCONNECTED)) === 0) {
         dependency.f ^= DISCONNECTED;
       }
+      destroy_derived_effects(
+        /** @type {Derived} **/
+        dependency
+      );
       remove_reactions(
-        /** @type {import('#client').Derived} **/
+        /** @type {Derived} **/
         dependency,
         0
       );
@@ -818,24 +1164,8 @@ var dubplus = function() {
   function remove_reactions(signal, start_index) {
     var dependencies = signal.deps;
     if (dependencies === null) return;
-    var active_dependencies = start_index === 0 ? null : dependencies.slice(0, start_index);
-    var seen = /* @__PURE__ */ new Set();
     for (var i = start_index; i < dependencies.length; i++) {
-      var dependency = dependencies[i];
-      if (seen.has(dependency)) continue;
-      seen.add(dependency);
-      if (active_dependencies === null || !active_dependencies.includes(dependency)) {
-        remove_reaction(signal, dependency);
-      }
-    }
-  }
-  function destroy_effect_children(signal, remove_dom = false) {
-    var effect2 = signal.first;
-    signal.first = signal.last = null;
-    while (effect2 !== null) {
-      var next = effect2.next;
-      destroy_effect(effect2, remove_dom);
-      effect2 = next;
+      remove_reaction(signal, dependencies[i]);
     }
   }
   function update_effect(effect2) {
@@ -844,33 +1174,43 @@ var dubplus = function() {
       return;
     }
     set_signal_status(effect2, CLEAN);
-    var component_context = effect2.ctx;
-    var previous_effect = current_effect;
-    var previous_component_context = current_component_context;
-    current_effect = effect2;
-    current_component_context = component_context;
+    var previous_effect = active_effect;
+    var previous_component_context = component_context;
+    active_effect = effect2;
     try {
-      if ((flags & BLOCK_EFFECT) === 0) {
+      if ((flags & BLOCK_EFFECT) !== 0) {
+        destroy_block_effect_children(effect2);
+      } else {
         destroy_effect_children(effect2);
       }
       execute_effect_teardown(effect2);
       var teardown2 = update_reaction(effect2);
       effect2.teardown = typeof teardown2 === "function" ? teardown2 : null;
-      effect2.version = current_version;
+      effect2.wv = write_version;
+      var deps = effect2.deps;
+      var dep;
+      if (DEV && tracing_mode_flag && (effect2.f & DIRTY) !== 0 && deps !== null) ;
+      if (DEV) ;
     } catch (error) {
-      handle_error(
-        /** @type {Error} */
-        error
-      );
+      handle_error(error, effect2, previous_effect, previous_component_context || effect2.ctx);
     } finally {
-      current_effect = previous_effect;
-      current_component_context = previous_component_context;
+      active_effect = previous_effect;
     }
   }
   function infinite_loop_guard() {
     if (flush_count > 1e3) {
       flush_count = 0;
-      effect_update_depth_exceeded();
+      try {
+        effect_update_depth_exceeded();
+      } catch (error) {
+        if (last_scheduled_effect !== null) {
+          {
+            handle_error(error, last_scheduled_effect, null);
+          }
+        } else {
+          throw error;
+        }
+      }
     }
     flush_count++;
   }
@@ -885,13 +1225,11 @@ var dubplus = function() {
     try {
       for (var i = 0; i < length; i++) {
         var effect2 = root_effects[i];
-        if (effect2.first === null && (effect2.f & BRANCH_EFFECT) === 0) {
-          flush_queued_effects([effect2]);
-        } else {
-          var collected_effects = [];
-          process_effects(effect2, collected_effects);
-          flush_queued_effects(collected_effects);
+        if ((effect2.f & CLEAN) === 0) {
+          effect2.f ^= CLEAN;
         }
+        var collected_effects = process_effects(effect2);
+        flush_queued_effects(collected_effects);
       }
     } finally {
       is_flushing_effect = previously_flushing_effect;
@@ -902,14 +1240,20 @@ var dubplus = function() {
     if (length === 0) return;
     for (var i = 0; i < length; i++) {
       var effect2 = effects[i];
-      if ((effect2.f & (DESTROYED | INERT)) === 0 && check_dirtiness(effect2)) {
-        update_effect(effect2);
-        if (effect2.deps === null && effect2.first === null && effect2.nodes === null) {
-          if (effect2.teardown === null) {
-            unlink_effect(effect2);
-          } else {
-            effect2.fn = null;
+      if ((effect2.f & (DESTROYED | INERT)) === 0) {
+        try {
+          if (check_dirtiness(effect2)) {
+            update_effect(effect2);
+            if (effect2.deps === null && effect2.first === null && effect2.nodes_start === null) {
+              if (effect2.teardown === null) {
+                unlink_effect(effect2);
+              } else {
+                effect2.fn = null;
+              }
+            }
           }
+        } catch (error) {
+          handle_error(error, effect2, null, effect2.ctx);
         }
       }
     }
@@ -919,211 +1263,134 @@ var dubplus = function() {
     if (flush_count > 1001) {
       return;
     }
-    const previous_queued_root_effects = current_queued_root_effects;
-    current_queued_root_effects = [];
+    const previous_queued_root_effects = queued_root_effects;
+    queued_root_effects = [];
     flush_queued_root_effects(previous_queued_root_effects);
     if (!is_micro_task_queued) {
       flush_count = 0;
+      last_scheduled_effect = null;
     }
   }
   function schedule_effect(signal) {
-    if (current_scheduler_mode === FLUSH_MICROTASK) {
+    {
       if (!is_micro_task_queued) {
         is_micro_task_queued = true;
         queueMicrotask(process_deferred);
       }
     }
+    last_scheduled_effect = signal;
     var effect2 = signal;
     while (effect2.parent !== null) {
       effect2 = effect2.parent;
       var flags = effect2.f;
-      if ((flags & BRANCH_EFFECT) !== 0) {
+      if ((flags & (ROOT_EFFECT | BRANCH_EFFECT)) !== 0) {
         if ((flags & CLEAN) === 0) return;
-        set_signal_status(effect2, MAYBE_DIRTY);
+        effect2.f ^= CLEAN;
       }
     }
-    current_queued_root_effects.push(effect2);
+    queued_root_effects.push(effect2);
   }
-  function process_effects(effect2, collected_effects) {
-    var current_effect2 = effect2.first;
+  function process_effects(effect2) {
     var effects = [];
-    main_loop: while (current_effect2 !== null) {
-      var flags = current_effect2.f;
-      var is_active = (flags & (DESTROYED | INERT)) === 0;
-      var is_branch = flags & BRANCH_EFFECT;
-      var is_clean = (flags & CLEAN) !== 0;
-      var child2 = current_effect2.first;
-      if (is_active && (!is_branch || !is_clean)) {
-        if (is_branch) {
-          set_signal_status(current_effect2, CLEAN);
-        }
-        if ((flags & RENDER_EFFECT) !== 0) {
-          if (!is_branch && check_dirtiness(current_effect2)) {
-            update_effect(current_effect2);
-            child2 = current_effect2.first;
-          }
-          if (child2 !== null) {
-            current_effect2 = child2;
-            continue;
-          }
-        } else if ((flags & EFFECT) !== 0) {
-          if (is_branch || is_clean) {
-            if (child2 !== null) {
-              current_effect2 = child2;
-              continue;
+    var current_effect = effect2.first;
+    main_loop: while (current_effect !== null) {
+      var flags = current_effect.f;
+      var is_branch = (flags & BRANCH_EFFECT) !== 0;
+      var is_skippable_branch = is_branch && (flags & CLEAN) !== 0;
+      var sibling2 = current_effect.next;
+      if (!is_skippable_branch && (flags & INERT) === 0) {
+        if ((flags & EFFECT) !== 0) {
+          effects.push(current_effect);
+        } else if (is_branch) {
+          current_effect.f ^= CLEAN;
+        } else {
+          var previous_active_reaction = active_reaction;
+          try {
+            active_reaction = current_effect;
+            if (check_dirtiness(current_effect)) {
+              update_effect(current_effect);
             }
-          } else {
-            effects.push(current_effect2);
+          } catch (error) {
+            handle_error(error, current_effect, null, current_effect.ctx);
+          } finally {
+            active_reaction = previous_active_reaction;
           }
+        }
+        var child2 = current_effect.first;
+        if (child2 !== null) {
+          current_effect = child2;
+          continue;
         }
       }
-      var sibling2 = current_effect2.next;
       if (sibling2 === null) {
-        let parent = current_effect2.parent;
+        let parent = current_effect.parent;
         while (parent !== null) {
           if (effect2 === parent) {
             break main_loop;
           }
           var parent_sibling = parent.next;
           if (parent_sibling !== null) {
-            current_effect2 = parent_sibling;
+            current_effect = parent_sibling;
             continue main_loop;
           }
           parent = parent.parent;
         }
       }
-      current_effect2 = sibling2;
+      current_effect = sibling2;
     }
-    for (var i = 0; i < effects.length; i++) {
-      child2 = effects[i];
-      collected_effects.push(child2);
-      process_effects(child2, collected_effects);
-    }
-  }
-  function flush_sync(fn, flush_previous = true) {
-    var previous_scheduler_mode = current_scheduler_mode;
-    var previous_queued_root_effects = current_queued_root_effects;
-    try {
-      infinite_loop_guard();
-      const root_effects = [];
-      current_scheduler_mode = FLUSH_SYNC;
-      current_queued_root_effects = root_effects;
-      is_micro_task_queued = false;
-      if (flush_previous) {
-        flush_queued_root_effects(previous_queued_root_effects);
-      }
-      var result = fn == null ? void 0 : fn();
-      flush_tasks();
-      if (current_queued_root_effects.length > 0 || root_effects.length > 0) {
-        flush_sync();
-      }
-      flush_count = 0;
-      return result;
-    } finally {
-      current_scheduler_mode = previous_scheduler_mode;
-      current_queued_root_effects = previous_queued_root_effects;
-    }
+    return effects;
   }
   function get(signal) {
     var flags = signal.f;
-    if ((flags & DESTROYED) !== 0) {
-      return signal.v;
-    }
-    if (current_reaction !== null) {
-      var deps = current_reaction.deps;
-      if (new_deps === null && deps !== null && deps[skipped_deps] === signal) {
-        skipped_deps++;
-      } else if (deps === null || skipped_deps === 0 || deps[skipped_deps - 1] !== signal) {
-        if (new_deps === null) {
+    var is_derived = (flags & DERIVED) !== 0;
+    if (active_reaction !== null && !untracking) {
+      if (derived_sources !== null && derived_sources.includes(signal)) {
+        state_unsafe_local_read();
+      }
+      var deps = active_reaction.deps;
+      if (signal.rv < read_version) {
+        signal.rv = read_version;
+        if (new_deps === null && deps !== null && deps[skipped_deps] === signal) {
+          skipped_deps++;
+        } else if (new_deps === null) {
           new_deps = [signal];
-        } else if (new_deps[new_deps.length - 1] !== signal) {
+        } else if (!skip_reaction || !new_deps.includes(signal)) {
           new_deps.push(signal);
         }
       }
-      if (current_untracked_writes !== null && current_effect !== null && (current_effect.f & CLEAN) !== 0 && (current_effect.f & BRANCH_EFFECT) === 0 && current_untracked_writes.includes(signal)) {
-        set_signal_status(current_effect, DIRTY);
-        schedule_effect(current_effect);
-      }
-    }
-    if ((flags & DERIVED) !== 0) {
+    } else if (is_derived && /** @type {Derived} */
+    signal.deps === null && /** @type {Derived} */
+    signal.effects === null) {
       var derived2 = (
-        /** @type {import('#client').Derived} */
+        /** @type {Derived} */
         signal
       );
+      var parent = derived2.parent;
+      if (parent !== null && (parent.f & UNOWNED) === 0) {
+        derived2.f ^= UNOWNED;
+      }
+    }
+    if (is_derived) {
+      derived2 = /** @type {Derived} */
+      signal;
       if (check_dirtiness(derived2)) {
         update_derived(derived2);
-      }
-      if ((flags & DISCONNECTED) !== 0) {
-        deps = derived2.deps;
-        if (deps !== null) {
-          for (var i = 0; i < deps.length; i++) {
-            var dep = deps[i];
-            var reactions = dep.reactions;
-            if (reactions === null) {
-              dep.reactions = [derived2];
-            } else if (!reactions.includes(derived2)) {
-              reactions.push(derived2);
-            }
-          }
-        }
-        derived2.f ^= DISCONNECTED;
       }
     }
     return signal.v;
   }
   function untrack(fn) {
-    const previous_reaction = current_reaction;
+    var previous_untracking = untracking;
     try {
-      current_reaction = null;
+      untracking = true;
       return fn();
     } finally {
-      current_reaction = previous_reaction;
+      untracking = previous_untracking;
     }
   }
-  const STATUS_MASK = ~(DIRTY | MAYBE_DIRTY | CLEAN);
+  const STATUS_MASK = -7169;
   function set_signal_status(signal, status) {
     signal.f = signal.f & STATUS_MASK | status;
-  }
-  function is_signal(val) {
-    return typeof val === "object" && val !== null && typeof /** @type {import('#client').Value<V>} */
-    val.f === "number";
-  }
-  function push(props, runes = false, fn) {
-    current_component_context = {
-      p: current_component_context,
-      c: null,
-      e: null,
-      m: false,
-      s: props,
-      x: null,
-      l: null
-    };
-    if (!runes) {
-      current_component_context.l = {
-        s: null,
-        u: null,
-        r1: [],
-        r2: /* @__PURE__ */ source(false)
-      };
-    }
-  }
-  function pop(component) {
-    const context_stack_item = current_component_context;
-    if (context_stack_item !== null) {
-      const effects = context_stack_item.e;
-      if (effects !== null) {
-        context_stack_item.e = null;
-        for (var i = 0; i < effects.length; i++) {
-          effect(effects[i]);
-        }
-      }
-      current_component_context = context_stack_item.p;
-      context_stack_item.m = true;
-    }
-    return (
-      /** @type {T} */
-      {}
-    );
   }
   function deep_read_state(value) {
     if (typeof value !== "object" || !value || value instanceof EventTarget) {
@@ -1168,68 +1435,74 @@ var dubplus = function() {
       }
     }
   }
-  function unwrap(value) {
-    if (is_signal(value)) {
-      return get(value);
-    }
-    return value;
+  const PASSIVE_EVENTS = ["touchstart", "touchmove"];
+  function is_passive_event(name) {
+    return PASSIVE_EVENTS.includes(name);
   }
-  let hydrating = false;
-  var $window;
-  function init_operations() {
-    if ($window !== void 0) {
-      return;
-    }
-    $window = window;
-    var element_prototype = Element.prototype;
-    element_prototype.__click = void 0;
-    element_prototype.__className = "";
-    element_prototype.__attributes = null;
-    element_prototype.__e = void 0;
-    Text.prototype.__t = void 0;
-  }
-  function empty() {
-    return document.createTextNode("");
-  }
-  // @__NO_SIDE_EFFECTS__
-  function child(node) {
-    const child2 = node.firstChild;
-    return child2;
-  }
-  // @__NO_SIDE_EFFECTS__
-  function first_child(fragment, is_text) {
-    {
-      var first = (
-        /** @type {DocumentFragment} */
-        fragment.firstChild
+  let listening_to_form_reset = false;
+  function add_form_reset_listener() {
+    if (!listening_to_form_reset) {
+      listening_to_form_reset = true;
+      document.addEventListener(
+        "reset",
+        (evt) => {
+          Promise.resolve().then(() => {
+            var _a;
+            if (!evt.defaultPrevented) {
+              for (
+                const e of
+                /**@type {HTMLFormElement} */
+                evt.target.elements
+              ) {
+                (_a = e.__on_r) == null ? void 0 : _a.call(e);
+              }
+            }
+          });
+        },
+        // In the capture phase to guarantee we get noticed of it (no possiblity of stopPropagation)
+        { capture: true }
       );
-      if (first instanceof Comment && first.data === "") return first.nextSibling;
-      return first;
     }
   }
-  // @__NO_SIDE_EFFECTS__
-  function sibling(node, is_text = false) {
-    var next_sibling = (
-      /** @type {import('#client').TemplateNode} */
-      node.nextSibling
-    );
-    {
-      return next_sibling;
+  function without_reactive_context(fn) {
+    var previous_reaction = active_reaction;
+    var previous_effect = active_effect;
+    set_active_reaction(null);
+    set_active_effect(null);
+    try {
+      return fn();
+    } finally {
+      set_active_reaction(previous_reaction);
+      set_active_effect(previous_effect);
     }
   }
-  function clear_text_content(node) {
-    node.textContent = "";
+  function listen_to_event_and_reset_event(element, event2, handler, on_reset = handler) {
+    element.addEventListener(event2, () => without_reactive_context(handler));
+    const prev = element.__on_r;
+    if (prev) {
+      element.__on_r = () => {
+        prev();
+        on_reset(true);
+      };
+    } else {
+      element.__on_r = () => on_reset(true);
+    }
+    add_form_reset_listener();
   }
-  function create_event(event_name, dom, handler, options) {
+  const all_registered_events = /* @__PURE__ */ new Set();
+  const root_event_handles = /* @__PURE__ */ new Set();
+  function create_event(event_name, dom, handler, options = {}) {
     function target_handler(event2) {
       if (!options.capture) {
         handle_event_propagation.call(dom, event2);
       }
       if (!event2.cancelBubble) {
-        return handler.call(this, event2);
+        return without_reactive_context(() => {
+          return handler == null ? void 0 : handler.call(this, event2);
+        });
       }
     }
-    if (event_name.startsWith("pointer") || event_name === "wheel") {
+    if (event_name.startsWith("pointer") || event_name.startsWith("touch") || event_name === "wheel") {
       queue_micro_task(() => {
         dom.addEventListener(event_name, target_handler, options);
       });
@@ -1294,11 +1567,15 @@ var dubplus = function() {
         return current_target || owner_document;
       }
     });
+    var previous_reaction = active_reaction;
+    var previous_effect = active_effect;
+    set_active_reaction(null);
+    set_active_effect(null);
     try {
       var throw_error;
       var other_errors = [];
       while (current_target !== null) {
-        var parent_element = current_target.parentNode || /** @type {any} */
+        var parent_element = current_target.assignedSlot || current_target.parentNode || /** @type {any} */
         current_target.host || null;
         try {
           var delegated = current_target["__" + event_name];
@@ -1333,409 +1610,25 @@ var dubplus = function() {
       }
     } finally {
       event2.__root = handler_element;
-      current_target = handler_element;
+      delete event2.currentTarget;
+      set_active_reaction(previous_reaction);
+      set_active_effect(previous_effect);
     }
   }
-  const all_registered_events = /* @__PURE__ */ new Set();
-  const root_event_handles = /* @__PURE__ */ new Set();
-  function set_text(text2, value) {
-    const prev = text2.__t ?? (text2.__t = text2.nodeValue);
-    if (prev !== value) {
-      text2.nodeValue = text2.__t = value;
-    }
-  }
-  function mount(component, options) {
-    const anchor = options.anchor ?? options.target.appendChild(empty());
-    return flush_sync(() => _mount(component, { ...options, anchor }), false);
-  }
-  function _mount(Component, { target, anchor, props = {}, events, context, intro = false }) {
-    init_operations();
-    const registered_events = /* @__PURE__ */ new Set();
-    const event_handle = (events2) => {
-      for (let i = 0; i < events2.length; i++) {
-        const event_name = events2[i];
-        const passive = PassiveDelegatedEvents.includes(event_name);
-        if (!registered_events.has(event_name)) {
-          registered_events.add(event_name);
-          target.addEventListener(event_name, handle_event_propagation, { passive });
-          document.addEventListener(event_name, handle_event_propagation, { passive });
-        }
-      }
-    };
-    event_handle(array_from(all_registered_events));
-    root_event_handles.add(event_handle);
-    let component = void 0;
-    const unmount = effect_root(() => {
-      branch(() => {
-        if (context) {
-          push({});
-          var ctx = (
-            /** @type {import('#client').ComponentContext} */
-            current_component_context
-          );
-          ctx.c = context;
-        }
-        if (events) {
-          props.$$events = events;
-        }
-        component = Component(anchor, props) || {};
-        if (context) {
-          pop();
-        }
-      });
-      return () => {
-        for (const event_name of registered_events) {
-          target.removeEventListener(event_name, handle_event_propagation);
-          document.removeEventListener(event_name, handle_event_propagation);
-        }
-        root_event_handles.delete(event_handle);
-        mounted_components.delete(component);
-      };
-    });
-    mounted_components.set(component, unmount);
-    return component;
-  }
-  let mounted_components = /* @__PURE__ */ new WeakMap();
   function create_fragment_from_html(html) {
     var elem = document.createElement("template");
     elem.innerHTML = html;
     return elem.content;
   }
-  function if_block(anchor, get_condition, consequent_fn, alternate_fn = null, elseif = false) {
-    var consequent_effect = null;
-    var alternate_effect = null;
-    var condition = null;
-    var flags = elseif ? EFFECT_TRANSPARENT : 0;
-    block(() => {
-      if (condition === (condition = !!get_condition())) return;
-      if (condition) {
-        if (consequent_effect) {
-          resume_effect(consequent_effect);
-        } else {
-          consequent_effect = branch(() => consequent_fn(anchor));
-        }
-        if (alternate_effect) {
-          pause_effect(alternate_effect, () => {
-            alternate_effect = null;
-          });
-        }
-      } else {
-        if (alternate_effect) {
-          resume_effect(alternate_effect);
-        } else if (alternate_fn) {
-          alternate_effect = branch(() => alternate_fn(anchor));
-        }
-        if (consequent_effect) {
-          pause_effect(consequent_effect, () => {
-            consequent_effect = null;
-          });
-        }
-      }
-    }, flags);
-  }
-  let current_each_item = null;
-  function index(_, i) {
-    return i;
-  }
-  function pause_effects(state, items, controlled_anchor, items_map) {
-    var transitions = [];
-    var length = items.length;
-    for (var i = 0; i < length; i++) {
-      pause_children(items[i].e, transitions, true);
-    }
-    var is_controlled = length > 0 && transitions.length === 0 && controlled_anchor !== null;
-    if (is_controlled) {
-      var parent_node = (
-        /** @type {Element} */
-        /** @type {Element} */
-        controlled_anchor.parentNode
-      );
-      clear_text_content(parent_node);
-      parent_node.append(
-        /** @type {Element} */
-        controlled_anchor
-      );
-      items_map.clear();
-      link(state, items[0].prev, items[length - 1].next);
-    }
-    run_out_transitions(transitions, () => {
-      for (var i2 = 0; i2 < length; i2++) {
-        var item = items[i2];
-        if (!is_controlled) {
-          items_map.delete(item.k);
-          link(state, item.prev, item.next);
-        }
-        destroy_effect(item.e, !is_controlled);
-      }
-    });
-  }
-  function each(anchor, flags, get_collection, get_key, render_fn, fallback_fn = null) {
-    var state = { flags, items: /* @__PURE__ */ new Map(), first: null };
-    var is_controlled = (flags & EACH_IS_CONTROLLED) !== 0;
-    if (is_controlled) {
-      var parent_node = (
-        /** @type {Element} */
-        anchor
-      );
-      anchor = parent_node.appendChild(empty());
-    }
-    var fallback = null;
-    block(() => {
-      var collection = get_collection();
-      var array = is_array(collection) ? collection : collection == null ? [] : Array.from(collection);
-      var length = array.length;
-      var flags2 = state.flags;
-      if ((flags2 & EACH_IS_STRICT_EQUALS) !== 0 && !is_frozen(array) && !(STATE_FROZEN_SYMBOL in array) && !(STATE_SYMBOL in array)) {
-        flags2 ^= EACH_IS_STRICT_EQUALS;
-        if ((flags2 & EACH_KEYED) !== 0 && (flags2 & EACH_ITEM_REACTIVE) === 0) {
-          flags2 ^= EACH_ITEM_REACTIVE;
-        }
-      }
-      {
-        reconcile(array, state, anchor, render_fn, flags2, get_key);
-      }
-      if (fallback_fn !== null) {
-        if (length === 0) {
-          if (fallback) {
-            resume_effect(fallback);
-          } else {
-            fallback = branch(() => fallback_fn(anchor));
-          }
-        } else if (fallback !== null) {
-          pause_effect(fallback, () => {
-            fallback = null;
-          });
-        }
-      }
-    });
-  }
-  function reconcile(array, state, anchor, render_fn, flags, get_key) {
-    var _a, _b, _c, _d;
-    var is_animated = (flags & EACH_IS_ANIMATED) !== 0;
-    var should_update = (flags & (EACH_ITEM_REACTIVE | EACH_INDEX_REACTIVE)) !== 0;
-    var length = array.length;
-    var items = state.items;
-    var first = state.first;
-    var current = first;
-    var seen = /* @__PURE__ */ new Set();
-    var prev = null;
-    var to_animate = /* @__PURE__ */ new Set();
-    var matched = [];
-    var stashed = [];
-    var value;
-    var key;
-    var item;
-    var i;
-    if (is_animated) {
-      for (i = 0; i < length; i += 1) {
-        value = array[i];
-        key = get_key(value, i);
-        item = items.get(key);
-        if (item !== void 0) {
-          (_a = item.a) == null ? void 0 : _a.measure();
-          to_animate.add(item);
-        }
-      }
-    }
-    for (i = 0; i < length; i += 1) {
-      value = array[i];
-      key = get_key(value, i);
-      item = items.get(key);
-      if (item === void 0) {
-        var child_anchor = current ? (
-          /** @type {import('#client').EffectNodes} */
-          current.e.nodes.start
-        ) : anchor;
-        prev = create_item(
-          child_anchor,
-          state,
-          prev,
-          prev === null ? state.first : prev.next,
-          value,
-          key,
-          i,
-          render_fn,
-          flags
-        );
-        items.set(key, prev);
-        matched = [];
-        stashed = [];
-        current = prev.next;
-        continue;
-      }
-      if (should_update) {
-        update_item(item, value, i, flags);
-      }
-      if ((item.e.f & INERT) !== 0) {
-        resume_effect(item.e);
-        if (is_animated) {
-          (_b = item.a) == null ? void 0 : _b.unfix();
-          to_animate.delete(item);
-        }
-      }
-      if (item !== current) {
-        if (seen.has(item)) {
-          if (matched.length < stashed.length) {
-            var start = stashed[0];
-            var j;
-            prev = start.prev;
-            var a = matched[0];
-            var b = matched[matched.length - 1];
-            for (j = 0; j < matched.length; j += 1) {
-              move(matched[j], start, anchor);
-            }
-            for (j = 0; j < stashed.length; j += 1) {
-              seen.delete(stashed[j]);
-            }
-            link(state, a.prev, b.next);
-            link(state, prev, a);
-            link(state, b, start);
-            current = start;
-            prev = b;
-            i -= 1;
-            matched = [];
-            stashed = [];
-          } else {
-            seen.delete(item);
-            move(item, current, anchor);
-            link(state, item.prev, item.next);
-            link(state, item, prev === null ? state.first : prev.next);
-            link(state, prev, item);
-            prev = item;
-          }
-          continue;
-        }
-        matched = [];
-        stashed = [];
-        while (current !== null && current.k !== key) {
-          seen.add(current);
-          stashed.push(current);
-          current = current.next;
-        }
-        if (current === null) {
-          continue;
-        }
-        item = current;
-      }
-      matched.push(item);
-      prev = item;
-      current = item.next;
-    }
-    const to_destroy = Array.from(seen);
-    while (current !== null) {
-      to_destroy.push(current);
-      current = current.next;
-    }
-    var destroy_length = to_destroy.length;
-    if (destroy_length > 0) {
-      var controlled_anchor = (flags & EACH_IS_CONTROLLED) !== 0 && length === 0 ? anchor : null;
-      if (is_animated) {
-        for (i = 0; i < destroy_length; i += 1) {
-          (_c = to_destroy[i].a) == null ? void 0 : _c.measure();
-        }
-        for (i = 0; i < destroy_length; i += 1) {
-          (_d = to_destroy[i].a) == null ? void 0 : _d.fix();
-        }
-      }
-      pause_effects(state, to_destroy, controlled_anchor, items);
-    }
-    if (is_animated) {
-      queue_micro_task(() => {
-        var _a2;
-        for (item of to_animate) {
-          (_a2 = item.a) == null ? void 0 : _a2.apply();
-        }
-      });
-    }
-    current_effect.first = state.first && state.first.e;
-    current_effect.last = prev && prev.e;
-  }
-  function update_item(item, value, index2, type) {
-    if ((type & EACH_ITEM_REACTIVE) !== 0) {
-      set(item.v, value);
-    }
-    if ((type & EACH_INDEX_REACTIVE) !== 0) {
-      set(
-        /** @type {import('#client').Value<number>} */
-        item.i,
-        index2
-      );
-    } else {
-      item.i = index2;
-    }
-  }
-  function create_item(anchor, state, prev, next, value, key, index2, render_fn, flags) {
-    var previous_each_item = current_each_item;
-    try {
-      var reactive = (flags & EACH_ITEM_REACTIVE) !== 0;
-      var mutable = (flags & EACH_IS_STRICT_EQUALS) === 0;
-      var v = reactive ? mutable ? /* @__PURE__ */ mutable_source(value) : /* @__PURE__ */ source(value) : value;
-      var i = (flags & EACH_INDEX_REACTIVE) === 0 ? index2 : /* @__PURE__ */ source(index2);
-      var item = {
-        i,
-        v,
-        k: key,
-        a: null,
-        // @ts-expect-error
-        e: null,
-        prev,
-        next
-      };
-      current_each_item = item;
-      item.e = branch(() => render_fn(anchor, v, i), hydrating);
-      item.e.prev = prev && prev.e;
-      item.e.next = next && next.e;
-      if (prev === null) {
-        state.first = item;
-      } else {
-        prev.next = item;
-        prev.e.next = item.e;
-      }
-      if (next !== null) {
-        next.prev = item;
-        next.e.prev = item.e;
-      }
-      return item;
-    } finally {
-      current_each_item = previous_each_item;
-    }
-  }
-  function move(item, next, anchor) {
-    var end = item.next ? (
-      /** @type {import('#client').EffectNodes} */
-      item.next.e.nodes.start
-    ) : anchor;
-    var dest = next ? (
-      /** @type {import('#client').EffectNodes} */
-      next.e.nodes.start
-    ) : anchor;
-    var node = (
-      /** @type {import('#client').EffectNodes} */
-      item.e.nodes.start
-    );
-    while (node !== end) {
-      var next_node = (
-        /** @type {import('#client').TemplateNode} */
-        node.nextSibling
-      );
-      dest.before(node);
-      node = next_node;
-    }
-  }
-  function link(state, prev, next) {
-    if (prev === null) {
-      state.first = next;
-    } else {
-      prev.next = next;
-      prev.e.next = next && next.e;
-    }
-    if (next !== null) {
-      next.prev = prev;
-      next.e.prev = prev && prev.e;
-    }
-  }
   function assign_nodes(start, end) {
-    current_effect.nodes ?? (current_effect.nodes = { start, end });
+    var effect2 = (
+      /** @type {Effect} */
+      active_effect
+    );
+    if (effect2.nodes_start === null) {
+      effect2.nodes_start = start;
+      effect2.nodes_end = end;
+    }
   }
   // @__NO_SIDE_EFFECTS__
   function template(content, flags) {
@@ -1744,22 +1637,22 @@ var dubplus = function() {
     var node;
     var has_start = !content.startsWith("<!>");
     return () => {
-      if (!node) {
+      if (node === void 0) {
         node = create_fragment_from_html(has_start ? content : "<!>" + content);
         if (!is_fragment) node = /** @type {Node} */
-        node.firstChild;
+        /* @__PURE__ */ get_first_child(node);
       }
       var clone = (
-        /** @type {import('#client').TemplateNode} */
-        use_import_node ? document.importNode(node, true) : node.cloneNode(true)
+        /** @type {TemplateNode} */
+        use_import_node || is_firefox ? document.importNode(node, true) : node.cloneNode(true)
       );
       if (is_fragment) {
         var start = (
-          /** @type {import('#client').TemplateNode} */
-          clone.firstChild
+          /** @type {TemplateNode} */
+          /* @__PURE__ */ get_first_child(clone)
         );
         var end = (
-          /** @type {import('#client').TemplateNode} */
+          /** @type {TemplateNode} */
           clone.lastChild
         );
         assign_nodes(start, end);
@@ -1782,15 +1675,15 @@ var dubplus = function() {
         );
         var root2 = (
           /** @type {Element} */
-          fragment.firstChild
+          /* @__PURE__ */ get_first_child(fragment)
         );
         {
           node = /** @type {Element} */
-          root2.firstChild;
+          /* @__PURE__ */ get_first_child(root2);
         }
       }
       var clone = (
-        /** @type {import('#client').TemplateNode} */
+        /** @type {TemplateNode} */
         node.cloneNode(true)
       );
       {
@@ -1799,10 +1692,9 @@ var dubplus = function() {
       return clone;
     };
   }
-  // @__NO_SIDE_EFFECTS__
-  function text(anchor) {
+  function text(value = "") {
     {
-      var t2 = empty();
+      var t2 = create_text(value + "");
       assign_nodes(t2, t2);
       return t2;
     }
@@ -1810,19 +1702,461 @@ var dubplus = function() {
   function comment() {
     var frag = document.createDocumentFragment();
     var start = document.createComment("");
-    var anchor = empty();
+    var anchor = create_text();
     frag.append(start, anchor);
     assign_nodes(start, anchor);
     return frag;
   }
   function append(anchor, dom) {
+    if (anchor === null) {
+      return;
+    }
     anchor.before(
       /** @type {Node} */
       dom
     );
   }
-  function snippet(anchor, get_snippet, ...args) {
-    var snippet2;
+  function set_text(text2, value) {
+    var str = value == null ? "" : typeof value === "object" ? value + "" : value;
+    if (str !== (text2.__t ?? (text2.__t = text2.nodeValue))) {
+      text2.__t = str;
+      text2.nodeValue = str + "";
+    }
+  }
+  function mount(component, options) {
+    return _mount(component, options);
+  }
+  const document_listeners = /* @__PURE__ */ new Map();
+  function _mount(Component, { target, anchor, props = {}, events, context, intro = true }) {
+    init_operations();
+    var registered_events = /* @__PURE__ */ new Set();
+    var event_handle = (events2) => {
+      for (var i = 0; i < events2.length; i++) {
+        var event_name = events2[i];
+        if (registered_events.has(event_name)) continue;
+        registered_events.add(event_name);
+        var passive = is_passive_event(event_name);
+        target.addEventListener(event_name, handle_event_propagation, { passive });
+        var n = document_listeners.get(event_name);
+        if (n === void 0) {
+          document.addEventListener(event_name, handle_event_propagation, { passive });
+          document_listeners.set(event_name, 1);
+        } else {
+          document_listeners.set(event_name, n + 1);
+        }
+      }
+    };
+    event_handle(array_from(all_registered_events));
+    root_event_handles.add(event_handle);
+    var component = void 0;
+    var unmount2 = component_root(() => {
+      var anchor_node = anchor ?? target.appendChild(create_text());
+      branch(() => {
+        if (context) {
+          push({});
+          var ctx = (
+            /** @type {ComponentContext} */
+            component_context
+          );
+          ctx.c = context;
+        }
+        if (events) {
+          props.$$events = events;
+        }
+        component = Component(anchor_node, props) || {};
+        if (context) {
+          pop();
+        }
+      });
+      return () => {
+        var _a;
+        for (var event_name of registered_events) {
+          target.removeEventListener(event_name, handle_event_propagation);
+          var n = (
+            /** @type {number} */
+            document_listeners.get(event_name)
+          );
+          if (--n === 0) {
+            document.removeEventListener(event_name, handle_event_propagation);
+            document_listeners.delete(event_name);
+          } else {
+            document_listeners.set(event_name, n);
+          }
+        }
+        root_event_handles.delete(event_handle);
+        if (anchor_node !== anchor) {
+          (_a = anchor_node.parentNode) == null ? void 0 : _a.removeChild(anchor_node);
+        }
+      };
+    });
+    mounted_components.set(component, unmount2);
+    return component;
+  }
+  let mounted_components = /* @__PURE__ */ new WeakMap();
+  function unmount(component, options) {
+    const fn = mounted_components.get(component);
+    if (fn) {
+      mounted_components.delete(component);
+      return fn(options);
+    }
+    return Promise.resolve();
+  }
+  function if_block(node, fn, elseif = false) {
+    var anchor = node;
+    var consequent_effect = null;
+    var alternate_effect = null;
+    var condition = UNINITIALIZED;
+    var flags = elseif ? EFFECT_TRANSPARENT : 0;
+    var has_branch = false;
+    const set_branch = (fn2, flag = true) => {
+      has_branch = true;
+      update_branch(flag, fn2);
+    };
+    const update_branch = (new_condition, fn2) => {
+      if (condition === (condition = new_condition)) return;
+      if (condition) {
+        if (consequent_effect) {
+          resume_effect(consequent_effect);
+        } else if (fn2) {
+          consequent_effect = branch(() => fn2(anchor));
+        }
+        if (alternate_effect) {
+          pause_effect(alternate_effect, () => {
+            alternate_effect = null;
+          });
+        }
+      } else {
+        if (alternate_effect) {
+          resume_effect(alternate_effect);
+        } else if (fn2) {
+          alternate_effect = branch(() => fn2(anchor));
+        }
+        if (consequent_effect) {
+          pause_effect(consequent_effect, () => {
+            consequent_effect = null;
+          });
+        }
+      }
+    };
+    block(() => {
+      has_branch = false;
+      fn(set_branch);
+      if (!has_branch) {
+        update_branch(null, null);
+      }
+    }, flags);
+  }
+  function index(_, i) {
+    return i;
+  }
+  function pause_effects(state2, items, controlled_anchor, items_map) {
+    var transitions = [];
+    var length = items.length;
+    for (var i = 0; i < length; i++) {
+      pause_children(items[i].e, transitions, true);
+    }
+    var is_controlled = length > 0 && transitions.length === 0 && controlled_anchor !== null;
+    if (is_controlled) {
+      var parent_node = (
+        /** @type {Element} */
+        /** @type {Element} */
+        controlled_anchor.parentNode
+      );
+      clear_text_content(parent_node);
+      parent_node.append(
+        /** @type {Element} */
+        controlled_anchor
+      );
+      items_map.clear();
+      link(state2, items[0].prev, items[length - 1].next);
+    }
+    run_out_transitions(transitions, () => {
+      for (var i2 = 0; i2 < length; i2++) {
+        var item = items[i2];
+        if (!is_controlled) {
+          items_map.delete(item.k);
+          link(state2, item.prev, item.next);
+        }
+        destroy_effect(item.e, !is_controlled);
+      }
+    });
+  }
+  function each(node, flags, get_collection, get_key, render_fn, fallback_fn = null) {
+    var anchor = node;
+    var state2 = { items: /* @__PURE__ */ new Map(), first: null };
+    var is_controlled = (flags & EACH_IS_CONTROLLED) !== 0;
+    if (is_controlled) {
+      var parent_node = (
+        /** @type {Element} */
+        node
+      );
+      anchor = parent_node.appendChild(create_text());
+    }
+    var fallback = null;
+    var was_empty = false;
+    var each_array = /* @__PURE__ */ derived_safe_equal(() => {
+      var collection = get_collection();
+      return is_array(collection) ? collection : collection == null ? [] : array_from(collection);
+    });
+    block(() => {
+      var array = get(each_array);
+      var length = array.length;
+      if (was_empty && length === 0) {
+        return;
+      }
+      was_empty = length === 0;
+      {
+        reconcile(array, state2, anchor, render_fn, flags, get_key, get_collection);
+      }
+      if (fallback_fn !== null) {
+        if (length === 0) {
+          if (fallback) {
+            resume_effect(fallback);
+          } else {
+            fallback = branch(() => fallback_fn(anchor));
+          }
+        } else if (fallback !== null) {
+          pause_effect(fallback, () => {
+            fallback = null;
+          });
+        }
+      }
+      get(each_array);
+    });
+  }
+  function reconcile(array, state2, anchor, render_fn, flags, get_key, get_collection) {
+    var _a, _b, _c, _d;
+    var is_animated = (flags & EACH_IS_ANIMATED) !== 0;
+    var should_update = (flags & (EACH_ITEM_REACTIVE | EACH_INDEX_REACTIVE)) !== 0;
+    var length = array.length;
+    var items = state2.items;
+    var first = state2.first;
+    var current = first;
+    var seen;
+    var prev = null;
+    var to_animate;
+    var matched = [];
+    var stashed = [];
+    var value;
+    var key;
+    var item;
+    var i;
+    if (is_animated) {
+      for (i = 0; i < length; i += 1) {
+        value = array[i];
+        key = get_key(value, i);
+        item = items.get(key);
+        if (item !== void 0) {
+          (_a = item.a) == null ? void 0 : _a.measure();
+          (to_animate ?? (to_animate = /* @__PURE__ */ new Set())).add(item);
+        }
+      }
+    }
+    for (i = 0; i < length; i += 1) {
+      value = array[i];
+      key = get_key(value, i);
+      item = items.get(key);
+      if (item === void 0) {
+        var child_anchor = current ? (
+          /** @type {TemplateNode} */
+          current.e.nodes_start
+        ) : anchor;
+        prev = create_item(
+          child_anchor,
+          state2,
+          prev,
+          prev === null ? state2.first : prev.next,
+          value,
+          key,
+          i,
+          render_fn,
+          flags,
+          get_collection
+        );
+        items.set(key, prev);
+        matched = [];
+        stashed = [];
+        current = prev.next;
+        continue;
+      }
+      if (should_update) {
+        update_item(item, value, i, flags);
+      }
+      if ((item.e.f & INERT) !== 0) {
+        resume_effect(item.e);
+        if (is_animated) {
+          (_b = item.a) == null ? void 0 : _b.unfix();
+          (to_animate ?? (to_animate = /* @__PURE__ */ new Set())).delete(item);
+        }
+      }
+      if (item !== current) {
+        if (seen !== void 0 && seen.has(item)) {
+          if (matched.length < stashed.length) {
+            var start = stashed[0];
+            var j;
+            prev = start.prev;
+            var a = matched[0];
+            var b = matched[matched.length - 1];
+            for (j = 0; j < matched.length; j += 1) {
+              move(matched[j], start, anchor);
+            }
+            for (j = 0; j < stashed.length; j += 1) {
+              seen.delete(stashed[j]);
+            }
+            link(state2, a.prev, b.next);
+            link(state2, prev, a);
+            link(state2, b, start);
+            current = start;
+            prev = b;
+            i -= 1;
+            matched = [];
+            stashed = [];
+          } else {
+            seen.delete(item);
+            move(item, current, anchor);
+            link(state2, item.prev, item.next);
+            link(state2, item, prev === null ? state2.first : prev.next);
+            link(state2, prev, item);
+            prev = item;
+          }
+          continue;
+        }
+        matched = [];
+        stashed = [];
+        while (current !== null && current.k !== key) {
+          if ((current.e.f & INERT) === 0) {
+            (seen ?? (seen = /* @__PURE__ */ new Set())).add(current);
+          }
+          stashed.push(current);
+          current = current.next;
+        }
+        if (current === null) {
+          continue;
+        }
+        item = current;
+      }
+      matched.push(item);
+      prev = item;
+      current = item.next;
+    }
+    if (current !== null || seen !== void 0) {
+      var to_destroy = seen === void 0 ? [] : array_from(seen);
+      while (current !== null) {
+        if ((current.e.f & INERT) === 0) {
+          to_destroy.push(current);
+        }
+        current = current.next;
+      }
+      var destroy_length = to_destroy.length;
+      if (destroy_length > 0) {
+        var controlled_anchor = (flags & EACH_IS_CONTROLLED) !== 0 && length === 0 ? anchor : null;
+        if (is_animated) {
+          for (i = 0; i < destroy_length; i += 1) {
+            (_c = to_destroy[i].a) == null ? void 0 : _c.measure();
+          }
+          for (i = 0; i < destroy_length; i += 1) {
+            (_d = to_destroy[i].a) == null ? void 0 : _d.fix();
+          }
+        }
+        pause_effects(state2, to_destroy, controlled_anchor, items);
+      }
+    }
+    if (is_animated) {
+      queue_micro_task(() => {
+        var _a2;
+        if (to_animate === void 0) return;
+        for (item of to_animate) {
+          (_a2 = item.a) == null ? void 0 : _a2.apply();
+        }
+      });
+    }
+    active_effect.first = state2.first && state2.first.e;
+    active_effect.last = prev && prev.e;
+  }
+  function update_item(item, value, index2, type) {
+    if ((type & EACH_ITEM_REACTIVE) !== 0) {
+      internal_set(item.v, value);
+    }
+    if ((type & EACH_INDEX_REACTIVE) !== 0) {
+      internal_set(
+        /** @type {Value<number>} */
+        item.i,
+        index2
+      );
+    } else {
+      item.i = index2;
+    }
+  }
+  function create_item(anchor, state2, prev, next, value, key, index2, render_fn, flags, get_collection) {
+    var reactive = (flags & EACH_ITEM_REACTIVE) !== 0;
+    var mutable = (flags & EACH_ITEM_IMMUTABLE) === 0;
+    var v = reactive ? mutable ? /* @__PURE__ */ mutable_source(value) : source(value) : value;
+    var i = (flags & EACH_INDEX_REACTIVE) === 0 ? index2 : source(index2);
+    var item = {
+      i,
+      v,
+      k: key,
+      a: null,
+      // @ts-expect-error
+      e: null,
+      prev,
+      next
+    };
+    try {
+      item.e = branch(() => render_fn(anchor, v, i, get_collection), hydrating);
+      item.e.prev = prev && prev.e;
+      item.e.next = next && next.e;
+      if (prev === null) {
+        state2.first = item;
+      } else {
+        prev.next = item;
+        prev.e.next = item.e;
+      }
+      if (next !== null) {
+        next.prev = item;
+        next.e.prev = item.e;
+      }
+      return item;
+    } finally {
+    }
+  }
+  function move(item, next, anchor) {
+    var end = item.next ? (
+      /** @type {TemplateNode} */
+      item.next.e.nodes_start
+    ) : anchor;
+    var dest = next ? (
+      /** @type {TemplateNode} */
+      next.e.nodes_start
+    ) : anchor;
+    var node = (
+      /** @type {TemplateNode} */
+      item.e.nodes_start
+    );
+    while (node !== end) {
+      var next_node = (
+        /** @type {TemplateNode} */
+        /* @__PURE__ */ get_next_sibling(node)
+      );
+      dest.before(node);
+      node = next_node;
+    }
+  }
+  function link(state2, prev, next) {
+    if (prev === null) {
+      state2.first = next;
+    } else {
+      prev.next = next;
+      prev.e.next = next && next.e;
+    }
+    if (next !== null) {
+      next.prev = prev;
+      next.e.prev = prev && prev.e;
+    }
+  }
+  function snippet(node, get_snippet, ...args) {
+    var anchor = node;
+    var snippet2 = noop;
     var snippet_effect;
     block(() => {
       if (snippet2 === (snippet2 = get_snippet())) return;
@@ -1830,12 +2164,10 @@ var dubplus = function() {
         destroy_effect(snippet_effect);
         snippet_effect = null;
       }
-      if (snippet2) {
-        snippet_effect = branch(() => (
-          /** @type {SnippetFn} */
-          snippet2(anchor, ...args)
-        ));
-      }
+      snippet_effect = branch(() => (
+        /** @type {SnippetFn} */
+        snippet2(anchor, ...args)
+      ));
     }, EFFECT_TRANSPARENT);
   }
   function action(dom, action2, get_value) {
@@ -1843,10 +2175,15 @@ var dubplus = function() {
       var payload = untrack(() => action2(dom, get_value == null ? void 0 : get_value()) || {});
       if (get_value && (payload == null ? void 0 : payload.update)) {
         var inited = false;
+        var prev = (
+          /** @type {any} */
+          {}
+        );
         render_effect(() => {
           var value = get_value();
           deep_read_state(value);
-          if (inited) {
+          if (inited && safe_not_equal(prev, value)) {
+            prev = value;
             payload.update(value);
           }
         });
@@ -1860,49 +2197,47 @@ var dubplus = function() {
       }
     });
   }
-  let listening_to_form_reset = false;
-  function add_form_reset_listener() {
-    if (!listening_to_form_reset) {
-      listening_to_form_reset = true;
-      document.addEventListener(
-        "reset",
-        (evt) => {
-          Promise.resolve().then(() => {
-            var _a;
-            if (!evt.defaultPrevented) {
-              for (
-                const e of
-                /**@type {HTMLFormElement} */
-                evt.target.elements
-              ) {
-                (_a = e.__on_r) == null ? void 0 : _a.call(e);
-              }
-            }
-          });
-        },
-        // In the capture phase to guarantee we get noticed of it (no possiblity of stopPropagation)
-        { capture: true }
-      );
-    }
-  }
-  function set_attribute(element, attribute, value) {
-    value = value == null ? null : value + "";
+  function set_attribute(element, attribute, value, skip_warning) {
     var attributes = element.__attributes ?? (element.__attributes = {});
     if (attributes[attribute] === (attributes[attribute] = value)) return;
+    if (attribute === "style" && "__styles" in element) {
+      element.__styles = {};
+    }
     if (attribute === "loading") {
       element[LOADING_ATTR_SYMBOL] = value;
     }
-    if (value === null) {
+    if (value == null) {
       element.removeAttribute(attribute);
+    } else if (typeof value !== "string" && get_setters(element).includes(attribute)) {
+      element[attribute] = value;
     } else {
       element.setAttribute(attribute, value);
     }
   }
-  function set_class(dom, value) {
+  var setters_cache = /* @__PURE__ */ new Map();
+  function get_setters(element) {
+    var setters = setters_cache.get(element.nodeName);
+    if (setters) return setters;
+    setters_cache.set(element.nodeName, setters = []);
+    var descriptors;
+    var proto = element;
+    var element_proto = Element.prototype;
+    while (element_proto !== proto) {
+      descriptors = get_descriptors(proto);
+      for (var key in descriptors) {
+        if (descriptors[key].set) {
+          setters.push(key);
+        }
+      }
+      proto = get_prototype_of(proto);
+    }
+    return setters;
+  }
+  function set_class(dom, value, hash) {
     var prev_class_name = dom.__className;
     var next_class_name = to_class(value);
     if (prev_class_name !== next_class_name || hydrating) {
-      if (value == null) {
+      if (value == null && true) {
         dom.removeAttribute("class");
       } else {
         dom.className = next_class_name;
@@ -1910,42 +2245,54 @@ var dubplus = function() {
       dom.__className = next_class_name;
     }
   }
-  function to_class(value) {
-    return value == null ? "" : value;
+  function to_class(value, hash) {
+    return (value == null ? "" : value) + "";
   }
   function toggle_class(dom, class_name, value) {
     if (value) {
+      if (dom.classList.contains(class_name)) return;
       dom.classList.add(class_name);
     } else {
+      if (!dom.classList.contains(class_name)) return;
       dom.classList.remove(class_name);
     }
   }
-  function listen_to_event_and_reset_event(element, event2, handler, on_reset = handler) {
-    element.addEventListener(event2, handler);
-    const prev = element.__on_r;
-    if (prev) {
-      element.__on_r = () => {
-        prev();
-        on_reset();
-      };
-    } else {
-      element.__on_r = on_reset;
-    }
-    add_form_reset_listener();
-  }
-  function bind_value(input, get_value, update) {
-    listen_to_event_and_reset_event(input, "input", () => {
-      update(is_numberlike_input(input) ? to_number(input.value) : input.value);
+  function bind_value(input, get2, set2 = get2) {
+    var runes = is_runes();
+    listen_to_event_and_reset_event(input, "input", (is_reset) => {
+      var value = is_reset ? input.defaultValue : input.value;
+      value = is_numberlike_input(input) ? to_number(value) : value;
+      set2(value);
+      if (runes && value !== (value = get2())) {
+        var start = input.selectionStart;
+        var end = input.selectionEnd;
+        input.value = value ?? "";
+        if (end !== null) {
+          input.selectionStart = start;
+          input.selectionEnd = Math.min(end, input.value.length);
+        }
+      }
     });
+    if (
+      // If we are hydrating and the value has since changed,
+      // then use the updated value from the input instead.
+      // If defaultValue is set, then value == defaultValue
+      // TODO Svelte 6: remove input.value check and set to empty string?
+      untrack(get2) == null && input.value
+    ) {
+      set2(is_numberlike_input(input) ? to_number(input.value) : input.value);
+    }
     render_effect(() => {
-      var value = get_value();
+      var value = get2();
       if (is_numberlike_input(input) && value === to_number(input.value)) {
         return;
       }
       if (input.type === "date" && !value && !input.value) {
         return;
       }
-      input.value = value ?? "";
+      if (value !== input.value) {
+        input.value = value ?? "";
+      }
     });
   }
   function is_numberlike_input(input) {
@@ -1955,16 +2302,37 @@ var dubplus = function() {
   function to_number(value) {
     return value === "" ? null : +value;
   }
-  function init() {
+  function init(immutable = false) {
     const context = (
       /** @type {ComponentContextLegacy} */
-      current_component_context
+      component_context
     );
     const callbacks = context.l.u;
     if (!callbacks) return;
+    let props = () => deep_read_state(context.s);
+    if (immutable) {
+      let version = 0;
+      let prev = (
+        /** @type {Record<string, any>} */
+        {}
+      );
+      const d = /* @__PURE__ */ derived(() => {
+        let changed = false;
+        const props2 = context.s;
+        for (const key in props2) {
+          if (props2[key] !== prev[key]) {
+            prev[key] = props2[key];
+            changed = true;
+          }
+        }
+        if (changed) version++;
+        return version;
+      });
+      props = () => get(d);
+    }
     if (callbacks.b.length) {
       user_pre_effect(() => {
-        observe_all(context);
+        observe_all(context, props);
         run_all(callbacks.b);
       });
     }
@@ -1980,23 +2348,35 @@ var dubplus = function() {
     });
     if (callbacks.a.length) {
       user_effect(() => {
-        observe_all(context);
+        observe_all(context, props);
         run_all(callbacks.a);
       });
     }
   }
-  function observe_all(context) {
+  function observe_all(context, props) {
     if (context.l.s) {
       for (const signal of context.l.s) get(signal);
     }
-    deep_read_state(context.s);
+    props();
+  }
+  function reactive_import(fn) {
+    var s = source(0);
+    return function() {
+      if (arguments.length === 1) {
+        set(s, get(s) + 1);
+        return arguments[0];
+      } else {
+        get(s);
+        return fn();
+      }
+    };
   }
   function onMount(fn) {
-    if (current_component_context === null) {
+    if (component_context === null) {
       lifecycle_outside_component();
     }
-    if (current_component_context.l !== null) {
-      init_update_callbacks(current_component_context).m.push(fn);
+    if (legacy_mode_flag && component_context.l !== null) {
+      init_update_callbacks(component_context).m.push(fn);
     } else {
       user_effect(() => {
         const cleanup = untrack(fn);
@@ -2008,14 +2388,14 @@ var dubplus = function() {
     }
   }
   function onDestroy(fn) {
-    if (current_component_context === null) {
+    if (component_context === null) {
       lifecycle_outside_component();
     }
     onMount(() => () => untrack(fn));
   }
   function init_update_callbacks(context) {
     var l = (
-      /** @type {import('#client').ComponentContextLegacy} */
+      /** @type {ComponentContextLegacy} */
       context.l
     );
     return l.u ?? (l.u = { a: [], b: [], m: [] });
@@ -2078,6 +2458,7 @@ var dubplus = function() {
       check();
     });
   }
+  enable_legacy_mode_flag();
   var root$k = /* @__PURE__ */ ns_template(`<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" viewBox="0 0 2078.496 2083.914" enable-background="new 0 0 2078.496 2083.914" xml:space="preserve"><rect x="769.659" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#660078" width="539.178" height="539.178"></rect><g><rect x="1308.837" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.488" height="539.178"></rect><polygon fill="#EB008B" points="2045.015,1042.035 1845.324,1311.625 1845.324,772.446 	"></polygon></g><g><rect x="232.172" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.487" height="539.178"></rect><polygon fill="#EB008B" points="33.481,1042.034 233.172,772.445 233.172,1311.623 	"></polygon></g><g><rect x="769.659" y="1311.624" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.248,2047.802 769.659,1848.111 1308.837,1848.111 	"></polygon></g><g><rect x="769.659" y="234.958" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.249,35.268 1308.837,235.958 769.659,235.958 	"></polygon></g></svg>`);
   function Logo($$anchor) {
     var svg = root$k();
@@ -2085,9 +2466,9 @@ var dubplus = function() {
   }
   const translations = {
     en: {
-      "Modal.confirm": "okay",
-      "Modal.cancel": "cancel",
-      "Modal.close": "close",
+      "Modal.confirm": "OK",
+      "Modal.cancel": "Cancel",
+      "Modal.close": "Close",
       "Error.modal.title": "Dub+ Error",
       "Error.modal.loggedout": "You're not logged in. Please login to use Dub+.",
       "Error.unknown": "Something went wrong starting Dub+. Please refresh and try again.",
@@ -2176,6 +2557,8 @@ var dubplus = function() {
       "hide-bg.description": "Toggle hiding background image",
       "show-timestamps.label": "Show Timestamps",
       "show-timestamps.description": "Toggle always showing chat message timestamps",
+      "flip-interface.label": "Flip Interface",
+      "flip-interface.description": "Swap the video and chat positions",
       "spacebar-mute.label": "Spacebar Mute",
       "spacebar-mute.description": "Turn on/off the ability to mute current song with the spacebar",
       "warn-redirect.label": "Warn on Navigation",
@@ -2224,22 +2607,19 @@ var dubplus = function() {
     if (loc.startsWith("en")) {
       return "en";
     }
-    if (loc.startsWith("es")) {
-      return "es";
-    }
     return loc;
   }
-  var root$j = /* @__PURE__ */ template(`<div class="dubplus-waiting svelte-1m63uxu"><div style="width: 26px; margin-right:5px"><!></div> <span style="flex: 1;"> </span></div>`);
+  var root$j = /* @__PURE__ */ template(`<div class="dubplus-waiting svelte-16mmbc"><div style="width: 26px; margin-right:5px"><!></div> <span style="flex: 1;"> </span></div>`);
   function Loading($$anchor, $$props) {
     push($$props, false);
     init();
     var div = root$j();
-    var div_1 = /* @__PURE__ */ child(div);
-    var node = /* @__PURE__ */ child(div_1);
+    var div_1 = child(div);
+    var node = child(div_1);
     Logo(node);
-    var span = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(div_1, true));
-    var text2 = /* @__PURE__ */ child(span);
-    template_effect(() => set_text(text2, t("Loading.text")));
+    var span = sibling(div_1, 2);
+    var text2 = child(span);
+    template_effect(($0) => set_text(text2, $0), [() => t("Loading.text")], derived_safe_equal);
     append($$anchor, div);
     pop();
   }
@@ -2274,15 +2654,15 @@ var dubplus = function() {
     });
     modalState.validation = nextState.validation || (() => true);
   }
-  var root_1$3 = /* @__PURE__ */ template(`<textarea class="svelte-1r2cx79">
+  var root_1$3 = /* @__PURE__ */ template(`<textarea class="svelte-1mnr24t">
       </textarea>`);
-  var root_2$3 = /* @__PURE__ */ template(`<p class="dp-modal--error svelte-1r2cx79"> </p>`);
-  var root_3$1 = /* @__PURE__ */ template(`<button class="dp-modal--cancel cancel svelte-1r2cx79"> </button> <button class="dp-modal--confirm confirm svelte-1r2cx79"> </button>`, 1);
-  var root_4 = /* @__PURE__ */ template(`<button class="dp-modal--cancel cancel svelte-1r2cx79"> </button>`);
-  var root$i = /* @__PURE__ */ template(`<dialog id="dubplus-dialog" class="dp-modal svelte-1r2cx79"><h1 class="svelte-1r2cx79"> </h1> <div class="dp-modal--content content svelte-1r2cx79"><p class="svelte-1r2cx79"> </p> <!> <!></div> <div class="dp-modal--buttons buttons svelte-1r2cx79"><!></div></dialog>`);
+  var root_2$3 = /* @__PURE__ */ template(`<p class="dp-modal--error svelte-1mnr24t"> </p>`);
+  var root_3$1 = /* @__PURE__ */ template(`<button class="dp-modal--cancel cancel svelte-1mnr24t"> </button> <button class="dp-modal--confirm confirm svelte-1mnr24t"> </button>`, 1);
+  var root_4 = /* @__PURE__ */ template(`<button class="dp-modal--cancel cancel svelte-1mnr24t"> </button>`);
+  var root$i = /* @__PURE__ */ template(`<dialog id="dubplus-dialog" class="dp-modal svelte-1mnr24t"><h1 class="svelte-1mnr24t"> </h1> <div class="dp-modal--content content svelte-1mnr24t"><p class="svelte-1mnr24t"> </p> <!> <!></div> <div class="dp-modal--buttons buttons svelte-1mnr24t"><!></div></dialog>`);
   function Modal($$anchor, $$props) {
     push($$props, true);
-    let errorMessage = /* @__PURE__ */ source("");
+    let errorMessage = state("");
     let dialog;
     onMount(() => {
       dialog = /**@type {HTMLDialogElement}*/
@@ -2297,44 +2677,51 @@ var dubplus = function() {
       }
     });
     var dialog_1 = root$i();
-    var h1 = /* @__PURE__ */ child(dialog_1);
-    var text2 = /* @__PURE__ */ child(h1);
-    var div = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(h1, true));
-    var p = /* @__PURE__ */ child(div);
-    var text_1 = /* @__PURE__ */ child(p);
-    var node = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(p, true));
-    if_block(node, () => modalState.placeholder || modalState.value, ($$anchor2) => {
-      var textarea = root_1$3();
-      template_effect(() => {
-        set_attribute(textarea, "placeholder", modalState.placeholder);
-        set_attribute(textarea, "maxlength", modalState.maxlength < 999 ? modalState.maxlength : 999);
+    var h1 = child(dialog_1);
+    var text2 = child(h1);
+    var div = sibling(h1, 2);
+    var p = child(div);
+    var text_1 = child(p);
+    var node = sibling(p, 2);
+    {
+      var consequent = ($$anchor2) => {
+        var textarea = root_1$3();
+        template_effect(() => {
+          set_attribute(textarea, "placeholder", modalState.placeholder);
+          set_attribute(textarea, "maxlength", modalState.maxlength < 999 ? modalState.maxlength : 999);
+        });
+        bind_value(textarea, () => modalState.value, ($$value) => modalState.value = $$value);
+        append($$anchor2, textarea);
+      };
+      if_block(node, ($$render) => {
+        if (modalState.placeholder || modalState.value) $$render(consequent);
       });
-      bind_value(textarea, () => modalState.value, ($$value) => modalState.value = $$value);
-      append($$anchor2, textarea);
-    });
-    var node_1 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node, true));
-    if_block(node_1, () => get(errorMessage), ($$anchor2) => {
-      var p_1 = root_2$3();
-      var text_2 = /* @__PURE__ */ child(p_1);
-      template_effect(() => set_text(text_2, get(errorMessage)));
-      append($$anchor2, p_1);
-    });
-    var div_1 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(div, true));
-    var node_2 = /* @__PURE__ */ child(div_1);
-    if_block(
-      node_2,
-      () => typeof modalState.onConfirm === "function",
-      ($$anchor2) => {
+    }
+    var node_1 = sibling(node, 2);
+    {
+      var consequent_1 = ($$anchor2) => {
+        var p_1 = root_2$3();
+        var text_2 = child(p_1);
+        template_effect(() => set_text(text_2, get(errorMessage)));
+        append($$anchor2, p_1);
+      };
+      if_block(node_1, ($$render) => {
+        if (get(errorMessage)) $$render(consequent_1);
+      });
+    }
+    var div_1 = sibling(div, 2);
+    var node_2 = child(div_1);
+    {
+      var consequent_2 = ($$anchor2) => {
         var fragment = root_3$1();
-        var button = /* @__PURE__ */ first_child(fragment);
+        var button = first_child(fragment);
         button.__click = () => {
           dialog.close();
           modalState.open = false;
           set(errorMessage, "");
         };
-        var text_3 = /* @__PURE__ */ child(button);
-        template_effect(() => set_text(text_3, t("Modal.cancel")));
-        var button_1 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(button, true));
+        var text_3 = child(button);
+        var button_1 = sibling(button, 2);
         button_1.__click = () => {
           const isValidOrErrorMessage = modalState.validation(modalState.value);
           if (isValidOrErrorMessage === true) {
@@ -2346,22 +2733,35 @@ var dubplus = function() {
             set(errorMessage, proxy(isValidOrErrorMessage));
           }
         };
-        var text_4 = /* @__PURE__ */ child(button_1);
-        template_effect(() => set_text(text_4, t("Modal.confirm")));
+        var text_4 = child(button_1);
+        template_effect(
+          ($0, $1) => {
+            set_text(text_3, $0);
+            set_text(text_4, $1);
+          },
+          [
+            () => t("Modal.cancel"),
+            () => t("Modal.confirm")
+          ]
+        );
         append($$anchor2, fragment);
-      },
-      ($$anchor2) => {
+      };
+      var alternate = ($$anchor2) => {
         var button_2 = root_4();
         button_2.__click = () => {
           dialog.close();
           modalState.open = false;
           set(errorMessage, "");
         };
-        var text_5 = /* @__PURE__ */ child(button_2);
-        template_effect(() => set_text(text_5, t("Modal.close")));
+        var text_5 = child(button_2);
+        template_effect(($0) => set_text(text_5, $0), [() => t("Modal.close")]);
         append($$anchor2, button_2);
-      }
-    );
+      };
+      if_block(node_2, ($$render) => {
+        if (typeof modalState.onConfirm === "function") $$render(consequent_2);
+        else $$render(alternate, false);
+      });
+    }
     template_effect(() => {
       set_text(text2, modalState.title);
       set_text(text_1, modalState.content);
@@ -2389,50 +2789,19 @@ var dubplus = function() {
   var on_click$1 = () => {
     document.querySelector(".dubplus-menu").classList.toggle("dubplus-menu-open");
   };
-  var root$h = /* @__PURE__ */ template(`<button type="button" class="dubplus-icon svelte-edw2as"><!></button>`);
+  var root$h = /* @__PURE__ */ template(`<button type="button" aria-label="Dub+ menu" class="dubplus-icon svelte-edw2as"><!></button>`);
   function MenuIcon($$anchor, $$props) {
     push($$props, false);
     init();
     var button = root$h();
     button.__click = [on_click$1];
-    var node = /* @__PURE__ */ child(button);
+    var node = child(button);
     Logo(node);
-    action(button, ($$node, $$action_arg) => teleport($$node, $$action_arg), () => ({ to: ".header-right-navigation" }));
+    action(button, ($$node, $$action_arg) => teleport == null ? void 0 : teleport($$node, $$action_arg), () => ({ to: ".header-right-navigation" }));
     append($$anchor, button);
     pop();
   }
   delegate(["click"]);
-  const makeLink = function(className, fileName) {
-    const link2 = document.createElement("link");
-    link2.rel = "stylesheet";
-    link2.type = "text/css";
-    link2.className = className;
-    link2.href = fileName;
-    return link2;
-  };
-  function loadCSS(cssFile, className) {
-    return new Promise((resolve, reject) => {
-      if (document.querySelector(`link.${className}`)) {
-        resolve();
-        return;
-      }
-      const link2 = makeLink(
-        className,
-        // @ts-ignore __TIME_STAMP__ is replace by vite
-        `${"https://cdn.jsdelivr.net/gh/DubPlus/DubPlus"}${cssFile}?${"1720207854589"}`
-      );
-      link2.onload = (e) => resolve();
-      link2.onerror = reject;
-      document.head.appendChild(link2);
-    });
-  }
-  function loadExternalCss(cssFile, className) {
-    if (document.querySelector(`link.${className}`)) {
-      return;
-    }
-    const link2 = makeLink(className, cssFile);
-    document.head.appendChild(link2);
-  }
   const optionsKeyMap = {
     "dubplus-autovote": "autovote",
     "dubplus-afk": "afk",
@@ -2523,6 +2892,7 @@ var dubplus = function() {
       customize: "open",
       contact: "open"
     },
+    // this will store the user inputs from the modals for features that support it
     custom: {}
   };
   function loadSettings() {
@@ -2551,29 +2921,27 @@ var dubplus = function() {
     return {};
   }
   const intialSettings = Object.assign({}, defaults, loadSettings());
-  console.log("intialSettings", structuredClone(intialSettings));
-  let settings$1 = proxy(intialSettings);
-  console.log("settings", settings$1);
+  let settings = proxy(intialSettings);
   function persist() {
     try {
-      localStorage.setItem(STORAGE_KEY_NEW, JSON.stringify(settings$1));
+      localStorage.setItem(STORAGE_KEY_NEW, JSON.stringify(settings));
     } catch (e) {
       logError("Error saving user settings:", e);
     }
   }
   function saveSetting(section, property, value) {
     if (section === "option") {
-      settings$1.options[property] = value;
+      settings.options[property] = value;
       persist();
       return;
     }
     if (section === "custom") {
-      settings$1.custom[property] = value;
+      settings.custom[property] = value;
       persist();
       return;
     }
     if (section === "menu") {
-      settings$1.menu[property] = value;
+      settings.menu[property] = value;
       persist();
       return;
     }
@@ -2582,10 +2950,10 @@ var dubplus = function() {
   var root$g = /* @__PURE__ */ template(`<button type="button" class="dubplus-menu-section-header svelte-31yg9a"><span></span> <p class="svelte-31yg9a"> </p></button>`);
   function MenuHeader($$anchor, $$props) {
     push($$props, true);
-    let arrow = /* @__PURE__ */ source("down");
-    let expanded = /* @__PURE__ */ source(true);
+    let arrow = state("down");
+    let expanded = state(true);
     user_effect(() => {
-      if (settings$1.menu[$$props.settingsId] === "closed") {
+      if (settings.menu[$$props.settingsId] === "closed") {
         set(arrow, "right");
         set(expanded, false);
       } else {
@@ -2594,14 +2962,14 @@ var dubplus = function() {
       }
     });
     function toggle() {
-      settings$1.menu[$$props.settingsId] = settings$1.menu[$$props.settingsId] === "closed" ? "open" : "closed";
-      saveSetting("menu", $$props.settingsId, settings$1.menu[$$props.settingsId]);
+      settings.menu[$$props.settingsId] = settings.menu[$$props.settingsId] === "closed" ? "open" : "closed";
+      saveSetting("menu", $$props.settingsId, settings.menu[$$props.settingsId]);
     }
     var button = root$g();
     button.__click = toggle;
-    var span = /* @__PURE__ */ child(button);
-    var p = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(span, true));
-    var text2 = /* @__PURE__ */ child(p);
+    var span = child(button);
+    var p = sibling(span, 2);
+    var text2 = child(p);
     template_effect(() => {
       set_attribute(button, "id", `dubplus-menu-section-header-${$$props.settingsId}`);
       set_attribute(button, "aria-expanded", get(expanded));
@@ -2615,23 +2983,21 @@ var dubplus = function() {
   delegate(["click"]);
   var root$f = /* @__PURE__ */ template(`<ul class="dubplus-menu-section svelte-nowxlp" role="region"><!></ul>`);
   function MenuSection($$anchor, $$props) {
-    push($$props, true);
     var ul = root$f();
-    var node = /* @__PURE__ */ child(ul);
+    var node = child(ul);
     snippet(node, () => $$props.children);
     template_effect(() => {
       set_attribute(ul, "id", `dubplus-menu-section-${$$props.settingsId}`);
       set_attribute(ul, "aria-labelledby", `dubplus-menu-section-header-${$$props.settingsId}`);
     });
     append($$anchor, ul);
-    pop();
   }
   var root$e = /* @__PURE__ */ template(`<li class="dubplus-menu-icon svelte-uwa6b6"><span></span> <a class="dubplus-menu-label svelte-uwa6b6" target="_blank"> </a></li>`);
   function MenuLink($$anchor, $$props) {
     var li = root$e();
-    var span = /* @__PURE__ */ child(li);
-    var a = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(span, true));
-    var text_1 = /* @__PURE__ */ child(a);
+    var span = child(li);
+    var a = sibling(span, 2);
+    var text_1 = child(a);
     template_effect(() => {
       set_class(span, `fa fa-${$$props.icon ?? ""} svelte-uwa6b6`);
       set_attribute(a, "href", $$props.href);
@@ -2645,55 +3011,48 @@ var dubplus = function() {
     push($$props, false);
     init();
     var fragment = root$d();
-    var node = /* @__PURE__ */ first_child(fragment);
-    var name = /* @__PURE__ */ derived_safe_equal(() => t("contact.title"));
+    var node = first_child(fragment);
+    const expression = /* @__PURE__ */ derived_safe_equal(() => t("contact.title"));
     MenuHeader(node, {
       settingsId: "contact",
       get name() {
-        return get(name);
-      },
-      $$legacy: true
+        return get(expression);
+      }
     });
-    var node_1 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node, true));
+    var node_1 = sibling(node, 2);
     MenuSection(node_1, {
       settingsId: "contact",
       children: ($$anchor2, $$slotProps) => {
         var fragment_1 = root_1$2();
-        var node_2 = /* @__PURE__ */ first_child(fragment_1);
-        var text2 = /* @__PURE__ */ derived_safe_equal(() => t("contact.bugs"));
+        var node_2 = first_child(fragment_1);
+        const expression_1 = /* @__PURE__ */ derived_safe_equal(() => t("contact.bugs"));
         MenuLink(node_2, {
           icon: "bug",
           href: "https://discord.gg/XUkG3Qy",
           get text() {
-            return get(text2);
-          },
-          $$legacy: true
+            return get(expression_1);
+          }
         });
-        var node_3 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node_2, true));
+        var node_3 = sibling(node_2, 2);
         MenuLink(node_3, {
           icon: "reddit-alien",
           href: "https://www.reddit.com/r/DubPlus/",
-          text: "Reddit",
-          $$legacy: true
+          text: "Reddit"
         });
-        var node_4 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node_3, true));
+        var node_4 = sibling(node_3, 2);
         MenuLink(node_4, {
           icon: "facebook",
           href: "https://facebook.com/DubPlusScript",
-          text: "Facebook",
-          $$legacy: true
+          text: "Facebook"
         });
-        var node_5 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node_4, true));
+        var node_5 = sibling(node_4, 2);
         MenuLink(node_5, {
           icon: "twitter",
           href: "https://twitter.com/DubPlusScript",
-          text: "Twitter",
-          $$legacy: true
+          text: "Twitter"
         });
         append($$anchor2, fragment_1);
-      },
-      $$slots: { default: true },
-      $$legacy: true
+      }
     });
     append($$anchor, fragment);
     pop();
@@ -2714,15 +3073,14 @@ var dubplus = function() {
   var root$c = /* @__PURE__ */ template(`<div role="switch" tabindex="0" class="svelte-dbnfh0"><span class="dubplus-switch svelte-dbnfh0"><span class="svelte-dbnfh0"></span></span> <span class="dubplus-switch-label svelte-dbnfh0"> </span></div>`);
   function Switch($$anchor, $$props) {
     push($$props, true);
-    let checked = /* @__PURE__ */ source(proxy(!$$props.disabled ? $$props.isOn : false));
+    let checked = state(proxy(!$$props.disabled ? $$props.isOn : false));
     var div = root$c();
     div.__click = [handleClick, $$props, checked];
     div.__keydown = [handleKeydown, $$props, checked];
-    var span = /* @__PURE__ */ child(div);
-    var span_2 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(span, true));
-    var text2 = /* @__PURE__ */ child(span_2);
+    var span = sibling(child(div), 2);
+    var text2 = child(span);
     template_effect(() => {
-      set_attribute(div, "aria-checked", get(checked));
+      set_attribute(div, "aria-checked", get(checked) ? "true" : "false");
       set_text(text2, $$props.label);
     });
     append($$anchor, div);
@@ -2738,19 +3096,18 @@ var dubplus = function() {
     push($$props, true);
     onMount(() => {
       if ($$props.init) $$props.init();
-      if (settings$1.options[$$props.id]) {
+      if (settings.options[$$props.id]) {
         const status = $$props.modOnly ? isMod(window.QueUp.session.id) : true;
         $$props.onToggle(status, true);
       }
     });
     function openEditModal() {
-      console.log("openEditModal", settings$1.options[$$props.id]);
       updateModalState({
         title: t($$props.customize.title),
         content: t($$props.customize.content),
         placeholder: t($$props.customize.placeholder),
         maxlength: $$props.customize.maxlength,
-        value: settings$1.custom[$$props.id] || "",
+        value: settings.custom[$$props.id] || "",
         validation: $$props.customize.validation,
         onConfirm: (value) => {
           saveSetting("custom", $$props.id, value);
@@ -2765,41 +3122,52 @@ var dubplus = function() {
       modalState.open = true;
     }
     var li = root$b();
-    template_effect(() => set_attribute(li, "title", t($$props.description)));
-    var node = /* @__PURE__ */ child(li);
-    var disabled = /* @__PURE__ */ derived(() => $$props.modOnly && !isMod(window.QueUp.session.id));
-    var label_1 = /* @__PURE__ */ derived(() => t($$props.label));
+    var node = child(li);
+    const expression = /* @__PURE__ */ derived(() => $$props.modOnly && !isMod(window.QueUp.session.id));
+    const expression_1 = /* @__PURE__ */ derived(() => t($$props.label));
     Switch(node, {
       get disabled() {
-        return get(disabled);
+        return get(expression);
       },
       get label() {
-        return get(label_1);
+        return get(expression_1);
       },
-      onToggle: (state) => {
-        if ($$props.customize && state === true && !settings$1.custom[$$props.id]) {
+      onToggle: (state2) => {
+        if ($$props.customize && state2 === true && !settings.custom[$$props.id]) {
           openEditModal();
           return;
         }
-        $$props.onToggle(state);
+        $$props.onToggle(state2);
       },
       get isOn() {
-        return settings$1.options[$$props.id];
+        return settings.options[$$props.id];
       }
     });
-    var node_1 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node, true));
-    if_block(node_1, () => $$props.customize, ($$anchor2) => {
-      var button = root_1$1();
-      button.__click = openEditModal;
-      var span = /* @__PURE__ */ child(button);
-      var text2 = /* @__PURE__ */ child(span);
-      template_effect(() => set_text(text2, t("MenuItem.edit")));
-      append($$anchor2, button);
-    });
-    template_effect(() => {
-      set_attribute(li, "id", $$props.id);
-      toggle_class(li, "disabled", $$props.modOnly && !isMod(window.QueUp.session.id));
-    });
+    var node_1 = sibling(node, 2);
+    {
+      var consequent = ($$anchor2) => {
+        var button = root_1$1();
+        button.__click = openEditModal;
+        var span = child(button);
+        var text2 = child(span);
+        template_effect(($0) => set_text(text2, $0), [() => t("MenuItem.edit")]);
+        append($$anchor2, button);
+      };
+      if_block(node_1, ($$render) => {
+        if ($$props.customize) $$render(consequent);
+      });
+    }
+    template_effect(
+      ($0, $1) => {
+        set_attribute(li, "id", $$props.id);
+        set_attribute(li, "title", $0);
+        toggle_class(li, "disabled", $1);
+      },
+      [
+        () => t($$props.description),
+        () => $$props.modOnly && !isMod(window.QueUp.session.id)
+      ]
+    );
     append($$anchor, li);
     pop();
   }
@@ -2836,8 +3204,8 @@ var dubplus = function() {
     const user = window.QueUp.session.get("username");
     if (content.includes(`@${user}`) && window.QueUp.session.id !== e.user.userInfo.userid) {
       const chatInput = document.querySelector("#chat-txt-message");
-      if (settings$1.custom.afk) {
-        chatInput.value = `[AFK] ${settings$1.custom.afk}`;
+      if (settings.custom.afk) {
+        chatInput.value = `[AFK] ${settings.custom.afk}`;
       } else {
         chatInput.value = `[AFK] ${t("afk.modal.placeholder")}`;
       }
@@ -3331,7 +3699,7 @@ var dubplus = function() {
     emojiState.emojiList = [];
   }
   function setEmojiList(listArray) {
-    emojiState.emojiList = listArray;
+    emojiState.emojiList = listArray.filter((emoji, index2, self) => index2 === self.findIndex((e) => e.src === emoji.src && e.platform === emoji.platform));
   }
   function decrement() {
     if (emojiState.selectedIndex > 0) {
@@ -3347,69 +3715,59 @@ var dubplus = function() {
       emojiState.selectedIndex = 0;
     }
   }
+  function isEdge(char) {
+    return char === " " || char === "\n";
+  }
+  function getSelection(currentText, cursorPos) {
+    let left = cursorPos > 0 ? cursorPos : 0;
+    while (left > 0 && currentText[left] !== ":") {
+      left -= 1;
+    }
+    let right = cursorPos;
+    while (!isEdge(currentText[right]) && right < currentText.length) {
+      right += 1;
+    }
+    return [left, right];
+  }
   const KEYS = {
     up: "ArrowUp",
     down: "ArrowDown",
-    left: "ArrowLeft",
-    right: "ArrowRight",
     enter: "Enter",
     esc: "Escape",
-    tab: "Tab",
-    backspace: "Backspace",
-    del: "Delete",
-    space: " "
+    tab: "Tab"
   };
-  const keyCharMin = 3;
+  const MIN_CHAR = 3;
   let acPreview = document.querySelector("#autocomplete-preview");
   let originalKeyDownEventHandler;
-  function getSelection(inputEl) {
-    const currentText = inputEl.value;
-    const cursorPos = inputEl.selectionStart;
-    let goLeft = cursorPos - 1;
-    while (currentText[goLeft] !== " " && goLeft > 0) {
-      goLeft--;
-    }
-    if (goLeft > 0 && currentText[goLeft] === " ") {
-      goLeft += 1;
-    }
-    let goRight = cursorPos;
-    while (currentText[goRight] !== " " && goRight < currentText.length) {
-      goRight++;
-    }
-    if (goRight !== currentText.length && currentText[goRight] === " ") {
-      goRight -= 1;
-    }
-    return [goLeft, goRight];
-  }
   function insertEmote(inputEl, index2) {
     const selected = emojiState.emojiList[index2];
-    const [start, end] = getSelection(inputEl);
+    const [start, end] = getSelection(inputEl.value, inputEl.selectionStart);
     const target = inputEl.value.substring(start, end);
     inputEl.value = inputEl.value.replace(target, `:${selected.text}:`);
     reset();
   }
   function checkInput(e) {
     const inputEl = (
-      /**@type {HTMLInputElement}*/
+      /**@type {HTMLTextAreaElement}*/
       e.target
     );
     const currentText = inputEl.value;
     const cursorPos = inputEl.selectionStart;
     let str = "";
     let goLeft = cursorPos - 1;
-    while (currentText[goLeft] !== " " && goLeft >= 0) {
+    while (!isEdge(currentText[goLeft]) && goLeft >= 0) {
       str = currentText[goLeft] + str;
       goLeft--;
     }
     let goRight = cursorPos;
-    while (currentText[goRight] !== " " && goRight < currentText.length) {
+    while (!isEdge(currentText[goRight]) && goRight < currentText.length) {
       str = str + currentText[goRight];
       goRight++;
     }
-    if (str.startsWith(":") && str.length >= keyCharMin && !str.endsWith(":")) {
+    if (str.startsWith(":") && str.length >= MIN_CHAR && !str.endsWith(":")) {
       const list = dubplus_emoji.findMatchingEmotes(
         str.substring(1).trim(),
-        settings$1.options.autocomplete
+        settings.options.emotes
       );
       setEmojiList(list);
     } else {
@@ -3417,7 +3775,12 @@ var dubplus = function() {
     }
   }
   function chatInputKeyupFunc(e) {
+    acPreview = acPreview || document.querySelector("#autocomplete-preview");
     const hasItems = acPreview.children.length > 0;
+    const isModifierKey = e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
+    if (isModifierKey) {
+      return;
+    }
     if (e.key === KEYS.up && hasItems) {
       e.preventDefault();
       decrement();
@@ -3432,7 +3795,7 @@ var dubplus = function() {
       e.preventDefault();
       e.stopImmediatePropagation();
       const inputEl = (
-        /**@type {HTMLInputElement}*/
+        /**@type {HTMLTextAreaElement}*/
         e.target
       );
       insertEmote(inputEl, emojiState.selectedIndex);
@@ -3445,6 +3808,7 @@ var dubplus = function() {
     checkInput(e);
   }
   function chatInputKeydownFunc(e) {
+    acPreview = acPreview || document.querySelector("#autocomplete-preview");
     const emptyPreview = acPreview.children.length === 0;
     const isValidKey = [KEYS.tab, KEYS.enter, KEYS.up, KEYS.down].includes(e.key);
     const isModifierKey = e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
@@ -3488,8 +3852,8 @@ var dubplus = function() {
   };
   const MODULE_ID$1 = "custom-mentions";
   function customMentionCheck(e) {
-    const enabled = settings$1.options[MODULE_ID$1];
-    const custom = settings$1.custom[MODULE_ID$1];
+    const enabled = settings.options[MODULE_ID$1];
+    const custom = settings.custom[MODULE_ID$1];
     if (enabled && // we only want to play the sound if the message is not from the current user
     window.QueUp.session.id !== e.user.userInfo.userid) {
       const customMentions2 = custom.split(",");
@@ -3523,7 +3887,7 @@ var dubplus = function() {
   const MODULE_ID = "chat-cleaner";
   function chatCleanerCheck(n) {
     const chatMessages = document.querySelectorAll("ul.chat-main > li");
-    const limit = parseInt(n ?? settings$1.custom[MODULE_ID], 10);
+    const limit = parseInt(n ?? settings.custom[MODULE_ID], 10);
     if (!(chatMessages == null ? void 0 : chatMessages.length) || isNaN(limit) || chatMessages.length < limit) {
       return;
     }
@@ -3548,7 +3912,7 @@ var dubplus = function() {
         return true;
       },
       onConfirm: (value) => {
-        if (settings$1.options[MODULE_ID]) {
+        if (settings.options[MODULE_ID]) {
           chatCleanerCheck(value);
         }
       }
@@ -3634,8 +3998,8 @@ var dubplus = function() {
     const content = e.message;
     const user = window.QueUp.session.get("username").toLowerCase();
     let mentionTriggers = ["@" + user];
-    if (settings$1.options["custom-mentions"] && settings$1.custom["custom-mentions"]) {
-      mentionTriggers = mentionTriggers.concat(settings$1.custom["custom-mentions"].split(",")).map((v) => v.trim());
+    if (settings.options["custom-mentions"] && settings.custom["custom-mentions"]) {
+      mentionTriggers = mentionTriggers.concat(settings.custom["custom-mentions"].split(",")).map((v) => v.trim());
     }
     const mentionTriggersTest = mentionTriggers.some(function(v) {
       const reg = new RegExp("\\b" + v + "\\b", "i");
@@ -3657,7 +4021,7 @@ var dubplus = function() {
       notifyCheckPermission().then(() => {
         window.QueUp.Events.bind(CHAT_MESSAGE, notifyOnMention);
       }).catch(() => {
-        settings$1.options[this.id] = false;
+        settings.options[this.id] = false;
       });
     },
     turnOff() {
@@ -3693,7 +4057,7 @@ var dubplus = function() {
       notifyCheckPermission().then(() => {
         window.QueUp.Events.bind(NEW_PM_MESSAGE, pmNotify);
       }).catch((err) => {
-        settings$1.options[this.id] = false;
+        settings.options[this.id] = false;
       });
     },
     turnOff() {
@@ -3714,7 +4078,7 @@ var dubplus = function() {
       );
       return;
     }
-    let parseSetting = parseInt(settings$1.custom["dj-notification"], 10);
+    let parseSetting = parseInt(settings.custom["dj-notification"], 10);
     if (isNaN(parseSetting)) {
       parseSetting = 2;
       logInfo("djNotification", "Could not parse setting, defaulting to 2");
@@ -3761,14 +4125,15 @@ var dubplus = function() {
     if (dubType === "grab") return dubsState.grabs;
     return [];
   }
+  const apiBase = window.location.hostname.includes("staging") ? "https://staging-api.queup.dev" : "https://api.queup.net";
   function userData(userid) {
-    return `https://api.queup.net/user/${userid}`;
+    return `${apiBase}/user/${userid}`;
   }
   function activeDubs(roomId) {
-    return `https://api.queup.net/room/${roomId}/playlist/active/dubs`;
+    return `${apiBase}/room/${roomId}/playlist/active/dubs`;
   }
   function userImage(userid) {
-    return `https://api.queup.net/user/${userid}/image`;
+    return `${apiBase}/user/${userid}/image`;
   }
   function getUserName(userid) {
     return new Promise((resolve, reject) => {
@@ -4333,6 +4698,37 @@ var dubplus = function() {
       window.removeEventListener("beforeunload", unloader);
     }
   };
+  const makeLink = function(className, fileName) {
+    const link2 = document.createElement("link");
+    link2.rel = "stylesheet";
+    link2.type = "text/css";
+    link2.className = className;
+    link2.href = fileName;
+    return link2;
+  };
+  function loadCSS(cssFile, className) {
+    return new Promise((resolve, reject) => {
+      if (document.querySelector(`link.${className}`)) {
+        resolve();
+        return;
+      }
+      const link2 = makeLink(
+        className,
+        // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
+        `${"https://cdn.jsdelivr.net/gh/DubPlus/DubPlus"}${cssFile}?${"1739424315897"}`
+      );
+      link2.onload = () => resolve();
+      link2.onerror = reject;
+      document.head.appendChild(link2);
+    });
+  }
+  function loadExternalCss(cssFile, className) {
+    if (document.querySelector(`link.${className}`)) {
+      return;
+    }
+    const link2 = makeLink(className, cssFile);
+    document.head.appendChild(link2);
+  }
   const communityTheme = {
     id: "community-theme",
     label: "community-theme.label",
@@ -4388,15 +4784,15 @@ var dubplus = function() {
         var _a;
         (_a = document.querySelector(`.${customCss.id}`)) == null ? void 0 : _a.remove();
         if (!value) {
-          settings$1.options[customCss.id] = false;
+          settings.options[customCss.id] = false;
           return;
         }
         loadExternalCss(value, customCss.id);
       }
     },
     turnOn() {
-      if (settings$1.custom[this.id]) {
-        loadExternalCss(settings$1.custom[this.id], this.id);
+      if (settings.custom[this.id]) {
+        loadExternalCss(settings.custom[this.id], this.id);
       }
     },
     turnOff() {
@@ -4441,7 +4837,7 @@ var dubplus = function() {
     turnOn() {
       var _a;
       (_a = document.querySelector(`.${this.id}`)) == null ? void 0 : _a.remove();
-      const savedCustomBG = settings$1.custom[this.id];
+      const savedCustomBG = settings.custom[this.id];
       if (savedCustomBG) {
         document.body.appendChild(makeBGdiv(savedCustomBG, this.id));
       }
@@ -4474,7 +4870,7 @@ var dubplus = function() {
       onConfirm(value) {
         if (!value) {
           window.QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
-          settings$1.options[customNotificationSound.id] = false;
+          settings.options[customNotificationSound.id] = false;
         } else {
           window.QueUp.room.chat.mentionChatSound.url = value;
         }
@@ -4482,12 +4878,24 @@ var dubplus = function() {
     },
     turnOn() {
       DubtrackDefaultSound = window.QueUp.room.chat.mentionChatSound.url;
-      if (settings$1.custom[this.id]) {
-        window.QueUp.room.chat.mentionChatSound.url = settings$1.custom[this.id];
+      if (settings.custom[this.id]) {
+        window.QueUp.room.chat.mentionChatSound.url = settings.custom[this.id];
       }
     },
     turnOff() {
       window.QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
+    }
+  };
+  const flipInterface = {
+    id: "flip-interface",
+    label: "flip-interface.label",
+    description: "flip-interface.description",
+    category: "user-interface",
+    turnOn() {
+      document.body.classList.add("dubplus-flip-interface");
+    },
+    turnOff() {
+      document.body.classList.remove("dubplus-flip-interface");
     }
   };
   const general = [
@@ -4514,9 +4922,10 @@ var dubplus = function() {
     hideVideo,
     hideAvatars,
     hideBackground,
-    showTimestamps
+    showTimestamps,
+    flipInterface
   ];
-  const settings = [spacebarMute, warnOnNavigation];
+  const settingsModules = [spacebarMute, warnOnNavigation];
   const customize = [
     communityTheme,
     customCss,
@@ -4528,55 +4937,51 @@ var dubplus = function() {
     push($$props, false);
     init();
     var fragment = root$a();
-    var node = /* @__PURE__ */ first_child(fragment);
-    var name = /* @__PURE__ */ derived_safe_equal(() => t("general.title"));
+    var node = first_child(fragment);
+    const expression = /* @__PURE__ */ derived_safe_equal(() => t("general.title"));
     MenuHeader(node, {
       settingsId: "general",
       get name() {
-        return get(name);
-      },
-      $$legacy: true
+        return get(expression);
+      }
     });
-    var node_1 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node, true));
+    var node_1 = sibling(node, 2);
     MenuSection(node_1, {
       settingsId: "general",
       children: ($$anchor2, $$slotProps) => {
         var fragment_1 = comment();
-        var node_2 = /* @__PURE__ */ first_child(fragment_1);
-        each(node_2, 1, () => general, index, ($$anchor3, module, $$index) => {
+        var node_2 = first_child(fragment_1);
+        each(node_2, 1, () => general, index, ($$anchor3, module) => {
           MenuSwitch($$anchor3, {
             get id() {
-              return unwrap(module).id;
+              return get(module).id;
             },
             get label() {
-              return unwrap(module).label;
+              return get(module).label;
             },
             get description() {
-              return unwrap(module).description;
+              return get(module).description;
             },
             get init() {
-              return unwrap(module).init;
+              return get(module).init;
             },
             get customize() {
-              return unwrap(module).custom;
+              return get(module).custom;
             },
             get modOnly() {
-              return unwrap(module).modOnly;
+              return get(module).modOnly;
             },
             onToggle: (on, onMount2) => {
-              if (on) unwrap(module).turnOn();
-              else unwrap(module).turnOff();
+              if (on) get(module).turnOn();
+              else get(module).turnOff();
               if (!onMount2) {
-                saveSetting("option", unwrap(module).id, on);
+                saveSetting("option", get(module).id, on);
               }
-            },
-            $$legacy: true
+            }
           });
         });
         append($$anchor2, fragment_1);
-      },
-      $$slots: { default: true },
-      $$legacy: true
+      }
     });
     append($$anchor, fragment);
     pop();
@@ -4584,7 +4989,7 @@ var dubplus = function() {
   var root$9 = /* @__PURE__ */ template(`<button type="button" class="icon-history eta_tooltip_t dubplus-btn-player"></button>`);
   function Eta($$anchor, $$props) {
     push($$props, true);
-    let eta = /* @__PURE__ */ source("ETA");
+    let eta = state("ETA");
     function getEta() {
       var _a, _b;
       const booth_position = (_a = document.querySelector(".queue-position")) == null ? void 0 : _a.textContent;
@@ -4602,20 +5007,18 @@ var dubplus = function() {
       }
     }
     var button = root$9();
-    template_effect(() => set_attribute(button, "data-dp-tooltip", get(eta)));
-    action(button, ($$node, $$action_arg) => teleport($$node, $$action_arg), () => ({ to: ".player_sharing" }));
-    event(
-      "mouseenter",
-      button,
-      () => {
-        set(eta, proxy(getEta()));
-      },
-      false
-    );
+    action(button, ($$node, $$action_arg) => teleport == null ? void 0 : teleport($$node, $$action_arg), () => ({ to: ".player_sharing" }));
+    template_effect(() => {
+      set_attribute(button, "aria-label", get(eta));
+      set_attribute(button, "data-dp-tooltip", get(eta));
+    });
+    event("mouseenter", button, () => {
+      set(eta, proxy(getEta()));
+    });
     append($$anchor, button);
     pop();
   }
-  var root$8 = /* @__PURE__ */ template(`<button type="button" class="icon-mute snooze_btn dubplus-btn-player"><span class="svelte-1a6zdj2">1</span></button>`);
+  var root$8 = /* @__PURE__ */ template(`<button type="button" class="icon-mute snooze_btn dubplus-btn-player svelte-huywc"><span class="svelte-huywc">1</span></button>`);
   function Snooze($$anchor, $$props) {
     push($$props, false);
     const eventUtils = { currentVol: 50, snoozed: false };
@@ -4642,9 +5045,16 @@ var dubplus = function() {
     }
     init();
     var button = root$8();
-    template_effect(() => set_attribute(button, "data-dp-tooltip", t("Snooze.tooltip")));
     button.__click = snooze;
-    action(button, ($$node, $$action_arg) => teleport($$node, $$action_arg), () => ({ to: ".player_sharing" }));
+    action(button, ($$node, $$action_arg) => teleport == null ? void 0 : teleport($$node, $$action_arg), () => ({ to: ".player_sharing" }));
+    template_effect(
+      ($0) => {
+        set_attribute(button, "aria-label", $0);
+        set_attribute(button, "data-dp-tooltip", $0);
+      },
+      [() => t("Snooze.tooltip")],
+      derived_safe_equal
+    );
     append($$anchor, button);
     pop();
   }
@@ -4668,69 +5078,65 @@ var dubplus = function() {
     });
     function handleClick2(index2) {
       const inputEl = (
-        /**@type {HTMLInputElement}*/
+        /**@type {HTMLTextAreaElement}*/
         document.getElementById("chat-txt-message")
       );
       insertEmote(inputEl, index2);
       inputEl.focus();
     }
     var ul = root$7();
-    each(
-      ul,
-      79,
-      () => emojiState.emojiList,
-      ($$item, i) => {
-        let src = () => unwrap(unwrap($$item)).src;
-        return src();
-      },
-      ($$anchor2, $$item, i) => {
-        let src = () => unwrap(unwrap($$item)).src;
-        let text2 = () => unwrap(unwrap($$item)).text;
-        let platform = () => unwrap(unwrap($$item)).platform;
-        let alt = () => unwrap(unwrap($$item)).alt;
-        var li = root_1();
-        li.__click = () => handleClick2(unwrap(i));
-        var div = /* @__PURE__ */ child(li);
-        var img = /* @__PURE__ */ child(div);
-        var span = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(div, true));
-        var text_1 = /* @__PURE__ */ child(span);
-        var node = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(span, true));
-        if_block(node, () => unwrap(i) === emojiState.selectedIndex, ($$anchor3) => {
+    each(ul, 23, () => emojiState.emojiList, ({ src, text: text2, platform, alt }) => src + platform, ($$anchor2, $$item, i) => {
+      let src = () => get($$item).src;
+      let text2 = () => get($$item).text;
+      let platform = () => get($$item).platform;
+      let alt = () => get($$item).alt;
+      var li = root_1();
+      li.__click = () => handleClick2(get(i));
+      var div = child(li);
+      var img = child(div);
+      var span = sibling(div, 2);
+      var text_1 = child(span);
+      var node = sibling(span, 2);
+      {
+        var consequent = ($$anchor3) => {
           var span_1 = root_2$2();
-          var text_2 = /* @__PURE__ */ child(span_1);
-          template_effect(() => set_text(text_2, t("autocomplete.preview.select")));
+          var text_2 = child(span_1);
+          template_effect(($0) => set_text(text_2, $0), [() => t("autocomplete.preview.select")]);
           append($$anchor3, span_1);
+        };
+        if_block(node, ($$render) => {
+          if (get(i) === emojiState.selectedIndex) $$render(consequent);
         });
-        template_effect(() => {
-          set_class(li, `${`preview-item ${platform()}-previews` ?? ""} svelte-2x4f0c`);
-          toggle_class(li, "selected", unwrap(i) === emojiState.selectedIndex);
-          set_attribute(img, "src", src());
-          set_attribute(img, "alt", alt());
-          set_attribute(img, "title", alt());
-          set_text(text_1, text2());
-        });
-        append($$anchor2, li);
       }
-    );
-    template_effect(() => toggle_class(ul, "ac-show", emojiState.emojiList.length > 0));
-    action(ul, ($$node, $$action_arg) => teleport($$node, $$action_arg), () => ({
+      template_effect(() => {
+        set_class(li, `${`preview-item ${platform()}-previews` ?? ""} svelte-2x4f0c`);
+        toggle_class(li, "selected", get(i) === emojiState.selectedIndex);
+        set_attribute(img, "src", src());
+        set_attribute(img, "alt", alt());
+        set_attribute(img, "title", alt());
+        set_text(text_1, text2());
+      });
+      append($$anchor2, li);
+    });
+    action(ul, ($$node, $$action_arg) => teleport == null ? void 0 : teleport($$node, $$action_arg), () => ({
       to: ".pusher-chat-widget-input",
       position: "prepend"
     }));
+    template_effect(() => toggle_class(ul, "ac-show", emojiState.emojiList.length > 0));
     append($$anchor, ul);
     pop();
   }
   delegate(["click"]);
-  var on_click = (_, handleClick2, dub) => handleClick2(unwrap(dub).username);
+  var on_click = (_, handleClick2, dub) => handleClick2(get(dub).username);
   var root_2$1 = /* @__PURE__ */ template(`<li><div class="dubinfo-image svelte-ujv5bp"><img alt="User Avatar" class="svelte-ujv5bp"></div> <button type="button" class="dubinfo-text svelte-ujv5bp"> </button></li>`);
   var root_3 = /* @__PURE__ */ template(`<li><!></li>`);
   var root$6 = /* @__PURE__ */ template(`<div role="none"><ul id="dubinfo-preview"><!></ul></div>`);
   function DubsInfo($$anchor, $$props) {
     push($$props, true);
     let dubData = /* @__PURE__ */ derived(() => getDubCount($$props.dubType));
-    let positionRight = /* @__PURE__ */ source(0);
-    let positionBottom = /* @__PURE__ */ source(0);
-    let display = /* @__PURE__ */ source("none");
+    let positionRight = state(0);
+    let positionBottom = state(0);
+    let display = state("none");
     let hoverTarget;
     function onHover() {
       const rect = hoverTarget.getBoundingClientRect();
@@ -4771,50 +5177,62 @@ var dubplus = function() {
       chatInput.focus();
     }
     var div = root$6();
-    var ul = /* @__PURE__ */ child(div);
-    var node = /* @__PURE__ */ child(ul);
-    if_block(
-      node,
-      () => get(dubData).length > 0,
-      ($$anchor2) => {
+    var ul = child(div);
+    var node = child(ul);
+    {
+      var consequent = ($$anchor2) => {
         var fragment = comment();
-        var node_1 = /* @__PURE__ */ first_child(fragment);
-        each(node_1, 65, () => get(dubData), index, ($$anchor3, dub, $$index) => {
+        var node_1 = first_child(fragment);
+        each(node_1, 17, () => get(dubData), index, ($$anchor3, dub) => {
           var li = root_2$1();
-          var div_1 = /* @__PURE__ */ child(li);
-          var img = /* @__PURE__ */ child(div_1);
-          template_effect(() => set_attribute(img, "src", userImage(unwrap(dub).userid)));
-          var button = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(div_1, true));
+          var div_1 = child(li);
+          var img = child(div_1);
+          var button = sibling(div_1, 2);
           button.__click = [on_click, handleClick2, dub];
-          var text2 = /* @__PURE__ */ child(button);
-          template_effect(() => {
-            set_class(li, `${`preview-dubinfo-item users-previews dubplus-${$$props.dubType}-hover` ?? ""} svelte-ujv5bp`);
-            set_text(text2, `@${unwrap(dub).username ?? ""}`);
-          });
+          var text2 = child(button);
+          template_effect(
+            ($0) => {
+              set_class(li, `${`preview-dubinfo-item users-previews dubplus-${$$props.dubType}-hover` ?? ""} svelte-ujv5bp`);
+              set_attribute(img, "src", $0);
+              set_text(text2, `@${get(dub).username ?? ""}`);
+            },
+            [() => userImage(get(dub).userid)]
+          );
           append($$anchor3, li);
         });
         append($$anchor2, fragment);
-      },
-      ($$anchor2) => {
+      };
+      var alternate_1 = ($$anchor2) => {
         var li_1 = root_3();
-        var node_2 = /* @__PURE__ */ child(li_1);
-        if_block(
-          node_2,
-          () => $$props.dubType === "updub" || $$props.dubType === "downdub",
-          ($$anchor3) => {
-            var text_1 = /* @__PURE__ */ text();
-            template_effect(() => set_text(text_1, t("dubs-hover.no-votes", { dubType: $$props.dubType })));
+        var node_2 = child(li_1);
+        {
+          var consequent_1 = ($$anchor3) => {
+            var text_1 = text();
+            template_effect(($0) => set_text(text_1, $0), [
+              () => t("dubs-hover.no-votes", { dubType: $$props.dubType })
+            ]);
             append($$anchor3, text_1);
-          },
-          ($$anchor3) => {
-            var text_2 = /* @__PURE__ */ text();
-            template_effect(() => set_text(text_2, t("dubs-hover.no-grabs", { dubType: $$props.dubType })));
+          };
+          var alternate = ($$anchor3) => {
+            var text_2 = text();
+            template_effect(($0) => set_text(text_2, $0), [
+              () => t("dubs-hover.no-grabs", { dubType: $$props.dubType })
+            ]);
             append($$anchor3, text_2);
-          }
-        );
+          };
+          if_block(node_2, ($$render) => {
+            if ($$props.dubType === "updub" || $$props.dubType === "downdub") $$render(consequent_1);
+            else $$render(alternate, false);
+          });
+        }
         append($$anchor2, li_1);
-      }
-    );
+      };
+      if_block(node, ($$render) => {
+        if (get(dubData).length > 0) $$render(consequent);
+        else $$render(alternate_1, false);
+      });
+    }
+    action(div, ($$node, $$action_arg) => teleport == null ? void 0 : teleport($$node, $$action_arg), () => ({ to: "body" }));
     template_effect(() => {
       set_attribute(div, "id", `dubplus-${$$props.dubType}s-container`);
       set_class(div, `${`dubplus-dubs-container dubplus-${$$props.dubType}s-container` ?? ""} svelte-ujv5bp`);
@@ -4822,8 +5240,7 @@ var dubplus = function() {
       set_class(ul, `${`dubinfo-show dubplus-${$$props.dubType}-hover` ?? ""} svelte-ujv5bp`);
       toggle_class(ul, "dubplus-no-dubs", get(dubData).length === 0);
     });
-    action(div, ($$node, $$action_arg) => teleport($$node, $$action_arg), () => ({ to: "body" }));
-    event("mouseleave", div, () => set(display, "none"), false);
+    event("mouseleave", div, () => set(display, "none"));
     append($$anchor, div);
     pop();
   }
@@ -4923,7 +5340,7 @@ var dubplus = function() {
     });
     init();
     var div = root$5();
-    action(div, ($$node, $$action_arg) => teleport($$node, $$action_arg), () => ({ to: "body" }));
+    action(div, ($$node, $$action_arg) => teleport == null ? void 0 : teleport($$node, $$action_arg), () => ({ to: "body" }));
     append($$anchor, div);
     pop();
   }
@@ -4934,20 +5351,27 @@ var dubplus = function() {
       if ($$props.init) $$props.init();
     });
     var li = root$4();
-    template_effect(() => set_attribute(li, "title", t($$props.description)));
-    var button = /* @__PURE__ */ child(li);
+    var button = child(li);
     button.__click = function(...$$args) {
-      const $$callback = $$props.onClick;
-      return $$callback == null ? void 0 : $$callback.apply(this, $$args);
+      var _a;
+      (_a = $$props.onClick) == null ? void 0 : _a.apply(this, $$args);
     };
-    var span = /* @__PURE__ */ child(button);
-    var span_1 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(span, true));
-    var text2 = /* @__PURE__ */ child(span_1);
-    template_effect(() => set_text(text2, t($$props.label)));
-    template_effect(() => {
-      set_attribute(li, "id", $$props.id);
-      set_class(span, `${`fa fa-${$$props.icon}` ?? ""} svelte-1j4s6el`);
-    });
+    var span = child(button);
+    var span_1 = sibling(span, 2);
+    var text2 = child(span_1);
+    template_effect(
+      ($0, $1) => {
+        set_attribute(li, "id", $$props.id);
+        set_attribute(li, "title", $0);
+        set_attribute(button, "aria-label", $0);
+        set_class(span, `${`fa fa-${$$props.icon}` ?? ""} svelte-1j4s6el`);
+        set_text(text2, $1);
+      },
+      [
+        () => t($$props.description),
+        () => t($$props.label)
+      ]
+    );
     append($$anchor, li);
     pop();
   }
@@ -4957,144 +5381,138 @@ var dubplus = function() {
     push($$props, false);
     init();
     var fragment = root$3();
-    var node = /* @__PURE__ */ first_child(fragment);
-    var name = /* @__PURE__ */ derived_safe_equal(() => t("user-interface.title"));
+    var node = first_child(fragment);
+    const expression = /* @__PURE__ */ derived_safe_equal(() => t("user-interface.title"));
     MenuHeader(node, {
       settingsId: "user-interface",
       get name() {
-        return get(name);
-      },
-      $$legacy: true
+        return get(expression);
+      }
     });
-    var node_1 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node, true));
+    var node_1 = sibling(node, 2);
     MenuSection(node_1, {
       settingsId: "user-interface",
       children: ($$anchor2, $$slotProps) => {
         var fragment_1 = comment();
-        var node_2 = /* @__PURE__ */ first_child(fragment_1);
-        each(node_2, 1, () => userInterface, index, ($$anchor3, module, $$index) => {
+        var node_2 = first_child(fragment_1);
+        each(node_2, 1, () => userInterface, index, ($$anchor3, module) => {
           var fragment_2 = comment();
-          var node_3 = /* @__PURE__ */ first_child(fragment_2);
-          if_block(
-            node_3,
-            () => unwrap(module).altIcon,
-            ($$anchor4) => {
+          var node_3 = first_child(fragment_2);
+          {
+            var consequent = ($$anchor4) => {
               MenuAction($$anchor4, {
                 get id() {
-                  return unwrap(module).id;
+                  return get(module).id;
                 },
                 get label() {
-                  return unwrap(module).label;
+                  return get(module).label;
                 },
                 get description() {
-                  return unwrap(module).description;
+                  return get(module).description;
                 },
                 get icon() {
-                  return unwrap(module).altIcon;
+                  return get(module).altIcon;
                 },
                 get onClick() {
-                  return unwrap(module).onClick;
+                  return get(module).onClick;
                 },
                 get init() {
-                  return unwrap(module).init;
-                },
-                $$legacy: true
+                  return get(module).init;
+                }
               });
-            },
-            ($$anchor4) => {
+            };
+            var alternate = ($$anchor4) => {
               MenuSwitch($$anchor4, {
                 get id() {
-                  return unwrap(module).id;
+                  return get(module).id;
                 },
                 get label() {
-                  return unwrap(module).label;
+                  return get(module).label;
                 },
                 get description() {
-                  return unwrap(module).description;
+                  return get(module).description;
                 },
                 get init() {
-                  return unwrap(module).init;
+                  return get(module).init;
                 },
                 get customize() {
-                  return unwrap(module).custom;
+                  return get(module).custom;
                 },
                 onToggle: (on, onMount2) => {
-                  if (on) unwrap(module).turnOn();
-                  else unwrap(module).turnOff();
+                  if (on) get(module).turnOn();
+                  else get(module).turnOff();
                   if (!onMount2) {
-                    saveSetting("option", unwrap(module).id, on);
+                    saveSetting("option", get(module).id, on);
                   }
-                },
-                $$legacy: true
+                }
               });
-            }
-          );
+            };
+            if_block(node_3, ($$render) => {
+              if (get(module).altIcon) $$render(consequent);
+              else $$render(alternate, false);
+            });
+          }
           append($$anchor3, fragment_2);
         });
         append($$anchor2, fragment_1);
-      },
-      $$slots: { default: true },
-      $$legacy: true
+      }
     });
     append($$anchor, fragment);
     pop();
   }
+  var $$_import_settings = reactive_import(() => settings);
   var root$2 = /* @__PURE__ */ template(`<!> <!>`, 1);
   function Settings($$anchor, $$props) {
     push($$props, false);
-    settings.forEach((module) => {
-      if (!settings$1.options[module.id]) {
-        settings$1.options[module.id] = false;
+    settingsModules.forEach((module) => {
+      if (!$$_import_settings().options[module.id]) {
+        $$_import_settings($$_import_settings().options[module.id] = false);
       }
     });
     init();
     var fragment = root$2();
-    var node = /* @__PURE__ */ first_child(fragment);
-    var name = /* @__PURE__ */ derived_safe_equal(() => t("settings.title"));
+    var node = first_child(fragment);
+    const expression = /* @__PURE__ */ derived_safe_equal(() => t("settings.title"));
     MenuHeader(node, {
       settingsId: "settings",
       get name() {
-        return get(name);
-      },
-      $$legacy: true
+        return get(expression);
+      }
     });
-    var node_1 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node, true));
+    var node_1 = sibling(node, 2);
     MenuSection(node_1, {
       settingsId: "settings",
       children: ($$anchor2, $$slotProps) => {
         var fragment_1 = comment();
-        var node_2 = /* @__PURE__ */ first_child(fragment_1);
-        each(node_2, 1, () => settings, index, ($$anchor3, module, $$index) => {
+        var node_2 = first_child(fragment_1);
+        each(node_2, 1, () => settingsModules, index, ($$anchor3, module) => {
           MenuSwitch($$anchor3, {
             get id() {
-              return unwrap(module).id;
+              return get(module).id;
             },
             get label() {
-              return unwrap(module).label;
+              return get(module).label;
             },
             get description() {
-              return unwrap(module).description;
+              return get(module).description;
             },
             get init() {
-              return unwrap(module).init;
+              return get(module).init;
             },
             get customize() {
-              return unwrap(module).custom;
+              return get(module).custom;
             },
             onToggle: (on, onMount2) => {
-              if (on) unwrap(module).turnOn();
-              else unwrap(module).turnOff();
+              if (on) get(module).turnOn();
+              else get(module).turnOff();
               if (!onMount2) {
-                saveSetting("option", unwrap(module).id, on);
+                saveSetting("option", get(module).id, on);
               }
-            },
-            $$legacy: true
+            }
           });
         });
         append($$anchor2, fragment_1);
-      },
-      $$slots: { default: true },
-      $$legacy: true
+      }
     });
     append($$anchor, fragment);
     pop();
@@ -5104,118 +5522,128 @@ var dubplus = function() {
     push($$props, false);
     init();
     var fragment = root$1();
-    var node = /* @__PURE__ */ first_child(fragment);
-    var name = /* @__PURE__ */ derived_safe_equal(() => t("customize.title"));
+    var node = first_child(fragment);
+    const expression = /* @__PURE__ */ derived_safe_equal(() => t("customize.title"));
     MenuHeader(node, {
       settingsId: "customize",
       get name() {
-        return get(name);
-      },
-      $$legacy: true
+        return get(expression);
+      }
     });
-    var node_1 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node, true));
+    var node_1 = sibling(node, 2);
     MenuSection(node_1, {
       settingsId: "customize",
       children: ($$anchor2, $$slotProps) => {
         var fragment_1 = comment();
-        var node_2 = /* @__PURE__ */ first_child(fragment_1);
-        each(node_2, 1, () => customize, index, ($$anchor3, module, $$index) => {
+        var node_2 = first_child(fragment_1);
+        each(node_2, 1, () => customize, index, ($$anchor3, module) => {
           MenuSwitch($$anchor3, {
             get id() {
-              return unwrap(module).id;
+              return get(module).id;
             },
             get label() {
-              return unwrap(module).label;
+              return get(module).label;
             },
             get description() {
-              return unwrap(module).description;
+              return get(module).description;
             },
             get init() {
-              return unwrap(module).init;
+              return get(module).init;
             },
             get customize() {
-              return unwrap(module).custom;
+              return get(module).custom;
             },
             onToggle: (on, onMount2) => {
-              if (on) unwrap(module).turnOn();
-              else unwrap(module).turnOff();
+              if (on) get(module).turnOn();
+              else get(module).turnOff();
               if (!onMount2) {
-                saveSetting("option", unwrap(module).id, on);
+                saveSetting("option", get(module).id, on);
               }
-            },
-            $$legacy: true
+            }
           });
         });
         append($$anchor2, fragment_1);
-      },
-      $$slots: { default: true },
-      $$legacy: true
+      }
     });
     append($$anchor, fragment);
     pop();
   }
   var root_2 = /* @__PURE__ */ template(`<!> <!> <!>`, 1);
-  var root = /* @__PURE__ */ template(`<!> <!> <!> <!> <!> <!> <section class="dubplus-menu svelte-1rqspoo"><p class="dubplus-menu-header svelte-1rqspoo"> </p> <!> <!> <!> <!> <!></section> <!>`, 1);
+  var root = /* @__PURE__ */ template(`<!> <!> <!> <!> <!> <!> <section class="dubplus-menu svelte-15wjekh"><p class="dubplus-menu-header svelte-15wjekh"> </p> <!> <!> <!> <!> <!></section> <!>`, 1);
   function Menu($$anchor, $$props) {
     push($$props, false);
     onMount(() => {
-      loadExternalCss("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css", "dp-font-awesome");
       document.querySelector("html").classList.add("dubplus");
     });
     init();
     var fragment = root();
-    var node = /* @__PURE__ */ first_child(fragment);
-    MenuIcon(node, { $$legacy: true });
-    var node_1 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node, true));
-    Snooze(node_1, { $$legacy: true });
-    var node_2 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node_1, true));
-    Eta(node_2, { $$legacy: true });
-    var node_3 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node_2, true));
-    if_block(node_3, () => settings$1.options.autocomplete, ($$anchor2) => {
-      EmojiPreview($$anchor2, { $$legacy: true });
-    });
-    var node_4 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node_3, true));
-    if_block(node_4, () => settings$1.options["dubs-hover"], ($$anchor2) => {
-      var fragment_2 = root_2();
-      var node_5 = /* @__PURE__ */ first_child(fragment_2);
-      DubsInfo(node_5, { dubType: "updub", $$legacy: true });
-      var node_6 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node_5, true));
-      DubsInfo(node_6, { dubType: "downdub", $$legacy: true });
-      var node_7 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node_6, true));
-      DubsInfo(node_7, { dubType: "grab", $$legacy: true });
-      append($$anchor2, fragment_2);
-    });
-    var node_8 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node_4, true));
-    if_block(node_8, () => settings$1.options.snow, ($$anchor2) => {
-      Snow($$anchor2, { $$legacy: true });
-    });
-    var section = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node_8, true));
-    var p = /* @__PURE__ */ child(section);
-    var text2 = /* @__PURE__ */ child(p);
-    template_effect(() => set_text(text2, t("Menu.title")));
-    var node_9 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(p, true));
-    General(node_9, { $$legacy: true });
-    var node_10 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node_9, true));
-    UserInterface(node_10, { $$legacy: true });
-    var node_11 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node_10, true));
-    Settings(node_11, { $$legacy: true });
-    var node_12 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node_11, true));
-    Customize(node_12, { $$legacy: true });
-    var node_13 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(node_12, true));
-    Contact(node_13, { $$legacy: true });
-    var node_14 = /* @__PURE__ */ sibling(/* @__PURE__ */ sibling(section, true));
-    Modal(node_14, { $$legacy: true });
+    var node = first_child(fragment);
+    Snooze(node, {});
+    var node_1 = sibling(node, 2);
+    MenuIcon(node_1, {});
+    var node_2 = sibling(node_1, 2);
+    Eta(node_2, {});
+    var node_3 = sibling(node_2, 2);
+    {
+      var consequent = ($$anchor2) => {
+        EmojiPreview($$anchor2, {});
+      };
+      if_block(node_3, ($$render) => {
+        if (settings.options.autocomplete) $$render(consequent);
+      });
+    }
+    var node_4 = sibling(node_3, 2);
+    {
+      var consequent_1 = ($$anchor2) => {
+        var fragment_2 = root_2();
+        var node_5 = first_child(fragment_2);
+        DubsInfo(node_5, { dubType: "updub" });
+        var node_6 = sibling(node_5, 2);
+        DubsInfo(node_6, { dubType: "downdub" });
+        var node_7 = sibling(node_6, 2);
+        DubsInfo(node_7, { dubType: "grab" });
+        append($$anchor2, fragment_2);
+      };
+      if_block(node_4, ($$render) => {
+        if (settings.options["dubs-hover"]) $$render(consequent_1);
+      });
+    }
+    var node_8 = sibling(node_4, 2);
+    {
+      var consequent_2 = ($$anchor2) => {
+        Snow($$anchor2, {});
+      };
+      if_block(node_8, ($$render) => {
+        if (settings.options.snow) $$render(consequent_2);
+      });
+    }
+    var section = sibling(node_8, 2);
+    var p = child(section);
+    var text2 = child(p);
+    var node_9 = sibling(p, 2);
+    General(node_9, {});
+    var node_10 = sibling(node_9, 2);
+    UserInterface(node_10, {});
+    var node_11 = sibling(node_10, 2);
+    Settings(node_11, {});
+    var node_12 = sibling(node_11, 2);
+    Customize(node_12, {});
+    var node_13 = sibling(node_12, 2);
+    Contact(node_13, {});
+    var node_14 = sibling(section, 2);
+    Modal(node_14, {});
+    template_effect(($0) => set_text(text2, $0), [() => t("Menu.title")], derived_safe_equal);
     append($$anchor, fragment);
     pop();
   }
+  var define_PKGINFO_default = { name: "dubplus", version: "1.0.0", description: "Dub+ - A simple script/extension for QueUp.net", author: "DubPlus", license: "MIT", homepage: "https://dub.plus" };
   function DubPlus($$anchor, $$props) {
     push($$props, true);
-    let status = /* @__PURE__ */ source("loading");
+    window.dubplus = window.dubplus || {};
+    window.dubplus = Object.assign(window.dubplus, define_PKGINFO_default);
+    let status = state("loading");
     function setLocale() {
       locale.current = normalizeLocale(navigator.language || "en");
-    }
-    {
-      loadCSS("/dist/dubplus.min.css", "dubplus-css");
     }
     onMount(() => {
       setLocale();
@@ -5259,38 +5687,51 @@ var dubplus = function() {
       }
     });
     var fragment = comment();
-    var node = /* @__PURE__ */ first_child(fragment);
-    if_block(
-      node,
-      () => get(status) === "loading",
-      ($$anchor2) => {
+    var node = first_child(fragment);
+    {
+      var consequent = ($$anchor2) => {
         Loading($$anchor2, {});
-      },
-      ($$anchor2) => {
+      };
+      var alternate_1 = ($$anchor2) => {
         var fragment_2 = comment();
-        var node_1 = /* @__PURE__ */ first_child(fragment_2);
-        if_block(
-          node_1,
-          () => get(status) === "ready",
-          ($$anchor3) => {
+        var node_1 = first_child(fragment_2);
+        {
+          var consequent_1 = ($$anchor3) => {
             Menu($$anchor3, {});
-          },
-          ($$anchor3) => {
+          };
+          var alternate = ($$anchor3) => {
             Modal($$anchor3, {});
-          },
-          true
-        );
+          };
+          if_block(
+            node_1,
+            ($$render) => {
+              if (get(status) === "ready") $$render(consequent_1);
+              else $$render(alternate, false);
+            },
+            true
+          );
+        }
         append($$anchor2, fragment_2);
-      }
-    );
+      };
+      if_block(node, ($$render) => {
+        if (get(status) === "loading") $$render(consequent);
+        else $$render(alternate_1, false);
+      });
+    }
     append($$anchor, fragment);
     pop();
+  }
+  {
+    loadCSS("/dubplus.css", "dubplus-css").catch(logError);
   }
   let container = document.getElementById("dubplus-container");
   if (!container) {
     container = document.createElement("div");
     container.id = "dubplus-container";
     document.body.appendChild(container);
+  }
+  if (container.children.length > 0) {
+    unmount(container);
   }
   const app = mount(DubPlus, {
     target: container

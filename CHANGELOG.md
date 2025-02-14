@@ -2,8 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.0.0] - 2024-?-?
-This is a complete rewrite of the code switching from the old jQuery spaghetti code to Svelte 5. See this [PR](https://github.com/DubPlus/DubPlus/pull/110) for more details. Also caught some existing bugs while updating.
+## [1.0.0] - 2025-?-?
+This is a complete rewrite of the code switching from the old jQuery code to Svelte 5. See this [PR](https://github.com/DubPlus/DubPlus/pull/110) for more details. Also caught some existing bugs while updating. 
+
+### New Feature
+- "Flip Interface", swaps the positions of the chat and video player
 
 ### Breaking Changes
 
@@ -11,12 +14,10 @@ We no longer produce minified versions of our code because we never used them an
 - `dubplus.min.js`
 - `css/dubplus.min.css`
 
-We no longer have a `css/` folder, the `dubplus.css` is located at the root next to the `dubplus.js` file. This shouldn't affect anyone because the CSS file is loaded direclty by the `dubplus.js` code so no change needed.
-
-If you were accessing these files you'll need to update your urls.
+We no longer have a `css/` folder, the `dubplus.css` is located at the root next to the `dubplus.js` file. If you were accessing these files you'll need to update your urls. Most people will not have to worry about this.
 
 ### Fixed
-- Fullscreen not working
+- Fullscreen wasn't working
 
 ## [0.3.4] - 2024-07-05
 ### Fixed

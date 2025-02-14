@@ -12,7 +12,7 @@
     "dev": "vite",
     "build": "vite build && cp ./dist/dubplus.* . && rm -rf ./dist",
     "preview": "vite preview",
-    "extensions": "npm run build && npm run zip",
+    "ext": "npm run build && npm run zip",
     "zip": "node ./tasks/zip.js",
     "start:firefox": "web-ext run",
     "test": "playwright test",
