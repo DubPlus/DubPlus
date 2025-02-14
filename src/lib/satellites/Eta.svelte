@@ -34,6 +34,7 @@
 
 <button
   use:teleport={{ to: ".player_sharing" }}
+  aria-label={eta}
   type="button"
   class="icon-history eta_tooltip_t dubplus-btn-player"
   data-dp-tooltip={eta}

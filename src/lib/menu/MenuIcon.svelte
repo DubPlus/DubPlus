@@ -6,6 +6,7 @@
 <button
   use:teleport={{ to: ".header-right-navigation" }}
   type="button"
+  aria-label="Dub+ menu"
   class="dubplus-icon"
   onclick={() => {
     document

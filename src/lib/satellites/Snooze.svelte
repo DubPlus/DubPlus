@@ -59,6 +59,7 @@
   use:teleport={{ to: ".player_sharing" }}
   type="button"
   class="icon-mute snooze_btn dubplus-btn-player"
+  aria-label={t("Snooze.tooltip")}
   data-dp-tooltip={t("Snooze.tooltip")}
   onclick={snooze}
 >

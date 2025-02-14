@@ -23,7 +23,7 @@
 </script>
 
 <li {id} title={t(description)}>
-  <button type="button" onclick={onClick}>   
+  <button aria-label={t(description)} type="button" onclick={onClick}>   
     <span class={`fa fa-${icon}`}></span>
     <span class="dubplus-menu-label">{t(label)}</span>
   </button>
