@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import pkg from './package.json';
+import pkg from './package.json' with { type: "json" };
 import { resolve } from 'path';
 
 // only want to pass a few things from package, delete the rest
