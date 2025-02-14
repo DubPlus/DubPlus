@@ -25,7 +25,11 @@ const KEYS = {
   space: ' ',
 };
 
-const keyCharMin = 3; // when to start showing previews
+/**
+ * Minimum number of characters to start filtering emojis.
+ * Includes the ":" character so ":sm" is 3 characters.
+ */
+const MIN_CHAR = 3;
 let acPreview = document.querySelector('#autocomplete-preview');
 let originalKeyDownEventHandler;
 
@@ -50,6 +54,21 @@ function checkInput(e) {
   const currentText = inputEl.value;
   const cursorPos = inputEl.selectionStart;
 
+  /*  
+    In here we are finding the nearest incomplete emoji/emote to the cursor position
+    
+    For example, if we have the following chat message:
+    "Smelly :cat"
+    and the cursor is at the end of the message,
+    It will find the string ":cat"
+
+    if the word is a complete emoji (starts and ends in a colon), like ":cat:",
+    it will ignore it. This only cares about incomplete possible emojis/emotes
+
+    It will use that partial emoji/emote to filter the list of emojis/emotes 
+    that show in the autocomplete preview panel
+  */
+
   let str = '';
   let goLeft = cursorPos - 1;
   while (!isEdge(currentText[goLeft]) && goLeft >= 0) {
@@ -63,11 +82,11 @@ function checkInput(e) {
     goRight++;
   }
 
-  if (str.startsWith(':') && str.length >= keyCharMin && !str.endsWith(':')) {
+  if (str.startsWith(':') && str.length >= MIN_CHAR && !str.endsWith(':')) {
     // start filtering emojis
     const list = dubplus_emoji.findMatchingEmotes(
       str.substring(1).trim(),
-      settings.options.autocomplete
+      settings.options.emotes
     );
     setEmojiList(list);
   } else {

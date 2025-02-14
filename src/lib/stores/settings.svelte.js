@@ -20,6 +20,7 @@ const defaults = {
     contact: 'open',
   },
 
+  // this will store the user inputs from the modals for features that support it
   custom: {},
 };
 
