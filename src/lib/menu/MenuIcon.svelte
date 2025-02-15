@@ -34,5 +34,7 @@
     display: inline-block;
     vertical-align: bottom;
     margin-left: 1rem;
+
+    top: -4px;
   }
 </style>
