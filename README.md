@@ -7,7 +7,7 @@ Dub+ - A Dubtrack.fm and QueUp.net script/extension for added features and custo
 - Run `npm install` to install dependencies
 - Run `npm run ext` to build and zip the extension. 
 
-The extension will load into any browser that supports Chrome's extenions API and manifest v3 (Chrome, Firefox, Edge, Opera, Vivaldi, etc.). DubPlus only uploads the extension to the Chrome WebStore and FireFox Add-ons. See https://dub.plus for more details
+The extension will load into any browser that supports Chrome's extenions API and manifest v3 (Chrome, Firefox, Edge, Opera, Vivaldi, etc.). Please note that we've only tested the extension on Chrome and Firefox and we only make it available on their respective extension stores. See https://dub.plus for more details
 
 ## Contributing
 
@@ -23,16 +23,16 @@ Requires Node v20 or higher
 
 The UI is written in [Svelte 5](https://svelte.dev/docs/svelte/overview) 
 
-There are 2 ways you can develop.
+There are 2 ways you can develop:
 
 ### 1. Using the Mock queup.net
 
-- run `npm run dev` and open the localhost:port that is printed in the command line by vite.
+- run `npm run dev` and open the localhost:port that is printed in the command line by Vite.
 - start developing
 
-This is a limited mockup of Queup.net so queup apis won't work. This environment is useful for quick development of UI related things.
+This is a limited mockup of Queup.net so not all queup apis won't work. This environment is useful for quick development of UI related things.
 
-### 2. Loading the unpacked extension in Chrome
+### 2. Loading the unpacked extension in Chrome 
 
 - run `npm run build:watch`
 - open [chrome://extensions/](chrome://extensions/)
@@ -43,7 +43,12 @@ This is a limited mockup of Queup.net so queup apis won't work. This environment
 - Open a new tab and log in to https://queup.net and join a room
 - start developing
 
-**Note**: Every time you hit save in a file, you'll need to refresh the extension and refresh the page
+Your process will go like this:
+- make changes
+- save (which auto runs the building of the files)
+- refresh the extension in chrome://extensions (click on the refresh icon next to the switch)
+- refresh the page
+- test your changes
 
 
 ### npm scripts
