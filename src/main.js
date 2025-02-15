@@ -9,7 +9,9 @@ import { logError } from './utils/logger';
 // Have successfully loaded the css file from the extension but the font
 // is not loading.
 if (!import.meta.env.DEV) {
-  loadCSS('/dubplus.css', 'dubplus-css').catch(logError);
+  loadCSS('/dubplus.css', 'dubplus-css').catch((e) => {
+    logError('Failed to load dubplus.css', e);
+  });
 }
 
 let container = document.getElementById('dubplus-container');
