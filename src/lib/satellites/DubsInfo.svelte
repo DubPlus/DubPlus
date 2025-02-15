@@ -1,10 +1,11 @@
 <script>
-  import { onDestroy, onMount } from "svelte";
-  import { teleport } from "../actions/teleport.js";
-  import { userImage } from "../api.js";
-  import { getDubCount } from "../stores/dubsState.svelte";
-  import { logError } from "../../utils/logger.js";
-  import { t } from "../stores/i18n.svelte.js";
+  import { onDestroy, onMount } from 'svelte';
+  import { teleport } from '../actions/teleport.js';
+  import { userImage } from '../api.js';
+  import { getDubCount } from '../stores/dubsState.svelte';
+  import { logError } from '../../utils/logger.js';
+  import { t } from '../stores/i18n.svelte.js';
+  import { setgroups } from 'process';
 
   /**
    * @typedef {object} DubsInfoProps
@@ -19,18 +20,30 @@
   let dubData = $derived(getDubCount(dubType));
   let positionRight = $state(0);
   let positionBottom = $state(0);
-  let display = $state("none");
+  let display = $state('none');
 
-  /**
-   * @type {HTMLElement}
-   */
-  let hoverTarget;
+  function getTarget() {
+    if (dubType === 'updub') {
+      return document.querySelector('.dubup')?.parentElement;
+    } else if (dubType === 'downdub') {
+      return document.querySelector('.dubdown')?.parentElement;
+    } else if (dubType === 'grab') {
+      return document.querySelector('.add-to-playlist');
+    }
+    return null;
+  }
 
+ 
   function onHover() {
-    const rect = hoverTarget.getBoundingClientRect();
-    positionRight = window.innerWidth - rect.right;
-    positionBottom = rect.height - 2;
-    display = "block";
+    const hoverTarget = getTarget();
+    if (hoverTarget) {
+      const rect = hoverTarget.getBoundingClientRect();
+      positionRight = window.innerWidth - rect.right;
+      positionBottom = rect.height - 2;
+      display = 'block';
+    } else {
+      logError(`Could not find hover target for ${dubType} in onHover`);
+    }
   }
 
   /**
@@ -40,28 +53,31 @@
     if (
       e.relatedTarget &&
       /**@type {HTMLDivElement}*/ (e.relatedTarget).closest(
-        ".dubplus-dubs-container",
+        '.dubplus-dubs-container',
       )
     ) {
       return;
     }
-    display = "none";
+    display = 'none';
   }
 
+
+
   onMount(() => {
-    hoverTarget = document.querySelector(`.dubplus-${dubType}s-hover`);
+    const hoverTarget = getTarget();
     if (hoverTarget) {
-      hoverTarget.addEventListener("mouseenter", onHover);
-      hoverTarget.addEventListener("mouseleave", onLeave);
+      hoverTarget.addEventListener('mouseenter', onHover);
+      hoverTarget.addEventListener('mouseleave', onLeave);
     } else {
       logError(`Could not find hover target for ${dubType} in onMount`);
     }
   });
 
   onDestroy(() => {
+    const hoverTarget = getTarget();
     if (hoverTarget) {
-      hoverTarget.removeEventListener("mouseenter", onHover);
-      hoverTarget.removeEventListener("mouseleave", onLeave);
+      hoverTarget.removeEventListener('mouseenter', onHover);
+      hoverTarget.removeEventListener('mouseleave', onLeave);
     } else {
       logError(`Could not find hover target for ${dubType} in onDestroy`);
     }
@@ -72,7 +88,7 @@
    */
   function handleClick(username) {
     const chatInput = /**@type {HTMLInputElement}*/ (
-      document.querySelector("#chat-txt-message")
+      document.querySelector('#chat-txt-message')
     );
     chatInput.value = `${chatInput.value}@${username} `.trimStart();
     chatInput.focus();
@@ -81,22 +97,20 @@
 
 <div
   id={`dubplus-${dubType}s-container`}
-  use:teleport={{ to: "body" }}
+  use:teleport={{ to: 'body' }}
   class={`dubplus-dubs-container dubplus-${dubType}s-container`}
   style={`bottom: ${positionBottom}px; right: ${positionRight}px; display: ${display};`}
-  onmouseleave={() => (display = "none")}
+  onmouseleave={() => (display = 'none')}
   role="none"
 >
   <ul
     id="dubinfo-preview"
-    class={`dubinfo-show dubplus-${dubType}-hover`}
+    class="dubinfo-show"
     class:dubplus-no-dubs={dubData.length === 0}
   >
     {#if dubData.length > 0}
       {#each dubData as dub}
-        <li
-          class={`preview-dubinfo-item users-previews dubplus-${dubType}-hover`}
-        >
+        <li class="preview-dubinfo-item users-previews">
           <div class="dubinfo-image">
             <img src={userImage(dub.userid)} alt="User Avatar" />
           </div>
@@ -111,10 +125,10 @@
       {/each}
     {:else}
       <li>
-        {#if dubType === "updub" || dubType === "downdub"}
-          {t("dubs-hover.no-votes", { dubType })}
+        {#if dubType === 'updub' || dubType === 'downdub'}
+          {t('dubs-hover.no-votes', { dubType })}
         {:else}
-          {t("dubs-hover.no-grabs", { dubType })}
+          {t('dubs-hover.no-grabs', { dubType })}
         {/if}
       </li>
     {/if}
