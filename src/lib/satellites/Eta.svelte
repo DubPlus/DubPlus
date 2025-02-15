@@ -14,16 +14,20 @@
       return t("Eta.tooltip.notInQueue");
     }
 
-    // we take "minutes" of the playing track
-    // and also your position in the booth
-    const time = 4;
+    // average time of a song in minutes
+    const average_song_minutes = 4;
+
+    // current_time is the minutes of the currently playing song
     const current_time = parseInt(
       document.querySelector(
         "#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min",
       )?.textContent,
     );
-    const booth_duration = parseInt(booth_position);
-    const booth_time = booth_duration * time - time + current_time;
+
+    const position_in_queue = parseInt(booth_position);
+
+    // we caclulate an ESTIMATE using the position in the queue * the average time of a song + the current time
+    const booth_time = position_in_queue * average_song_minutes - average_song_minutes + current_time;
     if (booth_time >= 0) {
       return t("Eta.tootltip", { minutes: booth_time });
     } else {
