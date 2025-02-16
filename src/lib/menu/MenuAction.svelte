@@ -7,7 +7,7 @@
    * @property {string} id
    * @property {string} label
    * @property {string} description
-   * @property {string} icon
+   * @property {import('svelte').Component} icon An SVG as a .svelte component
    * @property {() => void} onClick
    * @property {() => void} [init]
    */
@@ -15,7 +15,7 @@
   /**
    * @type {MenuActionProps}
    */
-  let { id, label, description, icon, onClick, init } = $props();
+  let { id, label, description, icon: Icon, onClick, init } = $props();
 
   onMount(() => {
     if (init) init();
@@ -24,7 +24,7 @@
 
 <li {id} title={t(description)}>
   <button aria-label={t(description)} type="button" onclick={onClick}>   
-    <span class={`dubplus-action-icon icon-${icon}`}></span>
+    <Icon />
     <span class="dubplus-menu-label">{t(label)}</span>
   </button>
 </li>
@@ -44,11 +44,13 @@
     color:inherit;
     font-size: inherit;
   }
-  .dubplus-action-icon {
-    font-family: icomoon;
+
+  button :global(svg) {
     width: 29px;
-    color: var(--dubplus-primary-color);
+    height: 18px;
+    fill: var(--dubplus-primary-color);
   }
+
   .dubplus-menu-label {
     flex: 1;
     padding-left: 11px;

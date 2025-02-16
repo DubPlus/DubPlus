@@ -1,4 +1,3 @@
-@import "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css";
 :root {
   /* colors */
   --dubplus-primary-color: #eb008b;
@@ -7,7 +6,7 @@
 
   /* fonts */
   --dubplus-font-size: 13px;
-  --dubplus-font-family: "Trebuchet MS", Helvetica, sans-serif;
+  --dubplus-font-family: 'Trebuchet MS', Helvetica, sans-serif;
 
   --dubplus-menu-width: 255px;
 
@@ -100,106 +99,102 @@
  * User Interface styles
  */
 
-.dubplus-split-chat {
-  .chat-main li:nth-child(2n) {
-    background: linear-gradient(to right, rgba(155,157,160,0.10) 0%, rgba(0,0,0,0) 100%);
-    box-shadow: -16px 0px 0px 0px rgba(155,157,160,0.10);
-    width: 100%;
+.dubplus-split-chat .chat-main li:nth-child(2n) {
+  background: linear-gradient(
+    to right,
+    rgba(155, 157, 160, 0.1) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
+  width: 100%;
+}
 
-    .chatDelete {
-      right: 1.7em !important;
-    }
-  }
+.dubplus-split-chat .chat-main li:nth-child(2n) .chatDelete {
+  right: 1.7em !important;
+}
 
-  .split {
-    background: linear-gradient(to right, rgba(155,157,160,0.10) 0%, rgba(0,0,0,0) 100%);
-    box-shadow: -16px 0px 0px 0px rgba(155,157,160,0.10);
-    width: 100%;
-  }
+.dubplus-split-chat .split {
+  background: linear-gradient(
+    to right,
+    rgba(155, 157, 160, 0.1) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
+  width: 100%;
+}
 
-  .splitfix {
-    right: 1.7em !important;
-  }
+.dubplus-split-chat .splitfix {
+  right: 1.7em !important;
 }
 
 /* hide the chat and only show the video */
-.dubplus-video-only {
-  .right_section {
-    display: none !important;
-  }
+.dubplus-video-only .right_section {
+  display: none !important;
+}
 
-  .left_section {
-    margin: 0 auto !important;
-    margin-left: 90px !important;
-    right: initial !important;
-    position: relative !important;
-    float: inherit !important;
-    padding-right: 200px !important;
-  }
+.dubplus-video-only .left_section {
+  margin: 0 auto !important;
+  margin-left: 90px !important;
+  right: initial !important;
+  position: relative !important;
+  float: inherit !important;
+  padding-right: 200px !important;
 }
 
 /* turns off the video and only shows the chat */
-.dubplus-chat-only {
-  .left_section {
-    display: none !important;
-  }
-  .right_section {
-    width: 40rem !important;
-    margin: 0 auto !important;
-    right: initial !important;
-    position: relative !important;
-    float: inherit !important;
-  }
-
-  .activity-row .text img {
-    max-height: 30rem;
-  }
+.dubplus-chat-only .left_section {
+  display: none !important;
+}
+.dubplus-chat-only .right_section {
+  width: 40rem !important;
+  margin: 0 auto !important;
+  right: initial !important;
+  position: relative !important;
+  float: inherit !important;
 }
 
-.dubplus-hide-avatars {
-  #chat .chat-container .chat-messages .chat-main li .stream-item-content .image_row,
-  #header-global .header-right-navigation .user-info .user-image,
-  #player-controller .left ul li.imgEl {
-    display: none !important;
-  }
-
-  #chat .chat-container .chat-messages .chat-main li .activity-row,
-  #player-controller .left ul li.infoContainer {
-    padding-left: 0rem !important;
-  }
-
-  #header-global .header-right-navigation {
-    padding-top: 5px !important;
-  }  
+.dubplus-chat-only .activity-row .text img {
+  max-height: 30rem;
 }
 
-.dubplus-hide-bg {
-  .backstretch {
-    display:none !important;
-  }
+/* Hide all avatars in chat, header, and footer */
+.dubplus-hide-avatars .chat-main .image_row,
+.dubplus-hide-avatars #header-global .user-info .user-image,
+.dubplus-hide-avatars #player-controller .imgEl {
+  display: none !important;
 }
 
-.dubplus-show-timestamp {
-  #chat .timeinfo {
-    display: block !important;
-    opacity: 1 !important;
-  }
+.dubplus-hide-avatars .chat-main .activity-row,
+.dubplus-hide-avatars #player-controller .infoContainer {
+  padding-left: 0rem !important;
+}
+
+.dubplus-hide-avatars #header-global .header-right-navigation {
+  padding-top: 5px !important;
+}
+
+.dubplus-hide-bg .backstretch {
+  display: none !important;
+}
+
+.dubplus-show-timestamp #chat .timeinfo {
+  display: block !important;
+  opacity: 1 !important;
 }
 
 @media screen and (min-width: 72em) {
-  .dubplus-flip-interface {
-    #main-room .left_section {
-      padding-left: 32rem;
-      padding-right: 0;
-    }
-    #main-room .right_section {
-      right: auto;
-      left: 0;
-    }
+  .dubplus-flip-interface #main-room .left_section {
+    padding-left: 32rem;
+    padding-right: 0;
+  }
+  .dubplus-flip-interface #main-room .right_section {
+    right: auto;
+    left: 0;
   }
 }
 
-.dubplus-chat-system-grab, .chat-system-grabbed {
+.dubplus-chat-system-grab,
+.chat-system-grabbed {
   color: var(--queup-green) !important;
 }
 
@@ -213,33 +208,6 @@
 .dubplus-chat-system .icon-close {
   font-family: icomoon;
 }
-
-.icon-enlarge:before {
-  content: "\e989";
-}
-.icon-bug:before {
-  content: "\e999";
-}
-
-/* 
-  These icons are provided by icon moon which
-  is loaded by Queup for their own icons so
-  we can piggy back off that set.
- */
-.icon-facebook:before {
-  content: "\ea90";
-}
-.icon-twitter:before {
-  /* content: "\ea96"; */ /* <-- this is the X icon */
-  content: "\e80B"; /* <-- this is the original Twitter icon */
-}
-.icon-reddit:before {
-  content: "\eac6";
-}
-.icon-pencil:before {
-  content: "\e812";
-}
-
 
 .sr-only,
 .sr-only-focusable:not(:focus):not(:focus-within) {

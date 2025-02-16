@@ -1,4 +1,5 @@
-import { logInfo } from "../../utils/logger";
+import { logInfo } from '../../utils/logger';
+import IconFullscreen from '../svg/IconFullscreen.svelte';
 
 /**
  * Fullscreen video
@@ -9,17 +10,17 @@ import { logInfo } from "../../utils/logger";
  * @type {import("./module").DubPlusModule}
  */
 export const fullscreen = {
-  id: "fullscreen",
-  label: "fullscreen.label",
-  description: "fullscreen.description",
-  category: "user-interface",
-  altIcon: "arrows-alt",
+  id: 'fullscreen',
+  label: 'fullscreen.label',
+  description: 'fullscreen.description',
+  category: 'user-interface',
+  altIcon: IconFullscreen,
   onClick() {
     const elem = /**@type{HTMLIFrameElement}*/ (
-      document.querySelector(".player_container iframe")
+      document.querySelector('.player_container iframe')
     );
     if (!elem) {
-      logInfo("Fullscreen: No video element found");
+      logInfo('Fullscreen: No video element found');
       return;
     }
     if (elem.requestFullscreen) {

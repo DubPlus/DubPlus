@@ -1,4 +1,5 @@
 import type { ModalProps } from "../../global";
+import type { Component } from "svelte";
 
 export interface DubPlusModule {
   /**
@@ -46,9 +47,10 @@ export interface DubPlusModule {
 
   /**
    * If this is provided then instead of the menu item rendering
-   * a switch, it will render this icon instead.
+   * a switch, it will render this icon instead. The icon should be an svg
+   * element as a .svelte file.
    */
-  altIcon?: string;
+  altIcon?: Component;
   
   /**
    * This pairs with the altIcon property. If this is provided then

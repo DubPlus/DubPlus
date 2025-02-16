@@ -103,14 +103,14 @@
     height: 13px;
     width: 13px;
     
-    :global(svg) {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-    :global(path) {
-      fill: var(--dubplus-text-color);
-    }
+  }
+  button :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  button :global(path) {
+    fill: var(--dubplus-text-color);
   }
 
   .disabled {
