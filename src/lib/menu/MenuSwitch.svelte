@@ -1,5 +1,6 @@
 <script>
   import Switch from "./Switch.svelte";
+  import IconPencil from "../svg/IconPencil.svelte";
   import { onMount } from "svelte";
   import { saveSetting, settings } from "../stores/settings.svelte";
   import { modalState, updateModalState } from "../stores/modalState.svelte";
@@ -76,7 +77,8 @@
     isOn={settings.options[id]}
   />
   {#if customize}
-    <button onclick={openEditModal} type="button" class="fa fa-pencil">
+    <button onclick={openEditModal} type="button">
+      <IconPencil />
       <span class="sr-only">{t("MenuItem.edit")}</span>
     </button>
   {/if}
@@ -98,8 +100,17 @@
     color: #fff;
     cursor: pointer;
 
-    height: 100%;
-    width: 9%;
+    height: 13px;
+    width: 13px;
+    
+    :global(svg) {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    :global(path) {
+      fill: var(--dubplus-text-color);
+    }
   }
 
   .disabled {

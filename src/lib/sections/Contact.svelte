@@ -13,7 +13,7 @@
     text={t("contact.bugs")}
   />
   <MenuLink
-    icon="reddit-alien"
+    icon="reddit"
     href="https://www.reddit.com/r/DubPlus/"
     text="Reddit"
   />

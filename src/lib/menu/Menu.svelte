@@ -65,13 +65,15 @@
     right: 0;
     transform: translateX(var(--dubplus-menu-width));
     box-sizing: border-box;
-    color: #999;
+    color: var(--dubplus-text-color);
     font-family: var(--dubplus-font-family);
     font-size: var(--dubplus-font-size);
     line-height: 1.4;
     padding-bottom: 100px;
     height: calc(100% - 114px);
     overflow-y: auto;
+    scrollbar-color: #999 transparent;
+    scrollbar-width: thin;
   }
 
   .dubplus-menu-header {

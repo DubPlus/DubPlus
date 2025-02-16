@@ -3,6 +3,7 @@
   /* colors */
   --dubplus-primary-color: #eb008b;
   --dubplus-secondary-color: #6fcbdc;
+  --dubplus-text-color: #999;
 
   /* fonts */
   --dubplus-font-size: 13px;
@@ -15,6 +16,7 @@
   --queup-green: #b3e790;
 }
 
+/* Styles for the Snooze and ETA buttons inserted under the player */
 .dubplus-btn-player {
   /* clear button styles */
   appearance: none;
@@ -91,7 +93,7 @@
  */
 
 .dubplus-menu a {
-  color: #999;
+  color: var(--dubplus-text-color);
 }
 
 /***************************************************************
@@ -195,4 +197,63 @@
       left: 0;
     }
   }
+}
+
+.dubplus-chat-system-grab, .chat-system-grabbed {
+  color: var(--queup-green) !important;
+}
+
+.dubplus-chat-system-updub {
+  color: var(--queup-aqua);
+}
+
+.dubplus-chat-system-downdub {
+  color: var(--queup-magenta);
+}
+.dubplus-chat-system .icon-close {
+  font-family: icomoon;
+}
+
+.icon-enlarge:before {
+  content: "\e989";
+}
+.icon-bug:before {
+  content: "\e999";
+}
+
+/* 
+  These icons are provided by icon moon which
+  is loaded by Queup for their own icons so
+  we can piggy back off that set.
+ */
+.icon-facebook:before {
+  content: "\ea90";
+}
+.icon-twitter:before {
+  /* content: "\ea96"; */ /* <-- this is the X icon */
+  content: "\e80B"; /* <-- this is the original Twitter icon */
+}
+.icon-reddit:before {
+  content: "\eac6";
+}
+.icon-pencil:before {
+  content: "\e812";
+}
+
+
+.sr-only,
+.sr-only-focusable:not(:focus):not(:focus-within) {
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.sr-only:not(caption),
+.sr-only-focusable:not(:focus):not(:focus-within):not(caption) {
+  position: absolute !important;
 }

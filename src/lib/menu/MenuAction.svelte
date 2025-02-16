@@ -24,7 +24,7 @@
 
 <li {id} title={t(description)}>
   <button aria-label={t(description)} type="button" onclick={onClick}>   
-    <span class={`fa fa-${icon}`}></span>
+    <span class={`dubplus-action-icon icon-${icon}`}></span>
     <span class="dubplus-menu-label">{t(label)}</span>
   </button>
 </li>
@@ -44,7 +44,8 @@
     color:inherit;
     font-size: inherit;
   }
-  .fa {
+  .dubplus-action-icon {
+    font-family: icomoon;
     width: 29px;
     color: var(--dubplus-primary-color);
   }
