@@ -3,11 +3,11 @@
   let { settingsId, children } = $props();
 </script>
 
-<ul 
+<ul
   id={`dubplus-menu-section-${settingsId}`}
   aria-labelledby={`dubplus-menu-section-header-${settingsId}`}
   class="dubplus-menu-section"
-  role="region" 
+  role="region"
 >
   {@render children()}
 </ul>
@@ -22,8 +22,19 @@
     margin: 0;
     list-style-type: none;
   }
-  :global([aria-expanded="false"]) + ul {
+  :global([aria-expanded='false']) + ul {
     max-height: 0;
     border: none;
+  }
+  @supports (height: calc-size(auto, size)) {
+    ul {
+      max-height: unset;
+      height: calc-size(auto, size);
+      transition: height 0.3s;
+    }
+    :global([aria-expanded='false']) + ul {
+      height: 0;
+      max-height: unset;
+    }
   }
 </style>
