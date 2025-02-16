@@ -1,12 +1,12 @@
-@import "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css";
 :root {
   /* colors */
   --dubplus-primary-color: #eb008b;
   --dubplus-secondary-color: #6fcbdc;
+  --dubplus-text-color: #999;
 
   /* fonts */
   --dubplus-font-size: 13px;
-  --dubplus-font-family: "Trebuchet MS", Helvetica, sans-serif;
+  --dubplus-font-family: 'Trebuchet MS', Helvetica, sans-serif;
 
   --dubplus-menu-width: 255px;
 
@@ -14,6 +14,8 @@
   --queup-aqua: #0ff;
   --queup-green: #b3e790;
 }
+
+/* Styles for the Snooze and ETA buttons inserted under the player */
 .dubplus-btn-player {
   /* clear button styles */
   appearance: none;
@@ -35,10 +37,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 [data-dp-tooltip] {
   position: relative;
   cursor: pointer;
 }
+
 [data-dp-tooltip]::after {
   position: absolute;
   opacity: 0;
@@ -62,11 +66,13 @@
   color: #000;
   text-align: center;
 }
+
 [data-dp-tooltip]:hover::after {
   opacity: 0.8;
   transform: translateY(0);
   transition-duration: 300ms;
 }
+
 /* Make the volume controller visible all the time */
 .dubplus
   #main_player
@@ -75,111 +81,151 @@
   .volume-controller-container {
   display: block;
 }
+
 .duration {
   font-size: 14px !important;
   margin-top: 0.5em !important;
 }
+
 /***************************************************************
  * Dub+ menu styles
  */
+
 .dubplus-menu a {
-  color: #999;
+  color: var(--dubplus-text-color);
 }
+
 /***************************************************************
  * User Interface styles
  */
-.dubplus-split-chat {
-  .chat-main li:nth-child(2n) {
-    background: linear-gradient(to right, rgba(155,157,160,0.10) 0%, rgba(0,0,0,0) 100%);
-    box-shadow: -16px 0px 0px 0px rgba(155,157,160,0.10);
-    width: 100%;
 
-    .chatDelete {
-      right: 1.7em !important;
-    }
-  }
-
-  .split {
-    background: linear-gradient(to right, rgba(155,157,160,0.10) 0%, rgba(0,0,0,0) 100%);
-    box-shadow: -16px 0px 0px 0px rgba(155,157,160,0.10);
-    width: 100%;
-  }
-
-  .splitfix {
-    right: 1.7em !important;
-  }
+.dubplus-split-chat .chat-main li:nth-child(2n) {
+  background: linear-gradient(
+    to right,
+    rgba(155, 157, 160, 0.1) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
+  width: 100%;
 }
+
+.dubplus-split-chat .chat-main li:nth-child(2n) .chatDelete {
+  right: 1.7em !important;
+}
+
+.dubplus-split-chat .split {
+  background: linear-gradient(
+    to right,
+    rgba(155, 157, 160, 0.1) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
+  width: 100%;
+}
+
+.dubplus-split-chat .splitfix {
+  right: 1.7em !important;
+}
+
 /* hide the chat and only show the video */
-.dubplus-video-only {
-  .right_section {
-    display: none !important;
-  }
-
-  .left_section {
-    margin: 0 auto !important;
-    margin-left: 90px !important;
-    right: initial !important;
-    position: relative !important;
-    float: inherit !important;
-    padding-right: 200px !important;
-  }
+.dubplus-video-only .right_section {
+  display: none !important;
 }
+
+.dubplus-video-only .left_section {
+  margin: 0 auto !important;
+  margin-left: 90px !important;
+  right: initial !important;
+  position: relative !important;
+  float: inherit !important;
+  padding-right: 200px !important;
+}
+
 /* turns off the video and only shows the chat */
-.dubplus-chat-only {
-  .left_section {
-    display: none !important;
-  }
-  .right_section {
-    width: 40rem !important;
-    margin: 0 auto !important;
-    right: initial !important;
-    position: relative !important;
-    float: inherit !important;
-  }
+.dubplus-chat-only .left_section {
+  display: none !important;
+}
+.dubplus-chat-only .right_section {
+  width: 40rem !important;
+  margin: 0 auto !important;
+  right: initial !important;
+  position: relative !important;
+  float: inherit !important;
+}
 
-  .activity-row .text img {
-    max-height: 30rem;
-  }
+.dubplus-chat-only .activity-row .text img {
+  max-height: 30rem;
 }
-.dubplus-hide-avatars {
-  #chat .chat-container .chat-messages .chat-main li .stream-item-content .image_row,
-  #header-global .header-right-navigation .user-info .user-image,
-  #player-controller .left ul li.imgEl {
-    display: none !important;
-  }
 
-  #chat .chat-container .chat-messages .chat-main li .activity-row,
-  #player-controller .left ul li.infoContainer {
-    padding-left: 0rem !important;
-  }
+/* Hide all avatars in chat, header, and footer */
+.dubplus-hide-avatars .chat-main .image_row,
+.dubplus-hide-avatars #header-global .user-info .user-image,
+.dubplus-hide-avatars #player-controller .imgEl {
+  display: none !important;
+}
 
-  #header-global .header-right-navigation {
-    padding-top: 5px !important;
-  }  
+.dubplus-hide-avatars .chat-main .activity-row,
+.dubplus-hide-avatars #player-controller .infoContainer {
+  padding-left: 0rem !important;
 }
-.dubplus-hide-bg {
-  .backstretch {
-    display:none !important;
-  }
+
+.dubplus-hide-avatars #header-global .header-right-navigation {
+  padding-top: 5px !important;
 }
-.dubplus-show-timestamp {
-  #chat .timeinfo {
-    display: block !important;
-    opacity: 1 !important;
-  }
+
+.dubplus-hide-bg .backstretch {
+  display: none !important;
 }
+
+.dubplus-show-timestamp #chat .timeinfo {
+  display: block !important;
+  opacity: 1 !important;
+}
+
 @media screen and (min-width: 72em) {
-  .dubplus-flip-interface {
-    #main-room .left_section {
-      padding-left: 32rem;
-      padding-right: 0;
-    }
-    #main-room .right_section {
-      right: auto;
-      left: 0;
-    }
+  .dubplus-flip-interface #main-room .left_section {
+    padding-left: 32rem;
+    padding-right: 0;
+  }
+  .dubplus-flip-interface #main-room .right_section {
+    right: auto;
+    left: 0;
   }
 }
+
+.dubplus-chat-system-grab,
+.chat-system-grabbed {
+  color: var(--queup-green) !important;
+}
+
+.dubplus-chat-system-updub {
+  color: var(--queup-aqua);
+}
+
+.dubplus-chat-system-downdub {
+  color: var(--queup-magenta);
+}
+.dubplus-chat-system .icon-close {
+  font-family: icomoon;
+}
+
+.sr-only,
+.sr-only-focusable:not(:focus):not(:focus-within) {
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.sr-only:not(caption),
+.sr-only-focusable:not(:focus):not(:focus-within):not(caption) {
+  position: absolute !important;
+}
+
   .dubplus-waiting.svelte-16mmbc {
     font-family: var(--dubplus-font-family);
     z-index: 2147483647;
@@ -282,7 +328,7 @@
 
   /* This is the Dub+ icon in the top right that's always showing
      and triggers the open/close of Dub+ */
-  .dubplus-icon.svelte-edw2as {
+  .dubplus-icon.svelte-9z7rrn {
     /* clear button styles */
     background: none;
     border: none;
@@ -296,6 +342,8 @@
     display: inline-block;
     vertical-align: bottom;
     margin-left: 1rem;
+
+    top: -4px;
   }
 
   button.svelte-31yg9a {
@@ -322,7 +370,7 @@
     line-height: 1;
   }
 
-  ul.svelte-nowxlp {
+  ul.svelte-m5z2p2 {
     padding: 0 15px;
     border-bottom: 1px solid #222;
     max-height: 500px;
@@ -331,24 +379,37 @@
     margin: 0;
     list-style-type: none;
   }
-  [aria-expanded="false"] + ul.svelte-nowxlp {
+  [aria-expanded='false'] + ul.svelte-m5z2p2 {
     max-height: 0;
     border: none;
   }
+  @supports (height: calc-size(auto, size)) {
+    ul.svelte-m5z2p2 {
+      max-height: unset;
+      height: calc-size(auto, size);
+      transition: height 0.3s;
+    }
+    [aria-expanded='false'] + ul.svelte-m5z2p2 {
+      height: 0;
+      max-height: unset;
+    }
+  }
 
-  li.svelte-uwa6b6 {
+  li.svelte-1oilhp7 {
     display: flex;
     align-items: center;
     margin: 10px 0;
   }
-
-  span.svelte-uwa6b6 {
-    color: var(--dubplus-primary-color);
-    width: 30px;
-    text-align: center;
+  li.svelte-1oilhp7 path {
+    fill: var(--dubplus-primary-color);
+  }
+  li.svelte-1oilhp7 svg {
+    width: 20px;
+    height: 20px;
+    display: block;
   }
 
-  a.svelte-uwa6b6 {
+  a.svelte-1oilhp7 {
     text-decoration: none;
     margin-left: 11px;
   }
@@ -396,14 +457,14 @@
     left: 13px;
   }
 
-  li.svelte-izs1xx {
+  li.svelte-1fumazm {
     display: flex;
     align-items: center;
     margin: 10px 0;
     justify-content: space-between;
   }
 
-  button.svelte-izs1xx {
+  button.svelte-1fumazm {
     appearance: none;
     background: none;
     border: none;
@@ -411,14 +472,23 @@
     color: #fff;
     cursor: pointer;
 
+    height: 13px;
+    width: 13px;
+    
+  }
+  button.svelte-1fumazm svg {
+    display: block;
+    width: 100%;
     height: 100%;
-    width: 9%;
+  }
+  button.svelte-1fumazm path {
+    fill: var(--dubplus-text-color);
   }
 
-  .disabled.svelte-izs1xx {
+  .disabled.svelte-1fumazm {
     opacity: 0.5;
   }
-  .disabled.svelte-izs1xx:hover {
+  .disabled.svelte-1fumazm:hover {
     cursor: not-allowed;
   }
 
@@ -609,10 +679,10 @@
     filter: drop-shadow(0 0 10px white);
   }
 
-  li.svelte-1j4s6el {
+  li.svelte-1gn1ygz {
     margin: 10px 0;
   }
-  button.svelte-1j4s6el {
+  button.svelte-1gn1ygz {
     display: flex;
     align-items: center;
     background: none;
@@ -623,17 +693,20 @@
     color:inherit;
     font-size: inherit;
   }
-  .fa.svelte-1j4s6el {
+
+  button.svelte-1gn1ygz svg {
     width: 29px;
-    color: var(--dubplus-primary-color);
+    height: 18px;
+    fill: var(--dubplus-primary-color);
   }
-  .dubplus-menu-label.svelte-1j4s6el {
+
+  .dubplus-menu-label.svelte-1gn1ygz {
     flex: 1;
     padding-left: 11px;
   }
 
   /* the main container for the whole menu that slides in */
-  .dubplus-menu.svelte-15wjekh {
+  .dubplus-menu.svelte-1u8kv6a {
     position: fixed;
     z-index: 999;
     background-color: rgba(10, 10, 10, 0.98);
@@ -644,16 +717,18 @@
     right: 0;
     transform: translateX(var(--dubplus-menu-width));
     box-sizing: border-box;
-    color: #999;
+    color: var(--dubplus-text-color);
     font-family: var(--dubplus-font-family);
     font-size: var(--dubplus-font-size);
     line-height: 1.4;
     padding-bottom: 100px;
     height: calc(100% - 114px);
     overflow-y: auto;
+    scrollbar-color: #999 transparent;
+    scrollbar-width: thin;
   }
 
-  .dubplus-menu-header.svelte-15wjekh {
+  .dubplus-menu-header.svelte-1u8kv6a {
     padding: 12px 15px;
     line-height: 1;
     margin: 0;
@@ -663,6 +738,6 @@
   }
 
   /* this is toggled in MenuIcon component */
-  .dubplus-menu.svelte-15wjekh.dubplus-menu-open {
+  .dubplus-menu.svelte-1u8kv6a.dubplus-menu-open {
     transform: translate3d(0, 0, 0);
   }

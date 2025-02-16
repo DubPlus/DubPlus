@@ -165,7 +165,7 @@ var dubplus = function() {
       };
     }
   }
-  function pop(component) {
+  function pop(component2) {
     const context_stack_item = component_context;
     if (context_stack_item !== null) {
       const component_effects = context_stack_item.e;
@@ -1723,8 +1723,8 @@ var dubplus = function() {
       text2.nodeValue = str + "";
     }
   }
-  function mount(component, options) {
-    return _mount(component, options);
+  function mount(component2, options) {
+    return _mount(component2, options);
   }
   const document_listeners = /* @__PURE__ */ new Map();
   function _mount(Component, { target, anchor, props = {}, events, context, intro = true }) {
@@ -1748,7 +1748,7 @@ var dubplus = function() {
     };
     event_handle(array_from(all_registered_events));
     root_event_handles.add(event_handle);
-    var component = void 0;
+    var component2 = void 0;
     var unmount2 = component_root(() => {
       var anchor_node = anchor ?? target.appendChild(create_text());
       branch(() => {
@@ -1763,7 +1763,7 @@ var dubplus = function() {
         if (events) {
           props.$$events = events;
         }
-        component = Component(anchor_node, props) || {};
+        component2 = Component(anchor_node, props) || {};
         if (context) {
           pop();
         }
@@ -1789,14 +1789,14 @@ var dubplus = function() {
         }
       };
     });
-    mounted_components.set(component, unmount2);
-    return component;
+    mounted_components.set(component2, unmount2);
+    return component2;
   }
   let mounted_components = /* @__PURE__ */ new WeakMap();
-  function unmount(component, options) {
-    const fn = mounted_components.get(component);
+  function unmount(component2, options) {
+    const fn = mounted_components.get(component2);
     if (fn) {
-      mounted_components.delete(component);
+      mounted_components.delete(component2);
       return fn(options);
     }
     return Promise.resolve();
@@ -2170,6 +2170,21 @@ var dubplus = function() {
       ));
     }, EFFECT_TRANSPARENT);
   }
+  function component(node, get_component, render_fn) {
+    var anchor = node;
+    var component2;
+    var effect2;
+    block(() => {
+      if (component2 === (component2 = get_component())) return;
+      if (effect2) {
+        pause_effect(effect2);
+        effect2 = null;
+      }
+      if (component2) {
+        effect2 = branch(() => render_fn(anchor, component2));
+      }
+    }, EFFECT_TRANSPARENT);
+  }
   function action(dom, action2, get_value) {
     effect(() => {
       var payload = untrack(() => action2(dom, get_value == null ? void 0 : get_value()) || {});
@@ -2459,9 +2474,9 @@ var dubplus = function() {
     });
   }
   enable_legacy_mode_flag();
-  var root$k = /* @__PURE__ */ ns_template(`<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" viewBox="0 0 2078.496 2083.914" enable-background="new 0 0 2078.496 2083.914" xml:space="preserve"><rect x="769.659" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#660078" width="539.178" height="539.178"></rect><g><rect x="1308.837" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.488" height="539.178"></rect><polygon fill="#EB008B" points="2045.015,1042.035 1845.324,1311.625 1845.324,772.446 	"></polygon></g><g><rect x="232.172" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.487" height="539.178"></rect><polygon fill="#EB008B" points="33.481,1042.034 233.172,772.445 233.172,1311.623 	"></polygon></g><g><rect x="769.659" y="1311.624" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.248,2047.802 769.659,1848.111 1308.837,1848.111 	"></polygon></g><g><rect x="769.659" y="234.958" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.249,35.268 1308.837,235.958 769.659,235.958 	"></polygon></g></svg>`);
+  var root$q = /* @__PURE__ */ ns_template(`<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" viewBox="0 0 2078.496 2083.914" enable-background="new 0 0 2078.496 2083.914" xml:space="preserve"><rect x="769.659" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#660078" width="539.178" height="539.178"></rect><g><rect x="1308.837" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.488" height="539.178"></rect><polygon fill="#EB008B" points="2045.015,1042.035 1845.324,1311.625 1845.324,772.446 	"></polygon></g><g><rect x="232.172" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.487" height="539.178"></rect><polygon fill="#EB008B" points="33.481,1042.034 233.172,772.445 233.172,1311.623 	"></polygon></g><g><rect x="769.659" y="1311.624" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.248,2047.802 769.659,1848.111 1308.837,1848.111 	"></polygon></g><g><rect x="769.659" y="234.958" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.249,35.268 1308.837,235.958 769.659,235.958 	"></polygon></g></svg>`);
   function Logo($$anchor) {
-    var svg = root$k();
+    var svg = root$q();
     append($$anchor, svg);
   }
   const translations = {
@@ -2609,11 +2624,11 @@ var dubplus = function() {
     }
     return loc;
   }
-  var root$j = /* @__PURE__ */ template(`<div class="dubplus-waiting svelte-16mmbc"><div style="width: 26px; margin-right:5px"><!></div> <span style="flex: 1;"> </span></div>`);
+  var root$p = /* @__PURE__ */ template(`<div class="dubplus-waiting svelte-16mmbc"><div style="width: 26px; margin-right:5px"><!></div> <span style="flex: 1;"> </span></div>`);
   function Loading($$anchor, $$props) {
     push($$props, false);
     init();
-    var div = root$j();
+    var div = root$p();
     var div_1 = child(div);
     var node = child(div_1);
     Logo(node);
@@ -2659,7 +2674,7 @@ var dubplus = function() {
   var root_2$3 = /* @__PURE__ */ template(`<p class="dp-modal--error svelte-1mnr24t"> </p>`);
   var root_3$1 = /* @__PURE__ */ template(`<button class="dp-modal--cancel cancel svelte-1mnr24t"> </button> <button class="dp-modal--confirm confirm svelte-1mnr24t"> </button>`, 1);
   var root_4 = /* @__PURE__ */ template(`<button class="dp-modal--cancel cancel svelte-1mnr24t"> </button>`);
-  var root$i = /* @__PURE__ */ template(`<dialog id="dubplus-dialog" class="dp-modal svelte-1mnr24t"><h1 class="svelte-1mnr24t"> </h1> <div class="dp-modal--content content svelte-1mnr24t"><p class="svelte-1mnr24t"> </p> <!> <!></div> <div class="dp-modal--buttons buttons svelte-1mnr24t"><!></div></dialog>`);
+  var root$o = /* @__PURE__ */ template(`<dialog id="dubplus-dialog" class="dp-modal svelte-1mnr24t"><h1 class="svelte-1mnr24t"> </h1> <div class="dp-modal--content content svelte-1mnr24t"><p class="svelte-1mnr24t"> </p> <!> <!></div> <div class="dp-modal--buttons buttons svelte-1mnr24t"><!></div></dialog>`);
   function Modal($$anchor, $$props) {
     push($$props, true);
     let errorMessage = state("");
@@ -2676,7 +2691,7 @@ var dubplus = function() {
         dialog.showModal();
       }
     });
-    var dialog_1 = root$i();
+    var dialog_1 = root$o();
     var h1 = child(dialog_1);
     var text2 = child(h1);
     var div = sibling(h1, 2);
@@ -2789,11 +2804,11 @@ var dubplus = function() {
   var on_click$1 = () => {
     document.querySelector(".dubplus-menu").classList.toggle("dubplus-menu-open");
   };
-  var root$h = /* @__PURE__ */ template(`<button type="button" aria-label="Dub+ menu" class="dubplus-icon svelte-edw2as"><!></button>`);
+  var root$n = /* @__PURE__ */ template(`<button type="button" aria-label="Dub+ menu" class="dubplus-icon svelte-9z7rrn"><!></button>`);
   function MenuIcon($$anchor, $$props) {
     push($$props, false);
     init();
-    var button = root$h();
+    var button = root$n();
     button.__click = [on_click$1];
     var node = child(button);
     Logo(node);
@@ -2947,7 +2962,7 @@ var dubplus = function() {
     }
     throw new Error(`Invalid section: "${section}"`);
   }
-  var root$g = /* @__PURE__ */ template(`<button type="button" class="dubplus-menu-section-header svelte-31yg9a"><span></span> <p class="svelte-31yg9a"> </p></button>`);
+  var root$m = /* @__PURE__ */ template(`<button type="button" class="dubplus-menu-section-header svelte-31yg9a"><span></span> <p class="svelte-31yg9a"> </p></button>`);
   function MenuHeader($$anchor, $$props) {
     push($$props, true);
     let arrow = state("down");
@@ -2965,7 +2980,7 @@ var dubplus = function() {
       settings.menu[$$props.settingsId] = settings.menu[$$props.settingsId] === "closed" ? "open" : "closed";
       saveSetting("menu", $$props.settingsId, settings.menu[$$props.settingsId]);
     }
-    var button = root$g();
+    var button = root$m();
     button.__click = toggle;
     var span = child(button);
     var p = sibling(span, 2);
@@ -2981,9 +2996,9 @@ var dubplus = function() {
     pop();
   }
   delegate(["click"]);
-  var root$f = /* @__PURE__ */ template(`<ul class="dubplus-menu-section svelte-nowxlp" role="region"><!></ul>`);
+  var root$l = /* @__PURE__ */ template(`<ul class="dubplus-menu-section svelte-m5z2p2" role="region"><!></ul>`);
   function MenuSection($$anchor, $$props) {
-    var ul = root$f();
+    var ul = root$l();
     var node = child(ul);
     snippet(node, () => $$props.children);
     template_effect(() => {
@@ -2992,25 +3007,47 @@ var dubplus = function() {
     });
     append($$anchor, ul);
   }
-  var root$e = /* @__PURE__ */ template(`<li class="dubplus-menu-icon svelte-uwa6b6"><span></span> <a class="dubplus-menu-label svelte-uwa6b6" target="_blank"> </a></li>`);
+  var root$k = /* @__PURE__ */ template(`<li class="dubplus-menu-icon svelte-1oilhp7"><!> <a class="dubplus-menu-label svelte-1oilhp7" target="_blank"> </a></li>`);
   function MenuLink($$anchor, $$props) {
-    var li = root$e();
-    var span = child(li);
-    var a = sibling(span, 2);
+    var li = root$k();
+    var node = child(li);
+    component(node, () => $$props.icon, ($$anchor2, $$component) => {
+      $$component($$anchor2, {});
+    });
+    var a = sibling(node, 2);
     var text_1 = child(a);
     template_effect(() => {
-      set_class(span, `fa fa-${$$props.icon ?? ""} svelte-uwa6b6`);
       set_attribute(a, "href", $$props.href);
       set_text(text_1, $$props.text);
     });
     append($$anchor, li);
   }
+  var root$j = /* @__PURE__ */ ns_template(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 0c53 0 96 43 96 96l0 3.6c0 15.7-12.7 28.4-28.4 28.4l-135.1 0c-15.7 0-28.4-12.7-28.4-28.4l0-3.6c0-53 43-96 96-96zM41.4 105.4c12.5-12.5 32.8-12.5 45.3 0l64 64c.7 .7 1.3 1.4 1.9 2.1c14.2-7.3 30.4-11.4 47.5-11.4l112 0c17.1 0 33.2 4.1 47.5 11.4c.6-.7 1.2-1.4 1.9-2.1l64-64c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-64 64c-.7 .7-1.4 1.3-2.1 1.9c6.2 12 10.1 25.3 11.1 39.5l64.3 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c0 24.6-5.5 47.8-15.4 68.6c2.2 1.3 4.2 2.9 6 4.8l64 64c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0l-63.1-63.1c-24.5 21.8-55.8 36.2-90.3 39.6L272 240c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 239.2c-34.5-3.4-65.8-17.8-90.3-39.6L86.6 502.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l64-64c1.9-1.9 3.9-3.4 6-4.8C101.5 367.8 96 344.6 96 320l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64.3 0c1.1-14.1 5-27.5 11.1-39.5c-.7-.6-1.4-1.2-2.1-1.9l-64-64c-12.5-12.5-12.5-32.8 0-45.3z"></path></svg>`);
+  function IconBug($$anchor) {
+    var svg = root$j();
+    append($$anchor, svg);
+  }
+  var root$i = /* @__PURE__ */ ns_template(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32zM305.9 166.4c20.6 0 37.3-16.7 37.3-37.3s-16.7-37.3-37.3-37.3c-18 0-33.1 12.8-36.6 29.8c-30.2 3.2-53.8 28.8-53.8 59.9l0 .2c-32.8 1.4-62.8 10.7-86.6 25.5c-8.8-6.8-19.9-10.9-32-10.9c-28.9 0-52.3 23.4-52.3 52.3c0 21 12.3 39 30.1 47.4c1.7 60.7 67.9 109.6 149.3 109.6s147.6-48.9 149.3-109.7c17.7-8.4 29.9-26.4 29.9-47.3c0-28.9-23.4-52.3-52.3-52.3c-12 0-23 4-31.9 10.8c-24-14.9-54.3-24.2-87.5-25.4l0-.1c0-22.2 16.5-40.7 37.9-43.7l0 0c3.9 16.5 18.7 28.7 36.3 28.7zM155 248.1c14.6 0 25.8 15.4 25 34.4s-11.8 25.9-26.5 25.9s-27.5-7.7-26.6-26.7s13.5-33.5 28.1-33.5zm166.4 33.5c.9 19-12 26.7-26.6 26.7s-25.6-6.9-26.5-25.9c-.9-19 10.3-34.4 25-34.4s27.3 14.6 28.1 33.5zm-42.1 49.6c-9 21.5-30.3 36.7-55.1 36.7s-46.1-15.1-55.1-36.7c-1.1-2.6 .7-5.4 3.4-5.7c16.1-1.6 33.5-2.5 51.7-2.5s35.6 .9 51.7 2.5c2.7 .3 4.5 3.1 3.4 5.7z"></path></svg>`);
+  function IconReddit($$anchor) {
+    var svg = root$i();
+    append($$anchor, svg);
+  }
+  var root$h = /* @__PURE__ */ ns_template(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64h98.2V334.2H109.4V256h52.8V222.3c0-87.1 39.4-127.5 125-127.5c16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1c-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H255V480H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64z"></path></svg>`);
+  function IconFacebook($$anchor) {
+    var svg = root$h();
+    append($$anchor, svg);
+  }
+  var root$g = /* @__PURE__ */ ns_template(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM351.3 199.3v0c0 86.7-66 186.6-186.6 186.6c-37.2 0-71.7-10.8-100.7-29.4c5.3 .6 10.4 .8 15.8 .8c30.7 0 58.9-10.4 81.4-28c-28.8-.6-53-19.5-61.3-45.5c10.1 1.5 19.2 1.5 29.6-1.2c-30-6.1-52.5-32.5-52.5-64.4v-.8c8.7 4.9 18.9 7.9 29.6 8.3c-9-6-16.4-14.1-21.5-23.6s-7.8-20.2-7.7-31c0-12.2 3.2-23.4 8.9-33.1c32.3 39.8 80.8 65.8 135.2 68.6c-9.3-44.5 24-80.6 64-80.6c18.9 0 35.9 7.9 47.9 20.7c14.8-2.8 29-8.3 41.6-15.8c-4.9 15.2-15.2 28-28.8 36.1c13.2-1.4 26-5.1 37.8-10.2c-8.9 13.1-20.1 24.7-32.9 34c.2 2.8 .2 5.7 .2 8.5z"></path></svg>`);
+  function IconTwitter($$anchor) {
+    var svg = root$g();
+    append($$anchor, svg);
+  }
   var root_1$2 = /* @__PURE__ */ template(`<!> <!> <!> <!>`, 1);
-  var root$d = /* @__PURE__ */ template(`<!> <!>`, 1);
+  var root$f = /* @__PURE__ */ template(`<!> <!>`, 1);
   function Contact($$anchor, $$props) {
     push($$props, false);
     init();
-    var fragment = root$d();
+    var fragment = root$f();
     var node = first_child(fragment);
     const expression = /* @__PURE__ */ derived_safe_equal(() => t("contact.title"));
     MenuHeader(node, {
@@ -3027,7 +3064,7 @@ var dubplus = function() {
         var node_2 = first_child(fragment_1);
         const expression_1 = /* @__PURE__ */ derived_safe_equal(() => t("contact.bugs"));
         MenuLink(node_2, {
-          icon: "bug",
+          icon: IconBug,
           href: "https://discord.gg/XUkG3Qy",
           get text() {
             return get(expression_1);
@@ -3035,19 +3072,19 @@ var dubplus = function() {
         });
         var node_3 = sibling(node_2, 2);
         MenuLink(node_3, {
-          icon: "reddit-alien",
+          icon: IconReddit,
           href: "https://www.reddit.com/r/DubPlus/",
           text: "Reddit"
         });
         var node_4 = sibling(node_3, 2);
         MenuLink(node_4, {
-          icon: "facebook",
+          icon: IconFacebook,
           href: "https://facebook.com/DubPlusScript",
           text: "Facebook"
         });
         var node_5 = sibling(node_4, 2);
         MenuLink(node_5, {
-          icon: "twitter",
+          icon: IconTwitter,
           href: "https://twitter.com/DubPlusScript",
           text: "Twitter"
         });
@@ -3070,16 +3107,17 @@ var dubplus = function() {
     set(checked, !get(checked));
     $$props.onToggle(get(checked));
   }
-  var root$c = /* @__PURE__ */ template(`<div role="switch" tabindex="0" class="svelte-dbnfh0"><span class="dubplus-switch svelte-dbnfh0"><span class="svelte-dbnfh0"></span></span> <span class="dubplus-switch-label svelte-dbnfh0"> </span></div>`);
+  var root$e = /* @__PURE__ */ template(`<div role="switch" tabindex="0" class="svelte-dbnfh0"><span class="dubplus-switch svelte-dbnfh0"><span class="svelte-dbnfh0"></span></span> <span class="dubplus-switch-label svelte-dbnfh0"> </span></div>`);
   function Switch($$anchor, $$props) {
     push($$props, true);
     let checked = state(proxy(!$$props.disabled ? $$props.isOn : false));
-    var div = root$c();
+    var div = root$e();
     div.__click = [handleClick, $$props, checked];
     div.__keydown = [handleKeydown, $$props, checked];
     var span = sibling(child(div), 2);
     var text2 = child(span);
     template_effect(() => {
+      set_attribute(div, "aria-disabled", $$props.disabled ? "true" : "false");
       set_attribute(div, "aria-checked", get(checked) ? "true" : "false");
       set_text(text2, $$props.label);
     });
@@ -3087,11 +3125,16 @@ var dubplus = function() {
     pop();
   }
   delegate(["click", "keydown"]);
+  var root$d = /* @__PURE__ */ ns_template(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1 0 32c0 8.8 7.2 16 16 16l32 0zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"></path></svg>`);
+  function IconPencil($$anchor) {
+    var svg = root$d();
+    append($$anchor, svg);
+  }
   function isMod(userid) {
     return window.QueUp.helpers.isSiteAdmin(userid) || window.QueUp.room.users.getIfOwner(userid) || window.QueUp.room.users.getIfManager(userid) || window.QueUp.room.users.getIfMod(userid);
   }
-  var root_1$1 = /* @__PURE__ */ template(`<button type="button" class="fa fa-pencil svelte-izs1xx"><span class="sr-only"> </span></button>`);
-  var root$b = /* @__PURE__ */ template(`<li class="svelte-izs1xx"><!> <!></li>`);
+  var root_1$1 = /* @__PURE__ */ template(`<button type="button" class="svelte-1fumazm"><!> <span class="sr-only"> </span></button>`);
+  var root$c = /* @__PURE__ */ template(`<li class="svelte-1fumazm"><!> <!></li>`);
   function MenuSwitch($$anchor, $$props) {
     push($$props, true);
     onMount(() => {
@@ -3121,9 +3164,9 @@ var dubplus = function() {
       });
       modalState.open = true;
     }
-    var li = root$b();
+    var li = root$c();
     var node = child(li);
-    const expression = /* @__PURE__ */ derived(() => $$props.modOnly && !isMod(window.QueUp.session.id));
+    const expression = /* @__PURE__ */ derived(() => $$props.modOnly ? !isMod(window.QueUp.session.id) : false);
     const expression_1 = /* @__PURE__ */ derived(() => t($$props.label));
     Switch(node, {
       get disabled() {
@@ -3148,7 +3191,9 @@ var dubplus = function() {
       var consequent = ($$anchor2) => {
         var button = root_1$1();
         button.__click = openEditModal;
-        var span = child(button);
+        var node_2 = child(button);
+        IconPencil(node_2);
+        var span = sibling(node_2, 2);
         var text2 = child(span);
         template_effect(($0) => set_text(text2, $0), [() => t("MenuItem.edit")]);
         append($$anchor2, button);
@@ -3165,7 +3210,7 @@ var dubplus = function() {
       },
       [
         () => t($$props.description),
-        () => $$props.modOnly && !isMod(window.QueUp.session.id)
+        () => $$props.modOnly ? !isMod(window.QueUp.session.id) : false
       ]
     );
     append($$anchor, li);
@@ -4065,9 +4110,14 @@ var dubplus = function() {
     }
   };
   function djNotificationCheck(e) {
-    var _a;
+    var _a, _b;
+    logInfo("djNotificationCheck", e);
+    const isInQueue = !!((_a = document.querySelector(".queue-position")) == null ? void 0 : _a.textContent);
+    if (!isInQueue) {
+      return;
+    }
     const currentPosition = parseInt(
-      (_a = document.querySelector(".queue-position")) == null ? void 0 : _a.textContent,
+      (_b = document.querySelector(".queue-position")) == null ? void 0 : _b.textContent,
       10
     );
     if (isNaN(currentPosition)) {
@@ -4151,7 +4201,7 @@ var dubplus = function() {
           const { username: username2 } = response.userinfo;
           resolve(username2);
         } else {
-          reject("Failed to get username from API");
+          reject("Failed to get username from API for userid: " + userid);
         }
       }).catch(reject);
     });
@@ -4166,7 +4216,7 @@ var dubplus = function() {
           userid: dub.userid,
           username
         });
-      }).catch((error) => logError("Failed to get username for upDubs", error));
+      }).catch((error) => logError("Failed to get username for upDubs:", error));
     });
   }
   function updateDowndubs(downdubs) {
@@ -4331,9 +4381,9 @@ var dubplus = function() {
   };
   function grabChatWatcher(e) {
     const isUserTheDJ = window.QueUp.session.id === window.QueUp.room.player.activeSong.attributes.song.userid;
-    if (isUserTheDJ && !window.QueUp.room.model.get("displayUserGrab")) {
+    if (isUserTheDJ) {
       insertQueupChat(
-        "dubplus-chat-system-updub",
+        "dubplus-chat-system-grab",
         t("grabs-in-chat.chat-message", {
           username: e.user.username,
           song_name: window.QueUp.room.player.activeSong.attributes.songInfo.name
@@ -4347,16 +4397,20 @@ var dubplus = function() {
     description: "grabs-in-chat.description",
     category: "general",
     turnOn() {
-      window.QueUp.Events.bind(
-        "realtime:room_playlist-queue-update-grabs",
-        grabChatWatcher
-      );
+      if (!window.QueUp.room.model.get("displayUserGrab")) {
+        window.QueUp.Events.bind(
+          "realtime:room_playlist-queue-update-grabs",
+          grabChatWatcher
+        );
+      }
     },
     turnOff() {
-      window.QueUp.Events.unbind(
-        "realtime:room_playlist-queue-update-grabs",
-        grabChatWatcher
-      );
+      if (!window.QueUp.room.model.get("displayUserGrab")) {
+        window.QueUp.Events.unbind(
+          "realtime:room_playlist-queue-update-grabs",
+          grabChatWatcher
+        );
+      }
     }
   };
   const snow = {
@@ -4562,12 +4616,17 @@ var dubplus = function() {
       delete this.rainEffect;
     }
   };
+  var root$b = /* @__PURE__ */ ns_template(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M448 344v112a23.9 23.9 0 0 1 -24 24H312c-21.4 0-32.1-25.9-17-41l36.2-36.2L224 295.6 116.8 402.9 153 439c15.1 15.1 4.4 41-17 41H24a23.9 23.9 0 0 1 -24-24V344c0-21.4 25.9-32.1 41-17l36.2 36.2L184.5 256 77.2 148.7 41 185c-15.1 15.1-41 4.4-41-17V56a23.9 23.9 0 0 1 24-24h112c21.4 0 32.1 25.9 17 41l-36.2 36.2L224 216.4l107.2-107.3L295 73c-15.1-15.1-4.4-41 17-41h112a23.9 23.9 0 0 1 24 24v112c0 21.4-25.9 32.1-41 17l-36.2-36.2L263.5 256l107.3 107.3L407 327.1c15.1-15.2 41-4.5 41 16.9z"></path></svg>`);
+  function IconFullscreen($$anchor) {
+    var svg = root$b();
+    append($$anchor, svg);
+  }
   const fullscreen = {
     id: "fullscreen",
     label: "fullscreen.label",
     description: "fullscreen.description",
     category: "user-interface",
-    altIcon: "arrows-alt",
+    altIcon: IconFullscreen,
     onClick() {
       const elem = (
         /**@type{HTMLIFrameElement}*/
@@ -4715,7 +4774,7 @@ var dubplus = function() {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${"https://cdn.jsdelivr.net/gh/DubPlus/DubPlus"}${cssFile}?${"1739424315897"}`
+        `${"https://cdn.jsdelivr.net/gh/DubPlus/DubPlus"}${cssFile}?${"1739689631713"}`
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -4996,10 +5055,10 @@ var dubplus = function() {
       if (!booth_position) {
         return t("Eta.tooltip.notInQueue");
       }
-      const time = 4;
+      const average_song_minutes = 4;
       const current_time = parseInt((_b = document.querySelector("#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min")) == null ? void 0 : _b.textContent);
-      const booth_duration = parseInt(booth_position);
-      const booth_time = booth_duration * time - time + current_time;
+      const position_in_queue = parseInt(booth_position);
+      const booth_time = position_in_queue * average_song_minutes - average_song_minutes + current_time;
       if (booth_time >= 0) {
         return t("Eta.tootltip", { minutes: booth_time });
       } else {
@@ -5127,22 +5186,201 @@ var dubplus = function() {
     pop();
   }
   delegate(["click"]);
+  var browser = { exports: {} };
+  var hasRequiredBrowser;
+  function requireBrowser() {
+    if (hasRequiredBrowser) return browser.exports;
+    hasRequiredBrowser = 1;
+    var process = browser.exports = {};
+    var cachedSetTimeout;
+    var cachedClearTimeout;
+    function defaultSetTimout() {
+      throw new Error("setTimeout has not been defined");
+    }
+    function defaultClearTimeout() {
+      throw new Error("clearTimeout has not been defined");
+    }
+    (function() {
+      try {
+        if (typeof setTimeout === "function") {
+          cachedSetTimeout = setTimeout;
+        } else {
+          cachedSetTimeout = defaultSetTimout;
+        }
+      } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+      }
+      try {
+        if (typeof clearTimeout === "function") {
+          cachedClearTimeout = clearTimeout;
+        } else {
+          cachedClearTimeout = defaultClearTimeout;
+        }
+      } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+      }
+    })();
+    function runTimeout(fun) {
+      if (cachedSetTimeout === setTimeout) {
+        return setTimeout(fun, 0);
+      }
+      if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+      }
+      try {
+        return cachedSetTimeout(fun, 0);
+      } catch (e) {
+        try {
+          return cachedSetTimeout.call(null, fun, 0);
+        } catch (e2) {
+          return cachedSetTimeout.call(this, fun, 0);
+        }
+      }
+    }
+    function runClearTimeout(marker) {
+      if (cachedClearTimeout === clearTimeout) {
+        return clearTimeout(marker);
+      }
+      if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+      }
+      try {
+        return cachedClearTimeout(marker);
+      } catch (e) {
+        try {
+          return cachedClearTimeout.call(null, marker);
+        } catch (e2) {
+          return cachedClearTimeout.call(this, marker);
+        }
+      }
+    }
+    var queue = [];
+    var draining = false;
+    var currentQueue;
+    var queueIndex = -1;
+    function cleanUpNextTick() {
+      if (!draining || !currentQueue) {
+        return;
+      }
+      draining = false;
+      if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+      } else {
+        queueIndex = -1;
+      }
+      if (queue.length) {
+        drainQueue();
+      }
+    }
+    function drainQueue() {
+      if (draining) {
+        return;
+      }
+      var timeout = runTimeout(cleanUpNextTick);
+      draining = true;
+      var len = queue.length;
+      while (len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+          if (currentQueue) {
+            currentQueue[queueIndex].run();
+          }
+        }
+        queueIndex = -1;
+        len = queue.length;
+      }
+      currentQueue = null;
+      draining = false;
+      runClearTimeout(timeout);
+    }
+    process.nextTick = function(fun) {
+      var args = new Array(arguments.length - 1);
+      if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+          args[i - 1] = arguments[i];
+        }
+      }
+      queue.push(new Item(fun, args));
+      if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+      }
+    };
+    function Item(fun, array) {
+      this.fun = fun;
+      this.array = array;
+    }
+    Item.prototype.run = function() {
+      this.fun.apply(null, this.array);
+    };
+    process.title = "browser";
+    process.browser = true;
+    process.env = {};
+    process.argv = [];
+    process.version = "";
+    process.versions = {};
+    function noop2() {
+    }
+    process.on = noop2;
+    process.addListener = noop2;
+    process.once = noop2;
+    process.off = noop2;
+    process.removeListener = noop2;
+    process.removeAllListeners = noop2;
+    process.emit = noop2;
+    process.prependListener = noop2;
+    process.prependOnceListener = noop2;
+    process.listeners = function(name) {
+      return [];
+    };
+    process.binding = function(name) {
+      throw new Error("process.binding is not supported");
+    };
+    process.cwd = function() {
+      return "/";
+    };
+    process.chdir = function(dir) {
+      throw new Error("process.chdir is not supported");
+    };
+    process.umask = function() {
+      return 0;
+    };
+    return browser.exports;
+  }
+  requireBrowser();
   var on_click = (_, handleClick2, dub) => handleClick2(get(dub).username);
-  var root_2$1 = /* @__PURE__ */ template(`<li><div class="dubinfo-image svelte-ujv5bp"><img alt="User Avatar" class="svelte-ujv5bp"></div> <button type="button" class="dubinfo-text svelte-ujv5bp"> </button></li>`);
+  var root_2$1 = /* @__PURE__ */ template(`<li class="preview-dubinfo-item users-previews svelte-ujv5bp"><div class="dubinfo-image svelte-ujv5bp"><img alt="User Avatar" class="svelte-ujv5bp"></div> <button type="button" class="dubinfo-text svelte-ujv5bp"> </button></li>`);
   var root_3 = /* @__PURE__ */ template(`<li><!></li>`);
-  var root$6 = /* @__PURE__ */ template(`<div role="none"><ul id="dubinfo-preview"><!></ul></div>`);
+  var root$6 = /* @__PURE__ */ template(`<div role="none"><ul id="dubinfo-preview" class="dubinfo-show svelte-ujv5bp"><!></ul></div>`);
   function DubsInfo($$anchor, $$props) {
     push($$props, true);
     let dubData = /* @__PURE__ */ derived(() => getDubCount($$props.dubType));
     let positionRight = state(0);
     let positionBottom = state(0);
     let display = state("none");
-    let hoverTarget;
+    function getTarget() {
+      var _a, _b;
+      if ($$props.dubType === "updub") {
+        return (_a = document.querySelector(".dubup")) == null ? void 0 : _a.parentElement;
+      } else if ($$props.dubType === "downdub") {
+        return (_b = document.querySelector(".dubdown")) == null ? void 0 : _b.parentElement;
+      } else if ($$props.dubType === "grab") {
+        return document.querySelector(".add-to-playlist");
+      }
+      return null;
+    }
     function onHover() {
-      const rect = hoverTarget.getBoundingClientRect();
-      set(positionRight, window.innerWidth - rect.right);
-      set(positionBottom, rect.height - 2);
-      set(display, "block");
+      const hoverTarget = getTarget();
+      if (hoverTarget) {
+        const rect = hoverTarget.getBoundingClientRect();
+        set(positionRight, window.innerWidth - rect.right);
+        set(positionBottom, rect.height - 2);
+        set(display, "block");
+      } else {
+        logError(`Could not find hover target for ${$$props.dubType} in onHover`);
+      }
     }
     function onLeave(e) {
       if (e.relatedTarget && /**@type {HTMLDivElement}*/
@@ -5152,7 +5390,7 @@ var dubplus = function() {
       set(display, "none");
     }
     onMount(() => {
-      hoverTarget = document.querySelector(`.dubplus-${$$props.dubType}s-hover`);
+      const hoverTarget = getTarget();
       if (hoverTarget) {
         hoverTarget.addEventListener("mouseenter", onHover);
         hoverTarget.addEventListener("mouseleave", onLeave);
@@ -5161,6 +5399,7 @@ var dubplus = function() {
       }
     });
     onDestroy(() => {
+      const hoverTarget = getTarget();
       if (hoverTarget) {
         hoverTarget.removeEventListener("mouseenter", onHover);
         hoverTarget.removeEventListener("mouseleave", onLeave);
@@ -5192,7 +5431,6 @@ var dubplus = function() {
           var text2 = child(button);
           template_effect(
             ($0) => {
-              set_class(li, `${`preview-dubinfo-item users-previews dubplus-${$$props.dubType}-hover` ?? ""} svelte-ujv5bp`);
               set_attribute(img, "src", $0);
               set_text(text2, `@${get(dub).username ?? ""}`);
             },
@@ -5237,7 +5475,6 @@ var dubplus = function() {
       set_attribute(div, "id", `dubplus-${$$props.dubType}s-container`);
       set_class(div, `${`dubplus-dubs-container dubplus-${$$props.dubType}s-container` ?? ""} svelte-ujv5bp`);
       set_attribute(div, "style", `bottom: ${get(positionBottom)}px; right: ${get(positionRight)}px; display: ${get(display)};`);
-      set_class(ul, `${`dubinfo-show dubplus-${$$props.dubType}-hover` ?? ""} svelte-ujv5bp`);
       toggle_class(ul, "dubplus-no-dubs", get(dubData).length === 0);
     });
     event("mouseleave", div, () => set(display, "none"));
@@ -5344,7 +5581,7 @@ var dubplus = function() {
     append($$anchor, div);
     pop();
   }
-  var root$4 = /* @__PURE__ */ template(`<li class="svelte-1j4s6el"><button type="button" class="svelte-1j4s6el"><span></span> <span class="dubplus-menu-label svelte-1j4s6el"> </span></button></li>`);
+  var root$4 = /* @__PURE__ */ template(`<li class="svelte-1gn1ygz"><button type="button" class="svelte-1gn1ygz"><!> <span class="dubplus-menu-label svelte-1gn1ygz"> </span></button></li>`);
   function MenuAction($$anchor, $$props) {
     push($$props, true);
     onMount(() => {
@@ -5356,15 +5593,17 @@ var dubplus = function() {
       var _a;
       (_a = $$props.onClick) == null ? void 0 : _a.apply(this, $$args);
     };
-    var span = child(button);
-    var span_1 = sibling(span, 2);
-    var text2 = child(span_1);
+    var node = child(button);
+    component(node, () => $$props.icon, ($$anchor2, $$component) => {
+      $$component($$anchor2, {});
+    });
+    var span = sibling(node, 2);
+    var text2 = child(span);
     template_effect(
       ($0, $1) => {
         set_attribute(li, "id", $$props.id);
         set_attribute(li, "title", $0);
         set_attribute(button, "aria-label", $0);
-        set_class(span, `${`fa fa-${$$props.icon}` ?? ""} svelte-1j4s6el`);
         set_text(text2, $1);
       },
       [
@@ -5569,7 +5808,7 @@ var dubplus = function() {
     pop();
   }
   var root_2 = /* @__PURE__ */ template(`<!> <!> <!>`, 1);
-  var root = /* @__PURE__ */ template(`<!> <!> <!> <!> <!> <!> <section class="dubplus-menu svelte-15wjekh"><p class="dubplus-menu-header svelte-15wjekh"> </p> <!> <!> <!> <!> <!></section> <!>`, 1);
+  var root = /* @__PURE__ */ template(`<!> <!> <!> <!> <!> <!> <section class="dubplus-menu svelte-1u8kv6a"><p class="dubplus-menu-header svelte-1u8kv6a"> </p> <!> <!> <!> <!> <!></section> <!>`, 1);
   function Menu($$anchor, $$props) {
     push($$props, false);
     onMount(() => {
@@ -5722,7 +5961,9 @@ var dubplus = function() {
     pop();
   }
   {
-    loadCSS("/dubplus.css", "dubplus-css").catch(logError);
+    loadCSS("/dubplus.css", "dubplus-css").catch((e) => {
+      logError("Failed to load dubplus.css", e);
+    });
   }
   let container = document.getElementById("dubplus-container");
   if (!container) {
@@ -5738,3 +5979,4 @@ var dubplus = function() {
   });
   return app;
 }();
+//# sourceMappingURL=dubplus.js.map
