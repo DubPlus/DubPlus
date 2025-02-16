@@ -1,13 +1,13 @@
-import { logError } from "../../utils/logger.js";
-import { isMod } from "../../utils/modcheck.js";
-import { dubsState } from "../stores/dubsState.svelte.js";
+import { logError } from '../../utils/logger.js';
+import { isMod } from '../../utils/modcheck.js';
+import { dubsState } from '../stores/dubsState.svelte.js';
 import {
   DUB,
   GRAB,
   PLAYLIST_UPDATE,
   USER_LEAVE,
-} from "../../events-constants.js";
-import { activeDubs, userData } from "../api.js";
+} from '../../events-constants.js';
+import { activeDubs, userData } from '../api.js';
 
 /**
  * @param {string} userid
@@ -33,7 +33,7 @@ function getUserName(userid) {
           const { username } = response.userinfo;
           resolve(username);
         } else {
-          reject("Failed to get username from API");
+          reject('Failed to get username from API for userid: ' + userid);
         }
       })
       .catch(reject);
@@ -58,7 +58,7 @@ function updateUpdubs(updubs) {
           username,
         });
       })
-      .catch((error) => logError("Failed to get username for upDubs", error));
+      .catch((error) => logError('Failed to get username for upDubs:', error));
   });
 }
 
@@ -80,7 +80,7 @@ function updateDowndubs(downdubs) {
           username,
         });
       })
-      .catch((error) => logError("Failed to get username for downDubs", error));
+      .catch((error) => logError('Failed to get username for downDubs', error));
   });
 }
 
@@ -100,7 +100,7 @@ function updateGrabs(grabs) {
           username,
         });
       })
-      .catch((error) => logError("Failed to get username for grab", error));
+      .catch((error) => logError('Failed to get username for grab', error));
   });
 }
 
@@ -121,7 +121,7 @@ function resetDubs() {
         updateDowndubs(response.data.downDubs);
       }
     })
-    .catch((error) => logError("Failed to fetch dubs data from API.", error));
+    .catch((error) => logError('Failed to fetch dubs data from API.', error));
 }
 
 /**
@@ -129,7 +129,7 @@ function resetDubs() {
  * @returns
  */
 function dubWatcher(e) {
-  if (e.dubtype === "updub") {
+  if (e.dubtype === 'updub') {
     if (!dubsState.upDubs.find((el) => el.userid === e.user._id)) {
       dubsState.upDubs.push({
         userid: e.user._id,
@@ -141,7 +141,7 @@ function dubWatcher(e) {
     dubsState.downDubs = dubsState.downDubs.filter(
       (el) => el.userid !== e.user._id
     );
-  } else if (e.dubtype === "downdub" && isMod(window.QueUp.session.id)) {
+  } else if (e.dubtype === 'downdub' && isMod(window.QueUp.session.id)) {
     if (!dubsState.downDubs.find((el) => el.userid === e.user._id)) {
       dubsState.downDubs.push({
         userid: e.user._id,
@@ -209,10 +209,10 @@ function dubUserLeaveWatcher(e) {
  * @type {import("./module.js").DubPlusModule}
  */
 export const showDubsOnHover = {
-  id: "dubs-hover",
-  label: "dubs-hover.label",
-  description: "dubs-hover.description",
-  category: "general",
+  id: 'dubs-hover',
+  label: 'dubs-hover.label',
+  description: 'dubs-hover.description',
+  category: 'general',
   turnOn() {
     resetDubs();
     window.QueUp.Events.bind(DUB, dubWatcher);
