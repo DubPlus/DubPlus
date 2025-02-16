@@ -3,23 +3,20 @@
  * only mods can use this
  */
 
-import { insertQueupChat } from "../../utils/chat-message";
-import { t } from "../stores/i18n.svelte";
+import { insertQueupChat } from '../../utils/chat-message';
+import { t } from '../stores/i18n.svelte';
 
 function grabChatWatcher(e) {
-  // const user = window.QueUp.session.get("username");
-  // const currentDj = window.QueUp.room.users.collection.findWhere({
-  //   userid: window.QueUp.room.player.activeSong.attributes.song.userid,
-  // }).attributes._user.username;
-
   const isUserTheDJ =
     window.QueUp.session.id ===
     window.QueUp.room.player.activeSong.attributes.song.userid;
 
-  if (isUserTheDJ && !window.QueUp.room.model.get("displayUserGrab")) {
+  // The owner of the room can set if grabs show in chat or not. If it is
+  // disabled, we only show grabs in chat if the user is the DJ.
+  if (isUserTheDJ) {
     insertQueupChat(
-      "dubplus-chat-system-updub",
-      t("grabs-in-chat.chat-message", {
+      'dubplus-chat-system-grab',
+      t('grabs-in-chat.chat-message', {
         username: e.user.username,
         song_name: window.QueUp.room.player.activeSong.attributes.songInfo.name,
       })
@@ -28,21 +25,25 @@ function grabChatWatcher(e) {
 }
 
 export const grabsInChat = {
-  id: "grabs-in-chat",
-  label: "grabs-in-chat.label",
-  description: "grabs-in-chat.description",
-  category: "general",
+  id: 'grabs-in-chat',
+  label: 'grabs-in-chat.label',
+  description: 'grabs-in-chat.description',
+  category: 'general',
   turnOn() {
-    window.QueUp.Events.bind(
-      "realtime:room_playlist-queue-update-grabs",
-      grabChatWatcher
-    );
+    if (!window.QueUp.room.model.get('displayUserGrab')) {
+      window.QueUp.Events.bind(
+        'realtime:room_playlist-queue-update-grabs',
+        grabChatWatcher
+      );
+    }
   },
 
   turnOff() {
-    window.QueUp.Events.unbind(
-      "realtime:room_playlist-queue-update-grabs",
-      grabChatWatcher
-    );
+    if (!window.QueUp.room.model.get('displayUserGrab')) {
+      window.QueUp.Events.unbind(
+        'realtime:room_playlist-queue-update-grabs',
+        grabChatWatcher
+      );
+    }
   },
 };
