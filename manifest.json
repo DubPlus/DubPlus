@@ -38,7 +38,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["dubplus.js", "dubplus.css"],
+      "resources": ["dubplus.js", "dubplus.css", "dubplus.js.map"],
       "matches": [
         "*://dubtrack.fm/*",
         "*://*.dubtrack.fm/*",
