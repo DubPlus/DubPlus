@@ -61,9 +61,9 @@
 <li 
   {id} 
   title={t(description)} 
-  class:disabled={modOnly && !isMod(window.QueUp.session.id)}>
+  class:disabled={modOnly ? !isMod(window.QueUp.session.id) : false}>
   <Switch
-    disabled={modOnly && !isMod(window.QueUp.session.id)}
+    disabled={modOnly ? !isMod(window.QueUp.session.id) : false}
     label={t(label)}
     onToggle={(state) => {
       // When turning on a feature that requires a custom value, and that
