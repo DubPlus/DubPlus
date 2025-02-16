@@ -1,5 +1,5 @@
 <script>
-  import Logo from "./Logo.svelte";
+  import Logo from "../svg/Logo.svelte";
   import { teleport } from "../actions/teleport";
 </script>
 

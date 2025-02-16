@@ -4,7 +4,7 @@
    * All of the styles are inlined here so we can load this component faster
    * and discard them after since they will no longer be needed.
    */
-  import Logo from "./menu/Logo.svelte";
+  import Logo from "./svg/Logo.svelte";
   import { t } from "./stores/i18n.svelte";
 </script>
 
