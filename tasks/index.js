@@ -2,7 +2,6 @@
  * custom tasks
  */
 import { log } from './fancy-log.js';
-import { packExtensions } from './extensions.js';
 import { zipExetension } from './zip.js';
 
 // find out which task we're running
@@ -17,7 +16,6 @@ switch (currentTask) {
 
   // TODO: this is outdated and needs to be fixed.
   // case 'ext-deploy':
-  //   packExtensions(true);
   //   deployExtensions(arg);
   //   break;
 
