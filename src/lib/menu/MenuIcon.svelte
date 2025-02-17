@@ -1,10 +1,11 @@
 <script>
   import Logo from "../svg/Logo.svelte";
-  import { teleport } from "../actions/teleport";
+  import { teleport } from "../actions/teleport.svelte";
 </script>
 
 <button
   use:teleport={{ to: ".header-right-navigation" }}
+  id="dubplus-menu-icon"
   type="button"
   aria-label="Dub+ menu"
   class="dubplus-icon"

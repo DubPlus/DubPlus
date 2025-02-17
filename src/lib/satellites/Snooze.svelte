@@ -1,5 +1,5 @@
 <script>
-  import { teleport } from "../actions/teleport";
+  import { teleport } from "../actions/teleport.svelte";
   import { t } from "../stores/i18n.svelte";
 
   /**
@@ -57,6 +57,7 @@
 
 <button
   use:teleport={{ to: ".player_sharing" }}
+  id="dubplus-snooze"
   type="button"
   class="icon-mute snooze_btn dubplus-btn-player"
   aria-label={t("Snooze.tooltip")}

@@ -1,11 +1,10 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
-  import { teleport } from '../actions/teleport.js';
+  import { teleport } from '../actions/teleport.svelte.js';
   import { userImage } from '../api.js';
   import { getDubCount } from '../stores/dubsState.svelte';
   import { logError } from '../../utils/logger.js';
   import { t } from '../stores/i18n.svelte.js';
-  import { setgroups } from 'process';
 
   /**
    * @typedef {object} DubsInfoProps

@@ -1,5 +1,5 @@
 <script>
-  import { teleport } from "../actions/teleport";
+  import { teleport } from "../actions/teleport.svelte";
   import { createSnow } from "../../external/pure-snow";
   import { onDestroy, onMount } from "svelte";
 

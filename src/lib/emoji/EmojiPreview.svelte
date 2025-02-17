@@ -1,5 +1,5 @@
 <script>
-  import { teleport } from "../actions/teleport";
+  import { teleport } from "../actions/teleport.svelte";
   import { insertEmote } from "../modules/autocomplete";
   import { t } from "../stores/i18n.svelte";
   import { emojiState } from "./emojiState.svelte";

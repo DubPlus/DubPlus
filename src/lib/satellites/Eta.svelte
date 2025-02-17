@@ -1,5 +1,5 @@
 <script>
-  import { teleport } from "../actions/teleport";
+  import { teleport } from "../actions/teleport.svelte";
   import { t } from "../stores/i18n.svelte";
 
   let eta = $state("ETA");
@@ -38,6 +38,7 @@
 
 <button
   use:teleport={{ to: ".player_sharing" }}
+  id="dubplus-eta"
   aria-label={eta}
   type="button"
   class="icon-history eta_tooltip_t dubplus-btn-player"
