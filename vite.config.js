@@ -69,8 +69,7 @@ export default defineConfig(() => {
       minify: false,
 
       // This places the "dubplus.js" and "dubplus.css" files in the root
-      // of this repo. I would move them to a "/dist" folder but for legacy 
-      // support I am leaving them in the root.
+      // of this repo.
       outDir: '.', 
       
       /*************************************************
