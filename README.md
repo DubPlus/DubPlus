@@ -23,7 +23,7 @@ Requires Node v20 or higher
 
 The UI is written in [Svelte 5](https://svelte.dev/docs/svelte/overview) 
 
-There are 2 ways you can develop:
+There are 3 ways you can develop:
 
 ### 1. Using the Mock queup.net
 
@@ -50,6 +50,18 @@ Your process will go like this:
 - refresh the page
 - test your changes
 
+### 3. Loading the extension in Firefox
+
+- in one command line window or tab, run `npm run build:watch`
+- in another command line, run `npm run start:firefox`. 
+
+This will launch firefox and load the extension. It will also watch for changes and reload the extension automatically.
+
+Your process will go like this:
+- make changes
+- save (which auto runs the building of the files)
+- refresh the page
+- test your changes
 
 ### npm scripts
 
