@@ -2785,26 +2785,30 @@ var dubplus = function() {
     pop();
   }
   delegate(["click"]);
-  function teleport(node, { to, position = "append" }) {
-    const teleportContainer = document.querySelector(to);
-    if (!teleportContainer) {
-      throw new Error(`teleport container not found: ${to}`);
-    }
-    if (position === "append") {
-      teleportContainer.appendChild(node);
-    } else {
-      teleportContainer.prepend(node);
-    }
-    return {
-      destroy() {
-        node.remove();
+  const teleport = (node, { to, position = "append" }) => {
+    user_effect(() => {
+      var _a;
+      if (node.id) {
+        (_a = document.getElementById(node.id)) == null ? void 0 : _a.remove();
       }
-    };
-  }
+      const teleportContainer = document.querySelector(to);
+      if (!teleportContainer) {
+        throw new Error(`teleport container not found: ${to}`);
+      }
+      if (position === "append") {
+        teleportContainer.appendChild(node);
+      } else {
+        teleportContainer.prepend(node);
+      }
+      return () => {
+        node.remove();
+      };
+    });
+  };
   var on_click$1 = () => {
     document.querySelector(".dubplus-menu").classList.toggle("dubplus-menu-open");
   };
-  var root$n = /* @__PURE__ */ template(`<button type="button" aria-label="Dub+ menu" class="dubplus-icon svelte-9z7rrn"><!></button>`);
+  var root$n = /* @__PURE__ */ template(`<button id="dubplus-menu-icon" type="button" aria-label="Dub+ menu" class="dubplus-icon svelte-9z7rrn"><!></button>`);
   function MenuIcon($$anchor, $$props) {
     push($$props, false);
     init();
@@ -4774,7 +4778,7 @@ var dubplus = function() {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${"https://cdn.jsdelivr.net/gh/DubPlus/DubPlus"}${cssFile}?${"1739689631713"}`
+        `${"https://cdn.jsdelivr.net/gh/DubPlus/DubPlus"}${cssFile}?${"1739770232666"}`
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5045,7 +5049,7 @@ var dubplus = function() {
     append($$anchor, fragment);
     pop();
   }
-  var root$9 = /* @__PURE__ */ template(`<button type="button" class="icon-history eta_tooltip_t dubplus-btn-player"></button>`);
+  var root$9 = /* @__PURE__ */ template(`<button id="dubplus-eta" type="button" class="icon-history eta_tooltip_t dubplus-btn-player"></button>`);
   function Eta($$anchor, $$props) {
     push($$props, true);
     let eta = state("ETA");
@@ -5077,7 +5081,7 @@ var dubplus = function() {
     append($$anchor, button);
     pop();
   }
-  var root$8 = /* @__PURE__ */ template(`<button type="button" class="icon-mute snooze_btn dubplus-btn-player svelte-huywc"><span class="svelte-huywc">1</span></button>`);
+  var root$8 = /* @__PURE__ */ template(`<button id="dubplus-snooze" type="button" class="icon-mute snooze_btn dubplus-btn-player svelte-huywc"><span class="svelte-huywc">1</span></button>`);
   function Snooze($$anchor, $$props) {
     push($$props, false);
     const eventUtils = { currentVol: 50, snoozed: false };
@@ -5186,170 +5190,6 @@ var dubplus = function() {
     pop();
   }
   delegate(["click"]);
-  var browser = { exports: {} };
-  var hasRequiredBrowser;
-  function requireBrowser() {
-    if (hasRequiredBrowser) return browser.exports;
-    hasRequiredBrowser = 1;
-    var process = browser.exports = {};
-    var cachedSetTimeout;
-    var cachedClearTimeout;
-    function defaultSetTimout() {
-      throw new Error("setTimeout has not been defined");
-    }
-    function defaultClearTimeout() {
-      throw new Error("clearTimeout has not been defined");
-    }
-    (function() {
-      try {
-        if (typeof setTimeout === "function") {
-          cachedSetTimeout = setTimeout;
-        } else {
-          cachedSetTimeout = defaultSetTimout;
-        }
-      } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-      }
-      try {
-        if (typeof clearTimeout === "function") {
-          cachedClearTimeout = clearTimeout;
-        } else {
-          cachedClearTimeout = defaultClearTimeout;
-        }
-      } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-      }
-    })();
-    function runTimeout(fun) {
-      if (cachedSetTimeout === setTimeout) {
-        return setTimeout(fun, 0);
-      }
-      if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-      }
-      try {
-        return cachedSetTimeout(fun, 0);
-      } catch (e) {
-        try {
-          return cachedSetTimeout.call(null, fun, 0);
-        } catch (e2) {
-          return cachedSetTimeout.call(this, fun, 0);
-        }
-      }
-    }
-    function runClearTimeout(marker) {
-      if (cachedClearTimeout === clearTimeout) {
-        return clearTimeout(marker);
-      }
-      if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-      }
-      try {
-        return cachedClearTimeout(marker);
-      } catch (e) {
-        try {
-          return cachedClearTimeout.call(null, marker);
-        } catch (e2) {
-          return cachedClearTimeout.call(this, marker);
-        }
-      }
-    }
-    var queue = [];
-    var draining = false;
-    var currentQueue;
-    var queueIndex = -1;
-    function cleanUpNextTick() {
-      if (!draining || !currentQueue) {
-        return;
-      }
-      draining = false;
-      if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-      } else {
-        queueIndex = -1;
-      }
-      if (queue.length) {
-        drainQueue();
-      }
-    }
-    function drainQueue() {
-      if (draining) {
-        return;
-      }
-      var timeout = runTimeout(cleanUpNextTick);
-      draining = true;
-      var len = queue.length;
-      while (len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-          if (currentQueue) {
-            currentQueue[queueIndex].run();
-          }
-        }
-        queueIndex = -1;
-        len = queue.length;
-      }
-      currentQueue = null;
-      draining = false;
-      runClearTimeout(timeout);
-    }
-    process.nextTick = function(fun) {
-      var args = new Array(arguments.length - 1);
-      if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-          args[i - 1] = arguments[i];
-        }
-      }
-      queue.push(new Item(fun, args));
-      if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-      }
-    };
-    function Item(fun, array) {
-      this.fun = fun;
-      this.array = array;
-    }
-    Item.prototype.run = function() {
-      this.fun.apply(null, this.array);
-    };
-    process.title = "browser";
-    process.browser = true;
-    process.env = {};
-    process.argv = [];
-    process.version = "";
-    process.versions = {};
-    function noop2() {
-    }
-    process.on = noop2;
-    process.addListener = noop2;
-    process.once = noop2;
-    process.off = noop2;
-    process.removeListener = noop2;
-    process.removeAllListeners = noop2;
-    process.emit = noop2;
-    process.prependListener = noop2;
-    process.prependOnceListener = noop2;
-    process.listeners = function(name) {
-      return [];
-    };
-    process.binding = function(name) {
-      throw new Error("process.binding is not supported");
-    };
-    process.cwd = function() {
-      return "/";
-    };
-    process.chdir = function(dir) {
-      throw new Error("process.chdir is not supported");
-    };
-    process.umask = function() {
-      return 0;
-    };
-    return browser.exports;
-  }
-  requireBrowser();
   var on_click = (_, handleClick2, dub) => handleClick2(get(dub).username);
   var root_2$1 = /* @__PURE__ */ template(`<li class="preview-dubinfo-item users-previews svelte-ujv5bp"><div class="dubinfo-image svelte-ujv5bp"><img alt="User Avatar" class="svelte-ujv5bp"></div> <button type="button" class="dubinfo-text svelte-ujv5bp"> </button></li>`);
   var root_3 = /* @__PURE__ */ template(`<li><!></li>`);
@@ -5973,6 +5813,7 @@ var dubplus = function() {
   }
   if (container.children.length > 0) {
     unmount(container);
+    container.innerHTML = "";
   }
   const app = mount(DubPlus, {
     target: container
