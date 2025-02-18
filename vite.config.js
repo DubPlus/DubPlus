@@ -65,7 +65,7 @@ export default defineConfig(() => {
       __PKGINFO__: JSON.stringify(pkg),
     },
     build: {
-      sourcemap: true,
+      sourcemap: false,
       minify: false,
 
       // This places the "dubplus.js" and "dubplus.css" files in the root
