@@ -34,6 +34,7 @@ This is a limited mockup of Queup.net so not all queup apis won't work. This env
 
 ### 2. Loading the unpacked extension in Chrome 
 
+- edit the [`manifest.json`](./manifest.json) and add `"css": ["dubplus.css"],` to the only object in the `content_scripts` array
 - run `npm run build:watch`
 - open [chrome://extensions/](chrome://extensions/)
 - if you have the Dub+ extension installed from the Chrome WebStore, make sure to disable it
@@ -44,6 +45,7 @@ This is a limited mockup of Queup.net so not all queup apis won't work. This env
 - start developing
 
 Your process will go like this:
+- edit the [`manifest.json`](./manifest.json) and add `"css": ["dubplus.css"],` to the only object in the `content_scripts` array
 - make changes
 - save (which auto runs the building of the files)
 - refresh the extension in chrome://extensions (click on the refresh icon next to the switch)
