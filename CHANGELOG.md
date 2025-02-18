@@ -3,7 +3,9 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.0.0] - 2025-?-?
-This is a complete rewrite of the code switching from the old jQuery code to Svelte 5. See this [PR](https://github.com/DubPlus/DubPlus/pull/110) for more details. Also caught some existing bugs while updating. 
+This is a complete rewrite of the code switching from the old jQuery code to Svelte 5. See this [PR](https://github.com/DubPlus/DubPlus/pull/110) for more details. Also caught some existing bugs while updating.
+
+The Chrome and Firefox extensions have been updated to use Manifest v3.
 
 ### New Feature
 - "Flip Interface", swaps the positions of the chat and video player
