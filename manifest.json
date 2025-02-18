@@ -31,20 +31,7 @@
     "128": "extension/icons/128.png"
   },
   "host_permissions": [
-    "*://dubtrack.fm/*",
     "*://*.dubtrack.fm/*",
-    "*://queup.net/*",
     "*://*.queup.net/*"
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": ["dubplus.js", "dubplus.css", "dubplus.js.map"],
-      "matches": [
-        "*://dubtrack.fm/*",
-        "*://*.dubtrack.fm/*",
-        "*://queup.net/*",
-        "*://*.queup.net/*"
-      ]
-    }
   ]
 }
