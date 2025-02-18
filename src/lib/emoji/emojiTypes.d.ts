@@ -17,5 +17,5 @@ export interface Emoji {
   /**
    * platform where the emoji is from
    */
-  platform: "twitch" | "bttv" | "ffz" | "tasty" | "emojify";
+  platform: 'twitch' | 'bttv' | 'ffz' | 'tasty' | 'emojify';
 }

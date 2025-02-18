@@ -7,14 +7,14 @@
  * @type {import("./module").DubPlusModule}
  */
 export const splitChat = {
-  id: "split-chat",
-  label: "split-chat.label",
-  description: "split-chat.description",
-  category: "user-interface",
+  id: 'split-chat',
+  label: 'split-chat.label',
+  description: 'split-chat.description',
+  category: 'user-interface',
   turnOn() {
-    document.body.classList.add("dubplus-split-chat");
+    document.body.classList.add('dubplus-split-chat');
   },
   turnOff() {
-    document.body.classList.remove("dubplus-split-chat");
+    document.body.classList.remove('dubplus-split-chat');
   },
 };

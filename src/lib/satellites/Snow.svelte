@@ -1,7 +1,7 @@
 <script>
-  import { teleport } from "../actions/teleport.svelte";
-  import { createSnow } from "../../external/pure-snow";
-  import { onDestroy, onMount } from "svelte";
+  import { teleport } from '../actions/teleport.svelte';
+  import { createSnow } from '../../external/pure-snow';
+  import { onDestroy, onMount } from 'svelte';
 
   onMount(() => {
     createSnow();
@@ -11,10 +11,9 @@
   onDestroy(() => {
     window.removeEventListener('resize', createSnow);
   });
-
 </script>
 
-<div use:teleport={{to: "body"}} id="snow-container"></div>
+<div use:teleport={{ to: 'body' }} id="snow-container"></div>
 
 <style>
   #snow-container {

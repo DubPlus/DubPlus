@@ -11,7 +11,7 @@
 const SNOWFLAKES_COUNT = 200;
 
 let snowflakesCount = SNOWFLAKES_COUNT; // Snowflake count, can be overwritten by attrs
-let baseCSS = "";
+let baseCSS = '';
 
 /**
  * We always want the snow to be full screen so this will always be 100vh
@@ -19,7 +19,7 @@ let baseCSS = "";
 const pageHeightVh = 100;
 
 function getSnowConatiner() {
-  return document.getElementById("snow-container");
+  return document.getElementById('snow-container');
 }
 
 // get params set in snow div
@@ -32,26 +32,26 @@ function getSnowAttributes() {
 function generateSnow(snowDensity = 200) {
   snowDensity -= 1;
   const snowWrapper = getSnowConatiner();
-  snowWrapper.innerHTML = "";
+  snowWrapper.innerHTML = '';
   for (let i = 0; i < snowDensity; i++) {
-    let board = document.createElement("div");
-    board.className = "snowflake";
+    let board = document.createElement('div');
+    board.className = 'snowflake';
     snowWrapper.appendChild(board);
   }
 }
 
 function getOrCreateCSSElement() {
-  let cssElement = document.getElementById("psjs-css");
+  let cssElement = document.getElementById('psjs-css');
   if (cssElement) return cssElement;
 
-  cssElement = document.createElement("style");
-  cssElement.id = "psjs-css";
+  cssElement = document.createElement('style');
+  cssElement.id = 'psjs-css';
   document.head.appendChild(cssElement);
   return cssElement;
 }
 
 // Append style for each snowflake to the head
-function addCSS(rule = "") {
+function addCSS(rule = '') {
   const cssElement = getOrCreateCSSElement();
   cssElement.innerHTML = rule; // safe to use innerHTML
   document.head.appendChild(cssElement);
@@ -85,7 +85,7 @@ function getRandomArbitrary(min, max) {
 
 // Create style for snowflake
 function generateSnowCSS(snowDensity = 200) {
-  let snowflakeName = "snowflake";
+  let snowflakeName = 'snowflake';
   let rule = baseCSS;
 
   for (let i = 1; i < snowDensity; i++) {

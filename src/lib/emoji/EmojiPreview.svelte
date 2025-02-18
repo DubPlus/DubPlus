@@ -1,21 +1,21 @@
 <script>
-  import { teleport } from "../actions/teleport.svelte";
-  import { insertEmote } from "../modules/autocomplete";
-  import { t } from "../stores/i18n.svelte";
-  import { emojiState } from "./emojiState.svelte";
+  import { teleport } from '../actions/teleport.svelte';
+  import { insertEmote } from '../modules/autocomplete';
+  import { t } from '../stores/i18n.svelte';
+  import { emojiState } from './emojiState.svelte';
 
   $effect(() => {
     if (
       emojiState.emojiList.length > 0 &&
-      typeof emojiState.selectedIndex === "number"
+      typeof emojiState.selectedIndex === 'number'
     ) {
       // scroll the li element into view
-      const selected = document.querySelector(".preview-item.selected");
+      const selected = document.querySelector('.preview-item.selected');
       if (selected) {
         selected.scrollIntoView({
-          block: "nearest",
-          inline: "nearest",
-          behavior: "smooth",
+          block: 'nearest',
+          inline: 'nearest',
+          behavior: 'smooth',
         });
       }
     }
@@ -25,18 +25,20 @@
    * @param {number} index
    */
   function handleClick(index) {
-    const inputEl = /**@type {HTMLTextAreaElement}*/ (document.getElementById("chat-txt-message"));
+    const inputEl = /**@type {HTMLTextAreaElement}*/ (
+      document.getElementById('chat-txt-message')
+    );
     insertEmote(inputEl, index);
     inputEl.focus();
   }
 </script>
 
 <ul
-  use:teleport={{ to: ".pusher-chat-widget-input", position: "prepend" }}
+  use:teleport={{ to: '.pusher-chat-widget-input', position: 'prepend' }}
   id="autocomplete-preview"
   class:ac-show={emojiState.emojiList.length > 0}
 >
-  {#each emojiState.emojiList as { src, text, platform, alt }, i (src+platform)}
+  {#each emojiState.emojiList as { src, text, platform, alt }, i (src + platform)}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <li
@@ -50,7 +52,7 @@
       <span class="ac-text">{text}</span>
       {#if i === emojiState.selectedIndex}
         <span class="ac-list-press-enter">
-          {t("autocomplete.preview.select")}
+          {t('autocomplete.preview.select')}
         </span>
       {/if}
     </li>

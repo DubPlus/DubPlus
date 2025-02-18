@@ -4,15 +4,15 @@
    * All of the styles are inlined here so we can load this component faster
    * and discard them after since they will no longer be needed.
    */
-  import Logo from "./svg/Logo.svelte";
-  import { t } from "./stores/i18n.svelte";
+  import Logo from './svg/Logo.svelte';
+  import { t } from './stores/i18n.svelte';
 </script>
 
 <div class="dubplus-waiting">
   <div style="width: 26px; margin-right:5px">
     <Logo />
   </div>
-  <span style="flex: 1;">{t("Loading.text")}</span>
+  <span style="flex: 1;">{t('Loading.text')}</span>
 </div>
 
 <style>

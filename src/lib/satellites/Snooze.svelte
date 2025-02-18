@@ -1,6 +1,6 @@
 <script>
-  import { teleport } from "../actions/teleport.svelte";
-  import { t } from "../stores/i18n.svelte";
+  import { teleport } from '../actions/teleport.svelte';
+  import { t } from '../stores/i18n.svelte';
 
   /**
    * Snooze
@@ -44,7 +44,7 @@
       // setup event listener for song advance to restore volume
       // when the song changes
       window.QueUp.Events.once(
-        "realtime:room_playlist-update",
+        'realtime:room_playlist-update',
         eventSongAdvance,
       );
     } else if (eventUtils.snoozed) {
@@ -56,12 +56,12 @@
 </script>
 
 <button
-  use:teleport={{ to: ".player_sharing" }}
+  use:teleport={{ to: '.player_sharing' }}
   id="dubplus-snooze"
   type="button"
   class="icon-mute snooze_btn dubplus-btn-player"
-  aria-label={t("Snooze.tooltip")}
-  data-dp-tooltip={t("Snooze.tooltip")}
+  aria-label={t('Snooze.tooltip')}
+  data-dp-tooltip={t('Snooze.tooltip')}
   onclick={snooze}
 >
   <span>1</span>
@@ -72,7 +72,7 @@
     width: 186px;
   }
   span {
-    content: "1";
+    content: '1';
     vertical-align: top;
     font-size: 0.75rem !important;
     font-weight: 700;

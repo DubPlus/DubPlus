@@ -1,6 +1,6 @@
 <script>
-  import { onMount } from "svelte";
-  import { t } from "../stores/i18n.svelte";
+  import { onMount } from 'svelte';
+  import { t } from '../stores/i18n.svelte';
 
   /**
    * @typedef {object} MenuActionProps
@@ -23,7 +23,7 @@
 </script>
 
 <li {id} title={t(description)}>
-  <button aria-label={t(description)} type="button" onclick={onClick}>   
+  <button aria-label={t(description)} type="button" onclick={onClick}>
     <Icon />
     <span class="dubplus-menu-label">{t(label)}</span>
   </button>
@@ -41,7 +41,7 @@
     padding: 0;
     cursor: pointer;
     appearance: none;
-    color:inherit;
+    color: inherit;
     font-size: inherit;
   }
 

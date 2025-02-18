@@ -1,7 +1,7 @@
-import { notifyCheckPermission, showNotification } from "../../utils/notify";
-import { settings } from "../stores/settings.svelte";
-import { t } from "../stores/i18n.svelte";
-import { NEW_PM_MESSAGE } from "../../events-constants";
+import { notifyCheckPermission, showNotification } from '../../utils/notify';
+import { settings } from '../stores/settings.svelte';
+import { t } from '../stores/i18n.svelte';
+import { NEW_PM_MESSAGE } from '../../events-constants';
 
 /**
  *
@@ -13,20 +13,20 @@ function pmNotify(e) {
     return;
   }
   showNotification({
-    title: t("pm-notifications.notification.title"),
+    title: t('pm-notifications.notification.title'),
     ignoreActiveTab: true,
     callback: function () {
       /**
        * @type {HTMLSpanElement}
        */
-      const openPmButton = document.querySelector(".user-messages");
+      const openPmButton = document.querySelector('.user-messages');
       openPmButton?.click();
       setTimeout(function () {
         /**
          * @type {HTMLLIElement}
          */
         const messageItem = document.querySelector(
-          `.message-item[data-messageid="${e.messageid}"]`
+          `.message-item[data-messageid="${e.messageid}"]`,
         );
         messageItem?.click();
       }, 500);
@@ -39,10 +39,10 @@ function pmNotify(e) {
  * @type {import("./module").DubPlusModule}
  */
 export const pmNotifications = {
-  id: "pm-notifications",
-  label: "pm-notifications.label",
-  description: "pm-notifications.description",
-  category: "general",
+  id: 'pm-notifications',
+  label: 'pm-notifications.label',
+  description: 'pm-notifications.description',
+  category: 'general',
   turnOn() {
     notifyCheckPermission()
       .then(() => {

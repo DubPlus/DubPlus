@@ -1,8 +1,8 @@
 export const snow = {
-  id: "snow",
-  label: "snow.label",
-  description: "snow.description",
-  category: "general",
+  id: 'snow',
+  label: 'snow.label',
+  description: 'snow.description',
+  category: 'general',
 
   turnOn() {
     // do nothing, we just want to turn the setting on

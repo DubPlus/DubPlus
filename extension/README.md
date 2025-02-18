@@ -4,15 +4,13 @@
 - make any changes to the extension in the `/common` folder
 - run `npm run ext` to build the Chrome and Firefox folders.
 
-
 The extensions share the same codebase, it only has slight differences in the manifest.json file. If you need to make browser-specific changes to the manifest file then update in the appropriate file:
 
-`manifest.core.json` - shared manifest items go here    
-`manifest.chrome.json` - Chrome-only manfest items go here    
+`manifest.core.json` - shared manifest items go here  
+`manifest.chrome.json` - Chrome-only manfest items go here  
 `manifest.firefox.json` - Firefox-only manifest items go here
 
 Definitely read this link for more information on porting a Chrome Extension to the WebExtensions Standard:
-
 
 **more helpful links:**
 
@@ -20,8 +18,8 @@ https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Chrome_incompatibiliti
 
 **Deploying via API**
 
-FF:    
-Web Extension Command line tool: https://github.com/mozilla/web-ext    
+FF:  
+Web Extension Command line tool: https://github.com/mozilla/web-ext  
 https://developer.mozilla.org/en-US/Add-ons/WebExtensions/web-ext_command_reference
 
 Chrome: https://developer.chrome.com/webstore/using_webstore_api

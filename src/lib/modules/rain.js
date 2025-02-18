@@ -29,13 +29,13 @@ class RainEffect {
     this.canvas = null;
   }
   makeCanvas() {
-    this.canvas = document.createElement("canvas");
-    this.canvas.id = "dubPlusRainCanvas";
-    this.canvas.style.position = "fixed";
-    this.canvas.style.top = "0px";
-    this.canvas.style.left = "0px";
-    this.canvas.style.zIndex = "100";
-    this.canvas.style.pointerEvents = "none";
+    this.canvas = document.createElement('canvas');
+    this.canvas.id = 'dubPlusRainCanvas';
+    this.canvas.style.position = 'fixed';
+    this.canvas.style.top = '0px';
+    this.canvas.style.left = '0px';
+    this.canvas.style.zIndex = '100';
+    this.canvas.style.pointerEvents = 'none';
     document.body.prepend(this.canvas);
   }
 
@@ -60,7 +60,7 @@ class RainEffect {
     this.requestAnimFrame = windowAnimFram ? windowAnimFram.bind(window) : null;
     if (!this.canvas) return;
 
-    const ctx = this.canvas.getContext("2d");
+    const ctx = this.canvas.getContext('2d');
 
     this.width, (this.height = 0);
 
@@ -99,15 +99,15 @@ class RainEffect {
         Y,
         alpha: 1,
         color:
-          "hsla(" +
+          'hsla(' +
           this.controls.color +
-          "," +
+          ',' +
           this.controls.saturation +
-          "%, " +
+          '%, ' +
           this.controls.lightness +
-          "%," +
+          '%,' +
           this.controls.opacity +
-          ")",
+          ')',
       });
     }
   }
@@ -162,7 +162,7 @@ class RainEffect {
         particlesactives.X,
         particlesactives.Y,
         particlesactives.speedY / 4,
-        particlesactives.speedY
+        particlesactives.speedY,
       );
     }
 
@@ -174,7 +174,7 @@ class RainEffect {
       ctx.arc(dropsactives.X, dropsactives.Y, dropsactives.radius, 0, tau);
       ctx.fill();
     }
-    ctx.strokeStyle = "white";
+    ctx.strokeStyle = 'white';
     ctx.lineWidth = 2;
 
     ctx.restore();
@@ -196,7 +196,7 @@ class RainEffect {
         this.explosion(
           particlesactives.X,
           particlesactives.Y,
-          particlesactives.color
+          particlesactives.color,
         );
       }
     }
@@ -227,10 +227,10 @@ class RainEffect {
 }
 
 export const rain = {
-  id: "rain",
-  label: "rain.label",
-  description: "rain.description",
-  category: "general",
+  id: 'rain',
+  label: 'rain.label',
+  description: 'rain.description',
+  category: 'general',
   turnOn() {
     this.rainEffect = new RainEffect();
     this.rainEffect.start();

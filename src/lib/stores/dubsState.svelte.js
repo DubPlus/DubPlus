@@ -23,8 +23,8 @@ export const dubsState = $state({
  * @returns {DubInfo[]}
  */
 export function getDubCount(dubType) {
-  if (dubType === "updub") return dubsState.upDubs;
-  if (dubType === "downdub") return dubsState.downDubs;
-  if (dubType === "grab") return dubsState.grabs;
+  if (dubType === 'updub') return dubsState.upDubs;
+  if (dubType === 'downdub') return dubsState.downDubs;
+  if (dubType === 'grab') return dubsState.grabs;
   return [];
 }

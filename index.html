@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,62 +7,63 @@
     <title>QueUp demo page for Dub+</title>
     <link rel="stylesheet" href="/css/main.css" />
     <style>
-      @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700,700i");
+      @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700,700i');
       /*
         These are not exactly the ones QueUp uses, but they are close enough.
         I got them free from icomoon.io which is where QueUp got theirs from.
         but i had to find and build the icon set myself
       */
       @font-face {
-        font-family: "icomoon";
-        src: url("./public/fonts/icomoon.eot");
-        src: url("./public/fonts/icomoon.eot#iefix") format("embedded-opentype"),
-          url("./public/fonts/icomoon.ttf") format("truetype"),
-          url("./public/fonts/icomoon.woff") format("woff"),
-          url("./public/fonts/icomoon.svg#icomoon") format("svg");
+        font-family: 'icomoon';
+        src: url('./public/fonts/icomoon.eot');
+        src:
+          url('./public/fonts/icomoon.eot#iefix') format('embedded-opentype'),
+          url('./public/fonts/icomoon.ttf') format('truetype'),
+          url('./public/fonts/icomoon.woff') format('woff'),
+          url('./public/fonts/icomoon.svg#icomoon') format('svg');
       }
 
       .icon-history:before {
-        content: "\e94d";
+        content: '\e94d';
       }
       .icon-mute:before {
-        content: "\ea2a";
+        content: '\ea2a';
       }
       .icon-message:before {
-        content: "\e901";
+        content: '\e901';
       }
       .icon-chevron:before {
-        content: "\e900";
+        content: '\e900';
       }
       .icon-reload:before {
-        content: "\e901";
+        content: '\e901';
       }
       .icon-facebook:before {
-        content: "\ea90";
+        content: '\ea90';
       }
       .icon-twitter:before {
-        content: "\e902";
+        content: '\e902';
       }
       .icon-reload:before {
-        content: "\ea2e";
+        content: '\ea2e';
       }
       .icon-heart:before {
-        content: "\e903";
+        content: '\e903';
       }
       .icon-upvote:before {
-        content: "\e905";
+        content: '\e905';
       }
       .icon-downvote:before {
-        content: "\e904";
+        content: '\e904';
       }
       .icon-playlist:before {
-        content: "\e9bb";
+        content: '\e9bb';
       }
       .icon-chat:before {
-        content: "\e906";
+        content: '\e906';
       }
       .icon-chatsettings:before {
-        content: "\e907";
+        content: '\e907';
       }
 
       /* QueUp uses a custom JS lib for scrolling which I didn't feel like importing
@@ -72,7 +73,7 @@
       }
 
       @media screen and (max-width: 72em) {
-        body[data-display="player"] {
+        body[data-display='player'] {
           #main-room {
             .left_section {
               display: block;
@@ -82,7 +83,7 @@
             }
           }
         }
-        body[data-display="chat"] {
+        body[data-display='chat'] {
           #main-room {
             .left_section {
               display: none;
@@ -477,22 +478,47 @@
                       </li>
                       <li class="user-123 chat-id-123-1724796613412">
                         <div class="stream-item-content">
-                          <div class="chatDelete"><span class="icon-close"></span></div>
+                          <div class="chatDelete">
+                            <span class="icon-close"></span>
+                          </div>
                           <div class="image_row">
-                            <img src="https://api.queup.net/user/654ee5a3a9d4e50006987572/image" alt="derpybot" title="derpybot"  class="cursor-pointer">
+                            <img
+                              src="https://api.queup.net/user/654ee5a3a9d4e50006987572/image"
+                              alt="derpybot"
+                              title="derpybot"
+                              class="cursor-pointer"
+                            />
                           </div>
                           <div class="activity-row">
                             <div class="username">
-                              <span class="user-role-icon"></span>derpybot<span class="user-role"></span>
+                              <span class="user-role-icon"></span>derpybot<span
+                                class="user-role"
+                              ></span>
                             </div>
                             <div class="text">
                               <p>
-                                <a href="http://i.imgur.com/WITgeR7.gif" class="autolink autolink-image" target="_blank">
-                                  <img src="https://images.queup.net/chat/?url=http%3A%2F%2Fi.imgur.com%2FWITgeR7.gif">
+                                <a
+                                  href="http://i.imgur.com/WITgeR7.gif"
+                                  class="autolink autolink-image"
+                                  target="_blank"
+                                >
+                                  <img
+                                    src="https://images.queup.net/chat/?url=http%3A%2F%2Fi.imgur.com%2FWITgeR7.gif"
+                                  />
                                 </a>
                               </p>
                             </div>
-                            <div class="meta-info"><span class="username">derpybot </span><i class="icon-dot"></i><span class="timeinfo"><time class="timeago" datetime="2024-08-27T22:10:13.412Z" title="8/27/2024, 6:10:13 PM">34 minutes ago</time></span>
+                            <div class="meta-info">
+                              <span class="username">derpybot </span
+                              ><i class="icon-dot"></i
+                              ><span class="timeinfo"
+                                ><time
+                                  class="timeago"
+                                  datetime="2024-08-27T22:10:13.412Z"
+                                  title="8/27/2024, 6:10:13 PM"
+                                  >34 minutes ago</time
+                                ></span
+                              >
                             </div>
                           </div>
                         </div>
@@ -560,7 +586,15 @@
                         </div>
                       </ul>
                     </div>
-                    <textarea id="chat-txt-message" name="message" rows="1" type="text" placeholder="Join the conversation" autocomplete="off" maxlength="255"></textarea>
+                    <textarea
+                      id="chat-txt-message"
+                      name="message"
+                      rows="1"
+                      type="text"
+                      placeholder="Join the conversation"
+                      autocomplete="off"
+                      maxlength="255"
+                    ></textarea>
                     <div class="chat-text-box-icons">
                       <span
                         class="send-chat-button icon-chevron"

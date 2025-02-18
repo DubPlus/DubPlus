@@ -1,15 +1,15 @@
-import { CHAT_MESSAGE } from "../../events-constants";
-import { t } from "../stores/i18n.svelte";
-import { settings } from "../stores/settings.svelte";
+import { CHAT_MESSAGE } from '../../events-constants';
+import { t } from '../stores/i18n.svelte';
+import { settings } from '../stores/settings.svelte';
 
-const MODULE_ID = "chat-cleaner";
+const MODULE_ID = 'chat-cleaner';
 
 /**
  * @param {string} n
  */
 function chatCleanerCheck(n) {
   // these will be ordered from oldest to newest
-  const chatMessages = document.querySelectorAll("ul.chat-main > li");
+  const chatMessages = document.querySelectorAll('ul.chat-main > li');
 
   const limit = parseInt(n ?? settings.custom[MODULE_ID], 10);
 
@@ -31,7 +31,7 @@ export const chatCleaner = {
   id: MODULE_ID,
   label: `${MODULE_ID}.label`,
   description: `${MODULE_ID}.description`,
-  category: "general",
+  category: 'general',
   custom: {
     title: `${MODULE_ID}.modal.title`,
     content: `${MODULE_ID}.modal.content`,

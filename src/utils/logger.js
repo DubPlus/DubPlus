@@ -1,4 +1,4 @@
-const PREFIX = "Dub+"; // This is the prefix for all log messages
+const PREFIX = 'Dub+'; // This is the prefix for all log messages
 
 function getTimeStamp() {
   return new Date().toLocaleTimeString();

@@ -82,7 +82,7 @@ export function migrate(oldSettings) {
         e.message,
         oldKey,
         newKey,
-        boolValue
+        boolValue,
       );
     }
   }
@@ -97,7 +97,7 @@ export function migrate(oldSettings) {
         e.message,
         oldKey,
         newKey,
-        stringValue
+        stringValue,
       );
     }
   }

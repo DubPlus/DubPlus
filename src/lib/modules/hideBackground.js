@@ -5,14 +5,14 @@
  * @type {import("./module").DubPlusModule}
  */
 export const hideBackground = {
-  id: "hide-bg",
-  label: "hide-bg.label",
-  description: "hide-bg.description",
-  category: "user-interface",
+  id: 'hide-bg',
+  label: 'hide-bg.label',
+  description: 'hide-bg.description',
+  category: 'user-interface',
   turnOn() {
-    document.body.classList.add("dubplus-hide-bg");
+    document.body.classList.add('dubplus-hide-bg');
   },
   turnOff() {
-    document.body.classList.remove("dubplus-hide-bg");
+    document.body.classList.remove('dubplus-hide-bg');
   },
 };

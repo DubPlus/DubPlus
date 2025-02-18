@@ -1,14 +1,14 @@
 <script>
-  import MenuHeader from "../menu/MenuHeader.svelte";
-  import MenuSection from "../menu/MenuSection.svelte";
-  import MenuItem from "../menu/MenuSwitch.svelte";
-  import { saveSetting, settings } from "../stores/settings.svelte";
-  import { userInterface } from "../modules";
-  import { t } from "../stores/i18n.svelte";
-  import MenuAction from "../menu/MenuAction.svelte";
+  import MenuHeader from '../menu/MenuHeader.svelte';
+  import MenuSection from '../menu/MenuSection.svelte';
+  import MenuItem from '../menu/MenuSwitch.svelte';
+  import { saveSetting, settings } from '../stores/settings.svelte';
+  import { userInterface } from '../modules';
+  import { t } from '../stores/i18n.svelte';
+  import MenuAction from '../menu/MenuAction.svelte';
 </script>
 
-<MenuHeader settingsId="user-interface" name={t("user-interface.title")} />
+<MenuHeader settingsId="user-interface" name={t('user-interface.title')} />
 <MenuSection settingsId="user-interface">
   {#each userInterface as module}
     {#if module.altIcon}
@@ -32,7 +32,7 @@
           else module.turnOff();
 
           if (!onMount) {
-            saveSetting("option", module.id, on);
+            saveSetting('option', module.id, on);
           }
         }}
       />

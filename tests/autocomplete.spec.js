@@ -58,7 +58,7 @@ test.describe('Autocomplete preview popup', () => {
       .first();
     await expect(firstPrewiewElement).toHaveClass(/selected/);
     await expect(firstPrewiewElement).toHaveText(
-      'cat press enter or tab to select'
+      'cat press enter or tab to select',
     );
   });
 
@@ -112,21 +112,21 @@ test.describe('Selecting emoji', () => {
   test('Pressing Tab should insert selected emoji', async ({ page }) => {
     await page.keyboard.press('Tab');
     await expect(page.locator('#chat-txt-message')).toHaveValue(
-      ':heart_eyes_cat:'
+      ':heart_eyes_cat:',
     );
   });
 
   test('Pressing Enter should insert selected emoji', async ({ page }) => {
     await page.keyboard.press('Enter');
     await expect(page.locator('#chat-txt-message')).toHaveValue(
-      ':heart_eyes_cat:'
+      ':heart_eyes_cat:',
     );
   });
 
   test('Should insert emoji when clicking on it', async ({ page }) => {
     await page.locator('#autocomplete-preview li.selected').click();
     await expect(page.locator('#chat-txt-message')).toHaveValue(
-      ':heart_eyes_cat:'
+      ':heart_eyes_cat:',
     );
   });
 
@@ -155,7 +155,7 @@ test.describe('Selecting emoji', () => {
 
     // should have inserted the emoji properly
     await expect(page.locator('#chat-txt-message')).toHaveValue(
-      'This emoji :heart_eyes_cat: is incomplete'
+      'This emoji :heart_eyes_cat: is incomplete',
     );
   });
 });

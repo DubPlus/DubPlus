@@ -18,7 +18,7 @@ var privateInfo = {
 // I also put them in a git-ignored json file that overrides env vars
 try {
   privateInfo = JSON.parse(
-    fs.readFileSync(process.cwd() + '/private.json', 'utf8')
+    fs.readFileSync(process.cwd() + '/private.json', 'utf8'),
   );
 } catch (ex) {
   // if json didnt work, we need to check if env vars were set at least
@@ -64,7 +64,7 @@ function uploadExtension(tokenResp) {
           itemResponse.TOKEN = TOKEN; // pass through of the token
           resolve(itemResponse);
         }
-      })
+      }),
     );
   });
 }
@@ -124,7 +124,7 @@ export default function () {
   getTokenFromRefresh(
     privateInfo.CLIENT_ID,
     privateInfo.CLIENT_SECRET,
-    privateInfo.REFRESH_TOKEN
+    privateInfo.REFRESH_TOKEN,
   )
     .then(uploadExtension)
     .then(publishExt)

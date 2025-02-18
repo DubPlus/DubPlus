@@ -12,11 +12,7 @@
 
 <li class="dubplus-menu-icon">
   <Icon />
-  <a
-    href={href}
-    class="dubplus-menu-label"
-    target="_blank"
-  >
+  <a {href} class="dubplus-menu-label" target="_blank">
     {text}
   </a>
 </li>

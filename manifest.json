@@ -30,8 +30,5 @@
     "96": "extension/icons/96.png",
     "128": "extension/icons/128.png"
   },
-  "host_permissions": [
-    "*://*.dubtrack.fm/*",
-    "*://*.queup.net/*"
-  ]
+  "host_permissions": ["*://*.dubtrack.fm/*", "*://*.queup.net/*"]
 }

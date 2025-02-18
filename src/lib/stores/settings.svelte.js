@@ -44,7 +44,7 @@ function loadSettings() {
     const oldSettings = JSON.parse(localStorage.getItem(STORAGE_KEY_OLD));
     if (oldSettings) {
       return migrate(
-        /**@type {import("../../global").Settings}*/ (oldSettings)
+        /**@type {import("../../global").Settings}*/ (oldSettings),
       );
     }
   } catch (e) {

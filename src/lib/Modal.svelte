@@ -1,20 +1,20 @@
 <script>
-  import { onMount } from "svelte";
-  import { modalState } from "./stores/modalState.svelte";
-  import { t } from "./stores/i18n.svelte";
+  import { onMount } from 'svelte';
+  import { modalState } from './stores/modalState.svelte';
+  import { t } from './stores/i18n.svelte';
 
-  let errorMessage = $state("");
+  let errorMessage = $state('');
 
   /** @type {HTMLDialogElement} */
   let dialog; // Reference to the dialog tag
 
   onMount(() => {
     dialog = /**@type {HTMLDialogElement}*/ (
-      document.getElementById("dubplus-dialog")
+      document.getElementById('dubplus-dialog')
     );
 
     // this handles the closing via the ESC key
-    dialog.addEventListener("close", () => {
+    dialog.addEventListener('close', () => {
       modalState.open = false;
     });
   });
@@ -43,14 +43,14 @@
     {/if}
   </div>
   <div class="dp-modal--buttons buttons">
-    {#if typeof modalState.onConfirm === "function"}
+    {#if typeof modalState.onConfirm === 'function'}
       <button
         onclick={() => {
           dialog.close();
           modalState.open = false;
-          errorMessage = "";
+          errorMessage = '';
         }}
-        class="dp-modal--cancel cancel">{t("Modal.cancel")}</button
+        class="dp-modal--cancel cancel">{t('Modal.cancel')}</button
       >
       <button
         onclick={() => {
@@ -59,23 +59,23 @@
             dialog.close();
             modalState.open = false;
             modalState.onConfirm(modalState.value);
-            errorMessage = "";
+            errorMessage = '';
           } else {
             errorMessage = isValidOrErrorMessage;
           }
         }}
         class="dp-modal--confirm confirm"
-        >{t("Modal.confirm")}
+        >{t('Modal.confirm')}
       </button>
     {:else}
       <button
         onclick={() => {
           dialog.close();
           modalState.open = false;
-          errorMessage = "";
+          errorMessage = '';
         }}
         class="dp-modal--cancel cancel"
-        >{t("Modal.close")}
+        >{t('Modal.close')}
       </button>
     {/if}
   </div>

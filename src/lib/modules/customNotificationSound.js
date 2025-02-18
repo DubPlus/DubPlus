@@ -1,5 +1,5 @@
-import { t } from "../stores/i18n.svelte";
-import { settings } from "../stores/settings.svelte";
+import { t } from '../stores/i18n.svelte';
+import { settings } from '../stores/settings.svelte';
 
 // store original sound from QueUp before we alter it
 let DubtrackDefaultSound;
@@ -8,14 +8,14 @@ let DubtrackDefaultSound;
  * @type {import("./module").DubPlusModule}
  */
 export const customNotificationSound = {
-  id: "custom-notification-sound",
-  label: "custom-notification-sound.label",
-  description: "custom-notification-sound.description",
-  category: "customize",
+  id: 'custom-notification-sound',
+  label: 'custom-notification-sound.label',
+  description: 'custom-notification-sound.description',
+  category: 'customize',
   custom: {
-    title: "custom-notification-sound.modal.title",
-    content: "custom-notification-sound.modal.content",
-    placeholder: "custom-notification-sound.modal.placeholder",
+    title: 'custom-notification-sound.modal.title',
+    content: 'custom-notification-sound.modal.content',
+    placeholder: 'custom-notification-sound.modal.placeholder',
     maxlength: 500,
     validation(value) {
       if (!value) {
@@ -23,7 +23,7 @@ export const customNotificationSound = {
         return true;
       }
       if (!window.soundManager.canPlayURL(value)) {
-        return t("custom-notification-sound.modal.validation");
+        return t('custom-notification-sound.modal.validation');
       }
 
       return true;

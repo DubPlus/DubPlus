@@ -30,8 +30,8 @@ export function setEmojiList(listArray) {
     (emoji, index, self) =>
       index ===
       self.findIndex(
-        (e) => e.src === emoji.src && e.platform === emoji.platform
-      )
+        (e) => e.src === emoji.src && e.platform === emoji.platform,
+      ),
   );
 }
 

@@ -32,7 +32,7 @@ export function loadCSS(cssFile, className) {
     const link = makeLink(
       className,
       // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-      `${__SRC_ROOT__}${cssFile}?${__TIME_STAMP__}`
+      `${__SRC_ROOT__}${cssFile}?${__TIME_STAMP__}`,
     );
     link.onload = () => resolve();
     link.onerror = reject;

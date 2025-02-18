@@ -1,5 +1,5 @@
 <script>
-  import { settings, saveSetting } from "../stores/settings.svelte";
+  import { settings, saveSetting } from '../stores/settings.svelte';
   /**
    * @typedef {object} MenuHeaderProps
    * @property {string} props.settingsId
@@ -8,24 +8,24 @@
 
   /** @type {MenuHeaderProps} */
   let { settingsId, name } = $props();
-  let arrow = $state("down");
+  let arrow = $state('down');
   let expanded = $state(true);
 
   $effect(() => {
-    if (settings.menu[settingsId] === "closed") {
-      arrow = "right";
+    if (settings.menu[settingsId] === 'closed') {
+      arrow = 'right';
       expanded = false;
     } else {
-      arrow = "down";
+      arrow = 'down';
       expanded = true;
     }
   });
 
   function toggle() {
     settings.menu[settingsId] =
-      settings.menu[settingsId] === "closed" ? "open" : "closed";
+      settings.menu[settingsId] === 'closed' ? 'open' : 'closed';
 
-    saveSetting("menu", settingsId, settings.menu[settingsId]);
+    saveSetting('menu', settingsId, settings.menu[settingsId]);
   }
 </script>
 

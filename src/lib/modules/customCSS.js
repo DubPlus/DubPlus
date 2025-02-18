@@ -3,9 +3,9 @@
  * Add custom CSS
  */
 
-import { loadExternalCss } from "../../utils/css";
-import { t } from "../stores/i18n.svelte";
-import { settings } from "../stores/settings.svelte";
+import { loadExternalCss } from '../../utils/css';
+import { t } from '../stores/i18n.svelte';
+import { settings } from '../stores/settings.svelte';
 
 /**
  * Custom CSS
@@ -13,14 +13,14 @@ import { settings } from "../stores/settings.svelte";
  * @type {import("./module").DubPlusModule}
  */
 export const customCss = {
-  id: "custom-css",
-  label: "custom-css.label",
-  description: "custom-css.description",
-  category: "customize",
+  id: 'custom-css',
+  label: 'custom-css.label',
+  description: 'custom-css.description',
+  category: 'customize',
   custom: {
-    title: "custom-css.modal.title",
-    content: "custom-css.modal.content",
-    placeholder: "custom-css.modal.placeholder",
+    title: 'custom-css.modal.title',
+    content: 'custom-css.modal.content',
+    placeholder: 'custom-css.modal.placeholder',
     maxlength: 500,
     validation(value) {
       if (!value) {
@@ -29,7 +29,7 @@ export const customCss = {
       }
       // basic validation that it's a url starting with http and ends with .css
       if (!/^http.+\.css$/.test(value)) {
-        return t("custom-css.modal.validation");
+        return t('custom-css.modal.validation');
       }
 
       return true;

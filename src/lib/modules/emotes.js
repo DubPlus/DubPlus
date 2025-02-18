@@ -1,5 +1,5 @@
-import { CHAT_MESSAGE } from "../../events-constants";
-import { dubplus_emoji } from "../emoji/emoji";
+import { CHAT_MESSAGE } from '../../events-constants';
+import { dubplus_emoji } from '../emoji/emoji';
 
 /**
  *
@@ -11,8 +11,8 @@ import { dubplus_emoji } from "../emoji/emoji";
  * @returns {string}
  */
 function makeImage(type, src, name, w, h) {
-  const width = w ? `width="${w}"` : "";
-  const height = h ? `height="${h}"` : "";
+  const width = w ? `width="${w}"` : '';
+  const height = h ? `height="${h}"` : '';
   return `<img class="emoji ${type}-emote" ${width} ${height} title="${name}" alt="${name}" src="${src}" />`;
 }
 
@@ -30,7 +30,7 @@ function replaceTwitch(html) {
     if (dubplus_emoji.twitch.emotesMap.has(key)) {
       const id = dubplus_emoji.twitch.emotesMap.get(key);
       const src = dubplus_emoji.twitch.template(id);
-      return makeImage("twitch", src, key);
+      return makeImage('twitch', src, key);
     } else {
       return matched;
     }
@@ -52,7 +52,7 @@ function replaceBttv(html) {
     if (dubplus_emoji.bttv.emotesMap.has(key)) {
       const id = dubplus_emoji.bttv.emotesMap.get(key);
       const src = dubplus_emoji.bttv.template(id);
-      return makeImage("bttv", src, key);
+      return makeImage('bttv', src, key);
     } else {
       return matched;
     }
@@ -74,7 +74,7 @@ function replaceFranker(html) {
     if (dubplus_emoji.frankerFacez.emotesMap.has(key)) {
       const id = dubplus_emoji.frankerFacez.emotesMap.get(key);
       const src = dubplus_emoji.frankerFacez.template(id);
-      return makeImage("frankerFacez", src, key);
+      return makeImage('frankerFacez', src, key);
     } else {
       return matched;
     }
@@ -88,14 +88,14 @@ function replaceFranker(html) {
  */
 function replaceTextWithEmote() {
   const chats = document.querySelectorAll(
-    ".chat-main li:not([data-emote-processed])"
+    '.chat-main li:not([data-emote-processed])',
   );
   if (!chats?.length) {
     return;
   }
   chats.forEach((li) => {
-    li.setAttribute("data-emote-processed", "true");
-    const text = li.querySelector(".text");
+    li.setAttribute('data-emote-processed', 'true');
+    const text = li.querySelector('.text');
     if (text?.innerHTML) {
       let processedHTML = replaceTwitch(text.innerHTML);
       processedHTML = replaceBttv(processedHTML);
@@ -113,10 +113,10 @@ function replaceTextWithEmote() {
  * @type {import("./module").DubPlusModule}
  */
 export const emotes = {
-  id: "emotes",
-  label: "emotes.label",
-  description: "emotes.description",
-  category: "general",
+  id: 'emotes',
+  label: 'emotes.label',
+  description: 'emotes.description',
+  category: 'general',
   turnOn() {
     dubplus_emoji
       .loadTwitchEmotes()

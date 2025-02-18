@@ -25,7 +25,6 @@ export interface GrabEvent {
   };
 }
 
-
 export interface PlaylistUpdateEvent {
   // we only use this property
   startTime: number;
@@ -65,8 +64,6 @@ export interface PlaylistUpdateEvent {
   // };
 }
 
-
-
 export interface ChatMessageEvent {
   message: string;
   chatid: string;
@@ -78,7 +75,6 @@ export interface ChatMessageEvent {
     };
   };
 }
-
 
 export interface UserLeaveEvent {
   user: {

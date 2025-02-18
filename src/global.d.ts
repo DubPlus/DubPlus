@@ -1,4 +1,4 @@
-export type SettingsSections = "option" | "menu" | "custom";
+export type SettingsSections = 'option' | 'menu' | 'custom';
 
 export interface Settings {
   options: { [key: string]: boolean };
@@ -42,7 +42,7 @@ export interface QueUp {
       mentionChatSound: {
         play: () => void;
         url: string;
-      },
+      };
       resizeTextarea: () => void;
     };
     player: {
@@ -61,9 +61,9 @@ export interface QueUp {
           };
           songInfo: {
             name: string;
-          }
-        }
-      }
+          };
+        };
+      };
     };
     model: {
       get: (name: string) => any;
@@ -71,7 +71,7 @@ export interface QueUp {
     };
     // TODO: actually type this
     users: any;
-  }
+  };
   Events: {
     bind: (event: string, callback: (e: any) => void) => void;
     once: (event: string, callback: (e: any) => void) => void;
@@ -83,19 +83,18 @@ export interface QueUp {
       set: (name: string, value: string, days: number) => void;
     };
     isSiteAdmin: (userid: string) => boolean;
-  },
+  };
   playerController: {
     volume: number;
     voteUp: HTMLAnchorElement;
-  }
-
+  };
 }
 
 interface Emojify {
   defaultConfig: {
-    img_dir: string
+    img_dir: string;
   };
-  emojiNames: string[]
+  emojiNames: string[];
 }
 
 interface LDB {
@@ -124,7 +123,7 @@ export interface ModalProps {
   placeholder?: string;
   maxlength?: number;
   /**
-   * 
+   *
    * @param value The value of the input
    * @returns true = validation passed, string = error message
    */
@@ -144,6 +143,6 @@ export interface ModalProps {
 export interface QueUpUser {
   username: string;
   userInfo: {
-    userid: string
-  }
+    userid: string;
+  };
 }

@@ -1,12 +1,12 @@
 /* global Dubtrack */
-import { updateModalState } from "../lib/stores/modalState.svelte";
-import { activeTabState } from "../lib/stores/activeTabState.svelte";
-import { t } from "../lib/stores/i18n.svelte";
+import { updateModalState } from '../lib/stores/modalState.svelte';
+import { activeTabState } from '../lib/stores/activeTabState.svelte';
+import { t } from '../lib/stores/i18n.svelte';
 
 function onDenyDismiss() {
   updateModalState({
-    title: t("Notifcation.permission.title"),
-    content: t("Notification.permission.denied"),
+    title: t('Notifcation.permission.title'),
+    content: t('Notification.permission.denied'),
     open: true,
   });
 }
@@ -14,23 +14,23 @@ function onDenyDismiss() {
 export function notifyCheckPermission() {
   return new Promise((resolve, reject) => {
     // first check if browser supports it
-    if (!("Notification" in window)) {
+    if (!('Notification' in window)) {
       updateModalState({
         open: true,
-        title: t("Notifcation.permission.title"),
-        content: t("Notification.permission.notSupported"),
+        title: t('Notifcation.permission.title'),
+        content: t('Notification.permission.notSupported'),
       });
       reject(false);
       return;
     }
 
     // no request needed, good to go
-    if (Notification.permission === "granted") {
+    if (Notification.permission === 'granted') {
       resolve();
       return;
     }
 
-    if (Notification.permission === "denied") {
+    if (Notification.permission === 'denied') {
       onDenyDismiss();
       reject();
       return;
@@ -38,7 +38,7 @@ export function notifyCheckPermission() {
 
     // persmission unknown, request it
     Notification.requestPermission().then(function (result) {
-      if (result === "denied" || result === "default") {
+      if (result === 'denied' || result === 'default') {
         onDenyDismiss();
         reject();
         return;
@@ -61,7 +61,7 @@ export function notifyCheckPermission() {
  */
 export function showNotification(opts) {
   const defaults = {
-    content: "",
+    content: '',
     ignoreActiveTab: false,
     callback: null,
     wait: 10000,
@@ -75,14 +75,14 @@ export function showNotification(opts) {
 
   const notificationOptions = {
     body: options.content,
-    icon: "https://cdn.jsdelivr.net/gh/DubPlus/DubPlus/images/dubplus.svg",
+    icon: 'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus/images/dubplus.svg',
   };
 
   const n = new Notification(options.title, notificationOptions);
 
   n.onclick = function () {
     window.focus();
-    if (typeof options.callback === "function") {
+    if (typeof options.callback === 'function') {
       options.callback();
     }
     n.close();

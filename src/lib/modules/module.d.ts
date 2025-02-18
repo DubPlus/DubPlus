@@ -1,9 +1,9 @@
-import type { ModalProps } from "../../global";
-import type { Component } from "svelte";
+import type { ModalProps } from '../../global';
+import type { Component } from 'svelte';
 
 export interface DubPlusModule {
   /**
-   * Id and property name that will be used to store the state of the feature in 
+   * Id and property name that will be used to store the state of the feature in
    * the settings.options object
    */
   id: string;
@@ -22,7 +22,7 @@ export interface DubPlusModule {
    * Which part of the menu this module will be displayed in
    */
   category: string;
-  
+
   modOnly?: boolean;
 
   /**
@@ -43,7 +43,7 @@ export interface DubPlusModule {
   /**
    * if the feature has an edit modal, this object will be used to create the modal
    */
-  custom?: ModalProps
+  custom?: ModalProps;
 
   /**
    * If this is provided then instead of the menu item rendering
@@ -51,12 +51,10 @@ export interface DubPlusModule {
    * element as a .svelte file.
    */
   altIcon?: Component;
-  
+
   /**
    * This pairs with the altIcon property. If this is provided then
    * the altIcon will be clickable and this function will be called
    */
   onClick?: () => void;
 }
-
-

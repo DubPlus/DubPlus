@@ -4,7 +4,7 @@
  */
 
 function unloader(e) {
-  let confirmationMessage = "You are leaving";
+  let confirmationMessage = 'You are leaving';
   e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
   return confirmationMessage; // Gecko, WebKit, Chrome <34
 }
@@ -13,14 +13,14 @@ function unloader(e) {
  * @type {import("./module").DubPlusModule}
  */
 export const warnOnNavigation = {
-  id: "warn-redirect",
-  label: "warn-redirect.label",
-  description: "warn-redirect.description",
-  category: "settings",
+  id: 'warn-redirect',
+  label: 'warn-redirect.label',
+  description: 'warn-redirect.description',
+  category: 'settings',
   turnOn() {
-    window.addEventListener("beforeunload", unloader);
+    window.addEventListener('beforeunload', unloader);
   },
   turnOff() {
-    window.removeEventListener("beforeunload", unloader);
+    window.removeEventListener('beforeunload', unloader);
   },
 };

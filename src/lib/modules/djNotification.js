@@ -15,7 +15,6 @@ import { settings } from '../stores/settings.svelte';
  * @returns
  */
 function djNotificationCheck(e) {
-
   // check if user is in the queue. One easy but kinda hacky way to do this is
   // to check the DOM for the queue position element to have a number
   const isInQueue = !!document.querySelector('.queue-position')?.textContent;
@@ -26,14 +25,14 @@ function djNotificationCheck(e) {
 
   const currentPosition = parseInt(
     document.querySelector('.queue-position')?.textContent,
-    10
+    10,
   );
   if (isNaN(currentPosition)) {
     // this is important. if we can't parse it then we can't do anything
     logError(
       'dj-notification',
       'Could not parse current position:',
-      currentPosition
+      currentPosition,
     );
     return;
   }

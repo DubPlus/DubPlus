@@ -19,7 +19,7 @@ function grabChatWatcher(e) {
       t('grabs-in-chat.chat-message', {
         username: e.user.username,
         song_name: window.QueUp.room.player.activeSong.attributes.songInfo.name,
-      })
+      }),
     );
   }
 }
@@ -33,7 +33,7 @@ export const grabsInChat = {
     if (!window.QueUp.room.model.get('displayUserGrab')) {
       window.QueUp.Events.bind(
         'realtime:room_playlist-queue-update-grabs',
-        grabChatWatcher
+        grabChatWatcher,
       );
     }
   },
@@ -42,7 +42,7 @@ export const grabsInChat = {
     if (!window.QueUp.room.model.get('displayUserGrab')) {
       window.QueUp.Events.unbind(
         'realtime:room_playlist-queue-update-grabs',
-        grabChatWatcher
+        grabChatWatcher,
       );
     }
   },

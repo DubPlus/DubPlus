@@ -1,4 +1,4 @@
-import { logInfo } from "./logger";
+import { logInfo } from './logger';
 
 /**
  * Looks for a property to exist in the provided starting scope. Handles
@@ -18,11 +18,11 @@ import { logInfo } from "./logger";
  * @return {boolean} if it is defined or not
  */
 function deepCheck(dottedString, startingScope = window) {
-  const props = dottedString.split(".");
+  const props = dottedString.split('.');
 
   let depth = startingScope;
   for (let i = 0; i < props.length; i++) {
-    if (typeof depth[props[i]] === "undefined") {
+    if (typeof depth[props[i]] === 'undefined') {
       return false;
     }
     depth = depth[props[i]];
@@ -41,7 +41,7 @@ function arrayDeepCheck(arr, startingScope = window) {
 
   for (let i = 0; i < arr.length; i++) {
     if (!deepCheck(arr[i], scope)) {
-      logInfo(arr[i], "is not found yet");
+      logInfo(arr[i], 'is not found yet');
       return false;
     }
   }

@@ -1,5 +1,5 @@
-import { CHAT_MESSAGE } from "../../events-constants";
-import { settings } from "../stores/settings.svelte";
+import { CHAT_MESSAGE } from '../../events-constants';
+import { settings } from '../stores/settings.svelte';
 /**
  * Custom Mentions
  *
@@ -7,7 +7,7 @@ import { settings } from "../stores/settings.svelte";
  * when it is mentioned in chat.
  */
 
-const MODULE_ID = "custom-mentions";
+const MODULE_ID = 'custom-mentions';
 
 /**
  * @param {import("../../events").ChatMessageEvent} e
@@ -20,9 +20,9 @@ function customMentionCheck(e) {
     // we only want to play the sound if the message is not from the current user
     window.QueUp.session.id !== e.user.userInfo.userid
   ) {
-    const customMentions = custom.split(",");
+    const customMentions = custom.split(',');
     const shouldPlaySound = customMentions.some(function (v) {
-      const reg = new RegExp("\\b" + v.trim() + "\\b", "i");
+      const reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
       return reg.test(e.message);
     });
 
@@ -39,7 +39,7 @@ export const customMentions = {
   id: MODULE_ID,
   label: `${MODULE_ID}.label`,
   description: `${MODULE_ID}.description`,
-  category: "general",
+  category: 'general',
   custom: {
     title: `${MODULE_ID}.modal.title`,
     content: `${MODULE_ID}.modal.content`,

@@ -1,18 +1,18 @@
 <script>
-  import Logo from "../svg/Logo.svelte";
-  import { teleport } from "../actions/teleport.svelte";
+  import Logo from '../svg/Logo.svelte';
+  import { teleport } from '../actions/teleport.svelte';
 </script>
 
 <button
-  use:teleport={{ to: ".header-right-navigation" }}
+  use:teleport={{ to: '.header-right-navigation' }}
   id="dubplus-menu-icon"
   type="button"
   aria-label="Dub+ menu"
   class="dubplus-icon"
   onclick={() => {
     document
-      .querySelector(".dubplus-menu")
-      .classList.toggle("dubplus-menu-open");
+      .querySelector('.dubplus-menu')
+      .classList.toggle('dubplus-menu-open');
   }}
 >
   <Logo />

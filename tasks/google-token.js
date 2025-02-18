@@ -28,7 +28,7 @@ export function getAccessTokenFromCode() {
   try {
     // if local private.json exists then we can use that instead of env
     let _priv = JSON.parse(
-      fs.readFileSync(process.cwd() + '/private.json', 'utf8')
+      fs.readFileSync(process.cwd() + '/private.json', 'utf8'),
     );
     privateInfo.CLIENT_ID = _priv.CLIENT_ID;
     privateInfo.CLIENT_SECRET = _priv.CLIENT_SECRET;

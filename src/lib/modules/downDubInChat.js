@@ -17,7 +17,7 @@ function downdubWatcher(e) {
       t('downdubs-in-chat.chat-message', {
         username: e.user.username,
         song_name: window.QueUp.room.player.activeSong.attributes.songInfo.name,
-      })
+      }),
     );
   }
 }

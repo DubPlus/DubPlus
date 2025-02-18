@@ -1,6 +1,6 @@
-import { settings } from "../stores/settings.svelte";
-import { t } from "../stores/i18n.svelte";
-import { CHAT_MESSAGE } from "../../events-constants";
+import { settings } from '../stores/settings.svelte';
+import { t } from '../stores/i18n.svelte';
+import { CHAT_MESSAGE } from '../../events-constants';
 /**
  * AFK -  Away from Keyboard
  * Toggles the afk auto response on/off
@@ -19,7 +19,7 @@ function afk_chat_respond(e) {
     return; // do nothing until it's back to true
   }
   const content = e.message;
-  const user = window.QueUp.session.get("username");
+  const user = window.QueUp.session.get('username');
 
   if (
     content.includes(`@${user}`) &&
@@ -28,12 +28,12 @@ function afk_chat_respond(e) {
     /**
      * @type {HTMLInputElement}
      */
-    const chatInput = document.querySelector("#chat-txt-message");
+    const chatInput = document.querySelector('#chat-txt-message');
 
     if (settings.custom.afk) {
       chatInput.value = `[AFK] ${settings.custom.afk}`;
     } else {
-      chatInput.value = `[AFK] ${t("afk.modal.placeholder")}`;
+      chatInput.value = `[AFK] ${t('afk.modal.placeholder')}`;
     }
 
     window.QueUp.room.chat.sendMessage();
@@ -50,10 +50,10 @@ function afk_chat_respond(e) {
  * @type {import("./module").DubPlusModule}
  */
 export const afk = {
-  id: "afk",
-  label: "afk.label",
-  description: "afk.description",
-  category: "general",
+  id: 'afk',
+  label: 'afk.label',
+  description: 'afk.description',
+  category: 'general',
   turnOn() {
     window.QueUp.Events.bind(CHAT_MESSAGE, afk_chat_respond);
   },
@@ -61,9 +61,9 @@ export const afk = {
     window.QueUp.Events.unbind(CHAT_MESSAGE, afk_chat_respond);
   },
   custom: {
-    title: "afk.modal.title",
-    content: "afk.modal.content",
-    placeholder: "afk.modal.placeholder",
+    title: 'afk.modal.title',
+    content: 'afk.modal.content',
+    placeholder: 'afk.modal.placeholder',
     maxlength: 255,
   },
 };

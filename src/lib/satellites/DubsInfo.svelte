@@ -32,7 +32,6 @@
     return null;
   }
 
- 
   function onHover() {
     const hoverTarget = getTarget();
     if (hoverTarget) {
@@ -59,8 +58,6 @@
     }
     display = 'none';
   }
-
-
 
   onMount(() => {
     const hoverTarget = getTarget();

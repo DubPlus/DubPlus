@@ -19,7 +19,7 @@
    */
   function handleKeydown(event) {
     if (disabled) return;
-    if (event.key === "Enter" || event.key === " ") {
+    if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       checked = !checked;
       onToggle(checked);
@@ -35,8 +35,8 @@
 
 <div
   role="switch"
-  aria-disabled={disabled ? "true" : "false"}
-  aria-checked={checked ? "true" : "false"}
+  aria-disabled={disabled ? 'true' : 'false'}
+  aria-checked={checked ? 'true' : 'false'}
   tabindex="0"
   onclick={handleClick}
   onkeydown={handleKeydown}
@@ -48,7 +48,7 @@
 </div>
 
 <style>
-  [role="switch"] {
+  [role='switch'] {
     user-select: none;
     display: flex;
     align-items: center;
@@ -82,10 +82,10 @@
     background: var(--dubplus-primary-color);
     transition: left 0.2s cubic-bezier(0.8, 0, 0.05, 1);
   }
-  [role="switch"][aria-checked="true"] .dubplus-switch {
+  [role='switch'][aria-checked='true'] .dubplus-switch {
     background: #666;
   }
-  [role="switch"][aria-checked="true"] .dubplus-switch span {
+  [role='switch'][aria-checked='true'] .dubplus-switch span {
     background: var(--dubplus-secondary-color);
     border-color: var(--dubplus-secondary-color);
     left: 13px;

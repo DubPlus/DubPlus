@@ -1,22 +1,22 @@
 <script>
-  import { onMount } from "svelte";
-  import MenuIcon from "./MenuIcon.svelte";
-  import Contact from "../sections/Contact.svelte";
-  import General from "../sections/General.svelte";
-  import Eta from "../satellites/Eta.svelte";
-  import Snooze from "../satellites/Snooze.svelte";
-  import Modal from "../Modal.svelte";
-  import EmojiPreview from "../emoji/EmojiPreview.svelte";
-  import { t } from "../stores/i18n.svelte";
-  import DubsInfo from "../satellites/DubsInfo.svelte";
-  import { settings } from "../stores/settings.svelte";
-  import Snow from "../satellites/Snow.svelte";
-  import UserInterface from "../sections/UserInterface.svelte";
-  import Settings from "../sections/Settings.svelte";
-  import Customize from "../sections/Customize.svelte";
+  import { onMount } from 'svelte';
+  import MenuIcon from './MenuIcon.svelte';
+  import Contact from '../sections/Contact.svelte';
+  import General from '../sections/General.svelte';
+  import Eta from '../satellites/Eta.svelte';
+  import Snooze from '../satellites/Snooze.svelte';
+  import Modal from '../Modal.svelte';
+  import EmojiPreview from '../emoji/EmojiPreview.svelte';
+  import { t } from '../stores/i18n.svelte';
+  import DubsInfo from '../satellites/DubsInfo.svelte';
+  import { settings } from '../stores/settings.svelte';
+  import Snow from '../satellites/Snow.svelte';
+  import UserInterface from '../sections/UserInterface.svelte';
+  import Settings from '../sections/Settings.svelte';
+  import Customize from '../sections/Customize.svelte';
 
   onMount(() => {
-    document.querySelector("html").classList.add("dubplus");
+    document.querySelector('html').classList.add('dubplus');
   });
 </script>
 
@@ -30,7 +30,7 @@
 {#if settings.options.autocomplete}
   <EmojiPreview />
 {/if}
-{#if settings.options["dubs-hover"]}
+{#if settings.options['dubs-hover']}
   <DubsInfo dubType="updub" />
   <DubsInfo dubType="downdub" />
   <DubsInfo dubType="grab" />
@@ -41,7 +41,7 @@
 
 <!-- this is the main menu -->
 <section class="dubplus-menu">
-  <p class="dubplus-menu-header">{t("Menu.title")}</p>
+  <p class="dubplus-menu-header">{t('Menu.title')}</p>
   <General />
   <UserInterface />
   <Settings />

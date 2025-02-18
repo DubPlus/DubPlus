@@ -1,11 +1,11 @@
 <script>
-  import { waitFor } from "./utils/waitFor";
-  import Loading from "./lib/Loading.svelte";
-  import Modal from "./lib/Modal.svelte";
-  import Menu from "./lib/menu/Menu.svelte";
-  import { modalState } from "./lib/stores/modalState.svelte";
-  import { t, locale, normalizeLocale } from "./lib/stores/i18n.svelte";
-  import { onMount, onDestroy } from "svelte";
+  import { waitFor } from './utils/waitFor';
+  import Loading from './lib/Loading.svelte';
+  import Modal from './lib/Modal.svelte';
+  import Menu from './lib/menu/Menu.svelte';
+  import { modalState } from './lib/stores/modalState.svelte';
+  import { t, locale, normalizeLocale } from './lib/stores/i18n.svelte';
+  import { onMount, onDestroy } from 'svelte';
 
   window.dubplus = window.dubplus || {};
 
@@ -13,41 +13,41 @@
   window.dubplus = Object.assign(window.dubplus, __PKGINFO__);
 
   /** @type {"loading" | "ready" | "loggedout" | "error"} */
-  let status = $state("loading");
+  let status = $state('loading');
 
   function setLocale() {
-    locale.current = normalizeLocale(navigator.language || "en");
+    locale.current = normalizeLocale(navigator.language || 'en');
   }
 
   onMount(() => {
     setLocale();
-    window.addEventListener("languagechange", setLocale);
+    window.addEventListener('languagechange', setLocale);
   });
 
   onDestroy(() => {
-    window.removeEventListener("languagechange", setLocale);
+    window.removeEventListener('languagechange', setLocale);
   });
 
   const checkList = [
-    "QueUp.session.id",
-    "QueUp.room.chat",
-    "QueUp.Events",
-    "QueUp.room.player",
-    "QueUp.helpers.cookie",
-    "QueUp.room.model",
-    "QueUp.room.users",
+    'QueUp.session.id',
+    'QueUp.room.chat',
+    'QueUp.Events',
+    'QueUp.room.player',
+    'QueUp.helpers.cookie',
+    'QueUp.room.model',
+    'QueUp.room.users',
   ];
 
   waitFor(checkList)
     .then(() => {
-      status = "ready";
+      status = 'ready';
     })
     .catch(() => {
       if (!window.QueUp?.session?.id) {
         // user might be logged out
-        status = "loggedout";
+        status = 'loggedout';
       } else {
-        status = "error";
+        status = 'error';
       }
     });
 
@@ -55,7 +55,7 @@
    * @param {string} content
    */
   function showErrorModal(content) {
-    modalState.title = t("Error.modal.title");
+    modalState.title = t('Error.modal.title');
     modalState.content = content;
 
     modalState.onCancel = () => {
@@ -68,17 +68,17 @@
   }
 
   $effect(() => {
-    if (status === "loggedout") {
-      showErrorModal(t("Error.modal.loggedout"));
-    } else if (status === "error") {
-      showErrorModal(t("Error.unknown"));
+    if (status === 'loggedout') {
+      showErrorModal(t('Error.modal.loggedout'));
+    } else if (status === 'error') {
+      showErrorModal(t('Error.unknown'));
     }
   });
 </script>
 
-{#if status === "loading"}
+{#if status === 'loading'}
   <Loading />
-{:else if status === "ready"}
+{:else if status === 'ready'}
   <Menu />
 {:else}
   <Modal />

@@ -3111,7 +3111,7 @@ var dubplus = function() {
     set(checked, !get(checked));
     $$props.onToggle(get(checked));
   }
-  var root$e = /* @__PURE__ */ template(`<div role="switch" tabindex="0" class="svelte-dbnfh0"><span class="dubplus-switch svelte-dbnfh0"><span class="svelte-dbnfh0"></span></span> <span class="dubplus-switch-label svelte-dbnfh0"> </span></div>`);
+  var root$e = /* @__PURE__ */ template(`<div role="switch" tabindex="0" class="svelte-1mny4ma"><span class="dubplus-switch svelte-1mny4ma"><span class="svelte-1mny4ma"></span></span> <span class="dubplus-switch-label svelte-1mny4ma"> </span></div>`);
   function Switch($$anchor, $$props) {
     push($$props, true);
     let checked = state(proxy(!$$props.disabled ? $$props.isOn : false));
@@ -3137,8 +3137,8 @@ var dubplus = function() {
   function isMod(userid) {
     return window.QueUp.helpers.isSiteAdmin(userid) || window.QueUp.room.users.getIfOwner(userid) || window.QueUp.room.users.getIfManager(userid) || window.QueUp.room.users.getIfMod(userid);
   }
-  var root_1$1 = /* @__PURE__ */ template(`<button type="button" class="svelte-1fumazm"><!> <span class="sr-only"> </span></button>`);
-  var root$c = /* @__PURE__ */ template(`<li class="svelte-1fumazm"><!> <!></li>`);
+  var root_1$1 = /* @__PURE__ */ template(`<button type="button" class="svelte-1dzj03i"><!> <span class="sr-only"> </span></button>`);
+  var root$c = /* @__PURE__ */ template(`<li class="svelte-1dzj03i"><!> <!></li>`);
   function MenuSwitch($$anchor, $$props) {
     push($$props, true);
     onMount(() => {
@@ -4115,7 +4115,6 @@ var dubplus = function() {
   };
   function djNotificationCheck(e) {
     var _a, _b;
-    logInfo("djNotificationCheck", e);
     const isInQueue = !!((_a = document.querySelector(".queue-position")) == null ? void 0 : _a.textContent);
     if (!isInQueue) {
       return;
@@ -4778,7 +4777,7 @@ var dubplus = function() {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${"https://cdn.jsdelivr.net/gh/DubPlus/DubPlus"}${cssFile}?${"1739770232666"}`
+        `${"https://cdn.jsdelivr.net/gh/DubPlus/DubPlus"}${cssFile}?${"1739851947854"}`
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5081,7 +5080,7 @@ var dubplus = function() {
     append($$anchor, button);
     pop();
   }
-  var root$8 = /* @__PURE__ */ template(`<button id="dubplus-snooze" type="button" class="icon-mute snooze_btn dubplus-btn-player svelte-huywc"><span class="svelte-huywc">1</span></button>`);
+  var root$8 = /* @__PURE__ */ template(`<button id="dubplus-snooze" type="button" class="icon-mute snooze_btn dubplus-btn-player svelte-1va87zs"><span class="svelte-1va87zs">1</span></button>`);
   function Snooze($$anchor, $$props) {
     push($$props, false);
     const eventUtils = { currentVol: 50, snoozed: false };
@@ -5421,7 +5420,7 @@ var dubplus = function() {
     append($$anchor, div);
     pop();
   }
-  var root$4 = /* @__PURE__ */ template(`<li class="svelte-1gn1ygz"><button type="button" class="svelte-1gn1ygz"><!> <span class="dubplus-menu-label svelte-1gn1ygz"> </span></button></li>`);
+  var root$4 = /* @__PURE__ */ template(`<li class="svelte-psnl7x"><button type="button" class="svelte-psnl7x"><!> <span class="dubplus-menu-label svelte-psnl7x"> </span></button></li>`);
   function MenuAction($$anchor, $$props) {
     push($$props, true);
     onMount(() => {
@@ -5820,4 +5819,3 @@ var dubplus = function() {
   });
   return app;
 }();
-//# sourceMappingURL=dubplus.js.map

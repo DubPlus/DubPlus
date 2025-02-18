@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import pkg from './package.json' with { type: "json" };
+import pkg from './package.json' with { type: 'json' };
 import { resolve } from 'path';
 
 // only want to pass a few things from package, delete the rest
@@ -60,7 +60,7 @@ export default defineConfig(() => {
     define: {
       __TIME_STAMP__: JSON.stringify(Date.now().toString()),
       __SRC_ROOT__: JSON.stringify(
-        'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus'
+        'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus',
       ),
       __PKGINFO__: JSON.stringify(pkg),
     },
@@ -70,8 +70,8 @@ export default defineConfig(() => {
 
       // This places the "dubplus.js" and "dubplus.css" files in the root
       // of this repo.
-      outDir: '.', 
-      
+      outDir: '.',
+
       /*************************************************
        * !! DO NOT CHANGE THIS !!
        * 'emptyOutDir' must always be 'false'.
@@ -79,7 +79,7 @@ export default defineConfig(() => {
        */
       emptyOutDir: false,
       /************************************************* */
-      
+
       lib: {
         entry: resolve(__dirname, '/src/main.js'),
         name: 'dubplus',

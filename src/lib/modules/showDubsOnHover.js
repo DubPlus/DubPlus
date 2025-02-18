@@ -139,7 +139,7 @@ function dubWatcher(e) {
 
     //Remove user from other dubtype if exists
     dubsState.downDubs = dubsState.downDubs.filter(
-      (el) => el.userid !== e.user._id
+      (el) => el.userid !== e.user._id,
     );
   } else if (e.dubtype === 'downdub' && isMod(window.QueUp.session.id)) {
     if (!dubsState.downDubs.find((el) => el.userid === e.user._id)) {
@@ -151,7 +151,7 @@ function dubWatcher(e) {
 
     //Remove user from other dubtype if exists
     dubsState.upDubs = dubsState.upDubs.filter(
-      (el) => el.userid !== e.user._id
+      (el) => el.userid !== e.user._id,
     );
   }
 
@@ -199,7 +199,7 @@ function dubUserLeaveWatcher(e) {
   dubsState.upDubs = dubsState.upDubs.filter((el) => el.userid !== e.user._id);
   // remove from down dubs
   dubsState.downDubs = dubsState.downDubs.filter(
-    (el) => el.userid !== e.user._id
+    (el) => el.userid !== e.user._id,
   );
   // remove from grabs
   dubsState.grabs = dubsState.grabs.filter((el) => el.userid !== e.user._id);

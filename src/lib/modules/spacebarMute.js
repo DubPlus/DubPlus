@@ -3,7 +3,7 @@
  */
 function handleMute(e) {
   const tag = /**@type {HTMLElement}*/ (e.target).tagName.toLowerCase();
-  if (e.key === " " && tag !== "input" && tag !== "textarea") {
+  if (e.key === ' ' && tag !== 'input' && tag !== 'textarea') {
     window.QueUp.room.player.mutePlayer();
   }
 }
@@ -15,14 +15,14 @@ function handleMute(e) {
  * @type {import("./module").DubPlusModule}
  */
 export const spacebarMute = {
-  id: "spacebar-mute",
-  label: "spacebar-mute.label",
-  description: "spacebar-mute.description",
-  category: "settings",
+  id: 'spacebar-mute',
+  label: 'spacebar-mute.label',
+  description: 'spacebar-mute.description',
+  category: 'settings',
   turnOn() {
-    document.addEventListener("keypress", handleMute);
+    document.addEventListener('keypress', handleMute);
   },
   turnOff() {
-    document.removeEventListener("keypress", handleMute);
+    document.removeEventListener('keypress', handleMute);
   },
 };
