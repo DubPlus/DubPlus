@@ -15,16 +15,21 @@ The Chrome and Firefox extensions have been updated to use Manifest v3.
 
 ### Breaking Changes
 
-We no longer produce minified versions of our code because we never used them and Chrome and Firefox extensions forbid them anyways:
+Some files deleted or moved. If you were accessing these files you'll need to update your urls. Most people will not have to worry about this.
 
-- `dubplus.min.js`
-- `css/dubplus.min.css`
+**Deleted**: We no longer produce minified versions of our code because Chrome and Firefox extensions forbid them.
 
-We no longer have a `css/` folder, the `dubplus.css` is located at the root next to the `dubplus.js` file. If you were accessing these files you'll need to update your urls. Most people will not have to worry about this.
+- ~~`dubplus.min.js`~~
+- ~~`css/dubplus.min.css`~~
+
+**Moved**:
+
+- ~~`css/dubplus.css`~~ --> `./dubplus.css`
 
 ### Fixed
 
 - Fullscreen wasn't working
+- Fixed custom css not unloading when disabled if a css file was loaded
 
 ## [0.3.4] - 2024-07-05
 
