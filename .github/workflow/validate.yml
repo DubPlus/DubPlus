@@ -1,0 +1,39 @@
+# In this action we validate that:
+# - the project builds without error
+# - that it doesn't contain code not meant to be committed
+
+name: Validate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    # cancel any previous runs in the same workflow
+    concurrency:
+      # github.workflow is the name of the workflow, which is "Validate"
+      # github.head_ref is the branch name, only available on pull requests
+      group: ${{ github.workflow }}-${{ github.head_ref }}
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+      - run: npm ci
+
+      # ensure file is formatted so that we can assert it using grep
+      - run: npx prettier vite.config.js --write
+
+      # emptyOutDir in vite.config.js must be false
+      - run: |
+          grep "emptyOutDir: false" vite.config.js || (echo "Error, emptyOutDir must be false in vite.config.js"; exit 1;)
+
+      # build should succeed
+      - run: npm run build
