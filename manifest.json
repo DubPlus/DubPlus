@@ -15,6 +15,12 @@
   },
   "content_scripts": [
     {
+      "js": ["extension/register-dubplus.js"],
+      "matches": ["*://*.dubtrack.fm/join/*", "*://*.queup.net/join/*"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
       "js": ["dubplus.js"],
       "css": ["dubplus.css"],
       "matches": ["*://*.dubtrack.fm/join/*", "*://*.queup.net/join/*"],

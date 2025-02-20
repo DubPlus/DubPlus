@@ -2,9 +2,17 @@ import './dubplus.css';
 import { mount, unmount } from 'svelte';
 import DubPlus from './DubPlus.svelte';
 import { loadCSS } from './utils/css';
-import { logError } from './utils/logger';
+import { logError, logInfo } from './utils/logger';
 
-if (!import.meta.env.DEV) {
+const loadedAsExtension = 'dubplusExtensionLoaded' in window;
+
+// @ts-ignore
+logInfo('Dub+: loaded as extension:', loadedAsExtension);
+
+// during development, and also when loaded as an extension,
+// we don't need to load the CSS, because css is injected by
+// the extension or dev server
+if (!import.meta.env.DEV && !loadedAsExtension) {
   loadCSS('/dubplus.css', 'dubplus-css').catch((e) => {
     logError('Failed to load dubplus.css', e);
   });
