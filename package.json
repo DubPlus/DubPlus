@@ -42,8 +42,8 @@
     "lint-staged": "^15.4.3",
     "prettier": "^3.5.1",
     "prettier-plugin-svelte": "^3.3.3",
-    "svelte": "^5.17.5",
-    "vite": "^6.0.7",
+    "svelte": "^5.20.2",
+    "vite": "^6.1.1",
     "web-ext": "^8.4.0"
   },
   "browserslist": [

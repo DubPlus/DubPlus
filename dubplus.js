@@ -1740,7 +1740,9 @@ var dubplus = (function () {
           var delegated = current_target['__' + event_name];
           if (
             delegated !== void 0 &&
-            !(/** @type {any} */ current_target.disabled)
+            (!(/** @type {any} */ current_target.disabled) || // DOM could've been updated already by the time this is reached, so we check this as well
+              // -> the target could not have been disabled because it emits the event in the first place
+              event2.target === current_target)
           ) {
             if (is_array(delegated)) {
               var [fn, ...data] = delegated;
@@ -5250,7 +5252,7 @@ var dubplus = (function () {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus'}${cssFile}?${'1740022755362'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus'}${cssFile}?${'1740029009124'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
