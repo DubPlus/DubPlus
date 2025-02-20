@@ -4297,9 +4297,8 @@ var dubplus = (function () {
       enabled && // we only want to play the sound if the message is not from the current user
       window.QueUp.session.id !== e.user.userInfo.userid
     ) {
-      const customMentions2 = custom.split(',');
-      const shouldPlaySound = customMentions2.some(function (v) {
-        const reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
+      const shouldPlaySound = custom.split(',').some(function (v) {
+        const reg = new RegExp('(^|\\b)@?' + v.trim() + '\\b', 'ig');
         return reg.test(e.message);
       });
       if (shouldPlaySound) {
@@ -5255,7 +5254,7 @@ var dubplus = (function () {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}${cssFile}?${'1740086213221'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}${cssFile}?${'1740092586166'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;

@@ -5,6 +5,9 @@ import { settings } from '../stores/settings.svelte';
  *
  * When enabled, you can set custom text that triggers the mention chat sound
  * when it is mentioned in chat.
+ *
+ * This works with or without the "@". So if you set your custom mention to
+ * be dubplus, it will trigger the sound when someone says "dubplus" or "@dubplus".
  */
 
 const MODULE_ID = 'custom-mentions';
@@ -20,9 +23,8 @@ function customMentionCheck(e) {
     // we only want to play the sound if the message is not from the current user
     window.QueUp.session.id !== e.user.userInfo.userid
   ) {
-    const customMentions = custom.split(',');
-    const shouldPlaySound = customMentions.some(function (v) {
-      const reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
+    const shouldPlaySound = custom.split(',').some(function (v) {
+      const reg = new RegExp('(^|\\b)@?' + v.trim() + '\\b', 'ig');
       return reg.test(e.message);
     });
 
