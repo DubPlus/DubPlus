@@ -15,6 +15,8 @@ import { loadExternalCss } from '../../utils/css';
  * @dubx=https://example.com/style.css
  */
 
+const LINK_ELEM_ID = 'dubplus-community-css';
+
 /**
  * @type {import("./module").DubPlusModule}
  */
@@ -30,7 +32,8 @@ export const communityTheme = {
       .then((e) => {
         const content = e.data.description;
 
-        // for backwards compatibility with dubx we're checking for both @dubx and @dubplus and @dub+
+        // for backwards compatibility with dubx we're checking for both @dubx
+        // and @dubplus and @dub+
         const themeCheck = new RegExp(
           /(@dub(x|plus|\+)=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/,
           'i',
@@ -44,14 +47,14 @@ export const communityTheme = {
           logInfo('No community CSS theme found');
           return;
         }
-        logInfo('loading community css theme:', communityCSSUrl);
-        loadExternalCss(communityCSSUrl, this.id);
+        logInfo('loading community css theme from:', communityCSSUrl);
+        return loadExternalCss(communityCSSUrl, LINK_ELEM_ID);
       })
       .catch((error) => {
         logError('Community CSS: Failed to load room info', error);
       });
   },
   turnOff() {
-    document.querySelector(`.${this.id}`)?.remove();
+    document.getElementById(LINK_ELEM_ID)?.remove();
   },
 };

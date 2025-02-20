@@ -4,8 +4,11 @@
  */
 
 import { loadExternalCss } from '../../utils/css';
+import { logError } from '../../utils/logger';
 import { t } from '../stores/i18n.svelte';
 import { settings } from '../stores/settings.svelte';
+
+const LINK_ELEM_ID = 'dubplus-custom-css';
 
 /**
  * Custom CSS
@@ -35,23 +38,27 @@ export const customCss = {
       return true;
     },
     onConfirm(value) {
-      document.querySelector(`.${customCss.id}`)?.remove();
       if (!value) {
+        document.getElementById(LINK_ELEM_ID)?.remove();
         // a blank value means the user wanted to remove the custom CSS
         settings.options[customCss.id] = false; // turn it back off
         return;
+      } else {
+        loadExternalCss(value, LINK_ELEM_ID).catch((e) => {
+          logError('Error loading custom css file:', e);
+        });
       }
-
-      loadExternalCss(value, customCss.id);
     },
   },
   turnOn() {
     if (settings.custom[this.id]) {
-      loadExternalCss(settings.custom[this.id], this.id);
+      loadExternalCss(settings.custom[this.id], LINK_ELEM_ID).catch((e) => {
+        logError('Error loading custom css file:', e);
+      });
     }
   },
 
   turnOff() {
-    document.querySelector(`.${this.id}`)?.remove();
+    document.getElementById(LINK_ELEM_ID)?.remove();
   },
 };
