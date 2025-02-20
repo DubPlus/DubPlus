@@ -2337,10 +2337,7 @@ var dubplus = (function () {
       ? /** @type {TemplateNode} */
         item.next.e.nodes_start
       : anchor;
-    var dest = next
-      ? /** @type {TemplateNode} */
-        next.e.nodes_start
-      : anchor;
+    var dest = next ? /** @type {TemplateNode} */ next.e.nodes_start : anchor;
     var node =
       /** @type {TemplateNode} */
       item.e.nodes_start;
@@ -5252,7 +5249,7 @@ var dubplus = (function () {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus'}${cssFile}?${'1740029009124'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus'}${cssFile}?${'1740030974487'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5358,11 +5355,19 @@ var dubplus = (function () {
         : _a.remove();
     },
   };
-  function makeBGdiv(url, className) {
-    const div = document.createElement('div');
-    div.className = className;
-    div.style.backgroundImage = `url(${url})`;
-    return div;
+  function addCustomBG(url) {
+    const img = document.querySelector('.backstretch img');
+    if (img) {
+      img.setAttribute('data-original', img.src);
+      img.src = url;
+    }
+  }
+  function removeCustomBG() {
+    const img = document.querySelector('.backstretch img');
+    if (img && img.hasAttribute('data-original')) {
+      img.src = img.getAttribute('data-original');
+      img.removeAttribute;
+    }
   }
   const customBackground = {
     id: 'custom-bg',
@@ -5384,31 +5389,22 @@ var dubplus = (function () {
         return true;
       },
       onConfirm(value) {
-        var _a;
-        (_a = document.querySelector(`.${customBackground.id}`)) == null
-          ? void 0
-          : _a.remove();
+        removeCustomBG();
         if (!value) {
           return;
         }
-        document.body.appendChild(makeBGdiv(value, customBackground.id));
+        addCustomBG(value);
       },
     },
     turnOn() {
-      var _a;
-      (_a = document.querySelector(`.${this.id}`)) == null
-        ? void 0
-        : _a.remove();
+      removeCustomBG();
       const savedCustomBG = settings.custom[this.id];
       if (savedCustomBG) {
-        document.body.appendChild(makeBGdiv(savedCustomBG, this.id));
+        addCustomBG(savedCustomBG);
       }
     },
     turnOff() {
-      var _a;
-      (_a = document.querySelector(`.${this.id}`)) == null
-        ? void 0
-        : _a.remove();
+      removeCustomBG();
     },
   };
   let DubtrackDefaultSound;
