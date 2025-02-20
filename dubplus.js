@@ -2337,7 +2337,10 @@ var dubplus = (function () {
       ? /** @type {TemplateNode} */
         item.next.e.nodes_start
       : anchor;
-    var dest = next ? /** @type {TemplateNode} */ next.e.nodes_start : anchor;
+    var dest = next
+      ? /** @type {TemplateNode} */
+        next.e.nodes_start
+      : anchor;
     var node =
       /** @type {TemplateNode} */
       item.e.nodes_start;
@@ -3867,7 +3870,7 @@ var dubplus = (function () {
       }
       logInfo('tasty', 'loading from api');
       return fetch(
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus'}/emotes/tastyemotes.json`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}/emotes/tastyemotes.json`,
       )
         .then((res) => res.json())
         .then((json) => {
@@ -5249,7 +5252,7 @@ var dubplus = (function () {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus'}${cssFile}?${'1740030974487'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}${cssFile}?${'1740068101094'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;

@@ -1,7 +1,8 @@
+import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import pkg from './package.json' with { type: 'json' };
-import { resolve } from 'path';
+import { getCurrentBranch } from './tasks/git-branch';
 
 // only want to pass a few things from package, delete the rest
 delete pkg.main;
@@ -53,15 +54,22 @@ const dubsResponse = {
   },
 };
 
+function getCdnRoot() {
+  const currentBranch = getCurrentBranch();
+  if (currentBranch) {
+    return `https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@${currentBranch}`;
+  } else {
+    return 'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus';
+  }
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   return {
     plugins: [svelte()],
     define: {
       __TIME_STAMP__: JSON.stringify(Date.now().toString()),
-      __SRC_ROOT__: JSON.stringify(
-        'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus',
-      ),
+      __SRC_ROOT__: JSON.stringify(getCdnRoot()),
       __PKGINFO__: JSON.stringify(pkg),
     },
     build: {
