@@ -2,6 +2,9 @@
   import { teleport } from '../actions/teleport.svelte';
   import { t } from '../stores/i18n.svelte';
 
+  let icon = $state('icon-eye-blocked');
+  let tooltip = $state(t('SnoozeVideo.tooltip'));
+
   /**
    * Snooze Video
    * Hides the video for the duration of the current song.
@@ -20,6 +23,9 @@
     if (e.startTime < 2) {
       // remove css class that hides the video
       document.body.classList.remove(SNOOZE_CLASS);
+      tooltip = t('SnoozeVideo.tooltip');
+      icon = 'icon-eye-blocked';
+      return true;
     }
   }
 
@@ -28,6 +34,8 @@
    */
   function snooze() {
     if (!document.body.classList.contains(SNOOZE_CLASS)) {
+      tooltip = t('SnoozeVideo.tooltip.undo');
+      icon = 'icon-eye-unblocked';
       document.body.classList.add(SNOOZE_CLASS);
       // setup event listener for song advance to restore volume
       // when the song changes
@@ -36,6 +44,8 @@
         eventSongAdvance,
       );
     } else {
+      tooltip = t('SnoozeVideo.tooltip');
+      icon = 'icon-eye-blocked';
       document.body.classList.remove(SNOOZE_CLASS);
       window.QueUp.Events.unbind(
         'realtime:room_playlist-update',
@@ -49,9 +59,9 @@
   use:teleport={{ to: '.player_sharing' }}
   id="dubplus-snooze-video"
   type="button"
-  class="icon-eye-blocked snooze-video-btn dubplus-btn-player"
-  aria-label={t('SnoozeVideo.tooltip')}
-  data-dp-tooltip={t('SnoozeVideo.tooltip')}
+  class={`${icon} snooze-video-btn dubplus-btn-player`}
+  aria-label={tooltip}
+  data-dp-tooltip={tooltip}
   onclick={snooze}
 >
   <span>1</span>

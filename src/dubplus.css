@@ -100,6 +100,7 @@
  * User Interface styles
  */
 
+.dubplus-split-chat .split,
 .dubplus-split-chat .chat-main li:nth-child(2n) {
   background: linear-gradient(
     to right,
@@ -112,16 +113,6 @@
 
 .dubplus-split-chat .chat-main li:nth-child(2n) .chatDelete {
   right: 1.7em !important;
-}
-
-.dubplus-split-chat .split {
-  background: linear-gradient(
-    to right,
-    rgba(155, 157, 160, 0.1) 0%,
-    rgba(0, 0, 0, 0) 100%
-  );
-  box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
-  width: 100%;
 }
 
 .dubplus-split-chat .splitfix {
@@ -196,6 +187,23 @@
 
 .dubplus-snooze-video #main_player .player_container {
   visibility: hidden;
+  position: relative;
+}
+.dubplus-snooze-video #main_player .player_container::before {
+  content: '\e90a';
+  font-family: icomoon;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  color: white;
+  visibility: visible;
 }
 
 .dubplus-chat-system-grab,

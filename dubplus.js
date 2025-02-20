@@ -2688,11 +2688,11 @@ var dubplus = (function () {
     });
   }
   enable_legacy_mode_flag();
-  var root$q = /* @__PURE__ */ ns_template(
+  var root$r = /* @__PURE__ */ ns_template(
     `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" viewBox="0 0 2078.496 2083.914" enable-background="new 0 0 2078.496 2083.914" xml:space="preserve"><rect x="769.659" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#660078" width="539.178" height="539.178"></rect><g><rect x="1308.837" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.488" height="539.178"></rect><polygon fill="#EB008B" points="2045.015,1042.035 1845.324,1311.625 1845.324,772.446 	"></polygon></g><g><rect x="232.172" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.487" height="539.178"></rect><polygon fill="#EB008B" points="33.481,1042.034 233.172,772.445 233.172,1311.623 	"></polygon></g><g><rect x="769.659" y="1311.624" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.248,2047.802 769.659,1848.111 1308.837,1848.111 	"></polygon></g><g><rect x="769.659" y="234.958" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.249,35.268 1308.837,235.958 769.659,235.958 	"></polygon></g></svg>`,
   );
   function Logo($$anchor) {
-    var svg = root$q();
+    var svg = root$r();
     append($$anchor, svg);
   }
   const translations = {
@@ -2708,7 +2708,10 @@ var dubplus = (function () {
       'Loading.text': 'Waiting for QueUp...',
       'Eta.tooltip.notInQueue': "You're not in the queue",
       'Eta.tootltip': 'ETA: {{minutes}} minutes',
-      'Snooze.tooltip': 'Mute current song',
+      'Snooze.tooltip': 'Mute for current song',
+      'Snooze.tooltip.undo': 'Cancel mute for current song',
+      'SnoozeVideo.tooltip': 'Hide video for current song',
+      'SnoozeVideo.tooltip.undo': 'Cancel hiding video for current song',
       'Notifcation.permission.title': 'Desktop Notification',
       'Notification.permission.denied':
         'You have dismissed or chosen to deny the request to allow desktop notifications. Reset this choice by clearing your cache for the site.',
@@ -2870,13 +2873,13 @@ var dubplus = (function () {
     }
     return loc;
   }
-  var root$p = /* @__PURE__ */ template(
+  var root$q = /* @__PURE__ */ template(
     `<div class="dubplus-waiting svelte-16mmbc"><div style="width: 26px; margin-right:5px"><!></div> <span style="flex: 1;"> </span></div>`,
   );
   function Loading($$anchor, $$props) {
     push($$props, false);
     init();
-    var div = root$p();
+    var div = root$q();
     var div_1 = child(div);
     var node = child(div_1);
     Logo(node);
@@ -2933,7 +2936,7 @@ var dubplus = (function () {
   var root_4 = /* @__PURE__ */ template(
     `<button class="dp-modal--cancel cancel svelte-1mnr24t"> </button>`,
   );
-  var root$o = /* @__PURE__ */ template(
+  var root$p = /* @__PURE__ */ template(
     `<dialog id="dubplus-dialog" class="dp-modal svelte-1mnr24t"><h1 class="svelte-1mnr24t"> </h1> <div class="dp-modal--content content svelte-1mnr24t"><p class="svelte-1mnr24t"> </p> <!> <!></div> <div class="dp-modal--buttons buttons svelte-1mnr24t"><!></div></dialog>`,
   );
   function Modal($$anchor, $$props) {
@@ -2953,7 +2956,7 @@ var dubplus = (function () {
         dialog.showModal();
       }
     });
-    var dialog_1 = root$o();
+    var dialog_1 = root$p();
     var h1 = child(dialog_1);
     var text2 = child(h1);
     var div = sibling(h1, 2);
@@ -3077,13 +3080,13 @@ var dubplus = (function () {
       .querySelector('.dubplus-menu')
       .classList.toggle('dubplus-menu-open');
   };
-  var root$n = /* @__PURE__ */ template(
+  var root$o = /* @__PURE__ */ template(
     `<button id="dubplus-menu-icon" type="button" aria-label="Dub+ menu" class="dubplus-icon svelte-9z7rrn"><!></button>`,
   );
   function MenuIcon($$anchor, $$props) {
     push($$props, false);
     init();
-    var button = root$n();
+    var button = root$o();
     button.__click = [on_click$1];
     var node = child(button);
     Logo(node);
@@ -3243,7 +3246,7 @@ var dubplus = (function () {
     }
     throw new Error(`Invalid section: "${section}"`);
   }
-  var root$m = /* @__PURE__ */ template(
+  var root$n = /* @__PURE__ */ template(
     `<button type="button" class="dubplus-menu-section-header svelte-31yg9a"><span></span> <p class="svelte-31yg9a"> </p></button>`,
   );
   function MenuHeader($$anchor, $$props) {
@@ -3268,7 +3271,7 @@ var dubplus = (function () {
         settings.menu[$$props.settingsId],
       );
     }
-    var button = root$m();
+    var button = root$n();
     button.__click = toggle;
     var span = child(button);
     var p = sibling(span, 2);
@@ -3292,11 +3295,11 @@ var dubplus = (function () {
     pop();
   }
   delegate(['click']);
-  var root$l = /* @__PURE__ */ template(
+  var root$m = /* @__PURE__ */ template(
     `<ul class="dubplus-menu-section svelte-m5z2p2" role="region"><!></ul>`,
   );
   function MenuSection($$anchor, $$props) {
-    var ul = root$l();
+    var ul = root$m();
     var node = child(ul);
     snippet(node, () => $$props.children);
     template_effect(() => {
@@ -3309,11 +3312,11 @@ var dubplus = (function () {
     });
     append($$anchor, ul);
   }
-  var root$k = /* @__PURE__ */ template(
+  var root$l = /* @__PURE__ */ template(
     `<li class="dubplus-menu-icon svelte-1oilhp7"><!> <a class="dubplus-menu-label svelte-1oilhp7" target="_blank"> </a></li>`,
   );
   function MenuLink($$anchor, $$props) {
-    var li = root$k();
+    var li = root$l();
     var node = child(li);
     component(
       node,
@@ -3330,40 +3333,40 @@ var dubplus = (function () {
     });
     append($$anchor, li);
   }
-  var root$j = /* @__PURE__ */ ns_template(
+  var root$k = /* @__PURE__ */ ns_template(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 0c53 0 96 43 96 96l0 3.6c0 15.7-12.7 28.4-28.4 28.4l-135.1 0c-15.7 0-28.4-12.7-28.4-28.4l0-3.6c0-53 43-96 96-96zM41.4 105.4c12.5-12.5 32.8-12.5 45.3 0l64 64c.7 .7 1.3 1.4 1.9 2.1c14.2-7.3 30.4-11.4 47.5-11.4l112 0c17.1 0 33.2 4.1 47.5 11.4c.6-.7 1.2-1.4 1.9-2.1l64-64c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-64 64c-.7 .7-1.4 1.3-2.1 1.9c6.2 12 10.1 25.3 11.1 39.5l64.3 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c0 24.6-5.5 47.8-15.4 68.6c2.2 1.3 4.2 2.9 6 4.8l64 64c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0l-63.1-63.1c-24.5 21.8-55.8 36.2-90.3 39.6L272 240c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 239.2c-34.5-3.4-65.8-17.8-90.3-39.6L86.6 502.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l64-64c1.9-1.9 3.9-3.4 6-4.8C101.5 367.8 96 344.6 96 320l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64.3 0c1.1-14.1 5-27.5 11.1-39.5c-.7-.6-1.4-1.2-2.1-1.9l-64-64c-12.5-12.5-12.5-32.8 0-45.3z"></path></svg>`,
   );
   function IconBug($$anchor) {
+    var svg = root$k();
+    append($$anchor, svg);
+  }
+  var root$j = /* @__PURE__ */ ns_template(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32zM305.9 166.4c20.6 0 37.3-16.7 37.3-37.3s-16.7-37.3-37.3-37.3c-18 0-33.1 12.8-36.6 29.8c-30.2 3.2-53.8 28.8-53.8 59.9l0 .2c-32.8 1.4-62.8 10.7-86.6 25.5c-8.8-6.8-19.9-10.9-32-10.9c-28.9 0-52.3 23.4-52.3 52.3c0 21 12.3 39 30.1 47.4c1.7 60.7 67.9 109.6 149.3 109.6s147.6-48.9 149.3-109.7c17.7-8.4 29.9-26.4 29.9-47.3c0-28.9-23.4-52.3-52.3-52.3c-12 0-23 4-31.9 10.8c-24-14.9-54.3-24.2-87.5-25.4l0-.1c0-22.2 16.5-40.7 37.9-43.7l0 0c3.9 16.5 18.7 28.7 36.3 28.7zM155 248.1c14.6 0 25.8 15.4 25 34.4s-11.8 25.9-26.5 25.9s-27.5-7.7-26.6-26.7s13.5-33.5 28.1-33.5zm166.4 33.5c.9 19-12 26.7-26.6 26.7s-25.6-6.9-26.5-25.9c-.9-19 10.3-34.4 25-34.4s27.3 14.6 28.1 33.5zm-42.1 49.6c-9 21.5-30.3 36.7-55.1 36.7s-46.1-15.1-55.1-36.7c-1.1-2.6 .7-5.4 3.4-5.7c16.1-1.6 33.5-2.5 51.7-2.5s35.6 .9 51.7 2.5c2.7 .3 4.5 3.1 3.4 5.7z"></path></svg>`,
+  );
+  function IconReddit($$anchor) {
     var svg = root$j();
     append($$anchor, svg);
   }
   var root$i = /* @__PURE__ */ ns_template(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32zM305.9 166.4c20.6 0 37.3-16.7 37.3-37.3s-16.7-37.3-37.3-37.3c-18 0-33.1 12.8-36.6 29.8c-30.2 3.2-53.8 28.8-53.8 59.9l0 .2c-32.8 1.4-62.8 10.7-86.6 25.5c-8.8-6.8-19.9-10.9-32-10.9c-28.9 0-52.3 23.4-52.3 52.3c0 21 12.3 39 30.1 47.4c1.7 60.7 67.9 109.6 149.3 109.6s147.6-48.9 149.3-109.7c17.7-8.4 29.9-26.4 29.9-47.3c0-28.9-23.4-52.3-52.3-52.3c-12 0-23 4-31.9 10.8c-24-14.9-54.3-24.2-87.5-25.4l0-.1c0-22.2 16.5-40.7 37.9-43.7l0 0c3.9 16.5 18.7 28.7 36.3 28.7zM155 248.1c14.6 0 25.8 15.4 25 34.4s-11.8 25.9-26.5 25.9s-27.5-7.7-26.6-26.7s13.5-33.5 28.1-33.5zm166.4 33.5c.9 19-12 26.7-26.6 26.7s-25.6-6.9-26.5-25.9c-.9-19 10.3-34.4 25-34.4s27.3 14.6 28.1 33.5zm-42.1 49.6c-9 21.5-30.3 36.7-55.1 36.7s-46.1-15.1-55.1-36.7c-1.1-2.6 .7-5.4 3.4-5.7c16.1-1.6 33.5-2.5 51.7-2.5s35.6 .9 51.7 2.5c2.7 .3 4.5 3.1 3.4 5.7z"></path></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64h98.2V334.2H109.4V256h52.8V222.3c0-87.1 39.4-127.5 125-127.5c16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1c-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H255V480H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64z"></path></svg>`,
   );
-  function IconReddit($$anchor) {
+  function IconFacebook($$anchor) {
     var svg = root$i();
     append($$anchor, svg);
   }
   var root$h = /* @__PURE__ */ ns_template(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64h98.2V334.2H109.4V256h52.8V222.3c0-87.1 39.4-127.5 125-127.5c16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1c-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H255V480H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64z"></path></svg>`,
-  );
-  function IconFacebook($$anchor) {
-    var svg = root$h();
-    append($$anchor, svg);
-  }
-  var root$g = /* @__PURE__ */ ns_template(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM351.3 199.3v0c0 86.7-66 186.6-186.6 186.6c-37.2 0-71.7-10.8-100.7-29.4c5.3 .6 10.4 .8 15.8 .8c30.7 0 58.9-10.4 81.4-28c-28.8-.6-53-19.5-61.3-45.5c10.1 1.5 19.2 1.5 29.6-1.2c-30-6.1-52.5-32.5-52.5-64.4v-.8c8.7 4.9 18.9 7.9 29.6 8.3c-9-6-16.4-14.1-21.5-23.6s-7.8-20.2-7.7-31c0-12.2 3.2-23.4 8.9-33.1c32.3 39.8 80.8 65.8 135.2 68.6c-9.3-44.5 24-80.6 64-80.6c18.9 0 35.9 7.9 47.9 20.7c14.8-2.8 29-8.3 41.6-15.8c-4.9 15.2-15.2 28-28.8 36.1c13.2-1.4 26-5.1 37.8-10.2c-8.9 13.1-20.1 24.7-32.9 34c.2 2.8 .2 5.7 .2 8.5z"></path></svg>`,
   );
   function IconTwitter($$anchor) {
-    var svg = root$g();
+    var svg = root$h();
     append($$anchor, svg);
   }
   var root_1$2 = /* @__PURE__ */ template(`<!> <!> <!> <!>`, 1);
-  var root$f = /* @__PURE__ */ template(`<!> <!>`, 1);
+  var root$g = /* @__PURE__ */ template(`<!> <!>`, 1);
   function Contact($$anchor, $$props) {
     push($$props, false);
     init();
-    var fragment = root$f();
+    var fragment = root$g();
     var node = first_child(fragment);
     const expression = /* @__PURE__ */ derived_safe_equal(() =>
       t('contact.title'),
@@ -3427,13 +3430,13 @@ var dubplus = (function () {
     set(checked, !get(checked));
     $$props.onToggle(get(checked));
   }
-  var root$e = /* @__PURE__ */ template(
+  var root$f = /* @__PURE__ */ template(
     `<div role="switch" tabindex="0" class="svelte-1mny4ma"><span class="dubplus-switch svelte-1mny4ma"><span class="svelte-1mny4ma"></span></span> <span class="dubplus-switch-label svelte-1mny4ma"> </span></div>`,
   );
   function Switch($$anchor, $$props) {
     push($$props, true);
     let checked = state(proxy(!$$props.disabled ? $$props.isOn : false));
-    var div = root$e();
+    var div = root$f();
     div.__click = [handleClick, $$props, checked];
     div.__keydown = [handleKeydown, $$props, checked];
     var span = sibling(child(div), 2);
@@ -3447,11 +3450,11 @@ var dubplus = (function () {
     pop();
   }
   delegate(['click', 'keydown']);
-  var root$d = /* @__PURE__ */ ns_template(
+  var root$e = /* @__PURE__ */ ns_template(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1 0 32c0 8.8 7.2 16 16 16l32 0zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"></path></svg>`,
   );
   function IconPencil($$anchor) {
-    var svg = root$d();
+    var svg = root$e();
     append($$anchor, svg);
   }
   function isMod(userid) {
@@ -3465,7 +3468,7 @@ var dubplus = (function () {
   var root_1$1 = /* @__PURE__ */ template(
     `<button type="button" class="svelte-1dzj03i"><!> <span class="sr-only"> </span></button>`,
   );
-  var root$c = /* @__PURE__ */ template(
+  var root$d = /* @__PURE__ */ template(
     `<li class="svelte-1dzj03i"><!> <!></li>`,
   );
   function MenuSwitch($$anchor, $$props) {
@@ -3498,7 +3501,7 @@ var dubplus = (function () {
       });
       modalState.open = true;
     }
-    var li = root$c();
+    var li = root$d();
     var node = child(li);
     const expression = /* @__PURE__ */ derived(() =>
       $$props.modOnly ? !isMod(window.QueUp.session.id) : false,
@@ -5094,11 +5097,11 @@ var dubplus = (function () {
       delete this.rainEffect;
     },
   };
-  var root$b = /* @__PURE__ */ ns_template(
+  var root$c = /* @__PURE__ */ ns_template(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M448 344v112a23.9 23.9 0 0 1 -24 24H312c-21.4 0-32.1-25.9-17-41l36.2-36.2L224 295.6 116.8 402.9 153 439c15.1 15.1 4.4 41-17 41H24a23.9 23.9 0 0 1 -24-24V344c0-21.4 25.9-32.1 41-17l36.2 36.2L184.5 256 77.2 148.7 41 185c-15.1 15.1-41 4.4-41-17V56a23.9 23.9 0 0 1 24-24h112c21.4 0 32.1 25.9 17 41l-36.2 36.2L224 216.4l107.2-107.3L295 73c-15.1-15.1-4.4-41 17-41h112a23.9 23.9 0 0 1 24 24v112c0 21.4-25.9 32.1-41 17l-36.2-36.2L263.5 256l107.3 107.3L407 327.1c15.1-15.2 41-4.5 41 16.9z"></path></svg>`,
   );
   function IconFullscreen($$anchor) {
-    var svg = root$b();
+    var svg = root$c();
     append($$anchor, svg);
   }
   const fullscreen = {
@@ -5252,7 +5255,7 @@ var dubplus = (function () {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}${cssFile}?${'1740068101094'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}${cssFile}?${'1740086213221'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5495,11 +5498,11 @@ var dubplus = (function () {
     customBackground,
     customNotificationSound,
   ];
-  var root$a = /* @__PURE__ */ template(`<!> <!>`, 1);
+  var root$b = /* @__PURE__ */ template(`<!> <!>`, 1);
   function General($$anchor, $$props) {
     push($$props, false);
     init();
-    var fragment = root$a();
+    var fragment = root$b();
     var node = first_child(fragment);
     const expression = /* @__PURE__ */ derived_safe_equal(() =>
       t('general.title'),
@@ -5557,7 +5560,7 @@ var dubplus = (function () {
     append($$anchor, fragment);
     pop();
   }
-  var root$9 = /* @__PURE__ */ template(
+  var root$a = /* @__PURE__ */ template(
     `<button id="dubplus-eta" type="button" class="icon-history eta_tooltip_t dubplus-btn-player"></button>`,
   );
   function Eta($$anchor, $$props) {
@@ -5591,7 +5594,7 @@ var dubplus = (function () {
         return t('Eta.tooltip.notInQueue');
       }
     }
-    var button = root$9();
+    var button = root$a();
     action(
       button,
       ($$node, $$action_arg) =>
@@ -5608,27 +5611,30 @@ var dubplus = (function () {
     append($$anchor, button);
     pop();
   }
-  var root$8 = /* @__PURE__ */ template(
+  var root$9 = /* @__PURE__ */ template(
     `<button id="dubplus-snooze" type="button" class="icon-mute snooze_btn dubplus-btn-player svelte-1va87zs"><span class="svelte-1va87zs">1</span></button>`,
   );
   function Snooze($$anchor, $$props) {
-    push($$props, false);
+    push($$props, true);
+    let tooltip = state(proxy(t('Snooze.tooltip')));
     const eventUtils = { currentVol: 50, snoozed: false };
     function eventSongAdvance(e) {
       if (e.startTime < 2) {
         if (eventUtils.snoozed) {
           window.QueUp.room.player.setVolume(eventUtils.currentVol);
           eventUtils.snoozed = false;
+          set(tooltip, proxy(t('Snooze.tooltip')));
         }
         return true;
       }
     }
-    function snooze() {
+    function snooze2() {
       if (
         !eventUtils.snoozed &&
         !window.QueUp.room.player.muted_player &&
         window.QueUp.playerController.volume > 2
       ) {
+        set(tooltip, proxy(t('Snooze.tooltip.undo')));
         eventUtils.currentVol = window.QueUp.playerController.volume;
         window.QueUp.room.player.mutePlayer();
         eventUtils.snoozed = true;
@@ -5637,28 +5643,24 @@ var dubplus = (function () {
           eventSongAdvance,
         );
       } else if (eventUtils.snoozed) {
+        set(tooltip, proxy(t('Snooze.tooltip')));
         window.QueUp.room.player.setVolume(eventUtils.currentVol);
         window.QueUp.room.player.updateVolumeBar();
         eventUtils.snoozed = false;
       }
     }
-    init();
-    var button = root$8();
-    button.__click = snooze;
+    var button = root$9();
+    button.__click = snooze2;
     action(
       button,
       ($$node, $$action_arg) =>
         teleport == null ? void 0 : teleport($$node, $$action_arg),
       () => ({ to: '.player_sharing' }),
     );
-    template_effect(
-      ($0) => {
-        set_attribute(button, 'aria-label', $0);
-        set_attribute(button, 'data-dp-tooltip', $0);
-      },
-      [() => t('Snooze.tooltip')],
-      derived_safe_equal,
-    );
+    template_effect(() => {
+      set_attribute(button, 'aria-label', get(tooltip));
+      set_attribute(button, 'data-dp-tooltip', get(tooltip));
+    });
     append($$anchor, button);
     pop();
   }
@@ -5669,7 +5671,7 @@ var dubplus = (function () {
   var root_1 = /* @__PURE__ */ template(
     `<li><div class="ac-image svelte-2x4f0c"><img class="svelte-2x4f0c"></div> <span class="ac-text svelte-2x4f0c"> </span> <!></li>`,
   );
-  var root$7 = /* @__PURE__ */ template(
+  var root$8 = /* @__PURE__ */ template(
     `<ul id="autocomplete-preview" class="svelte-2x4f0c"></ul>`,
   );
   function EmojiPreview($$anchor, $$props) {
@@ -5696,7 +5698,7 @@ var dubplus = (function () {
       insertEmote(inputEl, index2);
       inputEl.focus();
     }
-    var ul = root$7();
+    var ul = root$8();
     each(
       ul,
       23,
@@ -5763,7 +5765,7 @@ var dubplus = (function () {
     `<li class="preview-dubinfo-item users-previews svelte-ujv5bp"><div class="dubinfo-image svelte-ujv5bp"><img alt="User Avatar" class="svelte-ujv5bp"></div> <button type="button" class="dubinfo-text svelte-ujv5bp"> </button></li>`,
   );
   var root_3 = /* @__PURE__ */ template(`<li><!></li>`);
-  var root$6 = /* @__PURE__ */ template(
+  var root$7 = /* @__PURE__ */ template(
     `<div role="none"><ul id="dubinfo-preview" class="dubinfo-show svelte-ujv5bp"><!></ul></div>`,
   );
   function DubsInfo($$anchor, $$props) {
@@ -5839,7 +5841,7 @@ var dubplus = (function () {
       chatInput.value = `${chatInput.value}@${username} `.trimStart();
       chatInput.focus();
     }
-    var div = root$6();
+    var div = root$7();
     var ul = child(div);
     var node = child(ul);
     {
@@ -6014,7 +6016,7 @@ var dubplus = (function () {
     generateSnowCSS(snowflakesCount);
     generateSnow(snowflakesCount);
   }
-  var root$5 = /* @__PURE__ */ template(
+  var root$6 = /* @__PURE__ */ template(
     `<div id="snow-container" class="svelte-t6y8au"></div>`,
   );
   function Snow($$anchor, $$props) {
@@ -6027,7 +6029,7 @@ var dubplus = (function () {
       window.removeEventListener('resize', createSnow);
     });
     init();
-    var div = root$5();
+    var div = root$6();
     action(
       div,
       ($$node, $$action_arg) =>
@@ -6037,7 +6039,7 @@ var dubplus = (function () {
     append($$anchor, div);
     pop();
   }
-  var root$4 = /* @__PURE__ */ template(
+  var root$5 = /* @__PURE__ */ template(
     `<li class="svelte-psnl7x"><button type="button" class="svelte-psnl7x"><!> <span class="dubplus-menu-label svelte-psnl7x"> </span></button></li>`,
   );
   function MenuAction($$anchor, $$props) {
@@ -6045,7 +6047,7 @@ var dubplus = (function () {
     onMount(() => {
       if ($$props.init) $$props.init();
     });
-    var li = root$4();
+    var li = root$5();
     var button = child(li);
     button.__click = function (...$$args) {
       var _a;
@@ -6074,11 +6076,11 @@ var dubplus = (function () {
     pop();
   }
   delegate(['click']);
-  var root$3 = /* @__PURE__ */ template(`<!> <!>`, 1);
+  var root$4 = /* @__PURE__ */ template(`<!> <!>`, 1);
   function UserInterface($$anchor, $$props) {
     push($$props, false);
     init();
-    var fragment = root$3();
+    var fragment = root$4();
     var node = first_child(fragment);
     const expression = /* @__PURE__ */ derived_safe_equal(() =>
       t('user-interface.title'),
@@ -6167,7 +6169,7 @@ var dubplus = (function () {
     pop();
   }
   var $$_import_settings = reactive_import(() => settings);
-  var root$2 = /* @__PURE__ */ template(`<!> <!>`, 1);
+  var root$3 = /* @__PURE__ */ template(`<!> <!>`, 1);
   function Settings($$anchor, $$props) {
     push($$props, false);
     settingsModules.forEach((module) => {
@@ -6176,7 +6178,7 @@ var dubplus = (function () {
       }
     });
     init();
-    var fragment = root$2();
+    var fragment = root$3();
     var node = first_child(fragment);
     const expression = /* @__PURE__ */ derived_safe_equal(() =>
       t('settings.title'),
@@ -6231,11 +6233,11 @@ var dubplus = (function () {
     append($$anchor, fragment);
     pop();
   }
-  var root$1 = /* @__PURE__ */ template(`<!> <!>`, 1);
+  var root$2 = /* @__PURE__ */ template(`<!> <!>`, 1);
   function Customize($$anchor, $$props) {
     push($$props, false);
     init();
-    var fragment = root$1();
+    var fragment = root$2();
     var node = first_child(fragment);
     const expression = /* @__PURE__ */ derived_safe_equal(() =>
       t('customize.title'),
@@ -6290,9 +6292,64 @@ var dubplus = (function () {
     append($$anchor, fragment);
     pop();
   }
+  function snooze(_, SNOOZE_CLASS, tooltip, icon, eventSongAdvance) {
+    if (!document.body.classList.contains(SNOOZE_CLASS)) {
+      set(tooltip, proxy(t('SnoozeVideo.tooltip.undo')));
+      set(icon, 'icon-eye-unblocked');
+      document.body.classList.add(SNOOZE_CLASS);
+      window.QueUp.Events.once(
+        'realtime:room_playlist-update',
+        eventSongAdvance,
+      );
+    } else {
+      set(tooltip, proxy(t('SnoozeVideo.tooltip')));
+      set(icon, 'icon-eye-blocked');
+      document.body.classList.remove(SNOOZE_CLASS);
+      window.QueUp.Events.unbind(
+        'realtime:room_playlist-update',
+        eventSongAdvance,
+      );
+    }
+  }
+  var root$1 = /* @__PURE__ */ template(
+    `<button id="dubplus-snooze-video" type="button"><span class="svelte-1va87zs">1</span></button>`,
+  );
+  function SnoozeVideo($$anchor, $$props) {
+    push($$props, true);
+    let icon = state('icon-eye-blocked');
+    let tooltip = state(proxy(t('SnoozeVideo.tooltip')));
+    const SNOOZE_CLASS = 'dubplus-snooze-video';
+    function eventSongAdvance(e) {
+      if (e.startTime < 2) {
+        document.body.classList.remove(SNOOZE_CLASS);
+        set(tooltip, proxy(t('SnoozeVideo.tooltip')));
+        set(icon, 'icon-eye-blocked');
+        return true;
+      }
+    }
+    var button = root$1();
+    button.__click = [snooze, SNOOZE_CLASS, tooltip, icon, eventSongAdvance];
+    action(
+      button,
+      ($$node, $$action_arg) =>
+        teleport == null ? void 0 : teleport($$node, $$action_arg),
+      () => ({ to: '.player_sharing' }),
+    );
+    template_effect(() => {
+      set_class(
+        button,
+        `${`${get(icon)} snooze-video-btn dubplus-btn-player` ?? ''} svelte-1va87zs`,
+      );
+      set_attribute(button, 'aria-label', get(tooltip));
+      set_attribute(button, 'data-dp-tooltip', get(tooltip));
+    });
+    append($$anchor, button);
+    pop();
+  }
+  delegate(['click']);
   var root_2 = /* @__PURE__ */ template(`<!> <!> <!>`, 1);
   var root = /* @__PURE__ */ template(
-    `<!> <!> <!> <!> <!> <!> <section class="dubplus-menu svelte-1u8kv6a"><p class="dubplus-menu-header svelte-1u8kv6a"> </p> <!> <!> <!> <!> <!></section> <!>`,
+    `<!> <!> <!> <!> <!> <!> <!> <section class="dubplus-menu svelte-1u8kv6a"><p class="dubplus-menu-header svelte-1u8kv6a"> </p> <!> <!> <!> <!> <!></section> <!>`,
     1,
   );
   function Menu($$anchor, $$props) {
@@ -6309,54 +6366,56 @@ var dubplus = (function () {
     var node_2 = sibling(node_1, 2);
     Eta(node_2, {});
     var node_3 = sibling(node_2, 2);
+    SnoozeVideo(node_3, {});
+    var node_4 = sibling(node_3, 2);
     {
       var consequent = ($$anchor2) => {
         EmojiPreview($$anchor2, {});
       };
-      if_block(node_3, ($$render) => {
+      if_block(node_4, ($$render) => {
         if (settings.options.autocomplete) $$render(consequent);
       });
     }
-    var node_4 = sibling(node_3, 2);
+    var node_5 = sibling(node_4, 2);
     {
       var consequent_1 = ($$anchor2) => {
         var fragment_2 = root_2();
-        var node_5 = first_child(fragment_2);
-        DubsInfo(node_5, { dubType: 'updub' });
-        var node_6 = sibling(node_5, 2);
-        DubsInfo(node_6, { dubType: 'downdub' });
+        var node_6 = first_child(fragment_2);
+        DubsInfo(node_6, { dubType: 'updub' });
         var node_7 = sibling(node_6, 2);
-        DubsInfo(node_7, { dubType: 'grab' });
+        DubsInfo(node_7, { dubType: 'downdub' });
+        var node_8 = sibling(node_7, 2);
+        DubsInfo(node_8, { dubType: 'grab' });
         append($$anchor2, fragment_2);
       };
-      if_block(node_4, ($$render) => {
+      if_block(node_5, ($$render) => {
         if (settings.options['dubs-hover']) $$render(consequent_1);
       });
     }
-    var node_8 = sibling(node_4, 2);
+    var node_9 = sibling(node_5, 2);
     {
       var consequent_2 = ($$anchor2) => {
         Snow($$anchor2, {});
       };
-      if_block(node_8, ($$render) => {
+      if_block(node_9, ($$render) => {
         if (settings.options.snow) $$render(consequent_2);
       });
     }
-    var section = sibling(node_8, 2);
+    var section = sibling(node_9, 2);
     var p = child(section);
     var text2 = child(p);
-    var node_9 = sibling(p, 2);
-    General(node_9, {});
-    var node_10 = sibling(node_9, 2);
-    UserInterface(node_10, {});
+    var node_10 = sibling(p, 2);
+    General(node_10, {});
     var node_11 = sibling(node_10, 2);
-    Settings(node_11, {});
+    UserInterface(node_11, {});
     var node_12 = sibling(node_11, 2);
-    Customize(node_12, {});
+    Settings(node_12, {});
     var node_13 = sibling(node_12, 2);
-    Contact(node_13, {});
-    var node_14 = sibling(section, 2);
-    Modal(node_14, {});
+    Customize(node_13, {});
+    var node_14 = sibling(node_13, 2);
+    Contact(node_14, {});
+    var node_15 = sibling(section, 2);
+    Modal(node_15, {});
     template_effect(
       ($0) => set_text(text2, $0),
       [() => t('Menu.title')],

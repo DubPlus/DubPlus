@@ -12,8 +12,10 @@ export const translations = {
     'Loading.text': 'Waiting for QueUp...',
     'Eta.tooltip.notInQueue': "You're not in the queue",
     'Eta.tootltip': 'ETA: {{minutes}} minutes',
-    'Snooze.tooltip': 'Mute current song',
+    'Snooze.tooltip': 'Mute for current song',
+    'Snooze.tooltip.undo': 'Cancel mute for current song',
     'SnoozeVideo.tooltip': 'Hide video for current song',
+    'SnoozeVideo.tooltip.undo': 'Cancel hiding video for current song',
 
     'Notifcation.permission.title': 'Desktop Notification',
     'Notification.permission.denied':
