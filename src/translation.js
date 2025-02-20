@@ -13,6 +13,7 @@ export const translations = {
     'Eta.tooltip.notInQueue': "You're not in the queue",
     'Eta.tootltip': 'ETA: {{minutes}} minutes',
     'Snooze.tooltip': 'Mute current song',
+    'SnoozeVideo.tooltip': 'Hide video for current song',
 
     'Notifcation.permission.title': 'Desktop Notification',
     'Notification.permission.denied':

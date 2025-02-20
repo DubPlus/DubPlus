@@ -14,6 +14,7 @@
   import UserInterface from '../sections/UserInterface.svelte';
   import Settings from '../sections/Settings.svelte';
   import Customize from '../sections/Customize.svelte';
+  import SnoozeVideo from '../satellites/SnoozeVideo.svelte';
 
   onMount(() => {
     document.querySelector('html').classList.add('dubplus');
@@ -27,6 +28,7 @@
 <Snooze />
 <MenuIcon />
 <Eta />
+<SnoozeVideo />
 {#if settings.options.autocomplete}
   <EmojiPreview />
 {/if}

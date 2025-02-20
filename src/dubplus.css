@@ -194,6 +194,10 @@
   }
 }
 
+.dubplus-snooze-video #main_player .player_container {
+  visibility: hidden;
+}
+
 .dubplus-chat-system-grab,
 .chat-system-grabbed {
   color: var(--queup-green) !important;
