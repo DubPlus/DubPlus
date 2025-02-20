@@ -72,17 +72,17 @@ Your process will go like this:
 
 ### npm scripts
 
-`npm run dev` - starts the Vite development server which loads the mock QueUp page and our extension, watches for file changes (css and js) and reloads
+`npm run dev` - starts the Vite development server which loads the mock QueUp page and our extension, watches for file changes (css and js) and reloads. This is useful for rapid development but it's not a feature complete mockup of QueUp.
 
 `npm run build` - creates production builds of the JS and CSS files
 
-`npm run build:watch` - Starts file watcher that will rebuild dubplus.js and dubplus.css on save
+`npm run watch` - Starts file watcher that will rebuild dubplus.js and dubplus.css on save
 
 `npm run ext` - shortcut that runs `npm run build` then `npm run zip`
 
 `npm run zip` - creates the zip file of the extension
 
-`npm run start:firefox` - starts an instance of firefox with our extension loaded so you can test it in Firefox
+`npm run firefox` - starts an instance of firefox with our extension loaded so you can test it in Firefox. Requires that you have FireFox installed locally already
 
 `npm test` - runs playwright tests (still in early development)
 
