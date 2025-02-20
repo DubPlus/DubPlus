@@ -8,14 +8,27 @@ import { settings } from '../stores/settings.svelte';
 /**
  *
  * @param {string} url
- * @param {string} className
- * @returns {HTMLDivElement}
  */
-function makeBGdiv(url, className) {
-  const div = document.createElement('div');
-  div.className = className;
-  div.style.backgroundImage = `url(${url})`;
-  return div;
+function addCustomBG(url) {
+  /**
+   * @type {HTMLImageElement}
+   */
+  const img = document.querySelector('.backstretch img');
+  if (img) {
+    img.setAttribute('data-original', img.src);
+    img.src = url;
+  }
+}
+
+function removeCustomBG() {
+  /**
+   * @type {HTMLImageElement}
+   */
+  const img = document.querySelector('.backstretch img');
+  if (img && img.hasAttribute('data-original')) {
+    img.src = img.getAttribute('data-original');
+    img.removeAttribute;
+  }
 }
 
 /**
@@ -42,24 +55,24 @@ export const customBackground = {
       return true;
     },
     onConfirm(value) {
-      document.querySelector(`.${customBackground.id}`)?.remove();
+      removeCustomBG();
       if (!value) {
         // a blank value means the user wanted to remove the background image
         return;
       }
       // validation already happened so we can trust this value
-      document.body.appendChild(makeBGdiv(value, customBackground.id));
+      addCustomBG(value);
     },
   },
   turnOn() {
-    document.querySelector(`.${this.id}`)?.remove();
+    removeCustomBG();
     const savedCustomBG = settings.custom[this.id];
     if (savedCustomBG) {
-      document.body.appendChild(makeBGdiv(savedCustomBG, this.id));
+      addCustomBG(savedCustomBG);
     }
   },
 
   turnOff() {
-    document.querySelector(`.${this.id}`)?.remove();
+    removeCustomBG();
   },
 };
