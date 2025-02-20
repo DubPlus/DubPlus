@@ -24,11 +24,7 @@ const makeLink = function (className, fileName) {
  */
 export function loadCSS(cssFile, className) {
   return new Promise((resolve, reject) => {
-    if (document.querySelector(`link.${className}`)) {
-      // prevent from adding the same css file twice
-      resolve();
-      return;
-    }
+    document.querySelector(`link.${className}`)?.remove();
     const link = makeLink(
       className,
       // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
@@ -41,16 +37,20 @@ export function loadCSS(cssFile, className) {
 }
 
 /**
- * Loads a css file from a full URL in the <head>
+ * Loads a css file from a full URL in the <head>.
+ * Uses a style element instead of a link element
  * @param  {string} cssFile   the full url location of a CSS file
- * @param  {string} className a class name to give to the <link> element
- * @return {void}
+ * @param  {string} id an id to give to the <style> element
+ * @return {Promise<void>}
  */
-export function loadExternalCss(cssFile, className) {
-  if (document.querySelector(`link.${className}`)) {
-    // prevent from adding the same css file twice
-    return;
-  }
-  const link = makeLink(className, cssFile);
-  document.head.appendChild(link);
+export function loadExternalCss(cssFile, id) {
+  document.querySelector(`style#${id}`)?.remove();
+  return fetch(cssFile)
+    .then((res) => res.text())
+    .then((css) => {
+      const style = document.createElement('style');
+      style.id = id;
+      style.textContent = css;
+      document.head.appendChild(style);
+    });
 }
