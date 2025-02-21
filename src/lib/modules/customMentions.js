@@ -24,7 +24,7 @@ function customMentionCheck(e) {
     window.QueUp.session.id !== e.user.userInfo.userid
   ) {
     const shouldPlaySound = custom.split(',').some(function (v) {
-      const reg = new RegExp('(^|\\b)@?' + v.trim() + '\\b', 'ig');
+      const reg = new RegExp(`\\b@?${v.trim()}\\b`, 'ig');
       return reg.test(e.message);
     });
 
