@@ -1,0 +1,240 @@
+:root {
+  /* colors */
+  --dubplus-primary-color: #eb008b;
+  --dubplus-secondary-color: #6fcbdc;
+  --dubplus-text-color: #999;
+
+  /* fonts */
+  --dubplus-font-size: 13px;
+  --dubplus-font-family: 'Trebuchet MS', Helvetica, sans-serif;
+
+  --dubplus-menu-width: 255px;
+
+  --queup-magenta: #f0f;
+  --queup-aqua: #0ff;
+  --queup-green: #b3e790;
+}
+
+/* Styles for the Snooze and ETA buttons inserted under the player */
+.dubplus-btn-player {
+  /* clear button styles */
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+
+  /* mimic site's icon styles from .player_sharing */
+  font-size: 1.5rem;
+  margin-right: 1.5rem;
+  font-family: icomoon;
+  speak: none;
+  font-style: normal;
+  font-weight: 400;
+  font-variant: normal;
+  text-transform: none;
+  text-align: center;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-dp-tooltip] {
+  position: relative;
+  cursor: pointer;
+}
+
+[data-dp-tooltip]::after {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  content: attr(data-dp-tooltip);
+  left: 0;
+  bottom: calc(100% + 10px);
+  border-radius: 1.5rem;
+  box-shadow: 0 0 5px 2px rgba(100, 100, 100, 0.6);
+  background-color: white;
+  z-index: 10;
+  padding: 8px 16px;
+  width: 160px;
+  transform: translateY(-20px);
+  transition: all 150ms cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  /* prettier-ignore */
+  font: 1rem/1.5 proxima-nova, sans-serif;
+  font-weight: 700;
+  font-size: var(--dubplus-font-size);
+  text-transform: uppercase;
+  color: #000;
+  text-align: center;
+}
+
+[data-dp-tooltip]:hover::after {
+  opacity: 0.8;
+  transform: translateY(0);
+  transition-duration: 300ms;
+}
+
+/* Make the volume controller visible all the time */
+.dubplus
+  #main_player
+  .player_sharing
+  .player-controller-container
+  .volume-controller-container {
+  display: block;
+}
+
+.duration {
+  font-size: 14px !important;
+  margin-top: 0.5em !important;
+}
+
+/***************************************************************
+ * Dub+ menu styles
+ */
+
+.dubplus-menu a {
+  color: var(--dubplus-text-color);
+}
+
+/***************************************************************
+ * User Interface styles
+ */
+
+.dubplus-split-chat .split,
+.dubplus-split-chat .chat-main li:nth-child(2n) {
+  background: linear-gradient(
+    to right,
+    rgba(155, 157, 160, 0.1) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
+  width: 100%;
+}
+
+.dubplus-split-chat .chat-main li:nth-child(2n) .chatDelete {
+  right: 1.7em !important;
+}
+
+.dubplus-split-chat .splitfix {
+  right: 1.7em !important;
+}
+
+/* hide the chat and only show the video */
+.dubplus-video-only .right_section {
+  display: none !important;
+}
+
+.dubplus-video-only .left_section {
+  margin: 0 auto !important;
+  margin-left: 90px !important;
+  right: initial !important;
+  position: relative !important;
+  float: inherit !important;
+  padding-right: 200px !important;
+}
+
+/* turns off the video and only shows the chat */
+.dubplus-chat-only .left_section {
+  display: none !important;
+}
+.dubplus-chat-only .right_section {
+  width: 40rem !important;
+  margin: 0 auto !important;
+  right: initial !important;
+  position: relative !important;
+  float: inherit !important;
+}
+
+.dubplus-chat-only .activity-row .text img {
+  max-height: 30rem;
+}
+
+/* Hide all avatars in chat, header, and footer */
+.dubplus-hide-avatars .chat-main .image_row,
+.dubplus-hide-avatars #header-global .user-info .user-image,
+.dubplus-hide-avatars #player-controller .imgEl {
+  display: none !important;
+}
+
+.dubplus-hide-avatars .chat-main .activity-row,
+.dubplus-hide-avatars #player-controller .infoContainer {
+  padding-left: 0rem !important;
+}
+
+.dubplus-hide-avatars #header-global .header-right-navigation {
+  padding-top: 5px !important;
+}
+
+.dubplus-hide-bg .backstretch {
+  display: none !important;
+}
+
+.dubplus-show-timestamp #chat .timeinfo {
+  display: block !important;
+  opacity: 1 !important;
+}
+
+@media screen and (min-width: 72em) {
+  .dubplus-flip-interface #main-room .left_section {
+    padding-left: 32rem;
+    padding-right: 0;
+  }
+  .dubplus-flip-interface #main-room .right_section {
+    right: auto;
+    left: 0;
+  }
+}
+
+.dubplus-snooze-video #main_player .player_container {
+  visibility: hidden;
+  position: relative;
+}
+.dubplus-snooze-video #main_player .player_container::before {
+  content: '\e90a';
+  font-family: icomoon;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  color: white;
+  visibility: visible;
+}
+
+.dubplus-chat-system-grab,
+.chat-system-grabbed {
+  color: var(--queup-green) !important;
+}
+
+.dubplus-chat-system-updub {
+  color: var(--queup-aqua);
+}
+
+.dubplus-chat-system-downdub {
+  color: var(--queup-magenta);
+}
+.dubplus-chat-system .icon-close {
+  font-family: icomoon;
+}
+
+.sr-only,
+.sr-only-focusable:not(:focus):not(:focus-within) {
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.sr-only:not(caption),
+.sr-only-focusable:not(:focus):not(:focus-within):not(caption) {
+  position: absolute !important;
+}

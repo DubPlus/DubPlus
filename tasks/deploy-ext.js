@@ -1,16 +1,16 @@
-var chrome_ext = require('./deploy-chrome.js');
-var ff_ext = require('./deploy-ff.js');
-const doZip = require('./zip.js');
+import chrome_ext from './deploy-chrome.js';
+import { signFFext } from './deploy-ff.js';
+import { doZip } from './zip.js';
 
 function capFirst(str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
-module.exports = function(platform){
+export function deployExtensions(platform) {
   // if specific platform wasn't provided then we do both
   if (!platform) {
-    doZip("Chrome");
-    doZip("Firefox");
+    doZip('Chrome');
+    doZip('Firefox');
     chrome_ext();
     ff_ext();
     return;
@@ -19,18 +19,15 @@ module.exports = function(platform){
   // format our platform string just in case
   var target = capFirst(platform);
 
-  if (target === "Chrome") {
-    doZip("Chrome");
+  if (target === 'Chrome') {
+    doZip('Chrome');
     chrome_ext();
     return;
   }
 
-  if (target === "Firefox") {
-    doZip("Firefox");
-    ff_ext();
+  if (target === 'Firefox') {
+    doZip('Firefox');
+    signFFext();
     return;
   }
-
-
-};
-
+}

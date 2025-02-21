@@ -1,25 +1,20 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-"use strict";
-
-var _waitFor = _interopRequireDefault(require("./utils/waitFor.js"));
-var _preload = _interopRequireDefault(require("./utils/preload.js"));
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-/*
-     /$$$$$$$            /$$                
-    | $$__  $$          | $$          /$$   
-    | $$  \ $$ /$$   /$$| $$$$$$$    | $$   
-    | $$  | $$| $$  | $$| $$__  $$ /$$$$$$$$
-    | $$  | $$| $$  | $$| $$  \ $$|__  $$__/
-    | $$  | $$| $$  | $$| $$  | $$   | $$   
-    | $$$$$$$/|  $$$$$$/| $$$$$$$/   |__/   
-    |_______/  \______/ |_______/           
+var dubplus = (function () {
+  'use strict'; /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  ______/ |_______/           
                                             
                                             
     https://github.com/DubPlus/DubPlus
 
     MIT License 
 
-    Copyright (c) 2017 DubPlus
+    Copyright (c) 2024 DubPlus
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -40,3435 +35,6512 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
     SOFTWARE.
 */
 
-var modal = require('./utils/modal.js');
-var init = require('./lib/init.js');
-var css = require('./utils/css.js');
-function errorModal(errorMsg) {
-  // probably should make a modal with inline styles
-  // or a smaller css file with just modal styles so
-  // we're not loading the whole css for just a modal
-  css.load('/css/dubplus.css', 'dubplus-css');
-  modal.create({
-    title: 'Dub+ Error',
-    content: errorMsg
-  });
-}
-(0, _preload.default)();
-if (window.dubplus) {
-  var _document$querySelect;
-  // unbind any listeners before we reload the script
-  for (var key in window.dubplus) {
-    if (typeof window.dubplus[key].turnOff === 'function') {
-      window.dubplus[key].turnOff();
+  const DEV = false;
+  var is_array = Array.isArray;
+  var index_of = Array.prototype.indexOf;
+  var array_from = Array.from;
+  var define_property = Object.defineProperty;
+  var get_descriptor = Object.getOwnPropertyDescriptor;
+  var get_descriptors = Object.getOwnPropertyDescriptors;
+  var object_prototype = Object.prototype;
+  var array_prototype = Array.prototype;
+  var get_prototype_of = Object.getPrototypeOf;
+  const noop = () => {};
+  function run(fn) {
+    return fn();
+  }
+  function run_all(arr) {
+    for (var i = 0; i < arr.length; i++) {
+      arr[i]();
     }
   }
-  (_document$querySelect = document.querySelector('.dubplus-menu')) === null || _document$querySelect === void 0 || _document$querySelect.remove();
-}
-
-/* globals Dubtrack */
-(0, _preload.default)();
-
-// checking to see if these items exist before initializing the script
-// instead of just picking an arbitrary setTimeout and hoping for the best
-var checkList = ['QueUp.session.id', 'QueUp.room.chat', 'QueUp.Events', 'QueUp.room.player', 'QueUp.helpers.cookie', 'QueUp.room.model', 'QueUp.room.users'];
-var dubplusWaiting = new _waitFor.default(checkList, {
-  seconds: 10
-}); // 10sec should be more than enough
-
-dubplusWaiting.then(function () {
-  init();
-  $('.dubplus-waiting').remove();
-}).fail(function () {
-  if (!QueUp.session.id) {
-    errorModal("You're not logged in. Please login to use Dub+.");
-  } else {
-    $('.dubplus-waiting span').text('Something happed, refresh and try again');
+  const DERIVED = 1 << 1;
+  const EFFECT = 1 << 2;
+  const RENDER_EFFECT = 1 << 3;
+  const BLOCK_EFFECT = 1 << 4;
+  const BRANCH_EFFECT = 1 << 5;
+  const ROOT_EFFECT = 1 << 6;
+  const BOUNDARY_EFFECT = 1 << 7;
+  const UNOWNED = 1 << 8;
+  const DISCONNECTED = 1 << 9;
+  const CLEAN = 1 << 10;
+  const DIRTY = 1 << 11;
+  const MAYBE_DIRTY = 1 << 12;
+  const INERT = 1 << 13;
+  const DESTROYED = 1 << 14;
+  const EFFECT_RAN = 1 << 15;
+  const EFFECT_TRANSPARENT = 1 << 16;
+  const HEAD_EFFECT = 1 << 19;
+  const EFFECT_HAS_DERIVED = 1 << 20;
+  const STATE_SYMBOL = Symbol('$state');
+  const LOADING_ATTR_SYMBOL = Symbol('');
+  function equals(value) {
+    return value === this.v;
   }
-});
-
-},{"./lib/init.js":4,"./utils/css.js":41,"./utils/modal.js":43,"./utils/preload.js":47,"./utils/waitFor.js":48}],2:[function(require,module,exports){
-"use strict";
-
-function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-/* global  emojify */
-
-var GetJSON = require('../utils/getJSON.js');
-var settings = require("../lib/settings.js");
-
-// IndexedDB wrapper for increased quota compared to localstorage (5mb to 50mb)
-!function () {
-  function e(t, o) {
-    return n ? void (n.transaction("s").objectStore("s").get(t).onsuccess = function (e) {
-      var t = e.target.result && e.target.result.v || null;
-      o(t);
-    }) : void setTimeout(function () {
-      e(t, o);
-    }, 100);
+  function safe_not_equal(a, b) {
+    return a != a
+      ? b == b
+      : a !== b ||
+          (a !== null && typeof a === 'object') ||
+          typeof a === 'function';
   }
-  var t = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-  if (!t) return void console.error("indexDB not supported");
-  var n,
-    o = {
-      k: "",
-      v: ""
-    },
-    r = t.open("d2", 1);
-  r.onsuccess = function (e) {
-    n = this.result;
-  }, r.onerror = function (e) {
-    console.error("indexedDB request error"), console.log(e);
-  }, r.onupgradeneeded = function (e) {
-    n = null;
-    var t = e.target.result.createObjectStore("s", {
-      keyPath: "k"
-    });
-    t.transaction.oncomplete = function (e) {
-      n = e.target.db;
+  function safe_equals(value) {
+    return !safe_not_equal(value, this.v);
+  }
+  function effect_in_teardown(rune) {
+    {
+      throw new Error(`https://svelte.dev/e/effect_in_teardown`);
+    }
+  }
+  function effect_in_unowned_derived() {
+    {
+      throw new Error(`https://svelte.dev/e/effect_in_unowned_derived`);
+    }
+  }
+  function effect_orphan(rune) {
+    {
+      throw new Error(`https://svelte.dev/e/effect_orphan`);
+    }
+  }
+  function effect_update_depth_exceeded() {
+    {
+      throw new Error(`https://svelte.dev/e/effect_update_depth_exceeded`);
+    }
+  }
+  function state_descriptors_fixed() {
+    {
+      throw new Error(`https://svelte.dev/e/state_descriptors_fixed`);
+    }
+  }
+  function state_prototype_fixed() {
+    {
+      throw new Error(`https://svelte.dev/e/state_prototype_fixed`);
+    }
+  }
+  function state_unsafe_local_read() {
+    {
+      throw new Error(`https://svelte.dev/e/state_unsafe_local_read`);
+    }
+  }
+  function state_unsafe_mutation() {
+    {
+      throw new Error(`https://svelte.dev/e/state_unsafe_mutation`);
+    }
+  }
+  let legacy_mode_flag = false;
+  let tracing_mode_flag = false;
+  function enable_legacy_mode_flag() {
+    legacy_mode_flag = true;
+  }
+  const EACH_ITEM_REACTIVE = 1;
+  const EACH_INDEX_REACTIVE = 1 << 1;
+  const EACH_IS_CONTROLLED = 1 << 2;
+  const EACH_IS_ANIMATED = 1 << 3;
+  const EACH_ITEM_IMMUTABLE = 1 << 4;
+  const TEMPLATE_FRAGMENT = 1;
+  const TEMPLATE_USE_IMPORT_NODE = 1 << 1;
+  const UNINITIALIZED = Symbol();
+  function lifecycle_outside_component(name) {
+    {
+      throw new Error(`https://svelte.dev/e/lifecycle_outside_component`);
+    }
+  }
+  let component_context = null;
+  function set_component_context(context) {
+    component_context = context;
+  }
+  function push(props, runes = false, fn) {
+    component_context = {
+      p: component_context,
+      c: null,
+      e: null,
+      m: false,
+      s: props,
+      x: null,
+      l: null,
     };
-  }, window.ldb = {
-    get: e,
-    set: function set(e, t) {
-      o.k = e, o.v = t, n.transaction("s", "readwrite").objectStore("s").put(o);
+    if (legacy_mode_flag && !runes) {
+      component_context.l = {
+        s: null,
+        u: null,
+        r1: [],
+        r2: source(false),
+      };
     }
-  };
-}();
-var prepEmoji = {};
-prepEmoji.emoji = {
-  template: function template(id) {
-    return emojify.defaultConfig.img_dir + '/' + encodeURI(id) + '.png';
   }
-};
-prepEmoji.twitch = {
-  template: function template(id) {
-    return "//static-cdn.jtvnw.net/emoticons/v1/" + id + "/3.0";
-  },
-  specialEmotes: [],
-  emotes: {},
-  chatRegex: new RegExp(":([-_a-z0-9]+):", "ig")
-};
-prepEmoji.bttv = {
-  template: function template(id) {
-    return "//cdn.betterttv.net/emote/" + id + "/3x";
-  },
-  emotes: {},
-  chatRegex: new RegExp(":([&!()\\-_a-z0-9]+):", "ig")
-};
-prepEmoji.tasty = {
-  template: function template(id) {
-    return this.emotes[id].url;
-  },
-  emotes: {}
-};
-prepEmoji.frankerFacez = {
-  template: function template(id) {
-    return "//cdn.frankerfacez.com/emoticon/" + id + "/1";
-  },
-  emotes: {},
-  chatRegex: new RegExp(":([-_a-z0-9]+):", "ig")
-};
-prepEmoji.shouldUpdateAPIs = function (apiName, callback) {
-  var day = 86400000; // milliseconds in a day
-
-  // if api return an object with an error then we should try again
-  ldb.get(apiName + '_api', function (savedItem) {
-    if (savedItem) {
-      var parsed = JSON.parse(savedItem);
-      if (typeof parsed.error !== 'undefined') {
-        callback(true);
-      }
-    }
-    var today = Date.now();
-    var lastSaved = parseInt(localStorage.getItem(apiName + '_api_timestamp'));
-    // Is the lastsaved not a number for some strange reason, then we should update
-    // are we past 5 days from last update? then we should update
-    // does the data not exist in localStorage, then we should update
-    callback(isNaN(lastSaved) || today - lastSaved > day * 5 || !savedItem);
-  });
-};
-
-/**************************************************************************
-* Loads the twitch emotes from the api.
-* http://api.twitch.tv/kraken/chat/emoticon_images
-*/
-prepEmoji.loadTwitchEmotes = function () {
-  var savedData;
-  // if it doesn't exist in localStorage or it's older than 5 days
-  // grab it from the twitch API
-  this.shouldUpdateAPIs('twitch', function (update) {
-    if (update) {
-      console.log('dub+', 'twitch', 'loading from api');
-      var twApi = new GetJSON('//cdn.jsdelivr.net/gh/Jiiks/BetterDiscordApp/data/emotedata_twitch_global.json', 'twitch:loaded');
-      twApi.done(function (data) {
-        var json = JSON.parse(data);
-        var twitchEmotes = {};
-        for (var emote in json.emotes) {
-          if (!twitchEmotes[emote]) {
-            // if emote doesn't exist, add it
-            twitchEmotes[emote] = json.emotes[emote].image_id;
+  function pop(component2) {
+    const context_stack_item = component_context;
+    if (context_stack_item !== null) {
+      const component_effects = context_stack_item.e;
+      if (component_effects !== null) {
+        var previous_effect = active_effect;
+        var previous_reaction = active_reaction;
+        context_stack_item.e = null;
+        try {
+          for (var i = 0; i < component_effects.length; i++) {
+            var component_effect = component_effects[i];
+            set_active_effect(component_effect.effect);
+            set_active_reaction(component_effect.reaction);
+            effect(component_effect.fn);
           }
+        } finally {
+          set_active_effect(previous_effect);
+          set_active_reaction(previous_reaction);
         }
-        localStorage.setItem('twitch_api_timestamp', Date.now().toString());
-        ldb.set('twitch_api', JSON.stringify(twitchEmotes));
-        prepEmoji.processTwitchEmotes(twitchEmotes);
-      });
-    } else {
-      ldb.get('twitch_api', function (data) {
-        console.log('dub+', 'twitch', 'loading from IndexedDB');
-        savedData = JSON.parse(data);
-        prepEmoji.processTwitchEmotes(savedData);
-        savedData = null; // clear the var from memory
-        var twEvent = new Event('twitch:loaded');
-        window.dispatchEvent(twEvent);
-      });
-    }
-  });
-};
-prepEmoji.loadBTTVEmotes = function () {
-  var savedData;
-  // if it doesn't exist in localStorage or it's older than 5 days
-  // grab it from the bttv API
-  this.shouldUpdateAPIs('bttv', function (update) {
-    if (update) {
-      console.log('dub+', 'bttv', 'loading from api');
-      var bttvApi = new GetJSON('//api.betterttv.net/3/cached/emotes/global', 'bttv:loaded');
-      bttvApi.done(function (data) {
-        var json = JSON.parse(data);
-        var bttvEmotes = {};
-        json.forEach(function (e) {
-          if (!bttvEmotes[e.code]) {
-            // if emote doesn't exist, add it
-            bttvEmotes[e.code] = e.id;
-          }
-        });
-        localStorage.setItem('bttv_api_timestamp', Date.now().toString());
-        ldb.set('bttv_api', JSON.stringify(bttvEmotes));
-        prepEmoji.processBTTVEmotes(bttvEmotes);
-      });
-    } else {
-      ldb.get('bttv_api', function (data) {
-        console.log('dub+', 'bttv', 'loading from IndexedDB');
-        savedData = JSON.parse(data);
-        prepEmoji.processBTTVEmotes(savedData);
-        savedData = null; // clear the var from memory
-        var twEvent = new Event('bttv:loaded');
-        window.dispatchEvent(twEvent);
-      });
-    }
-  });
-};
-prepEmoji.loadTastyEmotes = function () {
-  var _this = this;
-  console.log('dub+', 'tasty', 'loading from api');
-  // since we control this API we should always have it load from remote
-  var tastyApi = new GetJSON(settings.srcRoot + '/emotes/tastyemotes.json', 'tasty:loaded');
-  tastyApi.done(function (data) {
-    ldb.set('tasty_api', JSON.stringify(data));
-    _this.processTastyEmotes(JSON.parse(data));
-  });
-};
-prepEmoji.loadFrankerFacez = function () {
-  var savedData;
-  // if it doesn't exist in localStorage or it's older than 5 days
-  // grab it from the frankerfacez API
-  this.shouldUpdateAPIs('frankerfacez', function (update) {
-    if (update) {
-      console.log('dub+', 'frankerfacez', 'loading from api');
-      var frankerFacezApi = new GetJSON('//api.frankerfacez.com/v1/emoticons?per_page=200&private=off&sort=count-desc', 'frankerfacez:loaded');
-      frankerFacezApi.done(function (data) {
-        var frankerFacez = JSON.parse(data);
-        localStorage.setItem('frankerfacez_api_timestamp', Date.now().toString());
-        ldb.set('frankerfacez_api', data);
-        prepEmoji.processFrankerFacez(frankerFacez);
-      });
-    } else {
-      ldb.get('frankerfacez_api', function (data) {
-        console.log('dub+', 'frankerfacez', 'loading from IndexedDB');
-        savedData = JSON.parse(data);
-        prepEmoji.processFrankerFacez(savedData);
-        savedData = null; // clear the var from memory
-        var twEvent = new Event('frankerfacez:loaded');
-        window.dispatchEvent(twEvent);
-      });
-    }
-  });
-};
-prepEmoji.processTwitchEmotes = function (data) {
-  for (var code in data) {
-    if (data.hasOwnProperty(code)) {
-      var _key = code.toLowerCase();
-
-      // move twitch non-named emojis to their own array
-      if (code.indexOf('\\') >= 0) {
-        this.twitch.specialEmotes.push([code, data[code]]);
-        continue;
       }
-      if (emojify.emojiNames.indexOf(_key) >= 0) {
-        continue; // do nothing so we don't override emoji
-      }
-      if (!this.twitch.emotes[_key]) {
-        // if emote doesn't exist, add it
-        this.twitch.emotes[_key] = data[code];
-      }
+      component_context = context_stack_item.p;
+      context_stack_item.m = true;
     }
+    return (
+      /** @type {T} */
+      {}
+    );
   }
-  this.twitchJSONSLoaded = true;
-  this.emojiEmotes = emojify.emojiNames.concat(Object.keys(this.twitch.emotes));
-};
-prepEmoji.processBTTVEmotes = function (data) {
-  for (var code in data) {
-    if (data.hasOwnProperty(code)) {
-      var _key = code.toLowerCase();
-      if (code.indexOf(':') >= 0) {
-        continue; // don't want any emotes with smileys and stuff
-      }
-      if (emojify.emojiNames.indexOf(_key) >= 0) {
-        continue; // do nothing so we don't override emoji
-      }
-      if (code.indexOf('(') >= 0) {
-        _key = _key.replace(/([()])/g, "");
-      }
-      this.bttv.emotes[_key] = data[code];
+  function is_runes() {
+    return (
+      !legacy_mode_flag ||
+      (component_context !== null && component_context.l === null)
+    );
+  }
+  function source(v, stack) {
+    var signal = {
+      f: 0,
+      // TODO ideally we could skip this altogether, but it causes type errors
+      v,
+      reactions: null,
+      equals,
+      rv: 0,
+      wv: 0,
+    };
+    return signal;
+  }
+  function state(v) {
+    return /* @__PURE__ */ push_derived_source(source(v));
+  }
+  // @__NO_SIDE_EFFECTS__
+  function mutable_source(initial_value, immutable = false) {
+    var _a;
+    const s = source(initial_value);
+    if (!immutable) {
+      s.equals = safe_equals;
     }
-  }
-  this.bttvJSONSLoaded = true;
-  this.emojiEmotes = this.emojiEmotes.concat(Object.keys(this.bttv.emotes));
-};
-prepEmoji.processTastyEmotes = function (data) {
-  this.tasty.emotes = data.emotes;
-  this.tastyJSONLoaded = true;
-  this.emojiEmotes = this.emojiEmotes.concat(Object.keys(this.tasty.emotes));
-};
-prepEmoji.processFrankerFacez = function (data) {
-  var _iterator = _createForOfIteratorHelper(data.emoticons),
-    _step;
-  try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-      var emoticon = _step.value;
-      var code = emoticon.name;
-      var _key = code.toLowerCase().replace('~', '-');
-      if (code.indexOf(':') >= 0) {
-        continue; // don't want any emotes with smileys and stuff
-      }
-      if (emojify.emojiNames.indexOf(_key) >= 0) {
-        continue; // do nothing so we don't override emoji
-      }
-      if (code.indexOf('(') >= 0) {
-        _key = _key.replace(/([()])/g, "");
-      }
-      this.frankerFacez.emotes[_key] = emoticon.id;
+    if (
+      legacy_mode_flag &&
+      component_context !== null &&
+      component_context.l !== null
+    ) {
+      ((_a = component_context.l).s ?? (_a.s = [])).push(s);
     }
-  } catch (err) {
-    _iterator.e(err);
-  } finally {
-    _iterator.f();
-  }
-  this.frankerfacezJSONLoaded = true;
-  this.emojiEmotes = this.emojiEmotes.concat(Object.keys(this.frankerFacez.emotes));
-};
-module.exports = prepEmoji;
-
-},{"../lib/settings.js":8,"../utils/getJSON.js":42}],3:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.makeList = exports.PreviewListManager = void 0;
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
-function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
-function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-var debugAC = false;
-function log() {
-  if (debugAC) {
-    console.log.apply(console, arguments);
-  }
-}
-
-/**
- * Populates the popup container with a list of items that you can click/enter
- * on to autocomplete items in the chat box
- * @param  {Array} acArray  the array of items to be added.  Each item is an object:
- * {
- *   src : full image src,
- *   text : text for auto completion,
- *   cn : css class name for to be concat with '-preview',
- *   alt : OPTIONAL, to add to alt and title tag
- * }
- */
-var makeList = exports.makeList = function makeList(acArray) {
-  function makePreviewContainer(cn) {
-    var d = document.createElement('li');
-    d.className = cn;
-    return d;
-  }
-  function makeImg(src, altText) {
-    var i = document.createElement('img');
-    i.src = src;
-    if (altText) {
-      i.title = altText;
-      i.alt = altText;
-    }
-    var div = document.createElement('div');
-    div.className = "ac-image";
-    div.appendChild(i);
-    return div;
-  }
-  function makeNameSpan(name) {
-    var s = document.createElement('span');
-    s.textContent = name;
-    s.className = "ac-text"; // autocomplete text
     return s;
   }
-  function makeEnterSpan() {
-    var s = document.createElement('span');
-    s.textContent = 'press enter to select';
-    s.className = "ac-list-press-enter"; // autocomplete text
-    return s;
-  }
-  function makeLi(info, i) {
-    var container = makePreviewContainer("preview-item " + info.cn + "-previews");
-    var span = makeNameSpan(info.text);
-    var img;
-    if (info.alt) {
-      img = makeImg(info.src, info.alt);
-    } else {
-      img = makeImg(info.src);
-    }
-    container.appendChild(img);
-    container.appendChild(span);
-    if (i === 0) {
-      container.appendChild(makeEnterSpan());
-      container.classList.add('selected');
-    }
-    container.tabIndex = -1;
-    return container;
-  }
-  var aCp = document.getElementById('autocomplete-preview');
-  aCp.innerHTML = "";
-  var frag = document.createDocumentFragment();
-  acArray.forEach(function (val, i) {
-    frag.appendChild(makeLi(val, i));
-  });
-  aCp.appendChild(frag);
-  aCp.classList.add('ac-show');
-};
-function isElementInView(el, container) {
-  var rect = el.getBoundingClientRect();
-  var outerRect = container.getBoundingClientRect();
-  return rect.top >= outerRect.top && rect.bottom <= outerRect.bottom;
-}
-
-/**
- * previewList
- * 
- * In this JS file should only exist what's necessary to populate the
- * autocomplete preview list that popups up for emojis and mentions
- * 
- * It also binds the events that handle navigating through the list
- * and also placing selected text into the chat
- */
-var PreviewListManager = exports.PreviewListManager = /*#__PURE__*/function () {
-  function PreviewListManager(data) {
-    _classCallCheck(this, PreviewListManager);
-    this._data = data || {
-      start: 0,
-      end: 0,
-      selected: ""
-    };
-  }
-  return _createClass(PreviewListManager, [{
-    key: "data",
-    get: function get() {
-      return this._data;
-    },
-    set: function set(newData) {
-      if (newData) {
-        this._data = newData;
-      }
-    }
-  }, {
-    key: "selected",
-    set: function set(text) {
-      if (text) {
-        this._data.selected = text;
-      }
-    }
-  }, {
-    key: "repl",
-    value: function repl(str, start, end, newtext) {
-      return str.substring(0, start - 1) + newtext + str.substring(end);
-    }
-  }, {
-    key: "updateChatInput",
-    value: function updateChatInput() {
-      log("inUpdate", this._data);
-      var inputText = $("#chat-txt-message").val();
-      var updatedText = this.repl(inputText, this._data.start, this._data.end, this._data.selected) + " ";
-      $('#autocomplete-preview').empty().removeClass('ac-show');
-      $("#chat-txt-message").val(updatedText).focus();
-    }
-  }, {
-    key: "doNavigate",
-    value: function doNavigate(diff) {
-      // get the current index of selected element within the nodelist collection of previews
-      var displayBoxIndex = $('.preview-item.selected').index();
-
-      // calculate new index position with given argument
-      displayBoxIndex += diff;
-      var oBoxCollection = $(".ac-show li");
-
-      // remove "press enter to select" span
-      $('.ac-list-press-enter').remove();
-
-      // if new index is greater than total length then we reset back to the top
-      if (displayBoxIndex >= oBoxCollection.length) {
-        displayBoxIndex = 0;
-      }
-      // if at the top and index becomes negative, we wrap down to end of array
-      if (displayBoxIndex < 0) {
-        displayBoxIndex = oBoxCollection.length - 1;
-      }
-      var cssClass = "selected";
-      var enterToSelectSpan = '<span class="ac-list-press-enter">press enter or tab to select</span>';
-      oBoxCollection.removeClass(cssClass).eq(displayBoxIndex).addClass(cssClass).append(enterToSelectSpan);
-      var pvItem = document.querySelector('.preview-item.selected');
-      var acPreview = document.querySelector('#autocomplete-preview');
-      var isInView = isElementInView(pvItem, acPreview);
-      log("isInView", isInView);
-      var align = diff === 1 ? false : true;
-      if (!isInView) {
-        pvItem.scrollIntoView(align);
-      }
-    }
-  }, {
-    key: "updater",
-    value: function updater(e) {
-      log(e.target, e);
-      this._data.selected = $(e.target).find('.ac-text').text();
-      this.updateChatInput();
-    }
-  }, {
-    key: "init",
-    value: function init() {
-      var _this = this;
-      var acUL = document.createElement('ul');
-      acUL.id = "autocomplete-preview";
-      $('.pusher-chat-widget-input').prepend(acUL);
-      $(document.body).on('click', '.preview-item', function (e) {
-        return _this.updater(e);
-      });
-    }
-  }, {
-    key: "stop",
-    value: function stop() {
-      // the garbade collector should clean up the event listener added in init
-      $('#autocomplete-preview').remove();
-    }
-  }]);
-}();
-
-},{}],4:[function(require,module,exports){
-(function (PKGINFO){(function (){
-"use strict";
-
-var _loadModules = _interopRequireDefault(require("./loadModules.js"));
-var _css = _interopRequireDefault(require("../utils/css.js"));
-var _menu = _interopRequireDefault(require("./menu.js"));
-var _snooze = _interopRequireDefault(require("../modules/snooze.js"));
-var _eta = _interopRequireDefault(require("../modules/eta.js"));
-var _menuEvents = require("./menu-events.js");
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-module.exports = function () {
-  window.dubplus = JSON.parse(PKGINFO);
-  window.dubplus.toggleMenuSection = _menuEvents.toggleMenuSection;
-  window.dubplus.toggleMenu = _menuEvents.toggleMenu;
-  window.dubplus.onMenuToggle = _menuEvents.onMenuToggle;
-  window.dubplus.onMenuAction = _menuEvents.onMenuAction;
-  window.dubplus.onMenuEdit = _menuEvents.onMenuEdit;
-
-  // load our main CSS
-  _css.default.load('/css/dubplus.css', 'dubplus-css');
-
-  // add a 'global' css class just in case we need more specificity in our css
-  document.querySelector('html').classList.add('dubplus');
-
-  // Get the opening html for the menu
-  var menuContainer = _menu.default.beginMenu();
-
-  // load all our modules into the 'dubplus' global object
-  // it also builds the menu dynamically
-  // returns an object to be passed to menu.finish
-  var menuObj = (0, _loadModules.default)();
-
-  // finalize the menu and add it to the UI
-  _menu.default.finishMenu(menuObj, menuContainer);
-
-  // run non-menu related items here:
-  (0, _snooze.default)();
-  (0, _eta.default)();
-};
-
-}).call(this)}).call(this,'{"name":"DubPlus","version":"0.3.4","description":"Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net","author":"DubPlus","license":"MIT","homepage":"https://dub.plus","browserslist":["> 1%","last 2 versions"],"dependencies":{"@babel/core":"^7.24.7","node-fetch":"^3.3.2","sass":"^1.77.6"}}')
-},{"../modules/eta.js":22,"../modules/snooze.js":34,"../utils/css.js":41,"./loadModules.js":5,"./menu-events.js":6,"./menu.js":7}],5:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var options = require('../utils/options.js');
-var dubPlus_modules = require('../modules/index.js');
-var settings = require('../lib/settings.js');
-var menu = require('../lib/menu.js');
-var menuObj = {
-  General: '',
-  'User Interface': '',
-  Settings: '',
-  Customize: ''
-};
-
-/**
- * Loads all the modules and initliazes them
- */
-function loadAllModules() {
-  // window.dubplus was created in the init module
-
-  dubPlus_modules.forEach(function (mod) {
-    // add each module to the new global object
-    window.dubplus[mod.id] = mod;
-    // add the toggleAndSave function as a member of each module
-    window.dubplus[mod.id].toggleAndSave = options.toggleAndSave;
-    // check stored settings for module's initial state
-    mod.optionState = settings.options[mod.id] || false;
-
-    // This is run only once, when the script is loaded.
-    // put anything you want ALWAYS run on Dub+ script load here
-    if (typeof mod.init === 'function') {
-      mod.init.call(mod);
-    }
-
-    // if module's localStorage option state is ON, we turn it on!
-    if (mod.optionState && typeof mod.turnOn === 'function') {
-      mod.turnOn.call(mod);
-    }
-    var _extraIcon = null;
-    // if module has a defined .extra {function} but does not define the .extraIcon {string}
-    // then we use 'pencil' as the default icon
-    if (typeof mod.extra === 'function' && !mod.extraIcon) {
-      _extraIcon = 'pencil';
-    }
-    if (!menuObj[mod.category]) {
-      menuObj[mod.category] = new DocumentFragment();
-    }
-
-    // generate the html for the menu option and add it to the
-    // appropriate category
-    menuObj[mod.category].appendChild(menu.makeOptionMenu(mod.moduleName, {
-      id: mod.id,
-      desc: mod.description,
-      state: mod.optionState,
-      extraIcon: mod.extraIcon || _extraIcon,
-      cssClass: mod.menuCssClass || '',
-      altIcon: mod.altIcon || null
-    }));
-  });
-  return menuObj;
-}
-var _default = exports.default = loadAllModules;
-
-},{"../lib/menu.js":7,"../lib/settings.js":8,"../modules/index.js":29,"../utils/options.js":46}],6:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.onMenuAction = onMenuAction;
-exports.onMenuEdit = onMenuEdit;
-exports.onMenuToggle = onMenuToggle;
-exports.toggleMenu = toggleMenu;
-exports.toggleMenuSection = toggleMenuSection;
-var options = require('../utils/options.js');
-
-/**
- * handles opening and closing of a menu section
- * @param  {string} id The id of the section to toggle
- */
-function toggleMenuSection(id) {
-  var sectionHeader = document.getElementById(id);
-  var icon = sectionHeader.querySelector('.fa');
-  var sectionUL = sectionHeader.nextElementSibling;
-  var menuName = sectionHeader.textContent.trim().replace(' ', '-').toLowerCase();
-  var closedClass = 'dubplus-menu-section-closed';
-  sectionUL.classList.toggle(closedClass);
-  var isClosed = sectionUL.classList.contains(closedClass);
-  icon.classList.toggle('fa-angle-down');
-  icon.classList.toggle('fa-angle-right');
-  options.saveOption('menu', menuName, isClosed ? 'closed' : 'open');
-}
-
-/**
- * handles the pencil icon click
- * @param {string} id
- */
-function onMenuEdit(id) {
-  var mod = window.dubplus[id];
-  if (!mod) {
-    return;
-  }
-  if (mod.extra) {
-    mod.extra.call(mod);
-  }
-}
-
-/**
- * handles the toggling of the switch
- * @param {string} id
- */
-function onMenuToggle(id) {
-  var mod = window.dubplus[id];
-  if (!mod) {
-    return;
-  }
-  if (mod.turnOn && mod.turnOff) {
-    // if it was off
-    if (!mod.optionState) {
-      mod.turnOn.call(mod);
-    } else {
-      mod.turnOff.call(mod);
-    }
-    mod.optionState = !mod.optionState;
-    options.toggleAndSave(mod.id, mod.optionState);
-  }
-}
-
-/**
- * handles the action of the menu item (like full screen, etc)
- * @param {string} id
- */
-function onMenuAction(id) {
-  var mod = window.dubplus[id];
-  if (!mod) {
-    return;
-  }
-  if (mod.go) {
-    mod.go.call(mod);
-  }
-}
-
-/**
- * open/close the menu
- */
-function toggleMenu() {
-  document.querySelector('.dubplus-menu').classList.toggle('dubplus-menu-open');
-}
-
-},{"../utils/options.js":46}],7:[function(require,module,exports){
-'use strict';
-
-var _menuEvents = _interopRequireDefault(require("./menu-events.js"));
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-var settings = require('./settings.js');
-var css = require('../utils/css.js');
-// this is used to set the state of the contact menu section
-var arrow = 'down';
-var isClosedClass = '';
-if (settings.menu.contact === 'closed') {
-  isClosedClass = 'dubplus-menu-section-closed';
-  arrow = 'right';
-}
-
-/*
-<div id="dubplus-contact" class="dubplus-menu-section-header">
-  <span class="fa fa-angle-${arrow}"></span>
-  <p>Contact</p>
-</div>
-<ul class="dubplus-menu-section ${isClosedClass}">
-  <li class="dubplus-menu-icon">
-    <span class="fa fa-bug"></span>
-    <a href="https://discord.gg/XUkG3Qy" class="dubplus-menu-label" target="_blank">Report bugs on Discord</a>
-  </li>
-  <li class="dubplus-menu-icon">
-    <span class="fa fa-reddit-alien"></span>
-    <a href="https://www.reddit.com/r/DubPlus/" class="dubplus-menu-label"  target="_blank">Reddit</a>
-  </li>
-  <li class="dubplus-menu-icon">
-    <span class="fa fa-facebook"></span>
-    <a href="https://facebook.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Facebook</a>
-  </li>
-  <li class="dubplus-menu-icon">
-    <span class="fa fa-twitter"></span>
-    <a href="https://twitter.com/DubPlusScript" class="dubplus-menu-label"  target="_blank">Twitter</a>
-  </li>
-</ul>`;
-*/
-function makeContactSection() {
-  var fragment = new DocumentFragment();
-  var contacts = [{
-    icon: 'bug',
-    link: 'https://discord.gg/XUkG3Qy',
-    text: 'Report bugs on Discord'
-  }, {
-    icon: 'reddit-alien',
-    link: 'https://www.reddit.com/r/DubPlus/',
-    text: 'Reddit'
-  }, {
-    icon: 'facebook',
-    link: 'https://facebook.com/DubPlusScript',
-    text: 'Facebook'
-  }, {
-    icon: 'twitter',
-    link: 'https://twitter.com/DubPlusScript',
-    text: 'Twitter'
-  }];
-  var contactSection = document.createElement('div');
-  contactSection.id = 'dubplus-contact';
-  contactSection.className = 'dubplus-menu-section-header';
-  contactSection.innerHTML = "\n    <span class=\"fa fa-angle-".concat(arrow, "\"></span>\n    <p>Contact</p>\n  ");
-  contactSection.setAttribute('onclick', "window.dubplus.toggleMenuSection('dubplus-contact')");
-  fragment.appendChild(contactSection);
-  var contactList = document.createElement('ul');
-  contactList.className = "dubplus-menu-section ".concat(isClosedClass);
-  contacts.forEach(function (contact) {
-    var contactItem = document.createElement('li');
-    contactItem.className = 'dubplus-menu-icon';
-    contactItem.innerHTML = "\n      <span class=\"fa fa-".concat(contact.icon, "\"></span>\n      <a href=\"").concat(contact.link, "\" class=\"dubplus-menu-label\" target=\"_blank\">").concat(contact.text, "</a>\n    ");
-    contactList.appendChild(contactItem);
-  });
-  fragment.appendChild(contactList);
-  return fragment;
-}
-module.exports = {
-  beginMenu: function beginMenu() {
-    var _document$querySelect;
-    // load font-awesome icons from CDN to be used in the menu
-    css.loadExternal('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css', 'dubplus-font-awesome');
-
-    /*
-      <div class="dubplus-icon">
-        <img src="images/dubplus.svg" alt="" />
-      </div>
-    */
-    // remove old one:
-    (_document$querySelect = document.querySelector('.dubplus-icon')) === null || _document$querySelect === void 0 || _document$querySelect.remove();
-
-    // create new one:
-    var menuIcon = document.createElement('div');
-    menuIcon.className = 'dubplus-icon';
-    var iconImg = document.createElement('img');
-    iconImg.src = "".concat(settings.srcRoot, "/images/dubplus.svg");
-    iconImg.alt = '';
-    menuIcon.appendChild(iconImg);
-    menuIcon.setAttribute('onclick', 'window.dubplus.toggleMenu()');
-    document.querySelector('.header-right-navigation').appendChild(menuIcon);
-
-    /*
-      <section class="dubplus-menu">
-        <p class="dubplus-menu-header">Dub+ Options</p>
-      </section>
-    */
-    var menuContainer = document.createElement('section');
-    menuContainer.className = 'dubplus-menu';
-    var header = document.createElement('p');
-    header.className = 'dubplus-menu-header';
-    header.textContent = 'Dub+ Options';
-    menuContainer.appendChild(header);
-    return menuContainer;
-  },
-  finishMenu: function finishMenu(menuObj, menuContainer) {
-    // dynamically create our menu from strings provided by each module
-    for (var category in menuObj) {
-      var fixed = category.replace(' ', '-').toLowerCase();
-      var menuSettings = settings.menu[fixed];
-      var id = 'dubplus-' + fixed;
-      var arrow = 'down';
-      var isClosedClass = '';
-      if (menuSettings === 'closed') {
-        isClosedClass = 'dubplus-menu-section-closed';
-        arrow = 'right';
-      }
-
-      /*
-        <div id="{id}" class="dubplus-menu-section-header" onclick="...">
-          <span class="fa fa-angle-{arrow}"></span>
-          <p>{category}</p>
-        </div>
-        <ul class="dubplus-menu-section {isClosedClass}">
-          {menuObj[category]}
-        </ul>
-      */
-
-      var sectionHeader = document.createElement('div');
-      sectionHeader.id = id;
-      sectionHeader.className = 'dubplus-menu-section-header';
-      var arrowSpan = document.createElement('span');
-      arrowSpan.className = "fa fa-angle-".concat(arrow);
-      var p = document.createElement('p');
-      p.textContent = category;
-      sectionHeader.appendChild(arrowSpan);
-      sectionHeader.appendChild(p);
-      sectionHeader.setAttribute('onclick', "window.dubplus.toggleMenuSection('".concat(id, "')"));
-      var sectionUL = document.createElement('ul');
-      sectionUL.className = "dubplus-menu-section ".concat(isClosedClass);
-      sectionUL.appendChild(menuObj[category]);
-      menuContainer.appendChild(sectionHeader);
-      menuContainer.appendChild(sectionUL);
-    }
-
-    // contact section last, is already fully formed, not dynamic
-    menuContainer.appendChild(makeContactSection());
-    document.body.appendChild(menuContainer);
-  },
-  makeOptionMenu: function makeOptionMenu(menuTitle, options) {
-    var defaults = {
-      id: '',
-      // will be the ID selector for the menu item
-      desc: '',
-      // will be used for the "title" attribute
-      state: false,
-      // whether the menu item is on/off
-      extraIcon: null,
-      // define the extra icon if an option needs it (like AFK, Custom Mentions)
-      cssClass: '',
-      // adds extra CSS class(es) if desired,
-      altIcon: null // use a font-awesome icon instead of the switch
-    };
-    var opts = Object.assign({}, defaults, options);
-    var switchState = opts.state ? 'dubplus-switch-on' : '';
-
-    // default icon on the left of each menu item is the switch
-    var mainCssClass = 'dubplus-switch';
-
-    /*
-       --- IF ALT ICON IS DEFINED ---
-      <li id="{opts.id}" class="dubplus-menu-icon dubplus-switch-{on|off} {opts.cssClass}" title="{opts.desc}">
-        <span class="fa fa-{opts.altIcon}"></span>
-        <span class="dubplus-menu-label">{menuTitle}</span>
-      </li>
-       --- ELSE ---
-      <li id="{opts.id}" class="dubplus-switch dubplus-switch-{on|off} {opts.cssClass}" title="{opts.desc}">
-        <!-- IF EXTRA ICON -->
-        <span class="fa fa-{opts.extraIcon} extra-icon"></span>
-        <!-- ENDIF -->
-        <div class="dubplus-switch-bg">
-          <div class="dubplus-switcher"></div>
-        </div>
-        <span class="dubplus-menu-label">{menuTitle}</span>
-      </li>
-    */
-
-    var mainIcon;
-    if (options.altIcon) {
-      mainCssClass = 'dubplus-menu-icon';
-      mainIcon = document.createElement('span');
-      mainIcon.className = "fa fa-".concat(opts.altIcon);
-      mainIcon.setAttribute('onclick', "window.dubplus.onMenuAction('".concat(opts.id, "')"));
-    } else {
-      mainIcon = document.createElement('div');
-      mainIcon.className = 'dubplus-switch-bg';
-      var switcher = document.createElement('div');
-      switcher.className = 'dubplus-switcher';
-      mainIcon.appendChild(switcher);
-      mainIcon.setAttribute('onclick', "window.dubplus.onMenuToggle('".concat(opts.id, "')"));
-    }
-    var li = document.createElement('li');
-    li.id = opts.id;
-    li.className = "".concat(mainCssClass, " ").concat(switchState, " ").concat(opts.cssClass).trim();
-    li.title = opts.desc;
-    if (opts.extraIcon) {
-      var extra = document.createElement('span');
-      extra.className = "fa fa-".concat(opts.extraIcon, " extra-icon");
-      extra.setAttribute('onclick', "window.dubplus.onMenuEdit('".concat(opts.id, "')"));
-      li.appendChild(extra);
-    }
-    li.appendChild(mainIcon);
-    var label = document.createElement('span');
-    label.className = 'dubplus-menu-label';
-    label.textContent = menuTitle;
-    li.appendChild(label);
-    return li;
-  }
-};
-
-},{"../utils/css.js":41,"./menu-events.js":6,"./settings.js":8}],8:[function(require,module,exports){
-(function (_RESOURCE_SRC_){(function (){
-"use strict";
-
-var defaults = {
-  // this will store all the on/off states
-  options: {},
-  // this will store the open/close state of the menu sections
-  menu: {
-    "general": "open",
-    "user-interface": "open",
-    "settings": "open",
-    "customize": "open",
-    "contact": "open"
-  },
-  // this will store custom strings for options like custom css, afk message, etc
-  custom: {}
-};
-var savedSettings = {};
-var _storageRaw = localStorage.getItem('dubplusUserSettings');
-if (_storageRaw) {
-  savedSettings = JSON.parse(_storageRaw);
-}
-var exportSettings = $.extend({}, defaults, savedSettings);
-
-// this is stored in localStorage but we don't want that, we always want it fresh
-exportSettings.srcRoot = _RESOURCE_SRC_;
-module.exports = exportSettings;
-
-}).call(this)}).call(this,'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus')
-},{}],9:[function(require,module,exports){
-"use strict";
-
-/**
- * AFK -  Away from Keyboard
- * Toggles the afk auto response on/off
- * including adding a custom message
- */
-
-/* global Dubtrack */
-var modal = require('../utils/modal.js');
-var options = require('../utils/options.js');
-var settings = require("../lib/settings.js");
-var afk_module = {};
-afk_module.id = "dubplus-afk";
-afk_module.moduleName = "AFK Auto-respond";
-afk_module.description = "Toggle Away from Keyboard and customize AFK message.";
-afk_module.category = "General";
-afk_module.canSend = true;
-var afk_chat_respond = function afk_chat_respond(e) {
-  if (!afk_module.canSend) {
-    return; // do nothing until it's back to true
-  }
-  var content = e.message;
-  var user = QueUp.session.get('username');
-  if (content.indexOf('@' + user) > -1 && QueUp.session.id !== e.user.userInfo.userid) {
-    if (settings.custom.customAfkMessage) {
-      $('#chat-txt-message').val('[AFK] ' + settings.custom.customAfkMessage);
-    } else {
-      $('#chat-txt-message').val("[AFK] I'm not here right now.");
-    }
-    QueUp.room.chat.sendMessage();
-    afk_module.canSend = false;
-    setTimeout(function () {
-      afk_module.canSend = true;
-    }, 30000);
-  }
-};
-afk_module.turnOn = function () {
-  QueUp.Events.bind("realtime:chat-message", afk_chat_respond);
-};
-afk_module.turnOff = function () {
-  QueUp.Events.unbind("realtime:chat-message", afk_chat_respond);
-};
-var saveAFKmessage = function saveAFKmessage() {
-  var customAfkMessage = $('.dp-modal textarea').val();
-  if (customAfkMessage !== '') {
-    options.saveOption('custom', 'customAfkMessage', customAfkMessage);
-  }
-};
-afk_module.extra = function () {
-  modal.create({
-    title: 'Custom AFK Message',
-    content: 'Enter a custom Away From Keyboard [AFK] message here',
-    value: settings.custom.customAfkMessage || '',
-    placeholder: "Be right back!",
-    maxlength: '255',
-    confirmCallback: saveAFKmessage
-  });
-};
-module.exports = afk_module;
-
-},{"../lib/settings.js":8,"../utils/modal.js":43,"../utils/options.js":46}],10:[function(require,module,exports){
-"use strict";
-
-var _previewList = require("../emojiUtils/previewList.js");
-/**
- * Autocomplete Emojis/Emotes
- */
-/*global _, Dubtrack, emojify*/
-var settings = require('../lib/settings.js');
-var prepEmjoji = require('../emojiUtils/prepEmoji.js');
-// because I have a lot of logging on each keypress I made this
-var debugAC = false;
-function log() {
-  if (debugAC) {
-    console.log.apply(console, arguments);
-  }
-}
-var myModule = {};
-myModule.id = 'dubplus-autocomplete';
-myModule.moduleName = 'Autocomplete Emoji';
-myModule.description = 'Toggle autocompleting emojis and emotes.  Shows a preview box in the chat';
-myModule.category = 'General';
-var KEYS = {
-  up: 38,
-  down: 40,
-  left: 37,
-  right: 39,
-  enter: 13,
-  esc: 27,
-  tab: 9,
-  shiftKey: 16,
-  backspace: 8,
-  del: 46,
-  space: 32,
-  ctrl: 17
-};
-var keyCharMin = 3; // when to start showing previews
-var inputRegex = new RegExp('(:)([&!()\\+\\-_a-z0-9]+)($|\\s)', 'ig');
-
-/**************************************************************************
- * A bunch of utility helpers for the emoji preview
- */
-var emojiUtils = {
-  createPreviewObj: function createPreviewObj(type, id, name) {
-    return {
-      src: prepEmjoji[type].template(id),
-      text: ':' + name + ':',
-      alt: name,
-      cn: type
-    };
-  },
-  addToPreviewList: function addToPreviewList(emojiArray) {
-    var self = this;
-    var listArray = [];
-    var _key;
-    emojiArray.forEach(function (val) {
-      _key = val.toLowerCase();
-      if (typeof prepEmjoji.twitch.emotes[_key] !== 'undefined') {
-        listArray.push(self.createPreviewObj('twitch', prepEmjoji.twitch.emotes[_key], val));
-      }
-      if (typeof prepEmjoji.bttv.emotes[_key] !== 'undefined') {
-        listArray.push(self.createPreviewObj('bttv', prepEmjoji.bttv.emotes[_key], val));
-      }
-      if (typeof prepEmjoji.tasty.emotes[_key] !== 'undefined') {
-        listArray.push(self.createPreviewObj('tasty', _key, val));
-      }
-      if (typeof prepEmjoji.frankerFacez.emotes[_key] !== 'undefined') {
-        listArray.push(self.createPreviewObj('frankerFacez', prepEmjoji.frankerFacez.emotes[_key], val));
-      }
-      if (emojify.emojiNames.indexOf(_key) >= 0) {
-        listArray.push(self.createPreviewObj('emoji', val, val));
-      }
-    });
-    (0, _previewList.makeList)(listArray);
-  },
-  filterEmoji: function filterEmoji(str) {
-    var finalStr = str.replace(/([+()])/, '\\$1');
-    var re = new RegExp('^' + finalStr, 'i');
-    var arrayToUse = emojify.emojiNames || [];
-    if (settings.options['dubplus-emotes']) {
-      arrayToUse = prepEmjoji.emojiEmotes || []; // merged array
-    }
-    return arrayToUse.filter(function (val) {
-      return re.test(val);
-    });
-  }
-};
-
-/**************************************************************************
- * handles filtering emoji, twitch, and users preview autocomplete popup on keyup
- */
-
-var previewList = new _previewList.PreviewListManager();
-var shouldClearPreview = function shouldClearPreview(ac, pvStr, current, kMin) {
-  var lastChar = current.charAt(current.length - 1);
-  if (pvStr.length < kMin || lastChar === ':' || lastChar === ' ' || current === '') {
-    pvStr = '';
-    ac.innerHTML = '';
-    ac.className = '';
-  }
-  return pvStr;
-};
-var handleMatch = function handleMatch(triggerMatch, currentText, cursorPos, keyCharMin) {
-  var pos = triggerMatch.length - 1; // only want to use the last one in the array
-  var currentMatch = triggerMatch[pos].trim();
-  var emoteChar = currentMatch.charAt(0); // get the ":" trigger and store it separately
-  currentMatch = currentMatch.substring(1); // and then remove it from the matched string
-
-  var strStart = currentText.lastIndexOf(currentMatch);
-  var strEnd = strStart + currentMatch.length;
-  log('cursorPos', cursorPos);
-  if (cursorPos >= strStart && cursorPos <= strEnd) {
-    // twitch and other emoji
-    if (currentMatch && currentMatch.length >= keyCharMin && emoteChar === ':') {
-      emojiUtils.addToPreviewList(emojiUtils.filterEmoji(currentMatch));
-    }
-  }
-  log('match', triggerMatch, strStart, strEnd);
-  return {
-    start: strStart,
-    end: strEnd,
-    currentMatch: currentMatch
-  };
-};
-var chatInputKeyupFunc = function chatInputKeyupFunc(e) {
-  var acPreview = document.querySelector('#autocomplete-preview');
-  var hasItems = acPreview.children.length > 0;
-  if (e.keyCode === KEYS.enter && !hasItems) {
-    return; // do nothing
-  }
-  if (e.keyCode === KEYS.up && hasItems) {
-    e.preventDefault();
-    previewList.doNavigate(-1);
-    return;
-  }
-  if (e.keyCode === KEYS.down && hasItems) {
-    e.preventDefault();
-    previewList.doNavigate(1);
-    return;
-  }
-  if ((e.keyCode === KEYS.enter || e.keyCode === KEYS.tab) && hasItems) {
-    e.preventDefault();
-    previewList.selected = $('.preview-item.selected').find('.ac-text').text();
-    previewList.updateChatInput();
-    return false;
-  }
-  var currentText = e.target.value;
-  var cursorPos = e.target.selectionStart;
-  var triggerMatch = currentText.match(inputRegex);
-  var previewSearchStr = '';
-  if (triggerMatch && triggerMatch.length > 0) {
-    var matchData = handleMatch(triggerMatch, currentText, cursorPos, keyCharMin);
-    previewSearchStr = matchData.currentMatch;
-    previewList.data = matchData;
-  }
-  log('inKeyup', previewList.data);
-  shouldClearPreview(acPreview, previewSearchStr, currentText, keyCharMin);
-};
-var chatInputKeydownFunc = function chatInputKeydownFunc(e) {
-  var hasItems = document.querySelector('#autocomplete-preview > li');
-  var isValidKey = [KEYS.tab, KEYS.enter, KEYS.up, KEYS.down].includes(e.keyCode);
-  var isModifierKey = e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
-  if (!isModifierKey && hasItems && isValidKey) {
-    e.preventDefault();
-    return;
-  }
-
-  // temporary fix to restore enter key functionality for sending messages
-  // due to the new multiline chat textarea
-  if (!isModifierKey && e.keyCode === KEYS.enter) {
-    window.QueUp.room.chat.sendMessage();
-    window.QueUp.room.chat.resizeTextarea();
-  } else if (!isModifierKey) {
-    window.QueUp.room.chat.ncKeyDown(e);
-  }
-};
-myModule.turnOn = function () {
-  previewList.init();
-  QueUp.room.chat.delegateEvents(_.omit(QueUp.room.chat.events, ['keydown #chat-txt-message']));
-  $('#chat-txt-message').on('keydown', chatInputKeydownFunc);
-  $('#chat-txt-message').on('keyup', chatInputKeyupFunc);
-};
-myModule.turnOff = function () {
-  previewList.stop();
-  QueUp.room.chat.delegateEvents(QueUp.room.chat.events);
-  $('#chat-txt-message').off('keydown', chatInputKeydownFunc);
-  $('#chat-txt-message').off('keyup', chatInputKeyupFunc);
-};
-module.exports = myModule;
-
-},{"../emojiUtils/prepEmoji.js":2,"../emojiUtils/previewList.js":3,"../lib/settings.js":8}],11:[function(require,module,exports){
-"use strict";
-
-/* global Dubtrack */
-var autovote = {};
-autovote.id = "dubplus-autovote";
-autovote.moduleName = "Autovote";
-autovote.description = "Toggles auto upvoting for every song";
-autovote.category = "General";
-
-/*******************************************************/
-// add any custom functions to this module
-
-var advance_vote = function advance_vote() {
-  if (QueUp && QueUp.playerController && QueUp.playerController.voteUp) {
-    console.log('voting');
-    QueUp.playerController.voteUp.click();
-  }
-};
-var voteCheck = function voteCheck(obj) {
-  if (obj.startTime < 2) {
-    advance_vote();
-  }
-};
-
-/*******************************************************/
-
-autovote.turnOff = function () {
-  QueUp.Events.unbind("realtime:room_playlist-update", voteCheck);
-};
-autovote.turnOn = function () {
-  var song = QueUp.room.player.activeSong.get('song');
-  var dubCookie = QueUp.helpers.cookie.get('dub-' + QueUp.room.model.get("_id"));
-  var dubsong = QueUp.helpers.cookie.get('dub-song');
-  if (!QueUp.room || !song || song.songid !== dubsong) {
-    dubCookie = false;
-  }
-  //Only cast the vote if user hasn't already voted
-  if (!$('.dubup, .dubdown').hasClass('voted') && !dubCookie) {
-    advance_vote();
-  }
-  QueUp.Events.bind("realtime:room_playlist-update", voteCheck);
-};
-module.exports = autovote;
-
-},{}],12:[function(require,module,exports){
-"use strict";
-
-/* global Dubtrack */
-var settings = require("../lib/settings.js");
-var modal = require('../utils/modal.js');
-var options = require('../utils/options.js');
-var myModule = {};
-myModule.id = "chat-cleaner";
-myModule.moduleName = "Chat Cleaner";
-myModule.description = "Automatically only keep a designated chatItems of chat items while clearing older ones, keeping CPU stress down";
-myModule.category = "General";
-myModule.extraIcon = 'pencil';
-var saveAmount = function saveAmount() {
-  var chatItems = parseInt($('.dp-modal textarea').val());
-  if (!isNaN(chatItems)) {
-    options.saveOption('custom', 'chat_cleaner', chatItems);
-  } else {
-    options.saveOption('custom', 'chat_cleaner', 500); // default to 500
-  }
-};
-myModule.chatCleanerCheck = function (e) {
-  var totalChats = $('ul.chat-main > li').length;
-  if (isNaN(totalChats) || isNaN(settings.custom.chat_cleaner) || totalChats < settings.custom.chat_cleaner) return;
-  $('ul.chat-main > li:lt(' + ($('ul.chat-main > li').length - settings.custom.chat_cleaner) + ')').remove();
-};
-myModule.turnOn = function () {
-  QueUp.Events.bind("realtime:chat-message", this.chatCleanerCheck);
-};
-myModule.extra = function () {
-  modal.create({
-    title: 'Chat Cleaner',
-    content: 'Please specify the number of most recent chat items that will remain in your chat history',
-    value: settings.custom.chat_cleaner || '',
-    placeholder: '500',
-    maxlength: '5',
-    confirmCallback: saveAmount
-  });
-};
-myModule.turnOff = function () {
-  QueUp.Events.unbind("realtime:chat-message", this.chatCleanerCheck);
-};
-module.exports = myModule;
-
-},{"../lib/settings.js":8,"../utils/modal.js":43,"../utils/options.js":46}],13:[function(require,module,exports){
-"use strict";
-
-var _notify = require("../utils/notify.js");
-/* global Dubtrack */
-var settings = require("../lib/settings.js");
-var myModule = {};
-myModule.id = "mention_notifications";
-myModule.moduleName = "Notification on Mentions";
-myModule.description = "Enable desktop notifications when a user mentions you in chat";
-myModule.category = "General";
-myModule.notifyOnMention = function (e) {
-  var content = e.message;
-  var user = QueUp.session.get('username').toLowerCase();
-  var mentionTriggers = ['@' + user];
-  if (settings.options.custom_mentions && settings.custom.custom_mentions) {
-    //add custom mention triggers to array
-    mentionTriggers = mentionTriggers.concat(settings.custom.custom_mentions.split(','));
-  }
-  var mentionTriggersTest = mentionTriggers.some(function (v) {
-    var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
-    return reg.test(content);
-  });
-  if (mentionTriggersTest && !this.isActiveTab && QueUp.session.id !== e.user.userInfo.userid) {
-    (0, _notify.showNotification)({
-      title: "Message from ".concat(e.user.username),
-      content: content
-    });
-  }
-};
-myModule.turnOn = function () {
-  var _this = this;
-  (0, _notify.notifyCheckPermission)(function (granted) {
-    if (granted === true) {
-      QueUp.Events.bind("realtime:chat-message", _this.notifyOnMention);
-    } else {
-      // turn back off until it's granted
-      _this.toggleAndSave(_this.id, false);
-    }
-  });
-};
-myModule.turnOff = function () {
-  QueUp.Events.unbind("realtime:chat-message", this.notifyOnMention);
-};
-module.exports = myModule;
-
-},{"../lib/settings.js":8,"../utils/notify.js":45}],14:[function(require,module,exports){
-"use strict";
-
-var _api = require("../utils/api.js");
-/**
- * Community Theme
- * Toggle Community CSS theme
- */
-
-/* global Dubtrack */
-var css = require('../utils/css.js');
-var myModule = {};
-myModule.id = 'dubplus-comm-theme';
-myModule.moduleName = 'Community Theme';
-myModule.description = 'Toggle Community CSS theme.';
-myModule.category = 'Customize';
-myModule.turnOn = function () {
-  var location = QueUp.room.model.get('roomUrl');
-  $.ajax({
-    type: 'GET',
-    url: "".concat(_api.apiBase, "/room/").concat(location)
-  }).done(function (e) {
-    var content = e.data.description;
-
-    // for backwards compatibility with dubx we're checking for both @dubx and @dubplus and @dub+
-    var themeCheck = new RegExp(/(@dub(x|plus|\+)=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/, 'i');
-    var communityCSSUrl = null;
-    content.replace(themeCheck, function (match, p1, p2, p3) {
-      console.log('loading community css theme:', p3);
-      communityCSSUrl = p3;
-    });
-    if (!communityCSSUrl) {
-      return;
-    }
-    css.loadExternal(communityCSSUrl, 'dubplus-comm-theme');
-  });
-};
-myModule.turnOff = function () {
-  $('.dubplus-comm-theme').remove();
-};
-module.exports = myModule;
-
-},{"../utils/api.js":40,"../utils/css.js":41}],15:[function(require,module,exports){
-"use strict";
-
-/**
- * Custom Background
- * Add your own custom background
- */
-
-var settings = require('../lib/settings.js');
-var modal = require('../utils/modal.js');
-var options = require('../utils/options.js');
-var myModule = {};
-myModule.id = 'dubplus-custom-bg';
-myModule.moduleName = 'Custom Background';
-myModule.description = 'Add your own custom background.';
-myModule.category = 'Customize';
-myModule.extraIcon = 'pencil';
-var makeBGdiv = function makeBGdiv(url) {
-  return "<div class=\"dubplus-custom-bg\" style=\"background-image: url(".concat(url, ");\"></div>");
-};
-var saveCustomBG = function saveCustomBG() {
-  var content = $('.dp-modal textarea').val();
-  options.saveOption('custom', 'bg', content || '');
-
-  // if the option is on, update the background
-  if (settings.options[myModule.id]) {
-    // always remove the old one
-    $('.dubplus-custom-bg').remove();
-    // if there is a new one, add it
-    if (content) {
-      $('body').append(makeBGdiv(content));
-    }
-  }
-};
-myModule.extra = function () {
-  modal.create({
-    title: 'Custom Background Image',
-    content: 'Enter the full URL of an image. We recommend using a .jpg file. Leave blank to remove the current background image',
-    value: settings.custom.bg || '',
-    placeholder: 'https://example.com/big-image.jpg',
-    maxlength: '500',
-    confirmCallback: saveCustomBG
-  });
-};
-myModule.turnOn = function () {
-  // show modal if no image is in settings
-  if (!settings.custom.bg) {
-    this.extra();
-  } else {
-    $('.dubplus-custom-bg').remove();
-    $('body').append(makeBGdiv(settings.custom.bg));
-  }
-};
-myModule.turnOff = function () {
-  $('.dubplus-custom-bg').remove();
-};
-module.exports = myModule;
-
-},{"../lib/settings.js":8,"../utils/modal.js":43,"../utils/options.js":46}],16:[function(require,module,exports){
-"use strict";
-
-/**
- * Custom CSS
- * Add custom CSS
- */
-
-var css = require('../utils/css.js');
-var settings = require("../lib/settings.js");
-var modal = require('../utils/modal.js');
-var options = require('../utils/options.js');
-var myModule = {};
-myModule.id = "dubplus-custom-css";
-myModule.moduleName = "Custom CSS";
-myModule.description = "Add your own custom CSS.";
-myModule.category = "Customize";
-myModule.extraIcon = 'pencil';
-var css_import = function css_import() {
-  $('.dubplus-custom-css').remove();
-  var css_to_import = $('.dp-modal textarea').val();
-  options.saveOption('custom', 'css', css_to_import);
-  if (css_to_import && css_to_import !== '') {
-    css.loadExternal(css_to_import, 'dubplus-custom-css');
-  }
-};
-myModule.extra = function () {
-  modal.create({
-    title: 'Custom CSS',
-    content: 'Enter a url location for your custom css',
-    value: settings.custom.css || '',
-    placeholder: 'https://example.com/example.css',
-    maxlength: '500',
-    confirmCallback: css_import
-  });
-};
-myModule.turnOn = function () {
-  if (settings.custom.css && settings.custom.css !== "") {
-    css.loadExternal(settings.custom.css, 'dubplus-custom-css');
-  } else {
-    this.extra();
-  }
-};
-myModule.turnOff = function () {
-  $('.dubplus-custom-css').remove();
-};
-module.exports = myModule;
-
-},{"../lib/settings.js":8,"../utils/css.js":41,"../utils/modal.js":43,"../utils/options.js":46}],17:[function(require,module,exports){
-"use strict";
-
-/**
- * Autocomplete User @ Mentions in Chat
- */
-
-/* global Dubtrack */
-var settings = require("../lib/settings.js");
-var modal = require('../utils/modal.js');
-var options = require('../utils/options.js');
-var myModule = {};
-myModule.id = "custom_mentions";
-myModule.moduleName = "Custom Mentions";
-myModule.description = "Toggle using custom mentions to trigger sounds in chat";
-myModule.category = "General";
-myModule.extraIcon = 'pencil';
-var saveCustomMentions = function saveCustomMentions() {
-  var mentionsVal = $('.dp-modal textarea').val();
-  if (mentionsVal !== '') {
-    options.saveOption('custom', 'custom_mentions', mentionsVal);
-  }
-};
-myModule.customMentionCheck = function (e) {
-  var content = e.message;
-  if (settings.custom.custom_mentions) {
-    var customMentions = settings.custom.custom_mentions.split(',');
-    var inUsers = customMentions.some(function (v) {
-      var reg = new RegExp('\\b' + v.trim() + '\\b', 'i');
-      return reg.test(content);
-    });
-    if (QueUp.session.id !== e.user.userInfo.userid && inUsers) {
-      QueUp.room.chat.mentionChatSound.play();
-    }
-  }
-};
-myModule.turnOn = function () {
-  QueUp.Events.bind("realtime:chat-message", this.customMentionCheck);
-};
-myModule.extra = function () {
-  modal.create({
-    title: 'Custom Mentions',
-    content: 'Add your custom mention triggers here (separate by comma)',
-    value: settings.custom.custom_mentions || '',
-    placeholder: 'separate, custom triggers, by, comma, :heart:',
-    maxlength: '255',
-    confirmCallback: saveCustomMentions
-  });
-};
-myModule.turnOff = function () {
-  QueUp.Events.unbind("realtime:chat-message", this.customMentionCheck);
-};
-module.exports = myModule;
-
-},{"../lib/settings.js":8,"../utils/modal.js":43,"../utils/options.js":46}],18:[function(require,module,exports){
-"use strict";
-
-var settings = require("../lib/settings.js");
-var modal = require('../utils/modal.js');
-var options = require('../utils/options.js');
-var DubtrackDefaultSound = '/assets/music/user_ping.mp3';
-var myModule = {};
-myModule.id = "dubplus-custom-notification-sound";
-myModule.moduleName = "Custom Notification Sound";
-myModule.description = "Change the notification sound to a custom one.";
-myModule.category = "Customize";
-myModule.extraIcon = 'pencil';
-var saveCustomNotificationSound = function saveCustomNotificationSound() {
-  var content = $('.dp-modal textarea').val();
-  if (content === '' || !content) {
-    options.saveOption('custom', 'notificationSound', '');
-    QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
-    return;
-  }
-
-  // Check if valid sound url
-  if (soundManager.canPlayURL(content)) {
-    QueUp.room.chat.mentionChatSound.url = content;
-  } else {
-    setTimeout(function () {
-      var that = myModule;
-      modal.create({
-        title: 'Dub+ Error',
-        content: "You've entered an invalid sound url! Please make sure you are entering the full, direct url to the file. IE: https://example.com/sweet-sound.mp3"
-      });
-      QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
-      that.optionState = false;
-      that.toggleAndSave(that.id, false);
-    }, 100);
-  }
-  options.saveOption('custom', 'notificationSound', content);
-};
-myModule.extra = function () {
-  modal.create({
-    title: 'Custom Notification Sound',
-    content: 'Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to Dubtrack\'s default sound',
-    value: settings.custom.notificationSound || '',
-    placeholder: 'https://example.com/sweet-sound.mp3',
-    maxlength: '500',
-    confirmCallback: saveCustomNotificationSound
-  });
-};
-myModule.init = function () {
-  if (this.optionState && settings.custom.notificationSound) {
-    this.turnOn();
-  }
-};
-myModule.turnOn = function () {
-  // show modal if no image is in settings
-  if (!settings.custom.notificationSound || settings.custom.notificationSound === '') {
-    this.extra();
-  } else {
-    QueUp.room.chat.mentionChatSound.url = settings.custom.notificationSound;
-  }
-};
-myModule.turnOff = function () {
-  QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
-};
-module.exports = myModule;
-
-},{"../lib/settings.js":8,"../utils/modal.js":43,"../utils/options.js":46}],19:[function(require,module,exports){
-"use strict";
-
-var _notify = require("../utils/notify.js");
-/* global Dubtrack */
-var settings = require("../lib/settings.js");
-var modal = require('../utils/modal.js');
-var options = require('../utils/options.js');
-var myModule = {};
-myModule.id = "dj-notification";
-myModule.moduleName = "DJ Notification";
-myModule.description = "Notification when you are coming up to be the DJ";
-myModule.category = "General";
-myModule.extraIcon = 'pencil';
-var savePosition = function savePosition() {
-  var position = parseInt($('.dp-modal textarea').val());
-  if (!isNaN(position)) {
-    options.saveOption('custom', 'dj_notification', position);
-  } else {
-    options.saveOption('custom', 'dj_notification', 2); // default to 2
-  }
-};
-myModule.djNotificationCheck = function (e) {
-  if (e.startTime > 2) return;
-  var positionParse = parseInt($('.queue-position').text());
-  var position = e.startTime < 0 && !isNaN(positionParse) ? positionParse - 1 : positionParse;
-  if (isNaN(positionParse) || position !== settings.custom.dj_notification) return;
-  (0, _notify.showNotification)({
-    title: 'DJ Alert!',
-    content: 'You will be DJing shortly! Make sure your song is set!',
-    ignoreActiveTab: true,
-    wait: 10000
-  });
-  QueUp.room.chat.mentionChatSound.play();
-};
-myModule.turnOn = function () {
-  QueUp.Events.bind("realtime:room_playlist-update", this.djNotificationCheck);
-};
-myModule.extra = function () {
-  modal.create({
-    title: 'DJ Notification',
-    content: 'Please specify the position in queue you want to be notified at',
-    value: settings.custom.dj_notification || '',
-    placeholder: '2',
-    maxlength: '2',
-    confirmCallback: savePosition
-  });
-};
-myModule.turnOff = function () {
-  QueUp.Events.unbind("realtime:room_playlist-update", this.djNotificationCheck);
-};
-module.exports = myModule;
-
-},{"../lib/settings.js":8,"../utils/modal.js":43,"../utils/notify.js":45,"../utils/options.js":46}],20:[function(require,module,exports){
-"use strict";
-
-var _modcheck = _interopRequireDefault(require("../utils/modcheck.js"));
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-/**
- * Show downvotes in chat
- * only mods can use this
- */
-
-/*global Dubtrack */
-
-var myModule = {};
-myModule.id = "dubplus-downdubs";
-myModule.moduleName = "Downdubs in Chat (mods only)";
-myModule.description = "Toggle showing downdubs in the chat box (mods only)";
-myModule.category = "General";
-myModule.downdubWatcher = function (e) {
-  var user = QueUp.session.get('username');
-  var currentDj = QueUp.room.users.collection.findWhere({
-    userid: QueUp.room.player.activeSong.attributes.song.userid
-  }).attributes._user.username;
-  if (user === currentDj && e.dubtype === 'downdub') {
-    var newChat = "\n      <li class=\"dubplus-chat-system dubplus-chat-system-downdub\">\n        <div class=\"chatDelete\" onclick=\"dubplus.deleteChatMessageClientSide(this)\">\n          <span class=\"icon-close\"></span>\n        </div>\n        <div class=\"text\">\n          @".concat(e.user.username, " has downdubbed your song ").concat(QueUp.room.player.activeSong.attributes.songInfo.name, "\n        </div>\n      </li>");
-    $('ul.chat-main').append(newChat);
-  }
-};
-myModule.turnOn = function () {
-  if (!(0, _modcheck.default)(QueUp.session.id)) {
-    return;
-  }
-  QueUp.Events.bind("realtime:room_playlist-dub", this.downdubWatcher);
-
-  // add this function to our global dubplus object so that downdubbed chat
-  // items can be deleted
-  if (typeof window.dubplus.deleteChatMessageClientSide !== 'function') {
-    window.dubplus.deleteChatMessageClientSide = function (el) {
-      $(el).parent('li')[0].remove();
-    };
-  }
-};
-myModule.turnOff = function () {
-  QueUp.Events.unbind("realtime:room_playlist-dub", this.downdubWatcher);
-};
-module.exports = myModule;
-
-},{"../utils/modcheck.js":44}],21:[function(require,module,exports){
-"use strict";
-
-/**
- * Emotes
- * Adds additional Twitch, BTTV, and Tasty Emotes to the chat window 
- */
-
-/* global Dubtrack */
-var dubplus_emoji = require('../emojiUtils/prepEmoji.js');
-var emote_module = {};
-emote_module.id = "dubplus-emotes";
-emote_module.moduleName = "Emotes";
-emote_module.description = "Adds twitch and bttv emotes in chat.";
-emote_module.category = "General";
-function makeImage(type, src, name, w, h) {
-  return '<img class="emoji ' + type + '-emote" ' + (w ? 'width="' + w + '" ' : '') + (h ? 'height="' + h + '" ' : '') + 'title="' + name + '" alt="' + name + '" src="' + src + '" />';
-}
-
-/**********************************************************************
- * handles replacing twitch emotes in the chat box with the images
- */
-
-var replaceTextWithEmote = function replaceTextWithEmote() {
-  var _regex = dubplus_emoji.twitch.chatRegex;
-  if (!dubplus_emoji.twitchJSONSLoaded) {
-    return;
-  } // can't do anything until jsons are loaded
-
-  var $chatTarget = $('.chat-main .text').last();
-  if (!$chatTarget.html()) {
-    return;
-  } // nothing to do
-
-  if (dubplus_emoji.bttvJSONSLoaded) {
-    _regex = dubplus_emoji.bttv.chatRegex;
-  }
-  var emoted = $chatTarget.html().replace(_regex, function (matched, p1) {
-    var _id,
-      _src,
-      key = p1.toLowerCase();
-    if (dubplus_emoji.twitch.emotes[key]) {
-      _id = dubplus_emoji.twitch.emotes[key];
-      _src = dubplus_emoji.twitch.template(_id);
-      return makeImage("twitch", _src, key);
-    } else if (dubplus_emoji.bttv.emotes[key]) {
-      _id = dubplus_emoji.bttv.emotes[key];
-      _src = dubplus_emoji.bttv.template(_id);
-      return makeImage("bttv", _src, key);
-    } else if (dubplus_emoji.tasty.emotes[key]) {
-      _src = dubplus_emoji.tasty.template(key);
-      return makeImage("tasty", _src, key, dubplus_emoji.tasty.emotes[key].width, dubplus_emoji.tasty.emotes[key].height);
-    } else if (dubplus_emoji.frankerFacez.emotes[key]) {
-      _id = dubplus_emoji.frankerFacez.emotes[key];
-      _src = dubplus_emoji.frankerFacez.template(_id);
-      return makeImage("frankerFacez", _src, key);
-    } else {
-      return matched;
-    }
-  });
-  $chatTarget.html(emoted);
-};
-emote_module.turnOn = function () {
-  window.addEventListener('twitch:loaded', dubplus_emoji.loadBTTVEmotes.bind(dubplus_emoji));
-  window.addEventListener('bttv:loaded', dubplus_emoji.loadFrankerFacez.bind(dubplus_emoji));
-  // window.addEventListener('bttv:loaded', dubplus_emoji.loadTastyEmotes.bind(dubplus_emoji));
-
-  if (!dubplus_emoji.twitchJSONSLoaded) {
-    dubplus_emoji.loadTwitchEmotes();
-  } else {
-    replaceTextWithEmote();
-  }
-  QueUp.Events.bind("realtime:chat-message", replaceTextWithEmote);
-};
-emote_module.turnOff = function () {
-  QueUp.Events.unbind("realtime:chat-message", replaceTextWithEmote);
-};
-module.exports = emote_module;
-
-},{"../emojiUtils/prepEmoji.js":2}],22:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = _default;
-/**
- * ETA
- *
- * This module is not a menu item, it is run once on load
- */
-
-function eta() {
-  var tooltip = document.querySelector('.player_sharing .eta_tooltip_t');
-  var div = document.createElement('div');
-  div.className = 'eta_tooltip dubplus-tooltip';
-  div.style.cssText = 'min-width: 150px;position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -33px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9;';
-  var remainingTime = document.querySelector('#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min');
-  var queuePosition = document.querySelector('.queue-position');
-  var queueTotal = document.querySelector('.queue-total');
-  if (!remainingTime.textContent || !queueTotal.textContent) {
-    div.textContent = 'No one is in the queue';
-    tooltip.appendChild(div);
-    return;
-  }
-  if (!queuePosition.textContent) {
-    div.textContent = "You're not in the queue";
-    tooltip.appendChild(div);
-    return;
-  }
-  var current_time = parseInt(remainingTime.textContent);
-  var booth_duration = parseInt(queuePosition.textContent);
-  var time = 4;
-  var booth_time = booth_duration * time - time + current_time;
-  if (booth_time >= 0) {
-    div.textContent = "ETA: ".concat(booth_time, " minute").concat(booth_time > 1 ? 's' : '');
-  } else {
-    div.textContent = "You're not in the queue";
-  }
-  tooltip.appendChild(div);
-}
-function hide_eta() {
-  var _document$querySelect;
-  (_document$querySelect = document.querySelector('.eta_tooltip')) === null || _document$querySelect === void 0 || _document$querySelect.remove();
-}
-function _default() {
-  if (document.querySelector('.player_sharing .eta_tooltip_t')) {
-    document.querySelector('.player_sharing .eta_tooltip_t').remove();
-  }
-  window.dubplus.etaTooltipShow = eta;
-  window.dubplus.etaTooltipHide = hide_eta;
-  var etaBtn = document.createElement('span');
-  etaBtn.className = 'icon-history eta_tooltip_t';
-  etaBtn.style.position = 'relative';
-  etaBtn.setAttribute('onmouseover', 'window.dubplus.etaTooltipShow()');
-  etaBtn.setAttribute('onmouseout', 'window.dubplus.etaTooltipHide()');
-  document.querySelector('.player_sharing').appendChild(etaBtn);
-}
-
-},{}],23:[function(require,module,exports){
-"use strict";
-
-/**
- * Fullscreen video
- * Toggle fullscreen video mode
- */
-var fs_module = {};
-fs_module.id = "dubplus-fullscreen";
-fs_module.moduleName = "Fullscreen Video";
-fs_module.description = "Toggle fullscreen video mode";
-fs_module.category = "User Interface";
-fs_module.altIcon = "arrows-alt";
-fs_module.go = function () {
-  var elem = document.querySelector('.playerElement iframe');
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  } else if (elem.msRequestFullscreen) {
-    elem.msRequestFullscreen();
-  } else if (elem.mozRequestFullScreen) {
-    elem.mozRequestFullScreen();
-  } else if (elem.webkitRequestFullscreen) {
-    elem.webkitRequestFullscreen();
-  }
-};
-module.exports = fs_module;
-
-},{}],24:[function(require,module,exports){
-"use strict";
-
-/**
- * Show downvotes in chat
- * only mods can use this
- */
-
-/*global Dubtrack */
-var myModule = {};
-myModule.id = "dubplus-grabschat";
-myModule.moduleName = "Grabs in Chat";
-myModule.description = "Toggle showing grabs in the chat box";
-myModule.category = "General";
-myModule.grabChatWatcher = function (e) {
-  var user = QueUp.session.get('username');
-  var currentDj = QueUp.room.users.collection.findWhere({
-    userid: QueUp.room.player.activeSong.attributes.song.userid
-  }).attributes._user.username;
-  if (user === currentDj && !QueUp.room.model.get('displayUserGrab')) {
-    var newChat = "\n      <li class=\"dubplus-chat-system dubplus-chat-system-grab\">\n        <div class=\"chatDelete\" onclick=\"dubplus.deleteChatMessageClientSide(this)\">\n          <span class=\"icon-close\"></span>\n        </div>\n        <div class=\"text\">\n          @".concat(e.user.username, " has grabbed your song ").concat(QueUp.room.player.activeSong.attributes.songInfo.name, "\n        </div>\n      </li>");
-    $('ul.chat-main').append(newChat);
-  }
-};
-myModule.turnOn = function () {
-  QueUp.Events.bind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
-
-  // add this function to our global dubplus object so that chat
-  // items can be deleted
-  if (typeof window.dubplus.deleteChatMessageClientSide !== 'function') {
-    window.dubplus.deleteChatMessageClientSide = function (el) {
-      $(el).parent('li')[0].remove();
-    };
-  }
-};
-myModule.turnOff = function () {
-  QueUp.Events.unbind("realtime:room_playlist-queue-update-grabs", this.grabChatWatcher);
-};
-module.exports = myModule;
-
-},{}],25:[function(require,module,exports){
-"use strict";
-
-/**
- * Hide Avatars
- * Toggle hiding user avatars in the chat box.
- */
-var myModule = {};
-myModule.id = "dubplus-hide-avatars";
-myModule.moduleName = "Hide Avatars";
-myModule.description = "Toggle hiding user avatars in the chat box.";
-myModule.category = "User Interface";
-myModule.turnOn = function () {
-  $('body').addClass('dubplus-hide-avatars');
-};
-myModule.turnOff = function () {
-  $('body').removeClass('dubplus-hide-avatars');
-};
-module.exports = myModule;
-
-},{}],26:[function(require,module,exports){
-"use strict";
-
-/**
- * Hide Background
- * toggle hiding background image
- */
-
-var myModule = {};
-myModule.id = "dubplus-hide-bg";
-myModule.moduleName = "Hide Background";
-myModule.description = "Toggle hiding background image.";
-myModule.category = "User Interface";
-myModule.turnOn = function () {
-  $('body').addClass('dubplus-hide-bg');
-};
-myModule.turnOff = function () {
-  $('body').removeClass('dubplus-hide-bg');
-};
-module.exports = myModule;
-
-},{}],27:[function(require,module,exports){
-"use strict";
-
-/**
- * Hide the Chat box and only show the video
- */
-
-var myModule = {};
-myModule.id = "dubplus-video-only";
-myModule.moduleName = "Hide Chat";
-myModule.description = "Toggles hiding the chat box";
-myModule.category = "User Interface";
-myModule.turnOn = function () {
-  $('body').addClass('dubplus-video-only');
-};
-myModule.turnOff = function () {
-  $('body').removeClass('dubplus-video-only');
-};
-module.exports = myModule;
-
-},{}],28:[function(require,module,exports){
-"use strict";
-
-/**
- * Dubs in Chat
- * Show down o
- */
-
-var myModule = {};
-myModule.id = "dubplus-chat-only";
-myModule.moduleName = "Hide Video";
-myModule.description = "Toggles hiding the video box";
-myModule.category = "User Interface";
-myModule.turnOn = function () {
-  $('body').addClass('dubplus-chat-only');
-};
-myModule.turnOff = function () {
-  $('body').removeClass('dubplus-chat-only');
-};
-module.exports = myModule;
-
-},{}],29:[function(require,module,exports){
-"use strict";
-
-// put this in order of appearance in the menu
-module.exports = [
-// General 
-require('./autovote.js'), require('./afk.js'), require('./emotes.js'), require('./autocomplete.js'), require('./customMentions.js'), require('./chatCleaner.js'), require('./chatNotifications.js'), require('./pmNotifications.js'), require('./djNotification.js'), require('./showDubsOnHover.js'), require('./downDubInChat.js'),
-// (mod only)
-require('./upDubInChat.js'), require('./grabsInChat.js'), require('./snow.js'), require('./rain.js'),
-// User Interface
-require('./fullscreen.js'), require('./splitchat.js'), require('./hideChat.js'), require('./hideVideo.js'), require('./hideAvatars.js'), require('./hideBackground.js'), require('./showTimestamps.js'),
-// Settings
-require('./spacebarMute.js'), require('./warnOnNavigation.js'),
-// Customize
-require('./communityTheme.js'), require('./customCSS.js'), require('./customBackground.js'), require('./customNotificationSound.js')];
-
-},{"./afk.js":9,"./autocomplete.js":10,"./autovote.js":11,"./chatCleaner.js":12,"./chatNotifications.js":13,"./communityTheme.js":14,"./customBackground.js":15,"./customCSS.js":16,"./customMentions.js":17,"./customNotificationSound.js":18,"./djNotification.js":19,"./downDubInChat.js":20,"./emotes.js":21,"./fullscreen.js":23,"./grabsInChat.js":24,"./hideAvatars.js":25,"./hideBackground.js":26,"./hideChat.js":27,"./hideVideo.js":28,"./pmNotifications.js":30,"./rain.js":31,"./showDubsOnHover.js":32,"./showTimestamps.js":33,"./snow.js":35,"./spacebarMute.js":36,"./splitchat.js":37,"./upDubInChat.js":38,"./warnOnNavigation.js":39}],30:[function(require,module,exports){
-"use strict";
-
-var _notify = require("../utils/notify.js");
-/* global Dubtrack */
-
-var myModule = {};
-myModule.id = "dubplus_pm_notifications";
-myModule.moduleName = "Notification on PM";
-myModule.description = "Enable desktop notifications when a user receives a private message";
-myModule.category = "General";
-myModule.pmNotify = function (e) {
-  var userid = QueUp.session.get('_id');
-  if (userid === e.userid) {
-    return;
-  }
-  (0, _notify.showNotification)({
-    title: 'You have a new PM',
-    ignoreActiveTab: true,
-    callback: function callback() {
-      $('.user-messages').click();
-      setTimeout(function () {
-        $(".message-item[data-messageid=\"".concat(e.messageid, "\"]")).click();
-      }, 500);
-    },
-    wait: 10000
-  });
-};
-myModule.turnOn = function () {
-  var _this = this;
-  (0, _notify.notifyCheckPermission)(function (granted) {
-    if (granted === true) {
-      QueUp.Events.bind("realtime:new-message", _this.pmNotify);
-    } else {
-      // turn back off until it's granted
-      _this.toggleAndSave(_this.id, false);
-    }
-  });
-};
-myModule.turnOff = function () {
-  QueUp.Events.unbind("realtime:new-message", this.pmNotify);
-};
-module.exports = myModule;
-
-},{"../utils/notify.js":45}],31:[function(require,module,exports){
-"use strict";
-
-var rain = {};
-rain.id = "dubplus-rain";
-rain.moduleName = "Rain";
-rain.description = "Make it rain!";
-rain.category = "General";
-
-// Rain settings
-rain.particles = [];
-rain.drops = [];
-rain.numbase = 5;
-rain.numb = 2;
-rain.width, rain.height = 0;
-
-// We can update these realtime
-rain.controls = {
-  rain: 2,
-  alpha: 1,
-  color: 200,
-  opacity: 1,
-  saturation: 100,
-  lightness: 50,
-  back: 0,
-  multi: false,
-  speed: 1
-};
-rain.turnOn = function () {
-  $('body').prepend('<canvas id="dubPlusRainCanvas" style="position : fixed; top : 0px; left : 0px; z-index: 100; pointer-events:none;"></canvas>');
-  this.bindCanvas();
-};
-
-// this function will be run on each click of the menu
-rain.turnOff = function () {
-  $('#dubPlusRainCanvas').remove();
-  this.unbindCanvas();
-};
-rain.bindCanvas = function () {
-  var windowAnimFram = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame;
-  this.requestAnimFrame = windowAnimFram ? windowAnimFram.bind(window) : null;
-  var canvas = document.getElementById('dubPlusRainCanvas');
-  if (!canvas) return;
-  var ctx = canvas.getContext('2d');
-  this.width, this.height = 0;
-  window.onresize = function onresize() {
-    this.width = canvas.width = window.innerWidth;
-    this.height = canvas.height = window.innerHeight;
-  };
-  window.onresize();
-  this.particles, this.drops = [];
-  this.numbase = 5;
-  this.numb = 2;
-  function Screenshot() {
-    window.open(canvas.toDataURL());
-  }
-  var that = this;
-  (function boucle() {
-    that.requestAnimFrame(boucle);
-    that.update();
-    that.rendu(ctx);
-  })();
-};
-rain.buildRainParticle = function (X, Y, num) {
-  if (!num) {
-    num = this.numb;
-  }
-  while (num--) {
-    this.particles.push({
-      speedX: Math.random() * 0.25,
-      speedY: Math.random() * 9 + 1,
-      X: X,
-      Y: Y,
-      alpha: 1,
-      color: "hsla(" + this.controls.color + "," + this.controls.saturation + "%, " + this.controls.lightness + "%," + this.controls.opacity + ")"
-    });
-  }
-};
-rain.explosion = function (X, Y, color, num) {
-  if (!num) {
-    num = this.numbase;
-  }
-  while (num--) {
-    this.drops.push({
-      speedX: Math.random() * 4 - 2,
-      speedY: Math.random() * -4,
-      X: X,
-      Y: Y,
-      radius: 0.65 + Math.floor(Math.random() * 1.6),
-      alpha: 1,
-      color: color
-    });
-  }
-};
-rain.rendu = function (ctx) {
-  if (this.controls.multi == true) {
-    this.controls.color = Math.random() * 360;
-  }
-  ctx.save();
-  ctx.clearRect(0, 0, width, height);
-  var particleslocales = this.particles;
-  var dropslocales = this.drops;
-  var tau = Math.PI * 2;
-  for (var i = 0, particlesactives; particlesactives = particleslocales[i]; i++) {
-    ctx.globalAlpha = particlesactives.alpha;
-    ctx.fillStyle = particlesactives.color;
-    ctx.fillRect(particlesactives.X, particlesactives.Y, particlesactives.speedY / 4, particlesactives.speedY);
-  }
-  for (var i = 0, dropsactives; dropsactives = dropslocales[i]; i++) {
-    ctx.globalAlpha = dropsactives.alpha;
-    ctx.fillStyle = dropsactives.color;
-    ctx.beginPath();
-    ctx.arc(dropsactives.X, dropsactives.Y, dropsactives.radius, 0, tau);
-    ctx.fill();
-  }
-  ctx.strokeStyle = "white";
-  ctx.lineWidth = 2;
-  ctx.restore();
-};
-rain.update = function () {
-  var particleslocales = this.particles;
-  var dropslocales = this.drops;
-  for (var i = 0, particlesactives; particlesactives = particleslocales[i]; i++) {
-    particlesactives.X += particlesactives.speedX;
-    particlesactives.Y += particlesactives.speedY + 5;
-    if (particlesactives.Y > height - 15) {
-      particleslocales.splice(i--, 1);
-      this.explosion(particlesactives.X, particlesactives.Y, particlesactives.color);
-    }
-  }
-  for (var i = 0, dropsactives; dropsactives = dropslocales[i]; i++) {
-    dropsactives.X += dropsactives.speedX;
-    dropsactives.Y += dropsactives.speedY;
-    dropsactives.radius -= 0.075;
-    if (dropsactives.alpha > 0) {
-      dropsactives.alpha -= 0.005;
-    } else {
-      dropsactives.alpha = 0;
-    }
-    if (dropsactives.radius < 0) {
-      dropslocales.splice(i--, 1);
-    }
-  }
-  var i = this.controls.rain;
-  while (i--) {
-    this.buildRainParticle(Math.floor(Math.random() * width), -15);
-  }
-};
-rain.unbindCanvas = function () {
-  this.requestAnimFrame = function () {};
-};
-module.exports = rain;
-
-},{}],32:[function(require,module,exports){
-"use strict";
-
-var _modcheck = _interopRequireDefault(require("../utils/modcheck.js"));
-var _api = require("../utils/api.js");
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-/* global Dubtrack */
-var modal = require('../utils/modal.js');
-var dubshover = {};
-dubshover.id = 'dubplus-dubs-hover';
-dubshover.moduleName = 'Show Dub info on Hover';
-dubshover.description = 'Show Dub info on Hover.';
-dubshover.category = 'General';
-
-/*******************************/
-
-dubshover.resetGrabs = function () {
-  window.dubplus.dubs.grabs = []; //TODO: Remove when we can hit the api for all grabs of current playing song
-};
-dubshover.grabInfoWarning = function () {
-  if (!this.warned) {
-    return;
-  }
-  this.warned = true;
-  modal.create({
-    title: 'Grab Vote Info',
-    content: 'Please note that this feature is currently still in development. We are waiting on the ability to pull grab vote information from Dubtrack on load. Until then the only grabs you will be able to see are those you are present in the room for.'
-  });
-};
-dubshover.showDubsOnHover = function () {
-  var that = this;
-  this.resetDubs();
-  QueUp.Events.bind('realtime:room_playlist-dub', this.dubWatcher.bind(this));
-  QueUp.Events.bind('realtime:room_playlist-queue-update-grabs', this.grabWatcher.bind(this));
-  QueUp.Events.bind('realtime:user-leave', this.dubUserLeaveWatcher.bind(this));
-  QueUp.Events.bind('realtime:room_playlist-update', this.resetDubs.bind(this));
-  QueUp.Events.bind('realtime:room_playlist-update', this.resetGrabs.bind(this)); //TODO: Remove when we can hit the api for all grabs of current playing song
-
-  var dubupEl = $('.dubup').first().parent('li');
-  var dubdownEl = $('.dubdown').first().parent('li');
-  var grabEl = $('.add-to-playlist-button').first().parent('li');
-  $(dubupEl).addClass('dubplus-updubs-hover');
-  $(dubdownEl).addClass('dubplus-downdubs-hover');
-  $(grabEl).addClass('dubplus-grabs-hover');
-
-  //Show compiled info containers when casting/changing vote
-  $(dubupEl).click(function (event) {
-    $('#dubplus-updubs-container').remove();
-    var x = event.clientX,
-      y = event.clientY;
-    if (!x || !y || isNaN(x) || isNaN(y)) {
-      return $('#dubplus-downdubs-container').remove();
-    }
-    var elementMouseIsOver = document.elementFromPoint(x, y);
-    if ($(elementMouseIsOver).hasClass('dubplus-updubs-hover') || $(elementMouseIsOver).parents('.dubplus-updubs-hover').length > 0) {
-      setTimeout(function () {
-        $(dubupEl).mouseenter();
-      }, 250);
-    }
-  });
-  $(dubdownEl).click(function (event) {
-    $('#dubplus-downdubs-container').remove();
-    var x = event.clientX,
-      y = event.clientY;
-    if (!x || !y || isNaN(x) || isNaN(y)) {
-      return $('#dubplus-downdubs-container').remove();
-    }
-    var elementMouseIsOver = document.elementFromPoint(x, y);
-    if ($(elementMouseIsOver).hasClass('dubplus-downdubs-hover') || $(elementMouseIsOver).parents('.dubplus-downdubs-hover').length > 0) {
-      setTimeout(function () {
-        $(dubdownEl).mouseenter();
-      }, 250);
-    }
-  });
-  $(grabEl).click(function (event) {
-    $('#dubplus-grabs-container').remove();
-    var x = event.clientX,
-      y = event.clientY;
-    if (!x || !y || isNaN(x) || isNaN(y)) {
-      return $('#dubplus-grabs-container').remove();
-    }
-    var elementMouseIsOver = document.elementFromPoint(x, y);
-    if ($(elementMouseIsOver).hasClass('dubplus-grabs-hover') || $(elementMouseIsOver).parents('.dubplus-grabs-hover').length > 0) {
-      setTimeout(function () {
-        $(grabEl).mouseenter();
-      }, 250);
-    }
-  });
-  $(dubupEl).mouseenter(function (e) {
-    var self = e.currentTarget;
-    if ($('#dubplus-updubs-container').length > 0) {
-      return;
-    } //already exists
-
-    var infoPaneWidth = $(dubupEl).innerWidth() + $(dubdownEl).innerWidth();
-    var dubupBackground = $('.dubup').hasClass('voted') ? $('.dubup').css('background-color') : $('.dubup').find('.icon-arrow-up').css('color');
-    var html;
-    if (window.dubplus.dubs.upDubs.length > 0) {
-      html = "<ul id=\"dubinfo-preview\" class=\"dubinfo-show dubplus-updubs-hover\" style=\"border-color: ".concat(dubupBackground, "\">");
-      window.dubplus.dubs.upDubs.forEach(function (val) {
-        html += "\n          <li class=\"preview-dubinfo-item users-previews dubplus-updubs-hover\">\n            <div class=\"dubinfo-image\">\n              <img src=\"".concat(_api.apiBase, "/user/").concat(val.userid, "/image\">\n            </div>\n            <span class=\"dubinfo-text\">@").concat(val.username, "</span>\n          </li>\n        ");
-      });
-      html += '</ul>';
-    } else {
-      html = "<div id=\"dubinfo-preview\" class=\"dubinfo-show dubplus-updubs-hover dubplus-no-dubs\" style=\"border-color: ".concat(dubupBackground, "\">\n          No updubs have been casted yet!\n        </div>");
-    }
-    var newEl = document.createElement('div');
-    newEl.id = 'dubplus-updubs-container';
-    newEl.className = 'dubinfo-show dubplus-updubs-hover';
-    newEl.innerHTML = html;
-    newEl.style.visibility = 'hidden';
-    document.body.appendChild(newEl);
-    var elemRect = self.getBoundingClientRect();
-    var bodyRect = document.body.getBoundingClientRect();
-    newEl.style.visibility = '';
-    newEl.style.width = infoPaneWidth + 'px';
-    newEl.style.top = elemRect.top - 150 + 'px';
-
-    //If info pane would run off screen set the position on right edge
-    if (bodyRect.right - elemRect.left >= infoPaneWidth) {
-      newEl.style.left = elemRect.left + 'px';
-    } else {
-      newEl.style.right = 0;
-    }
-    document.body.appendChild(newEl);
-    $(self).addClass('dubplus-updubs-hover');
-    $(document.body).on('click', '.preview-dubinfo-item', function (e) {
-      var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ';
-      that.updateChatInputWithString(new_text);
-    });
-    $('.dubplus-updubs-hover').mouseleave(function (event) {
-      var x = event.clientX,
-        y = event.clientY;
-      if (!x || !y || isNaN(x) || isNaN(y)) {
-        return $('#dubplus-downdubs-container').remove();
-      }
-      var elementMouseIsOver = document.elementFromPoint(x, y);
-      if (!$(elementMouseIsOver).hasClass('dubplus-updubs-hover') && !$(elementMouseIsOver).hasClass('ps-scrollbar-y') && $(elementMouseIsOver).parent('.dubplus-updubs-hover').length <= 0) {
-        $('#dubplus-updubs-container').remove();
-      }
-    });
-  });
-  $(dubdownEl).mouseenter(function (e) {
-    var self = e.currentTarget;
-    if ($('#dubplus-downdubs-container').length > 0) {
-      return;
-    } //already exists
-
-    var infoPaneWidth = $(dubupEl).innerWidth() + $(dubdownEl).innerWidth();
-    var dubdownBackground = $('.dubdown').hasClass('voted') ? $('.dubdown').css('background-color') : $('.dubdown').find('.icon-arrow-down').css('color');
-    var html;
-    if ((0, _modcheck.default)(QueUp.session.id)) {
-      if (window.dubplus.dubs.downDubs.length > 0) {
-        html = "<ul id=\"dubinfo-preview\" class=\"dubinfo-show dubplus-downdubs-hover\" style=\"border-color: ".concat(dubdownBackground, "\">");
-        window.dubplus.dubs.downDubs.forEach(function (val) {
-          html += "\n            <li class=\"preview-dubinfo-item users-previews dubplus-downdubs-hover\">\n              <div class=\"dubinfo-image\">\n                <img src=\"".concat(_api.apiBase, "/user/").concat(val.userid, "/image\" />\n              </div>\n              <span class=\"dubinfo-text\">@").concat(val.username, "</span>\n            </li>\n          ");
-        });
-        html += '</ul>';
+  // @__NO_SIDE_EFFECTS__
+  function push_derived_source(source2) {
+    if (
+      active_reaction !== null &&
+      !untracking &&
+      (active_reaction.f & DERIVED) !== 0
+    ) {
+      if (derived_sources === null) {
+        set_derived_sources([source2]);
       } else {
-        html = "<div id=\"dubinfo-preview\" class=\"dubinfo-show dubplus-downdubs-hover dubplus-no-dubs\" style=\"border-color: ".concat(dubdownBackground, "\">\n          No downdubs have been casted yet!\n          </div>");
+        derived_sources.push(source2);
       }
-    } else {
-      html = "<div id=\"dubinfo-preview\" class=\"dubinfo-show dubplus-downdubs-hover dubplus-downdubs-unauthorized\" style=\"border-color: ".concat(dubdownBackground, "\">\n          You must be at least a mod to view downdubs!\n        </div>");
     }
-    var newEl = document.createElement('div');
-    newEl.id = 'dubplus-downdubs-container';
-    newEl.className = 'dubinfo-show dubplus-downdubs-hover';
-    newEl.innerHTML = html;
-    newEl.style.visibility = 'hidden';
-    document.body.appendChild(newEl);
-    var elemRect = self.getBoundingClientRect();
-    var bodyRect = document.body.getBoundingClientRect();
-    newEl.style.visibility = '';
-    newEl.style.width = infoPaneWidth + 'px';
-    newEl.style.top = elemRect.top - 150 + 'px';
-
-    //If info pane would run off screen set the position on right edge
-    if (bodyRect.right - elemRect.left >= infoPaneWidth) {
-      newEl.style.left = elemRect.left + 'px';
-    } else {
-      newEl.style.right = 0;
-    }
-    document.body.appendChild(newEl);
-    $(self).addClass('dubplus-downdubs-hover');
-    $(document.body).on('click', '.preview-dubinfo-item', function (e) {
-      var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ';
-      that.updateChatInputWithString(new_text);
-    });
-    $('.dubplus-downdubs-hover').mouseleave(function (event) {
-      var x = event.clientX,
-        y = event.clientY;
-      if (!x || !y || isNaN(x) || isNaN(y)) {
-        return $('#dubplus-downdubs-container').remove();
-      }
-      var elementMouseIsOver = document.elementFromPoint(x, y);
-      if (!$(elementMouseIsOver).hasClass('dubplus-downdubs-hover') && !$(elementMouseIsOver).hasClass('ps-scrollbar-y') && $(elementMouseIsOver).parent('.dubplus-downdubs-hover').length <= 0) {
-        $('#dubplus-downdubs-container').remove();
-      }
-    });
-  });
-  $(grabEl).mouseenter(function (e) {
-    var self = e.currentTarget;
-    if ($('#dubplus-grabs-container').length > 0) {
-      return;
-    } //already exists
-
-    var infoPaneWidth = $(dubupEl).innerWidth() + $(grabEl).innerWidth();
-    var grabsBackground = $('.add-to-playlist-button').hasClass('grabbed') ? $('.add-to-playlist-button').css('background-color') : $('.add-to-playlist-button').find('.icon-heart').css('color');
-    var html;
-    if (window.dubplus.dubs.grabs.length > 0) {
-      html = '<ul id="dubinfo-preview" class="dubinfo-show dubplus-grabs-hover" style="border-color: ' + grabsBackground + '">';
-      window.dubplus.dubs.grabs.forEach(function (val) {
-        html += '<li class="preview-dubinfo-item users-previews dubplus-grabs-hover">' + '<div class="dubinfo-image">' + "<img src=\"".concat(_api.apiBase, "/user/").concat(val.userid, "/image\" />") + '</div>' + '<span class="dubinfo-text">@' + val.username + '</span>' + '</li>';
-      });
-      html += '</ul>';
-    } else {
-      html = '<div id="dubinfo-preview" class="dubinfo-show dubplus-grabs-hover dubplus-no-grabs" style="border-color: ' + grabsBackground + '">' + "This song hasn't been grabbed yet!" + '</div>';
-    }
-    var newEl = document.createElement('div');
-    newEl.id = 'dubplus-grabs-container';
-    newEl.className = 'dubinfo-show dubplus-grabs-hover';
-    newEl.innerHTML = html;
-    newEl.style.visibility = 'hidden';
-    document.body.appendChild(newEl);
-    var elemRect = self.getBoundingClientRect();
-    var bodyRect = document.body.getBoundingClientRect();
-    newEl.style.visibility = '';
-    newEl.style.width = infoPaneWidth + 'px';
-    newEl.style.top = elemRect.top - 150 + 'px';
-
-    //If info pane would run off screen set the position on right edge
-    if (bodyRect.right - elemRect.left >= infoPaneWidth) {
-      newEl.style.left = elemRect.left + 'px';
-    } else {
-      newEl.style.right = 0;
-    }
-    document.body.appendChild(newEl);
-    $(self).addClass('dubplus-grabs-hover');
-    $(document.body).on('click', '.preview-dubinfo-item', function (e) {
-      var new_text = $(e.currentTarget).find('.dubinfo-text')[0].innerHTML + ' ';
-      that.updateChatInputWithString(new_text);
-    });
-    $('.dubplus-grabs-hover').mouseleave(function (event) {
-      var x = event.clientX,
-        y = event.clientY;
-      if (!x || !y || isNaN(x) || isNaN(y)) {
-        return $('#dubplus-grabs-container').remove();
-      }
-      var elementMouseIsOver = document.elementFromPoint(x, y);
-      if (!$(elementMouseIsOver).hasClass('dubplus-grabs-hover') && !$(elementMouseIsOver).hasClass('ps-scrollbar-y') && $(elementMouseIsOver).parent('.dubplus-grabs-hover').length <= 0) {
-        $('#dubplus-grabs-container').remove();
-      }
-    });
-  });
-};
-dubshover.stopDubsOnHover = function () {
-  QueUp.Events.unbind('realtime:room_playlist-dub', this.dubWatcher);
-  QueUp.Events.unbind('realtime:room_playlist-queue-update-grabs', this.grabWatcher);
-  QueUp.Events.unbind('realtime:user-leave', this.dubUserLeaveWatcher);
-  QueUp.Events.unbind('realtime:room_playlist-update', this.resetDubs);
-  QueUp.Events.unbind('realtime:room_playlist-update', this.resetGrabs); //TODO: Remove when we can hit the api for all grabs of current playing song
-};
-dubshover.dubUserLeaveWatcher = function (e) {
-  //Remove user from dub list
-  if ($.grep(window.dubplus.dubs.upDubs, function (el) {
-    return el.userid === e.user._id;
-  }).length > 0) {
-    $.each(window.dubplus.dubs.upDubs, function (i) {
-      if (window.dubplus.dubs.upDubs[i].userid === e.user._id) {
-        window.dubplus.dubs.upDubs.splice(i, 1);
-        return false;
-      }
-    });
+    return source2;
   }
-  if ($.grep(window.dubplus.dubs.downDubs, function (el) {
-    return el.userid === e.user._id;
-  }).length > 0) {
-    $.each(window.dubplus.dubs.downDubs, function (i) {
-      if (window.dubplus.dubs.downDubs[i].userid === e.user._id) {
-        window.dubplus.dubs.downDubs.splice(i, 1);
-        return false;
-      }
-    });
-  }
-  if ($.grep(window.dubplus.dubs.grabs, function (el) {
-    return el.userid === e.user._id;
-  }).length > 0) {
-    $.each(window.dubplus.dubs.grabs, function (i) {
-      if (window.dubplus.dubs.grabs[i].userid === e.user._id) {
-        window.dubplus.dubs.grabs.splice(i, 1);
-        return false;
-      }
-    });
-  }
-};
-dubshover.grabWatcher = function (e) {
-  //If grab already casted
-  if ($.grep(window.dubplus.dubs.grabs, function (el) {
-    return el.userid === e.user._id;
-  }).length <= 0) {
-    window.dubplus.dubs.grabs.push({
-      userid: e.user._id,
-      username: e.user.username
-    });
-  }
-};
-dubshover.updateChatInputWithString = function (str) {
-  $('#chat-txt-message').val(str).focus();
-};
-dubshover.deleteChatMessageClientSide = function (el) {
-  $(el).parent('li')[0].remove();
-};
-dubshover.dubWatcher = function (e) {
-  if (e.dubtype === 'updub') {
-    //If dub already casted
-    if ($.grep(window.dubplus.dubs.upDubs, function (el) {
-      return el.userid === e.user._id;
-    }).length <= 0) {
-      window.dubplus.dubs.upDubs.push({
-        userid: e.user._id,
-        username: e.user.username
-      });
+  function set(source2, value) {
+    if (
+      active_reaction !== null &&
+      !untracking &&
+      is_runes() &&
+      (active_reaction.f & (DERIVED | BLOCK_EFFECT)) !== 0 && // If the source was created locally within the current derived, then
+      // we allow the mutation.
+      (derived_sources === null || !derived_sources.includes(source2))
+    ) {
+      state_unsafe_mutation();
     }
-
-    //Remove user from other dubtype if exists
-    if ($.grep(window.dubplus.dubs.downDubs, function (el) {
-      return el.userid === e.user._id;
-    }).length > 0) {
-      $.each(window.dubplus.dubs.downDubs, function (i) {
-        if (window.dubplus.dubs.downDubs[i].userid === e.user._id) {
-          window.dubplus.dubs.downDubs.splice(i, 1);
-          return false;
+    return internal_set(source2, value);
+  }
+  function internal_set(source2, value) {
+    if (!source2.equals(value)) {
+      source2.v;
+      source2.v = value;
+      source2.wv = increment_write_version();
+      mark_reactions(source2, DIRTY);
+      if (
+        is_runes() &&
+        active_effect !== null &&
+        (active_effect.f & CLEAN) !== 0 &&
+        (active_effect.f & (BRANCH_EFFECT | ROOT_EFFECT)) === 0
+      ) {
+        if (untracked_writes === null) {
+          set_untracked_writes([source2]);
+        } else {
+          untracked_writes.push(source2);
         }
-      });
-    }
-  } else if (e.dubtype === 'downdub') {
-    //If dub already casted
-    if ($.grep(window.dubplus.dubs.downDubs, function (el) {
-      return el.userid === e.user._id;
-    }).length <= 0 && (0, _modcheck.default)(QueUp.session.id)) {
-      window.dubplus.dubs.downDubs.push({
-        userid: e.user._id,
-        username: e.user.username
-      });
-    }
-
-    //Remove user from other dubtype if exists
-    if ($.grep(window.dubplus.dubs.upDubs, function (el) {
-      return el.userid === e.user._id;
-    }).length > 0) {
-      $.each(window.dubplus.dubs.upDubs, function (i) {
-        if (window.dubplus.dubs.upDubs[i].userid === e.user._id) {
-          window.dubplus.dubs.upDubs.splice(i, 1);
-          return false;
-        }
-      });
-    }
-  }
-  var msSinceSongStart = new Date() - new Date(QueUp.room.player.activeSong.attributes.song.played);
-  if (msSinceSongStart < 1000) {
-    return;
-  }
-  if (window.dubplus.dubs.upDubs.length !== QueUp.room.player.activeSong.attributes.song.updubs) {
-    // console.log("Updubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
-    this.resetDubs();
-  } else if ((0, _modcheck.default)(QueUp.session.id) && window.dubplus.dubs.downDubs.length !== QueUp.room.player.activeSong.attributes.song.downdubs) {
-    // console.log("Downdubs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
-    this.resetDubs();
-  }
-
-  // TODO: Uncomment this else if block when we can hit the api for all grabs of current playing song
-  /*
-  else if(window.dubplus.dubs.grabs.length !== parseInt($('.grab-counter')[0].innerHTML)){
-      console.log("Grabs don't match, reset! Song started ", msSinceSongStart, "ms ago!");
-      this.resetDubs();
-  }*/
-};
-dubshover.resetDubs = function () {
-  window.dubplus.dubs.upDubs = [];
-  window.dubplus.dubs.downDubs = [];
-  // window.dubplus.dubs.grabs: [] //TODO: Uncomment this when we can hit the api for all grabs of current playing song
-
-  var dubsURL = "".concat(_api.apiBase, "/room/").concat(QueUp.room.model.id, "/playlist/active/dubs");
-  $.getJSON(dubsURL, function (response) {
-    response.data.upDubs.forEach(function (e) {
-      //Dub already casted (usually from autodub)
-      if ($.grep(window.dubplus.dubs.upDubs, function (el) {
-        return el.userid === e.userid;
-      }).length > 0) {
-        return;
       }
-      var username;
-      if (!QueUp.room.users.collection.findWhere({
-        userid: e.userid
-      }) || !QueUp.room.users.collection.findWhere({
-        userid: e.userid
-      }).attributes) {
-        $.getJSON("".concat(_api.apiBase, "/user/").concat(e.userid), function (response) {
-          if (response && response.userinfo) {
-            username = response.userinfo.username;
+    }
+    return value;
+  }
+  function mark_reactions(signal, status) {
+    var reactions = signal.reactions;
+    if (reactions === null) return;
+    var runes = is_runes();
+    var length = reactions.length;
+    for (var i = 0; i < length; i++) {
+      var reaction = reactions[i];
+      var flags = reaction.f;
+      if ((flags & DIRTY) !== 0) continue;
+      if (!runes && reaction === active_effect) continue;
+      set_signal_status(reaction, status);
+      if ((flags & (CLEAN | UNOWNED)) !== 0) {
+        if ((flags & DERIVED) !== 0) {
+          mark_reactions(
+            /** @type {Derived} */
+            reaction,
+            MAYBE_DIRTY,
+          );
+        } else {
+          schedule_effect(
+            /** @type {Effect} */
+            reaction,
+          );
+        }
+      }
+    }
+  }
+  let hydrating = false;
+  function proxy(value, parent = null, prev) {
+    if (typeof value !== 'object' || value === null || STATE_SYMBOL in value) {
+      return value;
+    }
+    const prototype = get_prototype_of(value);
+    if (prototype !== object_prototype && prototype !== array_prototype) {
+      return value;
+    }
+    var sources = /* @__PURE__ */ new Map();
+    var is_proxied_array = is_array(value);
+    var version = source(0);
+    if (is_proxied_array) {
+      sources.set(
+        'length',
+        source(
+          /** @type {any[]} */
+          value.length,
+        ),
+      );
+    }
+    var metadata;
+    return new Proxy(
+      /** @type {any} */
+      value,
+      {
+        defineProperty(_, prop, descriptor) {
+          if (
+            !('value' in descriptor) ||
+            descriptor.configurable === false ||
+            descriptor.enumerable === false ||
+            descriptor.writable === false
+          ) {
+            state_descriptors_fixed();
           }
-        });
-      } else {
-        username = QueUp.room.users.collection.findWhere({
-          userid: e.userid
-        }).attributes._user.username;
+          var s = sources.get(prop);
+          if (s === void 0) {
+            s = source(descriptor.value);
+            sources.set(prop, s);
+          } else {
+            set(s, proxy(descriptor.value, metadata));
+          }
+          return true;
+        },
+        deleteProperty(target, prop) {
+          var s = sources.get(prop);
+          if (s === void 0) {
+            if (prop in target) {
+              sources.set(prop, source(UNINITIALIZED));
+            }
+          } else {
+            if (is_proxied_array && typeof prop === 'string') {
+              var ls =
+                /** @type {Source<number>} */
+                sources.get('length');
+              var n = Number(prop);
+              if (Number.isInteger(n) && n < ls.v) {
+                set(ls, n);
+              }
+            }
+            set(s, UNINITIALIZED);
+            update_version(version);
+          }
+          return true;
+        },
+        get(target, prop, receiver) {
+          var _a;
+          if (prop === STATE_SYMBOL) {
+            return value;
+          }
+          var s = sources.get(prop);
+          var exists = prop in target;
+          if (
+            s === void 0 &&
+            (!exists ||
+              ((_a = get_descriptor(target, prop)) == null
+                ? void 0
+                : _a.writable))
+          ) {
+            s = source(proxy(exists ? target[prop] : UNINITIALIZED, metadata));
+            sources.set(prop, s);
+          }
+          if (s !== void 0) {
+            var v = get(s);
+            return v === UNINITIALIZED ? void 0 : v;
+          }
+          return Reflect.get(target, prop, receiver);
+        },
+        getOwnPropertyDescriptor(target, prop) {
+          var descriptor = Reflect.getOwnPropertyDescriptor(target, prop);
+          if (descriptor && 'value' in descriptor) {
+            var s = sources.get(prop);
+            if (s) descriptor.value = get(s);
+          } else if (descriptor === void 0) {
+            var source2 = sources.get(prop);
+            var value2 = source2 == null ? void 0 : source2.v;
+            if (source2 !== void 0 && value2 !== UNINITIALIZED) {
+              return {
+                enumerable: true,
+                configurable: true,
+                value: value2,
+                writable: true,
+              };
+            }
+          }
+          return descriptor;
+        },
+        has(target, prop) {
+          var _a;
+          if (prop === STATE_SYMBOL) {
+            return true;
+          }
+          var s = sources.get(prop);
+          var has =
+            (s !== void 0 && s.v !== UNINITIALIZED) ||
+            Reflect.has(target, prop);
+          if (
+            s !== void 0 ||
+            (active_effect !== null &&
+              (!has ||
+                ((_a = get_descriptor(target, prop)) == null
+                  ? void 0
+                  : _a.writable)))
+          ) {
+            if (s === void 0) {
+              s = source(has ? proxy(target[prop], metadata) : UNINITIALIZED);
+              sources.set(prop, s);
+            }
+            var value2 = get(s);
+            if (value2 === UNINITIALIZED) {
+              return false;
+            }
+          }
+          return has;
+        },
+        set(target, prop, value2, receiver) {
+          var _a;
+          var s = sources.get(prop);
+          var has = prop in target;
+          if (is_proxied_array && prop === 'length') {
+            for (
+              var i = value2;
+              i < /** @type {Source<number>} */ s.v;
+              i += 1
+            ) {
+              var other_s = sources.get(i + '');
+              if (other_s !== void 0) {
+                set(other_s, UNINITIALIZED);
+              } else if (i in target) {
+                other_s = source(UNINITIALIZED);
+                sources.set(i + '', other_s);
+              }
+            }
+          }
+          if (s === void 0) {
+            if (
+              !has ||
+              ((_a = get_descriptor(target, prop)) == null
+                ? void 0
+                : _a.writable)
+            ) {
+              s = source(void 0);
+              set(s, proxy(value2, metadata));
+              sources.set(prop, s);
+            }
+          } else {
+            has = s.v !== UNINITIALIZED;
+            set(s, proxy(value2, metadata));
+          }
+          var descriptor = Reflect.getOwnPropertyDescriptor(target, prop);
+          if (descriptor == null ? void 0 : descriptor.set) {
+            descriptor.set.call(receiver, value2);
+          }
+          if (!has) {
+            if (is_proxied_array && typeof prop === 'string') {
+              var ls =
+                /** @type {Source<number>} */
+                sources.get('length');
+              var n = Number(prop);
+              if (Number.isInteger(n) && n >= ls.v) {
+                set(ls, n + 1);
+              }
+            }
+            update_version(version);
+          }
+          return true;
+        },
+        ownKeys(target) {
+          get(version);
+          var own_keys = Reflect.ownKeys(target).filter((key2) => {
+            var source3 = sources.get(key2);
+            return source3 === void 0 || source3.v !== UNINITIALIZED;
+          });
+          for (var [key, source2] of sources) {
+            if (source2.v !== UNINITIALIZED && !(key in target)) {
+              own_keys.push(key);
+            }
+          }
+          return own_keys;
+        },
+        setPrototypeOf() {
+          state_prototype_fixed();
+        },
+      },
+    );
+  }
+  function update_version(signal, d = 1) {
+    set(signal, signal.v + d);
+  }
+  var $window;
+  var is_firefox;
+  var first_child_getter;
+  var next_sibling_getter;
+  function init_operations() {
+    if ($window !== void 0) {
+      return;
+    }
+    $window = window;
+    is_firefox = /Firefox/.test(navigator.userAgent);
+    var element_prototype = Element.prototype;
+    var node_prototype = Node.prototype;
+    first_child_getter = get_descriptor(node_prototype, 'firstChild').get;
+    next_sibling_getter = get_descriptor(node_prototype, 'nextSibling').get;
+    element_prototype.__click = void 0;
+    element_prototype.__className = '';
+    element_prototype.__attributes = null;
+    element_prototype.__styles = null;
+    element_prototype.__e = void 0;
+    Text.prototype.__t = void 0;
+  }
+  function create_text(value = '') {
+    return document.createTextNode(value);
+  }
+  // @__NO_SIDE_EFFECTS__
+  function get_first_child(node) {
+    return first_child_getter.call(node);
+  }
+  // @__NO_SIDE_EFFECTS__
+  function get_next_sibling(node) {
+    return next_sibling_getter.call(node);
+  }
+  function child(node, is_text) {
+    {
+      return /* @__PURE__ */ get_first_child(node);
+    }
+  }
+  function first_child(fragment, is_text) {
+    {
+      var first =
+        /** @type {DocumentFragment} */
+        /* @__PURE__ */ get_first_child(
+          /** @type {Node} */
+          fragment,
+        );
+      if (first instanceof Comment && first.data === '')
+        return /* @__PURE__ */ get_next_sibling(first);
+      return first;
+    }
+  }
+  function sibling(node, count = 1, is_text = false) {
+    let next_sibling = node;
+    while (count--) {
+      next_sibling =
+        /** @type {TemplateNode} */
+        /* @__PURE__ */ get_next_sibling(next_sibling);
+    }
+    {
+      return next_sibling;
+    }
+  }
+  function clear_text_content(node) {
+    node.textContent = '';
+  }
+  // @__NO_SIDE_EFFECTS__
+  function derived(fn) {
+    var flags = DERIVED | DIRTY;
+    var parent_derived =
+      active_reaction !== null && (active_reaction.f & DERIVED) !== 0
+        ? /** @type {Derived} */
+          active_reaction
+        : null;
+    if (
+      active_effect === null ||
+      (parent_derived !== null && (parent_derived.f & UNOWNED) !== 0)
+    ) {
+      flags |= UNOWNED;
+    } else {
+      active_effect.f |= EFFECT_HAS_DERIVED;
+    }
+    const signal = {
+      ctx: component_context,
+      deps: null,
+      effects: null,
+      equals,
+      f: flags,
+      fn,
+      reactions: null,
+      rv: 0,
+      v:
+        /** @type {V} */
+        null,
+      wv: 0,
+      parent: parent_derived ?? active_effect,
+    };
+    return signal;
+  }
+  // @__NO_SIDE_EFFECTS__
+  function derived_safe_equal(fn) {
+    const signal = /* @__PURE__ */ derived(fn);
+    signal.equals = safe_equals;
+    return signal;
+  }
+  function destroy_derived_effects(derived2) {
+    var effects = derived2.effects;
+    if (effects !== null) {
+      derived2.effects = null;
+      for (var i = 0; i < effects.length; i += 1) {
+        destroy_effect(
+          /** @type {Effect} */
+          effects[i],
+        );
       }
-      if (!username) {
-        return;
+    }
+  }
+  function get_derived_parent_effect(derived2) {
+    var parent = derived2.parent;
+    while (parent !== null) {
+      if ((parent.f & DERIVED) === 0) {
+        return (
+          /** @type {Effect} */
+          parent
+        );
       }
-      window.dubplus.dubs.upDubs.push({
-        userid: e.userid,
-        username: username
+      parent = parent.parent;
+    }
+    return null;
+  }
+  function execute_derived(derived2) {
+    var value;
+    var prev_active_effect = active_effect;
+    set_active_effect(get_derived_parent_effect(derived2));
+    {
+      try {
+        destroy_derived_effects(derived2);
+        value = update_reaction(derived2);
+      } finally {
+        set_active_effect(prev_active_effect);
+      }
+    }
+    return value;
+  }
+  function update_derived(derived2) {
+    var value = execute_derived(derived2);
+    var status =
+      (skip_reaction || (derived2.f & UNOWNED) !== 0) && derived2.deps !== null
+        ? MAYBE_DIRTY
+        : CLEAN;
+    set_signal_status(derived2, status);
+    if (!derived2.equals(value)) {
+      derived2.v = value;
+      derived2.wv = increment_write_version();
+    }
+  }
+  function validate_effect(rune) {
+    if (active_effect === null && active_reaction === null) {
+      effect_orphan();
+    }
+    if (
+      active_reaction !== null &&
+      (active_reaction.f & UNOWNED) !== 0 &&
+      active_effect === null
+    ) {
+      effect_in_unowned_derived();
+    }
+    if (is_destroying_effect) {
+      effect_in_teardown();
+    }
+  }
+  function push_effect(effect2, parent_effect) {
+    var parent_last = parent_effect.last;
+    if (parent_last === null) {
+      parent_effect.last = parent_effect.first = effect2;
+    } else {
+      parent_last.next = effect2;
+      effect2.prev = parent_last;
+      parent_effect.last = effect2;
+    }
+  }
+  function create_effect(type, fn, sync, push2 = true) {
+    var is_root = (type & ROOT_EFFECT) !== 0;
+    var parent_effect = active_effect;
+    var effect2 = {
+      ctx: component_context,
+      deps: null,
+      nodes_start: null,
+      nodes_end: null,
+      f: type | DIRTY,
+      first: null,
+      fn,
+      last: null,
+      next: null,
+      parent: is_root ? null : parent_effect,
+      prev: null,
+      teardown: null,
+      transitions: null,
+      wv: 0,
+    };
+    if (sync) {
+      var previously_flushing_effect = is_flushing_effect;
+      try {
+        set_is_flushing_effect(true);
+        update_effect(effect2);
+        effect2.f |= EFFECT_RAN;
+      } catch (e) {
+        destroy_effect(effect2);
+        throw e;
+      } finally {
+        set_is_flushing_effect(previously_flushing_effect);
+      }
+    } else if (fn !== null) {
+      schedule_effect(effect2);
+    }
+    var inert =
+      sync &&
+      effect2.deps === null &&
+      effect2.first === null &&
+      effect2.nodes_start === null &&
+      effect2.teardown === null &&
+      (effect2.f & (EFFECT_HAS_DERIVED | BOUNDARY_EFFECT)) === 0;
+    if (!inert && !is_root && push2) {
+      if (parent_effect !== null) {
+        push_effect(effect2, parent_effect);
+      }
+      if (active_reaction !== null && (active_reaction.f & DERIVED) !== 0) {
+        var derived2 =
+          /** @type {Derived} */
+          active_reaction;
+        (derived2.effects ?? (derived2.effects = [])).push(effect2);
+      }
+    }
+    return effect2;
+  }
+  function teardown(fn) {
+    const effect2 = create_effect(RENDER_EFFECT, null, false);
+    set_signal_status(effect2, CLEAN);
+    effect2.teardown = fn;
+    return effect2;
+  }
+  function user_effect(fn) {
+    validate_effect();
+    var defer =
+      active_effect !== null &&
+      (active_effect.f & BRANCH_EFFECT) !== 0 &&
+      component_context !== null &&
+      !component_context.m;
+    if (defer) {
+      var context =
+        /** @type {ComponentContext} */
+        component_context;
+      (context.e ?? (context.e = [])).push({
+        fn,
+        effect: active_effect,
+        reaction: active_reaction,
       });
-    });
-    //TODO: Uncomment this when we can hit the api for all grabs of current playing song
-    /*response.data.grabs.forEach(function(e){
-        //Dub already casted (usually from autodub)
-        if($.grep(window.dubplus.dubs.grabs, function(el){ return el.userid == e.userid; }).length > 0){
-            return;
-        }
-         var username;
-        if(!QueUp.room.users.collection.findWhere({userid: e.userid}) || !QueUp.room.users.collection.findWhere({userid: e.userid}).attributes) {
-            $.getJSON("https://api.dubtrack.fm/user/" + e.userid, function(response){
-                username = response.userinfo.username;
-            });
-        }
-        else{
-            username = QueUp.room.users.collection.findWhere({userid: e.userid}).attributes._user.username;
-        }
-         window.dubplus.dubs.grabs.push({
-            userid: e.userid,
-            username: username
-        })
-    });*/
-
-    //Only let mods or higher access down dubs
-    if ((0, _modcheck.default)(QueUp.session.id)) {
-      response.data.downDubs.forEach(function (e) {
-        //Dub already casted
-        if ($.grep(window.dubplus.dubs.downDubs, function (el) {
-          return el.userid === e.userid;
-        }).length > 0) {
-          return;
-        }
-        var username;
-        if (!QueUp.room.users.collection.findWhere({
-          userid: e.userid
-        }) || !QueUp.room.users.collection.findWhere({
-          userid: e.userid
-        }).attributes) {
-          $.getJSON("".concat(_api.apiBase, "/user/").concat(e.userid), function (response) {
-            username = response.userinfo.username;
+    } else {
+      var signal = effect(fn);
+      return signal;
+    }
+  }
+  function user_pre_effect(fn) {
+    validate_effect();
+    return render_effect(fn);
+  }
+  function component_root(fn) {
+    const effect2 = create_effect(ROOT_EFFECT, fn, true);
+    return (options = {}) => {
+      return new Promise((fulfil) => {
+        if (options.outro) {
+          pause_effect(effect2, () => {
+            destroy_effect(effect2);
+            fulfil(void 0);
           });
         } else {
-          username = QueUp.room.users.collection.findWhere({
-            userid: e.userid
-          }).attributes._user.username;
+          destroy_effect(effect2);
+          fulfil(void 0);
         }
-        window.dubplus.dubs.downDubs.push({
-          userid: e.userid,
-          username: QueUp.room.users.collection.findWhere({
-            userid: e.userid
-          }).attributes._user.username
+      });
+    };
+  }
+  function effect(fn) {
+    return create_effect(EFFECT, fn, false);
+  }
+  function render_effect(fn) {
+    return create_effect(RENDER_EFFECT, fn, true);
+  }
+  function template_effect(fn, thunks = [], d = derived) {
+    const deriveds = thunks.map(d);
+    const effect2 = () => fn(...deriveds.map(get));
+    return block(effect2);
+  }
+  function block(fn, flags = 0) {
+    return create_effect(RENDER_EFFECT | BLOCK_EFFECT | flags, fn, true);
+  }
+  function branch(fn, push2 = true) {
+    return create_effect(RENDER_EFFECT | BRANCH_EFFECT, fn, true, push2);
+  }
+  function execute_effect_teardown(effect2) {
+    var teardown2 = effect2.teardown;
+    if (teardown2 !== null) {
+      const previously_destroying_effect = is_destroying_effect;
+      const previous_reaction = active_reaction;
+      set_is_destroying_effect(true);
+      set_active_reaction(null);
+      try {
+        teardown2.call(null);
+      } finally {
+        set_is_destroying_effect(previously_destroying_effect);
+        set_active_reaction(previous_reaction);
+      }
+    }
+  }
+  function destroy_effect_children(signal, remove_dom = false) {
+    var effect2 = signal.first;
+    signal.first = signal.last = null;
+    while (effect2 !== null) {
+      var next = effect2.next;
+      destroy_effect(effect2, remove_dom);
+      effect2 = next;
+    }
+  }
+  function destroy_block_effect_children(signal) {
+    var effect2 = signal.first;
+    while (effect2 !== null) {
+      var next = effect2.next;
+      if ((effect2.f & BRANCH_EFFECT) === 0) {
+        destroy_effect(effect2);
+      }
+      effect2 = next;
+    }
+  }
+  function destroy_effect(effect2, remove_dom = true) {
+    var removed = false;
+    if (
+      (remove_dom || (effect2.f & HEAD_EFFECT) !== 0) &&
+      effect2.nodes_start !== null
+    ) {
+      var node = effect2.nodes_start;
+      var end = effect2.nodes_end;
+      while (node !== null) {
+        var next =
+          node === end
+            ? null
+            : /** @type {TemplateNode} */
+              /* @__PURE__ */ get_next_sibling(node);
+        node.remove();
+        node = next;
+      }
+      removed = true;
+    }
+    destroy_effect_children(effect2, remove_dom && !removed);
+    remove_reactions(effect2, 0);
+    set_signal_status(effect2, DESTROYED);
+    var transitions = effect2.transitions;
+    if (transitions !== null) {
+      for (const transition of transitions) {
+        transition.stop();
+      }
+    }
+    execute_effect_teardown(effect2);
+    var parent = effect2.parent;
+    if (parent !== null && parent.first !== null) {
+      unlink_effect(effect2);
+    }
+    effect2.next =
+      effect2.prev =
+      effect2.teardown =
+      effect2.ctx =
+      effect2.deps =
+      effect2.fn =
+      effect2.nodes_start =
+      effect2.nodes_end =
+        null;
+  }
+  function unlink_effect(effect2) {
+    var parent = effect2.parent;
+    var prev = effect2.prev;
+    var next = effect2.next;
+    if (prev !== null) prev.next = next;
+    if (next !== null) next.prev = prev;
+    if (parent !== null) {
+      if (parent.first === effect2) parent.first = next;
+      if (parent.last === effect2) parent.last = prev;
+    }
+  }
+  function pause_effect(effect2, callback) {
+    var transitions = [];
+    pause_children(effect2, transitions, true);
+    run_out_transitions(transitions, () => {
+      destroy_effect(effect2);
+      if (callback) callback();
+    });
+  }
+  function run_out_transitions(transitions, fn) {
+    var remaining = transitions.length;
+    if (remaining > 0) {
+      var check = () => --remaining || fn();
+      for (var transition of transitions) {
+        transition.out(check);
+      }
+    } else {
+      fn();
+    }
+  }
+  function pause_children(effect2, transitions, local) {
+    if ((effect2.f & INERT) !== 0) return;
+    effect2.f ^= INERT;
+    if (effect2.transitions !== null) {
+      for (const transition of effect2.transitions) {
+        if (transition.is_global || local) {
+          transitions.push(transition);
+        }
+      }
+    }
+    var child2 = effect2.first;
+    while (child2 !== null) {
+      var sibling2 = child2.next;
+      var transparent =
+        (child2.f & EFFECT_TRANSPARENT) !== 0 ||
+        (child2.f & BRANCH_EFFECT) !== 0;
+      pause_children(child2, transitions, transparent ? local : false);
+      child2 = sibling2;
+    }
+  }
+  function resume_effect(effect2) {
+    resume_children(effect2, true);
+  }
+  function resume_children(effect2, local) {
+    if ((effect2.f & INERT) === 0) return;
+    effect2.f ^= INERT;
+    if ((effect2.f & CLEAN) === 0) {
+      effect2.f ^= CLEAN;
+    }
+    if (check_dirtiness(effect2)) {
+      set_signal_status(effect2, DIRTY);
+      schedule_effect(effect2);
+    }
+    var child2 = effect2.first;
+    while (child2 !== null) {
+      var sibling2 = child2.next;
+      var transparent =
+        (child2.f & EFFECT_TRANSPARENT) !== 0 ||
+        (child2.f & BRANCH_EFFECT) !== 0;
+      resume_children(child2, transparent ? local : false);
+      child2 = sibling2;
+    }
+    if (effect2.transitions !== null) {
+      for (const transition of effect2.transitions) {
+        if (transition.is_global || local) {
+          transition.in();
+        }
+      }
+    }
+  }
+  let is_micro_task_queued$1 = false;
+  let current_queued_micro_tasks = [];
+  function process_micro_tasks() {
+    is_micro_task_queued$1 = false;
+    const tasks = current_queued_micro_tasks.slice();
+    current_queued_micro_tasks = [];
+    run_all(tasks);
+  }
+  function queue_micro_task(fn) {
+    if (!is_micro_task_queued$1) {
+      is_micro_task_queued$1 = true;
+      queueMicrotask(process_micro_tasks);
+    }
+    current_queued_micro_tasks.push(fn);
+  }
+  let is_throwing_error = false;
+  let is_micro_task_queued = false;
+  let last_scheduled_effect = null;
+  let is_flushing_effect = false;
+  let is_destroying_effect = false;
+  function set_is_flushing_effect(value) {
+    is_flushing_effect = value;
+  }
+  function set_is_destroying_effect(value) {
+    is_destroying_effect = value;
+  }
+  let queued_root_effects = [];
+  let flush_count = 0;
+  let dev_effect_stack = [];
+  let active_reaction = null;
+  let untracking = false;
+  function set_active_reaction(reaction) {
+    active_reaction = reaction;
+  }
+  let active_effect = null;
+  function set_active_effect(effect2) {
+    active_effect = effect2;
+  }
+  let derived_sources = null;
+  function set_derived_sources(sources) {
+    derived_sources = sources;
+  }
+  let new_deps = null;
+  let skipped_deps = 0;
+  let untracked_writes = null;
+  function set_untracked_writes(value) {
+    untracked_writes = value;
+  }
+  let write_version = 1;
+  let read_version = 0;
+  let skip_reaction = false;
+  function increment_write_version() {
+    return ++write_version;
+  }
+  function check_dirtiness(reaction) {
+    var _a;
+    var flags = reaction.f;
+    if ((flags & DIRTY) !== 0) {
+      return true;
+    }
+    if ((flags & MAYBE_DIRTY) !== 0) {
+      var dependencies = reaction.deps;
+      var is_unowned = (flags & UNOWNED) !== 0;
+      if (dependencies !== null) {
+        var i;
+        var dependency;
+        var is_disconnected = (flags & DISCONNECTED) !== 0;
+        var is_unowned_connected =
+          is_unowned && active_effect !== null && !skip_reaction;
+        var length = dependencies.length;
+        if (is_disconnected || is_unowned_connected) {
+          var derived2 =
+            /** @type {Derived} */
+            reaction;
+          var parent = derived2.parent;
+          for (i = 0; i < length; i++) {
+            dependency = dependencies[i];
+            if (
+              is_disconnected ||
+              !((_a = dependency == null ? void 0 : dependency.reactions) ==
+              null
+                ? void 0
+                : _a.includes(derived2))
+            ) {
+              (dependency.reactions ?? (dependency.reactions = [])).push(
+                derived2,
+              );
+            }
+          }
+          if (is_disconnected) {
+            derived2.f ^= DISCONNECTED;
+          }
+          if (
+            is_unowned_connected &&
+            parent !== null &&
+            (parent.f & UNOWNED) === 0
+          ) {
+            derived2.f ^= UNOWNED;
+          }
+        }
+        for (i = 0; i < length; i++) {
+          dependency = dependencies[i];
+          if (
+            check_dirtiness(
+              /** @type {Derived} */
+              dependency,
+            )
+          ) {
+            update_derived(
+              /** @type {Derived} */
+              dependency,
+            );
+          }
+          if (dependency.wv > reaction.wv) {
+            return true;
+          }
+        }
+      }
+      if (!is_unowned || (active_effect !== null && !skip_reaction)) {
+        set_signal_status(reaction, CLEAN);
+      }
+    }
+    return false;
+  }
+  function propagate_error(error, effect2) {
+    var current = effect2;
+    while (current !== null) {
+      if ((current.f & BOUNDARY_EFFECT) !== 0) {
+        try {
+          current.fn(error);
+          return;
+        } catch {
+          current.f ^= BOUNDARY_EFFECT;
+        }
+      }
+      current = current.parent;
+    }
+    is_throwing_error = false;
+    throw error;
+  }
+  function should_rethrow_error(effect2) {
+    return (
+      (effect2.f & DESTROYED) === 0 &&
+      (effect2.parent === null || (effect2.parent.f & BOUNDARY_EFFECT) === 0)
+    );
+  }
+  function handle_error(error, effect2, previous_effect, component_context2) {
+    if (is_throwing_error) {
+      if (previous_effect === null) {
+        is_throwing_error = false;
+      }
+      if (should_rethrow_error(effect2)) {
+        throw error;
+      }
+      return;
+    }
+    if (previous_effect !== null) {
+      is_throwing_error = true;
+    }
+    {
+      propagate_error(error, effect2);
+      return;
+    }
+  }
+  function schedule_possible_effect_self_invalidation(
+    signal,
+    effect2,
+    root2 = true,
+  ) {
+    var reactions = signal.reactions;
+    if (reactions === null) return;
+    for (var i = 0; i < reactions.length; i++) {
+      var reaction = reactions[i];
+      if ((reaction.f & DERIVED) !== 0) {
+        schedule_possible_effect_self_invalidation(
+          /** @type {Derived} */
+          reaction,
+          effect2,
+          false,
+        );
+      } else if (effect2 === reaction) {
+        if (root2) {
+          set_signal_status(reaction, DIRTY);
+        } else if ((reaction.f & CLEAN) !== 0) {
+          set_signal_status(reaction, MAYBE_DIRTY);
+        }
+        schedule_effect(
+          /** @type {Effect} */
+          reaction,
+        );
+      }
+    }
+  }
+  function update_reaction(reaction) {
+    var _a;
+    var previous_deps = new_deps;
+    var previous_skipped_deps = skipped_deps;
+    var previous_untracked_writes = untracked_writes;
+    var previous_reaction = active_reaction;
+    var previous_skip_reaction = skip_reaction;
+    var prev_derived_sources = derived_sources;
+    var previous_component_context = component_context;
+    var previous_untracking = untracking;
+    var flags = reaction.f;
+    new_deps = /** @type {null | Value[]} */ null;
+    skipped_deps = 0;
+    untracked_writes = null;
+    active_reaction =
+      (flags & (BRANCH_EFFECT | ROOT_EFFECT)) === 0 ? reaction : null;
+    skip_reaction =
+      (flags & UNOWNED) !== 0 &&
+      (!is_flushing_effect ||
+        previous_reaction === null ||
+        previous_untracking);
+    derived_sources = null;
+    set_component_context(reaction.ctx);
+    untracking = false;
+    read_version++;
+    try {
+      var result =
+        /** @type {Function} */
+        (0, reaction.fn)();
+      var deps = reaction.deps;
+      if (new_deps !== null) {
+        var i;
+        remove_reactions(reaction, skipped_deps);
+        if (deps !== null && skipped_deps > 0) {
+          deps.length = skipped_deps + new_deps.length;
+          for (i = 0; i < new_deps.length; i++) {
+            deps[skipped_deps + i] = new_deps[i];
+          }
+        } else {
+          reaction.deps = deps = new_deps;
+        }
+        if (!skip_reaction) {
+          for (i = skipped_deps; i < deps.length; i++) {
+            ((_a = deps[i]).reactions ?? (_a.reactions = [])).push(reaction);
+          }
+        }
+      } else if (deps !== null && skipped_deps < deps.length) {
+        remove_reactions(reaction, skipped_deps);
+        deps.length = skipped_deps;
+      }
+      if (
+        is_runes() &&
+        untracked_writes !== null &&
+        !untracking &&
+        deps !== null &&
+        (reaction.f & (DERIVED | MAYBE_DIRTY | DIRTY)) === 0
+      ) {
+        for (i = 0; i < /** @type {Source[]} */ untracked_writes.length; i++) {
+          schedule_possible_effect_self_invalidation(
+            untracked_writes[i],
+            /** @type {Effect} */
+            reaction,
+          );
+        }
+      }
+      if (previous_reaction !== null) {
+        read_version++;
+      }
+      return result;
+    } finally {
+      new_deps = previous_deps;
+      skipped_deps = previous_skipped_deps;
+      untracked_writes = previous_untracked_writes;
+      active_reaction = previous_reaction;
+      skip_reaction = previous_skip_reaction;
+      derived_sources = prev_derived_sources;
+      set_component_context(previous_component_context);
+      untracking = previous_untracking;
+    }
+  }
+  function remove_reaction(signal, dependency) {
+    let reactions = dependency.reactions;
+    if (reactions !== null) {
+      var index2 = index_of.call(reactions, signal);
+      if (index2 !== -1) {
+        var new_length = reactions.length - 1;
+        if (new_length === 0) {
+          reactions = dependency.reactions = null;
+        } else {
+          reactions[index2] = reactions[new_length];
+          reactions.pop();
+        }
+      }
+    }
+    if (
+      reactions === null &&
+      (dependency.f & DERIVED) !== 0 && // Destroying a child effect while updating a parent effect can cause a dependency to appear
+      // to be unused, when in fact it is used by the currently-updating parent. Checking `new_deps`
+      // allows us to skip the expensive work of disconnecting and immediately reconnecting it
+      (new_deps === null || !new_deps.includes(dependency))
+    ) {
+      set_signal_status(dependency, MAYBE_DIRTY);
+      if ((dependency.f & (UNOWNED | DISCONNECTED)) === 0) {
+        dependency.f ^= DISCONNECTED;
+      }
+      destroy_derived_effects(
+        /** @type {Derived} **/
+        dependency,
+      );
+      remove_reactions(
+        /** @type {Derived} **/
+        dependency,
+        0,
+      );
+    }
+  }
+  function remove_reactions(signal, start_index) {
+    var dependencies = signal.deps;
+    if (dependencies === null) return;
+    for (var i = start_index; i < dependencies.length; i++) {
+      remove_reaction(signal, dependencies[i]);
+    }
+  }
+  function update_effect(effect2) {
+    var flags = effect2.f;
+    if ((flags & DESTROYED) !== 0) {
+      return;
+    }
+    set_signal_status(effect2, CLEAN);
+    var previous_effect = active_effect;
+    var previous_component_context = component_context;
+    active_effect = effect2;
+    try {
+      if ((flags & BLOCK_EFFECT) !== 0) {
+        destroy_block_effect_children(effect2);
+      } else {
+        destroy_effect_children(effect2);
+      }
+      execute_effect_teardown(effect2);
+      var teardown2 = update_reaction(effect2);
+      effect2.teardown = typeof teardown2 === 'function' ? teardown2 : null;
+      effect2.wv = write_version;
+      var deps = effect2.deps;
+      var dep;
+      if (
+        DEV &&
+        tracing_mode_flag &&
+        (effect2.f & DIRTY) !== 0 &&
+        deps !== null
+      );
+      if (DEV);
+    } catch (error) {
+      handle_error(
+        error,
+        effect2,
+        previous_effect,
+        previous_component_context || effect2.ctx,
+      );
+    } finally {
+      active_effect = previous_effect;
+    }
+  }
+  function infinite_loop_guard() {
+    if (flush_count > 1e3) {
+      flush_count = 0;
+      try {
+        effect_update_depth_exceeded();
+      } catch (error) {
+        if (last_scheduled_effect !== null) {
+          {
+            handle_error(error, last_scheduled_effect, null);
+          }
+        } else {
+          throw error;
+        }
+      }
+    }
+    flush_count++;
+  }
+  function flush_queued_root_effects(root_effects) {
+    var length = root_effects.length;
+    if (length === 0) {
+      return;
+    }
+    infinite_loop_guard();
+    var previously_flushing_effect = is_flushing_effect;
+    is_flushing_effect = true;
+    try {
+      for (var i = 0; i < length; i++) {
+        var effect2 = root_effects[i];
+        if ((effect2.f & CLEAN) === 0) {
+          effect2.f ^= CLEAN;
+        }
+        var collected_effects = process_effects(effect2);
+        flush_queued_effects(collected_effects);
+      }
+    } finally {
+      is_flushing_effect = previously_flushing_effect;
+    }
+  }
+  function flush_queued_effects(effects) {
+    var length = effects.length;
+    if (length === 0) return;
+    for (var i = 0; i < length; i++) {
+      var effect2 = effects[i];
+      if ((effect2.f & (DESTROYED | INERT)) === 0) {
+        try {
+          if (check_dirtiness(effect2)) {
+            update_effect(effect2);
+            if (
+              effect2.deps === null &&
+              effect2.first === null &&
+              effect2.nodes_start === null
+            ) {
+              if (effect2.teardown === null) {
+                unlink_effect(effect2);
+              } else {
+                effect2.fn = null;
+              }
+            }
+          }
+        } catch (error) {
+          handle_error(error, effect2, null, effect2.ctx);
+        }
+      }
+    }
+  }
+  function process_deferred() {
+    is_micro_task_queued = false;
+    if (flush_count > 1001) {
+      return;
+    }
+    const previous_queued_root_effects = queued_root_effects;
+    queued_root_effects = [];
+    flush_queued_root_effects(previous_queued_root_effects);
+    if (!is_micro_task_queued) {
+      flush_count = 0;
+      last_scheduled_effect = null;
+    }
+  }
+  function schedule_effect(signal) {
+    {
+      if (!is_micro_task_queued) {
+        is_micro_task_queued = true;
+        queueMicrotask(process_deferred);
+      }
+    }
+    last_scheduled_effect = signal;
+    var effect2 = signal;
+    while (effect2.parent !== null) {
+      effect2 = effect2.parent;
+      var flags = effect2.f;
+      if ((flags & (ROOT_EFFECT | BRANCH_EFFECT)) !== 0) {
+        if ((flags & CLEAN) === 0) return;
+        effect2.f ^= CLEAN;
+      }
+    }
+    queued_root_effects.push(effect2);
+  }
+  function process_effects(effect2) {
+    var effects = [];
+    var current_effect = effect2.first;
+    main_loop: while (current_effect !== null) {
+      var flags = current_effect.f;
+      var is_branch = (flags & BRANCH_EFFECT) !== 0;
+      var is_skippable_branch = is_branch && (flags & CLEAN) !== 0;
+      var sibling2 = current_effect.next;
+      if (!is_skippable_branch && (flags & INERT) === 0) {
+        if ((flags & EFFECT) !== 0) {
+          effects.push(current_effect);
+        } else if (is_branch) {
+          current_effect.f ^= CLEAN;
+        } else {
+          var previous_active_reaction = active_reaction;
+          try {
+            active_reaction = current_effect;
+            if (check_dirtiness(current_effect)) {
+              update_effect(current_effect);
+            }
+          } catch (error) {
+            handle_error(error, current_effect, null, current_effect.ctx);
+          } finally {
+            active_reaction = previous_active_reaction;
+          }
+        }
+        var child2 = current_effect.first;
+        if (child2 !== null) {
+          current_effect = child2;
+          continue;
+        }
+      }
+      if (sibling2 === null) {
+        let parent = current_effect.parent;
+        while (parent !== null) {
+          if (effect2 === parent) {
+            break main_loop;
+          }
+          var parent_sibling = parent.next;
+          if (parent_sibling !== null) {
+            current_effect = parent_sibling;
+            continue main_loop;
+          }
+          parent = parent.parent;
+        }
+      }
+      current_effect = sibling2;
+    }
+    return effects;
+  }
+  function get(signal) {
+    var flags = signal.f;
+    var is_derived = (flags & DERIVED) !== 0;
+    if (active_reaction !== null && !untracking) {
+      if (derived_sources !== null && derived_sources.includes(signal)) {
+        state_unsafe_local_read();
+      }
+      var deps = active_reaction.deps;
+      if (signal.rv < read_version) {
+        signal.rv = read_version;
+        if (
+          new_deps === null &&
+          deps !== null &&
+          deps[skipped_deps] === signal
+        ) {
+          skipped_deps++;
+        } else if (new_deps === null) {
+          new_deps = [signal];
+        } else if (!skip_reaction || !new_deps.includes(signal)) {
+          new_deps.push(signal);
+        }
+      }
+    } else if (
+      is_derived &&
+      /** @type {Derived} */
+      signal.deps === null &&
+      /** @type {Derived} */
+      signal.effects === null
+    ) {
+      var derived2 =
+        /** @type {Derived} */
+        signal;
+      var parent = derived2.parent;
+      if (parent !== null && (parent.f & UNOWNED) === 0) {
+        derived2.f ^= UNOWNED;
+      }
+    }
+    if (is_derived) {
+      derived2 = /** @type {Derived} */ signal;
+      if (check_dirtiness(derived2)) {
+        update_derived(derived2);
+      }
+    }
+    return signal.v;
+  }
+  function untrack(fn) {
+    var previous_untracking = untracking;
+    try {
+      untracking = true;
+      return fn();
+    } finally {
+      untracking = previous_untracking;
+    }
+  }
+  const STATUS_MASK = -7169;
+  function set_signal_status(signal, status) {
+    signal.f = (signal.f & STATUS_MASK) | status;
+  }
+  function deep_read_state(value) {
+    if (typeof value !== 'object' || !value || value instanceof EventTarget) {
+      return;
+    }
+    if (STATE_SYMBOL in value) {
+      deep_read(value);
+    } else if (!Array.isArray(value)) {
+      for (let key in value) {
+        const prop = value[key];
+        if (typeof prop === 'object' && prop && STATE_SYMBOL in prop) {
+          deep_read(prop);
+        }
+      }
+    }
+  }
+  function deep_read(value, visited = /* @__PURE__ */ new Set()) {
+    if (
+      typeof value === 'object' &&
+      value !== null && // We don't want to traverse DOM elements
+      !(value instanceof EventTarget) &&
+      !visited.has(value)
+    ) {
+      visited.add(value);
+      if (value instanceof Date) {
+        value.getTime();
+      }
+      for (let key in value) {
+        try {
+          deep_read(value[key], visited);
+        } catch (e) {}
+      }
+      const proto = get_prototype_of(value);
+      if (
+        proto !== Object.prototype &&
+        proto !== Array.prototype &&
+        proto !== Map.prototype &&
+        proto !== Set.prototype &&
+        proto !== Date.prototype
+      ) {
+        const descriptors = get_descriptors(proto);
+        for (let key in descriptors) {
+          const get2 = descriptors[key].get;
+          if (get2) {
+            try {
+              get2.call(value);
+            } catch (e) {}
+          }
+        }
+      }
+    }
+  }
+  const PASSIVE_EVENTS = ['touchstart', 'touchmove'];
+  function is_passive_event(name) {
+    return PASSIVE_EVENTS.includes(name);
+  }
+  let listening_to_form_reset = false;
+  function add_form_reset_listener() {
+    if (!listening_to_form_reset) {
+      listening_to_form_reset = true;
+      document.addEventListener(
+        'reset',
+        (evt) => {
+          Promise.resolve().then(() => {
+            var _a;
+            if (!evt.defaultPrevented) {
+              /**@type {HTMLFormElement} */
+              for (const e of evt.target.elements) {
+                (_a = e.__on_r) == null ? void 0 : _a.call(e);
+              }
+            }
+          });
+        },
+        // In the capture phase to guarantee we get noticed of it (no possiblity of stopPropagation)
+        { capture: true },
+      );
+    }
+  }
+  function without_reactive_context(fn) {
+    var previous_reaction = active_reaction;
+    var previous_effect = active_effect;
+    set_active_reaction(null);
+    set_active_effect(null);
+    try {
+      return fn();
+    } finally {
+      set_active_reaction(previous_reaction);
+      set_active_effect(previous_effect);
+    }
+  }
+  function listen_to_event_and_reset_event(
+    element,
+    event2,
+    handler,
+    on_reset = handler,
+  ) {
+    element.addEventListener(event2, () => without_reactive_context(handler));
+    const prev = element.__on_r;
+    if (prev) {
+      element.__on_r = () => {
+        prev();
+        on_reset(true);
+      };
+    } else {
+      element.__on_r = () => on_reset(true);
+    }
+    add_form_reset_listener();
+  }
+  const all_registered_events = /* @__PURE__ */ new Set();
+  const root_event_handles = /* @__PURE__ */ new Set();
+  function create_event(event_name, dom, handler, options = {}) {
+    function target_handler(event2) {
+      if (!options.capture) {
+        handle_event_propagation.call(dom, event2);
+      }
+      if (!event2.cancelBubble) {
+        return without_reactive_context(() => {
+          return handler == null ? void 0 : handler.call(this, event2);
         });
+      }
+    }
+    if (
+      event_name.startsWith('pointer') ||
+      event_name.startsWith('touch') ||
+      event_name === 'wheel'
+    ) {
+      queue_micro_task(() => {
+        dom.addEventListener(event_name, target_handler, options);
+      });
+    } else {
+      dom.addEventListener(event_name, target_handler, options);
+    }
+    return target_handler;
+  }
+  function event(event_name, dom, handler, capture, passive) {
+    var options = { capture, passive };
+    var target_handler = create_event(event_name, dom, handler, options);
+    if (dom === document.body || dom === window || dom === document) {
+      teardown(() => {
+        dom.removeEventListener(event_name, target_handler, options);
       });
     }
-  });
-};
-
-/************************************************************/
-
-dubshover.init = function () {
-  window.dubplus.dubs = {
-    upDubs: [],
-    downDubs: [],
-    grabs: []
-  };
-};
-dubshover.turnOn = function () {
-  this.grabInfoWarning();
-  this.showDubsOnHover();
-};
-dubshover.turnOff = function () {
-  this.stopDubsOnHover();
-};
-module.exports = dubshover;
-
-},{"../utils/api.js":40,"../utils/modal.js":43,"../utils/modcheck.js":44}],33:[function(require,module,exports){
-"use strict";
-
-/**
- * Show Timestamps
- * Toggle always showing chat message timestamps.
- */
-
-var myModule = {};
-myModule.id = "dubplus-show-timestamp";
-myModule.moduleName = "Show Timestamps";
-myModule.description = "Toggle always showing chat message timestamps.";
-myModule.category = "User Interface";
-myModule.turnOn = function () {
-  $('body').addClass('dubplus-show-timestamp');
-};
-myModule.turnOff = function () {
-  $('body').removeClass('dubplus-show-timestamp');
-};
-module.exports = myModule;
-
-},{}],34:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = _default;
-/**
- * Snooze
- * Mutes audio for one song.
- *
- * This module is not a menu item, it is always automatically run on load
- */
-
-/*global Dubtrack*/
-function snooze_tooltip() {
-  var div = document.createElement('div');
-  div.className = 'snooze_tooltip';
-  div.style.cssText = 'min-width: 186px;position: absolute;font: 1rem/1.5 proxima-nova,sans-serif;display: block;left: -15px;cursor: pointer;border-radius: 1.5rem;padding: 8px 16px;background: #fff;font-weight: 700;font-size: 13.6px;text-transform: uppercase;color: #000;opacity: .8;text-align: center;z-index: 9';
-  div.textContent = 'Mute current song';
-  document.querySelector('.player_sharing .snooze_btn').appendChild(div);
-}
-function hide_snooze_tooltip() {
-  var _document$querySelect;
-  (_document$querySelect = document.querySelector('.snooze_tooltip')) === null || _document$querySelect === void 0 || _document$querySelect.remove();
-}
-var eventUtils = {
-  currentVol: 50,
-  snoozed: false
-};
-function eventSongAdvance(e) {
-  if (e.startTime < 2) {
-    if (eventUtils.snoozed) {
-      QueUp.room.player.setVolume(eventUtils.currentVol);
-      eventUtils.snoozed = false;
+  }
+  function delegate(events) {
+    for (var i = 0; i < events.length; i++) {
+      all_registered_events.add(events[i]);
+    }
+    for (var fn of root_event_handles) {
+      fn(events);
+    }
+  }
+  function handle_event_propagation(event2) {
+    var _a;
+    var handler_element = this;
+    var owner_document =
+      /** @type {Node} */
+      handler_element.ownerDocument;
+    var event_name = event2.type;
+    var path =
+      ((_a = event2.composedPath) == null ? void 0 : _a.call(event2)) || [];
+    var current_target =
+      /** @type {null | Element} */
+      path[0] || event2.target;
+    var path_idx = 0;
+    var handled_at = event2.__root;
+    if (handled_at) {
+      var at_idx = path.indexOf(handled_at);
+      if (
+        at_idx !== -1 &&
+        (handler_element === document ||
+          handler_element === /** @type {any} */ window)
+      ) {
+        event2.__root = handler_element;
+        return;
+      }
+      var handler_idx = path.indexOf(handler_element);
+      if (handler_idx === -1) {
+        return;
+      }
+      if (at_idx <= handler_idx) {
+        path_idx = at_idx;
+      }
+    }
+    current_target = /** @type {Element} */ path[path_idx] || event2.target;
+    if (current_target === handler_element) return;
+    define_property(event2, 'currentTarget', {
+      configurable: true,
+      get() {
+        return current_target || owner_document;
+      },
+    });
+    var previous_reaction = active_reaction;
+    var previous_effect = active_effect;
+    set_active_reaction(null);
+    set_active_effect(null);
+    try {
+      var throw_error;
+      var other_errors = [];
+      while (current_target !== null) {
+        var parent_element =
+          current_target.assignedSlot ||
+          current_target.parentNode ||
+          /** @type {any} */
+          current_target.host ||
+          null;
+        try {
+          var delegated = current_target['__' + event_name];
+          if (
+            delegated !== void 0 &&
+            (!(/** @type {any} */ current_target.disabled) || // DOM could've been updated already by the time this is reached, so we check this as well
+              // -> the target could not have been disabled because it emits the event in the first place
+              event2.target === current_target)
+          ) {
+            if (is_array(delegated)) {
+              var [fn, ...data] = delegated;
+              fn.apply(current_target, [event2, ...data]);
+            } else {
+              delegated.call(current_target, event2);
+            }
+          }
+        } catch (error) {
+          if (throw_error) {
+            other_errors.push(error);
+          } else {
+            throw_error = error;
+          }
+        }
+        if (
+          event2.cancelBubble ||
+          parent_element === handler_element ||
+          parent_element === null
+        ) {
+          break;
+        }
+        current_target = parent_element;
+      }
+      if (throw_error) {
+        for (let error of other_errors) {
+          queueMicrotask(() => {
+            throw error;
+          });
+        }
+        throw throw_error;
+      }
+    } finally {
+      event2.__root = handler_element;
+      delete event2.currentTarget;
+      set_active_reaction(previous_reaction);
+      set_active_effect(previous_effect);
+    }
+  }
+  function create_fragment_from_html(html) {
+    var elem = document.createElement('template');
+    elem.innerHTML = html;
+    return elem.content;
+  }
+  function assign_nodes(start, end) {
+    var effect2 =
+      /** @type {Effect} */
+      active_effect;
+    if (effect2.nodes_start === null) {
+      effect2.nodes_start = start;
+      effect2.nodes_end = end;
+    }
+  }
+  // @__NO_SIDE_EFFECTS__
+  function template(content, flags) {
+    var is_fragment = (flags & TEMPLATE_FRAGMENT) !== 0;
+    var use_import_node = (flags & TEMPLATE_USE_IMPORT_NODE) !== 0;
+    var node;
+    var has_start = !content.startsWith('<!>');
+    return () => {
+      if (node === void 0) {
+        node = create_fragment_from_html(has_start ? content : '<!>' + content);
+        if (!is_fragment)
+          node = /** @type {Node} */ /* @__PURE__ */ get_first_child(node);
+      }
+      var clone =
+        /** @type {TemplateNode} */
+        use_import_node || is_firefox
+          ? document.importNode(node, true)
+          : node.cloneNode(true);
+      if (is_fragment) {
+        var start =
+          /** @type {TemplateNode} */
+          /* @__PURE__ */ get_first_child(clone);
+        var end =
+          /** @type {TemplateNode} */
+          clone.lastChild;
+        assign_nodes(start, end);
+      } else {
+        assign_nodes(clone, clone);
+      }
+      return clone;
+    };
+  }
+  // @__NO_SIDE_EFFECTS__
+  function ns_template(content, flags, ns = 'svg') {
+    var has_start = !content.startsWith('<!>');
+    var wrapped = `<${ns}>${has_start ? content : '<!>' + content}</${ns}>`;
+    var node;
+    return () => {
+      if (!node) {
+        var fragment =
+          /** @type {DocumentFragment} */
+          create_fragment_from_html(wrapped);
+        var root2 =
+          /** @type {Element} */
+          /* @__PURE__ */ get_first_child(fragment);
+        {
+          node = /** @type {Element} */ /* @__PURE__ */ get_first_child(root2);
+        }
+      }
+      var clone =
+        /** @type {TemplateNode} */
+        node.cloneNode(true);
+      {
+        assign_nodes(clone, clone);
+      }
+      return clone;
+    };
+  }
+  function text(value = '') {
+    {
+      var t2 = create_text(value + '');
+      assign_nodes(t2, t2);
+      return t2;
+    }
+  }
+  function comment() {
+    var frag = document.createDocumentFragment();
+    var start = document.createComment('');
+    var anchor = create_text();
+    frag.append(start, anchor);
+    assign_nodes(start, anchor);
+    return frag;
+  }
+  function append(anchor, dom) {
+    if (anchor === null) {
+      return;
+    }
+    anchor.before(
+      /** @type {Node} */
+      dom,
+    );
+  }
+  function set_text(text2, value) {
+    var str =
+      value == null ? '' : typeof value === 'object' ? value + '' : value;
+    if (str !== (text2.__t ?? (text2.__t = text2.nodeValue))) {
+      text2.__t = str;
+      text2.nodeValue = str + '';
+    }
+  }
+  function mount(component2, options) {
+    return _mount(component2, options);
+  }
+  const document_listeners = /* @__PURE__ */ new Map();
+  function _mount(
+    Component,
+    { target, anchor, props = {}, events, context, intro = true },
+  ) {
+    init_operations();
+    var registered_events = /* @__PURE__ */ new Set();
+    var event_handle = (events2) => {
+      for (var i = 0; i < events2.length; i++) {
+        var event_name = events2[i];
+        if (registered_events.has(event_name)) continue;
+        registered_events.add(event_name);
+        var passive = is_passive_event(event_name);
+        target.addEventListener(event_name, handle_event_propagation, {
+          passive,
+        });
+        var n = document_listeners.get(event_name);
+        if (n === void 0) {
+          document.addEventListener(event_name, handle_event_propagation, {
+            passive,
+          });
+          document_listeners.set(event_name, 1);
+        } else {
+          document_listeners.set(event_name, n + 1);
+        }
+      }
+    };
+    event_handle(array_from(all_registered_events));
+    root_event_handles.add(event_handle);
+    var component2 = void 0;
+    var unmount2 = component_root(() => {
+      var anchor_node = anchor ?? target.appendChild(create_text());
+      branch(() => {
+        if (context) {
+          push({});
+          var ctx =
+            /** @type {ComponentContext} */
+            component_context;
+          ctx.c = context;
+        }
+        if (events) {
+          props.$$events = events;
+        }
+        component2 = Component(anchor_node, props) || {};
+        if (context) {
+          pop();
+        }
+      });
+      return () => {
+        var _a;
+        for (var event_name of registered_events) {
+          target.removeEventListener(event_name, handle_event_propagation);
+          var n =
+            /** @type {number} */
+            document_listeners.get(event_name);
+          if (--n === 0) {
+            document.removeEventListener(event_name, handle_event_propagation);
+            document_listeners.delete(event_name);
+          } else {
+            document_listeners.set(event_name, n);
+          }
+        }
+        root_event_handles.delete(event_handle);
+        if (anchor_node !== anchor) {
+          (_a = anchor_node.parentNode) == null
+            ? void 0
+            : _a.removeChild(anchor_node);
+        }
+      };
+    });
+    mounted_components.set(component2, unmount2);
+    return component2;
+  }
+  let mounted_components = /* @__PURE__ */ new WeakMap();
+  function unmount(component2, options) {
+    const fn = mounted_components.get(component2);
+    if (fn) {
+      mounted_components.delete(component2);
+      return fn(options);
+    }
+    return Promise.resolve();
+  }
+  function if_block(node, fn, elseif = false) {
+    var anchor = node;
+    var consequent_effect = null;
+    var alternate_effect = null;
+    var condition = UNINITIALIZED;
+    var flags = elseif ? EFFECT_TRANSPARENT : 0;
+    var has_branch = false;
+    const set_branch = (fn2, flag = true) => {
+      has_branch = true;
+      update_branch(flag, fn2);
+    };
+    const update_branch = (new_condition, fn2) => {
+      if (condition === (condition = new_condition)) return;
+      if (condition) {
+        if (consequent_effect) {
+          resume_effect(consequent_effect);
+        } else if (fn2) {
+          consequent_effect = branch(() => fn2(anchor));
+        }
+        if (alternate_effect) {
+          pause_effect(alternate_effect, () => {
+            alternate_effect = null;
+          });
+        }
+      } else {
+        if (alternate_effect) {
+          resume_effect(alternate_effect);
+        } else if (fn2) {
+          alternate_effect = branch(() => fn2(anchor));
+        }
+        if (consequent_effect) {
+          pause_effect(consequent_effect, () => {
+            consequent_effect = null;
+          });
+        }
+      }
+    };
+    block(() => {
+      has_branch = false;
+      fn(set_branch);
+      if (!has_branch) {
+        update_branch(null, null);
+      }
+    }, flags);
+  }
+  function index(_, i) {
+    return i;
+  }
+  function pause_effects(state2, items, controlled_anchor, items_map) {
+    var transitions = [];
+    var length = items.length;
+    for (var i = 0; i < length; i++) {
+      pause_children(items[i].e, transitions, true);
+    }
+    var is_controlled =
+      length > 0 && transitions.length === 0 && controlled_anchor !== null;
+    if (is_controlled) {
+      var parent_node =
+        /** @type {Element} */
+        /** @type {Element} */
+        controlled_anchor.parentNode;
+      clear_text_content(parent_node);
+      parent_node.append(
+        /** @type {Element} */
+        controlled_anchor,
+      );
+      items_map.clear();
+      link(state2, items[0].prev, items[length - 1].next);
+    }
+    run_out_transitions(transitions, () => {
+      for (var i2 = 0; i2 < length; i2++) {
+        var item = items[i2];
+        if (!is_controlled) {
+          items_map.delete(item.k);
+          link(state2, item.prev, item.next);
+        }
+        destroy_effect(item.e, !is_controlled);
+      }
+    });
+  }
+  function each(
+    node,
+    flags,
+    get_collection,
+    get_key,
+    render_fn,
+    fallback_fn = null,
+  ) {
+    var anchor = node;
+    var state2 = { items: /* @__PURE__ */ new Map(), first: null };
+    var is_controlled = (flags & EACH_IS_CONTROLLED) !== 0;
+    if (is_controlled) {
+      var parent_node =
+        /** @type {Element} */
+        node;
+      anchor = parent_node.appendChild(create_text());
+    }
+    var fallback = null;
+    var was_empty = false;
+    var each_array = /* @__PURE__ */ derived_safe_equal(() => {
+      var collection = get_collection();
+      return is_array(collection)
+        ? collection
+        : collection == null
+          ? []
+          : array_from(collection);
+    });
+    block(() => {
+      var array = get(each_array);
+      var length = array.length;
+      if (was_empty && length === 0) {
+        return;
+      }
+      was_empty = length === 0;
+      {
+        reconcile(
+          array,
+          state2,
+          anchor,
+          render_fn,
+          flags,
+          get_key,
+          get_collection,
+        );
+      }
+      if (fallback_fn !== null) {
+        if (length === 0) {
+          if (fallback) {
+            resume_effect(fallback);
+          } else {
+            fallback = branch(() => fallback_fn(anchor));
+          }
+        } else if (fallback !== null) {
+          pause_effect(fallback, () => {
+            fallback = null;
+          });
+        }
+      }
+      get(each_array);
+    });
+  }
+  function reconcile(
+    array,
+    state2,
+    anchor,
+    render_fn,
+    flags,
+    get_key,
+    get_collection,
+  ) {
+    var _a, _b, _c, _d;
+    var is_animated = (flags & EACH_IS_ANIMATED) !== 0;
+    var should_update =
+      (flags & (EACH_ITEM_REACTIVE | EACH_INDEX_REACTIVE)) !== 0;
+    var length = array.length;
+    var items = state2.items;
+    var first = state2.first;
+    var current = first;
+    var seen;
+    var prev = null;
+    var to_animate;
+    var matched = [];
+    var stashed = [];
+    var value;
+    var key;
+    var item;
+    var i;
+    if (is_animated) {
+      for (i = 0; i < length; i += 1) {
+        value = array[i];
+        key = get_key(value, i);
+        item = items.get(key);
+        if (item !== void 0) {
+          (_a = item.a) == null ? void 0 : _a.measure();
+          (to_animate ?? (to_animate = /* @__PURE__ */ new Set())).add(item);
+        }
+      }
+    }
+    for (i = 0; i < length; i += 1) {
+      value = array[i];
+      key = get_key(value, i);
+      item = items.get(key);
+      if (item === void 0) {
+        var child_anchor = current
+          ? /** @type {TemplateNode} */
+            current.e.nodes_start
+          : anchor;
+        prev = create_item(
+          child_anchor,
+          state2,
+          prev,
+          prev === null ? state2.first : prev.next,
+          value,
+          key,
+          i,
+          render_fn,
+          flags,
+          get_collection,
+        );
+        items.set(key, prev);
+        matched = [];
+        stashed = [];
+        current = prev.next;
+        continue;
+      }
+      if (should_update) {
+        update_item(item, value, i, flags);
+      }
+      if ((item.e.f & INERT) !== 0) {
+        resume_effect(item.e);
+        if (is_animated) {
+          (_b = item.a) == null ? void 0 : _b.unfix();
+          (to_animate ?? (to_animate = /* @__PURE__ */ new Set())).delete(item);
+        }
+      }
+      if (item !== current) {
+        if (seen !== void 0 && seen.has(item)) {
+          if (matched.length < stashed.length) {
+            var start = stashed[0];
+            var j;
+            prev = start.prev;
+            var a = matched[0];
+            var b = matched[matched.length - 1];
+            for (j = 0; j < matched.length; j += 1) {
+              move(matched[j], start, anchor);
+            }
+            for (j = 0; j < stashed.length; j += 1) {
+              seen.delete(stashed[j]);
+            }
+            link(state2, a.prev, b.next);
+            link(state2, prev, a);
+            link(state2, b, start);
+            current = start;
+            prev = b;
+            i -= 1;
+            matched = [];
+            stashed = [];
+          } else {
+            seen.delete(item);
+            move(item, current, anchor);
+            link(state2, item.prev, item.next);
+            link(state2, item, prev === null ? state2.first : prev.next);
+            link(state2, prev, item);
+            prev = item;
+          }
+          continue;
+        }
+        matched = [];
+        stashed = [];
+        while (current !== null && current.k !== key) {
+          if ((current.e.f & INERT) === 0) {
+            (seen ?? (seen = /* @__PURE__ */ new Set())).add(current);
+          }
+          stashed.push(current);
+          current = current.next;
+        }
+        if (current === null) {
+          continue;
+        }
+        item = current;
+      }
+      matched.push(item);
+      prev = item;
+      current = item.next;
+    }
+    if (current !== null || seen !== void 0) {
+      var to_destroy = seen === void 0 ? [] : array_from(seen);
+      while (current !== null) {
+        if ((current.e.f & INERT) === 0) {
+          to_destroy.push(current);
+        }
+        current = current.next;
+      }
+      var destroy_length = to_destroy.length;
+      if (destroy_length > 0) {
+        var controlled_anchor =
+          (flags & EACH_IS_CONTROLLED) !== 0 && length === 0 ? anchor : null;
+        if (is_animated) {
+          for (i = 0; i < destroy_length; i += 1) {
+            (_c = to_destroy[i].a) == null ? void 0 : _c.measure();
+          }
+          for (i = 0; i < destroy_length; i += 1) {
+            (_d = to_destroy[i].a) == null ? void 0 : _d.fix();
+          }
+        }
+        pause_effects(state2, to_destroy, controlled_anchor, items);
+      }
+    }
+    if (is_animated) {
+      queue_micro_task(() => {
+        var _a2;
+        if (to_animate === void 0) return;
+        for (item of to_animate) {
+          (_a2 = item.a) == null ? void 0 : _a2.apply();
+        }
+      });
+    }
+    active_effect.first = state2.first && state2.first.e;
+    active_effect.last = prev && prev.e;
+  }
+  function update_item(item, value, index2, type) {
+    if ((type & EACH_ITEM_REACTIVE) !== 0) {
+      internal_set(item.v, value);
+    }
+    if ((type & EACH_INDEX_REACTIVE) !== 0) {
+      internal_set(
+        /** @type {Value<number>} */
+        item.i,
+        index2,
+      );
+    } else {
+      item.i = index2;
+    }
+  }
+  function create_item(
+    anchor,
+    state2,
+    prev,
+    next,
+    value,
+    key,
+    index2,
+    render_fn,
+    flags,
+    get_collection,
+  ) {
+    var reactive = (flags & EACH_ITEM_REACTIVE) !== 0;
+    var mutable = (flags & EACH_ITEM_IMMUTABLE) === 0;
+    var v = reactive
+      ? mutable
+        ? /* @__PURE__ */ mutable_source(value)
+        : source(value)
+      : value;
+    var i = (flags & EACH_INDEX_REACTIVE) === 0 ? index2 : source(index2);
+    var item = {
+      i,
+      v,
+      k: key,
+      a: null,
+      // @ts-expect-error
+      e: null,
+      prev,
+      next,
+    };
+    try {
+      item.e = branch(() => render_fn(anchor, v, i, get_collection), hydrating);
+      item.e.prev = prev && prev.e;
+      item.e.next = next && next.e;
+      if (prev === null) {
+        state2.first = item;
+      } else {
+        prev.next = item;
+        prev.e.next = item.e;
+      }
+      if (next !== null) {
+        next.prev = item;
+        next.e.prev = item.e;
+      }
+      return item;
+    } finally {
+    }
+  }
+  function move(item, next, anchor) {
+    var end = item.next
+      ? /** @type {TemplateNode} */
+        item.next.e.nodes_start
+      : anchor;
+    var dest = next
+      ? /** @type {TemplateNode} */
+        next.e.nodes_start
+      : anchor;
+    var node =
+      /** @type {TemplateNode} */
+      item.e.nodes_start;
+    while (node !== end) {
+      var next_node =
+        /** @type {TemplateNode} */
+        /* @__PURE__ */ get_next_sibling(node);
+      dest.before(node);
+      node = next_node;
+    }
+  }
+  function link(state2, prev, next) {
+    if (prev === null) {
+      state2.first = next;
+    } else {
+      prev.next = next;
+      prev.e.next = next && next.e;
+    }
+    if (next !== null) {
+      next.prev = prev;
+      next.e.prev = prev && prev.e;
+    }
+  }
+  function snippet(node, get_snippet, ...args) {
+    var anchor = node;
+    var snippet2 = noop;
+    var snippet_effect;
+    block(() => {
+      if (snippet2 === (snippet2 = get_snippet())) return;
+      if (snippet_effect) {
+        destroy_effect(snippet_effect);
+        snippet_effect = null;
+      }
+      snippet_effect = branch(() =>
+        /** @type {SnippetFn} */
+        snippet2(anchor, ...args),
+      );
+    }, EFFECT_TRANSPARENT);
+  }
+  function component(node, get_component, render_fn) {
+    var anchor = node;
+    var component2;
+    var effect2;
+    block(() => {
+      if (component2 === (component2 = get_component())) return;
+      if (effect2) {
+        pause_effect(effect2);
+        effect2 = null;
+      }
+      if (component2) {
+        effect2 = branch(() => render_fn(anchor, component2));
+      }
+    }, EFFECT_TRANSPARENT);
+  }
+  function action(dom, action2, get_value) {
+    effect(() => {
+      var payload = untrack(
+        () => action2(dom, get_value == null ? void 0 : get_value()) || {},
+      );
+      if (get_value && (payload == null ? void 0 : payload.update)) {
+        var inited = false;
+        var prev =
+          /** @type {any} */
+          {};
+        render_effect(() => {
+          var value = get_value();
+          deep_read_state(value);
+          if (inited && safe_not_equal(prev, value)) {
+            prev = value;
+            payload.update(value);
+          }
+        });
+        inited = true;
+      }
+      if (payload == null ? void 0 : payload.destroy) {
+        return () =>
+          /** @type {Function} */
+          payload.destroy();
+      }
+    });
+  }
+  function set_attribute(element, attribute, value, skip_warning) {
+    var attributes = element.__attributes ?? (element.__attributes = {});
+    if (attributes[attribute] === (attributes[attribute] = value)) return;
+    if (attribute === 'style' && '__styles' in element) {
+      element.__styles = {};
+    }
+    if (attribute === 'loading') {
+      element[LOADING_ATTR_SYMBOL] = value;
+    }
+    if (value == null) {
+      element.removeAttribute(attribute);
+    } else if (
+      typeof value !== 'string' &&
+      get_setters(element).includes(attribute)
+    ) {
+      element[attribute] = value;
+    } else {
+      element.setAttribute(attribute, value);
+    }
+  }
+  var setters_cache = /* @__PURE__ */ new Map();
+  function get_setters(element) {
+    var setters = setters_cache.get(element.nodeName);
+    if (setters) return setters;
+    setters_cache.set(element.nodeName, (setters = []));
+    var descriptors;
+    var proto = element;
+    var element_proto = Element.prototype;
+    while (element_proto !== proto) {
+      descriptors = get_descriptors(proto);
+      for (var key in descriptors) {
+        if (descriptors[key].set) {
+          setters.push(key);
+        }
+      }
+      proto = get_prototype_of(proto);
+    }
+    return setters;
+  }
+  function set_class(dom, value, hash) {
+    var prev_class_name = dom.__className;
+    var next_class_name = to_class(value);
+    if (prev_class_name !== next_class_name || hydrating) {
+      if (value == null && true) {
+        dom.removeAttribute('class');
+      } else {
+        dom.className = next_class_name;
+      }
+      dom.__className = next_class_name;
+    }
+  }
+  function to_class(value, hash) {
+    return (value == null ? '' : value) + '';
+  }
+  function toggle_class(dom, class_name, value) {
+    if (value) {
+      if (dom.classList.contains(class_name)) return;
+      dom.classList.add(class_name);
+    } else {
+      if (!dom.classList.contains(class_name)) return;
+      dom.classList.remove(class_name);
+    }
+  }
+  function bind_value(input, get2, set2 = get2) {
+    var runes = is_runes();
+    listen_to_event_and_reset_event(input, 'input', (is_reset) => {
+      var value = is_reset ? input.defaultValue : input.value;
+      value = is_numberlike_input(input) ? to_number(value) : value;
+      set2(value);
+      if (runes && value !== (value = get2())) {
+        var start = input.selectionStart;
+        var end = input.selectionEnd;
+        input.value = value ?? '';
+        if (end !== null) {
+          input.selectionStart = start;
+          input.selectionEnd = Math.min(end, input.value.length);
+        }
+      }
+    });
+    if (
+      // If we are hydrating and the value has since changed,
+      // then use the updated value from the input instead.
+      // If defaultValue is set, then value == defaultValue
+      // TODO Svelte 6: remove input.value check and set to empty string?
+      untrack(get2) == null &&
+      input.value
+    ) {
+      set2(is_numberlike_input(input) ? to_number(input.value) : input.value);
+    }
+    render_effect(() => {
+      var value = get2();
+      if (is_numberlike_input(input) && value === to_number(input.value)) {
+        return;
+      }
+      if (input.type === 'date' && !value && !input.value) {
+        return;
+      }
+      if (value !== input.value) {
+        input.value = value ?? '';
+      }
+    });
+  }
+  function is_numberlike_input(input) {
+    var type = input.type;
+    return type === 'number' || type === 'range';
+  }
+  function to_number(value) {
+    return value === '' ? null : +value;
+  }
+  function init(immutable = false) {
+    const context =
+      /** @type {ComponentContextLegacy} */
+      component_context;
+    const callbacks = context.l.u;
+    if (!callbacks) return;
+    let props = () => deep_read_state(context.s);
+    if (immutable) {
+      let version = 0;
+      let prev =
+        /** @type {Record<string, any>} */
+        {};
+      const d = /* @__PURE__ */ derived(() => {
+        let changed = false;
+        const props2 = context.s;
+        for (const key in props2) {
+          if (props2[key] !== prev[key]) {
+            prev[key] = props2[key];
+            changed = true;
+          }
+        }
+        if (changed) version++;
+        return version;
+      });
+      props = () => get(d);
+    }
+    if (callbacks.b.length) {
+      user_pre_effect(() => {
+        observe_all(context, props);
+        run_all(callbacks.b);
+      });
+    }
+    user_effect(() => {
+      const fns = untrack(() => callbacks.m.map(run));
+      return () => {
+        for (const fn of fns) {
+          if (typeof fn === 'function') {
+            fn();
+          }
+        }
+      };
+    });
+    if (callbacks.a.length) {
+      user_effect(() => {
+        observe_all(context, props);
+        run_all(callbacks.a);
+      });
+    }
+  }
+  function observe_all(context, props) {
+    if (context.l.s) {
+      for (const signal of context.l.s) get(signal);
+    }
+    props();
+  }
+  function reactive_import(fn) {
+    var s = source(0);
+    return function () {
+      if (arguments.length === 1) {
+        set(s, get(s) + 1);
+        return arguments[0];
+      } else {
+        get(s);
+        return fn();
+      }
+    };
+  }
+  function onMount(fn) {
+    if (component_context === null) {
+      lifecycle_outside_component();
+    }
+    if (legacy_mode_flag && component_context.l !== null) {
+      init_update_callbacks(component_context).m.push(fn);
+    } else {
+      user_effect(() => {
+        const cleanup = untrack(fn);
+        if (typeof cleanup === 'function')
+          return (
+            /** @type {() => void} */
+            cleanup
+          );
+      });
+    }
+  }
+  function onDestroy(fn) {
+    if (component_context === null) {
+      lifecycle_outside_component();
+    }
+    onMount(() => () => untrack(fn));
+  }
+  function init_update_callbacks(context) {
+    var l =
+      /** @type {ComponentContextLegacy} */
+      context.l;
+    return l.u ?? (l.u = { a: [], b: [], m: [] });
+  }
+  const PUBLIC_VERSION = '5';
+  if (typeof window !== 'undefined')
+    (
+      window.__svelte || (window.__svelte = { v: /* @__PURE__ */ new Set() })
+    ).v.add(PUBLIC_VERSION);
+  const PREFIX = 'Dub+';
+  function getTimeStamp() {
+    return /* @__PURE__ */ new Date().toLocaleTimeString();
+  }
+  function logInfo(...args) {
+    console.log(`[${getTimeStamp()}] ${PREFIX}:`, ...args);
+  }
+  function logError(...args) {
+    console.error(`[${getTimeStamp()}] ${PREFIX}:`, ...args);
+  }
+  function deepCheck(dottedString, startingScope = window) {
+    const props = dottedString.split('.');
+    let depth = startingScope;
+    for (let i = 0; i < props.length; i++) {
+      if (typeof depth[props[i]] === 'undefined') {
+        return false;
+      }
+      depth = depth[props[i]];
     }
     return true;
   }
-}
-function snooze() {
-  if (!eventUtils.snoozed && !QueUp.room.player.muted_player && QueUp.playerController.volume > 2) {
-    eventUtils.currentVol = QueUp.playerController.volume;
-    QueUp.room.player.mutePlayer();
-    eventUtils.snoozed = true;
-    QueUp.Events.bind('realtime:room_playlist-update', eventSongAdvance);
-  } else if (eventUtils.snoozed) {
-    QueUp.room.player.setVolume(eventUtils.currentVol);
-    QueUp.room.player.updateVolumeBar();
-    eventUtils.snoozed = false;
-  }
-}
-function _default() {
-  if (document.querySelector('.player_sharing .snooze_btn')) {
-    document.querySelector('.player_sharing .snooze_btn').remove();
-  }
-  window.dubplus.snowTooltipShow = snooze_tooltip;
-  window.dubplus.snoozeTooltipHide = hide_snooze_tooltip;
-  window.dubplus.snoozeClick = snooze;
-  var snoozeBtn = document.createElement('span');
-  snoozeBtn.className = 'icon-mute snooze_btn';
-  snoozeBtn.style.position = 'relative';
-  snoozeBtn.setAttribute('onmouseover', 'window.dubplus.snowTooltipShow()');
-  snoozeBtn.setAttribute('onmouseout', 'window.dubplus.snoozeTooltipHide()');
-  snoozeBtn.setAttribute('onclick', 'window.dubplus.snoozeClick()');
-  document.querySelector('.player_sharing').appendChild(snoozeBtn);
-}
-
-},{}],35:[function(require,module,exports){
-"use strict";
-
-var options = require('../utils/options.js');
-module.exports = {
-  id: "dubplus-snow",
-  moduleName: "Snow",
-  description: "Make it snow!",
-  category: "General",
-  doSnow: function doSnow() {
-    $(document).snowfall('clear');
-    $(document).snowfall({
-      round: true,
-      shadow: true,
-      flakeCount: 50,
-      minSize: 1,
-      maxSize: 5,
-      minSpeed: 5,
-      maxSpeed: 5
-    });
-  },
-  turnOn: function turnOn() {
-    var _this = this;
-    if (!$.snowfall) {
-      // only pull in the script once if it doesn't exist
-      $.getScript("https://cdn.jsdelivr.net/gh/loktar00/JQuery-Snowfall/src/snowfall.jquery.js").done(function () {
-        _this.doSnow();
-      }).fail(function (jqxhr, settings, exception) {
-        options.toggleAndSave(_this.id, false);
-        console.error('Could not load snowfall jquery plugin', exception);
-      });
-    } else {
-      this.doSnow();
+  function arrayDeepCheck(arr, startingScope = window) {
+    const scope = startingScope;
+    for (let i = 0; i < arr.length; i++) {
+      if (!deepCheck(arr[i], scope)) {
+        logInfo(arr[i], 'is not found yet');
+        return false;
+      }
     }
-    window.addEventListener('resize', this.doSnow, true);
-  },
-  turnOff: function turnOff() {
-    if ($.snowfall) {
-      // checking to avoid errors if you quickly switch it on/off before plugin
-      // is loaded in the turnOn function
-      $(document).snowfall('clear');
-      window.removeEventListener('resize', this.doSnow, true);
-    }
+    return true;
   }
-};
-
-},{"../utils/options.js":46}],36:[function(require,module,exports){
-"use strict";
-
-/**
- * Spacebar Mute
- * Turn on/off the ability to mute current song with the spacebar
- */
-
-var myModule = {};
-myModule.id = 'dubplus-spacebar-mute';
-myModule.moduleName = 'Spacebar Mute';
-myModule.description = 'Turn on/off the ability to mute current song with the spacebar.';
-myModule.category = 'Settings';
-var clickableTags = ['input', 'textarea', 'button', 'select', 'a'];
-function onSpacebar(event) {
-  var tag = event.target.tagName.toLowerCase();
-  if (event.which === 32 && !clickableTags.includes(tag) && !event.target.isContentEditable) {
-    QueUp.room.player.mutePlayer();
-  }
-}
-myModule.turnOn = function () {
-  $(document).on('keypress.key32', onSpacebar);
-};
-myModule.turnOff = function () {
-  $(document).off('keypress.key32', onSpacebar);
-};
-module.exports = myModule;
-
-},{}],37:[function(require,module,exports){
-"use strict";
-
-/**
- * Split Chat
- * Toggle Split chat mode
- */
-
-var myModule = {};
-myModule.id = "dubplus-split-chat";
-myModule.moduleName = "Split Chat";
-myModule.description = "Toggle Split Chat UI enhancement";
-myModule.category = "User Interface";
-myModule.turnOn = function () {
-  $('body').addClass('dubplus-split-chat');
-};
-myModule.turnOff = function () {
-  $('body').removeClass('dubplus-split-chat');
-};
-module.exports = myModule;
-
-},{}],38:[function(require,module,exports){
-"use strict";
-
-/**
- * Show downvotes in chat
- * only mods can use this
- */
-
-/*global Dubtrack */
-var myModule = {};
-myModule.id = "dubplus-updubs";
-myModule.moduleName = "Updubs in Chat";
-myModule.description = "Toggle showing updubs in the chat box";
-myModule.category = "General";
-myModule.updubWatcher = function (e) {
-  var user = QueUp.session.get('username');
-  var currentDj = QueUp.room.users.collection.findWhere({
-    userid: QueUp.room.player.activeSong.attributes.song.userid
-  }).attributes._user.username;
-  if (user === currentDj && e.dubtype === 'updub') {
-    var newChat = "\n      <li class=\"dubplus-chat-system dubplus-chat-system-updub\">\n        <div class=\"chatDelete\" onclick=\"dubplus.deleteChatMessageClientSide(this)\">\n          <span class=\"icon-close\"></span>\n        </div>\n        <div class=\"text\">\n          @".concat(e.user.username, " has updubbed your song ").concat(QueUp.room.player.activeSong.attributes.songInfo.name, "\n        </div>\n      </li>");
-    $('ul.chat-main').append(newChat);
-  }
-};
-myModule.turnOn = function () {
-  QueUp.Events.bind("realtime:room_playlist-dub", this.updubWatcher);
-
-  // add this function to our global dubplus object so that chat
-  // items can be deleted
-  if (typeof window.dubplus.deleteChatMessageClientSide !== 'function') {
-    window.dubplus.deleteChatMessageClientSide = function (el) {
-      $(el).parent('li')[0].remove();
+  function waitFor(waitingFor, options = {}) {
+    const defaults2 = {
+      interval: 500,
+      // every XX ms we check to see if all variables are defined
+      seconds: 5,
+      // how many total seconds we wish to continue pinging
     };
-  }
-};
-myModule.turnOff = function () {
-  QueUp.Events.unbind("realtime:room_playlist-dub", this.updubWatcher);
-};
-module.exports = myModule;
-
-},{}],39:[function(require,module,exports){
-"use strict";
-
-/**
- * Warn on Navigation
- * Warns you when accidentally clicking on a link that takes you out of dubtrack
- */
-
-var myModule = {};
-myModule.id = "warn_redirect";
-myModule.moduleName = "Warn On Navigation";
-myModule.description = "Warns you when accidentally clicking on a link that takes you out of dubtrack.";
-myModule.category = "Settings";
-function unloader(e) {
-  var confirmationMessage = "";
-  e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
-  return confirmationMessage; // Gecko, WebKit, Chrome <34
-}
-myModule.turnOn = function () {
-  window.addEventListener("beforeunload", unloader);
-};
-myModule.turnOff = function () {
-  window.removeEventListener("beforeunload", unloader);
-};
-module.exports = myModule;
-
-},{}],40:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.apiBase = void 0;
-var apiBase = exports.apiBase = window.location.hostname.includes('staging') ? 'https://staging-api.queup.dev' : 'https://api.queup.net';
-
-},{}],41:[function(require,module,exports){
-(function (TIME_STAMP){(function (){
-'use strict';
-
-var settings = require('../lib/settings.js');
-var makeLink = function makeLink(className, FileName) {
-  var link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.type = 'text/css';
-  link.className = className || '';
-  link.href = FileName;
-  return link;
-};
-function removeLink(className) {
-  var link = document.querySelector("link.".concat(className));
-  if (link) {
-    link.remove();
-  }
-}
-
-/**
- * Loads a CSS file into <head>.  It concats settings.srcRoot with the first argument (cssFile)
- * @param {string} cssFile    the css file location
- * @param {string} className  class name for element
- *
- * example:  css.load("/options/show_timestamps.css", "show_timestamps_link");
- */
-var load = function load(cssFile, className) {
-  if (!cssFile) {
-    return;
-  }
-  removeLink(className);
-  var link = makeLink(className, settings.srcRoot + cssFile + '?' + TIME_STAMP);
-  document.head.appendChild(link);
-};
-
-/**
- * Loads a css file from a full URL in the <head>
- * @param  {String} cssFile   the full url location of a CSS file
- * @param  {String} className a class name to give to the <link> element
- * @return {undefined}
- */
-var loadExternal = function loadExternal(cssFile, className) {
-  if (!cssFile) {
-    return;
-  }
-  removeLink(className);
-  var link = makeLink(className, cssFile);
-  document.head.appendChild(link);
-};
-module.exports = {
-  load: load,
-  loadExternal: loadExternal
-};
-
-}).call(this)}).call(this,'1720194289241')
-},{"../lib/settings.js":8}],42:[function(require,module,exports){
-"use strict";
-
-// jQuery's getJSON kept returning errors so making my own with promise-like
-// structure and added optional Event to fire when done so can hook in elsewhere
-var GetJSON = function GetJSON(url, optionalEvent, headers) {
-  var doneEvent = optionalEvent ? new Event(optionalEvent) : null;
-  function GetJ(_url, _cb) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', _url);
-    if (headers) {
-      for (var property in headers) {
-        if (headers.hasOwnProperty(property)) {
-          xhr.setRequestHeader(property, headers[property]);
+    const opts = Object.assign({}, defaults2, options);
+    return new Promise((resolve, reject) => {
+      let tryCount = 0;
+      const tryLimit = (opts.seconds * 1e3) / opts.interval;
+      const check = () => {
+        tryCount++;
+        if (arrayDeepCheck(waitingFor)) {
+          resolve();
+        } else if (tryCount < tryLimit) {
+          window.setTimeout(check, opts.interval);
+        } else {
+          reject();
         }
-      }
+      };
+      check();
+    });
+  }
+  enable_legacy_mode_flag();
+  var root$r = /* @__PURE__ */ ns_template(
+    `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" viewBox="0 0 2078.496 2083.914" enable-background="new 0 0 2078.496 2083.914" xml:space="preserve"><rect x="769.659" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#660078" width="539.178" height="539.178"></rect><g><rect x="1308.837" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.488" height="539.178"></rect><polygon fill="#EB008B" points="2045.015,1042.035 1845.324,1311.625 1845.324,772.446 	"></polygon></g><g><rect x="232.172" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.487" height="539.178"></rect><polygon fill="#EB008B" points="33.481,1042.034 233.172,772.445 233.172,1311.623 	"></polygon></g><g><rect x="769.659" y="1311.624" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.248,2047.802 769.659,1848.111 1308.837,1848.111 	"></polygon></g><g><rect x="769.659" y="234.958" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.249,35.268 1308.837,235.958 769.659,235.958 	"></polygon></g></svg>`,
+  );
+  function Logo($$anchor) {
+    var svg = root$r();
+    append($$anchor, svg);
+  }
+  const translations = {
+    en: {
+      'Modal.confirm': 'OK',
+      'Modal.cancel': 'Cancel',
+      'Modal.close': 'Close',
+      'Error.modal.title': 'Dub+ Error',
+      'Error.modal.loggedout':
+        "You're not logged in. Please login to use Dub+.",
+      'Error.unknown':
+        'Something went wrong starting Dub+. Please refresh and try again.',
+      'Loading.text': 'Waiting for QueUp...',
+      'Eta.tooltip.notInQueue': "You're not in the queue",
+      'Eta.tootltip': 'ETA: {{minutes}} minutes',
+      'Snooze.tooltip': 'Mute for current song',
+      'Snooze.tooltip.undo': 'Cancel mute for current song',
+      'SnoozeVideo.tooltip': 'Hide video for current song',
+      'SnoozeVideo.tooltip.undo': 'Cancel hiding video for current song',
+      'Notifcation.permission.title': 'Desktop Notification',
+      'Notification.permission.denied':
+        'You have dismissed or chosen to deny the request to allow desktop notifications. Reset this choice by clearing your cache for the site.',
+      'Notification.permission.notSupported':
+        'Sorry this browser does not support desktop notifications.  Please update your browser to the lastest version',
+      'Menu.title': 'Dub+ Options',
+      'general.title': 'General',
+      'user-interface.title': 'User Interface',
+      'settings.title': 'Settings',
+      'customize.title': 'Customize',
+      'contact.title': 'Contact',
+      'contact.bugs': 'Report bugs on Discord',
+      'Switch.on': 'On',
+      'Switch.off': 'Off',
+      // this text is only read by screen readers but we should still translate it
+      // it is the label of the little pencil icon
+      'MenuItem.edit': 'Edit',
+      'autovote.label': 'Autovote',
+      'autovote.description': 'Toggles auto upvoting for every song',
+      'afk.label': 'AFK Auto-respond',
+      'afk.description': 'Toggle Away from Keyboard and customize AFK message.',
+      'afk.modal.title': 'Custom AFK Message',
+      'afk.modal.content':
+        "Enter a custom Away From Keyboard [AFK] message here. Message will be prefixed with '[AFK]'",
+      'afk.modal.placeholder': 'Be right back!',
+      'emotes.label': 'Emotes',
+      'emotes.description':
+        'Adds Twitch, Bttv, and FrankerFacez emotes in chat.',
+      'autocomplete.label': 'Autocomplete Emoji',
+      'autocomplete.description':
+        'Toggle autocompleting emojis and emotes. Shows a preview box in the chat',
+      'autocomplete.preview.select': 'press enter or tab to select',
+      'custom-mentions.label': 'Custom Mentions',
+      'custom-mentions.description':
+        'Toggle using custom mentions to trigger sounds in chat',
+      'custom-mentions.modal.title': 'Custom Mentions',
+      'custom-mentions.modal.content':
+        'Add your custom mention triggers here (separate by comma)',
+      'custom-mentions.modal.placeholder':
+        'separate, custom mentions, by, comma, :heart:',
+      'chat-cleaner.label': 'Chat Cleaner',
+      'chat-cleaner.description':
+        'Help keep CPU stress down by setting a limit of how many chat messages to keep in the chat box, deleting older messages.',
+      'chat-cleaner.modal.title': 'Chat Cleaner',
+      'chat-cleaner.modal.content':
+        'Please specify the number of most recent chat items that will remain in your chat history',
+      'chat-cleaner.modal.validation': 'Please enter a valid number',
+      'chat-cleaner.modal.placeholder': '500',
+      'mention-notifications.label': 'Notification on Mentions',
+      'mention-notifications.description':
+        'Enable desktop notifications when a user mentions you in chat',
+      'pm-notifications.label': 'Notification on PM',
+      'pm-notifications.description':
+        'Enable desktop notifications when a user receives a private message',
+      'pm-notifications.notification.title': 'You have a new PM',
+      'dj-notification.label': 'DJ Notification',
+      'dj-notification.description':
+        'Get a notification when you are coming up to be the DJ',
+      'dj-notification.modal.title': 'DJ Notification',
+      'dj-notification.modal.content':
+        'Please specify the position in queue you want to be notified at',
+      'dj-notification.notification.title': 'DJ Alert!',
+      'dj-notification.notification.content':
+        'You will be DJing shortly! Make sure your song is set!',
+      'dj-notification.modal.validation': 'Please enter a valid number',
+      'dubs-hover.label': 'Show Dubs on Hover',
+      'dubs-hover.description':
+        'Show who dubs a song when hovering over the dubs count',
+      'dubs-hover.no-votes': 'No {{dubType}}s have been casted yet!',
+      'dubs-hover.no-grabs': 'No one has grabbed this song yet!',
+      'downdubs-in-chat.label': 'Downdubs in Chat (mods only)',
+      'downdubs-in-chat.description':
+        'Toggle showing downdubs in the chat box (mods only)',
+      'downdubs-in-chat.chat-message':
+        '@{{username}} has downdubbed your song {{song_name}}',
+      'updubs-in-chat.label': 'Updubs in Chat',
+      'updubs-in-chat.description': 'Toggle showing updubs in the chat box',
+      'updubs-in-chat.chat-message':
+        '@{{username}} has updubbed your song {{song_name}}',
+      'grabs-in-chat.label': 'Grabs in Chat',
+      'grabs-in-chat.description': 'Toggle showing grabs in the chat box',
+      'grabs-in-chat.chat-message':
+        '@{{username}} has grabbed your song {{song_name}}',
+      'snow.label': 'Snow',
+      'snow.description': 'Make it snow!',
+      'rain.label': 'Rain',
+      'rain.description': 'Make it rain!',
+      'fullscreen.label': 'Fullscreen',
+      'fullscreen.description': 'Toggle fullscreen video mode',
+      'split-chat.label': 'Split Chat',
+      'split-chat.description': 'Toggle Split Chat UI enhancement',
+      'hide-chat.label': 'Hide Chat',
+      'hide-chat.description': 'Toggles hiding the chat box',
+      'hide-video.label': 'Hide Video',
+      'hide-video.description': 'Toggles hiding the video box',
+      'hide-avatars.label': 'Hide Avatars',
+      'hide-avatars.description': 'Toggle hiding user avatars in the chat box',
+      'hide-bg.label': 'Hide Background',
+      'hide-bg.description': 'Toggle hiding background image',
+      'show-timestamps.label': 'Show Timestamps',
+      'show-timestamps.description':
+        'Toggle always showing chat message timestamps',
+      'flip-interface.label': 'Flip Interface',
+      'flip-interface.description': 'Swap the video and chat positions',
+      'spacebar-mute.label': 'Spacebar Mute',
+      'spacebar-mute.description':
+        'Turn on/off the ability to mute current song with the spacebar',
+      'warn-redirect.label': 'Warn on Navigation',
+      'warn-redirect.description':
+        'Warns you when accidentally clicking on a link that takes you out of QueUp',
+      'community-theme.label': 'Community Theme',
+      'community-theme.description': 'Toggle Community CSS theme',
+      'custom-css.label': 'Custom CSS',
+      'custom-css.description': 'Add your own custom CSS.',
+      'custom-css.modal.title': 'Custom CSS',
+      'custom-css.modal.content': 'Enter a url location for your custom css',
+      'custom-css.modal.placeholder': 'https://example.com/example.css',
+      'custom-css.modal.validation': 'Invalid URL',
+      'custom-bg.label': 'Custom Background',
+      'custom-bg.description': 'Add your own custom background.',
+      'custom-bg.modal.title': 'Custom Background Image',
+      'custom-bg.modal.content':
+        'Enter the full URL of an image. We recommend using a .jpg file. Leave blank to remove the current background image',
+      'custom-bg.modal.placeholder': 'https://example.com/big-image.jpg',
+      'custom-notification-sound.label': 'Custom Notification Sound',
+      'custom-notification-sound.description':
+        'Change the notification sound to a custom one.',
+      'custom-notification-sound.modal.title': 'Custom Notification Sound',
+      'custom-notification-sound.modal.content':
+        "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to QueUp's default sound",
+      'custom-notification-sound.modal.placeholder':
+        'https://example.com/sweet-sound.mp3',
+      'custom-notification-sound.modal.validation':
+        "Can't play sound from this URL. Please enter a valid URL to an MP3 file.",
+    },
+  };
+  const locale = proxy({ current: 'en' });
+  function translate(loc, key, vars) {
+    let text2 = translations[loc][key];
+    if (!text2 && loc !== 'en') {
+      text2 = translations['en'][key];
     }
-    xhr.send();
-    xhr.onload = function () {
-      var resp = xhr.responseText;
-      if (typeof _cb === 'function') {
-        _cb(resp);
-      }
-      if (doneEvent) {
-        window.dispatchEvent(doneEvent);
-      }
-    };
+    if (!text2) {
+      logError(`No translation found for ${loc}.${key}`);
+      return key;
+    }
+    Object.keys(vars).forEach((item) => {
+      const regex = new RegExp(`{{${item}}}`, 'g');
+      text2 = text2.replace(regex, vars[item]);
+    });
+    return text2;
   }
-  var done = function done(cb) {
-    new GetJ(url, cb);
-  };
-  return {
-    done: done
-  };
-};
-module.exports = GetJSON;
-
-},{}],43:[function(require,module,exports){
-'use strict';
-
-function makeButtons(cb) {
-  var buttons = '';
-  if (cb) {
-    buttons += '<button id="dp-modal-cancel">cancel</button>';
-    buttons += '<button id="dp-modal-confirm">okay</button>';
-  } else {
-    buttons += '<button id="dp-modal-cancel">close</button>';
+  function t(key, vars = {}) {
+    return translate(locale.current, key, vars);
   }
-  return buttons;
-}
-
-/**
- * input is a modal used to display messages and also capture data
- * 
- * @param  {String} title       title that shows at the top of the modal
- * @param  {String} content     A descriptive message on what the modal is for
- * @param  {String} placeholder placeholder for the textarea
- * @param  {String} confirm     a way to customize the text of the confirm button
- * @param  {Number} maxlength   for the textarea maxlength attribute
- */
-var create = function create(options) {
-  var defaults = {
+  function normalizeLocale(loc) {
+    if (loc.startsWith('en')) {
+      return 'en';
+    }
+    return loc;
+  }
+  var root$q = /* @__PURE__ */ template(
+    `<div class="dubplus-waiting svelte-16mmbc"><div style="width: 26px; margin-right:5px"><!></div> <span style="flex: 1;"> </span></div>`,
+  );
+  function Loading($$anchor, $$props) {
+    push($$props, false);
+    init();
+    var div = root$q();
+    var div_1 = child(div);
+    var node = child(div_1);
+    Logo(node);
+    var span = sibling(div_1, 2);
+    var text2 = child(span);
+    template_effect(
+      ($0) => set_text(text2, $0),
+      [() => t('Loading.text')],
+      derived_safe_equal,
+    );
+    append($$anchor, div);
+    pop();
+  }
+  const modalState = proxy({
+    id: '',
+    open: false,
     title: 'Dub+',
     content: '',
     value: '',
-    placeholder: null,
+    placeholder: '',
     maxlength: 999,
-    confirmCallback: null
+    validation: () => {
+      return true;
+    },
+    onConfirm: () => {
+      return true;
+    },
+    onCancel: () => {},
+  });
+  function updateModalState(nextState) {
+    modalState.open = nextState.open ?? false;
+    modalState.title = nextState.title || 'Dub+';
+    modalState.content = nextState.content || '';
+    modalState.value = nextState.value || '';
+    modalState.placeholder = nextState.placeholder || '';
+    modalState.maxlength = nextState.maxlength || 999;
+    modalState.onConfirm =
+      nextState.onConfirm ||
+      (() => {
+        return true;
+      });
+    modalState.onCancel = nextState.onCancel || (() => {});
+    modalState.validation = nextState.validation || (() => true);
+  }
+  var root_1$3 = /* @__PURE__ */ template(`<textarea class="svelte-1mnr24t">
+      </textarea>`);
+  var root_2$3 = /* @__PURE__ */ template(
+    `<p class="dp-modal--error svelte-1mnr24t"> </p>`,
+  );
+  var root_3$1 = /* @__PURE__ */ template(
+    `<button class="dp-modal--cancel cancel svelte-1mnr24t"> </button> <button class="dp-modal--confirm confirm svelte-1mnr24t"> </button>`,
+    1,
+  );
+  var root_4 = /* @__PURE__ */ template(
+    `<button class="dp-modal--cancel cancel svelte-1mnr24t"> </button>`,
+  );
+  var root$p = /* @__PURE__ */ template(
+    `<dialog id="dubplus-dialog" class="dp-modal svelte-1mnr24t"><h1 class="svelte-1mnr24t"> </h1> <div class="dp-modal--content content svelte-1mnr24t"><p class="svelte-1mnr24t"> </p> <!> <!></div> <div class="dp-modal--buttons buttons svelte-1mnr24t"><!></div></dialog>`,
+  );
+  function Modal($$anchor, $$props) {
+    push($$props, true);
+    let errorMessage = state('');
+    let dialog;
+    onMount(() => {
+      dialog =
+        /**@type {HTMLDialogElement}*/
+        document.getElementById('dubplus-dialog');
+      dialog.addEventListener('close', () => {
+        modalState.open = false;
+      });
+    });
+    user_effect(() => {
+      if (modalState.open && dialog && !dialog.open) {
+        dialog.showModal();
+      }
+    });
+    var dialog_1 = root$p();
+    var h1 = child(dialog_1);
+    var text2 = child(h1);
+    var div = sibling(h1, 2);
+    var p = child(div);
+    var text_1 = child(p);
+    var node = sibling(p, 2);
+    {
+      var consequent = ($$anchor2) => {
+        var textarea = root_1$3();
+        template_effect(() => {
+          set_attribute(textarea, 'placeholder', modalState.placeholder);
+          set_attribute(
+            textarea,
+            'maxlength',
+            modalState.maxlength < 999 ? modalState.maxlength : 999,
+          );
+        });
+        bind_value(
+          textarea,
+          () => modalState.value,
+          ($$value) => (modalState.value = $$value),
+        );
+        append($$anchor2, textarea);
+      };
+      if_block(node, ($$render) => {
+        if (modalState.placeholder || modalState.value) $$render(consequent);
+      });
+    }
+    var node_1 = sibling(node, 2);
+    {
+      var consequent_1 = ($$anchor2) => {
+        var p_1 = root_2$3();
+        var text_2 = child(p_1);
+        template_effect(() => set_text(text_2, get(errorMessage)));
+        append($$anchor2, p_1);
+      };
+      if_block(node_1, ($$render) => {
+        if (get(errorMessage)) $$render(consequent_1);
+      });
+    }
+    var div_1 = sibling(div, 2);
+    var node_2 = child(div_1);
+    {
+      var consequent_2 = ($$anchor2) => {
+        var fragment = root_3$1();
+        var button = first_child(fragment);
+        button.__click = () => {
+          dialog.close();
+          modalState.open = false;
+          set(errorMessage, '');
+        };
+        var text_3 = child(button);
+        var button_1 = sibling(button, 2);
+        button_1.__click = () => {
+          const isValidOrErrorMessage = modalState.validation(modalState.value);
+          if (isValidOrErrorMessage === true) {
+            dialog.close();
+            modalState.open = false;
+            modalState.onConfirm(modalState.value);
+            set(errorMessage, '');
+          } else {
+            set(errorMessage, proxy(isValidOrErrorMessage));
+          }
+        };
+        var text_4 = child(button_1);
+        template_effect(
+          ($0, $1) => {
+            set_text(text_3, $0);
+            set_text(text_4, $1);
+          },
+          [() => t('Modal.cancel'), () => t('Modal.confirm')],
+        );
+        append($$anchor2, fragment);
+      };
+      var alternate = ($$anchor2) => {
+        var button_2 = root_4();
+        button_2.__click = () => {
+          dialog.close();
+          modalState.open = false;
+          set(errorMessage, '');
+        };
+        var text_5 = child(button_2);
+        template_effect(($0) => set_text(text_5, $0), [() => t('Modal.close')]);
+        append($$anchor2, button_2);
+      };
+      if_block(node_2, ($$render) => {
+        if (typeof modalState.onConfirm === 'function') $$render(consequent_2);
+        else $$render(alternate, false);
+      });
+    }
+    template_effect(() => {
+      set_text(text2, modalState.title);
+      set_text(text_1, modalState.content);
+    });
+    append($$anchor, dialog_1);
+    pop();
+  }
+  delegate(['click']);
+  const teleport = (node, { to, position = 'append' }) => {
+    user_effect(() => {
+      var _a;
+      if (node.id) {
+        (_a = document.getElementById(node.id)) == null ? void 0 : _a.remove();
+      }
+      const teleportContainer = document.querySelector(to);
+      if (!teleportContainer) {
+        throw new Error(`teleport container not found: ${to}`);
+      }
+      if (position === 'append') {
+        teleportContainer.appendChild(node);
+      } else {
+        teleportContainer.prepend(node);
+      }
+      return () => {
+        node.remove();
+      };
+    });
   };
-  var opts = Object.assign({}, defaults, options);
-
-  /*****************************************************
-   * Create modal html string
-   */
-
-  // textarea in our modals are optional.  To add one, using the placeholder option will generate
-  // a textarea in the modal
-  var textarea = '';
-  if (opts.placeholder) {
-    textarea = '<textarea placeholder="' + opts.placeholder + '" maxlength="' + opts.maxlength + '">';
-    textarea += opts.value;
-    textarea += '</textarea>';
+  var on_click$1 = () => {
+    document
+      .querySelector('.dubplus-menu')
+      .classList.toggle('dubplus-menu-open');
+  };
+  var root$o = /* @__PURE__ */ template(
+    `<button id="dubplus-menu-icon" type="button" aria-label="Dub+ menu" class="dubplus-icon svelte-9z7rrn"><!></button>`,
+  );
+  function MenuIcon($$anchor, $$props) {
+    push($$props, false);
+    init();
+    var button = root$o();
+    button.__click = [on_click$1];
+    var node = child(button);
+    Logo(node);
+    action(
+      button,
+      ($$node, $$action_arg) =>
+        teleport == null ? void 0 : teleport($$node, $$action_arg),
+      () => ({ to: '.header-right-navigation' }),
+    );
+    append($$anchor, button);
+    pop();
   }
-  var dubplusModal = ['<div class="dp-modal">', '<aside class="container">', '<div class="title">', '<h1>' + opts.title + '</h1>', '</div>', '<div class="content">', '<p>' + opts.content + '</p>', textarea, '</div>', '<div class="dp-modal-buttons">', makeButtons(opts.confirmCallback), '</div>', '</aside>', '</div>'].join('');
-  document.body.insertAdjacentHTML('beforeend', dubplusModal);
-
-  /*****************************************************
-   * Attach events to your modal
-   */
-
-  // if a confirm cb function was defined then we add a click event to the 
-  // confirm button as well
-  if (typeof opts.confirmCallback === 'function') {
-    $('#dp-modal-confirm').one("click", function (e) {
-      opts.confirmCallback();
-      $('.dp-modal').remove();
+  delegate(['click']);
+  const optionsKeyMap = {
+    'dubplus-autovote': 'autovote',
+    'dubplus-afk': 'afk',
+    'dubplus-emotes': 'emotes',
+    'dubplus-autocomplete': 'autocomplete',
+    custom_mentions: 'custom-mentions',
+    'chat-cleaner': 'chat-cleaner',
+    mention_notifications: 'mention-notifications',
+    dubplus_pm_notifications: 'pm-notifications',
+    dj_notification: 'dj-notification',
+    'dubplus-dubs-hover': 'dubs-hover',
+    'dubplus-downdubs': 'downdubs-in-chat',
+    'dubplus-updubs': 'updubs-in-chat',
+    'dubplus-grabschat': 'grabs-in-chat',
+    'dubplus-snow': 'snow',
+    'dubplus-rain': 'rain',
+    'dubplus-fullscreen': 'fullscreen',
+    'dubplus-split-chat': 'split-chat',
+    'dubplus-video-only': 'hide-chat',
+    'dubplus-chat-only': 'hide-video',
+    'dubplus-hide-avatars': 'hide-avatars',
+    'dubplus-hide-bg': 'hide-bg',
+    'dubplus-show-timestamp': 'show-timestamps',
+    'dubplus-spacebar-mute': 'spacebar-mute',
+    warn_redirect: 'warn-redirect',
+    'dubplus-comm-theme': 'community-theme',
+    'dubplus-custom-css': 'custom-css',
+    'dubplus-custom-bg': 'custom-bg',
+    'dubplus-custom-notification-sound': 'custom-notification-sound',
+  };
+  const customKeyMap = {
+    customAfkMessage: optionsKeyMap['dubplus-afk'],
+    custom_mentions: optionsKeyMap['custom_mentions'],
+    chat_cleaner: optionsKeyMap['chat-cleaner'],
+    dj_notification: optionsKeyMap['dj_notification'],
+    css: optionsKeyMap['dubplus-custom-css'],
+    bg: optionsKeyMap['dubplus-custom-bg'],
+    notificationSound: optionsKeyMap['dubplus-custom-notification-sound'],
+    'dubplus-custom-notification-sound':
+      optionsKeyMap['dubplus-custom-notification-sound'],
+  };
+  function migrate(oldSettings) {
+    logInfo('Old Settings', oldSettings);
+    const newOptions = {
+      options: {},
+      menu: { ...oldSettings.menu },
+      custom: {},
+    };
+    for (const [oldKey, boolValue] of Object.entries(oldSettings.options)) {
+      const newKey = optionsKeyMap[oldKey];
+      try {
+        newOptions.options[newKey] = boolValue;
+      } catch (e) {
+        logError(
+          'Error converting options',
+          e.message,
+          oldKey,
+          newKey,
+          boolValue,
+        );
+      }
+    }
+    for (const [oldKey, stringValue] of Object.entries(oldSettings.custom)) {
+      const newKey = customKeyMap[oldKey];
+      try {
+        newOptions.custom[newKey] = stringValue;
+      } catch (e) {
+        logError(
+          'Error converting custom',
+          e.message,
+          oldKey,
+          newKey,
+          stringValue,
+        );
+      }
+    }
+    return newOptions;
+  }
+  const STORAGE_KEY_OLD = 'dubplusUserSettings';
+  const STORAGE_KEY_NEW = 'dubplusUserSettingsV2';
+  const defaults = {
+    // this will store all the on/off states
+    options: {},
+    // this will store the open/close state of the menu sections
+    menu: {
+      general: 'open',
+      'user-interface': 'open',
+      settings: 'open',
+      customize: 'open',
+      contact: 'open',
+    },
+    // this will store the user inputs from the modals for features that support it
+    custom: {},
+  };
+  function loadSettings() {
+    try {
+      const v2Settings = JSON.parse(localStorage.getItem(STORAGE_KEY_NEW));
+      if (v2Settings) {
+        return (
+          /**@type {import("../../global").Settings}*/
+          v2Settings
+        );
+      }
+    } catch (e) {
+      logInfo('Error loading v2 settings, trying old settings. Error:', e);
+    }
+    try {
+      const oldSettings = JSON.parse(localStorage.getItem(STORAGE_KEY_OLD));
+      if (oldSettings) {
+        return migrate(
+          /**@type {import("../../global").Settings}*/
+          oldSettings,
+        );
+      }
+    } catch (e) {
+      logInfo('Error loading old settings:', e);
+    }
+    return {};
+  }
+  const intialSettings = Object.assign({}, defaults, loadSettings());
+  let settings = proxy(intialSettings);
+  function persist() {
+    try {
+      localStorage.setItem(STORAGE_KEY_NEW, JSON.stringify(settings));
+    } catch (e) {
+      logError('Error saving user settings:', e);
+    }
+  }
+  function saveSetting(section, property, value) {
+    if (section === 'option') {
+      settings.options[property] = value;
+      persist();
+      return;
+    }
+    if (section === 'custom') {
+      settings.custom[property] = value;
+      persist();
+      return;
+    }
+    if (section === 'menu') {
+      settings.menu[property] = value;
+      persist();
+      return;
+    }
+    throw new Error(`Invalid section: "${section}"`);
+  }
+  var root$n = /* @__PURE__ */ template(
+    `<button type="button" class="dubplus-menu-section-header svelte-31yg9a"><span></span> <p class="svelte-31yg9a"> </p></button>`,
+  );
+  function MenuHeader($$anchor, $$props) {
+    push($$props, true);
+    let arrow = state('down');
+    let expanded = state(true);
+    user_effect(() => {
+      if (settings.menu[$$props.settingsId] === 'closed') {
+        set(arrow, 'right');
+        set(expanded, false);
+      } else {
+        set(arrow, 'down');
+        set(expanded, true);
+      }
+    });
+    function toggle() {
+      settings.menu[$$props.settingsId] =
+        settings.menu[$$props.settingsId] === 'closed' ? 'open' : 'closed';
+      saveSetting(
+        'menu',
+        $$props.settingsId,
+        settings.menu[$$props.settingsId],
+      );
+    }
+    var button = root$n();
+    button.__click = toggle;
+    var span = child(button);
+    var p = sibling(span, 2);
+    var text2 = child(p);
+    template_effect(() => {
+      set_attribute(
+        button,
+        'id',
+        `dubplus-menu-section-header-${$$props.settingsId}`,
+      );
+      set_attribute(button, 'aria-expanded', get(expanded));
+      set_attribute(
+        button,
+        'aria-controls',
+        `dubplus-menu-section-${$$props.settingsId}`,
+      );
+      set_class(span, `fa fa-angle-${get(arrow) ?? ''} svelte-31yg9a`);
+      set_text(text2, $$props.name);
+    });
+    append($$anchor, button);
+    pop();
+  }
+  delegate(['click']);
+  var root$m = /* @__PURE__ */ template(
+    `<ul class="dubplus-menu-section svelte-m5z2p2" role="region"><!></ul>`,
+  );
+  function MenuSection($$anchor, $$props) {
+    var ul = root$m();
+    var node = child(ul);
+    snippet(node, () => $$props.children);
+    template_effect(() => {
+      set_attribute(ul, 'id', `dubplus-menu-section-${$$props.settingsId}`);
+      set_attribute(
+        ul,
+        'aria-labelledby',
+        `dubplus-menu-section-header-${$$props.settingsId}`,
+      );
+    });
+    append($$anchor, ul);
+  }
+  var root$l = /* @__PURE__ */ template(
+    `<li class="dubplus-menu-icon svelte-1oilhp7"><!> <a class="dubplus-menu-label svelte-1oilhp7" target="_blank"> </a></li>`,
+  );
+  function MenuLink($$anchor, $$props) {
+    var li = root$l();
+    var node = child(li);
+    component(
+      node,
+      () => $$props.icon,
+      ($$anchor2, $$component) => {
+        $$component($$anchor2, {});
+      },
+    );
+    var a = sibling(node, 2);
+    var text_1 = child(a);
+    template_effect(() => {
+      set_attribute(a, 'href', $$props.href);
+      set_text(text_1, $$props.text);
+    });
+    append($$anchor, li);
+  }
+  var root$k = /* @__PURE__ */ ns_template(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 0c53 0 96 43 96 96l0 3.6c0 15.7-12.7 28.4-28.4 28.4l-135.1 0c-15.7 0-28.4-12.7-28.4-28.4l0-3.6c0-53 43-96 96-96zM41.4 105.4c12.5-12.5 32.8-12.5 45.3 0l64 64c.7 .7 1.3 1.4 1.9 2.1c14.2-7.3 30.4-11.4 47.5-11.4l112 0c17.1 0 33.2 4.1 47.5 11.4c.6-.7 1.2-1.4 1.9-2.1l64-64c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-64 64c-.7 .7-1.4 1.3-2.1 1.9c6.2 12 10.1 25.3 11.1 39.5l64.3 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c0 24.6-5.5 47.8-15.4 68.6c2.2 1.3 4.2 2.9 6 4.8l64 64c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0l-63.1-63.1c-24.5 21.8-55.8 36.2-90.3 39.6L272 240c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 239.2c-34.5-3.4-65.8-17.8-90.3-39.6L86.6 502.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l64-64c1.9-1.9 3.9-3.4 6-4.8C101.5 367.8 96 344.6 96 320l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64.3 0c1.1-14.1 5-27.5 11.1-39.5c-.7-.6-1.4-1.2-2.1-1.9l-64-64c-12.5-12.5-12.5-32.8 0-45.3z"></path></svg>`,
+  );
+  function IconBug($$anchor) {
+    var svg = root$k();
+    append($$anchor, svg);
+  }
+  var root$j = /* @__PURE__ */ ns_template(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32zM305.9 166.4c20.6 0 37.3-16.7 37.3-37.3s-16.7-37.3-37.3-37.3c-18 0-33.1 12.8-36.6 29.8c-30.2 3.2-53.8 28.8-53.8 59.9l0 .2c-32.8 1.4-62.8 10.7-86.6 25.5c-8.8-6.8-19.9-10.9-32-10.9c-28.9 0-52.3 23.4-52.3 52.3c0 21 12.3 39 30.1 47.4c1.7 60.7 67.9 109.6 149.3 109.6s147.6-48.9 149.3-109.7c17.7-8.4 29.9-26.4 29.9-47.3c0-28.9-23.4-52.3-52.3-52.3c-12 0-23 4-31.9 10.8c-24-14.9-54.3-24.2-87.5-25.4l0-.1c0-22.2 16.5-40.7 37.9-43.7l0 0c3.9 16.5 18.7 28.7 36.3 28.7zM155 248.1c14.6 0 25.8 15.4 25 34.4s-11.8 25.9-26.5 25.9s-27.5-7.7-26.6-26.7s13.5-33.5 28.1-33.5zm166.4 33.5c.9 19-12 26.7-26.6 26.7s-25.6-6.9-26.5-25.9c-.9-19 10.3-34.4 25-34.4s27.3 14.6 28.1 33.5zm-42.1 49.6c-9 21.5-30.3 36.7-55.1 36.7s-46.1-15.1-55.1-36.7c-1.1-2.6 .7-5.4 3.4-5.7c16.1-1.6 33.5-2.5 51.7-2.5s35.6 .9 51.7 2.5c2.7 .3 4.5 3.1 3.4 5.7z"></path></svg>`,
+  );
+  function IconReddit($$anchor) {
+    var svg = root$j();
+    append($$anchor, svg);
+  }
+  var root$i = /* @__PURE__ */ ns_template(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64h98.2V334.2H109.4V256h52.8V222.3c0-87.1 39.4-127.5 125-127.5c16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1c-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H255V480H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64z"></path></svg>`,
+  );
+  function IconFacebook($$anchor) {
+    var svg = root$i();
+    append($$anchor, svg);
+  }
+  var root$h = /* @__PURE__ */ ns_template(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM351.3 199.3v0c0 86.7-66 186.6-186.6 186.6c-37.2 0-71.7-10.8-100.7-29.4c5.3 .6 10.4 .8 15.8 .8c30.7 0 58.9-10.4 81.4-28c-28.8-.6-53-19.5-61.3-45.5c10.1 1.5 19.2 1.5 29.6-1.2c-30-6.1-52.5-32.5-52.5-64.4v-.8c8.7 4.9 18.9 7.9 29.6 8.3c-9-6-16.4-14.1-21.5-23.6s-7.8-20.2-7.7-31c0-12.2 3.2-23.4 8.9-33.1c32.3 39.8 80.8 65.8 135.2 68.6c-9.3-44.5 24-80.6 64-80.6c18.9 0 35.9 7.9 47.9 20.7c14.8-2.8 29-8.3 41.6-15.8c-4.9 15.2-15.2 28-28.8 36.1c13.2-1.4 26-5.1 37.8-10.2c-8.9 13.1-20.1 24.7-32.9 34c.2 2.8 .2 5.7 .2 8.5z"></path></svg>`,
+  );
+  function IconTwitter($$anchor) {
+    var svg = root$h();
+    append($$anchor, svg);
+  }
+  var root_1$2 = /* @__PURE__ */ template(`<!> <!> <!> <!>`, 1);
+  var root$g = /* @__PURE__ */ template(`<!> <!>`, 1);
+  function Contact($$anchor, $$props) {
+    push($$props, false);
+    init();
+    var fragment = root$g();
+    var node = first_child(fragment);
+    const expression = /* @__PURE__ */ derived_safe_equal(() =>
+      t('contact.title'),
+    );
+    MenuHeader(node, {
+      settingsId: 'contact',
+      get name() {
+        return get(expression);
+      },
+    });
+    var node_1 = sibling(node, 2);
+    MenuSection(node_1, {
+      settingsId: 'contact',
+      children: ($$anchor2, $$slotProps) => {
+        var fragment_1 = root_1$2();
+        var node_2 = first_child(fragment_1);
+        const expression_1 = /* @__PURE__ */ derived_safe_equal(() =>
+          t('contact.bugs'),
+        );
+        MenuLink(node_2, {
+          icon: IconBug,
+          href: 'https://discord.gg/XUkG3Qy',
+          get text() {
+            return get(expression_1);
+          },
+        });
+        var node_3 = sibling(node_2, 2);
+        MenuLink(node_3, {
+          icon: IconReddit,
+          href: 'https://www.reddit.com/r/DubPlus/',
+          text: 'Reddit',
+        });
+        var node_4 = sibling(node_3, 2);
+        MenuLink(node_4, {
+          icon: IconFacebook,
+          href: 'https://facebook.com/DubPlusScript',
+          text: 'Facebook',
+        });
+        var node_5 = sibling(node_4, 2);
+        MenuLink(node_5, {
+          icon: IconTwitter,
+          href: 'https://twitter.com/DubPlusScript',
+          text: 'Twitter',
+        });
+        append($$anchor2, fragment_1);
+      },
+    });
+    append($$anchor, fragment);
+    pop();
+  }
+  function handleKeydown(event2, $$props, checked) {
+    if ($$props.disabled) return;
+    if (event2.key === 'Enter' || event2.key === ' ') {
+      event2.preventDefault();
+      set(checked, !get(checked));
+      $$props.onToggle(get(checked));
+    }
+  }
+  function handleClick(_, $$props, checked) {
+    if ($$props.disabled) return;
+    set(checked, !get(checked));
+    $$props.onToggle(get(checked));
+  }
+  var root$f = /* @__PURE__ */ template(
+    `<div role="switch" tabindex="0" class="svelte-1mny4ma"><span class="dubplus-switch svelte-1mny4ma"><span class="svelte-1mny4ma"></span></span> <span class="dubplus-switch-label svelte-1mny4ma"> </span></div>`,
+  );
+  function Switch($$anchor, $$props) {
+    push($$props, true);
+    let checked = state(proxy(!$$props.disabled ? $$props.isOn : false));
+    var div = root$f();
+    div.__click = [handleClick, $$props, checked];
+    div.__keydown = [handleKeydown, $$props, checked];
+    var span = sibling(child(div), 2);
+    var text2 = child(span);
+    template_effect(() => {
+      set_attribute(div, 'aria-disabled', $$props.disabled ? 'true' : 'false');
+      set_attribute(div, 'aria-checked', get(checked) ? 'true' : 'false');
+      set_text(text2, $$props.label);
+    });
+    append($$anchor, div);
+    pop();
+  }
+  delegate(['click', 'keydown']);
+  var root$e = /* @__PURE__ */ ns_template(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1 0 32c0 8.8 7.2 16 16 16l32 0zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"></path></svg>`,
+  );
+  function IconPencil($$anchor) {
+    var svg = root$e();
+    append($$anchor, svg);
+  }
+  function isMod(userid) {
+    return (
+      window.QueUp.helpers.isSiteAdmin(userid) ||
+      window.QueUp.room.users.getIfOwner(userid) ||
+      window.QueUp.room.users.getIfManager(userid) ||
+      window.QueUp.room.users.getIfMod(userid)
+    );
+  }
+  var root_1$1 = /* @__PURE__ */ template(
+    `<button type="button" class="svelte-1dzj03i"><!> <span class="sr-only"> </span></button>`,
+  );
+  var root$d = /* @__PURE__ */ template(
+    `<li class="svelte-1dzj03i"><!> <!></li>`,
+  );
+  function MenuSwitch($$anchor, $$props) {
+    push($$props, true);
+    onMount(() => {
+      if ($$props.init) $$props.init();
+      if (settings.options[$$props.id]) {
+        const status = $$props.modOnly ? isMod(window.QueUp.session.id) : true;
+        $$props.onToggle(status, true);
+      }
+    });
+    function openEditModal() {
+      updateModalState({
+        title: t($$props.customize.title),
+        content: t($$props.customize.content),
+        placeholder: t($$props.customize.placeholder),
+        maxlength: $$props.customize.maxlength,
+        value: settings.custom[$$props.id] || '',
+        validation: $$props.customize.validation,
+        onConfirm: (value) => {
+          saveSetting('custom', $$props.id, value);
+          if (typeof $$props.customize.onConfirm === 'function') {
+            $$props.customize.onConfirm(value);
+          }
+        },
+        onCancel: () => {
+          if (typeof $$props.customize.onCancel === 'function')
+            $$props.customize.onCancel();
+        },
+      });
+      modalState.open = true;
+    }
+    var li = root$d();
+    var node = child(li);
+    const expression = /* @__PURE__ */ derived(() =>
+      $$props.modOnly ? !isMod(window.QueUp.session.id) : false,
+    );
+    const expression_1 = /* @__PURE__ */ derived(() => t($$props.label));
+    Switch(node, {
+      get disabled() {
+        return get(expression);
+      },
+      get label() {
+        return get(expression_1);
+      },
+      onToggle: (state2) => {
+        if (
+          $$props.customize &&
+          state2 === true &&
+          !settings.custom[$$props.id]
+        ) {
+          openEditModal();
+          return;
+        }
+        $$props.onToggle(state2);
+      },
+      get isOn() {
+        return settings.options[$$props.id];
+      },
+    });
+    var node_1 = sibling(node, 2);
+    {
+      var consequent = ($$anchor2) => {
+        var button = root_1$1();
+        button.__click = openEditModal;
+        var node_2 = child(button);
+        IconPencil(node_2);
+        var span = sibling(node_2, 2);
+        var text2 = child(span);
+        template_effect(
+          ($0) => set_text(text2, $0),
+          [() => t('MenuItem.edit')],
+        );
+        append($$anchor2, button);
+      };
+      if_block(node_1, ($$render) => {
+        if ($$props.customize) $$render(consequent);
+      });
+    }
+    template_effect(
+      ($0, $1) => {
+        set_attribute(li, 'id', $$props.id);
+        set_attribute(li, 'title', $0);
+        toggle_class(li, 'disabled', $1);
+      },
+      [
+        () => t($$props.description),
+        () => ($$props.modOnly ? !isMod(window.QueUp.session.id) : false),
+      ],
+    );
+    append($$anchor, li);
+    pop();
+  }
+  delegate(['click']);
+  const DUB = 'realtime:room_playlist-dub';
+  const GRAB = 'realtime:room_playlist-queue-update-grabs';
+  const USER_LEAVE = 'realtime:user-leave';
+  const PLAYLIST_UPDATE = 'realtime:room_playlist-update';
+  const CHAT_MESSAGE = 'realtime:chat-message';
+  const NEW_PM_MESSAGE = 'realtime:new-message';
+  function voteCheck() {
+    var _a, _b, _c;
+    (_c =
+      (_b = (_a = window.QueUp) == null ? void 0 : _a.playerController) == null
+        ? void 0
+        : _b.voteUp) == null
+      ? void 0
+      : _c.click();
+  }
+  const autovote = {
+    id: 'autovote',
+    label: 'autovote.label',
+    description: 'autovote.description',
+    category: 'general',
+    turnOff() {
+      window.QueUp.Events.unbind(PLAYLIST_UPDATE, voteCheck);
+    },
+    turnOn() {
+      voteCheck();
+      window.QueUp.Events.bind(PLAYLIST_UPDATE, voteCheck);
+    },
+  };
+  let canSend = true;
+  function afk_chat_respond(e) {
+    if (!canSend) {
+      return;
+    }
+    const content = e.message;
+    const user = window.QueUp.session.get('username');
+    if (
+      content.includes(`@${user}`) &&
+      window.QueUp.session.id !== e.user.userInfo.userid
+    ) {
+      const chatInput = document.querySelector('#chat-txt-message');
+      if (settings.custom.afk) {
+        chatInput.value = `[AFK] ${settings.custom.afk}`;
+      } else {
+        chatInput.value = `[AFK] ${t('afk.modal.placeholder')}`;
+      }
+      window.QueUp.room.chat.sendMessage();
+      canSend = false;
+      setTimeout(() => {
+        canSend = true;
+      }, 3e4);
+    }
+  }
+  const afk = {
+    id: 'afk',
+    label: 'afk.label',
+    description: 'afk.description',
+    category: 'general',
+    turnOn() {
+      window.QueUp.Events.bind(CHAT_MESSAGE, afk_chat_respond);
+    },
+    turnOff() {
+      window.QueUp.Events.unbind(CHAT_MESSAGE, afk_chat_respond);
+    },
+    custom: {
+      title: 'afk.modal.title',
+      content: 'afk.modal.content',
+      placeholder: 'afk.modal.placeholder',
+      maxlength: 255,
+    },
+  };
+  !(function () {
+    function e(t3, o2) {
+      return n
+        ? void (n.transaction('s').objectStore('s').get(t3).onsuccess =
+            function (e2) {
+              var t4 = (e2.target.result && e2.target.result.v) || null;
+              o2(t4);
+            })
+        : void setTimeout(function () {
+            e(t3, o2);
+          }, 100);
+    }
+    var t2 =
+      window.indexedDB ||
+      window.mozIndexedDB ||
+      window.webkitIndexedDB ||
+      window.msIndexedDB;
+    if (!t2) return void console.error('indexDB not supported');
+    var n,
+      o = { k: '', v: '' },
+      r = t2.open('d2', 1);
+    (r.onsuccess = function (e2) {
+      n = this.result;
+    }),
+      (r.onerror = function (e2) {
+        console.error('indexedDB request error'), console.log(e2);
+      }),
+      (r.onupgradeneeded = function (e2) {
+        n = null;
+        var t3 = e2.target.result.createObjectStore('s', { keyPath: 'k' });
+        t3.transaction.oncomplete = function (e3) {
+          n = e3.target.db;
+        };
+      }),
+      (window.ldb = {
+        get: e,
+        set: function (e2, t3) {
+          (o.k = e2),
+            (o.v = t3),
+            n.transaction('s', 'readwrite').objectStore('s').put(o);
+        },
+      });
+  })();
+  function ldbGet(key) {
+    return new Promise((resolve) => {
+      window.ldb.get(key, function (data) {
+        resolve(data);
+      });
     });
   }
-
-  // add one time cancel click
-  $('#dp-modal-cancel').one("click", function () {
-    $('.dp-modal').remove();
-  });
-
-  // bind one time keyup ENTER and ESC events
-  $(document).one('keyup', function (e) {
-    // enter
-    if (e.keyCode === 13 && typeof opts.confirmCallback === 'function') {
-      opts.confirmCallback();
-      $('.dp-modal').remove();
+  function fetchTwitchEmotes() {
+    return fetch(
+      '//cdn.jsdelivr.net/gh/Jiiks/BetterDiscordApp/data/emotedata_twitch_global.json',
+    ).then((res) => res.json());
+  }
+  function fetchBTTVEmotes() {
+    return fetch('//api.betterttv.net/3/cached/emotes/global').then((res) =>
+      res.json(),
+    );
+  }
+  function fetchFrankerFacezEmotes() {
+    return fetch(
+      '//api.frankerfacez.com/v1/emoticons?per_page=200&private=off&sort=count-desc',
+    ).then((res) => res.json());
+  }
+  const dubplus_emoji = {
+    emoji: {
+      /**
+       * @param {string} id
+       * @returns {string}
+       */
+      template(id) {
+        id = id.replace(/:/g, '');
+        return `${window.emojify.defaultConfig.img_dir}/${encodeURI(id)}.png`;
+      },
+    },
+    twitchJSONSLoaded: false,
+    bttvJSONSLoaded: false,
+    tastyJSONLoaded: false,
+    frankerfacezJSONLoaded: false,
+    twitch: {
+      /**
+       * @param {string} id
+       * @returns {string}
+       */
+      template(id) {
+        return `//static-cdn.jtvnw.net/emoticons/v1/${id}/3.0`;
+      },
+      /**
+       * @type {Map<string, string>}
+       */
+      emotesMap: /* @__PURE__ */ new Map(),
+      chatRegex: new RegExp(':([-_a-z0-9]+):', 'ig'),
+    },
+    bttv: {
+      /**
+       * @param {string} id
+       * @returns {string}
+       */
+      template(id) {
+        return `//cdn.betterttv.net/emote/${id}/3x`;
+      },
+      /**
+       * @type {Map<string, string>}
+       */
+      emotesMap: /* @__PURE__ */ new Map(),
+      chatRegex: new RegExp(':([&!()\\-_a-z0-9]+):', 'ig'),
+    },
+    tasty: {
+      /**
+       * @param {string} id
+       * @returns {string}
+       */
+      template(id) {
+        return this.emotesMap.get(id).url;
+      },
+      /**
+       * @type {Map<string, {url: string, width: number, height: number}>}
+       */
+      emotesMap: /* @__PURE__ */ new Map(),
+    },
+    frankerFacez: {
+      /**
+       * @param {number} id
+       * @returns {string}
+       */
+      template(id) {
+        return `//cdn.frankerfacez.com/emoticon/${id}/1`;
+      },
+      /**
+       * @type {Map<string, number>}
+       */
+      emotesMap: /* @__PURE__ */ new Map(),
+      chatRegex: new RegExp(':([-_a-z0-9]+):', 'ig'),
+    },
+    /**
+     *
+     * @param {string} apiName
+     * @returns {Promise<boolean>}
+     */
+    shouldUpdateAPIs(apiName) {
+      const day = 864e5;
+      return ldbGet(`${apiName}_api`).then((savedItem) => {
+        if (savedItem) {
+          try {
+            const parsed = JSON.parse(savedItem);
+            if (typeof parsed.error !== 'undefined') {
+              return true;
+            }
+          } catch (e) {
+            return true;
+          }
+        }
+        const today = Date.now();
+        const lastSaved = parseInt(
+          localStorage.getItem(`${apiName}_api_timestamp`),
+        );
+        return isNaN(lastSaved) || today - lastSaved > day * 5 || !savedItem;
+      });
+    },
+    /**************************************************************************
+     * Loads the twitch emotes from the api.
+     * http://api.twitch.tv/kraken/chat/emoticon_images
+     */
+    /**
+     * @return {Promise<void>}
+     */
+    loadTwitchEmotes() {
+      if (this.twitchJSONSLoaded) {
+        return Promise.resolve();
+      }
+      return this.shouldUpdateAPIs('twitch').then((shouldUpdate) => {
+        if (shouldUpdate) {
+          logInfo('twitch', 'loading from api');
+          return fetchTwitchEmotes()
+            .then((json) => {
+              const twitchEmotes = {};
+              for (const emote in json.emotes) {
+                if (!twitchEmotes[emote]) {
+                  twitchEmotes[emote] = json.emotes[emote].image_id;
+                }
+              }
+              localStorage.setItem(
+                'twitch_api_timestamp',
+                Date.now().toString(),
+              );
+              window.ldb.set('twitch_api', JSON.stringify(twitchEmotes));
+              dubplus_emoji.processTwitchEmotes(twitchEmotes);
+            })
+            .catch((err) => logError(err));
+        } else {
+          return ldbGet('twitch_api').then((data) => {
+            logInfo('twitch', 'loading from IndexedDB');
+            const savedData = JSON.parse(data);
+            dubplus_emoji.processTwitchEmotes(savedData);
+          });
+        }
+      });
+    },
+    /**
+     * @return {Promise<void>}
+     */
+    loadBTTVEmotes() {
+      if (this.bttvJSONSLoaded) {
+        return Promise.resolve();
+      }
+      return this.shouldUpdateAPIs('bttv').then((shouldUpdate) => {
+        if (shouldUpdate) {
+          logInfo('bttv', 'loading from api');
+          return fetchBTTVEmotes()
+            .then((json) => {
+              const bttvEmotes = {};
+              json.forEach((e) => {
+                if (!bttvEmotes[e.code]) {
+                  bttvEmotes[e.code] = e.id;
+                }
+              });
+              localStorage.setItem('bttv_api_timestamp', Date.now().toString());
+              window.ldb.set('bttv_api', JSON.stringify(bttvEmotes));
+              dubplus_emoji.processBTTVEmotes(bttvEmotes);
+            })
+            .catch((err) => logError(err));
+        } else {
+          return ldbGet('bttv_api').then((data) => {
+            logInfo('bttv', 'loading from IndexedDB');
+            const savedData = JSON.parse(data);
+            dubplus_emoji.processBTTVEmotes(savedData);
+          });
+        }
+      });
+    },
+    /**
+     * @return {Promise<void>}
+     */
+    loadTastyEmotes() {
+      if (this.tastyJSONLoaded) {
+        return Promise.resolve();
+      }
+      logInfo('tasty', 'loading from api');
+      return fetch(
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}/emotes/tastyemotes.json`,
+      )
+        .then((res) => res.json())
+        .then((json) => {
+          window.ldb.set('tasty_api', JSON.stringify(json));
+          dubplus_emoji.processTastyEmotes(json);
+        })
+        .catch((err) => logError(err));
+    },
+    /**
+     * @return {Promise<void>}
+     */
+    loadFrankerFacez() {
+      if (this.frankerfacezJSONLoaded) {
+        return Promise.resolve();
+      }
+      return this.shouldUpdateAPIs('frankerfacez').then((shouldUpdate) => {
+        if (shouldUpdate) {
+          logInfo('frankerfacez', 'loading from api');
+          return fetchFrankerFacezEmotes()
+            .then((json) => {
+              const frankerFacez = json;
+              localStorage.setItem(
+                'frankerfacez_api_timestamp',
+                Date.now().toString(),
+              );
+              window.ldb.set('frankerfacez_api', JSON.stringify(frankerFacez));
+              dubplus_emoji.processFrankerFacez(frankerFacez);
+            })
+            .catch((err) => logError(err));
+        } else {
+          return ldbGet('frankerfacez_api').then((data) => {
+            logInfo('frankerfacez', 'loading from IndexedDB');
+            const savedData = JSON.parse(data);
+            dubplus_emoji.processFrankerFacez(savedData);
+          });
+        }
+      });
+    },
+    /**
+     *
+     * @param {{[emote: string]: string}} data
+     */
+    processTwitchEmotes(data) {
+      for (const code in data) {
+        if (Object.hasOwn(data, code)) {
+          const key = code.toLowerCase();
+          if (window.emojify.emojiNames.includes(key)) {
+            continue;
+          }
+          this.twitch.emotesMap.set(key, data[code]);
+        }
+      }
+      this.twitchJSONSLoaded = true;
+    },
+    /**
+     * @param {{[emote: string]: string}} data
+     */
+    processBTTVEmotes(data) {
+      for (const code in data) {
+        if (Object.hasOwn(data, code)) {
+          const key = code.toLowerCase();
+          if (code.indexOf(':') >= 0) {
+            continue;
+          }
+          if (window.emojify.emojiNames.indexOf(key) >= 0) {
+            continue;
+          }
+          if (!this.twitch.emotesMap.has(key)) {
+            this.bttv.emotesMap.set(key, data[code]);
+          }
+        }
+      }
+      this.bttvJSONSLoaded = true;
+    },
+    /**
+     * @param {{[emote: string]: { url: string; width: number; height: number; }}} data
+     */
+    processTastyEmotes(data) {
+      this.tasty.emotes = data.emotes;
+      this.tastyJSONLoaded = true;
+      Object.keys(this.tasty.emotes).forEach((key) => {
+        this.tasty.emotesMap.set(key, data[key]);
+      });
+    },
+    /**
+     * @param {FrankerFacezJsonResponse} data
+     */
+    processFrankerFacez(data) {
+      for (const emoticon of data.emoticons) {
+        const code = emoticon.name;
+        const key = code.toLowerCase();
+        if (code.indexOf(':') >= 0) {
+          continue;
+        }
+        if (window.emojify.emojiNames.includes(key)) {
+          continue;
+        }
+        if (!this.twitch.emotesMap.has(key) && !this.bttv.emotesMap.has(key)) {
+          this.frankerFacez.emotesMap.set(key, emoticon.id);
+        }
+      }
+      this.frankerfacezJSONLoaded = true;
+    },
+    /**
+     * @param {string} str
+     * @param {boolean} [emotesEnabled=false]
+     */
+    findMatchingEmotes(str, emotesEnabled = false) {
+      const matches = [];
+      window.emojify.emojiNames.forEach((emoji) => {
+        if (emoji.includes(str)) {
+          matches.push({
+            src: this.emoji.template(emoji),
+            text: emoji,
+            alt: emoji,
+            platform: 'emojify',
+          });
+        }
+      });
+      if (!emotesEnabled) {
+        return matches;
+      }
+      Array.from(this.twitch.emotesMap.keys()).forEach((emoji) => {
+        if (emoji.includes(str)) {
+          matches.push({
+            src: this.twitch.template(this.twitch.emotesMap.get(emoji)),
+            text: emoji,
+            alt: emoji,
+            platform: 'twitch',
+          });
+        }
+      });
+      Array.from(this.bttv.emotesMap.keys()).forEach((emoji) => {
+        if (emoji.includes(str)) {
+          matches.push({
+            src: this.bttv.template(this.bttv.emotesMap.get(emoji)),
+            text: emoji,
+            alt: emoji,
+            platform: 'bttv',
+          });
+        }
+      });
+      Array.from(this.frankerFacez.emotesMap.keys()).forEach((emoji) => {
+        if (emoji.includes(str)) {
+          matches.push({
+            src: this.frankerFacez.template(
+              this.frankerFacez.emotesMap.get(emoji),
+            ),
+            text: emoji,
+            alt: emoji,
+            platform: 'ffz',
+          });
+        }
+      });
+      return matches;
+    },
+  };
+  function makeImage(type, src, name, w, h) {
+    const width = '';
+    const height = '';
+    return `<img class="emoji ${type}-emote" ${width} ${height} title="${name}" alt="${name}" src="${src}" />`;
+  }
+  function replaceTwitch(html) {
+    if (!dubplus_emoji.twitchJSONSLoaded) {
+      return html;
     }
-    // esc
-    if (e.keyCode === 27) {
-      $('.dp-modal').remove();
-    }
-  });
-};
-var close = function close() {
-  $('.dp-modal').remove();
-};
-module.exports = {
-  create: create,
-  close: close
-};
-
-},{}],44:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = _default;
-/**
- * Check if a user is at least a mod or above
- */
-/*global Dubtrack */
-function _default(userid) {
-  return QueUp.helpers.isSiteAdmin(userid) || QueUp.room.users.getIfOwner(userid) || QueUp.room.users.getIfManager(userid) || QueUp.room.users.getIfMod(userid);
-}
-
-},{}],45:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.notifyCheckPermission = notifyCheckPermission;
-exports.showNotification = showNotification;
-/* global Dubtrack */
-var modal = require('../utils/modal.js');
-var isActiveTab = true;
-window.onfocus = function () {
-  isActiveTab = true;
-};
-window.onblur = function () {
-  isActiveTab = false;
-};
-var onDenyDismiss = function onDenyDismiss() {
-  modal.create({
-    title: 'Desktop Notifications',
-    content: "You have dismissed or chosen to deny the request to allow desktop notifications. Reset this choice by clearing your cache for the site."
-  });
-};
-function notifyCheckPermission(cb) {
-  var _cb = typeof cb === 'function' ? cb : function () {};
-
-  // first check if browser supports it
-  if (!("Notification" in window)) {
-    modal.create({
-      title: 'Desktop Notifications',
-      content: "Sorry this browser does not support desktop notifications.  Please use the latest version of Chrome or FireFox"
+    const _regex = dubplus_emoji.twitch.chatRegex;
+    const emoted = html.replace(_regex, function (matched, p1) {
+      const key = p1.toLowerCase();
+      if (dubplus_emoji.twitch.emotesMap.has(key)) {
+        const id = dubplus_emoji.twitch.emotesMap.get(key);
+        const src = dubplus_emoji.twitch.template(id);
+        return makeImage('twitch', src, key);
+      } else {
+        return matched;
+      }
     });
-    return _cb(false);
+    return emoted;
   }
-
-  // no request needed, good to go
-  if (Notification.permission === "granted") {
-    return _cb(true);
+  function replaceBttv(html) {
+    if (!dubplus_emoji.bttvJSONSLoaded) {
+      return html;
+    }
+    const _regex = dubplus_emoji.bttv.chatRegex;
+    const emoted = html.replace(_regex, function (matched, p1) {
+      const key = p1.toLowerCase();
+      if (dubplus_emoji.bttv.emotesMap.has(key)) {
+        const id = dubplus_emoji.bttv.emotesMap.get(key);
+        const src = dubplus_emoji.bttv.template(id);
+        return makeImage('bttv', src, key);
+      } else {
+        return matched;
+      }
+    });
+    return emoted;
   }
-  if (Notification.permission !== 'denied') {
-    Notification.requestPermission().then(function (result) {
-      if (result === 'denied' || result === 'default') {
-        onDenyDismiss();
-        _cb(false);
+  function replaceFranker(html) {
+    if (!dubplus_emoji.frankerfacezJSONLoaded) {
+      return html;
+    }
+    const _regex = dubplus_emoji.frankerFacez.chatRegex;
+    const emoted = html.replace(_regex, function (matched, p1) {
+      const key = p1.toLowerCase();
+      if (dubplus_emoji.frankerFacez.emotesMap.has(key)) {
+        const id = dubplus_emoji.frankerFacez.emotesMap.get(key);
+        const src = dubplus_emoji.frankerFacez.template(id);
+        return makeImage('frankerFacez', src, key);
+      } else {
+        return matched;
+      }
+    });
+    return emoted;
+  }
+  function replaceTextWithEmote() {
+    const chats = document.querySelectorAll(
+      '.chat-main li:not([data-emote-processed])',
+    );
+    if (!(chats == null ? void 0 : chats.length)) {
+      return;
+    }
+    chats.forEach((li) => {
+      li.setAttribute('data-emote-processed', 'true');
+      const text2 = li.querySelector('.text');
+      if (text2 == null ? void 0 : text2.innerHTML) {
+        let processedHTML = replaceTwitch(text2.innerHTML);
+        processedHTML = replaceBttv(processedHTML);
+        processedHTML = replaceFranker(processedHTML);
+        text2.innerHTML = processedHTML;
+      }
+    });
+  }
+  const emotes = {
+    id: 'emotes',
+    label: 'emotes.label',
+    description: 'emotes.description',
+    category: 'general',
+    turnOn() {
+      dubplus_emoji
+        .loadTwitchEmotes()
+        .then(() => dubplus_emoji.loadBTTVEmotes())
+        .then(() => dubplus_emoji.loadFrankerFacez())
+        .then(() => {
+          replaceTextWithEmote();
+          window.QueUp.Events.bind(CHAT_MESSAGE, replaceTextWithEmote);
+        });
+    },
+    turnOff() {
+      window.QueUp.Events.unbind(CHAT_MESSAGE, replaceTextWithEmote);
+    },
+  };
+  const emojiState = proxy({ selectedIndex: 0, emojiList: [] });
+  function reset() {
+    emojiState.selectedIndex = 0;
+    emojiState.emojiList = [];
+  }
+  function setEmojiList(listArray) {
+    emojiState.emojiList = listArray.filter(
+      (emoji, index2, self) =>
+        index2 ===
+        self.findIndex(
+          (e) => e.src === emoji.src && e.platform === emoji.platform,
+        ),
+    );
+  }
+  function decrement() {
+    if (emojiState.selectedIndex > 0) {
+      emojiState.selectedIndex--;
+    } else {
+      emojiState.selectedIndex = emojiState.emojiList.length - 1;
+    }
+  }
+  function increment() {
+    if (emojiState.selectedIndex < emojiState.emojiList.length - 1) {
+      emojiState.selectedIndex++;
+    } else {
+      emojiState.selectedIndex = 0;
+    }
+  }
+  function isEdge(char) {
+    return char === ' ' || char === '\n';
+  }
+  function getSelection(currentText, cursorPos) {
+    let left = cursorPos > 0 ? cursorPos : 0;
+    while (left > 0 && currentText[left] !== ':') {
+      left -= 1;
+    }
+    let right = cursorPos;
+    while (!isEdge(currentText[right]) && right < currentText.length) {
+      right += 1;
+    }
+    return [left, right];
+  }
+  const KEYS = {
+    up: 'ArrowUp',
+    down: 'ArrowDown',
+    enter: 'Enter',
+    esc: 'Escape',
+    tab: 'Tab',
+  };
+  const MIN_CHAR = 3;
+  let acPreview = document.querySelector('#autocomplete-preview');
+  let originalKeyDownEventHandler;
+  function insertEmote(inputEl, index2) {
+    const selected = emojiState.emojiList[index2];
+    const [start, end] = getSelection(inputEl.value, inputEl.selectionStart);
+    const target = inputEl.value.substring(start, end);
+    inputEl.value = inputEl.value.replace(target, `:${selected.text}:`);
+    reset();
+  }
+  function checkInput(e) {
+    const inputEl =
+      /**@type {HTMLTextAreaElement}*/
+      e.target;
+    const currentText = inputEl.value;
+    const cursorPos = inputEl.selectionStart;
+    let str = '';
+    let goLeft = cursorPos - 1;
+    while (!isEdge(currentText[goLeft]) && goLeft >= 0) {
+      str = currentText[goLeft] + str;
+      goLeft--;
+    }
+    let goRight = cursorPos;
+    while (!isEdge(currentText[goRight]) && goRight < currentText.length) {
+      str = str + currentText[goRight];
+      goRight++;
+    }
+    if (str.startsWith(':') && str.length >= MIN_CHAR && !str.endsWith(':')) {
+      const list = dubplus_emoji.findMatchingEmotes(
+        str.substring(1).trim(),
+        settings.options.emotes,
+      );
+      setEmojiList(list);
+    } else {
+      reset();
+    }
+  }
+  function chatInputKeyupFunc(e) {
+    acPreview = acPreview || document.querySelector('#autocomplete-preview');
+    const hasItems = acPreview.children.length > 0;
+    const isModifierKey = e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
+    if (isModifierKey) {
+      return;
+    }
+    if (e.key === KEYS.up && hasItems) {
+      e.preventDefault();
+      decrement();
+      return;
+    }
+    if (e.key === KEYS.down && hasItems) {
+      e.preventDefault();
+      increment();
+      return;
+    }
+    if ((e.key === KEYS.enter || e.key === KEYS.tab) && hasItems) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const inputEl =
+        /**@type {HTMLTextAreaElement}*/
+        e.target;
+      insertEmote(inputEl, emojiState.selectedIndex);
+      return;
+    }
+    if (e.key === KEYS.esc && hasItems) {
+      reset();
+      return;
+    }
+    checkInput(e);
+  }
+  function chatInputKeydownFunc(e) {
+    acPreview = acPreview || document.querySelector('#autocomplete-preview');
+    const emptyPreview = acPreview.children.length === 0;
+    const isValidKey = [KEYS.tab, KEYS.enter, KEYS.up, KEYS.down].includes(
+      e.key,
+    );
+    const isModifierKey = e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
+    if (!isModifierKey && !emptyPreview && isValidKey) {
+      e.preventDefault();
+      return;
+    }
+    if (!isModifierKey && e.key === KEYS.enter) {
+      window.QueUp.room.chat.sendMessage();
+      window.QueUp.room.chat.resizeTextarea();
+    } else if (!isModifierKey) {
+      window.QueUp.room.chat.ncKeyDown(e);
+    }
+  }
+  const autocomplete = {
+    id: 'autocomplete',
+    label: 'autocomplete.label',
+    category: 'general',
+    description: 'autocomplete.description',
+    turnOn() {
+      acPreview = document.querySelector('#autocomplete-preview');
+      reset();
+      originalKeyDownEventHandler =
+        window.QueUp.room.chat.events['keydown #chat-txt-message'];
+      const newEventsObject = { ...window.QueUp.room.chat.events };
+      delete newEventsObject['keydown #chat-txt-message'];
+      window.QueUp.room.chat.delegateEvents(newEventsObject);
+      const chatInput = document.getElementById('chat-txt-message');
+      chatInput.addEventListener('keydown', chatInputKeydownFunc);
+      chatInput.addEventListener('keyup', chatInputKeyupFunc);
+      chatInput.addEventListener('click', checkInput);
+    },
+    turnOff() {
+      reset();
+      window.QueUp.room.chat.events['keydown #chat-txt-message'] =
+        originalKeyDownEventHandler;
+      window.QueUp.room.chat.delegateEvents(window.QueUp.room.chat.events);
+      const chatInput = document.getElementById('chat-txt-message');
+      chatInput.removeEventListener('keydown', chatInputKeydownFunc);
+      chatInput.removeEventListener('keyup', chatInputKeyupFunc);
+      chatInput.removeEventListener('click', checkInput);
+    },
+  };
+  const MODULE_ID$1 = 'custom-mentions';
+  function customMentionCheck(e) {
+    const enabled = settings.options[MODULE_ID$1];
+    const custom = settings.custom[MODULE_ID$1];
+    if (
+      enabled && // we only want to play the sound if the message is not from the current user
+      window.QueUp.session.id !== e.user.userInfo.userid
+    ) {
+      const shouldPlaySound = custom.split(',').some(function (v) {
+        const reg = new RegExp('(^|\\b)@?' + v.trim() + '\\b', 'ig');
+        return reg.test(e.message);
+      });
+      if (shouldPlaySound) {
+        window.QueUp.room.chat.mentionChatSound.play();
+      }
+    }
+  }
+  const customMentions = {
+    id: MODULE_ID$1,
+    label: `${MODULE_ID$1}.label`,
+    description: `${MODULE_ID$1}.description`,
+    category: 'general',
+    custom: {
+      title: `${MODULE_ID$1}.modal.title`,
+      content: `${MODULE_ID$1}.modal.content`,
+      placeholder: `${MODULE_ID$1}.modal.placeholder`,
+      maxlength: 255,
+    },
+    turnOn() {
+      window.QueUp.Events.bind(CHAT_MESSAGE, customMentionCheck);
+    },
+    turnOff() {
+      window.QueUp.Events.unbind(CHAT_MESSAGE, customMentionCheck);
+    },
+  };
+  const MODULE_ID = 'chat-cleaner';
+  function chatCleanerCheck(n) {
+    const chatMessages = document.querySelectorAll('ul.chat-main > li');
+    const limit = parseInt(n ?? settings.custom[MODULE_ID], 10);
+    if (
+      !(chatMessages == null ? void 0 : chatMessages.length) ||
+      isNaN(limit) ||
+      chatMessages.length < limit
+    ) {
+      return;
+    }
+    for (let i = 0; i < chatMessages.length - limit; i++) {
+      chatMessages[i].remove();
+    }
+  }
+  const chatCleaner = {
+    id: MODULE_ID,
+    label: `${MODULE_ID}.label`,
+    description: `${MODULE_ID}.description`,
+    category: 'general',
+    custom: {
+      title: `${MODULE_ID}.modal.title`,
+      content: `${MODULE_ID}.modal.content`,
+      placeholder: `${MODULE_ID}.modal.placeholder`,
+      maxlength: 5,
+      validation(val) {
+        if (/[^0-9]+/g.test(val)) {
+          return t(`${MODULE_ID}.modal.validation`);
+        }
+        return true;
+      },
+      onConfirm: (value) => {
+        if (settings.options[MODULE_ID]) {
+          chatCleanerCheck(value);
+        }
+      },
+    },
+    turnOn() {
+      chatCleanerCheck(void 0);
+      window.QueUp.Events.bind(CHAT_MESSAGE, chatCleanerCheck);
+    },
+    turnOff() {
+      window.QueUp.Events.unbind(CHAT_MESSAGE, chatCleanerCheck);
+    },
+  };
+  const activeTabState = proxy({ isActive: true });
+  window.onfocus = function () {
+    activeTabState.isActive = true;
+  };
+  window.onblur = function () {
+    activeTabState.isActive = false;
+  };
+  function onDenyDismiss() {
+    updateModalState({
+      title: t('Notifcation.permission.title'),
+      content: t('Notification.permission.denied'),
+      open: true,
+    });
+  }
+  function notifyCheckPermission() {
+    return new Promise((resolve, reject) => {
+      if (!('Notification' in window)) {
+        updateModalState({
+          open: true,
+          title: t('Notifcation.permission.title'),
+          content: t('Notification.permission.notSupported'),
+        });
+        reject(false);
         return;
       }
-      _cb(true);
+      if (Notification.permission === 'granted') {
+        resolve();
+        return;
+      }
+      if (Notification.permission === 'denied') {
+        onDenyDismiss();
+        reject();
+        return;
+      }
+      Notification.requestPermission().then(function (result) {
+        if (result === 'denied' || result === 'default') {
+          onDenyDismiss();
+          reject();
+          return;
+        }
+        resolve();
+      });
     });
-  } else {
-    onDenyDismiss();
-    return _cb(false);
   }
-}
-function showNotification(opts) {
-  var defaults = {
-    title: 'New Message',
-    content: '',
-    ignoreActiveTab: false,
-    callback: null,
-    wait: 5000
-  };
-  var options = Object.assign({}, defaults, opts);
-
-  // don't show a notification if tab is active
-  if (isActiveTab === true && !options.ignoreActiveTab) {
-    return;
-  }
-  var notificationOptions = {
-    body: options.content,
-    icon: "https://res.cloudinary.com/hhberclba/image/upload/c_lpad,h_100,w_100/v1400351432/dubtrack_new_logo_fvpxa6.png"
-  };
-  var n = new Notification(options.title, notificationOptions);
-  n.onclick = function () {
-    window.focus();
-    if (typeof options.callback === "function") {
-      options.callback();
+  function showNotification(opts) {
+    const defaults2 = {
+      content: '',
+      ignoreActiveTab: false,
+      callback: null,
+      wait: 1e4,
+    };
+    const options = Object.assign({}, defaults2, opts);
+    if (activeTabState.isActive && !options.ignoreActiveTab) {
+      return;
     }
-    n.close();
-  };
-  setTimeout(n.close.bind(n), options.wait);
-}
-
-},{"../utils/modal.js":43}],46:[function(require,module,exports){
-'use strict';
-
-var settings = require("../lib/settings.js");
-
-/**
- * Update settings and save all options to localStorage
- * @param  {String} where      Location in the settings object to save to
- * @param  {String} optionName 
- * @param  {String|Number|Boolean} value      
- */
-var saveOption = function saveOption(where, optionName, value) {
-  settings[where][optionName] = value;
-  localStorage.setItem('dubplusUserSettings', JSON.stringify(settings));
-};
-var getAllOptions = function getAllOptions() {
-  var _stored = localStorage.dubplusUserSettings;
-  if (_stored) {
-    return JSON.parse(_stored);
-  } else {
-    return settings;
+    const notificationOptions = {
+      body: options.content,
+      icon: 'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus/images/dubplus.svg',
+    };
+    const n = new Notification(options.title, notificationOptions);
+    n.onclick = function () {
+      window.focus();
+      if (typeof options.callback === 'function') {
+        options.callback();
+      }
+      n.close();
+    };
+    setTimeout(n.close.bind(n), options.wait);
   }
-};
-
-/**
- * Updates the on/off state of the option in the dubplus menu
- * @param  {String} selector name of the selector to be updated
- * @param  {Bool} state      true for "on", false for "off"
- * @return {undefined}         
- */
-var toggle = function toggle(selector, state) {
-  var $item = $(selector);
-  if (!$item.length) {
-    return;
-  }
-  if (state === true) {
-    $item.addClass('dubplus-switch-on');
-  } else {
-    $item.removeClass('dubplus-switch-on');
-  }
-};
-var toggleAndSave = function toggleAndSave(optionName, state) {
-  toggle("#" + optionName, state);
-  return saveOption('options', optionName, state);
-};
-module.exports = {
-  toggle: toggle,
-  toggleAndSave: toggleAndSave,
-  getAllOptions: getAllOptions,
-  saveOption: saveOption
-};
-
-},{"../lib/settings.js":8}],47:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = preload;
-var settings = require('../lib/settings.js');
-function preload() {
-  var waitingStyles = ['font-family: \'Trebuchet MS\', Helvetica, sans-serif', 'z-index: 2147483647', 'color: white', 'position: fixed', 'top: 69px', 'right: 13px', 'background: #222', 'padding: 10px', 'line-height: 1', '-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75)', '-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75)', 'box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75)', 'border-radius: 5px', 'overflow: hidden', 'width: 230px'].join(';');
-  var dpIcon = ['float:left', 'width: 26px', 'margin-right:5px'].join(";");
-  var dpText = ['display: table-cell', 'width: 10000px', 'padding-top:5px'].join(";");
-  var preloadHTML = "\n    <div class=\"dubplus-waiting\" style=\"".concat(waitingStyles, "\">\n      <div style=\"").concat(dpIcon, "\">\n        <img src=\"").concat(settings.srcRoot, "/images/dubplus.svg\" alt=\"DubPlus icon\">\n      </div>\n      <span style=\"").concat(dpText, "\">\n        Waiting for QueUp...\n      </span>\n    </div>\n  ");
-  document.body.insertAdjacentHTML('afterbegin', preloadHTML);
-}
-
-},{"../lib/settings.js":8}],48:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-/**
- * Takes a string  representation of a variable or object and checks if it's
- * definied starting at provided scope or default to global window scope.
- * @param  {string} dottedString  the item you are looking for
- * @param  {var}    startingScope where to start lookined
- * @return {boolean}              if it is defined or not
- */
-function deepCheck(dottedString, startingScope) {
-  var _vars = dottedString.split('.');
-  var len = _vars.length;
-  var depth = startingScope || window;
-  for (var i = 0; i < len; i++) {
-    if (typeof depth[_vars[i]] === 'undefined') {
-      return false;
+  function notifyOnMention(e) {
+    const content = e.message;
+    const user = window.QueUp.session.get('username').toLowerCase();
+    let mentionTriggers = ['@' + user];
+    if (
+      settings.options['custom-mentions'] &&
+      settings.custom['custom-mentions']
+    ) {
+      mentionTriggers = mentionTriggers
+        .concat(settings.custom['custom-mentions'].split(','))
+        .map((v) => v.trim());
     }
-    depth = depth[_vars[i]];
-  }
-  return true;
-}
-function arrayDeepCheck(arr, startingScope) {
-  var len = arr.length;
-  var scope = startingScope || window;
-  for (var i = 0; i < len; i++) {
-    if (!deepCheck(arr[i], scope)) {
-      console.log(arr[i], 'is not found yet');
-      return false;
+    const mentionTriggersTest = mentionTriggers.some(function (v) {
+      const reg = new RegExp('\\b' + v + '\\b', 'i');
+      return reg.test(content);
+    });
+    if (
+      mentionTriggersTest &&
+      !activeTabState.isActive &&
+      window.QueUp.session.id !== e.user.userInfo.userid
+    ) {
+      showNotification({
+        title: `Message from ${e.user.username}`,
+        content,
+      });
     }
   }
-  return true;
-}
-
-/**
- * pings for the existence of var/function for # seconds until it's defined
- * runs callback once found and stops pinging
- * @param {string|array} waitingFor          what you are waiting for
- * @param {object}       options             optional options to pass
- *                       options.interval    how often to ping
- *                       options.seconds     how long to ping for
- *                       
- * @return {object}                    2 functions:
- *                  .then(fn)          will run fn only when item successfully found.  This also starts the ping process
- *                  .fail(fn)          will run fn only when is never found in the time given
- */
-function WaitFor(waitingFor, options) {
-  if (typeof waitingFor !== "string" && !Array.isArray(waitingFor)) {
-    console.warn('WaitFor: invalid first argument');
-    return;
-  }
-  var defaults = {
-    interval: 500,
-    // every XX ms we check to see if waitingFor is defined
-    seconds: 5 // how many total seconds we wish to continue pinging
+  const mentionNotifications = {
+    id: 'mention-notifications',
+    label: 'mention-notifications.label',
+    description: 'mention-notifications.description',
+    category: 'general',
+    turnOn() {
+      notifyCheckPermission()
+        .then(() => {
+          window.QueUp.Events.bind(CHAT_MESSAGE, notifyOnMention);
+        })
+        .catch(() => {
+          settings.options[this.id] = false;
+        });
+    },
+    turnOff() {
+      window.QueUp.Events.unbind(CHAT_MESSAGE, notifyOnMention);
+    },
   };
-  var _cb = function _cb() {};
-  var _failCB = function _failCB() {};
-  var checkFunc = Array.isArray(waitingFor) ? arrayDeepCheck : deepCheck;
-  var opts = Object.assign({}, defaults, options);
-  var tryCount = 0;
-  var tryLimit = opts.seconds * 1000 / opts.interval; // how many intervals
-
-  var check = function check() {
-    tryCount++;
-    var _test = checkFunc(waitingFor);
-    if (_test) {
-      return _cb();
+  function pmNotify(e) {
+    if (window.QueUp.session.id === e.userid) {
+      return;
     }
-    if (tryCount < tryLimit) {
-      window.setTimeout(check, opts.interval);
+    showNotification({
+      title: t('pm-notifications.notification.title'),
+      ignoreActiveTab: true,
+      callback: function () {
+        const openPmButton = document.querySelector('.user-messages');
+        openPmButton == null ? void 0 : openPmButton.click();
+        setTimeout(function () {
+          const messageItem = document.querySelector(
+            `.message-item[data-messageid="${e.messageid}"]`,
+          );
+          messageItem == null ? void 0 : messageItem.click();
+        }, 500);
+      },
+      wait: 1e4,
+    });
+  }
+  const pmNotifications = {
+    id: 'pm-notifications',
+    label: 'pm-notifications.label',
+    description: 'pm-notifications.description',
+    category: 'general',
+    turnOn() {
+      notifyCheckPermission()
+        .then(() => {
+          window.QueUp.Events.bind(NEW_PM_MESSAGE, pmNotify);
+        })
+        .catch((err) => {
+          settings.options[this.id] = false;
+        });
+    },
+    turnOff() {
+      window.QueUp.Events.unbind(NEW_PM_MESSAGE, pmNotify);
+    },
+  };
+  function djNotificationCheck(e) {
+    var _a, _b;
+    const isInQueue = !!((_a = document.querySelector('.queue-position')) ==
+    null
+      ? void 0
+      : _a.textContent);
+    if (!isInQueue) {
+      return;
+    }
+    const currentPosition = parseInt(
+      (_b = document.querySelector('.queue-position')) == null
+        ? void 0
+        : _b.textContent,
+      10,
+    );
+    if (isNaN(currentPosition)) {
+      logError(
+        'dj-notification',
+        'Could not parse current position:',
+        currentPosition,
+      );
+      return;
+    }
+    let parseSetting = parseInt(settings.custom['dj-notification'], 10);
+    if (isNaN(parseSetting)) {
+      parseSetting = 2;
+      logInfo('djNotification', 'Could not parse setting, defaulting to 2');
+    }
+    if (currentPosition <= parseSetting) {
+      showNotification({
+        title: t('dj-notification.notification.title'),
+        content: t('dj-notification.notification.content'),
+        ignoreActiveTab: true,
+        wait: 1e4,
+      });
+      window.QueUp.room.chat.mentionChatSound.play();
+    }
+  }
+  const djNotification = {
+    id: 'dj-notification',
+    label: 'dj-notification.label',
+    description: 'dj-notification.description',
+    category: 'general',
+    custom: {
+      title: 'dj-notification.modal.title',
+      content: 'dj-notification.modal.content',
+      placeholder: '2',
+      maxlength: 2,
+      onConfirm: (value) => {
+        if (/[^0-9]+/.test(value.trim())) {
+          window.alert(t('dj-notification.modal.validation'));
+          return false;
+        }
+        return true;
+      },
+    },
+    turnOn() {
+      window.QueUp.Events.bind(PLAYLIST_UPDATE, djNotificationCheck);
+    },
+    turnOff() {
+      window.QueUp.Events.unbind(PLAYLIST_UPDATE, djNotificationCheck);
+    },
+  };
+  const dubsState = proxy({ upDubs: [], downDubs: [], grabs: [] });
+  function getDubCount(dubType) {
+    if (dubType === 'updub') return dubsState.upDubs;
+    if (dubType === 'downdub') return dubsState.downDubs;
+    if (dubType === 'grab') return dubsState.grabs;
+    return [];
+  }
+  const apiBase = window.location.hostname.includes('staging')
+    ? 'https://staging-api.queup.dev'
+    : 'https://api.queup.net';
+  function userData(userid) {
+    return `${apiBase}/user/${userid}`;
+  }
+  function activeDubs(roomId) {
+    return `${apiBase}/room/${roomId}/playlist/active/dubs`;
+  }
+  function userImage(userid) {
+    return `${apiBase}/user/${userid}/image`;
+  }
+  function getUserName(userid) {
+    return new Promise((resolve, reject) => {
+      var _a, _b, _c;
+      const username =
+        (_c =
+          (_b =
+            (_a = window.QueUp.room.users.collection.findWhere({
+              userid,
+            })) == null
+              ? void 0
+              : _a.attributes) == null
+            ? void 0
+            : _b._user) == null
+          ? void 0
+          : _c.username;
+      if (username) {
+        resolve(username);
+        return;
+      }
+      fetch(userData(userid))
+        .then((response) => response.json())
+        .then((response) => {
+          var _a2;
+          if (
+            (_a2 = response == null ? void 0 : response.userinfo) == null
+              ? void 0
+              : _a2.username
+          ) {
+            const { username: username2 } = response.userinfo;
+            resolve(username2);
+          } else {
+            reject('Failed to get username from API for userid: ' + userid);
+          }
+        })
+        .catch(reject);
+    });
+  }
+  function updateUpdubs(updubs) {
+    updubs.forEach((dub) => {
+      if (dubsState.upDubs.find((el) => el.userid === dub.userid)) {
+        return;
+      }
+      getUserName(dub.userid)
+        .then((username) => {
+          dubsState.upDubs.push({
+            userid: dub.userid,
+            username,
+          });
+        })
+        .catch((error) =>
+          logError('Failed to get username for upDubs:', error),
+        );
+    });
+  }
+  function updateDowndubs(downdubs) {
+    downdubs.forEach((dub) => {
+      if (dubsState.downDubs.find((el) => el.userid === dub.userid)) {
+        return;
+      }
+      getUserName(dub.userid)
+        .then((username) => {
+          dubsState.downDubs.push({
+            userid: dub.userid,
+            username,
+          });
+        })
+        .catch((error) =>
+          logError('Failed to get username for downDubs', error),
+        );
+    });
+  }
+  function resetDubs() {
+    dubsState.downDubs = [];
+    dubsState.upDubs = [];
+    dubsState.grabs = [];
+    const dubsURL = activeDubs(window.QueUp.room.model.id);
+    fetch(dubsURL)
+      .then((response) => response.json())
+      .then((response) => {
+        updateUpdubs(response.data.upDubs);
+        if (isMod(window.QueUp.session.id)) {
+          updateDowndubs(response.data.downDubs);
+        }
+      })
+      .catch((error) => logError('Failed to fetch dubs data from API.', error));
+  }
+  function dubWatcher(e) {
+    if (e.dubtype === 'updub') {
+      if (!dubsState.upDubs.find((el) => el.userid === e.user._id)) {
+        dubsState.upDubs.push({
+          userid: e.user._id,
+          username: e.user.username,
+        });
+      }
+      dubsState.downDubs = dubsState.downDubs.filter(
+        (el) => el.userid !== e.user._id,
+      );
+    } else if (e.dubtype === 'downdub' && isMod(window.QueUp.session.id)) {
+      if (!dubsState.downDubs.find((el) => el.userid === e.user._id)) {
+        dubsState.downDubs.push({
+          userid: e.user._id,
+          username: e.user.username,
+        });
+      }
+      dubsState.upDubs = dubsState.upDubs.filter(
+        (el) => el.userid !== e.user._id,
+      );
+    }
+    const msSinceSongStart =
+      Date.now() - window.QueUp.room.player.activeSong.attributes.song.played;
+    if (msSinceSongStart < 1e3) {
+      return;
+    }
+    if (
+      dubsState.upDubs.length !==
+      window.QueUp.room.player.activeSong.attributes.song.updubs
+    ) {
+      resetDubs();
+    } else if (
+      isMod(window.QueUp.session.id) &&
+      dubsState.downDubs.length !==
+        window.QueUp.room.player.activeSong.attributes.song.downdubs
+    ) {
+      resetDubs();
+    }
+  }
+  function grabWatcher(e) {
+    if (!dubsState.grabs.find((el) => el.userid === e.user._id)) {
+      dubsState.grabs.push({
+        userid: e.user._id,
+        username: e.user.username,
+      });
+    }
+  }
+  function dubUserLeaveWatcher(e) {
+    dubsState.upDubs = dubsState.upDubs.filter(
+      (el) => el.userid !== e.user._id,
+    );
+    dubsState.downDubs = dubsState.downDubs.filter(
+      (el) => el.userid !== e.user._id,
+    );
+    dubsState.grabs = dubsState.grabs.filter((el) => el.userid !== e.user._id);
+  }
+  const showDubsOnHover = {
+    id: 'dubs-hover',
+    label: 'dubs-hover.label',
+    description: 'dubs-hover.description',
+    category: 'general',
+    turnOn() {
+      resetDubs();
+      window.QueUp.Events.bind(DUB, dubWatcher);
+      window.QueUp.Events.bind(GRAB, grabWatcher);
+      window.QueUp.Events.bind(USER_LEAVE, dubUserLeaveWatcher);
+      window.QueUp.Events.bind(PLAYLIST_UPDATE, resetDubs);
+    },
+    turnOff() {
+      window.QueUp.Events.unbind(DUB, dubWatcher);
+      window.QueUp.Events.unbind(GRAB, grabWatcher);
+      window.QueUp.Events.unbind(USER_LEAVE, dubUserLeaveWatcher);
+      window.QueUp.Events.unbind(PLAYLIST_UPDATE, resetDubs);
+    },
+  };
+  function insertQueupChat(className, textContent) {
+    const li = document.createElement('li');
+    li.className = `dubplus-chat-system ${className}`;
+    const chatDelete = document.createElement('div');
+    chatDelete.className = 'chatDelete';
+    chatDelete.onclick = function (e) {
+      e.target.parentElement.remove();
+    };
+    const span = document.createElement('span');
+    span.className = 'icon-close';
+    chatDelete.appendChild(span);
+    li.appendChild(chatDelete);
+    const text2 = document.createElement('div');
+    text2.className = 'text';
+    text2.textContent = textContent;
+    li.appendChild(text2);
+    document.querySelector('ul.chat-main').appendChild(li);
+  }
+  function downdubWatcher(e) {
+    const isUserTheDJ =
+      window.QueUp.session.id ===
+      window.QueUp.room.player.activeSong.attributes.song.userid;
+    if (isUserTheDJ && e.dubtype === 'downdub') {
+      insertQueupChat(
+        'dubplus-chat-system-downdub',
+        t('downdubs-in-chat.chat-message', {
+          username: e.user.username,
+          song_name:
+            window.QueUp.room.player.activeSong.attributes.songInfo.name,
+        }),
+      );
+    }
+  }
+  const downdubsInChat = {
+    id: 'downdubs-in-chat',
+    label: 'downdubs-in-chat.label',
+    description: 'downdubs-in-chat.description',
+    category: 'general',
+    modOnly: true,
+    turnOn() {
+      if (isMod(window.QueUp.session.id)) {
+        window.QueUp.Events.bind('realtime:room_playlist-dub', downdubWatcher);
+      }
+    },
+    turnOff() {
+      window.QueUp.Events.unbind('realtime:room_playlist-dub', downdubWatcher);
+    },
+  };
+  function updubWatcher(e) {
+    const isUserTheDJ =
+      window.QueUp.session.id ===
+      window.QueUp.room.player.activeSong.attributes.song.userid;
+    if (isUserTheDJ && e.dubtype === 'updub') {
+      insertQueupChat(
+        'dubplus-chat-system-updub',
+        t('updubs-in-chat.chat-message', {
+          username: e.user.username,
+          song_name:
+            window.QueUp.room.player.activeSong.attributes.songInfo.name,
+        }),
+      );
+    }
+  }
+  const upDubInChat = {
+    id: 'updubs-in-chat',
+    label: 'updubs-in-chat.label',
+    description: 'updubs-in-chat.description',
+    category: 'general',
+    turnOn() {
+      window.QueUp.Events.bind('realtime:room_playlist-dub', updubWatcher);
+    },
+    turnOff() {
+      window.QueUp.Events.unbind('realtime:room_playlist-dub', updubWatcher);
+    },
+  };
+  function grabChatWatcher(e) {
+    const isUserTheDJ =
+      window.QueUp.session.id ===
+      window.QueUp.room.player.activeSong.attributes.song.userid;
+    if (isUserTheDJ) {
+      insertQueupChat(
+        'dubplus-chat-system-grab',
+        t('grabs-in-chat.chat-message', {
+          username: e.user.username,
+          song_name:
+            window.QueUp.room.player.activeSong.attributes.songInfo.name,
+        }),
+      );
+    }
+  }
+  const grabsInChat = {
+    id: 'grabs-in-chat',
+    label: 'grabs-in-chat.label',
+    description: 'grabs-in-chat.description',
+    category: 'general',
+    turnOn() {
+      if (!window.QueUp.room.model.get('displayUserGrab')) {
+        window.QueUp.Events.bind(
+          'realtime:room_playlist-queue-update-grabs',
+          grabChatWatcher,
+        );
+      }
+    },
+    turnOff() {
+      if (!window.QueUp.room.model.get('displayUserGrab')) {
+        window.QueUp.Events.unbind(
+          'realtime:room_playlist-queue-update-grabs',
+          grabChatWatcher,
+        );
+      }
+    },
+  };
+  const snow = {
+    id: 'snow',
+    label: 'snow.label',
+    description: 'snow.description',
+    category: 'general',
+    turnOn() {},
+    turnOff() {},
+  };
+  class RainEffect {
+    constructor() {
+      this.particles = [];
+      this.drops = [];
+      this.numbase = 5;
+      this.numb = 2;
+      this.width = 0;
+      this.height = 0;
+      this.controls = {
+        rain: 2,
+        alpha: 1,
+        color: 200,
+        opacity: 1,
+        saturation: 100,
+        lightness: 50,
+        back: 0,
+        multi: false,
+        speed: 1,
+      };
+      this.requestAnimFrame = null;
+      this.canvas = null;
+    }
+    makeCanvas() {
+      this.canvas = document.createElement('canvas');
+      this.canvas.id = 'dubPlusRainCanvas';
+      this.canvas.style.position = 'fixed';
+      this.canvas.style.top = '0px';
+      this.canvas.style.left = '0px';
+      this.canvas.style.zIndex = '100';
+      this.canvas.style.pointerEvents = 'none';
+      document.body.prepend(this.canvas);
+    }
+    start() {
+      this.makeCanvas();
+      this.startAnimation();
+    }
+    stop() {
+      var _a;
+      this.stopAnimation();
+      (_a = this.canvas) == null ? void 0 : _a.remove();
+    }
+    onWindowResize() {
+      this.width = this.canvas.width = window.innerWidth;
+      this.height = this.canvas.height = window.innerHeight;
+    }
+    startAnimation() {
+      const windowAnimFram = window.requestAnimationFrame;
+      this.requestAnimFrame = windowAnimFram
+        ? windowAnimFram.bind(window)
+        : null;
+      if (!this.canvas) return;
+      const ctx = this.canvas.getContext('2d');
+      this.width, (this.height = 0);
+      this.onWindowResize();
+      window.onresize = this.onWindowResize.bind(this);
+      this.particles = [];
+      this.drops = [];
+      this.numbase = 5;
+      this.numb = 2;
+      let that = this;
+      (function boucle() {
+        that.requestAnimFrame(boucle);
+        that.update();
+        that.rendu(ctx);
+      })();
+    }
+    /**
+     *
+     * @param {number} X
+     * @param {number} Y
+     * @param {number} [num]
+     */
+    buildRainParticle(X, Y, num) {
+      if (!num) {
+        num = this.numb;
+      }
+      while (num--) {
+        this.particles.push({
+          speedX: Math.random() * 0.25,
+          speedY: Math.random() * 9 + 1,
+          X,
+          Y,
+          alpha: 1,
+          color:
+            'hsla(' +
+            this.controls.color +
+            ',' +
+            this.controls.saturation +
+            '%, ' +
+            this.controls.lightness +
+            '%,' +
+            this.controls.opacity +
+            ')',
+        });
+      }
+    }
+    /**
+     *
+     * @param {number} X
+     * @param {number} Y
+     * @param {any} color
+     * @param {number} [num]
+     */
+    explosion(X, Y, color, num) {
+      if (!num) {
+        num = this.numbase;
+      }
+      while (num--) {
+        this.drops.push({
+          speedX: Math.random() * 4 - 2,
+          speedY: Math.random() * -4,
+          X,
+          Y,
+          radius: 0.65 + Math.floor(Math.random() * 1.6),
+          alpha: 1,
+          color,
+        });
+      }
+    }
+    /**
+     * @param {CanvasRenderingContext2D} ctx
+     */
+    rendu(ctx) {
+      if (this.controls.multi) {
+        this.controls.color = Math.random() * 360;
+      }
+      ctx.save();
+      ctx.clearRect(0, 0, this.width, this.height);
+      const particleslocales = this.particles;
+      const dropslocales = this.drops;
+      const tau = Math.PI * 2;
+      for (
+        let i = 0, particlesactives;
+        (particlesactives = particleslocales[i]);
+        i++
+      ) {
+        ctx.globalAlpha = particlesactives.alpha;
+        ctx.fillStyle = particlesactives.color;
+        ctx.fillRect(
+          particlesactives.X,
+          particlesactives.Y,
+          particlesactives.speedY / 4,
+          particlesactives.speedY,
+        );
+      }
+      for (let i = 0, dropsactives; (dropsactives = dropslocales[i]); i++) {
+        ctx.globalAlpha = dropsactives.alpha;
+        ctx.fillStyle = dropsactives.color;
+        ctx.beginPath();
+        ctx.arc(dropsactives.X, dropsactives.Y, dropsactives.radius, 0, tau);
+        ctx.fill();
+      }
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 2;
+      ctx.restore();
+    }
+    update() {
+      const particleslocales = this.particles;
+      const dropslocales = this.drops;
+      for (
+        let i2 = 0, particlesactives;
+        (particlesactives = particleslocales[i2]);
+        i2++
+      ) {
+        particlesactives.X += particlesactives.speedX;
+        particlesactives.Y += particlesactives.speedY + 5;
+        if (particlesactives.Y > this.height - 15) {
+          particleslocales.splice(i2--, 1);
+          this.explosion(
+            particlesactives.X,
+            particlesactives.Y,
+            particlesactives.color,
+          );
+        }
+      }
+      for (let i2 = 0, dropsactives; (dropsactives = dropslocales[i2]); i2++) {
+        dropsactives.X += dropsactives.speedX;
+        dropsactives.Y += dropsactives.speedY;
+        dropsactives.radius -= 0.075;
+        if (dropsactives.alpha > 0) {
+          dropsactives.alpha -= 5e-3;
+        } else {
+          dropsactives.alpha = 0;
+        }
+        if (dropsactives.radius < 0) {
+          dropslocales.splice(i2--, 1);
+        }
+      }
+      let i = this.controls.rain;
+      while (i--) {
+        this.buildRainParticle(Math.floor(Math.random() * this.width), -15);
+      }
+    }
+    stopAnimation() {
+      this.requestAnimFrame = function () {};
+    }
+  }
+  const rain = {
+    id: 'rain',
+    label: 'rain.label',
+    description: 'rain.description',
+    category: 'general',
+    turnOn() {
+      this.rainEffect = new RainEffect();
+      this.rainEffect.start();
+    },
+    turnOff() {
+      this.rainEffect.stop();
+      delete this.rainEffect;
+    },
+  };
+  var root$c = /* @__PURE__ */ ns_template(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M448 344v112a23.9 23.9 0 0 1 -24 24H312c-21.4 0-32.1-25.9-17-41l36.2-36.2L224 295.6 116.8 402.9 153 439c15.1 15.1 4.4 41-17 41H24a23.9 23.9 0 0 1 -24-24V344c0-21.4 25.9-32.1 41-17l36.2 36.2L184.5 256 77.2 148.7 41 185c-15.1 15.1-41 4.4-41-17V56a23.9 23.9 0 0 1 24-24h112c21.4 0 32.1 25.9 17 41l-36.2 36.2L224 216.4l107.2-107.3L295 73c-15.1-15.1-4.4-41 17-41h112a23.9 23.9 0 0 1 24 24v112c0 21.4-25.9 32.1-41 17l-36.2-36.2L263.5 256l107.3 107.3L407 327.1c15.1-15.2 41-4.5 41 16.9z"></path></svg>`,
+  );
+  function IconFullscreen($$anchor) {
+    var svg = root$c();
+    append($$anchor, svg);
+  }
+  const fullscreen = {
+    id: 'fullscreen',
+    label: 'fullscreen.label',
+    description: 'fullscreen.description',
+    category: 'user-interface',
+    altIcon: IconFullscreen,
+    onClick() {
+      const elem =
+        /**@type{HTMLIFrameElement}*/
+        document.querySelector('.player_container iframe');
+      if (!elem) {
+        logInfo('Fullscreen: No video element found');
+        return;
+      }
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      }
+    },
+  };
+  const splitChat = {
+    id: 'split-chat',
+    label: 'split-chat.label',
+    description: 'split-chat.description',
+    category: 'user-interface',
+    turnOn() {
+      document.body.classList.add('dubplus-split-chat');
+    },
+    turnOff() {
+      document.body.classList.remove('dubplus-split-chat');
+    },
+  };
+  const hideChat = {
+    id: 'hide-chat',
+    label: 'hide-chat.label',
+    description: 'hide-chat.description',
+    category: 'user-interface',
+    turnOn() {
+      document.body.classList.add('dubplus-video-only');
+    },
+    turnOff() {
+      document.body.classList.remove('dubplus-video-only');
+    },
+  };
+  const hideVideo = {
+    id: 'hide-video',
+    label: 'hide-video.label',
+    description: 'hide-video.description',
+    category: 'user-interface',
+    turnOn() {
+      document.body.classList.add('dubplus-chat-only');
+    },
+    turnOff() {
+      document.body.classList.remove('dubplus-chat-only');
+    },
+  };
+  const hideAvatars = {
+    id: 'hide-avatars',
+    label: 'hide-avatars.label',
+    description: 'hide-avatars.description',
+    category: 'user-interface',
+    turnOn() {
+      document.body.classList.add('dubplus-hide-avatars');
+    },
+    turnOff() {
+      document.body.classList.remove('dubplus-hide-avatars');
+    },
+  };
+  const hideBackground = {
+    id: 'hide-bg',
+    label: 'hide-bg.label',
+    description: 'hide-bg.description',
+    category: 'user-interface',
+    turnOn() {
+      document.body.classList.add('dubplus-hide-bg');
+    },
+    turnOff() {
+      document.body.classList.remove('dubplus-hide-bg');
+    },
+  };
+  const showTimestamps = {
+    id: 'show-timestamps',
+    label: 'show-timestamps.label',
+    description: 'show-timestamps.description',
+    category: 'user-interface',
+    turnOn() {
+      document.body.classList.add('dubplus-show-timestamp');
+    },
+    turnOff() {
+      document.body.classList.remove('dubplus-show-timestamp');
+    },
+  };
+  function handleMute(e) {
+    const tag =
+      /**@type {HTMLElement}*/
+      e.target.tagName.toLowerCase();
+    if (e.key === ' ' && tag !== 'input' && tag !== 'textarea') {
+      window.QueUp.room.player.mutePlayer();
+    }
+  }
+  const spacebarMute = {
+    id: 'spacebar-mute',
+    label: 'spacebar-mute.label',
+    description: 'spacebar-mute.description',
+    category: 'settings',
+    turnOn() {
+      document.addEventListener('keypress', handleMute);
+    },
+    turnOff() {
+      document.removeEventListener('keypress', handleMute);
+    },
+  };
+  function unloader(e) {
+    let confirmationMessage = 'You are leaving';
+    e.returnValue = confirmationMessage;
+    return confirmationMessage;
+  }
+  const warnOnNavigation = {
+    id: 'warn-redirect',
+    label: 'warn-redirect.label',
+    description: 'warn-redirect.description',
+    category: 'settings',
+    turnOn() {
+      window.addEventListener('beforeunload', unloader);
+    },
+    turnOff() {
+      window.removeEventListener('beforeunload', unloader);
+    },
+  };
+  const makeLink = function (className, fileName) {
+    const link2 = document.createElement('link');
+    link2.rel = 'stylesheet';
+    link2.type = 'text/css';
+    link2.className = className;
+    link2.href = fileName;
+    return link2;
+  };
+  function loadCSS(cssFile, className) {
+    return new Promise((resolve, reject) => {
+      var _a;
+      (_a = document.querySelector(`link.${className}`)) == null
+        ? void 0
+        : _a.remove();
+      const link2 = makeLink(
+        className,
+        // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}${cssFile}?${'1740092586166'}`,
+      );
+      link2.onload = () => resolve();
+      link2.onerror = reject;
+      document.head.appendChild(link2);
+    });
+  }
+  function loadExternalCss(cssFile, id) {
+    var _a;
+    (_a = document.querySelector(`style#${id}`)) == null ? void 0 : _a.remove();
+    return fetch(cssFile)
+      .then((res) => res.text())
+      .then((css) => {
+        const style = document.createElement('style');
+        style.id = id;
+        style.textContent = css;
+        document.head.appendChild(style);
+      });
+  }
+  const LINK_ELEM_ID$1 = 'dubplus-community-css';
+  const communityTheme = {
+    id: 'community-theme',
+    label: 'community-theme.label',
+    description: 'community-theme.description',
+    category: 'customize',
+    turnOn() {
+      const location = window.QueUp.room.model.get('roomUrl');
+      fetch(`https://api.queup.net/room/${location}`)
+        .then((response) => response.json())
+        .then((e) => {
+          const content = e.data.description;
+          const themeCheck = new RegExp(
+            /(@dub(x|plus|\+)=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/,
+            'i',
+          );
+          let communityCSSUrl = null;
+          content.replace(themeCheck, function (match, p1, p2, p3) {
+            communityCSSUrl = p3;
+          });
+          if (!communityCSSUrl) {
+            logInfo('No community CSS theme found');
+            return;
+          }
+          logInfo('loading community css theme from:', communityCSSUrl);
+          return loadExternalCss(communityCSSUrl, LINK_ELEM_ID$1);
+        })
+        .catch((error) => {
+          logError('Community CSS: Failed to load room info', error);
+        });
+    },
+    turnOff() {
+      var _a;
+      (_a = document.getElementById(LINK_ELEM_ID$1)) == null
+        ? void 0
+        : _a.remove();
+    },
+  };
+  const LINK_ELEM_ID = 'dubplus-custom-css';
+  const customCss = {
+    id: 'custom-css',
+    label: 'custom-css.label',
+    description: 'custom-css.description',
+    category: 'customize',
+    custom: {
+      title: 'custom-css.modal.title',
+      content: 'custom-css.modal.content',
+      placeholder: 'custom-css.modal.placeholder',
+      maxlength: 500,
+      validation(value) {
+        if (!value) {
+          return true;
+        }
+        if (!/^http.+\.css$/.test(value)) {
+          return t('custom-css.modal.validation');
+        }
+        return true;
+      },
+      onConfirm(value) {
+        var _a;
+        if (!value) {
+          (_a = document.getElementById(LINK_ELEM_ID)) == null
+            ? void 0
+            : _a.remove();
+          settings.options[customCss.id] = false;
+          return;
+        } else {
+          loadExternalCss(value, LINK_ELEM_ID).catch((e) => {
+            logError('Error loading custom css file:', e);
+          });
+        }
+      },
+    },
+    turnOn() {
+      if (settings.custom[this.id]) {
+        loadExternalCss(settings.custom[this.id], LINK_ELEM_ID).catch((e) => {
+          logError('Error loading custom css file:', e);
+        });
+      }
+    },
+    turnOff() {
+      var _a;
+      (_a = document.getElementById(LINK_ELEM_ID)) == null
+        ? void 0
+        : _a.remove();
+    },
+  };
+  function addCustomBG(url) {
+    const img = document.querySelector('.backstretch img');
+    if (img) {
+      img.setAttribute('data-original', img.src);
+      img.src = url;
+    }
+  }
+  function removeCustomBG() {
+    const img = document.querySelector('.backstretch img');
+    if (img && img.hasAttribute('data-original')) {
+      img.src = img.getAttribute('data-original');
+      img.removeAttribute;
+    }
+  }
+  const customBackground = {
+    id: 'custom-bg',
+    label: 'custom-bg.label',
+    description: 'custom-bg.description',
+    category: 'customize',
+    custom: {
+      title: 'custom-bg.modal.title',
+      content: 'custom-bg.modal.content',
+      placeholder: 'custom-bg.modal.placeholder',
+      maxlength: 500,
+      validation(value) {
+        if (!value) {
+          return true;
+        }
+        if (!value.startsWith('http')) {
+          return t('custom-bg.modal.validation');
+        }
+        return true;
+      },
+      onConfirm(value) {
+        removeCustomBG();
+        if (!value) {
+          return;
+        }
+        addCustomBG(value);
+      },
+    },
+    turnOn() {
+      removeCustomBG();
+      const savedCustomBG = settings.custom[this.id];
+      if (savedCustomBG) {
+        addCustomBG(savedCustomBG);
+      }
+    },
+    turnOff() {
+      removeCustomBG();
+    },
+  };
+  let DubtrackDefaultSound;
+  const customNotificationSound = {
+    id: 'custom-notification-sound',
+    label: 'custom-notification-sound.label',
+    description: 'custom-notification-sound.description',
+    category: 'customize',
+    custom: {
+      title: 'custom-notification-sound.modal.title',
+      content: 'custom-notification-sound.modal.content',
+      placeholder: 'custom-notification-sound.modal.placeholder',
+      maxlength: 500,
+      validation(value) {
+        if (!value) {
+          return true;
+        }
+        if (!window.soundManager.canPlayURL(value)) {
+          return t('custom-notification-sound.modal.validation');
+        }
+        return true;
+      },
+      onConfirm(value) {
+        if (!value) {
+          window.QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
+          settings.options[customNotificationSound.id] = false;
+        } else {
+          window.QueUp.room.chat.mentionChatSound.url = value;
+        }
+      },
+    },
+    turnOn() {
+      DubtrackDefaultSound = window.QueUp.room.chat.mentionChatSound.url;
+      if (settings.custom[this.id]) {
+        window.QueUp.room.chat.mentionChatSound.url = settings.custom[this.id];
+      }
+    },
+    turnOff() {
+      window.QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
+    },
+  };
+  const flipInterface = {
+    id: 'flip-interface',
+    label: 'flip-interface.label',
+    description: 'flip-interface.description',
+    category: 'user-interface',
+    turnOn() {
+      document.body.classList.add('dubplus-flip-interface');
+    },
+    turnOff() {
+      document.body.classList.remove('dubplus-flip-interface');
+    },
+  };
+  const general = [
+    autovote,
+    afk,
+    emotes,
+    autocomplete,
+    customMentions,
+    chatCleaner,
+    mentionNotifications,
+    pmNotifications,
+    djNotification,
+    showDubsOnHover,
+    downdubsInChat,
+    upDubInChat,
+    grabsInChat,
+    snow,
+    rain,
+  ];
+  const userInterface = [
+    fullscreen,
+    splitChat,
+    hideChat,
+    hideVideo,
+    hideAvatars,
+    hideBackground,
+    showTimestamps,
+    flipInterface,
+  ];
+  const settingsModules = [spacebarMute, warnOnNavigation];
+  const customize = [
+    communityTheme,
+    customCss,
+    customBackground,
+    customNotificationSound,
+  ];
+  var root$b = /* @__PURE__ */ template(`<!> <!>`, 1);
+  function General($$anchor, $$props) {
+    push($$props, false);
+    init();
+    var fragment = root$b();
+    var node = first_child(fragment);
+    const expression = /* @__PURE__ */ derived_safe_equal(() =>
+      t('general.title'),
+    );
+    MenuHeader(node, {
+      settingsId: 'general',
+      get name() {
+        return get(expression);
+      },
+    });
+    var node_1 = sibling(node, 2);
+    MenuSection(node_1, {
+      settingsId: 'general',
+      children: ($$anchor2, $$slotProps) => {
+        var fragment_1 = comment();
+        var node_2 = first_child(fragment_1);
+        each(
+          node_2,
+          1,
+          () => general,
+          index,
+          ($$anchor3, module) => {
+            MenuSwitch($$anchor3, {
+              get id() {
+                return get(module).id;
+              },
+              get label() {
+                return get(module).label;
+              },
+              get description() {
+                return get(module).description;
+              },
+              get init() {
+                return get(module).init;
+              },
+              get customize() {
+                return get(module).custom;
+              },
+              get modOnly() {
+                return get(module).modOnly;
+              },
+              onToggle: (on, onMount2) => {
+                if (on) get(module).turnOn();
+                else get(module).turnOff();
+                if (!onMount2) {
+                  saveSetting('option', get(module).id, on);
+                }
+              },
+            });
+          },
+        );
+        append($$anchor2, fragment_1);
+      },
+    });
+    append($$anchor, fragment);
+    pop();
+  }
+  var root$a = /* @__PURE__ */ template(
+    `<button id="dubplus-eta" type="button" class="icon-history eta_tooltip_t dubplus-btn-player"></button>`,
+  );
+  function Eta($$anchor, $$props) {
+    push($$props, true);
+    let eta = state('ETA');
+    function getEta() {
+      var _a, _b;
+      const booth_position =
+        (_a = document.querySelector('.queue-position')) == null
+          ? void 0
+          : _a.textContent;
+      if (!booth_position) {
+        return t('Eta.tooltip.notInQueue');
+      }
+      const average_song_minutes = 4;
+      const current_time = parseInt(
+        (_b = document.querySelector(
+          '#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min',
+        )) == null
+          ? void 0
+          : _b.textContent,
+      );
+      const position_in_queue = parseInt(booth_position);
+      const booth_time =
+        position_in_queue * average_song_minutes -
+        average_song_minutes +
+        current_time;
+      if (booth_time >= 0) {
+        return t('Eta.tootltip', { minutes: booth_time });
+      } else {
+        return t('Eta.tooltip.notInQueue');
+      }
+    }
+    var button = root$a();
+    action(
+      button,
+      ($$node, $$action_arg) =>
+        teleport == null ? void 0 : teleport($$node, $$action_arg),
+      () => ({ to: '.player_sharing' }),
+    );
+    template_effect(() => {
+      set_attribute(button, 'aria-label', get(eta));
+      set_attribute(button, 'data-dp-tooltip', get(eta));
+    });
+    event('mouseenter', button, () => {
+      set(eta, proxy(getEta()));
+    });
+    append($$anchor, button);
+    pop();
+  }
+  var root$9 = /* @__PURE__ */ template(
+    `<button id="dubplus-snooze" type="button" class="icon-mute snooze_btn dubplus-btn-player svelte-1va87zs"><span class="svelte-1va87zs">1</span></button>`,
+  );
+  function Snooze($$anchor, $$props) {
+    push($$props, true);
+    let tooltip = state(proxy(t('Snooze.tooltip')));
+    const eventUtils = { currentVol: 50, snoozed: false };
+    function eventSongAdvance(e) {
+      if (e.startTime < 2) {
+        if (eventUtils.snoozed) {
+          window.QueUp.room.player.setVolume(eventUtils.currentVol);
+          eventUtils.snoozed = false;
+          set(tooltip, proxy(t('Snooze.tooltip')));
+        }
+        return true;
+      }
+    }
+    function snooze2() {
+      if (
+        !eventUtils.snoozed &&
+        !window.QueUp.room.player.muted_player &&
+        window.QueUp.playerController.volume > 2
+      ) {
+        set(tooltip, proxy(t('Snooze.tooltip.undo')));
+        eventUtils.currentVol = window.QueUp.playerController.volume;
+        window.QueUp.room.player.mutePlayer();
+        eventUtils.snoozed = true;
+        window.QueUp.Events.once(
+          'realtime:room_playlist-update',
+          eventSongAdvance,
+        );
+      } else if (eventUtils.snoozed) {
+        set(tooltip, proxy(t('Snooze.tooltip')));
+        window.QueUp.room.player.setVolume(eventUtils.currentVol);
+        window.QueUp.room.player.updateVolumeBar();
+        eventUtils.snoozed = false;
+      }
+    }
+    var button = root$9();
+    button.__click = snooze2;
+    action(
+      button,
+      ($$node, $$action_arg) =>
+        teleport == null ? void 0 : teleport($$node, $$action_arg),
+      () => ({ to: '.player_sharing' }),
+    );
+    template_effect(() => {
+      set_attribute(button, 'aria-label', get(tooltip));
+      set_attribute(button, 'data-dp-tooltip', get(tooltip));
+    });
+    append($$anchor, button);
+    pop();
+  }
+  delegate(['click']);
+  var root_2$2 = /* @__PURE__ */ template(
+    `<span class="ac-list-press-enter svelte-2x4f0c"> </span>`,
+  );
+  var root_1 = /* @__PURE__ */ template(
+    `<li><div class="ac-image svelte-2x4f0c"><img class="svelte-2x4f0c"></div> <span class="ac-text svelte-2x4f0c"> </span> <!></li>`,
+  );
+  var root$8 = /* @__PURE__ */ template(
+    `<ul id="autocomplete-preview" class="svelte-2x4f0c"></ul>`,
+  );
+  function EmojiPreview($$anchor, $$props) {
+    push($$props, true);
+    user_effect(() => {
+      if (
+        emojiState.emojiList.length > 0 &&
+        typeof emojiState.selectedIndex === 'number'
+      ) {
+        const selected = document.querySelector('.preview-item.selected');
+        if (selected) {
+          selected.scrollIntoView({
+            block: 'nearest',
+            inline: 'nearest',
+            behavior: 'smooth',
+          });
+        }
+      }
+    });
+    function handleClick2(index2) {
+      const inputEl =
+        /**@type {HTMLTextAreaElement}*/
+        document.getElementById('chat-txt-message');
+      insertEmote(inputEl, index2);
+      inputEl.focus();
+    }
+    var ul = root$8();
+    each(
+      ul,
+      23,
+      () => emojiState.emojiList,
+      ({ src, text: text2, platform, alt }) => src + platform,
+      ($$anchor2, $$item, i) => {
+        let src = () => get($$item).src;
+        let text2 = () => get($$item).text;
+        let platform = () => get($$item).platform;
+        let alt = () => get($$item).alt;
+        var li = root_1();
+        li.__click = () => handleClick2(get(i));
+        var div = child(li);
+        var img = child(div);
+        var span = sibling(div, 2);
+        var text_1 = child(span);
+        var node = sibling(span, 2);
+        {
+          var consequent = ($$anchor3) => {
+            var span_1 = root_2$2();
+            var text_2 = child(span_1);
+            template_effect(
+              ($0) => set_text(text_2, $0),
+              [() => t('autocomplete.preview.select')],
+            );
+            append($$anchor3, span_1);
+          };
+          if_block(node, ($$render) => {
+            if (get(i) === emojiState.selectedIndex) $$render(consequent);
+          });
+        }
+        template_effect(() => {
+          set_class(
+            li,
+            `${`preview-item ${platform()}-previews` ?? ''} svelte-2x4f0c`,
+          );
+          toggle_class(li, 'selected', get(i) === emojiState.selectedIndex);
+          set_attribute(img, 'src', src());
+          set_attribute(img, 'alt', alt());
+          set_attribute(img, 'title', alt());
+          set_text(text_1, text2());
+        });
+        append($$anchor2, li);
+      },
+    );
+    action(
+      ul,
+      ($$node, $$action_arg) =>
+        teleport == null ? void 0 : teleport($$node, $$action_arg),
+      () => ({
+        to: '.pusher-chat-widget-input',
+        position: 'prepend',
+      }),
+    );
+    template_effect(() =>
+      toggle_class(ul, 'ac-show', emojiState.emojiList.length > 0),
+    );
+    append($$anchor, ul);
+    pop();
+  }
+  delegate(['click']);
+  var on_click = (_, handleClick2, dub) => handleClick2(get(dub).username);
+  var root_2$1 = /* @__PURE__ */ template(
+    `<li class="preview-dubinfo-item users-previews svelte-ujv5bp"><div class="dubinfo-image svelte-ujv5bp"><img alt="User Avatar" class="svelte-ujv5bp"></div> <button type="button" class="dubinfo-text svelte-ujv5bp"> </button></li>`,
+  );
+  var root_3 = /* @__PURE__ */ template(`<li><!></li>`);
+  var root$7 = /* @__PURE__ */ template(
+    `<div role="none"><ul id="dubinfo-preview" class="dubinfo-show svelte-ujv5bp"><!></ul></div>`,
+  );
+  function DubsInfo($$anchor, $$props) {
+    push($$props, true);
+    let dubData = /* @__PURE__ */ derived(() => getDubCount($$props.dubType));
+    let positionRight = state(0);
+    let positionBottom = state(0);
+    let display = state('none');
+    function getTarget() {
+      var _a, _b;
+      if ($$props.dubType === 'updub') {
+        return (_a = document.querySelector('.dubup')) == null
+          ? void 0
+          : _a.parentElement;
+      } else if ($$props.dubType === 'downdub') {
+        return (_b = document.querySelector('.dubdown')) == null
+          ? void 0
+          : _b.parentElement;
+      } else if ($$props.dubType === 'grab') {
+        return document.querySelector('.add-to-playlist');
+      }
+      return null;
+    }
+    function onHover() {
+      const hoverTarget = getTarget();
+      if (hoverTarget) {
+        const rect = hoverTarget.getBoundingClientRect();
+        set(positionRight, window.innerWidth - rect.right);
+        set(positionBottom, rect.height - 2);
+        set(display, 'block');
+      } else {
+        logError(
+          `Could not find hover target for ${$$props.dubType} in onHover`,
+        );
+      }
+    }
+    function onLeave(e) {
+      if (
+        e.relatedTarget &&
+        /**@type {HTMLDivElement}*/
+        e.relatedTarget.closest('.dubplus-dubs-container')
+      ) {
+        return;
+      }
+      set(display, 'none');
+    }
+    onMount(() => {
+      const hoverTarget = getTarget();
+      if (hoverTarget) {
+        hoverTarget.addEventListener('mouseenter', onHover);
+        hoverTarget.addEventListener('mouseleave', onLeave);
+      } else {
+        logError(
+          `Could not find hover target for ${$$props.dubType} in onMount`,
+        );
+      }
+    });
+    onDestroy(() => {
+      const hoverTarget = getTarget();
+      if (hoverTarget) {
+        hoverTarget.removeEventListener('mouseenter', onHover);
+        hoverTarget.removeEventListener('mouseleave', onLeave);
+      } else {
+        logError(
+          `Could not find hover target for ${$$props.dubType} in onDestroy`,
+        );
+      }
+    });
+    function handleClick2(username) {
+      const chatInput =
+        /**@type {HTMLInputElement}*/
+        document.querySelector('#chat-txt-message');
+      chatInput.value = `${chatInput.value}@${username} `.trimStart();
+      chatInput.focus();
+    }
+    var div = root$7();
+    var ul = child(div);
+    var node = child(ul);
+    {
+      var consequent = ($$anchor2) => {
+        var fragment = comment();
+        var node_1 = first_child(fragment);
+        each(
+          node_1,
+          17,
+          () => get(dubData),
+          index,
+          ($$anchor3, dub) => {
+            var li = root_2$1();
+            var div_1 = child(li);
+            var img = child(div_1);
+            var button = sibling(div_1, 2);
+            button.__click = [on_click, handleClick2, dub];
+            var text2 = child(button);
+            template_effect(
+              ($0) => {
+                set_attribute(img, 'src', $0);
+                set_text(text2, `@${get(dub).username ?? ''}`);
+              },
+              [() => userImage(get(dub).userid)],
+            );
+            append($$anchor3, li);
+          },
+        );
+        append($$anchor2, fragment);
+      };
+      var alternate_1 = ($$anchor2) => {
+        var li_1 = root_3();
+        var node_2 = child(li_1);
+        {
+          var consequent_1 = ($$anchor3) => {
+            var text_1 = text();
+            template_effect(
+              ($0) => set_text(text_1, $0),
+              [() => t('dubs-hover.no-votes', { dubType: $$props.dubType })],
+            );
+            append($$anchor3, text_1);
+          };
+          var alternate = ($$anchor3) => {
+            var text_2 = text();
+            template_effect(
+              ($0) => set_text(text_2, $0),
+              [() => t('dubs-hover.no-grabs', { dubType: $$props.dubType })],
+            );
+            append($$anchor3, text_2);
+          };
+          if_block(node_2, ($$render) => {
+            if ($$props.dubType === 'updub' || $$props.dubType === 'downdub')
+              $$render(consequent_1);
+            else $$render(alternate, false);
+          });
+        }
+        append($$anchor2, li_1);
+      };
+      if_block(node, ($$render) => {
+        if (get(dubData).length > 0) $$render(consequent);
+        else $$render(alternate_1, false);
+      });
+    }
+    action(
+      div,
+      ($$node, $$action_arg) =>
+        teleport == null ? void 0 : teleport($$node, $$action_arg),
+      () => ({ to: 'body' }),
+    );
+    template_effect(() => {
+      set_attribute(div, 'id', `dubplus-${$$props.dubType}s-container`);
+      set_class(
+        div,
+        `${`dubplus-dubs-container dubplus-${$$props.dubType}s-container` ?? ''} svelte-ujv5bp`,
+      );
+      set_attribute(
+        div,
+        'style',
+        `bottom: ${get(positionBottom)}px; right: ${get(positionRight)}px; display: ${get(display)};`,
+      );
+      toggle_class(ul, 'dubplus-no-dubs', get(dubData).length === 0);
+    });
+    event('mouseleave', div, () => set(display, 'none'));
+    append($$anchor, div);
+    pop();
+  }
+  delegate(['click']);
+  const SNOWFLAKES_COUNT = 200;
+  let snowflakesCount = SNOWFLAKES_COUNT;
+  let baseCSS = '';
+  const pageHeightVh = 100;
+  function getSnowConatiner() {
+    return document.getElementById('snow-container');
+  }
+  function getSnowAttributes() {
+    var _a;
+    const snowWrapper = getSnowConatiner();
+    snowflakesCount = Number(
+      ((_a = snowWrapper == null ? void 0 : snowWrapper.dataset) == null
+        ? void 0
+        : _a.count) || snowflakesCount,
+    );
+  }
+  function generateSnow(snowDensity = 200) {
+    snowDensity -= 1;
+    const snowWrapper = getSnowConatiner();
+    snowWrapper.innerHTML = '';
+    for (let i = 0; i < snowDensity; i++) {
+      let board = document.createElement('div');
+      board.className = 'snowflake';
+      snowWrapper.appendChild(board);
+    }
+  }
+  function getOrCreateCSSElement() {
+    let cssElement = document.getElementById('psjs-css');
+    if (cssElement) return cssElement;
+    cssElement = document.createElement('style');
+    cssElement.id = 'psjs-css';
+    document.head.appendChild(cssElement);
+    return cssElement;
+  }
+  function addCSS(rule = '') {
+    const cssElement = getOrCreateCSSElement();
+    cssElement.innerHTML = rule;
+    document.head.appendChild(cssElement);
+  }
+  function randomInt(value = 100) {
+    return Math.floor(Math.random() * value) + 1;
+  }
+  function randomIntRange(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+  function generateSnowCSS(snowDensity = 200) {
+    let snowflakeName = 'snowflake';
+    let rule = baseCSS;
+    for (let i = 1; i < snowDensity; i++) {
+      let randomX = Math.random() * 100;
+      let randomOffset = Math.random() * 10;
+      let randomXEnd = randomX + randomOffset;
+      let randomXEndYoyo = randomX + randomOffset / 2;
+      let randomYoyoTime = getRandomArbitrary(0.3, 0.8);
+      let randomYoyoY = randomYoyoTime * pageHeightVh;
+      let randomScale = Math.random();
+      let fallDuration = randomIntRange(10, (pageHeightVh / 10) * 3);
+      let fallDelay = randomInt((pageHeightVh / 10) * 3) * -1;
+      let opacity = Math.random();
+      rule += `
+      .${snowflakeName}:nth-child(${i}) {
+        opacity: ${opacity};
+        transform: translate(${randomX}vw, -10px) scale(${randomScale});
+        animation: fall-${i} ${fallDuration}s ${fallDelay}s linear infinite;
+      }
+      @keyframes fall-${i} {
+        ${randomYoyoTime * 100}% {
+          transform: translate(${randomXEnd}vw, ${randomYoyoY}vh) scale(${randomScale});
+        }
+        to {
+          transform: translate(${randomXEndYoyo}vw, ${pageHeightVh}vh) scale(${randomScale});
+        }
+      }
+    `;
+    }
+    addCSS(rule);
+  }
+  function createSnow() {
+    getSnowAttributes();
+    generateSnowCSS(snowflakesCount);
+    generateSnow(snowflakesCount);
+  }
+  var root$6 = /* @__PURE__ */ template(
+    `<div id="snow-container" class="svelte-t6y8au"></div>`,
+  );
+  function Snow($$anchor, $$props) {
+    push($$props, false);
+    onMount(() => {
+      createSnow();
+      window.addEventListener('resize', createSnow);
+    });
+    onDestroy(() => {
+      window.removeEventListener('resize', createSnow);
+    });
+    init();
+    var div = root$6();
+    action(
+      div,
+      ($$node, $$action_arg) =>
+        teleport == null ? void 0 : teleport($$node, $$action_arg),
+      () => ({ to: 'body' }),
+    );
+    append($$anchor, div);
+    pop();
+  }
+  var root$5 = /* @__PURE__ */ template(
+    `<li class="svelte-psnl7x"><button type="button" class="svelte-psnl7x"><!> <span class="dubplus-menu-label svelte-psnl7x"> </span></button></li>`,
+  );
+  function MenuAction($$anchor, $$props) {
+    push($$props, true);
+    onMount(() => {
+      if ($$props.init) $$props.init();
+    });
+    var li = root$5();
+    var button = child(li);
+    button.__click = function (...$$args) {
+      var _a;
+      (_a = $$props.onClick) == null ? void 0 : _a.apply(this, $$args);
+    };
+    var node = child(button);
+    component(
+      node,
+      () => $$props.icon,
+      ($$anchor2, $$component) => {
+        $$component($$anchor2, {});
+      },
+    );
+    var span = sibling(node, 2);
+    var text2 = child(span);
+    template_effect(
+      ($0, $1) => {
+        set_attribute(li, 'id', $$props.id);
+        set_attribute(li, 'title', $0);
+        set_attribute(button, 'aria-label', $0);
+        set_text(text2, $1);
+      },
+      [() => t($$props.description), () => t($$props.label)],
+    );
+    append($$anchor, li);
+    pop();
+  }
+  delegate(['click']);
+  var root$4 = /* @__PURE__ */ template(`<!> <!>`, 1);
+  function UserInterface($$anchor, $$props) {
+    push($$props, false);
+    init();
+    var fragment = root$4();
+    var node = first_child(fragment);
+    const expression = /* @__PURE__ */ derived_safe_equal(() =>
+      t('user-interface.title'),
+    );
+    MenuHeader(node, {
+      settingsId: 'user-interface',
+      get name() {
+        return get(expression);
+      },
+    });
+    var node_1 = sibling(node, 2);
+    MenuSection(node_1, {
+      settingsId: 'user-interface',
+      children: ($$anchor2, $$slotProps) => {
+        var fragment_1 = comment();
+        var node_2 = first_child(fragment_1);
+        each(
+          node_2,
+          1,
+          () => userInterface,
+          index,
+          ($$anchor3, module) => {
+            var fragment_2 = comment();
+            var node_3 = first_child(fragment_2);
+            {
+              var consequent = ($$anchor4) => {
+                MenuAction($$anchor4, {
+                  get id() {
+                    return get(module).id;
+                  },
+                  get label() {
+                    return get(module).label;
+                  },
+                  get description() {
+                    return get(module).description;
+                  },
+                  get icon() {
+                    return get(module).altIcon;
+                  },
+                  get onClick() {
+                    return get(module).onClick;
+                  },
+                  get init() {
+                    return get(module).init;
+                  },
+                });
+              };
+              var alternate = ($$anchor4) => {
+                MenuSwitch($$anchor4, {
+                  get id() {
+                    return get(module).id;
+                  },
+                  get label() {
+                    return get(module).label;
+                  },
+                  get description() {
+                    return get(module).description;
+                  },
+                  get init() {
+                    return get(module).init;
+                  },
+                  get customize() {
+                    return get(module).custom;
+                  },
+                  onToggle: (on, onMount2) => {
+                    if (on) get(module).turnOn();
+                    else get(module).turnOff();
+                    if (!onMount2) {
+                      saveSetting('option', get(module).id, on);
+                    }
+                  },
+                });
+              };
+              if_block(node_3, ($$render) => {
+                if (get(module).altIcon) $$render(consequent);
+                else $$render(alternate, false);
+              });
+            }
+            append($$anchor3, fragment_2);
+          },
+        );
+        append($$anchor2, fragment_1);
+      },
+    });
+    append($$anchor, fragment);
+    pop();
+  }
+  var $$_import_settings = reactive_import(() => settings);
+  var root$3 = /* @__PURE__ */ template(`<!> <!>`, 1);
+  function Settings($$anchor, $$props) {
+    push($$props, false);
+    settingsModules.forEach((module) => {
+      if (!$$_import_settings().options[module.id]) {
+        $$_import_settings(($$_import_settings().options[module.id] = false));
+      }
+    });
+    init();
+    var fragment = root$3();
+    var node = first_child(fragment);
+    const expression = /* @__PURE__ */ derived_safe_equal(() =>
+      t('settings.title'),
+    );
+    MenuHeader(node, {
+      settingsId: 'settings',
+      get name() {
+        return get(expression);
+      },
+    });
+    var node_1 = sibling(node, 2);
+    MenuSection(node_1, {
+      settingsId: 'settings',
+      children: ($$anchor2, $$slotProps) => {
+        var fragment_1 = comment();
+        var node_2 = first_child(fragment_1);
+        each(
+          node_2,
+          1,
+          () => settingsModules,
+          index,
+          ($$anchor3, module) => {
+            MenuSwitch($$anchor3, {
+              get id() {
+                return get(module).id;
+              },
+              get label() {
+                return get(module).label;
+              },
+              get description() {
+                return get(module).description;
+              },
+              get init() {
+                return get(module).init;
+              },
+              get customize() {
+                return get(module).custom;
+              },
+              onToggle: (on, onMount2) => {
+                if (on) get(module).turnOn();
+                else get(module).turnOff();
+                if (!onMount2) {
+                  saveSetting('option', get(module).id, on);
+                }
+              },
+            });
+          },
+        );
+        append($$anchor2, fragment_1);
+      },
+    });
+    append($$anchor, fragment);
+    pop();
+  }
+  var root$2 = /* @__PURE__ */ template(`<!> <!>`, 1);
+  function Customize($$anchor, $$props) {
+    push($$props, false);
+    init();
+    var fragment = root$2();
+    var node = first_child(fragment);
+    const expression = /* @__PURE__ */ derived_safe_equal(() =>
+      t('customize.title'),
+    );
+    MenuHeader(node, {
+      settingsId: 'customize',
+      get name() {
+        return get(expression);
+      },
+    });
+    var node_1 = sibling(node, 2);
+    MenuSection(node_1, {
+      settingsId: 'customize',
+      children: ($$anchor2, $$slotProps) => {
+        var fragment_1 = comment();
+        var node_2 = first_child(fragment_1);
+        each(
+          node_2,
+          1,
+          () => customize,
+          index,
+          ($$anchor3, module) => {
+            MenuSwitch($$anchor3, {
+              get id() {
+                return get(module).id;
+              },
+              get label() {
+                return get(module).label;
+              },
+              get description() {
+                return get(module).description;
+              },
+              get init() {
+                return get(module).init;
+              },
+              get customize() {
+                return get(module).custom;
+              },
+              onToggle: (on, onMount2) => {
+                if (on) get(module).turnOn();
+                else get(module).turnOff();
+                if (!onMount2) {
+                  saveSetting('option', get(module).id, on);
+                }
+              },
+            });
+          },
+        );
+        append($$anchor2, fragment_1);
+      },
+    });
+    append($$anchor, fragment);
+    pop();
+  }
+  function snooze(_, SNOOZE_CLASS, tooltip, icon, eventSongAdvance) {
+    if (!document.body.classList.contains(SNOOZE_CLASS)) {
+      set(tooltip, proxy(t('SnoozeVideo.tooltip.undo')));
+      set(icon, 'icon-eye-unblocked');
+      document.body.classList.add(SNOOZE_CLASS);
+      window.QueUp.Events.once(
+        'realtime:room_playlist-update',
+        eventSongAdvance,
+      );
     } else {
-      return _failCB();
+      set(tooltip, proxy(t('SnoozeVideo.tooltip')));
+      set(icon, 'icon-eye-blocked');
+      document.body.classList.remove(SNOOZE_CLASS);
+      window.QueUp.Events.unbind(
+        'realtime:room_playlist-update',
+        eventSongAdvance,
+      );
     }
-  };
-  var then = function then(cb) {
-    if (typeof cb === 'function') {
-      _cb = cb;
+  }
+  var root$1 = /* @__PURE__ */ template(
+    `<button id="dubplus-snooze-video" type="button"><span class="svelte-1va87zs">1</span></button>`,
+  );
+  function SnoozeVideo($$anchor, $$props) {
+    push($$props, true);
+    let icon = state('icon-eye-blocked');
+    let tooltip = state(proxy(t('SnoozeVideo.tooltip')));
+    const SNOOZE_CLASS = 'dubplus-snooze-video';
+    function eventSongAdvance(e) {
+      if (e.startTime < 2) {
+        document.body.classList.remove(SNOOZE_CLASS);
+        set(tooltip, proxy(t('SnoozeVideo.tooltip')));
+        set(icon, 'icon-eye-blocked');
+        return true;
+      }
     }
-    // start the first one
-    window.setTimeout(check, opts.interval);
-    return this;
-  };
-  var fail = function fail(cb) {
-    if (typeof cb === 'function') {
-      _failCB = cb;
+    var button = root$1();
+    button.__click = [snooze, SNOOZE_CLASS, tooltip, icon, eventSongAdvance];
+    action(
+      button,
+      ($$node, $$action_arg) =>
+        teleport == null ? void 0 : teleport($$node, $$action_arg),
+      () => ({ to: '.player_sharing' }),
+    );
+    template_effect(() => {
+      set_class(
+        button,
+        `${`${get(icon)} snooze-video-btn dubplus-btn-player` ?? ''} svelte-1va87zs`,
+      );
+      set_attribute(button, 'aria-label', get(tooltip));
+      set_attribute(button, 'data-dp-tooltip', get(tooltip));
+    });
+    append($$anchor, button);
+    pop();
+  }
+  delegate(['click']);
+  var root_2 = /* @__PURE__ */ template(`<!> <!> <!>`, 1);
+  var root = /* @__PURE__ */ template(
+    `<!> <!> <!> <!> <!> <!> <!> <section class="dubplus-menu svelte-1u8kv6a"><p class="dubplus-menu-header svelte-1u8kv6a"> </p> <!> <!> <!> <!> <!></section> <!>`,
+    1,
+  );
+  function Menu($$anchor, $$props) {
+    push($$props, false);
+    onMount(() => {
+      document.querySelector('html').classList.add('dubplus');
+    });
+    init();
+    var fragment = root();
+    var node = first_child(fragment);
+    Snooze(node, {});
+    var node_1 = sibling(node, 2);
+    MenuIcon(node_1, {});
+    var node_2 = sibling(node_1, 2);
+    Eta(node_2, {});
+    var node_3 = sibling(node_2, 2);
+    SnoozeVideo(node_3, {});
+    var node_4 = sibling(node_3, 2);
+    {
+      var consequent = ($$anchor2) => {
+        EmojiPreview($$anchor2, {});
+      };
+      if_block(node_4, ($$render) => {
+        if (settings.options.autocomplete) $$render(consequent);
+      });
     }
-    return this;
+    var node_5 = sibling(node_4, 2);
+    {
+      var consequent_1 = ($$anchor2) => {
+        var fragment_2 = root_2();
+        var node_6 = first_child(fragment_2);
+        DubsInfo(node_6, { dubType: 'updub' });
+        var node_7 = sibling(node_6, 2);
+        DubsInfo(node_7, { dubType: 'downdub' });
+        var node_8 = sibling(node_7, 2);
+        DubsInfo(node_8, { dubType: 'grab' });
+        append($$anchor2, fragment_2);
+      };
+      if_block(node_5, ($$render) => {
+        if (settings.options['dubs-hover']) $$render(consequent_1);
+      });
+    }
+    var node_9 = sibling(node_5, 2);
+    {
+      var consequent_2 = ($$anchor2) => {
+        Snow($$anchor2, {});
+      };
+      if_block(node_9, ($$render) => {
+        if (settings.options.snow) $$render(consequent_2);
+      });
+    }
+    var section = sibling(node_9, 2);
+    var p = child(section);
+    var text2 = child(p);
+    var node_10 = sibling(p, 2);
+    General(node_10, {});
+    var node_11 = sibling(node_10, 2);
+    UserInterface(node_11, {});
+    var node_12 = sibling(node_11, 2);
+    Settings(node_12, {});
+    var node_13 = sibling(node_12, 2);
+    Customize(node_13, {});
+    var node_14 = sibling(node_13, 2);
+    Contact(node_14, {});
+    var node_15 = sibling(section, 2);
+    Modal(node_15, {});
+    template_effect(
+      ($0) => set_text(text2, $0),
+      [() => t('Menu.title')],
+      derived_safe_equal,
+    );
+    append($$anchor, fragment);
+    pop();
+  }
+  var define_PKGINFO_default = {
+    name: 'dubplus',
+    version: '1.0.0',
+    description: 'Dub+ - A simple script/extension for QueUp.net',
+    author: 'DubPlus',
+    license: 'MIT',
+    homepage: 'https://dub.plus',
+    'lint-staged': { '*.{js,css,md,svelte,ts}': 'prettier --write' },
   };
-  return {
-    then: then,
-    fail: fail
-  };
-}
-var _default = exports.default = WaitFor;
-
-},{}]},{},[1]);
+  function DubPlus($$anchor, $$props) {
+    push($$props, true);
+    window.dubplus = window.dubplus || {};
+    window.dubplus = Object.assign(window.dubplus, define_PKGINFO_default);
+    let status = state('loading');
+    function setLocale() {
+      locale.current = normalizeLocale(navigator.language || 'en');
+    }
+    onMount(() => {
+      setLocale();
+      window.addEventListener('languagechange', setLocale);
+    });
+    onDestroy(() => {
+      window.removeEventListener('languagechange', setLocale);
+    });
+    const checkList = [
+      'QueUp.session.id',
+      'QueUp.room.chat',
+      'QueUp.Events',
+      'QueUp.room.player',
+      'QueUp.helpers.cookie',
+      'QueUp.room.model',
+      'QueUp.room.users',
+    ];
+    waitFor(checkList)
+      .then(() => {
+        set(status, 'ready');
+      })
+      .catch(() => {
+        var _a, _b;
+        if (
+          !((_b = (_a = window.QueUp) == null ? void 0 : _a.session) == null
+            ? void 0
+            : _b.id)
+        ) {
+          set(status, 'loggedout');
+        } else {
+          set(status, 'error');
+        }
+      });
+    function showErrorModal(content) {
+      modalState.title = t('Error.modal.title');
+      modalState.content = content;
+      modalState.onCancel = () => {
+        modalState.open = false;
+      };
+      modalState.open = true;
+    }
+    user_effect(() => {
+      if (get(status) === 'loggedout') {
+        showErrorModal(t('Error.modal.loggedout'));
+      } else if (get(status) === 'error') {
+        showErrorModal(t('Error.unknown'));
+      }
+    });
+    var fragment = comment();
+    var node = first_child(fragment);
+    {
+      var consequent = ($$anchor2) => {
+        Loading($$anchor2, {});
+      };
+      var alternate_1 = ($$anchor2) => {
+        var fragment_2 = comment();
+        var node_1 = first_child(fragment_2);
+        {
+          var consequent_1 = ($$anchor3) => {
+            Menu($$anchor3, {});
+          };
+          var alternate = ($$anchor3) => {
+            Modal($$anchor3, {});
+          };
+          if_block(
+            node_1,
+            ($$render) => {
+              if (get(status) === 'ready') $$render(consequent_1);
+              else $$render(alternate, false);
+            },
+            true,
+          );
+        }
+        append($$anchor2, fragment_2);
+      };
+      if_block(node, ($$render) => {
+        if (get(status) === 'loading') $$render(consequent);
+        else $$render(alternate_1, false);
+      });
+    }
+    append($$anchor, fragment);
+    pop();
+  }
+  const loadedAsExtension = 'dubplusExtensionLoaded' in window;
+  logInfo('Dub+: loaded as extension:', loadedAsExtension);
+  if (!loadedAsExtension) {
+    loadCSS('/dubplus.css', 'dubplus-css').catch((e) => {
+      logError('Failed to load dubplus.css', e);
+    });
+  }
+  let container = document.getElementById('dubplus-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'dubplus-container';
+    document.body.appendChild(container);
+  }
+  if (container.children.length > 0) {
+    unmount(container);
+    container.innerHTML = '';
+  }
+  const app = mount(DubPlus, {
+    target: container,
+  });
+  return app;
+})();

@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "version": "0.0.0",
+  "name": "DubPlus",
+  "short_name": "Dub+",
+  "author": "Dub+ Devs",
+  "description": "Dub+ - A Dubtrack.fm and QueUp.net script/extension for added features and customizations",
+  "homepage_url": "https://dub.plus/",
+  "action": {
+    "default_icon": {
+      "16": "extension/icons/18.png",
+      "38": "extension/icons/38.png",
+      "48": "extension/icons/48.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "js": ["extension/register-dubplus.js"],
+      "matches": ["*://*.dubtrack.fm/join/*", "*://*.queup.net/join/*"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "js": ["dubplus.js"],
+      "css": ["dubplus.css"],
+      "matches": ["*://*.dubtrack.fm/join/*", "*://*.queup.net/join/*"],
+      "run_at": "document_end",
+      "world": "MAIN"
+    }
+  ],
+  "icons": {
+    "16": "extension/icons/18.png",
+    "19": "extension/icons/19.png",
+    "38": "extension/icons/38.png",
+    "48": "extension/icons/48.png",
+    "96": "extension/icons/96.png",
+    "128": "extension/icons/128.png"
+  },
+  "host_permissions": ["*://*.dubtrack.fm/*", "*://*.queup.net/*"]
+}
