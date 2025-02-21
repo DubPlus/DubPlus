@@ -3873,7 +3873,7 @@ var dubplus = (function () {
       }
       logInfo('tasty', 'loading from api');
       return fetch(
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}/emotes/tastyemotes.json`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}/emotes/tastyemotes.json`,
       )
         .then((res) => res.json())
         .then((json) => {
@@ -5254,7 +5254,7 @@ var dubplus = (function () {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}${cssFile}?${'1740092586166'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1740149974689'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
