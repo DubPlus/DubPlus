@@ -48,6 +48,14 @@ export const translations = {
       "Enter a custom Away From Keyboard [AFK] message here. Message will be prefixed with '[AFK]'",
     'afk.modal.placeholder': 'Be right back!',
 
+    'auto-afk.label': 'Auto AFK',
+    'auto-afk.description':
+      'Automatically set yourself to AFK after a certain amount of time of inactivity',
+    'auto-afk.modal.title': 'Auto AFK Timer',
+    'auto-afk.modal.content':
+      'Enter the amount of time, in minutes, before you are set to AFK. Default is 30 minutes',
+    'auto-afk.modal.validation': 'Value must be a number greater than 0',
+
     'emotes.label': 'Emotes',
     'emotes.description': 'Adds Twitch, Bttv, and FrankerFacez emotes in chat.',
 

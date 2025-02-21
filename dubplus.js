@@ -2737,6 +2737,13 @@ var dubplus = (function () {
       'afk.modal.content':
         "Enter a custom Away From Keyboard [AFK] message here. Message will be prefixed with '[AFK]'",
       'afk.modal.placeholder': 'Be right back!',
+      'auto-afk.label': 'Auto AFK',
+      'auto-afk.description':
+        'Automatically set yourself to AFK after a certain amount of time of inactivity',
+      'auto-afk.modal.title': 'Auto AFK Timer',
+      'auto-afk.modal.content':
+        'Enter the amount of time, in minutes, before you are set to AFK. Default is 30 minutes',
+      'auto-afk.modal.validation': 'Value must be a number greater than 0',
       'emotes.label': 'Emotes',
       'emotes.description':
         'Adds Twitch, Bttv, and FrankerFacez emotes in chat.',
@@ -3550,7 +3557,7 @@ var dubplus = (function () {
     }
     template_effect(
       ($0, $1) => {
-        set_attribute(li, 'id', $$props.id);
+        set_attribute(li, 'id', `dubplus-${$$props.id}`);
         set_attribute(li, 'title', $0);
         toggle_class(li, 'disabled', $1);
       },
@@ -4298,7 +4305,7 @@ var dubplus = (function () {
       window.QueUp.session.id !== e.user.userInfo.userid
     ) {
       const shouldPlaySound = custom.split(',').some(function (v) {
-        const reg = new RegExp('(^|\\b)@?' + v.trim() + '\\b', 'ig');
+        const reg = new RegExp(`\\b@?${v.trim()}\\b`, 'ig');
         return reg.test(e.message);
       });
       if (shouldPlaySound) {
@@ -4370,12 +4377,41 @@ var dubplus = (function () {
     },
   };
   const activeTabState = proxy({ isActive: true });
-  window.onfocus = function () {
-    activeTabState.isActive = true;
-  };
-  window.onblur = function () {
-    activeTabState.isActive = false;
-  };
+  const onOut = [];
+  const onIn = [];
+  document.addEventListener('visibilitychange', handleChange);
+  window.onpageshow = handleChange;
+  window.onpagehide = handleChange;
+  window.onfocus = handleChange;
+  window.onblur = handleChange;
+  if (document.hidden !== void 0) {
+    handleChange({ type: document.hidden ? 'blur' : 'focus' });
+  }
+  function handleChange(evt) {
+    if (
+      activeTabState.isActive &&
+      (['blur', 'pagehide'].includes(evt.type) || document.hidden)
+    ) {
+      activeTabState.isActive = false;
+      onOut.forEach((fn) => fn());
+      logInfo('activeTabState', 'inactive');
+    } else if (
+      !activeTabState.isActive &&
+      (['focus', 'pageshow'].includes(evt.type) || !document.hidden)
+    ) {
+      activeTabState.isActive = true;
+      onIn.forEach((fn) => fn());
+      logInfo('activeTabState', 'active');
+    }
+  }
+  function registerVisibilityChangeListeners(inHandler, outHandler) {
+    if (inHandler) onIn.push(inHandler);
+    if (outHandler) onOut.push(outHandler);
+  }
+  function unRegisterVisibilityChangeListeners(inHandler, outHandler) {
+    if (inHandler) onIn.splice(onIn.indexOf(inHandler), 1);
+    if (outHandler) onOut.splice(onOut.indexOf(outHandler), 1);
+  }
   function onDenyDismiss() {
     updateModalState({
       title: t('Notifcation.permission.title'),
@@ -4449,14 +4485,14 @@ var dubplus = (function () {
       mentionTriggers = mentionTriggers
         .concat(settings.custom['custom-mentions'].split(','))
         .map((v) => v.trim());
+      mentionTriggers = mentionTriggers.concat(
+        mentionTriggers.map((v) => '@' + v),
+      );
     }
-    const mentionTriggersTest = mentionTriggers.some(function (v) {
-      const reg = new RegExp('\\b' + v + '\\b', 'i');
-      return reg.test(content);
-    });
+    const bigRegex = new RegExp(`\\b(${mentionTriggers.join('|')})\\b`, 'ig');
     if (
-      mentionTriggersTest &&
-      !activeTabState.isActive &&
+      bigRegex.test(content) &&
+      !activeTabState.isActive && // notifications only if you're not focused on the tab
       window.QueUp.session.id !== e.user.userInfo.userid
     ) {
       showNotification({
@@ -5254,7 +5290,7 @@ var dubplus = (function () {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}${cssFile}?${'1740092586166'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}${cssFile}?${'1740151444762'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5463,9 +5499,64 @@ var dubplus = (function () {
       document.body.classList.remove('dubplus-flip-interface');
     },
   };
+  let timer = null;
+  function onTimerExpired() {
+    if (!settings.options.afk) {
+      logInfo('auto-afk timer expired, enabling afk');
+      const afkSwitch = document.querySelector('#dubplus-afk [role=switch]');
+      afkSwitch == null ? void 0 : afkSwitch.click();
+    } else {
+      logInfo('auto-afk timer expired, but afk is already enabled');
+    }
+  }
+  function onBlur() {
+    let userTime = parseInt(settings.custom['auto-afk'], 10);
+    if (isNaN(userTime)) {
+      userTime = 30;
+    }
+    logInfo('auto-afk onBlur: starting timer for ', userTime, 'minutes');
+    timer = setTimeout(onTimerExpired, userTime * 60 * 1e3);
+  }
+  function onFocus() {
+    if (timer) {
+      logInfo('auto-afk onFocus: clearing timer');
+      clearTimeout(timer);
+      timer = null;
+    } else {
+      logInfo('auto-afk onFocus: no timer to clear');
+    }
+  }
+  const autoAfk = {
+    id: 'auto-afk',
+    label: 'auto-afk.label',
+    description: 'auto-afk.description',
+    category: 'general',
+    turnOn() {
+      registerVisibilityChangeListeners(onFocus, onBlur);
+    },
+    turnOff() {
+      unRegisterVisibilityChangeListeners(onFocus, onBlur);
+      onFocus();
+    },
+    custom: {
+      title: 'auto-afk.modal.title',
+      content: 'auto-afk.modal.content',
+      placeholder: '30',
+      maxlength: 10,
+      validation(value) {
+        const num = parseInt(value, 10);
+        if (isNaN(num) || num < 1) {
+          return t('auto-afk.modal.validation');
+        } else {
+          return true;
+        }
+      },
+    },
+  };
   const general = [
     autovote,
     afk,
+    autoAfk,
     emotes,
     autocomplete,
     customMentions,
