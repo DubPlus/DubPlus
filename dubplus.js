@@ -2853,6 +2853,12 @@ var dubplus = (function () {
         'https://example.com/sweet-sound.mp3',
       'custom-notification-sound.modal.validation':
         "Can't play sound from this URL. Please enter a valid URL to an MP3 file.",
+      'grab-response.label': 'Grab Response',
+      'grab-response.description': 'Sends a chat message when you grab a song',
+      'grab-response.modal.title': 'Grab Response',
+      'grab-response.modal.content':
+        'Enter a message to send when you grab a song',
+      'grab-response.modal.placeholder': 'Thanks for the song!',
     },
   };
   const locale = proxy({ current: 'en' });
@@ -3598,6 +3604,31 @@ var dubplus = (function () {
       window.QueUp.Events.bind(PLAYLIST_UPDATE, voteCheck);
     },
   };
+  function insertQueupChat(className, textContent) {
+    const li = document.createElement('li');
+    li.className = `dubplus-chat-system ${className}`;
+    const chatDelete = document.createElement('div');
+    chatDelete.className = 'chatDelete';
+    chatDelete.onclick = function (e) {
+      e.target.parentElement.remove();
+    };
+    const span = document.createElement('span');
+    span.className = 'icon-close';
+    chatDelete.appendChild(span);
+    li.appendChild(chatDelete);
+    const text2 = document.createElement('div');
+    text2.className = 'text';
+    text2.textContent = textContent;
+    li.appendChild(text2);
+    document.querySelector('ul.chat-main').appendChild(li);
+  }
+  function sendChatMessage(message) {
+    const chatInput = document.querySelector('#chat-txt-message');
+    const messageOriginal = chatInput.value;
+    chatInput.value = message;
+    window.QueUp.room.chat.sendMessage();
+    if (messageOriginal) chatInput.value = messageOriginal;
+  }
   let canSend = true;
   function afk_chat_respond(e) {
     if (!canSend) {
@@ -3609,13 +3640,13 @@ var dubplus = (function () {
       content.includes(`@${user}`) &&
       window.QueUp.session.id !== e.user.userInfo.userid
     ) {
-      const chatInput = document.querySelector('#chat-txt-message');
+      let chatMessage = '';
       if (settings.custom.afk) {
-        chatInput.value = `[AFK] ${settings.custom.afk}`;
+        chatMessage = `[AFK] ${settings.custom.afk}`;
       } else {
-        chatInput.value = `[AFK] ${t('afk.modal.placeholder')}`;
+        chatMessage = `[AFK] ${t('afk.modal.placeholder')}`;
       }
-      window.QueUp.room.chat.sendMessage();
+      sendChatMessage(chatMessage);
       canSend = false;
       setTimeout(() => {
         canSend = true;
@@ -3880,7 +3911,7 @@ var dubplus = (function () {
       }
       logInfo('tasty', 'loading from api');
       return fetch(
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}/emotes/tastyemotes.json`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}/emotes/tastyemotes.json`,
       )
         .then((res) => res.json())
         .then((json) => {
@@ -4394,14 +4425,12 @@ var dubplus = (function () {
     ) {
       activeTabState.isActive = false;
       onOut.forEach((fn) => fn());
-      logInfo('activeTabState', 'inactive');
     } else if (
       !activeTabState.isActive &&
       (['focus', 'pageshow'].includes(evt.type) || !document.hidden)
     ) {
       activeTabState.isActive = true;
       onIn.forEach((fn) => fn());
-      logInfo('activeTabState', 'active');
     }
   }
   function registerVisibilityChangeListeners(inHandler, outHandler) {
@@ -4801,24 +4830,6 @@ var dubplus = (function () {
       window.QueUp.Events.unbind(PLAYLIST_UPDATE, resetDubs);
     },
   };
-  function insertQueupChat(className, textContent) {
-    const li = document.createElement('li');
-    li.className = `dubplus-chat-system ${className}`;
-    const chatDelete = document.createElement('div');
-    chatDelete.className = 'chatDelete';
-    chatDelete.onclick = function (e) {
-      e.target.parentElement.remove();
-    };
-    const span = document.createElement('span');
-    span.className = 'icon-close';
-    chatDelete.appendChild(span);
-    li.appendChild(chatDelete);
-    const text2 = document.createElement('div');
-    text2.className = 'text';
-    text2.textContent = textContent;
-    li.appendChild(text2);
-    document.querySelector('ul.chat-main').appendChild(li);
-  }
   function downdubWatcher(e) {
     const isUserTheDJ =
       window.QueUp.session.id ===
@@ -5290,7 +5301,7 @@ var dubplus = (function () {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}${cssFile}?${'1740151444762'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}${cssFile}?${'1740199685576'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5553,6 +5564,32 @@ var dubplus = (function () {
       },
     },
   };
+  function onGrab(e) {
+    if (e.user._id === window.QueUp.session.id) {
+      const message = settings.custom['grab-response'];
+      if (message) {
+        sendChatMessage(message);
+      }
+    }
+  }
+  const grabResponse = {
+    id: 'grab-response',
+    label: 'grab-response.label',
+    description: 'grab-response.description',
+    category: 'general',
+    turnOn() {
+      window.QueUp.Events.bind(GRAB, onGrab);
+    },
+    turnOff() {
+      window.QueUp.Events.unbind(GRAB, onGrab);
+    },
+    custom: {
+      title: 'grab-response.modal.title',
+      content: 'grab-response.modal.content',
+      placeholder: 'grab-response.modal.placeholder',
+      maxlength: 255,
+    },
+  };
   const general = [
     autovote,
     afk,
@@ -5568,6 +5605,7 @@ var dubplus = (function () {
     downdubsInChat,
     upDubInChat,
     grabsInChat,
+    grabResponse,
     snow,
     rain,
   ];
