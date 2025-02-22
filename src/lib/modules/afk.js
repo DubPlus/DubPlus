@@ -1,6 +1,7 @@
 import { settings } from '../stores/settings.svelte';
 import { t } from '../stores/i18n.svelte';
 import { CHAT_MESSAGE } from '../../events-constants';
+import { sendChatMessage } from '../../utils/chat-message';
 /**
  * AFK -  Away from Keyboard
  * Toggles the afk auto response on/off
@@ -25,18 +26,14 @@ function afk_chat_respond(e) {
     content.includes(`@${user}`) &&
     window.QueUp.session.id !== e.user.userInfo.userid
   ) {
-    /**
-     * @type {HTMLInputElement}
-     */
-    const chatInput = document.querySelector('#chat-txt-message');
-
+    let chatMessage = '';
     if (settings.custom.afk) {
-      chatInput.value = `[AFK] ${settings.custom.afk}`;
+      chatMessage = `[AFK] ${settings.custom.afk}`;
     } else {
-      chatInput.value = `[AFK] ${t('afk.modal.placeholder')}`;
+      chatMessage = `[AFK] ${t('afk.modal.placeholder')}`;
     }
 
-    window.QueUp.room.chat.sendMessage();
+    sendChatMessage(chatMessage);
     canSend = false;
 
     // prevent spamming. 30 seconds between messages

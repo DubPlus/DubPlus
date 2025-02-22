@@ -190,5 +190,12 @@ export const translations = {
       'https://example.com/sweet-sound.mp3',
     'custom-notification-sound.modal.validation':
       "Can't play sound from this URL. Please enter a valid URL to an MP3 file.",
+
+    'grab-response.label': 'Grab Response',
+    'grab-response.description': 'Sends a chat message when you grab a song',
+    'grab-response.modal.title': 'Grab Response',
+    'grab-response.modal.content':
+      'Enter a message to send when you grab a song',
+    'grab-response.modal.placeholder': 'Thanks for the song!',
   },
 };

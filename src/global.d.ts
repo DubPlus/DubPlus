@@ -25,6 +25,12 @@ export interface Song {
   played: number;
 }
 
+export interface SongInfo {
+  fkid: string;
+  name: string;
+  type: string;
+}
+
 export interface QueUp {
   session: {
     /**
@@ -59,9 +65,7 @@ export interface QueUp {
             downdubs: number;
             userid: string;
           };
-          songInfo: {
-            name: string;
-          };
+          songInfo: SongInfo;
         };
       };
     };
