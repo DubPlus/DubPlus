@@ -1,5 +1,3 @@
-import { logInfo } from '../../utils/logger';
-
 export const activeTabState = $state({ isActive: true });
 
 /**
@@ -37,14 +35,12 @@ function handleChange(evt) {
   ) {
     activeTabState.isActive = false;
     onOut.forEach((fn) => fn());
-    logInfo('activeTabState', 'inactive');
   } else if (
     !activeTabState.isActive &&
     (['focus', 'pageshow'].includes(evt.type) || !document.hidden)
   ) {
     activeTabState.isActive = true;
     onIn.forEach((fn) => fn());
-    logInfo('activeTabState', 'active');
   }
 }
 
