@@ -59,7 +59,7 @@
 </script>
 
 <li
-  {id}
+  id={`dubplus-${id}`}
   title={t(description)}
   class:disabled={modOnly ? !isMod(window.QueUp.session.id) : false}
 >

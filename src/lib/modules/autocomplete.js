@@ -130,6 +130,15 @@ function chatInputKeyupFunc(e) {
     return;
   }
 
+  if (e.key === KEYS.enter && !hasItems && !e.shiftKey) {
+    // let Queup handle submitting the message
+    // but we need to resize the textarea after the message is sent
+    setTimeout(() => {
+      window.QueUp.room.chat.resizeTextarea();
+    }, 10);
+    return;
+  }
+
   // just clear the preview if we hit escape
   if (e.key === KEYS.esc && hasItems) {
     reset();

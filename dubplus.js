@@ -2642,8 +2642,8 @@ var dubplus = (function () {
   function logError(...args) {
     console.error(`[${getTimeStamp()}] ${PREFIX}:`, ...args);
   }
-  function deepCheck(dottedString, startingScope = window) {
-    const props = dottedString.split('.');
+  function deepCheck(objectPath, startingScope = window) {
+    const props = objectPath.split('.');
     let depth = startingScope;
     for (let i = 0; i < props.length; i++) {
       if (typeof depth[props[i]] === 'undefined') {
@@ -2737,6 +2737,13 @@ var dubplus = (function () {
       'afk.modal.content':
         "Enter a custom Away From Keyboard [AFK] message here. Message will be prefixed with '[AFK]'",
       'afk.modal.placeholder': 'Be right back!',
+      'auto-afk.label': 'Auto AFK',
+      'auto-afk.description':
+        'Automatically set yourself to AFK after a certain amount of time of inactivity',
+      'auto-afk.modal.title': 'Auto AFK Timer',
+      'auto-afk.modal.content':
+        'Enter the amount of time, in minutes, before you are set to AFK. Default is 30 minutes',
+      'auto-afk.modal.validation': 'Value must be a number greater than 0',
       'emotes.label': 'Emotes',
       'emotes.description':
         'Adds Twitch, Bttv, and FrankerFacez emotes in chat.',
@@ -2846,6 +2853,12 @@ var dubplus = (function () {
         'https://example.com/sweet-sound.mp3',
       'custom-notification-sound.modal.validation':
         "Can't play sound from this URL. Please enter a valid URL to an MP3 file.",
+      'grab-response.label': 'Grab Response',
+      'grab-response.description': 'Sends a chat message when you grab a song',
+      'grab-response.modal.title': 'Grab Response',
+      'grab-response.modal.content':
+        'Enter a message to send when you grab a song',
+      'grab-response.modal.placeholder': 'Thanks for the song!',
     },
   };
   const locale = proxy({ current: 'en' });
@@ -2926,7 +2939,7 @@ var dubplus = (function () {
   }
   var root_1$3 = /* @__PURE__ */ template(`<textarea class="svelte-1mnr24t">
       </textarea>`);
-  var root_2$3 = /* @__PURE__ */ template(
+  var root_2$2 = /* @__PURE__ */ template(
     `<p class="dp-modal--error svelte-1mnr24t"> </p>`,
   );
   var root_3$1 = /* @__PURE__ */ template(
@@ -2988,7 +3001,7 @@ var dubplus = (function () {
     var node_1 = sibling(node, 2);
     {
       var consequent_1 = ($$anchor2) => {
-        var p_1 = root_2$3();
+        var p_1 = root_2$2();
         var text_2 = child(p_1);
         template_effect(() => set_text(text_2, get(errorMessage)));
         append($$anchor2, p_1);
@@ -3550,7 +3563,7 @@ var dubplus = (function () {
     }
     template_effect(
       ($0, $1) => {
-        set_attribute(li, 'id', $$props.id);
+        set_attribute(li, 'id', `dubplus-${$$props.id}`);
         set_attribute(li, 'title', $0);
         toggle_class(li, 'disabled', $1);
       },
@@ -3591,6 +3604,31 @@ var dubplus = (function () {
       window.QueUp.Events.bind(PLAYLIST_UPDATE, voteCheck);
     },
   };
+  function insertQueupChat(className, textContent) {
+    const li = document.createElement('li');
+    li.className = `dubplus-chat-system ${className}`;
+    const chatDelete = document.createElement('div');
+    chatDelete.className = 'chatDelete';
+    chatDelete.onclick = function (e) {
+      e.target.parentElement.remove();
+    };
+    const span = document.createElement('span');
+    span.className = 'icon-close';
+    chatDelete.appendChild(span);
+    li.appendChild(chatDelete);
+    const text2 = document.createElement('div');
+    text2.className = 'text';
+    text2.textContent = textContent;
+    li.appendChild(text2);
+    document.querySelector('ul.chat-main').appendChild(li);
+  }
+  function sendChatMessage(message) {
+    const chatInput = document.querySelector('#chat-txt-message');
+    const messageOriginal = chatInput.value;
+    chatInput.value = message;
+    window.QueUp.room.chat.sendMessage();
+    if (messageOriginal) chatInput.value = messageOriginal;
+  }
   let canSend = true;
   function afk_chat_respond(e) {
     if (!canSend) {
@@ -3602,13 +3640,13 @@ var dubplus = (function () {
       content.includes(`@${user}`) &&
       window.QueUp.session.id !== e.user.userInfo.userid
     ) {
-      const chatInput = document.querySelector('#chat-txt-message');
+      let chatMessage = '';
       if (settings.custom.afk) {
-        chatInput.value = `[AFK] ${settings.custom.afk}`;
+        chatMessage = `[AFK] ${settings.custom.afk}`;
       } else {
-        chatInput.value = `[AFK] ${t('afk.modal.placeholder')}`;
+        chatMessage = `[AFK] ${t('afk.modal.placeholder')}`;
       }
-      window.QueUp.room.chat.sendMessage();
+      sendChatMessage(chatMessage);
       canSend = false;
       setTimeout(() => {
         canSend = true;
@@ -3873,7 +3911,7 @@ var dubplus = (function () {
       }
       logInfo('tasty', 'loading from api');
       return fetch(
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}/emotes/tastyemotes.json`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}/emotes/tastyemotes.json`,
       )
         .then((res) => res.json())
         .then((json) => {
@@ -4130,13 +4168,23 @@ var dubplus = (function () {
     emojiState.emojiList = [];
   }
   function setEmojiList(listArray) {
-    emojiState.emojiList = listArray.filter(
-      (emoji, index2, self) =>
-        index2 ===
-        self.findIndex(
-          (e) => e.src === emoji.src && e.platform === emoji.platform,
-        ),
-    );
+    emojiState.emojiList = listArray
+      .filter(
+        (emoji, index2, self) =>
+          index2 ===
+          self.findIndex(
+            (e) => e.src === emoji.src && e.platform === emoji.platform,
+          ),
+      )
+      .sort((a, b) => {
+        const platforms = ['emojify', 'twitch', 'bttv', 'ffz', 'tasty'];
+        const platformA = platforms.indexOf(a.platform);
+        const platformB = platforms.indexOf(b.platform);
+        if (platformA === platformB) {
+          return a.text.localeCompare(b.text);
+        }
+        return platformA - platformB;
+      });
   }
   function decrement() {
     if (emojiState.selectedIndex > 0) {
@@ -4236,6 +4284,12 @@ var dubplus = (function () {
       insertEmote(inputEl, emojiState.selectedIndex);
       return;
     }
+    if (e.key === KEYS.enter && !hasItems && !e.shiftKey) {
+      setTimeout(() => {
+        window.QueUp.room.chat.resizeTextarea();
+      }, 10);
+      return;
+    }
     if (e.key === KEYS.esc && hasItems) {
       reset();
       return;
@@ -4298,7 +4352,7 @@ var dubplus = (function () {
       window.QueUp.session.id !== e.user.userInfo.userid
     ) {
       const shouldPlaySound = custom.split(',').some(function (v) {
-        const reg = new RegExp('(^|\\b)@?' + v.trim() + '\\b', 'ig');
+        const reg = new RegExp(`\\b@?${v.trim()}\\b`, 'ig');
         return reg.test(e.message);
       });
       if (shouldPlaySound) {
@@ -4370,12 +4424,39 @@ var dubplus = (function () {
     },
   };
   const activeTabState = proxy({ isActive: true });
-  window.onfocus = function () {
-    activeTabState.isActive = true;
-  };
-  window.onblur = function () {
-    activeTabState.isActive = false;
-  };
+  const onOut = [];
+  const onIn = [];
+  document.addEventListener('visibilitychange', handleChange);
+  window.onpageshow = handleChange;
+  window.onpagehide = handleChange;
+  window.onfocus = handleChange;
+  window.onblur = handleChange;
+  if (document.hidden !== void 0) {
+    handleChange({ type: document.hidden ? 'blur' : 'focus' });
+  }
+  function handleChange(evt) {
+    if (
+      activeTabState.isActive &&
+      (['blur', 'pagehide'].includes(evt.type) || document.hidden)
+    ) {
+      activeTabState.isActive = false;
+      onOut.forEach((fn) => fn());
+    } else if (
+      !activeTabState.isActive &&
+      (['focus', 'pageshow'].includes(evt.type) || !document.hidden)
+    ) {
+      activeTabState.isActive = true;
+      onIn.forEach((fn) => fn());
+    }
+  }
+  function registerVisibilityChangeListeners(inHandler, outHandler) {
+    if (inHandler) onIn.push(inHandler);
+    if (outHandler) onOut.push(outHandler);
+  }
+  function unRegisterVisibilityChangeListeners(inHandler, outHandler) {
+    if (inHandler) onIn.splice(onIn.indexOf(inHandler), 1);
+    if (outHandler) onOut.splice(onOut.indexOf(outHandler), 1);
+  }
   function onDenyDismiss() {
     updateModalState({
       title: t('Notifcation.permission.title'),
@@ -4449,14 +4530,14 @@ var dubplus = (function () {
       mentionTriggers = mentionTriggers
         .concat(settings.custom['custom-mentions'].split(','))
         .map((v) => v.trim());
+      mentionTriggers = mentionTriggers.concat(
+        mentionTriggers.map((v) => '@' + v),
+      );
     }
-    const mentionTriggersTest = mentionTriggers.some(function (v) {
-      const reg = new RegExp('\\b' + v + '\\b', 'i');
-      return reg.test(content);
-    });
+    const bigRegex = new RegExp(`\\b(${mentionTriggers.join('|')})\\b`, 'ig');
     if (
-      mentionTriggersTest &&
-      !activeTabState.isActive &&
+      bigRegex.test(content) &&
+      !activeTabState.isActive && // notifications only if you're not focused on the tab
       window.QueUp.session.id !== e.user.userInfo.userid
     ) {
       showNotification({
@@ -4765,24 +4846,6 @@ var dubplus = (function () {
       window.QueUp.Events.unbind(PLAYLIST_UPDATE, resetDubs);
     },
   };
-  function insertQueupChat(className, textContent) {
-    const li = document.createElement('li');
-    li.className = `dubplus-chat-system ${className}`;
-    const chatDelete = document.createElement('div');
-    chatDelete.className = 'chatDelete';
-    chatDelete.onclick = function (e) {
-      e.target.parentElement.remove();
-    };
-    const span = document.createElement('span');
-    span.className = 'icon-close';
-    chatDelete.appendChild(span);
-    li.appendChild(chatDelete);
-    const text2 = document.createElement('div');
-    text2.className = 'text';
-    text2.textContent = textContent;
-    li.appendChild(text2);
-    document.querySelector('ul.chat-main').appendChild(li);
-  }
   function downdubWatcher(e) {
     const isUserTheDJ =
       window.QueUp.session.id ===
@@ -5254,7 +5317,7 @@ var dubplus = (function () {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1740149974689'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}${cssFile}?${'1740721471481'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5463,9 +5526,90 @@ var dubplus = (function () {
       document.body.classList.remove('dubplus-flip-interface');
     },
   };
+  let timer = null;
+  function onTimerExpired() {
+    if (!settings.options.afk) {
+      logInfo('auto-afk timer expired, enabling afk');
+      const afkSwitch = document.querySelector('#dubplus-afk [role=switch]');
+      afkSwitch == null ? void 0 : afkSwitch.click();
+    } else {
+      logInfo('auto-afk timer expired, but afk is already enabled');
+    }
+  }
+  function onBlur() {
+    let userTime = parseInt(settings.custom['auto-afk'], 10);
+    if (isNaN(userTime)) {
+      userTime = 30;
+    }
+    logInfo('auto-afk onBlur: starting timer for ', userTime, 'minutes');
+    timer = setTimeout(onTimerExpired, userTime * 60 * 1e3);
+  }
+  function onFocus() {
+    if (timer) {
+      logInfo('auto-afk onFocus: clearing timer');
+      clearTimeout(timer);
+      timer = null;
+    } else {
+      logInfo('auto-afk onFocus: no timer to clear');
+    }
+  }
+  const autoAfk = {
+    id: 'auto-afk',
+    label: 'auto-afk.label',
+    description: 'auto-afk.description',
+    category: 'general',
+    turnOn() {
+      registerVisibilityChangeListeners(onFocus, onBlur);
+    },
+    turnOff() {
+      unRegisterVisibilityChangeListeners(onFocus, onBlur);
+      onFocus();
+    },
+    custom: {
+      title: 'auto-afk.modal.title',
+      content: 'auto-afk.modal.content',
+      placeholder: '30',
+      maxlength: 10,
+      validation(value) {
+        const num = parseInt(value, 10);
+        if (isNaN(num) || num < 1) {
+          return t('auto-afk.modal.validation');
+        } else {
+          return true;
+        }
+      },
+    },
+  };
+  function onGrab(e) {
+    if (e.user._id === window.QueUp.session.id) {
+      const message = settings.custom['grab-response'];
+      if (message) {
+        sendChatMessage(message);
+      }
+    }
+  }
+  const grabResponse = {
+    id: 'grab-response',
+    label: 'grab-response.label',
+    description: 'grab-response.description',
+    category: 'general',
+    turnOn() {
+      window.QueUp.Events.bind(GRAB, onGrab);
+    },
+    turnOff() {
+      window.QueUp.Events.unbind(GRAB, onGrab);
+    },
+    custom: {
+      title: 'grab-response.modal.title',
+      content: 'grab-response.modal.content',
+      placeholder: 'grab-response.modal.placeholder',
+      maxlength: 255,
+    },
+  };
   const general = [
     autovote,
     afk,
+    autoAfk,
     emotes,
     autocomplete,
     customMentions,
@@ -5477,6 +5621,7 @@ var dubplus = (function () {
     downdubsInChat,
     upDubInChat,
     grabsInChat,
+    grabResponse,
     snow,
     rain,
   ];
@@ -5664,14 +5809,11 @@ var dubplus = (function () {
     pop();
   }
   delegate(['click']);
-  var root_2$2 = /* @__PURE__ */ template(
-    `<span class="ac-list-press-enter svelte-2x4f0c"> </span>`,
-  );
   var root_1 = /* @__PURE__ */ template(
-    `<li><div class="ac-image svelte-2x4f0c"><img class="svelte-2x4f0c"></div> <span class="ac-text svelte-2x4f0c"> </span> <!></li>`,
+    `<li><div class="ac-image svelte-1pg7edp"><img class="svelte-1pg7edp"></div></li>`,
   );
   var root$8 = /* @__PURE__ */ template(
-    `<ul id="autocomplete-preview" class="svelte-2x4f0c"></ul>`,
+    `<div class="ac-preview-container svelte-1pg7edp"><div class="ac-header svelte-1pg7edp"> </div> <ul id="autocomplete-preview" class="svelte-1pg7edp"></ul> <span class="ac-text-preview svelte-1pg7edp"> </span></div>`,
   );
   function EmojiPreview($$anchor, $$props) {
     push($$props, true);
@@ -5697,7 +5839,10 @@ var dubplus = (function () {
       insertEmote(inputEl, index2);
       inputEl.focus();
     }
-    var ul = root$8();
+    var div = root$8();
+    var div_1 = child(div);
+    var text_1 = child(div_1);
+    var ul = sibling(div_1, 2);
     each(
       ul,
       23,
@@ -5710,41 +5855,26 @@ var dubplus = (function () {
         let alt = () => get($$item).alt;
         var li = root_1();
         li.__click = () => handleClick2(get(i));
-        var div = child(li);
-        var img = child(div);
-        var span = sibling(div, 2);
-        var text_1 = child(span);
-        var node = sibling(span, 2);
-        {
-          var consequent = ($$anchor3) => {
-            var span_1 = root_2$2();
-            var text_2 = child(span_1);
-            template_effect(
-              ($0) => set_text(text_2, $0),
-              [() => t('autocomplete.preview.select')],
-            );
-            append($$anchor3, span_1);
-          };
-          if_block(node, ($$render) => {
-            if (get(i) === emojiState.selectedIndex) $$render(consequent);
-          });
-        }
+        var div_2 = child(li);
+        var img = child(div_2);
         template_effect(() => {
           set_class(
             li,
-            `${`preview-item ${platform()}-previews` ?? ''} svelte-2x4f0c`,
+            `${`preview-item ${platform()}-previews` ?? ''} svelte-1pg7edp`,
           );
+          set_attribute(li, 'title', text2());
           toggle_class(li, 'selected', get(i) === emojiState.selectedIndex);
           set_attribute(img, 'src', src());
           set_attribute(img, 'alt', alt());
           set_attribute(img, 'title', alt());
-          set_text(text_1, text2());
         });
         append($$anchor2, li);
       },
     );
+    var span = sibling(ul, 2);
+    var text_2 = child(span);
     action(
-      ul,
+      div,
       ($$node, $$action_arg) =>
         teleport == null ? void 0 : teleport($$node, $$action_arg),
       () => ({
@@ -5752,10 +5882,21 @@ var dubplus = (function () {
         position: 'prepend',
       }),
     );
-    template_effect(() =>
-      toggle_class(ul, 'ac-show', emojiState.emojiList.length > 0),
+    template_effect(
+      ($0) => {
+        var _a;
+        toggle_class(div, 'ac-show', emojiState.emojiList.length > 0);
+        set_text(text_1, $0);
+        set_text(
+          text_2,
+          (_a = emojiState.emojiList[emojiState.selectedIndex]) == null
+            ? void 0
+            : _a.text,
+        );
+      },
+      [() => t('autocomplete.preview.select')],
     );
-    append($$anchor, ul);
+    append($$anchor, div);
     pop();
   }
   delegate(['click']);

@@ -37,7 +37,7 @@
       tooltip = t('SnoozeVideo.tooltip.undo');
       icon = 'icon-eye-unblocked';
       document.body.classList.add(SNOOZE_CLASS);
-      // setup event listener for song advance to restore volume
+      // setup event listener for song advance to restore video
       // when the song changes
       window.QueUp.Events.once(
         'realtime:room_playlist-update',

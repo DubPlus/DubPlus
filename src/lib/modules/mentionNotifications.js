@@ -21,16 +21,19 @@ function notifyOnMention(e) {
     mentionTriggers = mentionTriggers
       .concat(settings.custom['custom-mentions'].split(','))
       .map((v) => v.trim());
+
+    // custom mentions work with or without the @ symbol
+    // so we add the @ to the beginning of each one
+    mentionTriggers = mentionTriggers.concat(
+      mentionTriggers.map((v) => '@' + v),
+    );
   }
 
-  const mentionTriggersTest = mentionTriggers.some(function (v) {
-    const reg = new RegExp('\\b' + v + '\\b', 'i');
-    return reg.test(content);
-  });
+  const bigRegex = new RegExp(`\\b(${mentionTriggers.join('|')})\\b`, 'ig');
 
   if (
-    mentionTriggersTest &&
-    !activeTabState.isActive &&
+    bigRegex.test(content) &&
+    !activeTabState.isActive && // notifications only if you're not focused on the tab
     window.QueUp.session.id !== e.user.userInfo.userid
   ) {
     showNotification({

@@ -27,6 +27,8 @@ import { customCss } from './customCSS';
 import { customBackground } from './customBackground';
 import { customNotificationSound } from './customNotificationSound';
 import { flipInterface } from './flipInterface';
+import { autoAfk } from './auto-afk';
+import { grabResponse } from './grabResponse';
 
 /**
  * @type {import("./module").DubPlusModule[]}
@@ -34,6 +36,7 @@ import { flipInterface } from './flipInterface';
 export const general = [
   autovote,
   afk,
+  autoAfk,
   emotes,
   autocomplete,
   customMentions,
@@ -45,6 +48,7 @@ export const general = [
   downdubsInChat,
   upDubInChat,
   grabsInChat,
+  grabResponse,
   snow,
   rain,
 ];

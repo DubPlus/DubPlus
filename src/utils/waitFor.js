@@ -5,7 +5,7 @@ import { logInfo } from './logger';
  * nested property lookups.
  *
  * For example:
- * if `dottedString` is `"QueUp.room.chat"` and the `startingScope` is the window
+ * if `objectPath` is `"QueUp.room.chat"` and the `startingScope` is the window
  * object, it would check in the following order:
  * 1. `window.Queup`
  * 2. `window.Queup.room`
@@ -13,12 +13,12 @@ import { logInfo } from './logger';
  *
  * All have to be defined for it to return true.
  *
- * @param  {string} dottedString  the item you are looking for
- * @param  {object} startingScope where to start looking. default: window
+ * @param  {string} objectPath  the item you are looking for
+ * @param  {object} [startingScope=window] where to start looking. default: `window`
  * @return {boolean} if it is defined or not
  */
-function deepCheck(dottedString, startingScope = window) {
-  const props = dottedString.split('.');
+function deepCheck(objectPath, startingScope = window) {
+  const props = objectPath.split('.');
 
   let depth = startingScope;
   for (let i = 0; i < props.length; i++) {
@@ -33,7 +33,7 @@ function deepCheck(dottedString, startingScope = window) {
 /**
  *
  * @param {string[]} arr
- * @param {object} startingScope
+ * @param {object} [startingScope=window] default: `window`
  * @returns
  */
 function arrayDeepCheck(arr, startingScope = window) {

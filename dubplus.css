@@ -524,37 +524,64 @@ span.svelte-1va87zs {
  * bttv logo white: https://i.imgur.com/oTfAI0O.png
  */
 
-ul.svelte-2x4f0c {
-  overflow: auto;
-  display: block;
+.ac-preview-container.svelte-1pg7edp {
   position: absolute;
   bottom: 54px;
-  background-color: rgba(0, 0, 0, 0.9);
   width: 100%;
   height: auto;
   max-height: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+}
+.ac-header.svelte-1pg7edp {
+  display: none;
+  position: sticky;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  padding: 5px 10px;
+  border-bottom: 1px solid #515253;
+}
+.ac-show.svelte-1pg7edp {
+  border: 1px solid #202020;
+  border-bottom: 1px solid #878c8e;
+  max-height: 200px;
+  transition: 0.4s;
+}
+.ac-show.svelte-1pg7edp .ac-header:where(.svelte-1pg7edp) {
+  display: block;
+}
+
+ul.svelte-1pg7edp {
+  display: block;
   padding: 0;
   list-style-type: none;
   margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-li.svelte-2x4f0c {
+li.svelte-1pg7edp {
+  width: 50px;
   display: block;
   padding: 6px 10px;
   margin: 0;
   color: #fff;
 }
 
-li.svelte-2x4f0c:hover,
-li.selected.svelte-2x4f0c {
+li.svelte-1pg7edp:hover,
+li.selected.svelte-1pg7edp {
   background-color: #555;
 }
 
-li.svelte-2x4f0c:focus {
+li.svelte-1pg7edp:focus {
   outline: none;
 }
 
-.preview-item.svelte-2x4f0c {
+.preview-item.svelte-1pg7edp {
   background-repeat: no-repeat;
   background-size: 25px;
   background-position: 98% center;
@@ -562,49 +589,54 @@ li.svelte-2x4f0c:focus {
   align-items: center;
 }
 
-.twitch-previews {
-  background-image: url(https://i.imgur.com/FhzONPQ.png);
-}
+/*
+  :global(.twitch-previews) {
+    background-image: url(https://i.imgur.com/FhzONPQ.png);
+  }
 
-.bttv-previews {
-  background-image: url(https://i.imgur.com/oTfAI0O.png);
-}
+  :global(.bttv-previews) {
+    background-image: url(https://i.imgur.com/oTfAI0O.png);
+  }
 
-.tasty-previews {
-  background-image: url(#{$resourceSrc}/emotes/tastycat/21.png);
-}
+  :global(.tasty-previews) {
+    background-image: url(#{$resourceSrc}/emotes/tastycat/21.png);
+  }
 
-.ffz-previews {
-  background-image: url(https://i.imgur.com/DuJfI4T.png);
-}
-
-.ac-text.svelte-2x4f0c {
+  :global(.ffz-previews) {
+    background-image: url(https://i.imgur.com/DuJfI4T.png);
+  }
+*/
+.ac-text.svelte-1pg7edp {
   font-size: 0.8em;
   padding-left: 20px;
 }
 
-.ac-image.svelte-2x4f0c {
+.ac-image.svelte-1pg7edp {
   width: 30px;
   height: 30px;
 }
 
-img.svelte-2x4f0c {
+img.svelte-1pg7edp {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
-.ac-show.svelte-2x4f0c {
-  border: 1px solid #202020;
-  border-bottom: 1px solid #878c8e;
-  max-height: 164px;
-  transition: 0.4s;
-}
-
-.ac-list-press-enter.svelte-2x4f0c {
+.ac-list-press-enter.svelte-1pg7edp {
   flex: 1;
   text-align: center;
   font-size: 0.8em;
+}
+
+.ac-text-preview.svelte-1pg7edp {
+  padding: 5px 10px;
+  background-color: rgba(0, 0, 0, 0.9);
+  font-size: 0.8em;
+  border-top: 1px solid #515253;
+  display: none;
+}
+.ac-show.svelte-1pg7edp .ac-text-preview:where(.svelte-1pg7edp) {
+  display: block;
 }
 
 .dubplus-dubs-container.svelte-ujv5bp {

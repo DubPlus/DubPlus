@@ -26,13 +26,25 @@ export function reset() {
  */
 export function setEmojiList(listArray) {
   // make listArray unique by emoji.src and emoji.platform
-  emojiState.emojiList = listArray.filter(
-    (emoji, index, self) =>
-      index ===
-      self.findIndex(
-        (e) => e.src === emoji.src && e.platform === emoji.platform,
-      ),
-  );
+  emojiState.emojiList = listArray
+    .filter(
+      (emoji, index, self) =>
+        index ===
+        self.findIndex(
+          (e) => e.src === emoji.src && e.platform === emoji.platform,
+        ),
+    )
+    .sort((a, b) => {
+      // sort by platform in the following order: emojify, twitch, bttv, ffz, tasty
+      // then sort by text ascending
+      const platforms = ['emojify', 'twitch', 'bttv', 'ffz', 'tasty'];
+      const platformA = platforms.indexOf(a.platform);
+      const platformB = platforms.indexOf(b.platform);
+      if (platformA === platformB) {
+        return a.text.localeCompare(b.text);
+      }
+      return platformA - platformB;
+    });
 }
 
 export function decrement() {

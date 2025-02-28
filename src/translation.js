@@ -48,6 +48,14 @@ export const translations = {
       "Enter a custom Away From Keyboard [AFK] message here. Message will be prefixed with '[AFK]'",
     'afk.modal.placeholder': 'Be right back!',
 
+    'auto-afk.label': 'Auto AFK',
+    'auto-afk.description':
+      'Automatically set yourself to AFK after a certain amount of time of inactivity',
+    'auto-afk.modal.title': 'Auto AFK Timer',
+    'auto-afk.modal.content':
+      'Enter the amount of time, in minutes, before you are set to AFK. Default is 30 minutes',
+    'auto-afk.modal.validation': 'Value must be a number greater than 0',
+
     'emotes.label': 'Emotes',
     'emotes.description': 'Adds Twitch, Bttv, and FrankerFacez emotes in chat.',
 
@@ -182,5 +190,12 @@ export const translations = {
       'https://example.com/sweet-sound.mp3',
     'custom-notification-sound.modal.validation':
       "Can't play sound from this URL. Please enter a valid URL to an MP3 file.",
+
+    'grab-response.label': 'Grab Response',
+    'grab-response.description': 'Sends a chat message when you grab a song',
+    'grab-response.modal.title': 'Grab Response',
+    'grab-response.modal.content':
+      'Enter a message to send when you grab a song',
+    'grab-response.modal.placeholder': 'Thanks for the song!',
   },
 };
