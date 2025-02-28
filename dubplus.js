@@ -2642,8 +2642,8 @@ var dubplus = (function () {
   function logError(...args) {
     console.error(`[${getTimeStamp()}] ${PREFIX}:`, ...args);
   }
-  function deepCheck(dottedString, startingScope = window) {
-    const props = dottedString.split('.');
+  function deepCheck(objectPath, startingScope = window) {
+    const props = objectPath.split('.');
     let depth = startingScope;
     for (let i = 0; i < props.length; i++) {
       if (typeof depth[props[i]] === 'undefined') {
@@ -2939,7 +2939,7 @@ var dubplus = (function () {
   }
   var root_1$3 = /* @__PURE__ */ template(`<textarea class="svelte-1mnr24t">
       </textarea>`);
-  var root_2$3 = /* @__PURE__ */ template(
+  var root_2$2 = /* @__PURE__ */ template(
     `<p class="dp-modal--error svelte-1mnr24t"> </p>`,
   );
   var root_3$1 = /* @__PURE__ */ template(
@@ -3001,7 +3001,7 @@ var dubplus = (function () {
     var node_1 = sibling(node, 2);
     {
       var consequent_1 = ($$anchor2) => {
-        var p_1 = root_2$3();
+        var p_1 = root_2$2();
         var text_2 = child(p_1);
         template_effect(() => set_text(text_2, get(errorMessage)));
         append($$anchor2, p_1);
@@ -4168,13 +4168,23 @@ var dubplus = (function () {
     emojiState.emojiList = [];
   }
   function setEmojiList(listArray) {
-    emojiState.emojiList = listArray.filter(
-      (emoji, index2, self) =>
-        index2 ===
-        self.findIndex(
-          (e) => e.src === emoji.src && e.platform === emoji.platform,
-        ),
-    );
+    emojiState.emojiList = listArray
+      .filter(
+        (emoji, index2, self) =>
+          index2 ===
+          self.findIndex(
+            (e) => e.src === emoji.src && e.platform === emoji.platform,
+          ),
+      )
+      .sort((a, b) => {
+        const platforms = ['emojify', 'twitch', 'bttv', 'ffz', 'tasty'];
+        const platformA = platforms.indexOf(a.platform);
+        const platformB = platforms.indexOf(b.platform);
+        if (platformA === platformB) {
+          return a.text.localeCompare(b.text);
+        }
+        return platformA - platformB;
+      });
   }
   function decrement() {
     if (emojiState.selectedIndex > 0) {
@@ -4272,6 +4282,12 @@ var dubplus = (function () {
         /**@type {HTMLTextAreaElement}*/
         e.target;
       insertEmote(inputEl, emojiState.selectedIndex);
+      return;
+    }
+    if (e.key === KEYS.enter && !hasItems && !e.shiftKey) {
+      setTimeout(() => {
+        window.QueUp.room.chat.resizeTextarea();
+      }, 10);
       return;
     }
     if (e.key === KEYS.esc && hasItems) {
@@ -5301,7 +5317,7 @@ var dubplus = (function () {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}${cssFile}?${'1740199685576'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-svelte'}${cssFile}?${'1740721471481'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5793,14 +5809,11 @@ var dubplus = (function () {
     pop();
   }
   delegate(['click']);
-  var root_2$2 = /* @__PURE__ */ template(
-    `<span class="ac-list-press-enter svelte-2x4f0c"> </span>`,
-  );
   var root_1 = /* @__PURE__ */ template(
-    `<li><div class="ac-image svelte-2x4f0c"><img class="svelte-2x4f0c"></div> <span class="ac-text svelte-2x4f0c"> </span> <!></li>`,
+    `<li><div class="ac-image svelte-1pg7edp"><img class="svelte-1pg7edp"></div></li>`,
   );
   var root$8 = /* @__PURE__ */ template(
-    `<ul id="autocomplete-preview" class="svelte-2x4f0c"></ul>`,
+    `<div class="ac-preview-container svelte-1pg7edp"><div class="ac-header svelte-1pg7edp"> </div> <ul id="autocomplete-preview" class="svelte-1pg7edp"></ul> <span class="ac-text-preview svelte-1pg7edp"> </span></div>`,
   );
   function EmojiPreview($$anchor, $$props) {
     push($$props, true);
@@ -5826,7 +5839,10 @@ var dubplus = (function () {
       insertEmote(inputEl, index2);
       inputEl.focus();
     }
-    var ul = root$8();
+    var div = root$8();
+    var div_1 = child(div);
+    var text_1 = child(div_1);
+    var ul = sibling(div_1, 2);
     each(
       ul,
       23,
@@ -5839,41 +5855,26 @@ var dubplus = (function () {
         let alt = () => get($$item).alt;
         var li = root_1();
         li.__click = () => handleClick2(get(i));
-        var div = child(li);
-        var img = child(div);
-        var span = sibling(div, 2);
-        var text_1 = child(span);
-        var node = sibling(span, 2);
-        {
-          var consequent = ($$anchor3) => {
-            var span_1 = root_2$2();
-            var text_2 = child(span_1);
-            template_effect(
-              ($0) => set_text(text_2, $0),
-              [() => t('autocomplete.preview.select')],
-            );
-            append($$anchor3, span_1);
-          };
-          if_block(node, ($$render) => {
-            if (get(i) === emojiState.selectedIndex) $$render(consequent);
-          });
-        }
+        var div_2 = child(li);
+        var img = child(div_2);
         template_effect(() => {
           set_class(
             li,
-            `${`preview-item ${platform()}-previews` ?? ''} svelte-2x4f0c`,
+            `${`preview-item ${platform()}-previews` ?? ''} svelte-1pg7edp`,
           );
+          set_attribute(li, 'title', text2());
           toggle_class(li, 'selected', get(i) === emojiState.selectedIndex);
           set_attribute(img, 'src', src());
           set_attribute(img, 'alt', alt());
           set_attribute(img, 'title', alt());
-          set_text(text_1, text2());
         });
         append($$anchor2, li);
       },
     );
+    var span = sibling(ul, 2);
+    var text_2 = child(span);
     action(
-      ul,
+      div,
       ($$node, $$action_arg) =>
         teleport == null ? void 0 : teleport($$node, $$action_arg),
       () => ({
@@ -5881,10 +5882,21 @@ var dubplus = (function () {
         position: 'prepend',
       }),
     );
-    template_effect(() =>
-      toggle_class(ul, 'ac-show', emojiState.emojiList.length > 0),
+    template_effect(
+      ($0) => {
+        var _a;
+        toggle_class(div, 'ac-show', emojiState.emojiList.length > 0);
+        set_text(text_1, $0);
+        set_text(
+          text_2,
+          (_a = emojiState.emojiList[emojiState.selectedIndex]) == null
+            ? void 0
+            : _a.text,
+        );
+      },
+      [() => t('autocomplete.preview.select')],
     );
-    append($$anchor, ul);
+    append($$anchor, div);
     pop();
   }
   delegate(['click']);
