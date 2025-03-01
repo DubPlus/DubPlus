@@ -8,7 +8,7 @@ import { logError } from '../../utils/logger';
 import { t } from '../stores/i18n.svelte';
 import { settings } from '../stores/settings.svelte';
 
-const LINK_ELEM_ID = 'dubplus-custom-css';
+const LINK_ELEM_ID = 'dubplus-user-custom-css';
 
 /**
  * Custom CSS
