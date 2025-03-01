@@ -17,8 +17,12 @@
 
 <style>
   #snow-container {
-    height: 100vw;
+    height: 100vh;
     width: 100vw;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
   }
   :global(.snowflake) {
     position: absolute;
