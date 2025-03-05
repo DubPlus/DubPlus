@@ -3,6 +3,7 @@ export const translations = {
     'Modal.confirm': 'OK',
     'Modal.cancel': 'Cancel',
     'Modal.close': 'Close',
+    'Modal.defaultValue': 'Default Value',
 
     'Error.modal.title': 'Dub+ Error',
     'Error.modal.loggedout': "You're not logged in. Please login to use Dub+.",
@@ -45,7 +46,7 @@ export const translations = {
     'afk.description': 'Toggle Away from Keyboard and customize AFK message.',
     'afk.modal.title': 'Custom AFK Message',
     'afk.modal.content':
-      "Enter a custom Away From Keyboard [AFK] message here. Message will be prefixed with '[AFK]'",
+      'Enter a custom "Away From Keyboard" [AFK] message here. Message will be prefixed with \'[AFK]\'',
     'afk.modal.placeholder': 'Be right back!',
 
     'auto-afk.label': 'Auto AFK',
@@ -53,7 +54,7 @@ export const translations = {
       'Automatically set yourself to AFK after a certain amount of time of inactivity',
     'auto-afk.modal.title': 'Auto AFK Timer',
     'auto-afk.modal.content':
-      'Enter the amount of time, in minutes, before you are set to AFK. Default is 30 minutes',
+      'Enter the amount of time, in minutes, before you are set to AFK.',
     'auto-afk.modal.validation': 'Value must be a number greater than 0',
 
     'emotes.label': 'Emotes',

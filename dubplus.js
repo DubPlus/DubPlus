@@ -2700,6 +2700,7 @@ var dubplus = (function () {
       'Modal.confirm': 'OK',
       'Modal.cancel': 'Cancel',
       'Modal.close': 'Close',
+      'Modal.defaultValue': 'Default Value',
       'Error.modal.title': 'Dub+ Error',
       'Error.modal.loggedout':
         "You're not logged in. Please login to use Dub+.",
@@ -2734,15 +2735,14 @@ var dubplus = (function () {
       'afk.label': 'AFK Auto-respond',
       'afk.description': 'Toggle Away from Keyboard and customize AFK message.',
       'afk.modal.title': 'Custom AFK Message',
-      'afk.modal.content':
-        "Enter a custom Away From Keyboard [AFK] message here. Message will be prefixed with '[AFK]'",
+      'afk.modal.content': `Enter a custom "Away From Keyboard" [AFK] message here. Message will be prefixed with '[AFK]'`,
       'afk.modal.placeholder': 'Be right back!',
       'auto-afk.label': 'Auto AFK',
       'auto-afk.description':
         'Automatically set yourself to AFK after a certain amount of time of inactivity',
       'auto-afk.modal.title': 'Auto AFK Timer',
       'auto-afk.modal.content':
-        'Enter the amount of time, in minutes, before you are set to AFK. Default is 30 minutes',
+        'Enter the amount of time, in minutes, before you are set to AFK.',
       'auto-afk.modal.validation': 'Value must be a number greater than 0',
       'emotes.label': 'Emotes',
       'emotes.description':
@@ -2913,6 +2913,7 @@ var dubplus = (function () {
     content: '',
     value: '',
     placeholder: '',
+    defaultValue: '',
     maxlength: 999,
     validation: () => {
       return true;
@@ -2928,6 +2929,7 @@ var dubplus = (function () {
     modalState.content = nextState.content || '';
     modalState.value = nextState.value || '';
     modalState.placeholder = nextState.placeholder || '';
+    modalState.defaultValue = nextState.defaultValue;
     modalState.maxlength = nextState.maxlength || 999;
     modalState.onConfirm =
       nextState.onConfirm ||
@@ -2937,20 +2939,23 @@ var dubplus = (function () {
     modalState.onCancel = nextState.onCancel || (() => {});
     modalState.validation = nextState.validation || (() => true);
   }
-  var root_1$3 = /* @__PURE__ */ template(`<textarea class="svelte-1mnr24t">
-      </textarea>`);
-  var root_2$2 = /* @__PURE__ */ template(
-    `<p class="dp-modal--error svelte-1mnr24t"> </p>`,
+  var root_1$3 = /* @__PURE__ */ template(
+    `<div class="default svelte-ascx4b"><span class="default-label svelte-ascx4b"> </span> <span class="default-value svelte-ascx4b"> </span></div>`,
   );
+  var root_2$2 = /* @__PURE__ */ template(`<textarea class="svelte-ascx4b">
+      </textarea>`);
   var root_3$1 = /* @__PURE__ */ template(
-    `<button class="dp-modal--cancel cancel svelte-1mnr24t"> </button> <button class="dp-modal--confirm confirm svelte-1mnr24t"> </button>`,
-    1,
+    `<p class="dp-modal--error svelte-ascx4b"> </p>`,
   );
   var root_4 = /* @__PURE__ */ template(
-    `<button class="dp-modal--cancel cancel svelte-1mnr24t"> </button>`,
+    `<button class="dp-modal--cancel cancel svelte-ascx4b"> </button> <button class="dp-modal--confirm confirm svelte-ascx4b"> </button>`,
+    1,
+  );
+  var root_5 = /* @__PURE__ */ template(
+    `<button class="dp-modal--cancel cancel svelte-ascx4b"> </button>`,
   );
   var root$p = /* @__PURE__ */ template(
-    `<dialog id="dubplus-dialog" class="dp-modal svelte-1mnr24t"><h1 class="svelte-1mnr24t"> </h1> <div class="dp-modal--content content svelte-1mnr24t"><p class="svelte-1mnr24t"> </p> <!> <!></div> <div class="dp-modal--buttons buttons svelte-1mnr24t"><!></div></dialog>`,
+    `<dialog id="dubplus-dialog" class="dp-modal svelte-ascx4b"><h1 class="svelte-ascx4b"> </h1> <div class="dp-modal--content content svelte-ascx4b"><p class="svelte-ascx4b"> </p> <!> <!> <!></div> <div class="dp-modal--buttons buttons svelte-ascx4b"><!></div></dialog>`,
   );
   function Modal($$anchor, $$props) {
     push($$props, true);
@@ -2978,7 +2983,28 @@ var dubplus = (function () {
     var node = sibling(p, 2);
     {
       var consequent = ($$anchor2) => {
-        var textarea = root_1$3();
+        var div_1 = root_1$3();
+        var span = child(div_1);
+        var text_2 = child(span);
+        var span_1 = sibling(span, 2);
+        var text_3 = child(span_1);
+        template_effect(
+          ($0) => {
+            set_text(text_2, `${$0 ?? ''}:`);
+            set_text(text_3, modalState.defaultValue);
+          },
+          [() => t('Modal.defaultValue')],
+        );
+        append($$anchor2, div_1);
+      };
+      if_block(node, ($$render) => {
+        if (modalState.defaultValue) $$render(consequent);
+      });
+    }
+    var node_1 = sibling(node, 2);
+    {
+      var consequent_1 = ($$anchor2) => {
+        var textarea = root_2$2();
         template_effect(() => {
           set_attribute(textarea, 'placeholder', modalState.placeholder);
           set_attribute(
@@ -2994,34 +3020,34 @@ var dubplus = (function () {
         );
         append($$anchor2, textarea);
       };
-      if_block(node, ($$render) => {
-        if (modalState.placeholder || modalState.value) $$render(consequent);
-      });
-    }
-    var node_1 = sibling(node, 2);
-    {
-      var consequent_1 = ($$anchor2) => {
-        var p_1 = root_2$2();
-        var text_2 = child(p_1);
-        template_effect(() => set_text(text_2, get(errorMessage)));
-        append($$anchor2, p_1);
-      };
       if_block(node_1, ($$render) => {
-        if (get(errorMessage)) $$render(consequent_1);
+        if (modalState.placeholder || modalState.value) $$render(consequent_1);
       });
     }
-    var div_1 = sibling(div, 2);
-    var node_2 = child(div_1);
+    var node_2 = sibling(node_1, 2);
     {
       var consequent_2 = ($$anchor2) => {
-        var fragment = root_3$1();
+        var p_1 = root_3$1();
+        var text_4 = child(p_1);
+        template_effect(() => set_text(text_4, get(errorMessage)));
+        append($$anchor2, p_1);
+      };
+      if_block(node_2, ($$render) => {
+        if (get(errorMessage)) $$render(consequent_2);
+      });
+    }
+    var div_2 = sibling(div, 2);
+    var node_3 = child(div_2);
+    {
+      var consequent_3 = ($$anchor2) => {
+        var fragment = root_4();
         var button = first_child(fragment);
         button.__click = () => {
           dialog.close();
           modalState.open = false;
           set(errorMessage, '');
         };
-        var text_3 = child(button);
+        var text_5 = child(button);
         var button_1 = sibling(button, 2);
         button_1.__click = () => {
           const isValidOrErrorMessage = modalState.validation(modalState.value);
@@ -3034,29 +3060,29 @@ var dubplus = (function () {
             set(errorMessage, proxy(isValidOrErrorMessage));
           }
         };
-        var text_4 = child(button_1);
+        var text_6 = child(button_1);
         template_effect(
           ($0, $1) => {
-            set_text(text_3, $0);
-            set_text(text_4, $1);
+            set_text(text_5, $0);
+            set_text(text_6, $1);
           },
           [() => t('Modal.cancel'), () => t('Modal.confirm')],
         );
         append($$anchor2, fragment);
       };
       var alternate = ($$anchor2) => {
-        var button_2 = root_4();
+        var button_2 = root_5();
         button_2.__click = () => {
           dialog.close();
           modalState.open = false;
           set(errorMessage, '');
         };
-        var text_5 = child(button_2);
-        template_effect(($0) => set_text(text_5, $0), [() => t('Modal.close')]);
+        var text_7 = child(button_2);
+        template_effect(($0) => set_text(text_7, $0), [() => t('Modal.close')]);
         append($$anchor2, button_2);
       };
-      if_block(node_2, ($$render) => {
-        if (typeof modalState.onConfirm === 'function') $$render(consequent_2);
+      if_block(node_3, ($$render) => {
+        if (typeof modalState.onConfirm === 'function') $$render(consequent_3);
         else $$render(alternate, false);
       });
     }
@@ -3430,33 +3456,38 @@ var dubplus = (function () {
     append($$anchor, fragment);
     pop();
   }
-  function handleKeydown(event2, $$props, checked) {
+  function handleKeydown(event2, $$props, toggleOption) {
     if ($$props.disabled) return;
     if (event2.key === 'Enter' || event2.key === ' ') {
       event2.preventDefault();
-      set(checked, !get(checked));
-      $$props.onToggle(get(checked));
+      toggleOption();
     }
   }
-  function handleClick(_, $$props, checked) {
+  function handleClick(_, $$props, toggleOption) {
     if ($$props.disabled) return;
-    set(checked, !get(checked));
-    $$props.onToggle(get(checked));
+    toggleOption();
   }
   var root$f = /* @__PURE__ */ template(
     `<div role="switch" tabindex="0" class="svelte-1mny4ma"><span class="dubplus-switch svelte-1mny4ma"><span class="svelte-1mny4ma"></span></span> <span class="dubplus-switch-label svelte-1mny4ma"> </span></div>`,
   );
   function Switch($$anchor, $$props) {
     push($$props, true);
-    let checked = state(proxy(!$$props.disabled ? $$props.isOn : false));
+    function toggleOption() {
+      settings.options[$$props.optionId] = !settings.options[$$props.optionId];
+      $$props.onToggle(settings.options[$$props.optionId]);
+    }
     var div = root$f();
-    div.__click = [handleClick, $$props, checked];
-    div.__keydown = [handleKeydown, $$props, checked];
+    div.__click = [handleClick, $$props, toggleOption];
+    div.__keydown = [handleKeydown, $$props, toggleOption];
     var span = sibling(child(div), 2);
     var text2 = child(span);
     template_effect(() => {
       set_attribute(div, 'aria-disabled', $$props.disabled ? 'true' : 'false');
-      set_attribute(div, 'aria-checked', get(checked) ? 'true' : 'false');
+      set_attribute(
+        div,
+        'aria-checked',
+        settings.options[$$props.optionId] ? 'true' : 'false',
+      );
       set_text(text2, $$props.label);
     });
     append($$anchor, div);
@@ -3498,11 +3529,17 @@ var dubplus = (function () {
         title: t($$props.customize.title),
         content: t($$props.customize.content),
         placeholder: t($$props.customize.placeholder),
+        defaultValue: $$props.customize.defaultValue
+          ? t($$props.customize.defaultValue)
+          : '',
         maxlength: $$props.customize.maxlength,
         value: settings.custom[$$props.id] || '',
         validation: $$props.customize.validation,
         onConfirm: (value) => {
           saveSetting('custom', $$props.id, value);
+          if (value.trim() === '' && !$$props.customize.defaultValue) {
+            $$props.onToggle(false);
+          }
           if (typeof $$props.customize.onConfirm === 'function') {
             $$props.customize.onConfirm(value);
           }
@@ -3538,8 +3575,8 @@ var dubplus = (function () {
         }
         $$props.onToggle(state2);
       },
-      get isOn() {
-        return settings.options[$$props.id];
+      get optionId() {
+        return $$props.id;
       },
     });
     var node_1 = sibling(node, 2);
@@ -3668,6 +3705,7 @@ var dubplus = (function () {
       title: 'afk.modal.title',
       content: 'afk.modal.content',
       placeholder: 'afk.modal.placeholder',
+      defaultValue: 'afk.modal.placeholder',
       maxlength: 255,
     },
   };
@@ -3911,7 +3949,7 @@ var dubplus = (function () {
       }
       logInfo('tasty', 'loading from api');
       return fetch(
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}/emotes/tastyemotes.json`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@bugfix-v1-issues'}/emotes/tastyemotes.json`,
       )
         .then((res) => res.json())
         .then((json) => {
@@ -5317,7 +5355,7 @@ var dubplus = (function () {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1740725494681'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@bugfix-v1-issues'}${cssFile}?${'1741206226902'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5374,7 +5412,7 @@ var dubplus = (function () {
         : _a.remove();
     },
   };
-  const LINK_ELEM_ID = 'dubplus-custom-css';
+  const LINK_ELEM_ID = 'dubplus-user-custom-css';
   const customCss = {
     id: 'custom-css',
     label: 'custom-css.label',
@@ -5569,6 +5607,7 @@ var dubplus = (function () {
       title: 'auto-afk.modal.title',
       content: 'auto-afk.modal.content',
       placeholder: '30',
+      defaultValue: '30',
       maxlength: 10,
       validation(value) {
         const num = parseInt(value, 10);
@@ -6157,7 +6196,7 @@ var dubplus = (function () {
     generateSnow(snowflakesCount);
   }
   var root$6 = /* @__PURE__ */ template(
-    `<div id="snow-container" class="svelte-t6y8au"></div>`,
+    `<div id="snow-container" class="svelte-qgqre1"></div>`,
   );
   function Snow($$anchor, $$props) {
     push($$props, false);

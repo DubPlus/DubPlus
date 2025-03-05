@@ -5,13 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.0.0] - 2025-?-?
 
-This is a complete rewrite of the code switching from the old jQuery code to Svelte 5. See this [PR](https://github.com/DubPlus/DubPlus/pull/110) for more details. Also caught some existing bugs while updating.
+This is a complete rewrite of the code switching from the old jQuery code to Svelte 5 [#108](https://github.com/DubPlus/DubPlus/issues/108). Also caught some existing bugs while updating.
 
 The Chrome and Firefox extensions have been updated to use Manifest v3.
 
-### New Feature
+See the [v1 milestone for more details](https://github.com/DubPlus/DubPlus/milestone/1)
+
+### New Features
 
 - "Flip Interface", swaps the positions of the chat and video player
+- "Auto AFK", when user is no longer focused on the page it starts a timer that auto-enables AFK when it expires [#38](https://github.com/DubPlus/DubPlus/issues/38)
+- Snooze Video - hide the video for 1 song [#118](https://github.com/DubPlus/DubPlus/issues/118)
+- Grab Response - send a message to the chat when you grab a song [#107](https://github.com/DubPlus/DubPlus/issues/107)
+- Modal improvments [#123](https://github.com/DubPlus/DubPlus/issues/123)
+  - show default value within the modal
+  - disable options if user leaves modal blank and there is no default value
 
 ### Breaking Changes
 

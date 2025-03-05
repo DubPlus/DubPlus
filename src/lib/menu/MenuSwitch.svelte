@@ -40,11 +40,19 @@
       title: t(customize.title),
       content: t(customize.content),
       placeholder: t(customize.placeholder),
+      defaultValue: customize.defaultValue ? t(customize.defaultValue) : '',
       maxlength: customize.maxlength,
       value: settings.custom[id] || '',
       validation: customize.validation,
       onConfirm: (value) => {
         saveSetting('custom', id, value);
+
+        // if the value is empty and there is no default value, then we
+        // turn off the feature
+        if (value.trim() === '' && !customize.defaultValue) {
+          onToggle(false);
+        }
+
         if (typeof customize.onConfirm === 'function') {
           customize.onConfirm(value);
         }
@@ -75,7 +83,7 @@
       }
       onToggle(state);
     }}
-    isOn={settings.options[id]}
+    optionId={id}
   />
   {#if customize}
     <button onclick={openEditModal} type="button">
