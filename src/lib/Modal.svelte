@@ -30,6 +30,14 @@
   <h1>{modalState.title}</h1>
   <div class="dp-modal--content content">
     <p>{modalState.content}</p>
+    {#if modalState.defaultValue}
+      <div class="default">
+        <span class="default-label">{t('Modal.defaultValue')}:</span>
+        <span class="default-value">
+          {modalState.defaultValue}
+        </span>
+      </div>
+    {/if}
     {#if modalState.placeholder || modalState.value}
       <textarea
         bind:value={modalState.value}
@@ -107,12 +115,33 @@
   }
   .content {
     padding: 27px 0;
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .content p {
     margin: 0;
     padding: 0 16px 16px;
+  }
+
+  .default {
+    font-size: 1rem;
+    margin: 6px 10px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .default-label {
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 10px;
+  }
+
+  .default-value {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    padding: 10px;
+    flex: 1;
   }
 
   textarea {

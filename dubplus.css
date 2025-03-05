@@ -257,12 +257,12 @@
   align-items: center;
 }
 
-dialog.svelte-1mnr24t::backdrop {
+dialog.svelte-ascx4b::backdrop {
   background: rgba(0, 0, 0, 0.6);
-  animation: svelte-1mnr24t-fade-in 250ms;
+  animation: svelte-ascx4b-fade-in 250ms;
 }
 
-dialog.svelte-1mnr24t {
+dialog.svelte-ascx4b {
   box-shadow: 0 0 5px #000;
   background: #111;
   color: #fff;
@@ -272,7 +272,7 @@ dialog.svelte-1mnr24t {
   border: none;
 }
 
-h1.svelte-1mnr24t {
+h1.svelte-ascx4b {
   height: 54px;
   background: #333;
   margin: 0;
@@ -280,17 +280,38 @@ h1.svelte-1mnr24t {
   padding-top: 12px;
   font-weight: 400;
 }
-.content.svelte-1mnr24t {
+.content.svelte-ascx4b {
   padding: 27px 0;
-  font-size: 14px;
+  font-size: 16px;
 }
 
-.content.svelte-1mnr24t p:where(.svelte-1mnr24t) {
+.content.svelte-ascx4b p:where(.svelte-ascx4b) {
   margin: 0;
   padding: 0 16px 16px;
 }
 
-textarea.svelte-1mnr24t {
+.default.svelte-ascx4b {
+  font-size: 1rem;
+  margin: 6px 10px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.default-label.svelte-ascx4b {
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.default-value.svelte-ascx4b {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  padding: 10px;
+  flex: 1;
+}
+
+textarea.svelte-ascx4b {
   width: 100% !important;
   min-height: 108px !important;
   background: #333;
@@ -301,16 +322,16 @@ textarea.svelte-1mnr24t {
   resize: vertical;
 }
 
-.dp-modal--error.svelte-1mnr24t {
+.dp-modal--error.svelte-ascx4b {
   color: red;
 }
 
-.buttons.svelte-1mnr24t {
+.buttons.svelte-ascx4b {
   display: flex;
   justify-content: flex-end;
 }
 
-button.svelte-1mnr24t {
+button.svelte-ascx4b {
   width: 50%;
   text-align: center;
   padding: 1em 0;
@@ -321,16 +342,16 @@ button.svelte-1mnr24t {
   cursor: pointer;
 }
 
-.confirm.svelte-1mnr24t {
+.confirm.svelte-ascx4b {
   background: #0ff;
   color: #555;
 }
 
-.cancel.svelte-1mnr24t {
+.cancel.svelte-ascx4b {
   background: #333;
 }
 
-@keyframes svelte-1mnr24t-fade-in {
+@keyframes svelte-ascx4b-fade-in {
   from {
     opacity: 0;
   }
@@ -713,9 +734,13 @@ button.svelte-ujv5bp:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-#snow-container.svelte-t6y8au {
-  height: 100vw;
+#snow-container.svelte-qgqre1 {
+  height: 100vh;
   width: 100vw;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 .snowflake {
   position: absolute;

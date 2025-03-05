@@ -61,6 +61,7 @@ export const afk = {
     title: 'afk.modal.title',
     content: 'afk.modal.content',
     placeholder: 'afk.modal.placeholder',
+    defaultValue: 'afk.modal.placeholder',
     maxlength: 255,
   },
 };

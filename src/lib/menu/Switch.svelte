@@ -1,8 +1,10 @@
 <script>
+  import { settings } from '../stores/settings.svelte';
+
   /**
    * @typedef {object} SwitchProps
    * @property {string} label
-   * @property {boolean} isOn
+   * @property {string} optionId
    * @property {boolean} [disabled]
    * @property {(state: boolean) => void} onToggle
    */
@@ -10,9 +12,12 @@
   /**
    * @type {SwitchProps} props
    */
-  let { label, onToggle, isOn, disabled } = $props();
+  let { label, onToggle, optionId, disabled } = $props();
 
-  let checked = $state(!disabled ? isOn : false);
+  function toggleOption() {
+    settings.options[optionId] = !settings.options[optionId];
+    onToggle(settings.options[optionId]);
+  }
 
   /**
    * @param {KeyboardEvent} event
@@ -21,22 +26,20 @@
     if (disabled) return;
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      checked = !checked;
-      onToggle(checked);
+      toggleOption();
     }
   }
 
   function handleClick() {
     if (disabled) return;
-    checked = !checked;
-    onToggle(checked);
+    toggleOption();
   }
 </script>
 
 <div
   role="switch"
   aria-disabled={disabled ? 'true' : 'false'}
-  aria-checked={checked ? 'true' : 'false'}
+  aria-checked={settings.options[optionId] ? 'true' : 'false'}
   tabindex="0"
   onclick={handleClick}
   onkeydown={handleKeydown}

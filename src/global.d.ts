@@ -125,6 +125,7 @@ export interface ModalProps {
   content?: string;
   value?: string;
   placeholder?: string;
+  defaultValue?: string;
   maxlength?: number;
   /**
    *

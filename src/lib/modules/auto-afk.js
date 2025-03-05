@@ -74,6 +74,7 @@ export const autoAfk = {
     title: 'auto-afk.modal.title',
     content: 'auto-afk.modal.content',
     placeholder: '30',
+    defaultValue: '30',
     maxlength: 10,
     validation(value) {
       const num = parseInt(value, 10);
