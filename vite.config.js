@@ -110,7 +110,9 @@ export default defineConfig(() => {
       },
     },
 
-    // this is for the dev server
+    // this is for the dev server that runs the Mock QueUp.
+    // Might get rid of this in the future because developing
+    // against the real QueUp using `npm run firefox` is better
     server: {
       strictPort: true,
       proxy: {

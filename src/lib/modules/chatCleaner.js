@@ -1,4 +1,5 @@
 import { CHAT_MESSAGE } from '../../events-constants';
+import { getChatMessages } from '../queup.ui';
 import { t } from '../stores/i18n.svelte';
 import { settings } from '../stores/settings.svelte';
 
@@ -9,7 +10,7 @@ const MODULE_ID = 'chat-cleaner';
  */
 function chatCleanerCheck(n) {
   // these will be ordered from oldest to newest
-  const chatMessages = document.querySelectorAll('ul.chat-main > li');
+  const chatMessages = getChatMessages();
 
   const limit = parseInt(n ?? settings.custom[MODULE_ID], 10);
 

@@ -1,5 +1,5 @@
 /**
- * When a user in the rom up/down dubs a song
+ * When a user in the room up/down dubs a song
  */
 export const DUB = 'realtime:room_playlist-dub';
 

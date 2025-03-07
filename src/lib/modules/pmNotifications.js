@@ -2,6 +2,7 @@ import { notifyCheckPermission, showNotification } from '../../utils/notify';
 import { settings } from '../stores/settings.svelte';
 import { t } from '../stores/i18n.svelte';
 import { NEW_PM_MESSAGE } from '../../events-constants';
+import { getPrivateMessage, getPrivateMessageButton } from '../queup.ui';
 
 /**
  *
@@ -16,18 +17,10 @@ function pmNotify(e) {
     title: t('pm-notifications.notification.title'),
     ignoreActiveTab: true,
     callback: function () {
-      /**
-       * @type {HTMLSpanElement}
-       */
-      const openPmButton = document.querySelector('.user-messages');
+      const openPmButton = getPrivateMessageButton();
       openPmButton?.click();
       setTimeout(function () {
-        /**
-         * @type {HTMLLIElement}
-         */
-        const messageItem = document.querySelector(
-          `.message-item[data-messageid="${e.messageid}"]`,
-        );
+        const messageItem = getPrivateMessage(e.messageid);
         messageItem?.click();
       }, 500);
     },

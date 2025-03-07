@@ -1,5 +1,7 @@
 <script>
+  import { PLAYLIST_UPDATE } from '../../events-constants';
   import { teleport } from '../actions/teleport.svelte';
+  import { PLAYER_SHARING_CONTAINER } from '../queup.ui';
   import { t } from '../stores/i18n.svelte';
 
   let icon = $state('icon-eye-blocked');
@@ -39,24 +41,18 @@
       document.body.classList.add(SNOOZE_CLASS);
       // setup event listener for song advance to restore video
       // when the song changes
-      window.QueUp.Events.once(
-        'realtime:room_playlist-update',
-        eventSongAdvance,
-      );
+      window.QueUp.Events.once(PLAYLIST_UPDATE, eventSongAdvance);
     } else {
       tooltip = t('SnoozeVideo.tooltip');
       icon = 'icon-eye-blocked';
       document.body.classList.remove(SNOOZE_CLASS);
-      window.QueUp.Events.unbind(
-        'realtime:room_playlist-update',
-        eventSongAdvance,
-      );
+      window.QueUp.Events.unbind(PLAYLIST_UPDATE, eventSongAdvance);
     }
   }
 </script>
 
 <button
-  use:teleport={{ to: '.player_sharing' }}
+  use:teleport={{ to: PLAYER_SHARING_CONTAINER }}
   id="dubplus-snooze-video"
   type="button"
   class={`${icon} snooze-video-btn dubplus-btn-player`}

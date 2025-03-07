@@ -1,4 +1,5 @@
 import { logInfo } from '../../utils/logger';
+import { getPlayerIframe } from '../queup.ui';
 import IconFullscreen from '../svg/IconFullscreen.svelte';
 
 /**
@@ -16,9 +17,7 @@ export const fullscreen = {
   category: 'user-interface',
   altIcon: IconFullscreen,
   onClick() {
-    const elem = /**@type{HTMLIFrameElement}*/ (
-      document.querySelector('.player_container iframe')
-    );
+    const elem = getPlayerIframe();
     if (!elem) {
       logInfo('Fullscreen: No video element found');
       return;

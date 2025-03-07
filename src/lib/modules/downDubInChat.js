@@ -5,6 +5,7 @@
 import { isMod } from '../../utils/modcheck';
 import { insertQueupChat } from '../../utils/chat-message';
 import { t } from '../stores/i18n.svelte';
+import { DUB } from '../../events-constants';
 
 function downdubWatcher(e) {
   const isUserTheDJ =
@@ -30,11 +31,11 @@ export const downdubsInChat = {
   modOnly: true,
   turnOn() {
     if (isMod(window.QueUp.session.id)) {
-      window.QueUp.Events.bind('realtime:room_playlist-dub', downdubWatcher);
+      window.QueUp.Events.bind(DUB, downdubWatcher);
     }
   },
 
   turnOff() {
-    window.QueUp.Events.unbind('realtime:room_playlist-dub', downdubWatcher);
+    window.QueUp.Events.unbind(DUB, downdubWatcher);
   },
 };

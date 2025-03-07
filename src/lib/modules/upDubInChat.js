@@ -3,6 +3,7 @@
  * only mods can use this
  */
 
+import { DUB } from '../../events-constants';
 import { insertQueupChat } from '../../utils/chat-message';
 import { t } from '../stores/i18n.svelte';
 
@@ -28,9 +29,9 @@ export const upDubInChat = {
   description: 'updubs-in-chat.description',
   category: 'general',
   turnOn() {
-    window.QueUp.Events.bind('realtime:room_playlist-dub', updubWatcher);
+    window.QueUp.Events.bind(DUB, updubWatcher);
   },
   turnOff() {
-    window.QueUp.Events.unbind('realtime:room_playlist-dub', updubWatcher);
+    window.QueUp.Events.unbind(DUB, updubWatcher);
   },
 };

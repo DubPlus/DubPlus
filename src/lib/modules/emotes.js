@@ -1,5 +1,6 @@
 import { CHAT_MESSAGE } from '../../events-constants';
 import { dubplus_emoji } from '../emoji/emoji';
+import { getChatMessages } from '../queup.ui';
 
 /**
  *
@@ -87,9 +88,7 @@ function replaceFranker(html) {
  * and only replaces emotes in the last message
  */
 function replaceTextWithEmote() {
-  const chats = document.querySelectorAll(
-    '.chat-main li:not([data-emote-processed])',
-  );
+  const chats = getChatMessages(':not([data-emote-processed])');
   if (!chats?.length) {
     return;
   }

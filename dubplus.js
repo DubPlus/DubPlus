@@ -320,7 +320,7 @@ var dubplus = (function () {
     }
     var sources = /* @__PURE__ */ new Map();
     var is_proxied_array = is_array(value);
-    var version = source(0);
+    var version2 = source(0);
     if (is_proxied_array) {
       sources.set(
         'length',
@@ -370,7 +370,7 @@ var dubplus = (function () {
               }
             }
             set(s, UNINITIALIZED);
-            update_version(version);
+            update_version(version2);
           }
           return true;
         },
@@ -492,12 +492,12 @@ var dubplus = (function () {
                 set(ls, n + 1);
               }
             }
-            update_version(version);
+            update_version(version2);
           }
           return true;
         },
         ownKeys(target) {
-          get(version);
+          get(version2);
           var own_keys = Reflect.ownKeys(target).filter((key2) => {
             var source3 = sources.get(key2);
             return source3 === void 0 || source3.v !== UNINITIALIZED;
@@ -2539,7 +2539,7 @@ var dubplus = (function () {
     if (!callbacks) return;
     let props = () => deep_read_state(context.s);
     if (immutable) {
-      let version = 0;
+      let version2 = 0;
       let prev =
         /** @type {Record<string, any>} */
         {};
@@ -2552,8 +2552,8 @@ var dubplus = (function () {
             changed = true;
           }
         }
-        if (changed) version++;
-        return version;
+        if (changed) version2++;
+        return version2;
       });
       props = () => get(d);
     }
@@ -3114,6 +3114,47 @@ var dubplus = (function () {
       };
     });
   };
+  function getChatInput() {
+    return document.querySelector('#chat-txt-message');
+  }
+  function getChatContainer() {
+    return document.querySelector('ul.chat-main');
+  }
+  function getChatMessages(extra = '') {
+    return document.querySelectorAll(`ul.chat-main > li${extra}`);
+  }
+  function getBackgroundImage() {
+    return document.querySelector('.backstretch img');
+  }
+  function getQueuePosition() {
+    return document.querySelector('.queue-position');
+  }
+  function getPlayerIframe() {
+    return document.querySelector('.player_container iframe');
+  }
+  function getPrivateMessageButton() {
+    return document.querySelector('.user-messages');
+  }
+  function getPrivateMessage(messageId) {
+    return document.querySelector(
+      `.message-item[data-messageid="${messageId}"]`,
+    );
+  }
+  function getDubUp() {
+    return document.querySelector('.dubup');
+  }
+  function getDubDown() {
+    return document.querySelector('.dubdown');
+  }
+  function getAddToPlaylist() {
+    return document.querySelector('.add-to-playlist');
+  }
+  function getCurrentSongMinutes() {
+    return document.querySelector('div.currentTime span.min');
+  }
+  const CHAT_INPUT_CONTAINER = '.pusher-chat-widget-input';
+  const DUBPLUS_MENU_CONTAINER = '.header-right-navigation';
+  const PLAYER_SHARING_CONTAINER = '.player_sharing';
   var on_click$1 = () => {
     document
       .querySelector('.dubplus-menu')
@@ -3133,7 +3174,7 @@ var dubplus = (function () {
       button,
       ($$node, $$action_arg) =>
         teleport == null ? void 0 : teleport($$node, $$action_arg),
-      () => ({ to: '.header-right-navigation' }),
+      () => ({ to: DUBPLUS_MENU_CONTAINER }),
     );
     append($$anchor, button);
     pop();
@@ -3657,10 +3698,10 @@ var dubplus = (function () {
     text2.className = 'text';
     text2.textContent = textContent;
     li.appendChild(text2);
-    document.querySelector('ul.chat-main').appendChild(li);
+    getChatContainer().appendChild(li);
   }
   function sendChatMessage(message) {
-    const chatInput = document.querySelector('#chat-txt-message');
+    const chatInput = getChatInput();
     const messageOriginal = chatInput.value;
     chatInput.value = message;
     window.QueUp.room.chat.sendMessage();
@@ -3949,7 +3990,7 @@ var dubplus = (function () {
       }
       logInfo('tasty', 'loading from api');
       return fetch(
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}/emotes/tastyemotes.json`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@ui-getters'}/emotes/tastyemotes.json`,
       )
         .then((res) => res.json())
         .then((json) => {
@@ -4164,9 +4205,7 @@ var dubplus = (function () {
     return emoted;
   }
   function replaceTextWithEmote() {
-    const chats = document.querySelectorAll(
-      '.chat-main li:not([data-emote-processed])',
-    );
+    const chats = getChatMessages(':not([data-emote-processed])');
     if (!(chats == null ? void 0 : chats.length)) {
       return;
     }
@@ -4365,7 +4404,7 @@ var dubplus = (function () {
       const newEventsObject = { ...window.QueUp.room.chat.events };
       delete newEventsObject['keydown #chat-txt-message'];
       window.QueUp.room.chat.delegateEvents(newEventsObject);
-      const chatInput = document.getElementById('chat-txt-message');
+      const chatInput = getChatInput();
       chatInput.addEventListener('keydown', chatInputKeydownFunc);
       chatInput.addEventListener('keyup', chatInputKeyupFunc);
       chatInput.addEventListener('click', checkInput);
@@ -4375,7 +4414,7 @@ var dubplus = (function () {
       window.QueUp.room.chat.events['keydown #chat-txt-message'] =
         originalKeyDownEventHandler;
       window.QueUp.room.chat.delegateEvents(window.QueUp.room.chat.events);
-      const chatInput = document.getElementById('chat-txt-message');
+      const chatInput = getChatInput();
       chatInput.removeEventListener('keydown', chatInputKeydownFunc);
       chatInput.removeEventListener('keyup', chatInputKeyupFunc);
       chatInput.removeEventListener('click', checkInput);
@@ -4418,7 +4457,7 @@ var dubplus = (function () {
   };
   const MODULE_ID = 'chat-cleaner';
   function chatCleanerCheck(n) {
-    const chatMessages = document.querySelectorAll('ul.chat-main > li');
+    const chatMessages = getChatMessages();
     const limit = parseInt(n ?? settings.custom[MODULE_ID], 10);
     if (
       !(chatMessages == null ? void 0 : chatMessages.length) ||
@@ -4610,12 +4649,10 @@ var dubplus = (function () {
       title: t('pm-notifications.notification.title'),
       ignoreActiveTab: true,
       callback: function () {
-        const openPmButton = document.querySelector('.user-messages');
+        const openPmButton = getPrivateMessageButton();
         openPmButton == null ? void 0 : openPmButton.click();
         setTimeout(function () {
-          const messageItem = document.querySelector(
-            `.message-item[data-messageid="${e.messageid}"]`,
-          );
+          const messageItem = getPrivateMessage(e.messageid);
           messageItem == null ? void 0 : messageItem.click();
         }, 500);
       },
@@ -4642,17 +4679,14 @@ var dubplus = (function () {
   };
   function djNotificationCheck(e) {
     var _a, _b;
-    const isInQueue = !!((_a = document.querySelector('.queue-position')) ==
-    null
+    const isInQueue = !!((_a = getQueuePosition()) == null
       ? void 0
       : _a.textContent);
     if (!isInQueue) {
       return;
     }
     const currentPosition = parseInt(
-      (_b = document.querySelector('.queue-position')) == null
-        ? void 0
-        : _b.textContent,
+      (_b = getQueuePosition()) == null ? void 0 : _b.textContent,
       10,
     );
     if (isNaN(currentPosition)) {
@@ -4907,11 +4941,11 @@ var dubplus = (function () {
     modOnly: true,
     turnOn() {
       if (isMod(window.QueUp.session.id)) {
-        window.QueUp.Events.bind('realtime:room_playlist-dub', downdubWatcher);
+        window.QueUp.Events.bind(DUB, downdubWatcher);
       }
     },
     turnOff() {
-      window.QueUp.Events.unbind('realtime:room_playlist-dub', downdubWatcher);
+      window.QueUp.Events.unbind(DUB, downdubWatcher);
     },
   };
   function updubWatcher(e) {
@@ -4935,10 +4969,10 @@ var dubplus = (function () {
     description: 'updubs-in-chat.description',
     category: 'general',
     turnOn() {
-      window.QueUp.Events.bind('realtime:room_playlist-dub', updubWatcher);
+      window.QueUp.Events.bind(DUB, updubWatcher);
     },
     turnOff() {
-      window.QueUp.Events.unbind('realtime:room_playlist-dub', updubWatcher);
+      window.QueUp.Events.unbind(DUB, updubWatcher);
     },
   };
   function grabChatWatcher(e) {
@@ -5211,9 +5245,7 @@ var dubplus = (function () {
     category: 'user-interface',
     altIcon: IconFullscreen,
     onClick() {
-      const elem =
-        /**@type{HTMLIFrameElement}*/
-        document.querySelector('.player_container iframe');
+      const elem = getPlayerIframe();
       if (!elem) {
         logInfo('Fullscreen: No video element found');
         return;
@@ -5355,7 +5387,7 @@ var dubplus = (function () {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1741208055876'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@ui-getters'}${cssFile}?${'1741322049254'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5462,14 +5494,14 @@ var dubplus = (function () {
     },
   };
   function addCustomBG(url) {
-    const img = document.querySelector('.backstretch img');
+    const img = getBackgroundImage();
     if (img) {
       img.setAttribute('data-original', img.src);
       img.src = url;
     }
   }
   function removeCustomBG() {
-    const img = document.querySelector('.backstretch img');
+    const img = getBackgroundImage();
     if (img && img.hasAttribute('data-original')) {
       img.src = img.getAttribute('data-original');
       img.removeAttribute;
@@ -5752,19 +5784,13 @@ var dubplus = (function () {
     function getEta() {
       var _a, _b;
       const booth_position =
-        (_a = document.querySelector('.queue-position')) == null
-          ? void 0
-          : _a.textContent;
+        (_a = getQueuePosition()) == null ? void 0 : _a.textContent;
       if (!booth_position) {
         return t('Eta.tooltip.notInQueue');
       }
       const average_song_minutes = 4;
       const current_time = parseInt(
-        (_b = document.querySelector(
-          '#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min',
-        )) == null
-          ? void 0
-          : _b.textContent,
+        (_b = getCurrentSongMinutes()) == null ? void 0 : _b.textContent,
       );
       const position_in_queue = parseInt(booth_position);
       const booth_time =
@@ -5782,7 +5808,7 @@ var dubplus = (function () {
       button,
       ($$node, $$action_arg) =>
         teleport == null ? void 0 : teleport($$node, $$action_arg),
-      () => ({ to: '.player_sharing' }),
+      () => ({ to: PLAYER_SHARING_CONTAINER }),
     );
     template_effect(() => {
       set_attribute(button, 'aria-label', get(eta));
@@ -5821,15 +5847,13 @@ var dubplus = (function () {
         eventUtils.currentVol = window.QueUp.playerController.volume;
         window.QueUp.room.player.mutePlayer();
         eventUtils.snoozed = true;
-        window.QueUp.Events.once(
-          'realtime:room_playlist-update',
-          eventSongAdvance,
-        );
+        window.QueUp.Events.once(PLAYLIST_UPDATE, eventSongAdvance);
       } else if (eventUtils.snoozed) {
         set(tooltip, proxy(t('Snooze.tooltip')));
         window.QueUp.room.player.setVolume(eventUtils.currentVol);
         window.QueUp.room.player.updateVolumeBar();
         eventUtils.snoozed = false;
+        window.QueUp.Events.unbind(PLAYLIST_UPDATE, eventSongAdvance);
       }
     }
     var button = root$9();
@@ -5838,7 +5862,7 @@ var dubplus = (function () {
       button,
       ($$node, $$action_arg) =>
         teleport == null ? void 0 : teleport($$node, $$action_arg),
-      () => ({ to: '.player_sharing' }),
+      () => ({ to: PLAYER_SHARING_CONTAINER }),
     );
     template_effect(() => {
       set_attribute(button, 'aria-label', get(tooltip));
@@ -5872,9 +5896,7 @@ var dubplus = (function () {
       }
     });
     function handleClick2(index2) {
-      const inputEl =
-        /**@type {HTMLTextAreaElement}*/
-        document.getElementById('chat-txt-message');
+      const inputEl = getChatInput();
       insertEmote(inputEl, index2);
       inputEl.focus();
     }
@@ -5916,10 +5938,7 @@ var dubplus = (function () {
       div,
       ($$node, $$action_arg) =>
         teleport == null ? void 0 : teleport($$node, $$action_arg),
-      () => ({
-        to: '.pusher-chat-widget-input',
-        position: 'prepend',
-      }),
+      () => ({ to: CHAT_INPUT_CONTAINER, position: 'prepend' }),
     );
     template_effect(
       ($0) => {
@@ -5956,15 +5975,11 @@ var dubplus = (function () {
     function getTarget() {
       var _a, _b;
       if ($$props.dubType === 'updub') {
-        return (_a = document.querySelector('.dubup')) == null
-          ? void 0
-          : _a.parentElement;
+        return (_a = getDubUp()) == null ? void 0 : _a.parentElement;
       } else if ($$props.dubType === 'downdub') {
-        return (_b = document.querySelector('.dubdown')) == null
-          ? void 0
-          : _b.parentElement;
+        return (_b = getDubDown()) == null ? void 0 : _b.parentElement;
       } else if ($$props.dubType === 'grab') {
-        return document.querySelector('.add-to-playlist');
+        return getAddToPlaylist();
       }
       return null;
     }
@@ -6014,9 +6029,7 @@ var dubplus = (function () {
       }
     });
     function handleClick2(username) {
-      const chatInput =
-        /**@type {HTMLInputElement}*/
-        document.querySelector('#chat-txt-message');
+      const chatInput = getChatInput();
       chatInput.value = `${chatInput.value}@${username} `.trimStart();
       chatInput.focus();
     }
@@ -6476,18 +6489,12 @@ var dubplus = (function () {
       set(tooltip, proxy(t('SnoozeVideo.tooltip.undo')));
       set(icon, 'icon-eye-unblocked');
       document.body.classList.add(SNOOZE_CLASS);
-      window.QueUp.Events.once(
-        'realtime:room_playlist-update',
-        eventSongAdvance,
-      );
+      window.QueUp.Events.once(PLAYLIST_UPDATE, eventSongAdvance);
     } else {
       set(tooltip, proxy(t('SnoozeVideo.tooltip')));
       set(icon, 'icon-eye-blocked');
       document.body.classList.remove(SNOOZE_CLASS);
-      window.QueUp.Events.unbind(
-        'realtime:room_playlist-update',
-        eventSongAdvance,
-      );
+      window.QueUp.Events.unbind(PLAYLIST_UPDATE, eventSongAdvance);
     }
   }
   var root$1 = /* @__PURE__ */ template(
@@ -6512,7 +6519,7 @@ var dubplus = (function () {
       button,
       ($$node, $$action_arg) =>
         teleport == null ? void 0 : teleport($$node, $$action_arg),
-      () => ({ to: '.player_sharing' }),
+      () => ({ to: PLAYER_SHARING_CONTAINER }),
     );
     template_effect(() => {
       set_class(
@@ -6526,9 +6533,13 @@ var dubplus = (function () {
     pop();
   }
   delegate(['click']);
+  const version = '1.0.0';
+  const pkg = {
+    version,
+  };
   var root_2 = /* @__PURE__ */ template(`<!> <!> <!>`, 1);
   var root = /* @__PURE__ */ template(
-    `<!> <!> <!> <!> <!> <!> <!> <section class="dubplus-menu svelte-1u8kv6a"><p class="dubplus-menu-header svelte-1u8kv6a"> </p> <!> <!> <!> <!> <!></section> <!>`,
+    `<!> <!> <!> <!> <!> <!> <!> <aside class="dubplus-menu svelte-yl0u1x"><p class="dubplus-menu-header svelte-yl0u1x"> <span class="version svelte-yl0u1x"> </span></p> <!> <!> <!> <!> <!></aside> <!>`,
     1,
   );
   function Menu($$anchor, $$props) {
@@ -6580,9 +6591,11 @@ var dubplus = (function () {
         if (settings.options.snow) $$render(consequent_2);
       });
     }
-    var section = sibling(node_9, 2);
-    var p = child(section);
+    var aside = sibling(node_9, 2);
+    var p = child(aside);
     var text2 = child(p);
+    var span = sibling(text2);
+    var text_1 = child(span);
     var node_10 = sibling(p, 2);
     General(node_10, {});
     var node_11 = sibling(node_10, 2);
@@ -6593,10 +6606,13 @@ var dubplus = (function () {
     Customize(node_13, {});
     var node_14 = sibling(node_13, 2);
     Contact(node_14, {});
-    var node_15 = sibling(section, 2);
+    var node_15 = sibling(aside, 2);
     Modal(node_15, {});
     template_effect(
-      ($0) => set_text(text2, $0),
+      ($0) => {
+        set_text(text2, `${$0 ?? ''} `);
+        set_text(text_1, `v${pkg.version}`);
+      },
       [() => t('Menu.title')],
       derived_safe_equal,
     );
@@ -6614,8 +6630,10 @@ var dubplus = (function () {
   };
   function DubPlus($$anchor, $$props) {
     push($$props, true);
-    window.dubplus = window.dubplus || {};
-    window.dubplus = Object.assign(window.dubplus, define_PKGINFO_default);
+    window.dubplus = Object.assign(
+      window.dubplus || {},
+      define_PKGINFO_default,
+    );
     let status = state('loading');
     function setLocale() {
       locale.current = normalizeLocale(navigator.language || 'en');

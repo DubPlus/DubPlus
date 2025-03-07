@@ -11,6 +11,7 @@ import {
 } from '../emoji/emojiState.svelte';
 import { settings } from '../stores/settings.svelte';
 import { getSelection, isEdge } from '../emoji/helpers';
+import { getChatInput } from '../queup.ui';
 
 const KEYS = {
   up: 'ArrowUp',
@@ -196,7 +197,7 @@ export const autocomplete = {
     delete newEventsObject['keydown #chat-txt-message'];
     window.QueUp.room.chat.delegateEvents(newEventsObject);
 
-    const chatInput = document.getElementById('chat-txt-message');
+    const chatInput = getChatInput();
     chatInput.addEventListener('keydown', chatInputKeydownFunc);
     chatInput.addEventListener('keyup', chatInputKeyupFunc);
     chatInput.addEventListener('click', checkInput);
@@ -207,7 +208,7 @@ export const autocomplete = {
     window.QueUp.room.chat.events['keydown #chat-txt-message'] =
       originalKeyDownEventHandler;
     window.QueUp.room.chat.delegateEvents(window.QueUp.room.chat.events);
-    const chatInput = document.getElementById('chat-txt-message');
+    const chatInput = getChatInput();
     chatInput.removeEventListener('keydown', chatInputKeydownFunc);
     chatInput.removeEventListener('keyup', chatInputKeyupFunc);
     chatInput.removeEventListener('click', checkInput);
