@@ -789,7 +789,7 @@ span.svelte-1va87zs {
 }
 
 /* the main container for the whole menu that slides in */
-.dubplus-menu.svelte-1u8kv6a {
+.dubplus-menu.svelte-yl0u1x {
   position: fixed;
   z-index: 999;
   background-color: rgba(10, 10, 10, 0.98);
@@ -811,16 +811,25 @@ span.svelte-1va87zs {
   scrollbar-width: thin;
 }
 
-.dubplus-menu-header.svelte-1u8kv6a {
+.dubplus-menu-header.svelte-yl0u1x {
   padding: 12px 15px;
   line-height: 1;
   margin: 0;
   border-bottom: 1px solid #222;
   font-size: 1.2em;
   color: #ccc;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* this is toggled in MenuIcon component */
-.dubplus-menu.svelte-1u8kv6a.dubplus-menu-open {
+.dubplus-menu.svelte-yl0u1x.dubplus-menu-open {
   transform: translate3d(0, 0, 0);
+}
+
+.version.svelte-yl0u1x {
+  font-size: 0.8em;
+  color: #666;
 }

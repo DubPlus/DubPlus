@@ -7,10 +7,8 @@
   import { t, locale, normalizeLocale } from './lib/stores/i18n.svelte';
   import { onMount, onDestroy } from 'svelte';
 
-  window.dubplus = window.dubplus || {};
-
   // @ts-ignore __PKGINFO__ is injected by the build process
-  window.dubplus = Object.assign(window.dubplus, __PKGINFO__);
+  window.dubplus = Object.assign(window.dubplus || {}, __PKGINFO__);
 
   /** @type {"loading" | "ready" | "loggedout" | "error"} */
   let status = $state('loading');
