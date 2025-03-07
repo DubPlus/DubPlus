@@ -35,6 +35,7 @@ var dubplus = (function () {
     SOFTWARE.
 */
 
+  var _a;
   const DEV = false;
   var is_array = Array.isArray;
   var index_of = Array.prototype.indexOf;
@@ -140,6 +141,7 @@ var dubplus = (function () {
   const TEMPLATE_FRAGMENT = 1;
   const TEMPLATE_USE_IMPORT_NODE = 1 << 1;
   const UNINITIALIZED = Symbol();
+  const NAMESPACE_HTML = 'http://www.w3.org/1999/xhtml';
   function lifecycle_outside_component(name) {
     {
       throw new Error(`https://svelte.dev/e/lifecycle_outside_component`);
@@ -219,7 +221,7 @@ var dubplus = (function () {
   }
   // @__NO_SIDE_EFFECTS__
   function mutable_source(initial_value, immutable = false) {
-    var _a;
+    var _a2;
     const s = source(initial_value);
     if (!immutable) {
       s.equals = safe_equals;
@@ -229,7 +231,7 @@ var dubplus = (function () {
       component_context !== null &&
       component_context.l !== null
     ) {
-      ((_a = component_context.l).s ?? (_a.s = [])).push(s);
+      ((_a2 = component_context.l).s ?? (_a2.s = [])).push(s);
     }
     return s;
   }
@@ -375,7 +377,7 @@ var dubplus = (function () {
           return true;
         },
         get(target, prop, receiver) {
-          var _a;
+          var _a2;
           if (prop === STATE_SYMBOL) {
             return value;
           }
@@ -384,9 +386,9 @@ var dubplus = (function () {
           if (
             s === void 0 &&
             (!exists ||
-              ((_a = get_descriptor(target, prop)) == null
+              ((_a2 = get_descriptor(target, prop)) == null
                 ? void 0
-                : _a.writable))
+                : _a2.writable))
           ) {
             s = source(proxy(exists ? target[prop] : UNINITIALIZED, metadata));
             sources.set(prop, s);
@@ -417,7 +419,7 @@ var dubplus = (function () {
           return descriptor;
         },
         has(target, prop) {
-          var _a;
+          var _a2;
           if (prop === STATE_SYMBOL) {
             return true;
           }
@@ -429,9 +431,9 @@ var dubplus = (function () {
             s !== void 0 ||
             (active_effect !== null &&
               (!has ||
-                ((_a = get_descriptor(target, prop)) == null
+                ((_a2 = get_descriptor(target, prop)) == null
                   ? void 0
-                  : _a.writable)))
+                  : _a2.writable)))
           ) {
             if (s === void 0) {
               s = source(has ? proxy(target[prop], metadata) : UNINITIALIZED);
@@ -445,7 +447,7 @@ var dubplus = (function () {
           return has;
         },
         set(target, prop, value2, receiver) {
-          var _a;
+          var _a2;
           var s = sources.get(prop);
           var has = prop in target;
           if (is_proxied_array && prop === 'length') {
@@ -466,9 +468,9 @@ var dubplus = (function () {
           if (s === void 0) {
             if (
               !has ||
-              ((_a = get_descriptor(target, prop)) == null
+              ((_a2 = get_descriptor(target, prop)) == null
                 ? void 0
-                : _a.writable)
+                : _a2.writable)
             ) {
               s = source(void 0);
               set(s, proxy(value2, metadata));
@@ -533,9 +535,9 @@ var dubplus = (function () {
     first_child_getter = get_descriptor(node_prototype, 'firstChild').get;
     next_sibling_getter = get_descriptor(node_prototype, 'nextSibling').get;
     element_prototype.__click = void 0;
-    element_prototype.__className = '';
+    element_prototype.__className = void 0;
     element_prototype.__attributes = null;
-    element_prototype.__styles = null;
+    element_prototype.__style = void 0;
     element_prototype.__e = void 0;
     Text.prototype.__t = void 0;
   }
@@ -698,8 +700,7 @@ var dubplus = (function () {
     }
   }
   function create_effect(type, fn, sync, push2 = true) {
-    var is_root = (type & ROOT_EFFECT) !== 0;
-    var parent_effect = active_effect;
+    var parent = active_effect;
     var effect2 = {
       ctx: component_context,
       deps: null,
@@ -710,23 +711,19 @@ var dubplus = (function () {
       fn,
       last: null,
       next: null,
-      parent: is_root ? null : parent_effect,
+      parent,
       prev: null,
       teardown: null,
       transitions: null,
       wv: 0,
     };
     if (sync) {
-      var previously_flushing_effect = is_flushing_effect;
       try {
-        set_is_flushing_effect(true);
         update_effect(effect2);
         effect2.f |= EFFECT_RAN;
       } catch (e) {
         destroy_effect(effect2);
         throw e;
-      } finally {
-        set_is_flushing_effect(previously_flushing_effect);
       }
     } else if (fn !== null) {
       schedule_effect(effect2);
@@ -738,9 +735,9 @@ var dubplus = (function () {
       effect2.nodes_start === null &&
       effect2.teardown === null &&
       (effect2.f & (EFFECT_HAS_DERIVED | BOUNDARY_EFFECT)) === 0;
-    if (!inert && !is_root && push2) {
-      if (parent_effect !== null) {
-        push_effect(effect2, parent_effect);
+    if (!inert && push2) {
+      if (parent !== null) {
+        push_effect(effect2, parent);
       }
       if (active_reaction !== null && (active_reaction.f & DERIVED) !== 0) {
         var derived2 =
@@ -835,7 +832,11 @@ var dubplus = (function () {
     signal.first = signal.last = null;
     while (effect2 !== null) {
       var next = effect2.next;
-      destroy_effect(effect2, remove_dom);
+      if ((effect2.f & ROOT_EFFECT) !== 0) {
+        effect2.parent = null;
+      } else {
+        destroy_effect(effect2, remove_dom);
+      }
       effect2 = next;
     }
   }
@@ -972,34 +973,27 @@ var dubplus = (function () {
       }
     }
   }
-  let is_micro_task_queued$1 = false;
-  let current_queued_micro_tasks = [];
-  function process_micro_tasks() {
-    is_micro_task_queued$1 = false;
-    const tasks = current_queued_micro_tasks.slice();
-    current_queued_micro_tasks = [];
+  let micro_tasks = [];
+  function run_micro_tasks() {
+    var tasks = micro_tasks;
+    micro_tasks = [];
     run_all(tasks);
   }
   function queue_micro_task(fn) {
-    if (!is_micro_task_queued$1) {
-      is_micro_task_queued$1 = true;
-      queueMicrotask(process_micro_tasks);
+    if (micro_tasks.length === 0) {
+      queueMicrotask(run_micro_tasks);
     }
-    current_queued_micro_tasks.push(fn);
+    micro_tasks.push(fn);
   }
   let is_throwing_error = false;
-  let is_micro_task_queued = false;
+  let is_flushing = false;
   let last_scheduled_effect = null;
-  let is_flushing_effect = false;
+  let is_updating_effect = false;
   let is_destroying_effect = false;
-  function set_is_flushing_effect(value) {
-    is_flushing_effect = value;
-  }
   function set_is_destroying_effect(value) {
     is_destroying_effect = value;
   }
   let queued_root_effects = [];
-  let flush_count = 0;
   let dev_effect_stack = [];
   let active_reaction = null;
   let untracking = false;
@@ -1027,7 +1021,7 @@ var dubplus = (function () {
     return ++write_version;
   }
   function check_dirtiness(reaction) {
-    var _a;
+    var _a2;
     var flags = reaction.f;
     if ((flags & DIRTY) !== 0) {
       return true;
@@ -1051,10 +1045,10 @@ var dubplus = (function () {
             dependency = dependencies[i];
             if (
               is_disconnected ||
-              !((_a = dependency == null ? void 0 : dependency.reactions) ==
+              !((_a2 = dependency == null ? void 0 : dependency.reactions) ==
               null
                 ? void 0
-                : _a.includes(derived2))
+                : _a2.includes(derived2))
             ) {
               (dependency.reactions ?? (dependency.reactions = [])).push(
                 derived2,
@@ -1166,7 +1160,7 @@ var dubplus = (function () {
     }
   }
   function update_reaction(reaction) {
-    var _a;
+    var _a2;
     var previous_deps = new_deps;
     var previous_skipped_deps = skipped_deps;
     var previous_untracked_writes = untracked_writes;
@@ -1179,13 +1173,11 @@ var dubplus = (function () {
     new_deps = /** @type {null | Value[]} */ null;
     skipped_deps = 0;
     untracked_writes = null;
-    active_reaction =
-      (flags & (BRANCH_EFFECT | ROOT_EFFECT)) === 0 ? reaction : null;
     skip_reaction =
       (flags & UNOWNED) !== 0 &&
-      (!is_flushing_effect ||
-        previous_reaction === null ||
-        previous_untracking);
+      (untracking || !is_updating_effect || active_reaction === null);
+    active_reaction =
+      (flags & (BRANCH_EFFECT | ROOT_EFFECT)) === 0 ? reaction : null;
     derived_sources = null;
     set_component_context(reaction.ctx);
     untracking = false;
@@ -1208,7 +1200,7 @@ var dubplus = (function () {
         }
         if (!skip_reaction) {
           for (i = skipped_deps; i < deps.length; i++) {
-            ((_a = deps[i]).reactions ?? (_a.reactions = [])).push(reaction);
+            ((_a2 = deps[i]).reactions ?? (_a2.reactions = [])).push(reaction);
           }
         }
       } else if (deps !== null && skipped_deps < deps.length) {
@@ -1296,7 +1288,9 @@ var dubplus = (function () {
     set_signal_status(effect2, CLEAN);
     var previous_effect = active_effect;
     var previous_component_context = component_context;
+    var was_updating_effect = is_updating_effect;
     active_effect = effect2;
+    is_updating_effect = true;
     try {
       if ((flags & BLOCK_EFFECT) !== 0) {
         destroy_block_effect_children(effect2);
@@ -1324,45 +1318,44 @@ var dubplus = (function () {
         previous_component_context || effect2.ctx,
       );
     } finally {
+      is_updating_effect = was_updating_effect;
       active_effect = previous_effect;
     }
   }
   function infinite_loop_guard() {
-    if (flush_count > 1e3) {
-      flush_count = 0;
-      try {
-        effect_update_depth_exceeded();
-      } catch (error) {
-        if (last_scheduled_effect !== null) {
-          {
-            handle_error(error, last_scheduled_effect, null);
-          }
-        } else {
-          throw error;
+    try {
+      effect_update_depth_exceeded();
+    } catch (error) {
+      if (last_scheduled_effect !== null) {
+        {
+          handle_error(error, last_scheduled_effect, null);
         }
+      } else {
+        throw error;
       }
     }
-    flush_count++;
   }
-  function flush_queued_root_effects(root_effects) {
-    var length = root_effects.length;
-    if (length === 0) {
-      return;
-    }
-    infinite_loop_guard();
-    var previously_flushing_effect = is_flushing_effect;
-    is_flushing_effect = true;
+  function flush_queued_root_effects() {
+    var was_updating_effect = is_updating_effect;
     try {
-      for (var i = 0; i < length; i++) {
-        var effect2 = root_effects[i];
-        if ((effect2.f & CLEAN) === 0) {
-          effect2.f ^= CLEAN;
+      var flush_count = 0;
+      is_updating_effect = true;
+      while (queued_root_effects.length > 0) {
+        if (flush_count++ > 1e3) {
+          infinite_loop_guard();
         }
-        var collected_effects = process_effects(effect2);
-        flush_queued_effects(collected_effects);
+        var root_effects = queued_root_effects;
+        var length = root_effects.length;
+        queued_root_effects = [];
+        for (var i = 0; i < length; i++) {
+          var collected_effects = process_effects(root_effects[i]);
+          flush_queued_effects(collected_effects);
+        }
       }
     } finally {
-      is_flushing_effect = previously_flushing_effect;
+      is_flushing = false;
+      is_updating_effect = was_updating_effect;
+      last_scheduled_effect = null;
     }
   }
   function flush_queued_effects(effects) {
@@ -1392,28 +1385,12 @@ var dubplus = (function () {
       }
     }
   }
-  function process_deferred() {
-    is_micro_task_queued = false;
-    if (flush_count > 1001) {
-      return;
-    }
-    const previous_queued_root_effects = queued_root_effects;
-    queued_root_effects = [];
-    flush_queued_root_effects(previous_queued_root_effects);
-    if (!is_micro_task_queued) {
-      flush_count = 0;
-      last_scheduled_effect = null;
-    }
-  }
   function schedule_effect(signal) {
-    {
-      if (!is_micro_task_queued) {
-        is_micro_task_queued = true;
-        queueMicrotask(process_deferred);
-      }
+    if (!is_flushing) {
+      is_flushing = true;
+      queueMicrotask(flush_queued_root_effects);
     }
-    last_scheduled_effect = signal;
-    var effect2 = signal;
+    var effect2 = (last_scheduled_effect = signal);
     while (effect2.parent !== null) {
       effect2 = effect2.parent;
       var flags = effect2.f;
@@ -1424,53 +1401,43 @@ var dubplus = (function () {
     }
     queued_root_effects.push(effect2);
   }
-  function process_effects(effect2) {
+  function process_effects(root2) {
     var effects = [];
-    var current_effect = effect2.first;
-    main_loop: while (current_effect !== null) {
-      var flags = current_effect.f;
-      var is_branch = (flags & BRANCH_EFFECT) !== 0;
+    var effect2 = root2;
+    while (effect2 !== null) {
+      var flags = effect2.f;
+      var is_branch = (flags & (BRANCH_EFFECT | ROOT_EFFECT)) !== 0;
       var is_skippable_branch = is_branch && (flags & CLEAN) !== 0;
-      var sibling2 = current_effect.next;
       if (!is_skippable_branch && (flags & INERT) === 0) {
         if ((flags & EFFECT) !== 0) {
-          effects.push(current_effect);
+          effects.push(effect2);
         } else if (is_branch) {
-          current_effect.f ^= CLEAN;
+          effect2.f ^= CLEAN;
         } else {
           var previous_active_reaction = active_reaction;
           try {
-            active_reaction = current_effect;
-            if (check_dirtiness(current_effect)) {
-              update_effect(current_effect);
+            active_reaction = effect2;
+            if (check_dirtiness(effect2)) {
+              update_effect(effect2);
             }
           } catch (error) {
-            handle_error(error, current_effect, null, current_effect.ctx);
+            handle_error(error, effect2, null, effect2.ctx);
           } finally {
             active_reaction = previous_active_reaction;
           }
         }
-        var child2 = current_effect.first;
+        var child2 = effect2.first;
         if (child2 !== null) {
-          current_effect = child2;
+          effect2 = child2;
           continue;
         }
       }
-      if (sibling2 === null) {
-        let parent = current_effect.parent;
-        while (parent !== null) {
-          if (effect2 === parent) {
-            break main_loop;
-          }
-          var parent_sibling = parent.next;
-          if (parent_sibling !== null) {
-            current_effect = parent_sibling;
-            continue main_loop;
-          }
-          parent = parent.parent;
-        }
+      var parent = effect2.parent;
+      effect2 = effect2.next;
+      while (effect2 === null && parent !== null) {
+        effect2 = parent.next;
+        parent = parent.parent;
       }
-      current_effect = sibling2;
     }
     return effects;
   }
@@ -1595,11 +1562,11 @@ var dubplus = (function () {
         'reset',
         (evt) => {
           Promise.resolve().then(() => {
-            var _a;
+            var _a2;
             if (!evt.defaultPrevented) {
               /**@type {HTMLFormElement} */
               for (const e of evt.target.elements) {
-                (_a = e.__on_r) == null ? void 0 : _a.call(e);
+                (_a2 = e.__on_r) == null ? void 0 : _a2.call(e);
               }
             }
           });
@@ -1683,14 +1650,14 @@ var dubplus = (function () {
     }
   }
   function handle_event_propagation(event2) {
-    var _a;
+    var _a2;
     var handler_element = this;
     var owner_document =
       /** @type {Node} */
       handler_element.ownerDocument;
     var event_name = event2.type;
     var path =
-      ((_a = event2.composedPath) == null ? void 0 : _a.call(event2)) || [];
+      ((_a2 = event2.composedPath) == null ? void 0 : _a2.call(event2)) || [];
     var current_target =
       /** @type {null | Element} */
       path[0] || event2.target;
@@ -1937,7 +1904,7 @@ var dubplus = (function () {
         }
       });
       return () => {
-        var _a;
+        var _a2;
         for (var event_name of registered_events) {
           target.removeEventListener(event_name, handle_event_propagation);
           var n =
@@ -1952,9 +1919,9 @@ var dubplus = (function () {
         }
         root_event_handles.delete(event_handle);
         if (anchor_node !== anchor) {
-          (_a = anchor_node.parentNode) == null
+          (_a2 = anchor_node.parentNode) == null
             ? void 0
-            : _a.removeChild(anchor_node);
+            : _a2.removeChild(anchor_node);
         }
       };
     });
@@ -1970,12 +1937,12 @@ var dubplus = (function () {
     }
     return Promise.resolve();
   }
-  function if_block(node, fn, elseif = false) {
+  function if_block(node, fn, [root_index, hydrate_index] = [0, 0]) {
     var anchor = node;
     var consequent_effect = null;
     var alternate_effect = null;
     var condition = UNINITIALIZED;
-    var flags = elseif ? EFFECT_TRANSPARENT : 0;
+    var flags = root_index > 0 ? EFFECT_TRANSPARENT : 0;
     var has_branch = false;
     const set_branch = (fn2, flag = true) => {
       has_branch = true;
@@ -1998,7 +1965,9 @@ var dubplus = (function () {
         if (alternate_effect) {
           resume_effect(alternate_effect);
         } else if (fn2) {
-          alternate_effect = branch(() => fn2(anchor));
+          alternate_effect = branch(() =>
+            fn2(anchor, [root_index + 1, hydrate_index]),
+          );
         }
         if (consequent_effect) {
           pause_effect(consequent_effect, () => {
@@ -2059,7 +2028,7 @@ var dubplus = (function () {
     fallback_fn = null,
   ) {
     var anchor = node;
-    var state2 = { items: /* @__PURE__ */ new Map(), first: null };
+    var state2 = { flags, items: /* @__PURE__ */ new Map(), first: null };
     var is_controlled = (flags & EACH_IS_CONTROLLED) !== 0;
     if (is_controlled) {
       var parent_node =
@@ -2120,7 +2089,7 @@ var dubplus = (function () {
     get_key,
     get_collection,
   ) {
-    var _a, _b, _c, _d;
+    var _a2, _b, _c, _d;
     var is_animated = (flags & EACH_IS_ANIMATED) !== 0;
     var should_update =
       (flags & (EACH_ITEM_REACTIVE | EACH_INDEX_REACTIVE)) !== 0;
@@ -2143,7 +2112,7 @@ var dubplus = (function () {
         key = get_key(value, i);
         item = items.get(key);
         if (item !== void 0) {
-          (_a = item.a) == null ? void 0 : _a.measure();
+          (_a2 = item.a) == null ? void 0 : _a2.measure();
           (to_animate ?? (to_animate = /* @__PURE__ */ new Set())).add(item);
         }
       }
@@ -2260,10 +2229,10 @@ var dubplus = (function () {
     }
     if (is_animated) {
       queue_micro_task(() => {
-        var _a2;
+        var _a3;
         if (to_animate === void 0) return;
         for (item of to_animate) {
-          (_a2 = item.a) == null ? void 0 : _a2.apply();
+          (_a3 = item.a) == null ? void 0 : _a3.apply();
         }
       });
     }
@@ -2422,12 +2391,82 @@ var dubplus = (function () {
       }
     });
   }
-  function set_attribute(element, attribute, value, skip_warning) {
-    var attributes = element.__attributes ?? (element.__attributes = {});
-    if (attributes[attribute] === (attributes[attribute] = value)) return;
-    if (attribute === 'style' && '__styles' in element) {
-      element.__styles = {};
+  const whitespace = [...' 	\n\r\f \v\uFEFF'];
+  function to_class(value, hash, directives) {
+    var classname = value == null ? '' : '' + value;
+    if (hash) {
+      classname = classname ? classname + ' ' + hash : hash;
     }
+    if (directives) {
+      for (var key in directives) {
+        if (directives[key]) {
+          classname = classname ? classname + ' ' + key : key;
+        } else if (classname.length) {
+          var len = key.length;
+          var a = 0;
+          while ((a = classname.indexOf(key, a)) >= 0) {
+            var b = a + len;
+            if (
+              (a === 0 || whitespace.includes(classname[a - 1])) &&
+              (b === classname.length || whitespace.includes(classname[b]))
+            ) {
+              classname =
+                (a === 0 ? '' : classname.substring(0, a)) +
+                classname.substring(b + 1);
+            } else {
+              a = b;
+            }
+          }
+        }
+      }
+    }
+    return classname === '' ? null : classname;
+  }
+  function to_style(value, styles) {
+    return value == null ? null : String(value);
+  }
+  function set_class(dom, is_html, value, hash, prev_classes, next_classes) {
+    var prev = dom.__className;
+    if (prev !== value) {
+      var next_class_name = to_class(value, hash, next_classes);
+      {
+        if (next_class_name == null) {
+          dom.removeAttribute('class');
+        } else {
+          dom.className = next_class_name;
+        }
+      }
+      dom.__className = value;
+    } else if (next_classes && prev_classes !== next_classes) {
+      for (var key in next_classes) {
+        var is_present = !!next_classes[key];
+        if (prev_classes == null || is_present !== !!prev_classes[key]) {
+          dom.classList.toggle(key, is_present);
+        }
+      }
+    }
+    return next_classes;
+  }
+  function set_style(dom, value, prev_styles, next_styles) {
+    var prev = dom.__style;
+    if (prev !== value) {
+      var next_style_attr = to_style(value);
+      {
+        if (next_style_attr == null) {
+          dom.removeAttribute('style');
+        } else {
+          dom.style.cssText = next_style_attr;
+        }
+      }
+      dom.__style = value;
+    }
+    return next_styles;
+  }
+  const IS_CUSTOM_ELEMENT = Symbol('is custom element');
+  const IS_HTML = Symbol('is html');
+  function set_attribute(element, attribute, value, skip_warning) {
+    var attributes = get_attributes(element);
+    if (attributes[attribute] === (attributes[attribute] = value)) return;
     if (attribute === 'loading') {
       element[LOADING_ATTR_SYMBOL] = value;
     }
@@ -2441,6 +2480,17 @@ var dubplus = (function () {
     } else {
       element.setAttribute(attribute, value);
     }
+  }
+  function get_attributes(element) {
+    return (
+      /** @type {Record<string | symbol, unknown>} **/
+      // @ts-expect-error
+      element.__attributes ??
+      (element.__attributes = {
+        [IS_CUSTOM_ELEMENT]: element.nodeName.includes('-'),
+        [IS_HTML]: element.namespaceURI === NAMESPACE_HTML,
+      })
+    );
   }
   var setters_cache = /* @__PURE__ */ new Map();
   function get_setters(element) {
@@ -2460,30 +2510,6 @@ var dubplus = (function () {
       proto = get_prototype_of(proto);
     }
     return setters;
-  }
-  function set_class(dom, value, hash) {
-    var prev_class_name = dom.__className;
-    var next_class_name = to_class(value);
-    if (prev_class_name !== next_class_name || hydrating) {
-      if (value == null && true) {
-        dom.removeAttribute('class');
-      } else {
-        dom.className = next_class_name;
-      }
-      dom.__className = next_class_name;
-    }
-  }
-  function to_class(value, hash) {
-    return (value == null ? '' : value) + '';
-  }
-  function toggle_class(dom, class_name, value) {
-    if (value) {
-      if (dom.classList.contains(class_name)) return;
-      dom.classList.add(class_name);
-    } else {
-      if (!dom.classList.contains(class_name)) return;
-      dom.classList.remove(class_name);
-    }
   }
   function bind_value(input, get2, set2 = get2) {
     var runes = is_runes();
@@ -2628,10 +2654,12 @@ var dubplus = (function () {
     return l.u ?? (l.u = { a: [], b: [], m: [] });
   }
   const PUBLIC_VERSION = '5';
-  if (typeof window !== 'undefined')
+  if (typeof window !== 'undefined') {
     (
-      window.__svelte || (window.__svelte = { v: /* @__PURE__ */ new Set() })
-    ).v.add(PUBLIC_VERSION);
+      (_a = window.__svelte ?? (window.__svelte = {})).v ??
+      (_a.v = /* @__PURE__ */ new Set())
+    ).add(PUBLIC_VERSION);
+  }
   const PREFIX = 'Dub+';
   function getTimeStamp() {
     return /* @__PURE__ */ new Date().toLocaleTimeString();
@@ -3096,9 +3124,11 @@ var dubplus = (function () {
   delegate(['click']);
   const teleport = (node, { to, position = 'append' }) => {
     user_effect(() => {
-      var _a;
+      var _a2;
       if (node.id) {
-        (_a = document.getElementById(node.id)) == null ? void 0 : _a.remove();
+        (_a2 = document.getElementById(node.id)) == null
+          ? void 0
+          : _a2.remove();
       }
       const teleportContainer = document.querySelector(to);
       if (!teleportContainer) {
@@ -3368,7 +3398,7 @@ var dubplus = (function () {
         'aria-controls',
         `dubplus-menu-section-${$$props.settingsId}`,
       );
-      set_class(span, `fa fa-angle-${get(arrow) ?? ''} svelte-31yg9a`);
+      set_class(span, 1, `fa fa-angle-${get(arrow) ?? ''}`, 'svelte-31yg9a');
       set_text(text2, $$props.name);
     });
     append($$anchor, button);
@@ -3553,9 +3583,7 @@ var dubplus = (function () {
   var root_1$1 = /* @__PURE__ */ template(
     `<button type="button" class="svelte-1dzj03i"><!> <span class="sr-only"> </span></button>`,
   );
-  var root$d = /* @__PURE__ */ template(
-    `<li class="svelte-1dzj03i"><!> <!></li>`,
-  );
+  var root$d = /* @__PURE__ */ template(`<li><!> <!></li>`);
   function MenuSwitch($$anchor, $$props) {
     push($$props, true);
     onMount(() => {
@@ -3593,6 +3621,7 @@ var dubplus = (function () {
       modalState.open = true;
     }
     var li = root$d();
+    let classes;
     var node = child(li);
     const expression = /* @__PURE__ */ derived(() =>
       $$props.modOnly ? !isMod(window.QueUp.session.id) : false,
@@ -3643,11 +3672,13 @@ var dubplus = (function () {
       ($0, $1) => {
         set_attribute(li, 'id', `dubplus-${$$props.id}`);
         set_attribute(li, 'title', $0);
-        toggle_class(li, 'disabled', $1);
+        classes = set_class(li, 1, 'svelte-1dzj03i', null, classes, $1);
       },
       [
         () => t($$props.description),
-        () => ($$props.modOnly ? !isMod(window.QueUp.session.id) : false),
+        () => ({
+          disabled: $$props.modOnly ? !isMod(window.QueUp.session.id) : false,
+        }),
       ],
     );
     append($$anchor, li);
@@ -3661,9 +3692,10 @@ var dubplus = (function () {
   const CHAT_MESSAGE = 'realtime:chat-message';
   const NEW_PM_MESSAGE = 'realtime:new-message';
   function voteCheck() {
-    var _a, _b, _c;
+    var _a2, _b, _c;
     (_c =
-      (_b = (_a = window.QueUp) == null ? void 0 : _a.playerController) == null
+      (_b = (_a2 = window.QueUp) == null ? void 0 : _a2.playerController) ==
+      null
         ? void 0
         : _b.voteUp) == null
       ? void 0
@@ -4678,10 +4710,10 @@ var dubplus = (function () {
     },
   };
   function djNotificationCheck(e) {
-    var _a, _b;
-    const isInQueue = !!((_a = getQueuePosition()) == null
+    var _a2, _b;
+    const isInQueue = !!((_a2 = getQueuePosition()) == null
       ? void 0
-      : _a.textContent);
+      : _a2.textContent);
     if (!isInQueue) {
       return;
     }
@@ -4758,15 +4790,15 @@ var dubplus = (function () {
   }
   function getUserName(userid) {
     return new Promise((resolve, reject) => {
-      var _a, _b, _c;
+      var _a2, _b, _c;
       const username =
         (_c =
           (_b =
-            (_a = window.QueUp.room.users.collection.findWhere({
+            (_a2 = window.QueUp.room.users.collection.findWhere({
               userid,
             })) == null
               ? void 0
-              : _a.attributes) == null
+              : _a2.attributes) == null
             ? void 0
             : _b._user) == null
           ? void 0
@@ -4778,11 +4810,11 @@ var dubplus = (function () {
       fetch(userData(userid))
         .then((response) => response.json())
         .then((response) => {
-          var _a2;
+          var _a3;
           if (
-            (_a2 = response == null ? void 0 : response.userinfo) == null
+            (_a3 = response == null ? void 0 : response.userinfo) == null
               ? void 0
-              : _a2.username
+              : _a3.username
           ) {
             const { username: username2 } = response.userinfo;
             resolve(username2);
@@ -5057,9 +5089,9 @@ var dubplus = (function () {
       this.startAnimation();
     }
     stop() {
-      var _a;
+      var _a2;
       this.stopAnimation();
-      (_a = this.canvas) == null ? void 0 : _a.remove();
+      (_a2 = this.canvas) == null ? void 0 : _a2.remove();
     }
     onWindowResize() {
       this.width = this.canvas.width = window.innerWidth;
@@ -5380,14 +5412,14 @@ var dubplus = (function () {
   };
   function loadCSS(cssFile, className) {
     return new Promise((resolve, reject) => {
-      var _a;
-      (_a = document.querySelector(`link.${className}`)) == null
+      var _a2;
+      (_a2 = document.querySelector(`link.${className}`)) == null
         ? void 0
-        : _a.remove();
+        : _a2.remove();
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1741323263256'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1741323943312'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5395,8 +5427,10 @@ var dubplus = (function () {
     });
   }
   function loadExternalCss(cssFile, id) {
-    var _a;
-    (_a = document.querySelector(`style#${id}`)) == null ? void 0 : _a.remove();
+    var _a2;
+    (_a2 = document.querySelector(`style#${id}`)) == null
+      ? void 0
+      : _a2.remove();
     return fetch(cssFile)
       .then((res) => res.text())
       .then((css) => {
@@ -5438,10 +5472,10 @@ var dubplus = (function () {
         });
     },
     turnOff() {
-      var _a;
-      (_a = document.getElementById(LINK_ELEM_ID$1)) == null
+      var _a2;
+      (_a2 = document.getElementById(LINK_ELEM_ID$1)) == null
         ? void 0
-        : _a.remove();
+        : _a2.remove();
     },
   };
   const LINK_ELEM_ID = 'dubplus-user-custom-css';
@@ -5465,11 +5499,11 @@ var dubplus = (function () {
         return true;
       },
       onConfirm(value) {
-        var _a;
+        var _a2;
         if (!value) {
-          (_a = document.getElementById(LINK_ELEM_ID)) == null
+          (_a2 = document.getElementById(LINK_ELEM_ID)) == null
             ? void 0
-            : _a.remove();
+            : _a2.remove();
           settings.options[customCss.id] = false;
           return;
         } else {
@@ -5487,10 +5521,10 @@ var dubplus = (function () {
       }
     },
     turnOff() {
-      var _a;
-      (_a = document.getElementById(LINK_ELEM_ID)) == null
+      var _a2;
+      (_a2 = document.getElementById(LINK_ELEM_ID)) == null
         ? void 0
-        : _a.remove();
+        : _a2.remove();
     },
   };
   function addCustomBG(url) {
@@ -5782,9 +5816,9 @@ var dubplus = (function () {
     push($$props, true);
     let eta = state('ETA');
     function getEta() {
-      var _a, _b;
+      var _a2, _b;
       const booth_position =
-        (_a = getQueuePosition()) == null ? void 0 : _a.textContent;
+        (_a2 = getQueuePosition()) == null ? void 0 : _a2.textContent;
       if (!booth_position) {
         return t('Eta.tooltip.notInQueue');
       }
@@ -5876,7 +5910,7 @@ var dubplus = (function () {
     `<li><div class="ac-image svelte-1pg7edp"><img class="svelte-1pg7edp"></div></li>`,
   );
   var root$8 = /* @__PURE__ */ template(
-    `<div class="ac-preview-container svelte-1pg7edp"><div class="ac-header svelte-1pg7edp"> </div> <ul id="autocomplete-preview" class="svelte-1pg7edp"></ul> <span class="ac-text-preview svelte-1pg7edp"> </span></div>`,
+    `<div><div class="ac-header svelte-1pg7edp"> </div> <ul id="autocomplete-preview" class="svelte-1pg7edp"></ul> <span class="ac-text-preview svelte-1pg7edp"> </span></div>`,
   );
   function EmojiPreview($$anchor, $$props) {
     push($$props, true);
@@ -5901,6 +5935,7 @@ var dubplus = (function () {
       inputEl.focus();
     }
     var div = root$8();
+    let classes;
     var div_1 = child(div);
     var text_1 = child(div_1);
     var ul = sibling(div_1, 2);
@@ -5915,20 +5950,31 @@ var dubplus = (function () {
         let platform = () => get($$item).platform;
         let alt = () => get($$item).alt;
         var li = root_1();
+        let classes_1;
         li.__click = () => handleClick2(get(i));
         var div_2 = child(li);
         var img = child(div_2);
-        template_effect(() => {
-          set_class(
-            li,
-            `${`preview-item ${platform()}-previews` ?? ''} svelte-1pg7edp`,
-          );
-          set_attribute(li, 'title', text2());
-          toggle_class(li, 'selected', get(i) === emojiState.selectedIndex);
-          set_attribute(img, 'src', src());
-          set_attribute(img, 'alt', alt());
-          set_attribute(img, 'title', alt());
-        });
+        template_effect(
+          ($0) => {
+            classes_1 = set_class(
+              li,
+              1,
+              `preview-item ${platform()}-previews`,
+              'svelte-1pg7edp',
+              classes_1,
+              $0,
+            );
+            set_attribute(li, 'title', text2());
+            set_attribute(img, 'src', src());
+            set_attribute(img, 'alt', alt());
+            set_attribute(img, 'title', alt());
+          },
+          [
+            () => ({
+              selected: get(i) === emojiState.selectedIndex,
+            }),
+          ],
+        );
         append($$anchor2, li);
       },
     );
@@ -5941,18 +5987,28 @@ var dubplus = (function () {
       () => ({ to: CHAT_INPUT_CONTAINER, position: 'prepend' }),
     );
     template_effect(
-      ($0) => {
-        var _a;
-        toggle_class(div, 'ac-show', emojiState.emojiList.length > 0);
-        set_text(text_1, $0);
+      ($0, $1) => {
+        var _a2;
+        classes = set_class(
+          div,
+          1,
+          'ac-preview-container svelte-1pg7edp',
+          null,
+          classes,
+          $0,
+        );
+        set_text(text_1, $1);
         set_text(
           text_2,
-          (_a = emojiState.emojiList[emojiState.selectedIndex]) == null
+          (_a2 = emojiState.emojiList[emojiState.selectedIndex]) == null
             ? void 0
-            : _a.text,
+            : _a2.text,
         );
       },
-      [() => t('autocomplete.preview.select')],
+      [
+        () => ({ 'ac-show': emojiState.emojiList.length > 0 }),
+        () => t('autocomplete.preview.select'),
+      ],
     );
     append($$anchor, div);
     pop();
@@ -5964,7 +6020,7 @@ var dubplus = (function () {
   );
   var root_3 = /* @__PURE__ */ template(`<li><!></li>`);
   var root$7 = /* @__PURE__ */ template(
-    `<div role="none"><ul id="dubinfo-preview" class="dubinfo-show svelte-ujv5bp"><!></ul></div>`,
+    `<div role="none"><ul id="dubinfo-preview"><!></ul></div>`,
   );
   function DubsInfo($$anchor, $$props) {
     push($$props, true);
@@ -5973,9 +6029,9 @@ var dubplus = (function () {
     let positionBottom = state(0);
     let display = state('none');
     function getTarget() {
-      var _a, _b;
+      var _a2, _b;
       if ($$props.dubType === 'updub') {
-        return (_a = getDubUp()) == null ? void 0 : _a.parentElement;
+        return (_a2 = getDubUp()) == null ? void 0 : _a2.parentElement;
       } else if ($$props.dubType === 'downdub') {
         return (_b = getDubDown()) == null ? void 0 : _b.parentElement;
       } else if ($$props.dubType === 'grab') {
@@ -6035,6 +6091,7 @@ var dubplus = (function () {
     }
     var div = root$7();
     var ul = child(div);
+    let classes;
     var node = child(ul);
     {
       var consequent = ($$anchor2) => {
@@ -6064,7 +6121,7 @@ var dubplus = (function () {
         );
         append($$anchor2, fragment);
       };
-      var alternate_1 = ($$anchor2) => {
+      var alternate = ($$anchor2) => {
         var li_1 = root_3();
         var node_2 = child(li_1);
         {
@@ -6076,7 +6133,7 @@ var dubplus = (function () {
             );
             append($$anchor3, text_1);
           };
-          var alternate = ($$anchor3) => {
+          var alternate_1 = ($$anchor3) => {
             var text_2 = text();
             template_effect(
               ($0) => set_text(text_2, $0),
@@ -6087,14 +6144,14 @@ var dubplus = (function () {
           if_block(node_2, ($$render) => {
             if ($$props.dubType === 'updub' || $$props.dubType === 'downdub')
               $$render(consequent_1);
-            else $$render(alternate, false);
+            else $$render(alternate_1, false);
           });
         }
         append($$anchor2, li_1);
       };
       if_block(node, ($$render) => {
         if (get(dubData).length > 0) $$render(consequent);
-        else $$render(alternate_1, false);
+        else $$render(alternate, false);
       });
     }
     action(
@@ -6103,19 +6160,34 @@ var dubplus = (function () {
         teleport == null ? void 0 : teleport($$node, $$action_arg),
       () => ({ to: 'body' }),
     );
-    template_effect(() => {
-      set_attribute(div, 'id', `dubplus-${$$props.dubType}s-container`);
-      set_class(
-        div,
-        `${`dubplus-dubs-container dubplus-${$$props.dubType}s-container` ?? ''} svelte-ujv5bp`,
-      );
-      set_attribute(
-        div,
-        'style',
-        `bottom: ${get(positionBottom)}px; right: ${get(positionRight)}px; display: ${get(display)};`,
-      );
-      toggle_class(ul, 'dubplus-no-dubs', get(dubData).length === 0);
-    });
+    template_effect(
+      ($0) => {
+        set_attribute(div, 'id', `dubplus-${$$props.dubType}s-container`);
+        set_class(
+          div,
+          1,
+          `dubplus-dubs-container dubplus-${$$props.dubType}s-container`,
+          'svelte-ujv5bp',
+        );
+        set_style(
+          div,
+          `bottom: ${get(positionBottom)}px; right: ${get(positionRight)}px; display: ${get(display)};`,
+        );
+        classes = set_class(
+          ul,
+          1,
+          'dubinfo-show svelte-ujv5bp',
+          null,
+          classes,
+          $0,
+        );
+      },
+      [
+        () => ({
+          'dubplus-no-dubs': get(dubData).length === 0,
+        }),
+      ],
+    );
     event('mouseleave', div, () => set(display, 'none'));
     append($$anchor, div);
     pop();
@@ -6129,12 +6201,12 @@ var dubplus = (function () {
     return document.getElementById('snow-container');
   }
   function getSnowAttributes() {
-    var _a;
+    var _a2;
     const snowWrapper = getSnowConatiner();
     snowflakesCount = Number(
-      ((_a = snowWrapper == null ? void 0 : snowWrapper.dataset) == null
+      ((_a2 = snowWrapper == null ? void 0 : snowWrapper.dataset) == null
         ? void 0
-        : _a.count) || snowflakesCount,
+        : _a2.count) || snowflakesCount,
     );
   }
   function generateSnow(snowDensity = 200) {
@@ -6242,8 +6314,8 @@ var dubplus = (function () {
     var li = root$5();
     var button = child(li);
     button.__click = function (...$$args) {
-      var _a;
-      (_a = $$props.onClick) == null ? void 0 : _a.apply(this, $$args);
+      var _a2;
+      (_a2 = $$props.onClick) == null ? void 0 : _a2.apply(this, $$args);
     };
     var node = child(button);
     component(
@@ -6256,13 +6328,17 @@ var dubplus = (function () {
     var span = sibling(node, 2);
     var text2 = child(span);
     template_effect(
-      ($0, $1) => {
+      ($0, $1, $2) => {
         set_attribute(li, 'id', $$props.id);
         set_attribute(li, 'title', $0);
-        set_attribute(button, 'aria-label', $0);
-        set_text(text2, $1);
+        set_attribute(button, 'aria-label', $1);
+        set_text(text2, $2);
       },
-      [() => t($$props.description), () => t($$props.label)],
+      [
+        () => t($$props.description),
+        () => t($$props.description),
+        () => t($$props.label),
+      ],
     );
     append($$anchor, li);
     pop();
@@ -6524,7 +6600,9 @@ var dubplus = (function () {
     template_effect(() => {
       set_class(
         button,
-        `${`${get(icon)} snooze-video-btn dubplus-btn-player` ?? ''} svelte-1va87zs`,
+        1,
+        `${get(icon)} snooze-video-btn dubplus-btn-player`,
+        'svelte-1va87zs',
       );
       set_attribute(button, 'aria-label', get(tooltip));
       set_attribute(button, 'data-dp-tooltip', get(tooltip));
@@ -6626,7 +6704,10 @@ var dubplus = (function () {
     author: 'DubPlus',
     license: 'MIT',
     homepage: 'https://dub.plus',
-    'lint-staged': { '*.{js,css,md,svelte,ts}': 'prettier --write' },
+    'lint-staged': {
+      '*.{css,md}': 'prettier --write',
+      '*.{js,svelte}': 'prettier --write && eslint src',
+    },
   };
   function DubPlus($$anchor, $$props) {
     push($$props, true);
@@ -6659,9 +6740,9 @@ var dubplus = (function () {
         set(status, 'ready');
       })
       .catch(() => {
-        var _a, _b;
+        var _a2, _b;
         if (
-          !((_b = (_a = window.QueUp) == null ? void 0 : _a.session) == null
+          !((_b = (_a2 = window.QueUp) == null ? void 0 : _a2.session) == null
             ? void 0
             : _b.id)
         ) {
@@ -6691,30 +6772,27 @@ var dubplus = (function () {
       var consequent = ($$anchor2) => {
         Loading($$anchor2, {});
       };
-      var alternate_1 = ($$anchor2) => {
-        var fragment_2 = comment();
-        var node_1 = first_child(fragment_2);
+      var alternate = ($$anchor2, $$elseif) => {
         {
           var consequent_1 = ($$anchor3) => {
             Menu($$anchor3, {});
           };
-          var alternate = ($$anchor3) => {
+          var alternate_1 = ($$anchor3) => {
             Modal($$anchor3, {});
           };
           if_block(
-            node_1,
+            $$anchor2,
             ($$render) => {
               if (get(status) === 'ready') $$render(consequent_1);
-              else $$render(alternate, false);
+              else $$render(alternate_1, false);
             },
-            true,
+            $$elseif,
           );
         }
-        append($$anchor2, fragment_2);
       };
       if_block(node, ($$render) => {
         if (get(status) === 'loading') $$render(consequent);
-        else $$render(alternate_1, false);
+        else $$render(alternate, false);
       });
     }
     append($$anchor, fragment);
