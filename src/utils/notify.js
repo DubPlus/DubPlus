@@ -1,4 +1,3 @@
-/* global Dubtrack */
 import { updateModalState } from '../lib/stores/modalState.svelte';
 import { activeTabState } from '../lib/stores/activeTabState.svelte';
 import { t } from '../lib/stores/i18n.svelte';

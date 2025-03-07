@@ -2,7 +2,7 @@
   import MenuHeader from '../menu/MenuHeader.svelte';
   import MenuSection from '../menu/MenuSection.svelte';
   import MenuItem from '../menu/MenuSwitch.svelte';
-  import { saveSetting, settings } from '../stores/settings.svelte';
+  import { saveSetting } from '../stores/settings.svelte';
   import { userInterface } from '../modules';
   import { t } from '../stores/i18n.svelte';
   import MenuAction from '../menu/MenuAction.svelte';
@@ -10,7 +10,7 @@
 
 <MenuHeader settingsId="user-interface" name={t('user-interface.title')} />
 <MenuSection settingsId="user-interface">
-  {#each userInterface as module}
+  {#each userInterface as module (module.id)}
     {#if module.altIcon}
       <MenuAction
         id={module.id}

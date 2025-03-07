@@ -9,6 +9,7 @@ export function getCurrentBranch() {
       .trim()
       .replace('refs/heads/', '');
   } catch (error) {
+    console.log('Error getting current branch:', error);
     return '';
   }
 }

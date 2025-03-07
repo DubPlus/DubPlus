@@ -109,7 +109,7 @@
     class:dubplus-no-dubs={dubData.length === 0}
   >
     {#if dubData.length > 0}
-      {#each dubData as dub}
+      {#each dubData as dub (dub.userid)}
         <li class="preview-dubinfo-item users-previews">
           <div class="dubinfo-image">
             <img src={userImage(dub.userid)} alt="User Avatar" />

@@ -84,25 +84,25 @@ function updateDowndubs(downdubs) {
   });
 }
 
-/**
- * @param {Array<{ userid: string}>} grabs
- */
-function updateGrabs(grabs) {
-  grabs.forEach((grab) => {
-    if (dubsState.grabs.find((el) => el.userid === grab.userid)) {
-      return;
-    }
+// /**
+//  * @param {Array<{ userid: string}>} grabs
+//  */
+// function updateGrabs(grabs) {
+//   grabs.forEach((grab) => {
+//     if (dubsState.grabs.find((el) => el.userid === grab.userid)) {
+//       return;
+//     }
 
-    getUserName(grab.userid)
-      .then((username) => {
-        dubsState.grabs.push({
-          userid: grab.userid,
-          username,
-        });
-      })
-      .catch((error) => logError('Failed to get username for grab', error));
-  });
-}
+//     getUserName(grab.userid)
+//       .then((username) => {
+//         dubsState.grabs.push({
+//           userid: grab.userid,
+//           username,
+//         });
+//       })
+//       .catch((error) => logError('Failed to get username for grab', error));
+//   });
+// }
 
 function resetDubs() {
   dubsState.downDubs = [];

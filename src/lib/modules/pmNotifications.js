@@ -41,7 +41,7 @@ export const pmNotifications = {
       .then(() => {
         window.QueUp.Events.bind(NEW_PM_MESSAGE, pmNotify);
       })
-      .catch((err) => {
+      .catch(() => {
         // turn back off until it's granted
         settings.options[this.id] = false;
       });
