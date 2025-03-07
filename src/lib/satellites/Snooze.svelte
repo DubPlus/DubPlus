@@ -1,5 +1,7 @@
 <script>
+  import { PLAYLIST_UPDATE } from '../../events-constants';
   import { teleport } from '../actions/teleport.svelte';
+  import { PLAYER_SHARING_CONTAINER } from '../queup.ui';
   import { t } from '../stores/i18n.svelte';
 
   let tooltip = $state(t('Snooze.tooltip'));
@@ -47,15 +49,13 @@
       eventUtils.snoozed = true;
       // setup event listener for song advance to restore volume
       // when the song changes
-      window.QueUp.Events.once(
-        'realtime:room_playlist-update',
-        eventSongAdvance,
-      );
+      window.QueUp.Events.once(PLAYLIST_UPDATE, eventSongAdvance);
     } else if (eventUtils.snoozed) {
       tooltip = t('Snooze.tooltip');
       window.QueUp.room.player.setVolume(eventUtils.currentVol);
       window.QueUp.room.player.updateVolumeBar();
       eventUtils.snoozed = false;
+      window.QueUp.Events.unbind(PLAYLIST_UPDATE, eventSongAdvance);
     }
   }
 </script>
