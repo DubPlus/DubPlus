@@ -9,7 +9,7 @@
 
 <MenuHeader settingsId="general" name={t('general.title')} />
 <MenuSection settingsId="general">
-  {#each general as module}
+  {#each general as module (module.id)}
     <MenuSwitch
       id={module.id}
       label={module.label}

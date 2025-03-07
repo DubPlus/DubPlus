@@ -189,7 +189,7 @@ export const dubplus_emoji = {
           if (typeof parsed.error !== 'undefined') {
             return true;
           }
-        } catch (e) {
+        } catch {
           // if we can't parse the data then we should update
           return true;
         }
@@ -305,7 +305,8 @@ export const dubplus_emoji = {
     }
     logInfo('tasty', 'loading from api');
     // since we control this API we should always have it load from remote
-    // @ts-ignore
+    // @ts-ignore __SRC_ROOT__ is replaced by vite
+    // eslint-disable-next-line no-undef
     return fetch(`${__SRC_ROOT__}/emotes/tastyemotes.json`)
       .then((res) => res.json())
       .then((json) => {

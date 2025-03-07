@@ -12,10 +12,8 @@ import { settings } from '../stores/settings.svelte';
  * examples:
  * if you want to be notified when you're next you would use position 1.
  * if you want to be notified when you started playing you would use position 0.
- * @param {{startTime: number}} e
- * @returns
  */
-function djNotificationCheck(e) {
+function djNotificationCheck() {
   // check if user is in the queue. One easy but kinda hacky way to do this is
   // to check the DOM for the queue position element to have a number
   const isInQueue = !!getQueuePosition()?.textContent;

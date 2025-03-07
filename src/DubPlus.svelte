@@ -8,6 +8,7 @@
   import { onMount, onDestroy } from 'svelte';
 
   // @ts-ignore __PKGINFO__ is injected by the build process
+  // eslint-disable-next-line no-undef
   window.dubplus = Object.assign(window.dubplus || {}, __PKGINFO__);
 
   /** @type {"loading" | "ready" | "loggedout" | "error"} */

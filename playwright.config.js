@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 
 // TODO: right now we're testing against the mock queup site.
 // Ideally it would be nice to test against the real queup site.

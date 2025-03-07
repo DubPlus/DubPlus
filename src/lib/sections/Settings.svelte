@@ -15,7 +15,7 @@
 
 <MenuHeader settingsId="settings" name={t('settings.title')} />
 <MenuSection settingsId="settings">
-  {#each settingsModules as module}
+  {#each settingsModules as module (module.id)}
     <MenuItem
       id={module.id}
       label={module.label}

@@ -2,14 +2,14 @@
   import MenuHeader from '../menu/MenuHeader.svelte';
   import MenuSection from '../menu/MenuSection.svelte';
   import MenuSwitch from '../menu/MenuSwitch.svelte';
-  import { saveSetting, settings } from '../stores/settings.svelte';
+  import { saveSetting } from '../stores/settings.svelte';
   import { customize } from '../modules';
   import { t } from '../stores/i18n.svelte';
 </script>
 
 <MenuHeader settingsId="customize" name={t('customize.title')} />
 <MenuSection settingsId="customize">
-  {#each customize as module}
+  {#each customize as module (module.id)}
     <MenuSwitch
       id={module.id}
       label={module.label}
