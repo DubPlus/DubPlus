@@ -1,3 +1,5 @@
+import { getChatContainer, getChatInput } from '../lib/queup.ui';
+
 /**
  * This inserts a chat message row into the chat.
  * @param {string} className
@@ -23,7 +25,7 @@ export function insertQueupChat(className, textContent) {
   text.className = 'text';
   text.textContent = textContent;
   li.appendChild(text);
-  document.querySelector('ul.chat-main').appendChild(li);
+  getChatContainer().appendChild(li);
 }
 
 /**
@@ -32,10 +34,7 @@ export function insertQueupChat(className, textContent) {
  * @param {string} message
  */
 export function sendChatMessage(message) {
-  /**
-   * @type {HTMLInputElement}
-   */
-  const chatInput = document.querySelector('#chat-txt-message');
+  const chatInput = getChatInput();
   // store original message
   const messageOriginal = chatInput.value;
   chatInput.value = message;

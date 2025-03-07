@@ -1,6 +1,7 @@
 import { PLAYLIST_UPDATE } from '../../events-constants';
 import { logError, logInfo } from '../../utils/logger';
 import { showNotification } from '../../utils/notify';
+import { getQueuePosition } from '../queup.ui';
 import { t } from '../stores/i18n.svelte';
 import { settings } from '../stores/settings.svelte';
 
@@ -17,16 +18,13 @@ import { settings } from '../stores/settings.svelte';
 function djNotificationCheck(e) {
   // check if user is in the queue. One easy but kinda hacky way to do this is
   // to check the DOM for the queue position element to have a number
-  const isInQueue = !!document.querySelector('.queue-position')?.textContent;
+  const isInQueue = !!getQueuePosition()?.textContent;
   if (!isInQueue) {
     // if the user is NOT in the queue then we don't need to do anything
     return;
   }
 
-  const currentPosition = parseInt(
-    document.querySelector('.queue-position')?.textContent,
-    10,
-  );
+  const currentPosition = parseInt(getQueuePosition()?.textContent, 10);
   if (isNaN(currentPosition)) {
     // this is important. if we can't parse it then we can't do anything
     logError(

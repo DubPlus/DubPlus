@@ -1,5 +1,10 @@
 <script>
   import { teleport } from '../actions/teleport.svelte';
+  import {
+    getQueuePosition,
+    getCurrentSongMinutes,
+    PLAYER_SHARING_CONTAINER,
+  } from '../queup.ui';
   import { t } from '../stores/i18n.svelte';
 
   let eta = $state('ETA');
@@ -8,8 +13,7 @@
    * @returns {string}
    */
   function getEta() {
-    const booth_position =
-      document.querySelector('.queue-position')?.textContent;
+    const booth_position = getQueuePosition()?.textContent;
     if (!booth_position) {
       return t('Eta.tooltip.notInQueue');
     }
@@ -18,11 +22,7 @@
     const average_song_minutes = 4;
 
     // current_time is the minutes of the currently playing song
-    const current_time = parseInt(
-      document.querySelector(
-        '#player-controller div.left ul li.infoContainer.display-block div.currentTime span.min',
-      )?.textContent,
-    );
+    const current_time = parseInt(getCurrentSongMinutes()?.textContent);
 
     const position_in_queue = parseInt(booth_position);
 
@@ -40,7 +40,7 @@
 </script>
 
 <button
-  use:teleport={{ to: '.player_sharing' }}
+  use:teleport={{ to: PLAYER_SHARING_CONTAINER }}
   id="dubplus-eta"
   aria-label={eta}
   type="button"

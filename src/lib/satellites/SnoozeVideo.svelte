@@ -56,7 +56,7 @@
 </script>
 
 <button
-  use:teleport={{ to: '.player_sharing' }}
+  use:teleport={{ to: PLAYER_SHARING_CONTAINER }}
   id="dubplus-snooze-video"
   type="button"
   class={`${icon} snooze-video-btn dubplus-btn-player`}

@@ -1,6 +1,7 @@
 <script>
   import { teleport } from '../actions/teleport.svelte';
   import { insertEmote } from '../modules/autocomplete';
+  import { CHAT_INPUT_CONTAINER, getChatInput } from '../queup.ui';
   import { t } from '../stores/i18n.svelte';
   import { emojiState } from './emojiState.svelte';
 
@@ -25,16 +26,14 @@
    * @param {number} index
    */
   function handleClick(index) {
-    const inputEl = /**@type {HTMLTextAreaElement}*/ (
-      document.getElementById('chat-txt-message')
-    );
+    const inputEl = getChatInput();
     insertEmote(inputEl, index);
     inputEl.focus();
   }
 </script>
 
 <div
-  use:teleport={{ to: '.pusher-chat-widget-input', position: 'prepend' }}
+  use:teleport={{ to: CHAT_INPUT_CONTAINER, position: 'prepend' }}
   class="ac-preview-container"
   class:ac-show={emojiState.emojiList.length > 0}
 >

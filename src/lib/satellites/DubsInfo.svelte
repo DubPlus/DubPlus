@@ -5,6 +5,12 @@
   import { getDubCount } from '../stores/dubsState.svelte';
   import { logError } from '../../utils/logger.js';
   import { t } from '../stores/i18n.svelte.js';
+  import {
+    getAddToPlaylist,
+    getChatInput,
+    getDubDown,
+    getDubUp,
+  } from '../queup.ui.js';
 
   /**
    * @typedef {object} DubsInfoProps
@@ -23,11 +29,11 @@
 
   function getTarget() {
     if (dubType === 'updub') {
-      return document.querySelector('.dubup')?.parentElement;
+      return getDubUp()?.parentElement;
     } else if (dubType === 'downdub') {
-      return document.querySelector('.dubdown')?.parentElement;
+      return getDubDown()?.parentElement;
     } else if (dubType === 'grab') {
-      return document.querySelector('.add-to-playlist');
+      return getAddToPlaylist();
     }
     return null;
   }
@@ -83,9 +89,7 @@
    * @param {string} username
    */
   function handleClick(username) {
-    const chatInput = /**@type {HTMLInputElement}*/ (
-      document.querySelector('#chat-txt-message')
-    );
+    const chatInput = getChatInput();
     chatInput.value = `${chatInput.value}@${username} `.trimStart();
     chatInput.focus();
   }
