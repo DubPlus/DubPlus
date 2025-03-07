@@ -15,6 +15,7 @@
   import Settings from '../sections/Settings.svelte';
   import Customize from '../sections/Customize.svelte';
   import SnoozeVideo from '../satellites/SnoozeVideo.svelte';
+  import pkg from '../../../package.json';
 
   onMount(() => {
     document.querySelector('html').classList.add('dubplus');
@@ -42,14 +43,16 @@
 {/if}
 
 <!-- this is the main menu -->
-<section class="dubplus-menu">
-  <p class="dubplus-menu-header">{t('Menu.title')}</p>
+<aside class="dubplus-menu">
+  <p class="dubplus-menu-header">
+    {t('Menu.title')} <span class="version">v{pkg.version}</span>
+  </p>
   <General />
   <UserInterface />
   <Settings />
   <Customize />
   <Contact />
-</section>
+</aside>
 
 <!-- One Modal that is controlled via the modalState -->
 <Modal />
@@ -85,10 +88,19 @@
     border-bottom: 1px solid #222;
     font-size: 1.2em;
     color: #ccc;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   /* this is toggled in MenuIcon component */
   .dubplus-menu:global(.dubplus-menu-open) {
     transform: translate3d(0, 0, 0);
+  }
+
+  .version {
+    font-size: 0.8em;
+    color: #666;
   }
 </style>
