@@ -7,7 +7,7 @@ var dubplus = (function () {
     | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
     | ##  | ##| ##  | ##| ##  | ##   | ##   
     | #######/|  ######/| #######/   |__/   
-    |_______/  ______/ |_______/           
+    |_______/  \______/ |_______/           
                                             
                                             
     https://github.com/DubPlus/DubPlus
@@ -1240,13 +1240,13 @@ var dubplus = (function () {
   function remove_reaction(signal, dependency) {
     let reactions = dependency.reactions;
     if (reactions !== null) {
-      var index2 = index_of.call(reactions, signal);
-      if (index2 !== -1) {
+      var index = index_of.call(reactions, signal);
+      if (index !== -1) {
         var new_length = reactions.length - 1;
         if (new_length === 0) {
           reactions = dependency.reactions = null;
         } else {
-          reactions[index2] = reactions[new_length];
+          reactions[index] = reactions[new_length];
           reactions.pop();
         }
       }
@@ -1984,9 +1984,6 @@ var dubplus = (function () {
       }
     }, flags);
   }
-  function index(_, i) {
-    return i;
-  }
   function pause_effects(state2, items, controlled_anchor, items_map) {
     var transitions = [];
     var length = items.length;
@@ -2239,7 +2236,7 @@ var dubplus = (function () {
     active_effect.first = state2.first && state2.first.e;
     active_effect.last = prev && prev.e;
   }
-  function update_item(item, value, index2, type) {
+  function update_item(item, value, index, type) {
     if ((type & EACH_ITEM_REACTIVE) !== 0) {
       internal_set(item.v, value);
     }
@@ -2247,10 +2244,10 @@ var dubplus = (function () {
       internal_set(
         /** @type {Value<number>} */
         item.i,
-        index2,
+        index,
       );
     } else {
-      item.i = index2;
+      item.i = index;
     }
   }
   function create_item(
@@ -2260,7 +2257,7 @@ var dubplus = (function () {
     next,
     value,
     key,
-    index2,
+    index,
     render_fn,
     flags,
     get_collection,
@@ -2272,7 +2269,7 @@ var dubplus = (function () {
         ? /* @__PURE__ */ mutable_source(value)
         : source(value)
       : value;
-    var i = (flags & EACH_INDEX_REACTIVE) === 0 ? index2 : source(index2);
+    var i = (flags & EACH_INDEX_REACTIVE) === 0 ? index : source(index);
     var item = {
       i,
       v,
@@ -3931,7 +3928,7 @@ var dubplus = (function () {
             if (typeof parsed.error !== 'undefined') {
               return true;
             }
-          } catch (e) {
+          } catch {
             return true;
           }
         }
@@ -4022,7 +4019,7 @@ var dubplus = (function () {
       }
       logInfo('tasty', 'loading from api');
       return fetch(
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}/emotes/tastyemotes.json`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@update-packages'}/emotes/tastyemotes.json`,
       )
         .then((res) => res.json())
         .then((json) => {
@@ -4279,8 +4276,8 @@ var dubplus = (function () {
   function setEmojiList(listArray) {
     emojiState.emojiList = listArray
       .filter(
-        (emoji, index2, self) =>
-          index2 ===
+        (emoji, index, self) =>
+          index ===
           self.findIndex(
             (e) => e.src === emoji.src && e.platform === emoji.platform,
           ),
@@ -4333,8 +4330,8 @@ var dubplus = (function () {
   const MIN_CHAR = 3;
   let acPreview = document.querySelector('#autocomplete-preview');
   let originalKeyDownEventHandler;
-  function insertEmote(inputEl, index2) {
-    const selected = emojiState.emojiList[index2];
+  function insertEmote(inputEl, index) {
+    const selected = emojiState.emojiList[index];
     const [start, end] = getSelection(inputEl.value, inputEl.selectionStart);
     const target = inputEl.value.substring(start, end);
     inputEl.value = inputEl.value.replace(target, `:${selected.text}:`);
@@ -4701,7 +4698,7 @@ var dubplus = (function () {
         .then(() => {
           window.QueUp.Events.bind(NEW_PM_MESSAGE, pmNotify);
         })
-        .catch((err) => {
+        .catch(() => {
           settings.options[this.id] = false;
         });
     },
@@ -4709,7 +4706,7 @@ var dubplus = (function () {
       window.QueUp.Events.unbind(NEW_PM_MESSAGE, pmNotify);
     },
   };
-  function djNotificationCheck(e) {
+  function djNotificationCheck() {
     var _a2, _b;
     const isInQueue = !!((_a2 = getQueuePosition()) == null
       ? void 0
@@ -5419,7 +5416,8 @@ var dubplus = (function () {
       const link2 = makeLink(
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1741323943312'}`,
+        // eslint-disable-next-line no-undef
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@update-packages'}${cssFile}?${'1741326323870'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5772,7 +5770,7 @@ var dubplus = (function () {
           node_2,
           1,
           () => general,
-          index,
+          (module) => module.id,
           ($$anchor3, module) => {
             MenuSwitch($$anchor3, {
               get id() {
@@ -5929,9 +5927,9 @@ var dubplus = (function () {
         }
       }
     });
-    function handleClick2(index2) {
+    function handleClick2(index) {
       const inputEl = getChatInput();
-      insertEmote(inputEl, index2);
+      insertEmote(inputEl, index);
       inputEl.focus();
     }
     var div = root$8();
@@ -6101,7 +6099,7 @@ var dubplus = (function () {
           node_1,
           17,
           () => get(dubData),
-          index,
+          (dub) => dub.userid,
           ($$anchor3, dub) => {
             var li = root_2$1();
             var div_1 = child(li);
@@ -6369,7 +6367,7 @@ var dubplus = (function () {
           node_2,
           1,
           () => userInterface,
-          index,
+          (module) => module.id,
           ($$anchor3, module) => {
             var fragment_2 = comment();
             var node_3 = first_child(fragment_2);
@@ -6467,7 +6465,7 @@ var dubplus = (function () {
           node_2,
           1,
           () => settingsModules,
-          index,
+          (module) => module.id,
           ($$anchor3, module) => {
             MenuSwitch($$anchor3, {
               get id() {
@@ -6526,7 +6524,7 @@ var dubplus = (function () {
           node_2,
           1,
           () => customize,
-          index,
+          (module) => module.id,
           ($$anchor3, module) => {
             MenuSwitch($$anchor3, {
               get id() {
@@ -6705,8 +6703,8 @@ var dubplus = (function () {
     license: 'MIT',
     homepage: 'https://dub.plus',
     'lint-staged': {
-      '*.{css,md}': 'prettier --write',
-      '*.{js,svelte}': 'prettier --write && eslint src',
+      '*.{css,md}': 'prettier --list-different --write',
+      '*.{js,svelte}': ['prettier --list-different --write', 'eslint'],
     },
   };
   function DubPlus($$anchor, $$props) {
