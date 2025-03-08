@@ -40,10 +40,9 @@ export const customBackground = {
     placeholder: 'custom-bg.modal.placeholder',
     maxlength: 500,
     validation(value) {
-      if (!value) {
-        // we allow blank value to remove the custom notification sound
-        return true;
-      }
+      // we can allow empty value which will just disable the feature
+      if (value.trim() === '') return true;
+
       if (!value.startsWith('http')) {
         return t('custom-bg.modal.validation');
       }

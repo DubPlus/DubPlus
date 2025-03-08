@@ -17,16 +17,26 @@
 
   const SNOOZE_CLASS = 'dubplus-snooze-video';
 
+  function revert() {
+    tooltip = t('SnoozeVideo.tooltip');
+    icon = 'icon-eye-blocked';
+    document.body.classList.remove(SNOOZE_CLASS);
+    window.QueUp.Events.unbind(PLAYLIST_UPDATE, eventSongAdvance);
+  }
+
   /**
    * Show the video again when the song changes
    * @param {{startTime: number}} e
    */
   function eventSongAdvance(e) {
+    // the reason we use e.startTime is because the PLAYLIST_UPDATE can be triggered
+    // when anything in the room's queue is updated, such as: a user joins the queue,
+    // a user leaves the queue, a user changes their song in the queue, a new song
+    // starts playing, etc.
+    // The startTime is the time of the song that is currently playing and so the lower
+    // the startTime, the more likely it is that the song has just started playing.
     if (e.startTime < 2) {
-      // remove css class that hides the video
-      document.body.classList.remove(SNOOZE_CLASS);
-      tooltip = t('SnoozeVideo.tooltip');
-      icon = 'icon-eye-blocked';
+      revert();
       return true;
     }
   }
@@ -39,14 +49,9 @@
       tooltip = t('SnoozeVideo.tooltip.undo');
       icon = 'icon-eye-unblocked';
       document.body.classList.add(SNOOZE_CLASS);
-      // setup event listener for song advance to restore video
-      // when the song changes
-      window.QueUp.Events.once(PLAYLIST_UPDATE, eventSongAdvance);
+      window.QueUp.Events.bind(PLAYLIST_UPDATE, eventSongAdvance);
     } else {
-      tooltip = t('SnoozeVideo.tooltip');
-      icon = 'icon-eye-blocked';
-      document.body.classList.remove(SNOOZE_CLASS);
-      window.QueUp.Events.unbind(PLAYLIST_UPDATE, eventSongAdvance);
+      revert();
     }
   }
 </script>

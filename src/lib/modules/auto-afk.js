@@ -11,7 +11,7 @@ state transitions:
 
 active -> idle
   - start timer
-	- if timer expires, enabled afk
+	- if timer expires, enable afk
 
 idle -> active
 	- stop timer
@@ -77,12 +77,14 @@ export const autoAfk = {
     defaultValue: '30',
     maxlength: 10,
     validation(value) {
+      // we can allow empty value which will just disable the feature
+      if (value.trim() === '') return true;
+
       const num = parseInt(value, 10);
-      if (isNaN(num) || num < 1) {
-        return t('auto-afk.modal.validation');
-      } else {
-        return true;
+      if (value.includes('.') || isNaN(num) || num < 1) {
+        return t(`auto-afk.modal.validation`);
       }
+      return true;
     },
   },
 };

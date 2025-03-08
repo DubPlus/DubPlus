@@ -19,18 +19,22 @@
     snoozed: false,
   };
 
+  function revert() {
+    window.QueUp.room.player.setVolume(eventUtils.currentVol);
+    window.QueUp.room.player.updateVolumeBar();
+    eventUtils.snoozed = false;
+    tooltip = t('Snooze.tooltip');
+    window.QueUp.Events.unbind(PLAYLIST_UPDATE, eventSongAdvance);
+  }
+
   /**
    * Unmute when the song changes
    * @param {{startTime: number}} e
    * @returns
    */
   function eventSongAdvance(e) {
-    if (e.startTime < 2) {
-      if (eventUtils.snoozed) {
-        window.QueUp.room.player.setVolume(eventUtils.currentVol);
-        eventUtils.snoozed = false;
-        tooltip = t('Snooze.tooltip');
-      }
+    if (e.startTime < 2 && eventUtils.snoozed) {
+      revert();
       return true;
     }
   }
@@ -49,13 +53,9 @@
       eventUtils.snoozed = true;
       // setup event listener for song advance to restore volume
       // when the song changes
-      window.QueUp.Events.once(PLAYLIST_UPDATE, eventSongAdvance);
+      window.QueUp.Events.bind(PLAYLIST_UPDATE, eventSongAdvance);
     } else if (eventUtils.snoozed) {
-      tooltip = t('Snooze.tooltip');
-      window.QueUp.room.player.setVolume(eventUtils.currentVol);
-      window.QueUp.room.player.updateVolumeBar();
-      eventUtils.snoozed = false;
-      window.QueUp.Events.unbind(PLAYLIST_UPDATE, eventSongAdvance);
+      revert();
     }
   }
 </script>

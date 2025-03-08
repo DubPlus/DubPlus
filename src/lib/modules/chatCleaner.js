@@ -39,7 +39,11 @@ export const chatCleaner = {
     placeholder: `${MODULE_ID}.modal.placeholder`,
     maxlength: 5,
     validation(val) {
-      if (/[^0-9]+/g.test(val)) {
+      // we can allow empty value which will just disable the feature
+      if (val.trim() === '') return true;
+
+      const num = parseInt(val, 10);
+      if (val.includes('.') || isNaN(num) || num < 1) {
         return t(`${MODULE_ID}.modal.validation`);
       }
       return true;

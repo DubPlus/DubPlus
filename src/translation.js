@@ -55,7 +55,7 @@ export const translations = {
     'auto-afk.modal.title': 'Auto AFK Timer',
     'auto-afk.modal.content':
       'Enter the amount of time, in minutes, before you are set to AFK.',
-    'auto-afk.modal.validation': 'Value must be a number greater than 0',
+    'auto-afk.modal.validation': 'Please enter a whole number greater than 0',
 
     'emotes.label': 'Emotes',
     'emotes.description': 'Adds Twitch, Bttv, and FrankerFacez emotes in chat.',
@@ -80,7 +80,8 @@ export const translations = {
     'chat-cleaner.modal.title': 'Chat Cleaner',
     'chat-cleaner.modal.content':
       'Please specify the number of most recent chat items that will remain in your chat history',
-    'chat-cleaner.modal.validation': 'Please enter a valid number',
+    'chat-cleaner.modal.validation':
+      'Please enter a whole number greater than, or equal to, 1',
     'chat-cleaner.modal.placeholder': '500',
 
     'mention-notifications.label': 'Notification on Mentions',
@@ -97,11 +98,12 @@ export const translations = {
       'Get a notification when you are coming up to be the DJ',
     'dj-notification.modal.title': 'DJ Notification',
     'dj-notification.modal.content':
-      'Please specify the position in queue you want to be notified at',
+      'Please specify the position in queue you want to be notified at. Use "0" to be notified when you start playing.',
     'dj-notification.notification.title': 'DJ Alert!',
     'dj-notification.notification.content':
       'You will be DJing shortly! Make sure your song is set!',
-    'dj-notification.modal.validation': 'Please enter a valid number',
+    'dj-notification.modal.validation':
+      'Please enter a whole number greater than, or equal to, 0',
 
     'dubs-hover.label': 'Show Dubs on Hover',
     'dubs-hover.description':
