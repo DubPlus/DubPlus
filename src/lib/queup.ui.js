@@ -37,6 +37,13 @@ export function getQueuePosition() {
 }
 
 /**
+ * @returns {HTMLSpanElement}
+ */
+export function getQueueTotal() {
+  return document.querySelector('.queue-total');
+}
+
+/**
  * @returns {HTMLIFrameElement}
  */
 export function getPlayerIframe() {

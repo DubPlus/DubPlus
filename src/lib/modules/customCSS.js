@@ -26,10 +26,9 @@ export const customCss = {
     placeholder: 'custom-css.modal.placeholder',
     maxlength: 500,
     validation(value) {
-      if (!value) {
-        // we allow blank value to remove the custom CSS
-        return true;
-      }
+      // we can allow empty value which will just disable the feature
+      if (value.trim() === '') return true;
+
       // basic validation that it's a url starting with http and ends with .css
       if (!/^http.+\.css$/.test(value)) {
         return t('custom-css.modal.validation');

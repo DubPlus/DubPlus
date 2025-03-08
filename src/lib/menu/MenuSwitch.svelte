@@ -1,7 +1,7 @@
 <script>
   import Switch from './Switch.svelte';
   import IconPencil from '../svg/IconPencil.svelte';
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { saveSetting, settings } from '../stores/settings.svelte';
   import { modalState, updateModalState } from '../stores/modalState.svelte';
   import { t } from '../stores/i18n.svelte';
@@ -12,8 +12,8 @@
    * @property {string} label
    * @property {string} description
    * @property {boolean} [modOnly]
-   * @property {(state: boolean, onMount?: boolean) => void} onToggle `onMount` is `true`
-   * when run from component onMount, `false` when run from a user action
+   * @property {() => void} turnOn runs when the switch is turned on
+   * @property {() => void} turnOff runs when the switch is turned off
    * @property {() => void} [init] always runs when the component mounts, whether
    * the switch is on or off
    * @property {import('../../global').ModalProps} [customize]
@@ -23,15 +23,22 @@
   /**
    * @type {MenuSwitchProps}
    */
-  let { id, label, description, customize, onToggle, init, modOnly } = $props();
+  let { id, label, description, customize, turnOn, turnOff, init, modOnly } =
+    $props();
 
   onMount(() => {
     if (init) init();
 
     if (settings.options[id]) {
       // check user mod status if this is a mod only feature
-      const status = modOnly ? isMod(window.QueUp.session.id) : true;
-      onToggle(status, true);
+      const allowed = modOnly ? isMod(window.QueUp.session.id) : true;
+      if (allowed) turnOn();
+    }
+  });
+
+  onDestroy(() => {
+    if (settings.options[id]) {
+      turnOff();
     }
   });
 
@@ -50,7 +57,8 @@
         // if the value is empty and there is no default value, then we
         // turn off the feature
         if (value.trim() === '' && !customize.defaultValue) {
-          onToggle(false);
+          saveSetting('option', id, false);
+          turnOff();
         }
 
         if (typeof customize.onConfirm === 'function') {
@@ -81,7 +89,12 @@
         openEditModal();
         return;
       }
-      onToggle(state);
+      saveSetting('option', id, state);
+      if (state) {
+        turnOn();
+      } else {
+        turnOff();
+      }
     }}
     optionId={id}
   />

@@ -18,10 +18,9 @@ export const customNotificationSound = {
     placeholder: 'custom-notification-sound.modal.placeholder',
     maxlength: 500,
     validation(value) {
-      if (!value) {
-        // we allow blank value to remove the custom notification sound
-        return true;
-      }
+      // we can allow empty value which will just disable the feature
+      if (value.trim() === '') return true;
+
       if (!window.soundManager.canPlayURL(value)) {
         return t('custom-notification-sound.modal.validation');
       }

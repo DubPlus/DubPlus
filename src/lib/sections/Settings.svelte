@@ -2,7 +2,7 @@
   import MenuHeader from '../menu/MenuHeader.svelte';
   import MenuSection from '../menu/MenuSection.svelte';
   import MenuItem from '../menu/MenuSwitch.svelte';
-  import { saveSetting, settings } from '../stores/settings.svelte';
+  import { settings } from '../stores/settings.svelte';
   import { settingsModules } from '../modules';
   import { t } from '../stores/i18n.svelte';
 
@@ -22,14 +22,8 @@
       description={module.description}
       init={module.init}
       customize={module.custom}
-      onToggle={(on, onMount) => {
-        if (on) module.turnOn();
-        else module.turnOff();
-
-        if (!onMount) {
-          saveSetting('option', module.id, on);
-        }
-      }}
+      turnOn={module.turnOn}
+      turnOff={module.turnOff}
     />
   {/each}
 </MenuSection>
