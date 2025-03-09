@@ -53,14 +53,19 @@
   <div class="dp-modal--buttons buttons">
     {#if typeof modalState.onConfirm === 'function'}
       <button
+        class="dp-modal--cancel cancel"
         onclick={() => {
           dialog.close();
           modalState.open = false;
           errorMessage = '';
+          if (typeof modalState.onCancel === 'function') {
+            modalState.onCancel();
+          }
         }}
-        class="dp-modal--cancel cancel">{t('Modal.cancel')}</button
-      >
+        >{t('Modal.cancel')}
+      </button>
       <button
+        class="dp-modal--confirm confirm"
         onclick={() => {
           const isValidOrErrorMessage = modalState.validation(modalState.value);
           if (isValidOrErrorMessage === true) {
@@ -72,7 +77,6 @@
             errorMessage = isValidOrErrorMessage;
           }
         }}
-        class="dp-modal--confirm confirm"
         >{t('Modal.confirm')}
       </button>
     {:else}
