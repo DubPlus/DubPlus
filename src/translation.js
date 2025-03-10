@@ -63,7 +63,11 @@ export const translations = {
     'autocomplete.label': 'Autocomplete Emoji',
     'autocomplete.description':
       'Toggle autocompleting emojis and emotes. Shows a preview box in the chat',
-    'autocomplete.preview.select': 'press enter or tab to select',
+    'autocomplete.preview.a11y':
+      'press up and down to navigate, press enter or tab to select, press esc to close',
+    'autocomplete.preview.navigate': 'navigate',
+    'autocomplete.preview.select': 'select',
+    'autocomplete.preview.close': 'close',
 
     'custom-mentions.label': 'Custom Mentions',
     'custom-mentions.description':
