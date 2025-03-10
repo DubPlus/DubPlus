@@ -2907,12 +2907,6 @@ var dubplus = (function () {
   function t(key, vars = {}) {
     return translate(locale.current, key, vars);
   }
-  function normalizeLocale(loc) {
-    if (loc.startsWith('en')) {
-      return 'en';
-    }
-    return loc;
-  }
   var root$q = /* @__PURE__ */ template(
     `<div class="dubplus-waiting svelte-16mmbc"><div style="width: 26px; margin-right:5px"><!></div> <span style="flex: 1;"> </span></div>`,
   );
@@ -5467,7 +5461,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta-fix'}${cssFile}?${'1741493024293'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta-fix'}${cssFile}?${'1741568573419'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -6761,16 +6755,6 @@ var dubplus = (function () {
       define_PKGINFO_default,
     );
     let status = state('loading');
-    function setLocale() {
-      locale.current = normalizeLocale(navigator.language || 'en');
-    }
-    onMount(() => {
-      setLocale();
-      window.addEventListener('languagechange', setLocale);
-    });
-    onDestroy(() => {
-      window.removeEventListener('languagechange', setLocale);
-    });
     const checkList = [
       'QueUp.session.id',
       'QueUp.room.chat',
