@@ -2740,7 +2740,7 @@ var dubplus = (function () {
       'SnoozeVideo.tooltip.undo': 'Cancel hiding video for current song',
       'Notifcation.permission.title': 'Desktop Notification',
       'Notification.permission.denied':
-        'You have dismissed or chosen to deny the request to allow desktop notifications. Reset this choice by clearing your cache for the site.',
+        "You have dismissed, or chosen to deny, the request to allow desktop notifications. If you change your mind, you will need to reset this in your browser's site settings.",
       'Notification.permission.notSupported':
         'Sorry this browser does not support desktop notifications.  Please update your browser to the lastest version',
       'Menu.title': 'Dub+ Options',
@@ -2952,12 +2952,8 @@ var dubplus = (function () {
     modalState.placeholder = nextState.placeholder || '';
     modalState.defaultValue = nextState.defaultValue;
     modalState.maxlength = nextState.maxlength || 999;
-    modalState.onConfirm =
-      nextState.onConfirm ||
-      (() => {
-        return true;
-      });
-    modalState.onCancel = nextState.onCancel || (() => {});
+    modalState.onConfirm = nextState.onConfirm;
+    modalState.onCancel = nextState.onCancel;
     modalState.validation = nextState.validation || (() => true);
   }
   var root_1$3 = /* @__PURE__ */ template(
@@ -5461,7 +5457,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta-fix'}${cssFile}?${'1741568573419'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta-fix'}${cssFile}?${'1741568745647'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;

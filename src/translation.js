@@ -20,7 +20,7 @@ export const translations = {
 
     'Notifcation.permission.title': 'Desktop Notification',
     'Notification.permission.denied':
-      'You have dismissed or chosen to deny the request to allow desktop notifications. Reset this choice by clearing your cache for the site.',
+      "You have dismissed, or chosen to deny, the request to allow desktop notifications. If you change your mind, you will need to reset this in your browser's site settings.",
     'Notification.permission.notSupported':
       'Sorry this browser does not support desktop notifications.  Please update your browser to the lastest version',
 

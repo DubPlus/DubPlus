@@ -29,11 +29,7 @@ export function updateModalState(nextState) {
   modalState.placeholder = nextState.placeholder || '';
   modalState.defaultValue = nextState.defaultValue;
   modalState.maxlength = nextState.maxlength || 999;
-  modalState.onConfirm =
-    nextState.onConfirm ||
-    (() => {
-      return true;
-    });
-  modalState.onCancel = nextState.onCancel || (() => {});
+  modalState.onConfirm = nextState.onConfirm;
+  modalState.onCancel = nextState.onCancel;
   modalState.validation = nextState.validation || (() => true);
 }
