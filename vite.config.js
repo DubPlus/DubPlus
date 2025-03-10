@@ -56,6 +56,7 @@ const dubsResponse = {
 
 function getCdnRoot() {
   const currentBranch = getCurrentBranch();
+  console.log('currentBranch:', currentBranch);
   if (currentBranch) {
     return `https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@${currentBranch}`;
   } else {
