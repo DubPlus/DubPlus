@@ -2741,6 +2741,7 @@ var dubplus = (function () {
       'Notifcation.permission.title': 'Desktop Notification',
       'Notification.permission.denied':
         "You have dismissed, or chosen to deny, the request to allow desktop notifications. If you change your mind, you will need to reset this in your browser's site settings.",
+
       'Notification.permission.notSupported':
         'Sorry this browser does not support desktop notifications.  Please update your browser to the lastest version',
       'Menu.title': 'Dub+ Options',
@@ -3067,9 +3068,6 @@ var dubplus = (function () {
           dialog.close();
           modalState.open = false;
           set(errorMessage, '');
-          if (typeof modalState.onCancel === 'function') {
-            modalState.onCancel();
-          }
         };
         var text_5 = child(button);
         var button_1 = sibling(button, 2);
