@@ -23,9 +23,12 @@ export function reset() {
 
 /**
  * @param {Emoji[]} listArray
+ * @param {string} searchStr
  */
-export function setEmojiList(listArray) {
+export function setEmojiList(listArray, searchStr) {
   // make listArray unique by emoji.src and emoji.platform
+  const platforms = ['emojify', 'twitch', 'bttv', 'ffz', 'tasty'];
+
   emojiState.emojiList = listArray
     .filter(
       (emoji, index, self) =>
@@ -36,12 +39,21 @@ export function setEmojiList(listArray) {
     )
     .sort((a, b) => {
       // sort by platform in the following order: emojify, twitch, bttv, ffz, tasty
-      // then sort by text ascending
-      const platforms = ['emojify', 'twitch', 'bttv', 'ffz', 'tasty'];
+      // then special sort by giving priority to words that start with the search string
+      // then finally sort by text alphabetically ascending
       const platformA = platforms.indexOf(a.platform);
       const platformB = platforms.indexOf(b.platform);
       if (platformA === platformB) {
-        return a.text.localeCompare(b.text);
+        if (a.text.startsWith(searchStr) && !b.text.startsWith(searchStr)) {
+          return -1;
+        } else if (
+          !a.text.startsWith(searchStr) &&
+          b.text.startsWith(searchStr)
+        ) {
+          return 1;
+        } else {
+          return a.text.localeCompare(b.text);
+        }
       }
       return platformA - platformB;
     });

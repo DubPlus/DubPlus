@@ -2740,7 +2740,8 @@ var dubplus = (function () {
       'SnoozeVideo.tooltip.undo': 'Cancel hiding video for current song',
       'Notifcation.permission.title': 'Desktop Notification',
       'Notification.permission.denied':
-        'You have dismissed or chosen to deny the request to allow desktop notifications. Reset this choice by clearing your cache for the site.',
+        "You have dismissed, or chosen to deny, the request to allow desktop notifications. If you change your mind, you will need to reset this in your browser's site settings.",
+
       'Notification.permission.notSupported':
         'Sorry this browser does not support desktop notifications.  Please update your browser to the lastest version',
       'Menu.title': 'Dub+ Options',
@@ -2775,7 +2776,11 @@ var dubplus = (function () {
       'autocomplete.label': 'Autocomplete Emoji',
       'autocomplete.description':
         'Toggle autocompleting emojis and emotes. Shows a preview box in the chat',
-      'autocomplete.preview.select': 'press enter or tab to select',
+      'autocomplete.preview.a11y':
+        'press up and down to navigate, press enter or tab to select, press esc to close',
+      'autocomplete.preview.navigate': 'navigate',
+      'autocomplete.preview.select': 'select',
+      'autocomplete.preview.close': 'close',
       'custom-mentions.label': 'Custom Mentions',
       'custom-mentions.description':
         'Toggle using custom mentions to trigger sounds in chat',
@@ -2907,12 +2912,6 @@ var dubplus = (function () {
   function t(key, vars = {}) {
     return translate(locale.current, key, vars);
   }
-  function normalizeLocale(loc) {
-    if (loc.startsWith('en')) {
-      return 'en';
-    }
-    return loc;
-  }
   var root$q = /* @__PURE__ */ template(
     `<div class="dubplus-waiting svelte-16mmbc"><div style="width: 26px; margin-right:5px"><!></div> <span style="flex: 1;"> </span></div>`,
   );
@@ -2958,12 +2957,8 @@ var dubplus = (function () {
     modalState.placeholder = nextState.placeholder || '';
     modalState.defaultValue = nextState.defaultValue;
     modalState.maxlength = nextState.maxlength || 999;
-    modalState.onConfirm =
-      nextState.onConfirm ||
-      (() => {
-        return true;
-      });
-    modalState.onCancel = nextState.onCancel || (() => {});
+    modalState.onConfirm = nextState.onConfirm;
+    modalState.onCancel = nextState.onCancel;
     modalState.validation = nextState.validation || (() => true);
   }
   var root_1$3 = /* @__PURE__ */ template(
@@ -3622,6 +3617,14 @@ var dubplus = (function () {
           }
         },
         onCancel: () => {
+          if (
+            !$$props.customize.defaultValue &&
+            (typeof settings.custom[$$props.id] === 'undefined' ||
+              settings.custom[$$props.id] === '')
+          ) {
+            saveSetting('option', $$props.id, false);
+            $$props.turnOff();
+          }
           if (typeof $$props.customize.onCancel === 'function')
             $$props.customize.onCancel();
         },
@@ -4035,7 +4038,7 @@ var dubplus = (function () {
       }
       logInfo('tasty', 'loading from api');
       return fetch(
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}/emotes/tastyemotes.json`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta-fix'}/emotes/tastyemotes.json`,
       )
         .then((res) => res.json())
         .then((json) => {
@@ -4289,7 +4292,8 @@ var dubplus = (function () {
     emojiState.selectedIndex = 0;
     emojiState.emojiList = [];
   }
-  function setEmojiList(listArray) {
+  function setEmojiList(listArray, searchStr) {
+    const platforms = ['emojify', 'twitch', 'bttv', 'ffz', 'tasty'];
     emojiState.emojiList = listArray
       .filter(
         (emoji, index, self) =>
@@ -4299,11 +4303,19 @@ var dubplus = (function () {
           ),
       )
       .sort((a, b) => {
-        const platforms = ['emojify', 'twitch', 'bttv', 'ffz', 'tasty'];
         const platformA = platforms.indexOf(a.platform);
         const platformB = platforms.indexOf(b.platform);
         if (platformA === platformB) {
-          return a.text.localeCompare(b.text);
+          if (a.text.startsWith(searchStr) && !b.text.startsWith(searchStr)) {
+            return -1;
+          } else if (
+            !a.text.startsWith(searchStr) &&
+            b.text.startsWith(searchStr)
+          ) {
+            return 1;
+          } else {
+            return a.text.localeCompare(b.text);
+          }
         }
         return platformA - platformB;
       });
@@ -4371,11 +4383,12 @@ var dubplus = (function () {
       goRight++;
     }
     if (str.startsWith(':') && str.length >= MIN_CHAR && !str.endsWith(':')) {
+      const searchStr = str.substring(1).trim();
       const list = dubplus_emoji.findMatchingEmotes(
-        str.substring(1).trim(),
+        searchStr,
         settings.options.emotes,
       );
-      setEmojiList(list);
+      setEmojiList(list, searchStr);
     } else {
       reset();
     }
@@ -5456,7 +5469,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1741415155907'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta-fix'}${cssFile}?${'1741568745647'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5939,7 +5952,7 @@ var dubplus = (function () {
     `<li><div class="ac-image svelte-1pg7edp"><img class="svelte-1pg7edp"></div></li>`,
   );
   var root$8 = /* @__PURE__ */ template(
-    `<div><div class="ac-header svelte-1pg7edp"> </div> <ul id="autocomplete-preview" class="svelte-1pg7edp"></ul> <span class="ac-text-preview svelte-1pg7edp"> </span></div>`,
+    `<div><div class="ac-header svelte-1pg7edp"><span class="sr-only"> </span> <div class="tip-container" aria-hidden="true"><span class="tip-navigate"><key class="icon-upvote"></key> &amp; <key class="icon-downvote"></key> </span> <span class="tip-complete"><key>TAB</key> or <key>ENTER</key> </span> <span class="tip-close"><key>ESC</key> </span></div></div> <ul id="autocomplete-preview" class="svelte-1pg7edp"></ul> <span class="ac-text-preview svelte-1pg7edp"> </span></div>`,
   );
   function EmojiPreview($$anchor, $$props) {
     push($$props, true);
@@ -5966,7 +5979,15 @@ var dubplus = (function () {
     var div = root$8();
     let classes;
     var div_1 = child(div);
-    var text_1 = child(div_1);
+    var span = child(div_1);
+    var text_1 = child(span);
+    var div_2 = sibling(span, 2);
+    var span_1 = child(div_2);
+    var text_2 = sibling(child(span_1), 3);
+    var span_2 = sibling(span_1, 2);
+    var text_3 = sibling(child(span_2), 3);
+    var span_3 = sibling(span_2, 2);
+    var text_4 = sibling(child(span_3));
     var ul = sibling(div_1, 2);
     each(
       ul,
@@ -5981,8 +6002,8 @@ var dubplus = (function () {
         var li = root_1();
         let classes_1;
         li.__click = () => handleClick2(get(i));
-        var div_2 = child(li);
-        var img = child(div_2);
+        var div_3 = child(li);
+        var img = child(div_3);
         template_effect(
           ($0) => {
             classes_1 = set_class(
@@ -6007,8 +6028,8 @@ var dubplus = (function () {
         append($$anchor2, li);
       },
     );
-    var span = sibling(ul, 2);
-    var text_2 = child(span);
+    var span_4 = sibling(ul, 2);
+    var text_5 = child(span_4);
     action(
       div,
       ($$node, $$action_arg) =>
@@ -6016,7 +6037,7 @@ var dubplus = (function () {
       () => ({ to: CHAT_INPUT_CONTAINER, position: 'prepend' }),
     );
     template_effect(
-      ($0, $1) => {
+      ($0, $1, $2, $3, $4) => {
         var _a2;
         classes = set_class(
           div,
@@ -6027,8 +6048,11 @@ var dubplus = (function () {
           $0,
         );
         set_text(text_1, $1);
+        set_text(text_2, ` (${$2 ?? ''})`);
+        set_text(text_3, ` (${$3 ?? ''})`);
+        set_text(text_4, ` (${$4 ?? ''})`);
         set_text(
-          text_2,
+          text_5,
           (_a2 = emojiState.emojiList[emojiState.selectedIndex]) == null
             ? void 0
             : _a2.text,
@@ -6036,7 +6060,10 @@ var dubplus = (function () {
       },
       [
         () => ({ 'ac-show': emojiState.emojiList.length > 0 }),
+        () => t('autocomplete.preview.a11y'),
+        () => t('autocomplete.preview.navigate'),
         () => t('autocomplete.preview.select'),
+        () => t('autocomplete.preview.close'),
       ],
     );
     append($$anchor, div);
@@ -6750,16 +6777,6 @@ var dubplus = (function () {
       define_PKGINFO_default,
     );
     let status = state('loading');
-    function setLocale() {
-      locale.current = normalizeLocale(navigator.language || 'en');
-    }
-    onMount(() => {
-      setLocale();
-      window.addEventListener('languagechange', setLocale);
-    });
-    onDestroy(() => {
-      window.removeEventListener('languagechange', setLocale);
-    });
     const checkList = [
       'QueUp.session.id',
       'QueUp.room.chat',
@@ -6788,9 +6805,6 @@ var dubplus = (function () {
     function showErrorModal(content) {
       modalState.title = t('Error.modal.title');
       modalState.content = content;
-      modalState.onCancel = () => {
-        modalState.open = false;
-      };
       modalState.open = true;
     }
     user_effect(() => {
@@ -6844,8 +6858,7 @@ var dubplus = (function () {
     container = document.createElement('div');
     container.id = 'dubplus-container';
     document.body.appendChild(container);
-  }
-  if (container.children.length > 0) {
+  } else if (container.children.length > 0) {
     unmount(container);
     container.innerHTML = '';
   }

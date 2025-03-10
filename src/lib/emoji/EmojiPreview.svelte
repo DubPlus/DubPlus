@@ -38,7 +38,25 @@
   class:ac-show={emojiState.emojiList.length > 0}
 >
   <div class="ac-header">
-    {t('autocomplete.preview.select')}
+    <span class="sr-only">
+      {t('autocomplete.preview.a11y')}
+    </span>
+    <div class="tip-container" aria-hidden="true">
+      <span class="tip-navigate">
+        <key class="icon-upvote"></key> &amp;
+        <key class="icon-downvote"></key> ({t(
+          'autocomplete.preview.navigate',
+        )})</span
+      >
+      <span class="tip-complete">
+        <key>TAB</key> or <key>ENTER</key> ({t(
+          'autocomplete.preview.select',
+        )})</span
+      >
+      <span class="tip-close"
+        ><key>ESC</key> ({t('autocomplete.preview.close')})</span
+      >
+    </div>
   </div>
   <ul id="autocomplete-preview">
     {#each emojiState.emojiList as { src, text, platform, alt }, i (src + platform)}

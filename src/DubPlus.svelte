@@ -4,8 +4,7 @@
   import Modal from './lib/Modal.svelte';
   import Menu from './lib/menu/Menu.svelte';
   import { modalState } from './lib/stores/modalState.svelte';
-  import { t, locale, normalizeLocale } from './lib/stores/i18n.svelte';
-  import { onMount, onDestroy } from 'svelte';
+  import { t } from './lib/stores/i18n.svelte';
 
   // @ts-ignore __PKGINFO__ is injected by the build process
   // eslint-disable-next-line no-undef
@@ -13,19 +12,6 @@
 
   /** @type {"loading" | "ready" | "loggedout" | "error"} */
   let status = $state('loading');
-
-  function setLocale() {
-    locale.current = normalizeLocale(navigator.language || 'en');
-  }
-
-  onMount(() => {
-    setLocale();
-    window.addEventListener('languagechange', setLocale);
-  });
-
-  onDestroy(() => {
-    window.removeEventListener('languagechange', setLocale);
-  });
 
   const checkList = [
     'QueUp.session.id',
@@ -56,11 +42,6 @@
   function showErrorModal(content) {
     modalState.title = t('Error.modal.title');
     modalState.content = content;
-
-    modalState.onCancel = () => {
-      modalState.open = false;
-    };
-
     // this must always go last to ensure the data above
     // is set before the modal is opened
     modalState.open = true;

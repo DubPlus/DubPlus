@@ -24,9 +24,7 @@ if (!container) {
   container = document.createElement('div');
   container.id = 'dubplus-container';
   document.body.appendChild(container);
-}
-
-if (container.children.length > 0) {
+} else if (container.children.length > 0) {
   // Dub+ has already been loaded so we need to unmount it first
   unmount(container);
   container.innerHTML = '';

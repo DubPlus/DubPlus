@@ -84,12 +84,13 @@ function checkInput(e) {
   }
 
   if (str.startsWith(':') && str.length >= MIN_CHAR && !str.endsWith(':')) {
+    const searchStr = str.substring(1).trim();
     // start filtering emojis
     const list = dubplus_emoji.findMatchingEmotes(
-      str.substring(1).trim(),
+      searchStr,
       settings.options.emotes,
     );
-    setEmojiList(list);
+    setEmojiList(list, searchStr);
   } else {
     reset();
   }

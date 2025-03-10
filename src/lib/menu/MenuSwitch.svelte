@@ -6,6 +6,7 @@
   import { modalState, updateModalState } from '../stores/modalState.svelte';
   import { t } from '../stores/i18n.svelte';
   import { isMod } from '../../utils/modcheck';
+
   /**
    * @typedef {object} MenuSwitchProps
    * @property {string} id
@@ -66,6 +67,16 @@
         }
       },
       onCancel: () => {
+        // if the saved custom setting is empty and there is no default value,
+        // then we turn off the feature
+        if (
+          !customize.defaultValue &&
+          (typeof settings.custom[id] === 'undefined' ||
+            settings.custom[id] === '')
+        ) {
+          saveSetting('option', id, false);
+          turnOff();
+        }
         if (typeof customize.onCancel === 'function') customize.onCancel();
       },
     });
