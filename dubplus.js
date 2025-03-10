@@ -2741,7 +2741,6 @@ var dubplus = (function () {
       'Notifcation.permission.title': 'Desktop Notification',
       'Notification.permission.denied':
         "You have dismissed, or chosen to deny, the request to allow desktop notifications. If you change your mind, you will need to reset this in your browser's site settings.",
-
       'Notification.permission.notSupported':
         'Sorry this browser does not support desktop notifications.  Please update your browser to the lastest version',
       'Menu.title': 'Dub+ Options',
@@ -3068,6 +3067,9 @@ var dubplus = (function () {
           dialog.close();
           modalState.open = false;
           set(errorMessage, '');
+          if (typeof modalState.onCancel === 'function') {
+            modalState.onCancel();
+          }
         };
         var text_5 = child(button);
         var button_1 = sibling(button, 2);
@@ -4038,7 +4040,7 @@ var dubplus = (function () {
       }
       logInfo('tasty', 'loading from api');
       return fetch(
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta-fix'}/emotes/tastyemotes.json`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}/emotes/tastyemotes.json`,
       )
         .then((res) => res.json())
         .then((json) => {
@@ -5469,7 +5471,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta-fix'}${cssFile}?${'1741568745647'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1741574036583'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
