@@ -42,11 +42,6 @@
   function showErrorModal(content) {
     modalState.title = t('Error.modal.title');
     modalState.content = content;
-
-    modalState.onCancel = () => {
-      modalState.open = false;
-    };
-
     // this must always go last to ensure the data above
     // is set before the modal is opened
     modalState.open = true;
