@@ -6835,8 +6835,7 @@ var dubplus = (function () {
     container = document.createElement('div');
     container.id = 'dubplus-container';
     document.body.appendChild(container);
-  }
-  if (container.children.length > 0) {
+  } else if (container.children.length > 0) {
     unmount(container);
     container.innerHTML = '';
   }
