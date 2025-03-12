@@ -26,19 +26,31 @@ Requires Node v20 or higher
 
 The UI is written in [Svelte 5](https://svelte.dev/docs/svelte/overview)
 
-There are 3 ways you can develop:
+There are 2 ways you can develop.
 
-### 1. Using the Mock queup.net
+### 1. Loading the extension in Firefox - RECOMMENDED
 
-- run `npm run dev` and open the localhost:port that is printed in the command line by Vite.
-- start developing
+This is recommended because everything is automated for you.
 
-This is a limited mockup of Queup.net so not all queup apis won't work. This environment is useful for quick development of UI related things.
+- in one command line window or tab, run `npm run watch`
+- in another command line, run `npm run firefox`.
+
+This will launch firefox and load the extension. It will also watch for changes and reload the extension automatically.
+
+Your process will go like this:
+
+- make changes
+- save
+  - This will auto-rebuild the extension
+  - which should also reload the extension in FF automatically
+  - once in a while you might need to refresh the page
+- test your changes
 
 ### 2. Loading the unpacked extension in Chrome
 
-- edit the [`manifest.json`](./manifest.json) and add `"css": ["dubplus.css"],` to the only object in the `content_scripts` array
-- run `npm run build:watch`
+This way is a little more manual but it's good to test on Chrome when you're finished developing on Firefox to make sure it works well in both browsers.
+
+- run `npm run watch`
 - open [chrome://extensions/](chrome://extensions/)
 - if you have the Dub+ extension installed from the Chrome WebStore, make sure to disable it
 - Turn on the "developer mode" switch in the top right
@@ -49,24 +61,9 @@ This is a limited mockup of Queup.net so not all queup apis won't work. This env
 
 Your process will go like this:
 
-- edit the [`manifest.json`](./manifest.json) and add `"css": ["dubplus.css"],` to the only object in the `content_scripts` array
 - make changes
 - save (which auto runs the building of the files)
 - refresh the extension in chrome://extensions (click on the refresh icon next to the switch)
-- refresh the page
-- test your changes
-
-### 3. Loading the extension in Firefox
-
-- in one command line window or tab, run `npm run build:watch`
-- in another command line, run `npm run start:firefox`.
-
-This will launch firefox and load the extension. It will also watch for changes and reload the extension automatically.
-
-Your process will go like this:
-
-- make changes
-- save (which auto runs the building of the files)
 - refresh the page
 - test your changes
 

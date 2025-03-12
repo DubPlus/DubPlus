@@ -15,45 +15,6 @@ delete pkg.type;
 delete pkg.browserslist;
 delete pkg.engines;
 
-// this is a fake dubs response to test the dubs module
-const dubsResponse = {
-  code: 200,
-  message: 'OK',
-  data: {
-    upDubs: [
-      {
-        _id: 'abc123',
-        type: 'updub',
-        created: 1719292218125,
-        updated: 1719292218125,
-        fkid: 'abc123',
-        model: 'rooms_playlists',
-        userid: 'abc123',
-        __v: 0,
-      },
-    ],
-    downDubs: [],
-    currentSong: {
-      _id: '6669fae3f6962c00073f8620',
-      created: 1718221537578,
-      isActive: true,
-      isPlayed: false,
-      skipped: false,
-      order: 5,
-      roomid: '60553a02aa44080006989621',
-      songLength: 446000,
-      updubs: 6,
-      downdubs: 0,
-      userid: '605546871cc35c0006b1d08b',
-      songid: '656f74824851430006005d0c',
-      _user: '605546871cc35c0006b1d08b',
-      _song: '656f74824851430006005d0c',
-      __v: 0,
-      played: 1719292219378,
-    },
-  },
-};
-
 function getCdnRoot() {
   const currentBranch = getCurrentBranch();
   console.log('currentBranch:', currentBranch);
@@ -106,43 +67,6 @@ export default defineConfig(() => {
           entryFileNames: (chunkInfo) => {
             if (chunkInfo.name === 'main') return 'dubplus.js';
             return chunkInfo.name;
-          },
-        },
-      },
-    },
-
-    // this is for the dev server that runs the Mock QueUp.
-    // Might get rid of this in the future because developing
-    // against the real QueUp using `npm run firefox` is better
-    server: {
-      strictPort: true,
-      proxy: {
-        // for any emojify requests, always return the same single cat image
-        // this way we dont have to download all the emoji images
-        '/assets/emoji/apple/': {
-          target: 'http://localhost:5173',
-          changeOrigin: false,
-          rewrite: (path) =>
-            path.replace(/\/assets\/emoji\/apple\/.+\.png/, '/images/cat.png'),
-        },
-        // mock the active dubs endpoint response
-        '/api/room/room-123/playlist/active/dubs': {
-          target: 'http://localhost:5173',
-          changeOrigin: true,
-          selfHandleResponse: true,
-          secure: false,
-          configure(proxy) {
-            proxy.on('proxyRes', (proxyRes, req, res) => {
-              var body = [];
-              proxyRes.on('data', function (chunk) {
-                body.push(chunk);
-              });
-              proxyRes.on('end', function () {
-                body = Buffer.concat(body).toString();
-                res.setHeader('Content-Type', 'application/json');
-                res.end(JSON.stringify(dubsResponse));
-              });
-            });
           },
         },
       },
