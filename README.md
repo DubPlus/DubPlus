@@ -83,11 +83,3 @@ Your process will go like this:
 `npm run zip` - creates the zip file of the extension
 
 `npm run firefox` - starts an instance of firefox with our extension loaded so you can test it in Firefox. Requires that you have FireFox installed locally already
-
-`npm test` - runs playwright tests (still in early development)
-
-`npm run test:ui` - opens playwright's UI to help with test development
-
-TODO:
-
-- figure out a way to develop using `web-ext` in Firefox so we can remove the mock QueUp

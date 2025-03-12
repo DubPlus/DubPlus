@@ -18,7 +18,6 @@ export function zipExetension() {
     '"*.vscode*"',
     '".env*"',
     '"*test-results*"',
-    '"*playwright-report*"',
     '"*.zip"',
   ].join(' -x ');
   execSync(`zip -vr -FS DubPlus-Extension ./* -x ${excludes}`, options);

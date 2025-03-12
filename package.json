@@ -15,8 +15,6 @@
     "ext": "npm run build && npm run zip",
     "zip": "node ./tasks/zip.js",
     "firefox": "web-ext run --start-url www.queup.net --watch-files dubplus.js dubplus.css manifest.json",
-    "test": "playwright test",
-    "test:ui": "playwright test --ui",
     "prepare": "husky install",
     "prettier": "prettier --write ."
   },
