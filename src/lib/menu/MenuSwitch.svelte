@@ -13,7 +13,7 @@
    * @property {string} label
    * @property {string} description
    * @property {boolean} [modOnly]
-   * @property {() => void} turnOn runs when the switch is turned on
+   * @property {(onLoad?: boolean) => void} turnOn runs when the switch is turned on
    * @property {() => void} turnOff runs when the switch is turned off
    * @property {() => void} [init] always runs when the component mounts, whether
    * the switch is on or off
@@ -33,7 +33,7 @@
     if (settings.options[id]) {
       // check user mod status if this is a mod only feature
       const allowed = modOnly ? isMod(window.QueUp.session.id) : true;
-      if (allowed) turnOn();
+      if (allowed) turnOn(true);
     }
   });
 

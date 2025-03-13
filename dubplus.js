@@ -152,15 +152,16 @@ var dubplus = (function () {
     component_context = context;
   }
   function push(props, runes = false, fn) {
-    component_context = {
+    var ctx = (component_context = {
       p: component_context,
       c: null,
+      d: false,
       e: null,
       m: false,
       s: props,
       x: null,
       l: null,
-    };
+    });
     if (legacy_mode_flag && !runes) {
       component_context.l = {
         s: null,
@@ -169,6 +170,9 @@ var dubplus = (function () {
         r2: source(false),
       };
     }
+    teardown(() => {
+      ctx.d = true;
+    });
   }
   function pop(component2) {
     const context_stack_item = component_context;
@@ -204,6 +208,7 @@ var dubplus = (function () {
       (component_context !== null && component_context.l === null)
     );
   }
+  const old_values = /* @__PURE__ */ new Map();
   function source(v, stack) {
     var signal = {
       f: 0,
@@ -265,7 +270,12 @@ var dubplus = (function () {
   }
   function internal_set(source2, value) {
     if (!source2.equals(value)) {
-      source2.v;
+      var old_value = source2.v;
+      if (is_destroying_effect) {
+        old_values.set(source2, value);
+      } else {
+        old_values.set(source2, old_value);
+      }
       source2.v = value;
       source2.wv = increment_write_version();
       mark_reactions(source2, DIRTY);
@@ -1356,6 +1366,7 @@ var dubplus = (function () {
       is_flushing = false;
       is_updating_effect = was_updating_effect;
       last_scheduled_effect = null;
+      old_values.clear();
     }
   }
   function flush_queued_effects(effects) {
@@ -1483,6 +1494,9 @@ var dubplus = (function () {
       if (check_dirtiness(derived2)) {
         update_derived(derived2);
       }
+    }
+    if (is_destroying_effect && old_values.has(signal)) {
+      return old_values.get(signal);
     }
     return signal.v;
   }
@@ -1706,7 +1720,7 @@ var dubplus = (function () {
         try {
           var delegated = current_target['__' + event_name];
           if (
-            delegated !== void 0 &&
+            delegated != null &&
             (!(/** @type {any} */ current_target.disabled) || // DOM could've been updated already by the time this is reached, so we check this as well
               // -> the target could not have been disabled because it emits the event in the first place
               event2.target === current_target)
@@ -3149,6 +3163,9 @@ var dubplus = (function () {
   function getChatMessages(extra = '') {
     return document.querySelectorAll(`ul.chat-main > li${extra}`);
   }
+  function getImagesInChat() {
+    return document.querySelectorAll('.chat-main > li .autolink-image');
+  }
   function getBackgroundImage() {
     return document.querySelector('.backstretch img');
   }
@@ -3405,7 +3422,7 @@ var dubplus = (function () {
   }
   delegate(['click']);
   var root$m = /* @__PURE__ */ template(
-    `<ul class="dubplus-menu-section svelte-m5z2p2" role="region"><!></ul>`,
+    `<ul class="dubplus-menu-section svelte-19n0ph7" role="region"><!></ul>`,
   );
   function MenuSection($$anchor, $$props) {
     var ul = root$m();
@@ -3589,7 +3606,7 @@ var dubplus = (function () {
       if ($$props.init) $$props.init();
       if (settings.options[$$props.id]) {
         const allowed = $$props.modOnly ? isMod(window.QueUp.session.id) : true;
-        if (allowed) $$props.turnOn();
+        if (allowed) $$props.turnOn(true);
       }
     });
     onDestroy(() => {
@@ -4040,7 +4057,7 @@ var dubplus = (function () {
       }
       logInfo('tasty', 'loading from api');
       return fetch(
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}/emotes/tastyemotes.json`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@feature-74-collapsible-chat-images'}/emotes/tastyemotes.json`,
       )
         .then((res) => res.json())
         .then((json) => {
@@ -4290,7 +4307,7 @@ var dubplus = (function () {
     },
   };
   const emojiState = proxy({ selectedIndex: 0, emojiList: [] });
-  function reset() {
+  function reset$1() {
     emojiState.selectedIndex = 0;
     emojiState.emojiList = [];
   }
@@ -4357,7 +4374,7 @@ var dubplus = (function () {
     esc: 'Escape',
     tab: 'Tab',
   };
-  const MIN_CHAR = 3;
+  const MIN_CHAR = 2;
   let acPreview = document.querySelector('#autocomplete-preview');
   let originalKeyDownEventHandler;
   function insertEmote(inputEl, index) {
@@ -4365,7 +4382,7 @@ var dubplus = (function () {
     const [start, end] = getSelection(inputEl.value, inputEl.selectionStart);
     const target = inputEl.value.substring(start, end);
     inputEl.value = inputEl.value.replace(target, `:${selected.text}:`);
-    reset();
+    reset$1();
   }
   function checkInput(e) {
     const inputEl =
@@ -4392,7 +4409,7 @@ var dubplus = (function () {
       );
       setEmojiList(list, searchStr);
     } else {
-      reset();
+      reset$1();
     }
   }
   function chatInputKeyupFunc(e) {
@@ -4428,7 +4445,7 @@ var dubplus = (function () {
       return;
     }
     if (e.key === KEYS.esc && hasItems) {
-      reset();
+      reset$1();
       return;
     }
     checkInput(e);
@@ -4458,7 +4475,7 @@ var dubplus = (function () {
     description: 'autocomplete.description',
     turnOn() {
       acPreview = document.querySelector('#autocomplete-preview');
-      reset();
+      reset$1();
       originalKeyDownEventHandler =
         window.QueUp.room.chat.events['keydown #chat-txt-message'];
       const newEventsObject = { ...window.QueUp.room.chat.events };
@@ -4470,7 +4487,7 @@ var dubplus = (function () {
       chatInput.addEventListener('click', checkInput);
     },
     turnOff() {
-      reset();
+      reset$1();
       window.QueUp.room.chat.events['keydown #chat-txt-message'] =
         originalKeyDownEventHandler;
       window.QueUp.room.chat.delegateEvents(window.QueUp.room.chat.events);
@@ -5471,7 +5488,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1741574036583'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@feature-74-collapsible-chat-images'}${cssFile}?${'1741826415328'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5757,6 +5774,84 @@ var dubplus = (function () {
       maxlength: 255,
     },
   };
+  function handleCollapseButtonClick(event2) {
+    const parentElement = event2.target.parentElement;
+    const imageContaner =
+      /**@type {HTMLAnchorElement}*/
+      event2.target.previousElementSibling;
+    if (!parentElement.classList.contains('dubplus-collapsed')) {
+      parentElement.classList.add('dubplus-collapsed');
+      event2.target.title = 'expand image';
+      imageContaner.setAttribute('aria-hidden', 'true');
+      event2.target.setAttribute('aria-expanded', 'false');
+    } else {
+      parentElement.classList.remove('dubplus-collapsed');
+      event2.target.title = 'collapse image';
+      imageContaner.setAttribute('aria-hidden', 'false');
+      event2.target.setAttribute('aria-expanded', 'true');
+    }
+  }
+  function addCollapserToImage(autolinkImage) {
+    if (
+      !autolinkImage.parentElement.classList.contains(
+        'dubplus-collapsible-image',
+      )
+    ) {
+      autolinkImage.parentElement.classList.add('dubplus-collapsible-image');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.title = 'collapse image';
+      button.classList.add('dubplus-collapser');
+      button.addEventListener('click', handleCollapseButtonClick);
+      autolinkImage.parentElement.appendChild(button);
+      const p = document.createElement('p');
+      p.classList.add('dubplus-collapser-message');
+      p.textContent = 'image collapsed';
+      autolinkImage.parentElement.appendChild(p);
+    }
+  }
+  function processChat(e) {
+    if (e == null ? void 0 : e.chatid) {
+      const chatMessage = document.querySelector(`.chat-id-${e.chatid}`);
+      if (chatMessage) {
+        addCollapserToImage(chatMessage.querySelector('.autolink-image'));
+        return;
+      }
+    }
+    const chatImages = getImagesInChat();
+    chatImages.forEach(addCollapserToImage);
+  }
+  function reset() {
+    document.querySelectorAll('.dubplus-collapsible-image').forEach((el) => {
+      el.classList.remove('dubplus-collapsible-image');
+      el.classList.remove('dubplus-collapsed');
+    });
+    document.querySelectorAll('.dubplus-collapser').forEach((el) => {
+      el.removeEventListener('click', handleCollapseButtonClick);
+      el.remove();
+    });
+    getImagesInChat().forEach((el) => el.removeAttribute('aria-hidden'));
+    document
+      .querySelectorAll('.dubplus-collapser-message')
+      .forEach((el) => el.remove());
+  }
+  const collapsibleImages = {
+    id: 'collapsible-images',
+    label: 'Collapsible Images',
+    description: 'Make images in the chat collapsible',
+    category: 'general',
+    turnOn(onLoad) {
+      if (!onLoad) processChat();
+      window.QueUp.Events.bind(CHAT_MESSAGE, processChat);
+      setTimeout(() => {
+        processChat();
+      }, 1e3);
+    },
+    turnOff() {
+      window.QueUp.Events.unbind(CHAT_MESSAGE, processChat);
+      reset();
+    },
+  };
   const general = [
     autovote,
     afk,
@@ -5765,6 +5860,7 @@ var dubplus = (function () {
     autocomplete,
     customMentions,
     chatCleaner,
+    collapsibleImages,
     mentionNotifications,
     pmNotifications,
     djNotification,

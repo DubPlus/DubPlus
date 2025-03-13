@@ -2,6 +2,14 @@
 
 A Dubtrack.fm and QueUp.net script/extension for added features and customizations to improve your Dubtrack/QueUp experience
 
+New features in latest release:
+
+- Auto AFK
+- Flip Interface
+- Snooze Video
+- Grab Response
+- Collapsible Images
+
 Features include:
 
 - AutoVote
@@ -10,8 +18,8 @@ Features include:
 - AutoComplete Emoji
 - Custom Mentions
 - Notify on Mentions
-- Notify on PM - NEW!
-- DJ Notification - NEW!
+- Notify on PM
+- DJ Notification
 - SpaceBar Mute
 - Warn on navigation
 - Dubvote Info on Hover

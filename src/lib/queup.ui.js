@@ -23,6 +23,13 @@ export function getChatMessages(extra = '') {
 }
 
 /**
+ * @returns {NodeListOf<HTMLAnchorElement>}
+ */
+export function getImagesInChat() {
+  return document.querySelectorAll('.chat-main > li .autolink-image');
+}
+
+/**
  * @returns {HTMLImageElement}
  */
 export function getBackgroundImage() {

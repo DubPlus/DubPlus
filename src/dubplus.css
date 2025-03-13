@@ -222,6 +222,52 @@
   font-family: icomoon;
 }
 
+.dubplus-collapsible-image {
+  position: relative;
+}
+
+.dubplus-collapser {
+  font-family: icomoon;
+  font-size: 20px;
+  background: none;
+  border: none;
+  appearance: none;
+  cursor: pointer;
+  color: white;
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+}
+
+.dubplus-collapser::before {
+  content: '\e801';
+  font-size: inherit;
+}
+
+.dubplus-collapsed [aria-hidden='true'] {
+  display: none;
+}
+
+.dubplus-collapsed .dubplus-collapser::before {
+  content: '\e802';
+}
+
+.dubplus-collapser-message {
+  display: none;
+}
+.dubplus-collapsed .dubplus-collapser-message {
+  display: inline-block;
+  margin-left: 26% !important;
+  color: #878c8e;
+  border: 1px solid #878c8e;
+  padding: 0 10px !important;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
 .sr-only,
 .sr-only-focusable:not(:focus):not(:focus-within) {
   width: 1px !important;

@@ -29,6 +29,7 @@ import { customNotificationSound } from './customNotificationSound';
 import { flipInterface } from './flipInterface';
 import { autoAfk } from './auto-afk';
 import { grabResponse } from './grabResponse';
+import { collapsibleImages } from './collapsible-images';
 
 /**
  * @type {import("./module").DubPlusModule[]}
@@ -41,6 +42,7 @@ export const general = [
   autocomplete,
   customMentions,
   chatCleaner,
+  collapsibleImages,
   mentionNotifications,
   pmNotifications,
   djNotification,

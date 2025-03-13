@@ -88,6 +88,9 @@ export const translations = {
       'Please enter a whole number greater than, or equal to, 1',
     'chat-cleaner.modal.placeholder': '500',
 
+    'collapsible-images.label': 'Collapsible Images',
+    'collapsible-images.description': 'Make images in the chat collapsible',
+
     'mention-notifications.label': 'Notification on Mentions',
     'mention-notifications.description':
       'Enable desktop notifications when a user mentions you in chat',
