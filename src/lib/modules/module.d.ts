@@ -28,7 +28,7 @@ export interface DubPlusModule {
   /**
    * Runs when the module is enabled
    */
-  turnOn?: () => void;
+  turnOn?: (onLoad?: boolean) => void;
 
   /**
    * Runs when the module is disabled

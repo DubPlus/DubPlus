@@ -16,7 +16,7 @@
   ul {
     padding: 0 15px;
     border-bottom: 1px solid #222;
-    max-height: 500px;
+    max-height: 516px;
     transition: max-height 0.3s;
     overflow: hidden;
     margin: 0;

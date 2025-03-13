@@ -30,7 +30,7 @@ const KEYS = {
  * Minimum number of characters to start filtering emojis.
  * Includes the ":" character so ":sm" is 3 characters.
  */
-const MIN_CHAR = 3;
+const MIN_CHAR = 2;
 let acPreview = document.querySelector('#autocomplete-preview');
 let originalKeyDownEventHandler;
 
