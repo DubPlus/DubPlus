@@ -1,6 +1,6 @@
 ### Description
 
-A Dubtrack.fm and QueUp.net script/extension for added features and customizations to improve your Dubtrack/QueUp experience
+A Dubtrack.fm and QueUp.net extension for added features and customizations to improve your Dubtrack/QueUp experience
 
 New features in latest release:
 
