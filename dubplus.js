@@ -2811,6 +2811,8 @@ var dubplus = (function () {
       'chat-cleaner.modal.validation':
         'Please enter a whole number greater than, or equal to, 1',
       'chat-cleaner.modal.placeholder': '500',
+      'collapsible-images.label': 'Collapsible Images',
+      'collapsible-images.description': 'Make images in the chat collapsible',
       'mention-notifications.label': 'Notification on Mentions',
       'mention-notifications.description':
         'Enable desktop notifications when a user mentions you in chat',
@@ -5488,7 +5490,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@feature-74-collapsible-chat-images'}${cssFile}?${'1741826415328'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@feature-74-collapsible-chat-images'}${cssFile}?${'1741837040471'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5837,8 +5839,8 @@ var dubplus = (function () {
   }
   const collapsibleImages = {
     id: 'collapsible-images',
-    label: 'Collapsible Images',
-    description: 'Make images in the chat collapsible',
+    label: 'collapsible-images.label',
+    description: 'collapsible-images.description',
     category: 'general',
     turnOn(onLoad) {
       if (!onLoad) processChat();
