@@ -1,7 +1,7 @@
 import './dubplus.css';
 import { mount, unmount } from 'svelte';
 import DubPlus from './DubPlus.svelte';
-import { loadCSS } from './utils/css';
+import { link } from './utils/css';
 import { logError, logInfo } from './utils/logger';
 
 const loadedAsExtension = 'dubplusExtensionLoaded' in window;
@@ -9,11 +9,9 @@ const loadedAsExtension = 'dubplusExtensionLoaded' in window;
 // @ts-ignore
 logInfo('Dub+: loaded as extension:', loadedAsExtension);
 
-// If loading this script as an extension it will come with the
-// css locally. But if it's not loaded as an extension (i.e. Bookmarklet),
-// we need to load the CSS file from the CDN.
+// We only load the CSS if we're NOT loaded as an extension
 if (!import.meta.env.DEV && !loadedAsExtension) {
-  loadCSS('/dubplus.css', 'dubplus-css').catch((e) => {
+  link('/dubplus.css', 'dubplus-css').catch((e) => {
     logError('Failed to load dubplus.css', e);
   });
 }

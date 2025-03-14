@@ -22,7 +22,7 @@ const makeLink = function (className, fileName) {
  * @param {string} className  class name for element
  * @returns {Promise<void>}
  */
-export function loadCSS(cssFile, className) {
+export function link(cssFile, className) {
   return new Promise((resolve, reject) => {
     document.querySelector(`link.${className}`)?.remove();
     const link = makeLink(
@@ -38,13 +38,11 @@ export function loadCSS(cssFile, className) {
 }
 
 /**
- * Loads a css file from a full URL in the <head>.
- * Uses a style element instead of a link element
- * @param  {string} cssFile   the full url location of a CSS file
- * @param  {string} id an id to give to the <style> element
+ * @param  {string} cssFile
+ * @param  {string} id
  * @return {Promise<void>}
  */
-export function loadExternalCss(cssFile, id) {
+export function style(cssFile, id) {
   document.querySelector(`style#${id}`)?.remove();
   return fetch(cssFile)
     .then((res) => res.text())
