@@ -4260,7 +4260,6 @@ var dubplus = (function () {
         nodes.push(document.createTextNode(chunk));
       }
     });
-    console.log(nodes);
     return nodes;
   }
   function processChatLI(li) {
@@ -5491,7 +5490,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1741968256195'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1741980436376'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;

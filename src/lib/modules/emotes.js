@@ -77,7 +77,6 @@ function processChatText(text) {
       nodes.push(document.createTextNode(chunk));
     }
   });
-  console.log(nodes);
   return nodes;
 }
 
