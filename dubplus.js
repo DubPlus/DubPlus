@@ -2017,14 +2017,14 @@ var dubplus = (function () {
         controlled_anchor,
       );
       items_map.clear();
-      link(state2, items[0].prev, items[length - 1].next);
+      link$1(state2, items[0].prev, items[length - 1].next);
     }
     run_out_transitions(transitions, () => {
       for (var i2 = 0; i2 < length; i2++) {
         var item = items[i2];
         if (!is_controlled) {
           items_map.delete(item.k);
-          link(state2, item.prev, item.next);
+          link$1(state2, item.prev, item.next);
         }
         destroy_effect(item.e, !is_controlled);
       }
@@ -2179,9 +2179,9 @@ var dubplus = (function () {
             for (j = 0; j < stashed.length; j += 1) {
               seen.delete(stashed[j]);
             }
-            link(state2, a.prev, b.next);
-            link(state2, prev, a);
-            link(state2, b, start);
+            link$1(state2, a.prev, b.next);
+            link$1(state2, prev, a);
+            link$1(state2, b, start);
             current = start;
             prev = b;
             i -= 1;
@@ -2190,9 +2190,9 @@ var dubplus = (function () {
           } else {
             seen.delete(item);
             move(item, current, anchor);
-            link(state2, item.prev, item.next);
-            link(state2, item, prev === null ? state2.first : prev.next);
-            link(state2, prev, item);
+            link$1(state2, item.prev, item.next);
+            link$1(state2, item, prev === null ? state2.first : prev.next);
+            link$1(state2, prev, item);
             prev = item;
           }
           continue;
@@ -2332,7 +2332,7 @@ var dubplus = (function () {
       node = next_node;
     }
   }
-  function link(state2, prev, next) {
+  function link$1(state2, prev, next) {
     if (prev === null) {
       state2.first = next;
     } else {
@@ -3911,7 +3911,6 @@ var dubplus = (function () {
        * @type {Map<string, string>}
        */
       emotesMap: /* @__PURE__ */ new Map(),
-      chatRegex: new RegExp(':([-_a-z0-9]+):', 'ig'),
     },
     bttv: {
       /**
@@ -3925,7 +3924,6 @@ var dubplus = (function () {
        * @type {Map<string, string>}
        */
       emotesMap: /* @__PURE__ */ new Map(),
-      chatRegex: new RegExp(':([&!()\\-_a-z0-9]+):', 'ig'),
     },
     tasty: {
       /**
@@ -3952,7 +3950,6 @@ var dubplus = (function () {
        * @type {Map<string, number>}
        */
       emotesMap: /* @__PURE__ */ new Map(),
-      chatRegex: new RegExp(':([-_a-z0-9]+):', 'ig'),
     },
     /**
      *
@@ -4059,7 +4056,7 @@ var dubplus = (function () {
       }
       logInfo('tasty', 'loading from api');
       return fetch(
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}/emotes/tastyemotes.json`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-131-ff-add-on-reject-updates'}/emotes/tastyemotes.json`,
       )
         .then((res) => res.json())
         .then((json) => {
@@ -4218,76 +4215,80 @@ var dubplus = (function () {
     },
   };
   function makeImage(type, src, name, w, h) {
-    const width = '';
-    const height = '';
-    return `<img class="emoji ${type}-emote" ${width} ${height} title="${name}" alt="${name}" src="${src}" />`;
+    const img = document.createElement('img');
+    img.className = `emoji ${type}-emote`;
+    img.title = name;
+    img.alt = name;
+    img.src = src;
+    return img;
   }
-  function replaceTwitch(html) {
-    if (!dubplus_emoji.twitchJSONSLoaded) {
-      return html;
-    }
-    const _regex = dubplus_emoji.twitch.chatRegex;
-    const emoted = html.replace(_regex, function (matched, p1) {
-      const key = p1.toLowerCase();
-      if (dubplus_emoji.twitch.emotesMap.has(key)) {
-        const id = dubplus_emoji.twitch.emotesMap.get(key);
-        const src = dubplus_emoji.twitch.template(id);
-        return makeImage('twitch', src, key);
+  function processChatText(text2) {
+    const regex = /(:[^: ]+:)/g;
+    const chunks = text2.split(regex);
+    const nodes = [];
+    chunks.forEach((chunk) => {
+      if (chunk.match(regex)) {
+        const key = chunk.toLowerCase().replace(/^:/, '').replace(/:$/, '');
+        if (
+          dubplus_emoji.twitchJSONSLoaded &&
+          dubplus_emoji.twitch.emotesMap.has(key)
+        ) {
+          const id = dubplus_emoji.twitch.emotesMap.get(key);
+          const src = dubplus_emoji.twitch.template(id);
+          const img = makeImage('twitch', src, key);
+          nodes.push(img);
+        } else if (
+          dubplus_emoji.bttvJSONSLoaded &&
+          dubplus_emoji.bttv.emotesMap.has(key)
+        ) {
+          const id = dubplus_emoji.bttv.emotesMap.get(key);
+          const src = dubplus_emoji.bttv.template(id);
+          const img = makeImage('bttv', src, key);
+          nodes.push(img);
+        } else if (
+          dubplus_emoji.frankerfacezJSONLoaded &&
+          dubplus_emoji.frankerFacez.emotesMap.has(key)
+        ) {
+          const id = dubplus_emoji.frankerFacez.emotesMap.get(key);
+          const src = dubplus_emoji.frankerFacez.template(id);
+          const img = makeImage('frankerFacez', src, key);
+          nodes.push(img);
+        } else {
+          nodes.push(document.createTextNode(chunk));
+        }
       } else {
-        return matched;
+        nodes.push(document.createTextNode(chunk));
       }
     });
-    return emoted;
+    console.log(nodes);
+    return nodes;
   }
-  function replaceBttv(html) {
-    if (!dubplus_emoji.bttvJSONSLoaded) {
-      return html;
-    }
-    const _regex = dubplus_emoji.bttv.chatRegex;
-    const emoted = html.replace(_regex, function (matched, p1) {
-      const key = p1.toLowerCase();
-      if (dubplus_emoji.bttv.emotesMap.has(key)) {
-        const id = dubplus_emoji.bttv.emotesMap.get(key);
-        const src = dubplus_emoji.bttv.template(id);
-        return makeImage('bttv', src, key);
-      } else {
-        return matched;
+  function processChatLI(li) {
+    const textElems = li.querySelectorAll('.text p');
+    textElems.forEach((textElem) => {
+      if (
+        !textElem.hasAttribute('dubplus-emotes-processed') &&
+        (textElem == null ? void 0 : textElem.textContent)
+      ) {
+        const processedHTML = processChatText(textElem.textContent);
+        textElem.replaceChildren(...processedHTML);
+        textElem.setAttribute('dubplus-emotes-processed', 'true');
       }
     });
-    return emoted;
   }
-  function replaceFranker(html) {
-    if (!dubplus_emoji.frankerfacezJSONLoaded) {
-      return html;
-    }
-    const _regex = dubplus_emoji.frankerFacez.chatRegex;
-    const emoted = html.replace(_regex, function (matched, p1) {
-      const key = p1.toLowerCase();
-      if (dubplus_emoji.frankerFacez.emotesMap.has(key)) {
-        const id = dubplus_emoji.frankerFacez.emotesMap.get(key);
-        const src = dubplus_emoji.frankerFacez.template(id);
-        return makeImage('frankerFacez', src, key);
-      } else {
-        return matched;
+  function replaceTextWithEmote(e) {
+    if (e == null ? void 0 : e.chatid) {
+      const chatMessage = document.querySelector(`.chat-id-${e.chatid}`);
+      if (chatMessage) {
+        processChatLI(chatMessage);
+        return;
       }
-    });
-    return emoted;
-  }
-  function replaceTextWithEmote() {
-    const chats = getChatMessages(':not([data-emote-processed])');
+    }
+    const chats = getChatMessages();
     if (!(chats == null ? void 0 : chats.length)) {
       return;
     }
-    chats.forEach((li) => {
-      li.setAttribute('data-emote-processed', 'true');
-      const text2 = li.querySelector('.text');
-      if (text2 == null ? void 0 : text2.innerHTML) {
-        let processedHTML = replaceTwitch(text2.innerHTML);
-        processedHTML = replaceBttv(processedHTML);
-        processedHTML = replaceFranker(processedHTML);
-        text2.innerHTML = processedHTML;
-      }
-    });
+    chats.forEach(processChatLI);
   }
   const emotes = {
     id: 'emotes',
@@ -5480,7 +5481,7 @@ var dubplus = (function () {
     link2.href = fileName;
     return link2;
   };
-  function loadCSS(cssFile, className) {
+  function link(cssFile, className) {
     return new Promise((resolve, reject) => {
       var _a2;
       (_a2 = document.querySelector(`link.${className}`)) == null
@@ -5490,14 +5491,14 @@ var dubplus = (function () {
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1741837264716'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-131-ff-add-on-reject-updates'}${cssFile}?${'1741965349985'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
       document.head.appendChild(link2);
     });
   }
-  function loadExternalCss(cssFile, id) {
+  function style(cssFile, id) {
     var _a2;
     (_a2 = document.querySelector(`style#${id}`)) == null
       ? void 0
@@ -5505,10 +5506,10 @@ var dubplus = (function () {
     return fetch(cssFile)
       .then((res) => res.text())
       .then((css) => {
-        const style = document.createElement('style');
-        style.id = id;
-        style.textContent = css;
-        document.head.appendChild(style);
+        const style2 = document.createElement('style');
+        style2.id = id;
+        style2.textContent = css;
+        document.head.appendChild(style2);
       });
   }
   const LINK_ELEM_ID$1 = 'dubplus-community-css';
@@ -5527,16 +5528,16 @@ var dubplus = (function () {
             /(@dub(x|plus|\+)=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/,
             'i',
           );
-          let communityCSSUrl = null;
+          let community = null;
           content.replace(themeCheck, function (match, p1, p2, p3) {
-            communityCSSUrl = p3;
+            community = p3;
           });
-          if (!communityCSSUrl) {
+          if (!community) {
             logInfo('No community CSS theme found');
             return;
           }
-          logInfo('loading community css theme from:', communityCSSUrl);
-          return loadExternalCss(communityCSSUrl, LINK_ELEM_ID$1);
+          logInfo('loading community css theme from:', community);
+          return style(community, LINK_ELEM_ID$1);
         })
         .catch((error) => {
           logError('Community CSS: Failed to load room info', error);
@@ -5576,7 +5577,7 @@ var dubplus = (function () {
           settings.options[customCss.id] = false;
           return;
         } else {
-          loadExternalCss(value, LINK_ELEM_ID).catch((e) => {
+          style(value, LINK_ELEM_ID).catch((e) => {
             logError('Error loading custom css file:', e);
           });
         }
@@ -5584,7 +5585,7 @@ var dubplus = (function () {
     },
     turnOn() {
       if (settings.custom[this.id]) {
-        loadExternalCss(settings.custom[this.id], LINK_ELEM_ID).catch((e) => {
+        style(settings.custom[this.id], LINK_ELEM_ID).catch((e) => {
           logError('Error loading custom css file:', e);
         });
       }
@@ -6368,7 +6369,7 @@ var dubplus = (function () {
   function generateSnow(snowDensity = 200) {
     snowDensity -= 1;
     const snowWrapper = getSnowConatiner();
-    snowWrapper.innerHTML = '';
+    snowWrapper.replaceChildren();
     for (let i = 0; i < snowDensity; i++) {
       let board = document.createElement('div');
       board.className = 'snowflake';
@@ -6385,7 +6386,7 @@ var dubplus = (function () {
   }
   function addCSS(rule = '') {
     const cssElement = getOrCreateCSSElement();
-    cssElement.innerHTML = rule;
+    cssElement.textContent = rule;
     document.head.appendChild(cssElement);
   }
   function randomInt(value = 100) {
@@ -6949,7 +6950,7 @@ var dubplus = (function () {
   const loadedAsExtension = 'dubplusExtensionLoaded' in window;
   logInfo('Dub+: loaded as extension:', loadedAsExtension);
   if (!loadedAsExtension) {
-    loadCSS('/dubplus.css', 'dubplus-css').catch((e) => {
+    link('/dubplus.css', 'dubplus-css').catch((e) => {
       logError('Failed to load dubplus.css', e);
     });
   }
@@ -6960,7 +6961,7 @@ var dubplus = (function () {
     document.body.appendChild(container);
   } else if (container.children.length > 0) {
     unmount(container);
-    container.innerHTML = '';
+    container.replaceChildren();
   }
   const app = mount(DubPlus, {
     target: container,

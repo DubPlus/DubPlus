@@ -17,10 +17,9 @@ export function zipExetension() {
     '"*node_modules*"',
     '"*.vscode*"',
     '".env*"',
-    '"*test-results*"',
     '"*.zip"',
   ].join(' -x ');
-  execSync(`zip -vr -FS DubPlus-Extension ./* -x ${excludes}`, options);
+  execSync(`zip -vr -FS DubPlus-Extension . -x ${excludes}`, options);
 }
 
 if (isThisFileBeingRunViaCLI) {

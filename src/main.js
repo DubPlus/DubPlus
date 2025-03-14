@@ -1,7 +1,7 @@
 import './dubplus.css';
 import { mount, unmount } from 'svelte';
 import DubPlus from './DubPlus.svelte';
-import { loadCSS } from './utils/css';
+import { link } from './utils/css';
 import { logError, logInfo } from './utils/logger';
 
 const loadedAsExtension = 'dubplusExtensionLoaded' in window;
@@ -9,11 +9,9 @@ const loadedAsExtension = 'dubplusExtensionLoaded' in window;
 // @ts-ignore
 logInfo('Dub+: loaded as extension:', loadedAsExtension);
 
-// during development, and also when loaded as an extension,
-// we don't need to load the CSS, because css is injected by
-// the extension or dev server
+// We only load the CSS if we're NOT loaded as an extension
 if (!import.meta.env.DEV && !loadedAsExtension) {
-  loadCSS('/dubplus.css', 'dubplus-css').catch((e) => {
+  link('/dubplus.css', 'dubplus-css').catch((e) => {
     logError('Failed to load dubplus.css', e);
   });
 }
@@ -27,7 +25,7 @@ if (!container) {
 } else if (container.children.length > 0) {
   // Dub+ has already been loaded so we need to unmount it first
   unmount(container);
-  container.innerHTML = '';
+  container.replaceChildren();
 }
 
 const app = mount(DubPlus, {

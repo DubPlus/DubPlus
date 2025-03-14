@@ -1,6 +1,6 @@
 <script>
   import { teleport } from '../actions/teleport.svelte';
-  import { createSnow } from '../../external/pure-snow';
+  import { createSnow } from '../../scripts/pure-snow';
   import { onDestroy, onMount } from 'svelte';
 
   onMount(() => {

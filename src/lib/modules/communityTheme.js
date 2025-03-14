@@ -1,5 +1,5 @@
 import { logError, logInfo } from '../../utils/logger';
-import { loadExternalCss } from '../../utils/css';
+import { style } from '../../utils/css';
 /**
  * Community Theme
  * Toggle Community CSS theme
@@ -32,23 +32,23 @@ export const communityTheme = {
       .then((e) => {
         const content = e.data.description;
 
-        // for backwards compatibility with dubx we're checking for both @dubx
-        // and @dubplus and @dub+
+        // for backwards compatibility with dubx we're checking for:
+        // @dubx, @dubplus, and @dub+
         const themeCheck = new RegExp(
           /(@dub(x|plus|\+)=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/,
           'i',
         );
-        let communityCSSUrl = null;
+        let community = null;
         content.replace(themeCheck, function (match, p1, p2, p3) {
-          communityCSSUrl = p3;
+          community = p3;
         });
 
-        if (!communityCSSUrl) {
+        if (!community) {
           logInfo('No community CSS theme found');
           return;
         }
-        logInfo('loading community css theme from:', communityCSSUrl);
-        return loadExternalCss(communityCSSUrl, LINK_ELEM_ID);
+        logInfo('loading community css theme from:', community);
+        return style(community, LINK_ELEM_ID);
       })
       .catch((error) => {
         logError('Community CSS: Failed to load room info', error);

@@ -9,7 +9,7 @@
   "action": {
     "default_icon": {
       "16": "extension/icons/18.png",
-      "38": "extension/icons/38.png",
+      "32": "extension/icons/32.png",
       "48": "extension/icons/48.png"
     }
   },
@@ -29,12 +29,21 @@
     }
   ],
   "icons": {
-    "16": "extension/icons/18.png",
+    "18": "extension/icons/18.png",
     "19": "extension/icons/19.png",
-    "38": "extension/icons/38.png",
+    "32": "extension/icons/32.png",
     "48": "extension/icons/48.png",
     "96": "extension/icons/96.png",
     "128": "extension/icons/128.png"
   },
-  "host_permissions": ["*://*.dubtrack.fm/*", "*://*.queup.net/*"]
+  "host_permissions": ["*://*.dubtrack.fm/*", "*://*.queup.net/*"],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{00319163-9639-49e6-ac0f-7d1fb989707d}",
+      "strict_min_version": "109.0"
+    },
+    "safari": {
+      "strict_min_version": "14"
+    }
+  }
 }

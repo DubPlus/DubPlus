@@ -9,7 +9,6 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "dev": "vite",
     "build": "eslint src && vite build",
     "watch": "vite build --watch",
     "ext": "npm run build && npm run zip",

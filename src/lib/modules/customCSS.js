@@ -3,7 +3,7 @@
  * Add custom CSS
  */
 
-import { loadExternalCss } from '../../utils/css';
+import { style } from '../../utils/css';
 import { logError } from '../../utils/logger';
 import { t } from '../stores/i18n.svelte';
 import { settings } from '../stores/settings.svelte';
@@ -43,7 +43,7 @@ export const customCss = {
         settings.options[customCss.id] = false; // turn it back off
         return;
       } else {
-        loadExternalCss(value, LINK_ELEM_ID).catch((e) => {
+        style(value, LINK_ELEM_ID).catch((e) => {
           logError('Error loading custom css file:', e);
         });
       }
@@ -51,7 +51,7 @@ export const customCss = {
   },
   turnOn() {
     if (settings.custom[this.id]) {
-      loadExternalCss(settings.custom[this.id], LINK_ELEM_ID).catch((e) => {
+      style(settings.custom[this.id], LINK_ELEM_ID).catch((e) => {
         logError('Error loading custom css file:', e);
       });
     }
