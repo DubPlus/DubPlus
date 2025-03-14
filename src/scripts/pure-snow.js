@@ -32,7 +32,7 @@ function getSnowAttributes() {
 function generateSnow(snowDensity = 200) {
   snowDensity -= 1;
   const snowWrapper = getSnowConatiner();
-  snowWrapper.innerHTML = '';
+  snowWrapper.replaceChildren(); // clear previous snowflakes
   for (let i = 0; i < snowDensity; i++) {
     let board = document.createElement('div');
     board.className = 'snowflake';
@@ -53,7 +53,7 @@ function getOrCreateCSSElement() {
 // Append style for each snowflake to the head
 function addCSS(rule = '') {
   const cssElement = getOrCreateCSSElement();
-  cssElement.innerHTML = rule; // safe to use innerHTML
+  cssElement.textContent = rule;
   document.head.appendChild(cssElement);
 }
 
