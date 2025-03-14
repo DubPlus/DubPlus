@@ -11,10 +11,9 @@ export function getCurrentBranch() {
   // in this case we always want the target branch. Unless it's the main branch,
   // then we should return an empty string.
   if (process.env.GITHUB_BASE_REF) {
-    if (process.env.GITHUB_BASE_REF === 'master') {
-      return '';
-    }
-    return process.env.GITHUB_BASE_REF;
+    return process.env.GITHUB_BASE_REF === 'master'
+      ? ''
+      : process.env.GITHUB_BASE_REF;
   }
   try {
     return execSync('git symbolic-ref HEAD 2>/dev/null')
