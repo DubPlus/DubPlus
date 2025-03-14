@@ -9,7 +9,7 @@
   "action": {
     "default_icon": {
       "16": "extension/icons/18.png",
-      "38": "extension/icons/38.png",
+      "32": "extension/icons/32.png",
       "48": "extension/icons/48.png"
     }
   },
