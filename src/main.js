@@ -25,7 +25,7 @@ if (!container) {
 } else if (container.children.length > 0) {
   // Dub+ has already been loaded so we need to unmount it first
   unmount(container);
-  container.innerHTML = '';
+  container.replaceChildren();
 }
 
 const app = mount(DubPlus, {
