@@ -3911,7 +3911,6 @@ var dubplus = (function () {
        * @type {Map<string, string>}
        */
       emotesMap: /* @__PURE__ */ new Map(),
-      chatRegex: new RegExp(':([-_a-z0-9]+):', 'ig'),
     },
     bttv: {
       /**
@@ -3925,7 +3924,6 @@ var dubplus = (function () {
        * @type {Map<string, string>}
        */
       emotesMap: /* @__PURE__ */ new Map(),
-      chatRegex: new RegExp(':([&!()\\-_a-z0-9]+):', 'ig'),
     },
     tasty: {
       /**
@@ -3952,7 +3950,6 @@ var dubplus = (function () {
        * @type {Map<string, number>}
        */
       emotesMap: /* @__PURE__ */ new Map(),
-      chatRegex: new RegExp(':([-_a-z0-9]+):', 'ig'),
     },
     /**
      *
@@ -4218,76 +4215,80 @@ var dubplus = (function () {
     },
   };
   function makeImage(type, src, name, w, h) {
-    const width = '';
-    const height = '';
-    return `<img class="emoji ${type}-emote" ${width} ${height} title="${name}" alt="${name}" src="${src}" />`;
+    const img = document.createElement('img');
+    img.className = `emoji ${type}-emote`;
+    img.title = name;
+    img.alt = name;
+    img.src = src;
+    return img;
   }
-  function replaceTwitch(html) {
-    if (!dubplus_emoji.twitchJSONSLoaded) {
-      return html;
-    }
-    const _regex = dubplus_emoji.twitch.chatRegex;
-    const emoted = html.replace(_regex, function (matched, p1) {
-      const key = p1.toLowerCase();
-      if (dubplus_emoji.twitch.emotesMap.has(key)) {
-        const id = dubplus_emoji.twitch.emotesMap.get(key);
-        const src = dubplus_emoji.twitch.template(id);
-        return makeImage('twitch', src, key);
+  function processChatText(text2) {
+    const regex = /(:[^: ]+:)/g;
+    const chunks = text2.split(regex);
+    const nodes = [];
+    chunks.forEach((chunk) => {
+      if (chunk.match(regex)) {
+        const key = chunk.toLowerCase().replace(/^:/, '').replace(/:$/, '');
+        if (
+          dubplus_emoji.twitchJSONSLoaded &&
+          dubplus_emoji.twitch.emotesMap.has(key)
+        ) {
+          const id = dubplus_emoji.twitch.emotesMap.get(key);
+          const src = dubplus_emoji.twitch.template(id);
+          const img = makeImage('twitch', src, key);
+          nodes.push(img);
+        } else if (
+          dubplus_emoji.bttvJSONSLoaded &&
+          dubplus_emoji.bttv.emotesMap.has(key)
+        ) {
+          const id = dubplus_emoji.bttv.emotesMap.get(key);
+          const src = dubplus_emoji.bttv.template(id);
+          const img = makeImage('bttv', src, key);
+          nodes.push(img);
+        } else if (
+          dubplus_emoji.frankerfacezJSONLoaded &&
+          dubplus_emoji.frankerFacez.emotesMap.has(key)
+        ) {
+          const id = dubplus_emoji.frankerFacez.emotesMap.get(key);
+          const src = dubplus_emoji.frankerFacez.template(id);
+          const img = makeImage('frankerFacez', src, key);
+          nodes.push(img);
+        } else {
+          nodes.push(document.createTextNode(chunk));
+        }
       } else {
-        return matched;
+        nodes.push(document.createTextNode(chunk));
       }
     });
-    return emoted;
+    console.log(nodes);
+    return nodes;
   }
-  function replaceBttv(html) {
-    if (!dubplus_emoji.bttvJSONSLoaded) {
-      return html;
-    }
-    const _regex = dubplus_emoji.bttv.chatRegex;
-    const emoted = html.replace(_regex, function (matched, p1) {
-      const key = p1.toLowerCase();
-      if (dubplus_emoji.bttv.emotesMap.has(key)) {
-        const id = dubplus_emoji.bttv.emotesMap.get(key);
-        const src = dubplus_emoji.bttv.template(id);
-        return makeImage('bttv', src, key);
-      } else {
-        return matched;
+  function processChatLI(li) {
+    const textElems = li.querySelectorAll('.text p');
+    textElems.forEach((textElem) => {
+      if (
+        !textElem.hasAttribute('dubplus-emotes-processed') &&
+        (textElem == null ? void 0 : textElem.textContent)
+      ) {
+        const processedHTML = processChatText(textElem.textContent);
+        textElem.replaceChildren(...processedHTML);
+        textElem.setAttribute('dubplus-emotes-processed', 'true');
       }
     });
-    return emoted;
   }
-  function replaceFranker(html) {
-    if (!dubplus_emoji.frankerfacezJSONLoaded) {
-      return html;
-    }
-    const _regex = dubplus_emoji.frankerFacez.chatRegex;
-    const emoted = html.replace(_regex, function (matched, p1) {
-      const key = p1.toLowerCase();
-      if (dubplus_emoji.frankerFacez.emotesMap.has(key)) {
-        const id = dubplus_emoji.frankerFacez.emotesMap.get(key);
-        const src = dubplus_emoji.frankerFacez.template(id);
-        return makeImage('frankerFacez', src, key);
-      } else {
-        return matched;
+  function replaceTextWithEmote(e) {
+    if (e == null ? void 0 : e.chatid) {
+      const chatMessage = document.querySelector(`.chat-id-${e.chatid}`);
+      if (chatMessage) {
+        processChatLI(chatMessage);
+        return;
       }
-    });
-    return emoted;
-  }
-  function replaceTextWithEmote() {
-    const chats = getChatMessages(':not([data-emote-processed])');
+    }
+    const chats = getChatMessages();
     if (!(chats == null ? void 0 : chats.length)) {
       return;
     }
-    chats.forEach((li) => {
-      li.setAttribute('data-emote-processed', 'true');
-      const text2 = li.querySelector('.text');
-      if (text2 == null ? void 0 : text2.innerHTML) {
-        let processedHTML = replaceTwitch(text2.innerHTML);
-        processedHTML = replaceBttv(processedHTML);
-        processedHTML = replaceFranker(processedHTML);
-        text2.innerHTML = processedHTML;
-      }
-    });
+    chats.forEach(processChatLI);
   }
   const emotes = {
     id: 'emotes',
@@ -5490,7 +5491,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-131-ff-add-on-reject-updates'}${cssFile}?${'1741958407383'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-131-ff-add-on-reject-updates'}${cssFile}?${'1741965349985'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -6368,7 +6369,7 @@ var dubplus = (function () {
   function generateSnow(snowDensity = 200) {
     snowDensity -= 1;
     const snowWrapper = getSnowConatiner();
-    snowWrapper.innerHTML = '';
+    snowWrapper.replaceChildren();
     for (let i = 0; i < snowDensity; i++) {
       let board = document.createElement('div');
       board.className = 'snowflake';
@@ -6385,7 +6386,7 @@ var dubplus = (function () {
   }
   function addCSS(rule = '') {
     const cssElement = getOrCreateCSSElement();
-    cssElement.innerHTML = rule;
+    cssElement.textContent = rule;
     document.head.appendChild(cssElement);
   }
   function randomInt(value = 100) {
@@ -6960,7 +6961,7 @@ var dubplus = (function () {
     document.body.appendChild(container);
   } else if (container.children.length > 0) {
     unmount(container);
-    container.innerHTML = '';
+    container.replaceChildren();
   }
   const app = mount(DubPlus, {
     target: container,
