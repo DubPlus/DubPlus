@@ -130,7 +130,6 @@ export const dubplus_emoji = {
      * @type {Map<string, string>}
      */
     emotesMap: new Map(),
-    chatRegex: new RegExp(':([-_a-z0-9]+):', 'ig'),
   },
   bttv: {
     /**
@@ -144,7 +143,6 @@ export const dubplus_emoji = {
      * @type {Map<string, string>}
      */
     emotesMap: new Map(),
-    chatRegex: new RegExp(':([&!()\\-_a-z0-9]+):', 'ig'),
   },
   tasty: {
     /**
@@ -171,7 +169,6 @@ export const dubplus_emoji = {
      * @type {Map<string, number>}
      */
     emotesMap: new Map(),
-    chatRegex: new RegExp(':([-_a-z0-9]+):', 'ig'),
   },
 
   /**
