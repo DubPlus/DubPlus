@@ -9,9 +9,9 @@ const loadedAsExtension = 'dubplusExtensionLoaded' in window;
 // @ts-ignore
 logInfo('Dub+: loaded as extension:', loadedAsExtension);
 
-// during development, and also when loaded as an extension,
-// we don't need to load the CSS, because css is injected by
-// the extension or dev server
+// If loading this script as an extension it will come with the
+// css locally. But if it's not loaded as an extension (i.e. Bookmarklet),
+// we need to load the CSS file from the CDN.
 if (!import.meta.env.DEV && !loadedAsExtension) {
   loadCSS('/dubplus.css', 'dubplus-css').catch((e) => {
     logError('Failed to load dubplus.css', e);
