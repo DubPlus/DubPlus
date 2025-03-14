@@ -4056,7 +4056,7 @@ var dubplus = (function () {
       }
       logInfo('tasty', 'loading from api');
       return fetch(
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-131-ff-add-on-reject-updates'}/emotes/tastyemotes.json`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}/emotes/tastyemotes.json`,
       )
         .then((res) => res.json())
         .then((json) => {
@@ -5491,7 +5491,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@refactor-131-ff-add-on-reject-updates'}${cssFile}?${'1741965349985'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1741968256195'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
