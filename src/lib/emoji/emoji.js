@@ -1,18 +1,8 @@
 import '../../utils/ldb'; // loads ldb into the window object
 import { logError, logInfo } from '../../utils/logger';
+import { LDB } from '../../utils/ldb';
 
-/**
- * Promisify version of `window.ldb.get`
- * @param {string} key
- * @returns {Promise<string>}
- */
-function ldbGet(key) {
-  return new Promise((resolve) => {
-    window.ldb.get(key, function (data) {
-      resolve(data);
-    });
-  });
-}
+const ldb = new LDB();
 
 /**
  * @typedef {object} TwitchEmote
@@ -115,7 +105,6 @@ export const dubplus_emoji = {
   },
   twitchJSONSLoaded: false,
   bttvJSONSLoaded: false,
-  tastyJSONLoaded: false,
   frankerfacezJSONLoaded: false,
 
   twitch: {
@@ -144,19 +133,6 @@ export const dubplus_emoji = {
      */
     emotesMap: new Map(),
   },
-  tasty: {
-    /**
-     * @param {string} id
-     * @returns {string}
-     */
-    template(id) {
-      return this.emotesMap.get(id).url;
-    },
-    /**
-     * @type {Map<string, {url: string, width: number, height: number}>}
-     */
-    emotesMap: new Map(),
-  },
   frankerFacez: {
     /**
      * @param {number} id
@@ -179,7 +155,7 @@ export const dubplus_emoji = {
   shouldUpdateAPIs(apiName) {
     const day = 86400000; // milliseconds in a day
     // if api return an object with an error then we should try again
-    return ldbGet(`${apiName}_api`).then((savedItem) => {
+    return ldb.get(`${apiName}_api`).then((savedItem) => {
       if (savedItem) {
         try {
           const parsed = JSON.parse(savedItem);
@@ -215,7 +191,7 @@ export const dubplus_emoji = {
       return Promise.resolve();
     }
 
-    // if it doesn't exist in localStorage or it's older than 5 days
+    // if it doesn't exist in localStorage, or it's older than 5 days,
     // grab it from the twitch API
     return this.shouldUpdateAPIs('twitch').then((shouldUpdate) => {
       if (shouldUpdate) {
@@ -233,12 +209,12 @@ export const dubplus_emoji = {
               }
             }
             localStorage.setItem('twitch_api_timestamp', Date.now().toString());
-            window.ldb.set('twitch_api', JSON.stringify(twitchEmotes));
+            ldb.set('twitch_api', JSON.stringify(twitchEmotes));
             dubplus_emoji.processTwitchEmotes(twitchEmotes);
           })
           .catch((err) => logError(err));
       } else {
-        return ldbGet('twitch_api').then((data) => {
+        return ldb.get('twitch_api').then((data) => {
           logInfo('twitch', 'loading from IndexedDB');
           /**
            * @type {{[emote: string]: string}}
@@ -276,12 +252,12 @@ export const dubplus_emoji = {
               }
             });
             localStorage.setItem('bttv_api_timestamp', Date.now().toString());
-            window.ldb.set('bttv_api', JSON.stringify(bttvEmotes));
+            ldb.set('bttv_api', JSON.stringify(bttvEmotes));
             dubplus_emoji.processBTTVEmotes(bttvEmotes);
           })
           .catch((err) => logError(err));
       } else {
-        return ldbGet('bttv_api').then((data) => {
+        return ldb.get('bttv_api').then((data) => {
           logInfo('bttv', 'loading from IndexedDB');
           /**
            * @type {{[emote: string]: string}}
@@ -291,26 +267,6 @@ export const dubplus_emoji = {
         });
       }
     });
-  },
-
-  /**
-   * @return {Promise<void>}
-   */
-  loadTastyEmotes() {
-    if (this.tastyJSONLoaded) {
-      return Promise.resolve();
-    }
-    logInfo('tasty', 'loading from api');
-    // since we control this API we should always have it load from remote
-    // @ts-ignore __SRC_ROOT__ is replaced by vite
-    // eslint-disable-next-line no-undef
-    return fetch(`${__SRC_ROOT__}/emotes/tastyemotes.json`)
-      .then((res) => res.json())
-      .then((json) => {
-        window.ldb.set('tasty_api', JSON.stringify(json));
-        dubplus_emoji.processTastyEmotes(json);
-      })
-      .catch((err) => logError(err));
   },
 
   /**
@@ -332,12 +288,12 @@ export const dubplus_emoji = {
               'frankerfacez_api_timestamp',
               Date.now().toString(),
             );
-            window.ldb.set('frankerfacez_api', JSON.stringify(frankerFacez));
+            ldb.set('frankerfacez_api', JSON.stringify(frankerFacez));
             dubplus_emoji.processFrankerFacez(frankerFacez);
           })
           .catch((err) => logError(err));
       } else {
-        return ldbGet('frankerfacez_api').then((data) => {
+        return ldb.get('frankerfacez_api').then((data) => {
           logInfo('frankerfacez', 'loading from IndexedDB');
           const savedData = JSON.parse(data);
           dubplus_emoji.processFrankerFacez(savedData);
@@ -356,10 +312,10 @@ export const dubplus_emoji = {
         const key = code.toLowerCase();
 
         if (window.emojify.emojiNames.includes(key)) {
-          continue; // do nothing so we don't override emoji
+          this.twitch.emotesMap.set(`${key}_twitch`, data[code]);
+        } else {
+          this.twitch.emotesMap.set(key, data[code]);
         }
-
-        this.twitch.emotesMap.set(key, data[code]);
       }
     }
     this.twitchJSONSLoaded = true;
@@ -373,31 +329,21 @@ export const dubplus_emoji = {
       if (Object.hasOwn(data, code)) {
         const key = code.toLowerCase();
 
-        if (code.indexOf(':') >= 0) {
+        if (code.includes(':')) {
           continue; // don't want any emotes with smileys and stuff
         }
 
-        if (window.emojify.emojiNames.indexOf(key) >= 0) {
-          continue; // do nothing so we don't override emoji
-        }
-
-        if (!this.twitch.emotesMap.has(key)) {
+        if (
+          window.emojify.emojiNames.includes(key) ||
+          this.twitch.emotesMap.has(key)
+        ) {
+          this.bttv.emotesMap.set(`${key}_bttv`, data[code]);
+        } else {
           this.bttv.emotesMap.set(key, data[code]);
         }
       }
     }
     this.bttvJSONSLoaded = true;
-  },
-
-  /**
-   * @param {{[emote: string]: { url: string; width: number; height: number; }}} data
-   */
-  processTastyEmotes(data) {
-    this.tasty.emotes = data.emotes;
-    this.tastyJSONLoaded = true;
-    Object.keys(this.tasty.emotes).forEach((key) => {
-      this.tasty.emotesMap.set(key, data[key]);
-    });
   },
 
   /**
@@ -408,15 +354,17 @@ export const dubplus_emoji = {
       const code = emoticon.name;
       const key = code.toLowerCase();
 
-      if (code.indexOf(':') >= 0) {
+      if (code.includes(':')) {
         continue; // don't want any emotes with smileys and stuff
       }
 
-      if (window.emojify.emojiNames.includes(key)) {
-        continue; // do nothing so we don't override emojify emoji
-      }
-
-      if (!this.twitch.emotesMap.has(key) && !this.bttv.emotesMap.has(key)) {
+      if (
+        window.emojify.emojiNames.includes(key) ||
+        this.twitch.emotesMap.has(key) ||
+        this.bttv.emotesMap.has(key)
+      ) {
+        this.frankerFacez.emotesMap.set(`${key}_ffz`, emoticon.id);
+      } else {
         this.frankerFacez.emotesMap.set(key, emoticon.id);
       }
     }

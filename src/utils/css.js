@@ -1,3 +1,5 @@
+const CDN_ROOT = '//cdn.jsdelivr.net/gh/DubPlus';
+
 /**
  * @param {string} className
  * @param {string} fileName
@@ -14,7 +16,7 @@ const makeLink = function (className, fileName) {
 
 /**
  * Loads a CSS file into <head>.
- * It concats __SRC_ROOT__ with the first argument (cssFile)
+ * It concats __GIT_BRANCH__ with the first argument (cssFile)
  * @example:
  * css.load("/options/show_timestamps.css", "show_timestamps_link");
  *
@@ -27,9 +29,9 @@ export function link(cssFile, className) {
     document.querySelector(`link.${className}`)?.remove();
     const link = makeLink(
       className,
-      // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
+      // @ts-ignore __GIT_BRANCH__ & __TIME_STAMP__ are replaced by vite
       // eslint-disable-next-line no-undef
-      `${__SRC_ROOT__}${cssFile}?${__TIME_STAMP__}`,
+      `${CDN_ROOT}/${__GIT_BRANCH__}${cssFile}?${__TIME_STAMP__}`,
     );
     link.onload = () => resolve();
     link.onerror = reject;

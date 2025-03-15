@@ -3819,56 +3819,58 @@ var dubplus = (function () {
       maxlength: 255,
     },
   };
-  !(function () {
-    function e(t3, o2) {
-      return n
-        ? void (n.transaction('s').objectStore('s').get(t3).onsuccess =
-            function (e2) {
-              var t4 = (e2.target.result && e2.target.result.v) || null;
-              o2(t4);
-            })
-        : void setTimeout(function () {
-            e(t3, o2);
-          }, 100);
-    }
-    var t2 =
-      window.indexedDB ||
-      window.mozIndexedDB ||
-      window.webkitIndexedDB ||
-      window.msIndexedDB;
-    if (!t2) return void console.error('indexDB not supported');
-    var n,
-      o = { k: '', v: '' },
-      r = t2.open('d2', 1);
-    (r.onsuccess = function (e2) {
-      n = this.result;
-    }),
-      (r.onerror = function (e2) {
-        console.error('indexedDB request error'), console.log(e2);
-      }),
-      (r.onupgradeneeded = function (e2) {
-        n = null;
-        var t3 = e2.target.result.createObjectStore('s', { keyPath: 'k' });
-        t3.transaction.oncomplete = function (e3) {
-          n = e3.target.db;
+  class LDB {
+    constructor() {
+      this.db = null;
+      const dbReq = window.indexedDB.open('d2', 1);
+      const outerThis = this;
+      dbReq.onsuccess = function () {
+        outerThis.db = this.result;
+      };
+      dbReq.onerror = function (e) {
+        console.error('Dub+', 'indexedDB request error:', e);
+      };
+      dbReq.onupgradeneeded = function () {
+        outerThis.db = null;
+        var t2 = this.result.createObjectStore('s', { keyPath: 'k' });
+        t2.transaction.oncomplete = function () {
+          outerThis.db = this.db;
         };
-      }),
-      (window.ldb = {
-        get: e,
-        set: function (e2, t3) {
-          (o.k = e2),
-            (o.v = t3),
-            n.transaction('s', 'readwrite').objectStore('s').put(o);
-        },
+      };
+    }
+    /**
+     *
+     * @param {string} key
+     * @returns {Promise<string|null>}
+     */
+    get(key) {
+      return new Promise((resolve) => {
+        if (this.db) {
+          this.db.transaction('s').objectStore('s').get(key).onsuccess =
+            function () {
+              var _a2;
+              resolve(((_a2 = this.result) == null ? void 0 : _a2.v) || null);
+            };
+        } else {
+          setTimeout(() => {
+            this.get(key).then(resolve);
+          }, 100);
+        }
       });
-  })();
-  function ldbGet(key) {
-    return new Promise((resolve) => {
-      window.ldb.get(key, function (data) {
-        resolve(data);
-      });
-    });
+    }
+    /**
+     *
+     * @param {string} key
+     * @param {string} value
+     */
+    set(key, value) {
+      this.db
+        .transaction('s', 'readwrite')
+        .objectStore('s')
+        .put({ k: key, v: value });
+    }
   }
+  const ldb = new LDB();
   function fetchTwitchEmotes() {
     return fetch(
       '//cdn.jsdelivr.net/gh/Jiiks/BetterDiscordApp/data/emotedata_twitch_global.json',
@@ -3897,7 +3899,6 @@ var dubplus = (function () {
     },
     twitchJSONSLoaded: false,
     bttvJSONSLoaded: false,
-    tastyJSONLoaded: false,
     frankerfacezJSONLoaded: false,
     twitch: {
       /**
@@ -3925,19 +3926,6 @@ var dubplus = (function () {
        */
       emotesMap: /* @__PURE__ */ new Map(),
     },
-    tasty: {
-      /**
-       * @param {string} id
-       * @returns {string}
-       */
-      template(id) {
-        return this.emotesMap.get(id).url;
-      },
-      /**
-       * @type {Map<string, {url: string, width: number, height: number}>}
-       */
-      emotesMap: /* @__PURE__ */ new Map(),
-    },
     frankerFacez: {
       /**
        * @param {number} id
@@ -3958,7 +3946,7 @@ var dubplus = (function () {
      */
     shouldUpdateAPIs(apiName) {
       const day = 864e5;
-      return ldbGet(`${apiName}_api`).then((savedItem) => {
+      return ldb.get(`${apiName}_api`).then((savedItem) => {
         if (savedItem) {
           try {
             const parsed = JSON.parse(savedItem);
@@ -4002,12 +3990,12 @@ var dubplus = (function () {
                 'twitch_api_timestamp',
                 Date.now().toString(),
               );
-              window.ldb.set('twitch_api', JSON.stringify(twitchEmotes));
+              ldb.set('twitch_api', JSON.stringify(twitchEmotes));
               dubplus_emoji.processTwitchEmotes(twitchEmotes);
             })
             .catch((err) => logError(err));
         } else {
-          return ldbGet('twitch_api').then((data) => {
+          return ldb.get('twitch_api').then((data) => {
             logInfo('twitch', 'loading from IndexedDB');
             const savedData = JSON.parse(data);
             dubplus_emoji.processTwitchEmotes(savedData);
@@ -4034,36 +4022,18 @@ var dubplus = (function () {
                 }
               });
               localStorage.setItem('bttv_api_timestamp', Date.now().toString());
-              window.ldb.set('bttv_api', JSON.stringify(bttvEmotes));
+              ldb.set('bttv_api', JSON.stringify(bttvEmotes));
               dubplus_emoji.processBTTVEmotes(bttvEmotes);
             })
             .catch((err) => logError(err));
         } else {
-          return ldbGet('bttv_api').then((data) => {
+          return ldb.get('bttv_api').then((data) => {
             logInfo('bttv', 'loading from IndexedDB');
             const savedData = JSON.parse(data);
             dubplus_emoji.processBTTVEmotes(savedData);
           });
         }
       });
-    },
-    /**
-     * @return {Promise<void>}
-     */
-    loadTastyEmotes() {
-      if (this.tastyJSONLoaded) {
-        return Promise.resolve();
-      }
-      logInfo('tasty', 'loading from api');
-      return fetch(
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}/emotes/tastyemotes.json`,
-      )
-        .then((res) => res.json())
-        .then((json) => {
-          window.ldb.set('tasty_api', JSON.stringify(json));
-          dubplus_emoji.processTastyEmotes(json);
-        })
-        .catch((err) => logError(err));
     },
     /**
      * @return {Promise<void>}
@@ -4082,12 +4052,12 @@ var dubplus = (function () {
                 'frankerfacez_api_timestamp',
                 Date.now().toString(),
               );
-              window.ldb.set('frankerfacez_api', JSON.stringify(frankerFacez));
+              ldb.set('frankerfacez_api', JSON.stringify(frankerFacez));
               dubplus_emoji.processFrankerFacez(frankerFacez);
             })
             .catch((err) => logError(err));
         } else {
-          return ldbGet('frankerfacez_api').then((data) => {
+          return ldb.get('frankerfacez_api').then((data) => {
             logInfo('frankerfacez', 'loading from IndexedDB');
             const savedData = JSON.parse(data);
             dubplus_emoji.processFrankerFacez(savedData);
@@ -4104,9 +4074,10 @@ var dubplus = (function () {
         if (Object.hasOwn(data, code)) {
           const key = code.toLowerCase();
           if (window.emojify.emojiNames.includes(key)) {
-            continue;
+            this.twitch.emotesMap.set(`${key}_twitch`, data[code]);
+          } else {
+            this.twitch.emotesMap.set(key, data[code]);
           }
-          this.twitch.emotesMap.set(key, data[code]);
         }
       }
       this.twitchJSONSLoaded = true;
@@ -4118,28 +4089,20 @@ var dubplus = (function () {
       for (const code in data) {
         if (Object.hasOwn(data, code)) {
           const key = code.toLowerCase();
-          if (code.indexOf(':') >= 0) {
+          if (code.includes(':')) {
             continue;
           }
-          if (window.emojify.emojiNames.indexOf(key) >= 0) {
-            continue;
-          }
-          if (!this.twitch.emotesMap.has(key)) {
+          if (
+            window.emojify.emojiNames.includes(key) ||
+            this.twitch.emotesMap.has(key)
+          ) {
+            this.bttv.emotesMap.set(`${key}_bttv`, data[code]);
+          } else {
             this.bttv.emotesMap.set(key, data[code]);
           }
         }
       }
       this.bttvJSONSLoaded = true;
-    },
-    /**
-     * @param {{[emote: string]: { url: string; width: number; height: number; }}} data
-     */
-    processTastyEmotes(data) {
-      this.tasty.emotes = data.emotes;
-      this.tastyJSONLoaded = true;
-      Object.keys(this.tasty.emotes).forEach((key) => {
-        this.tasty.emotesMap.set(key, data[key]);
-      });
     },
     /**
      * @param {FrankerFacezJsonResponse} data
@@ -4148,13 +4111,16 @@ var dubplus = (function () {
       for (const emoticon of data.emoticons) {
         const code = emoticon.name;
         const key = code.toLowerCase();
-        if (code.indexOf(':') >= 0) {
+        if (code.includes(':')) {
           continue;
         }
-        if (window.emojify.emojiNames.includes(key)) {
-          continue;
-        }
-        if (!this.twitch.emotesMap.has(key) && !this.bttv.emotesMap.has(key)) {
+        if (
+          window.emojify.emojiNames.includes(key) ||
+          this.twitch.emotesMap.has(key) ||
+          this.bttv.emotesMap.has(key)
+        ) {
+          this.frankerFacez.emotesMap.set(`${key}_ffz`, emoticon.id);
+        } else {
           this.frankerFacez.emotesMap.set(key, emoticon.id);
         }
       }
@@ -4314,7 +4280,7 @@ var dubplus = (function () {
     emojiState.emojiList = [];
   }
   function setEmojiList(listArray, searchStr) {
-    const platforms = ['emojify', 'twitch', 'bttv', 'ffz', 'tasty'];
+    const platforms = ['emojify', 'twitch', 'bttv', 'ffz'];
     emojiState.emojiList = listArray
       .filter(
         (emoji, index, self) =>
@@ -4535,9 +4501,8 @@ var dubplus = (function () {
     },
   };
   const MODULE_ID$1 = 'chat-cleaner';
-  function chatCleanerCheck(n) {
+  function cleanChat(limit) {
     const chatMessages = getChatMessages();
-    const limit = parseInt(n ?? settings.custom[MODULE_ID$1], 10);
     if (
       !(chatMessages == null ? void 0 : chatMessages.length) ||
       isNaN(limit) ||
@@ -4547,6 +4512,15 @@ var dubplus = (function () {
     }
     for (let i = 0; i < chatMessages.length - limit; i++) {
       chatMessages[i].remove();
+    }
+  }
+  function onChatMessage() {
+    const limit = settings.custom[MODULE_ID$1];
+    if (typeof limit === 'number') {
+      cleanChat(limit);
+    } else if (typeof limit === 'string' && limit.trim() !== '') {
+      const num = parseInt(limit, 10);
+      cleanChat(num);
     }
   }
   const chatCleaner = {
@@ -4569,16 +4543,16 @@ var dubplus = (function () {
       },
       onConfirm: (value) => {
         if (settings.options[MODULE_ID$1]) {
-          chatCleanerCheck(value);
+          cleanChat(parseInt(value, 10));
         }
       },
     },
     turnOn() {
-      chatCleanerCheck(void 0);
-      window.QueUp.Events.bind(CHAT_MESSAGE, chatCleanerCheck);
+      cleanChat(void 0);
+      window.QueUp.Events.bind(CHAT_MESSAGE, onChatMessage);
     },
     turnOff() {
-      window.QueUp.Events.unbind(CHAT_MESSAGE, chatCleanerCheck);
+      window.QueUp.Events.unbind(CHAT_MESSAGE, onChatMessage);
     },
   };
   const activeTabState = proxy({ isActive: true });
@@ -5472,6 +5446,7 @@ var dubplus = (function () {
       window.removeEventListener('beforeunload', unloader);
     },
   };
+  const CDN_ROOT = '//cdn.jsdelivr.net/gh/DubPlus';
   const makeLink = function (className, fileName) {
     const link2 = document.createElement('link');
     link2.rel = 'stylesheet';
@@ -5488,9 +5463,9 @@ var dubplus = (function () {
         : _a2.remove();
       const link2 = makeLink(
         className,
-        // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
+        // @ts-ignore __GIT_BRANCH__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1741980436376'}`,
+        `${CDN_ROOT}/${'DubPlus@beta-emotes-refactor'}${cssFile}?${'1742003771290'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -6049,10 +6024,10 @@ var dubplus = (function () {
   }
   delegate(['click']);
   var root_1 = /* @__PURE__ */ template(
-    `<li><div class="ac-image svelte-1pg7edp"><img class="svelte-1pg7edp"></div></li>`,
+    `<li><div class="ac-image svelte-198qtio"><img class="svelte-198qtio"></div></li>`,
   );
   var root$8 = /* @__PURE__ */ template(
-    `<div><div class="ac-header svelte-1pg7edp"><span class="sr-only"> </span> <div class="tip-container" aria-hidden="true"><span class="tip-navigate"><key class="icon-upvote"></key> &amp; <key class="icon-downvote"></key> </span> <span class="tip-complete"><key>TAB</key> or <key>ENTER</key> </span> <span class="tip-close"><key>ESC</key> </span></div></div> <ul id="autocomplete-preview" class="svelte-1pg7edp"></ul> <span class="ac-text-preview svelte-1pg7edp"> </span></div>`,
+    `<div><div class="ac-header svelte-198qtio"><span class="sr-only"> </span> <div class="tip-container" aria-hidden="true"><span class="tip-navigate"><key class="icon-upvote"></key> &amp; <key class="icon-downvote"></key> </span> <span class="tip-complete"><key>TAB</key> or <key>ENTER</key> </span> <span class="tip-close"><key>ESC</key> </span></div></div> <ul id="autocomplete-preview" class="svelte-198qtio"></ul> <span class="ac-text-preview svelte-198qtio"> </span></div>`,
   );
   function EmojiPreview($$anchor, $$props) {
     push($$props, true);
@@ -6110,7 +6085,7 @@ var dubplus = (function () {
               li,
               1,
               `preview-item ${platform()}-previews`,
-              'svelte-1pg7edp',
+              'svelte-198qtio',
               classes_1,
               $0,
             );
@@ -6142,7 +6117,7 @@ var dubplus = (function () {
         classes = set_class(
           div,
           1,
-          'ac-preview-container svelte-1pg7edp',
+          'ac-preview-container svelte-198qtio',
           null,
           classes,
           $0,

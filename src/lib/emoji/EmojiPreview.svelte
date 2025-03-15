@@ -151,23 +151,6 @@
     align-items: center;
   }
 
-  /*
-  :global(.twitch-previews) {
-    background-image: url(https://i.imgur.com/FhzONPQ.png);
-  }
-
-  :global(.bttv-previews) {
-    background-image: url(https://i.imgur.com/oTfAI0O.png);
-  }
-
-  :global(.tasty-previews) {
-    background-image: url(#{$resourceSrc}/emotes/tastycat/21.png);
-  }
-
-  :global(.ffz-previews) {
-    background-image: url(https://i.imgur.com/DuJfI4T.png);
-  }
-*/
   .ac-text {
     font-size: 0.8em;
     padding-left: 20px;

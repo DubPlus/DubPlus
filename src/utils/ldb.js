@@ -1,49 +1,65 @@
 /**
- * a wrapper around IndexedDB or increased quota compared to localstorage (5mb to 50mb).
- * This will add "ldb" to the window object (window.ldb).
+ * A wrapper around IndexedDB.
+ * IndexedDB has a higher storage limit (50mb) compared to localstorage (5mb).
  */
 
-!(function () {
-  function e(t, o) {
-    return n
-      ? void (n.transaction("s").objectStore("s").get(t).onsuccess = function (
-          e
-        ) {
-          var t = (e.target.result && e.target.result.v) || null;
-          o(t);
-        })
-      : void setTimeout(function () {
-          e(t, o);
-        }, 100);
-  }
-  var t =
-    window.indexedDB ||
-    window.mozIndexedDB ||
-    window.webkitIndexedDB ||
-    window.msIndexedDB;
-  if (!t) return void console.error("indexDB not supported");
-  var n,
-    o = { k: "", v: "" },
-    r = t.open("d2", 1);
-  (r.onsuccess = function (e) {
-    n = this.result;
-  }),
-    (r.onerror = function (e) {
-      console.error("indexedDB request error"), console.log(e);
-    }),
-    (r.onupgradeneeded = function (e) {
-      n = null;
-      var t = e.target.result.createObjectStore("s", { keyPath: "k" });
-      t.transaction.oncomplete = function (e) {
-        n = e.target.db;
+export class LDB {
+  constructor() {
+    /**
+     * @type {IDBDatabase|null}
+     */
+    this.db = null;
+
+    const dbReq = window.indexedDB.open('d2', 1);
+
+    const outerThis = this;
+
+    dbReq.onsuccess = function () {
+      outerThis.db = this.result;
+    };
+
+    dbReq.onerror = function (e) {
+      console.error('Dub+', 'indexedDB request error:', e);
+    };
+
+    dbReq.onupgradeneeded = function () {
+      outerThis.db = null;
+      var t = this.result.createObjectStore('s', { keyPath: 'k' });
+      t.transaction.oncomplete = function () {
+        outerThis.db = this.db;
       };
-    }),
-    (window.ldb = {
-      get: e,
-      set: function (e, t) {
-        (o.k = e),
-          (o.v = t),
-          n.transaction("s", "readwrite").objectStore("s").put(o);
-      },
+    };
+  }
+
+  /**
+   *
+   * @param {string} key
+   * @returns {Promise<string|null>}
+   */
+  get(key) {
+    return new Promise((resolve) => {
+      if (this.db) {
+        this.db.transaction('s').objectStore('s').get(key).onsuccess =
+          function () {
+            resolve(this.result?.v || null);
+          };
+      } else {
+        setTimeout(() => {
+          this.get(key).then(resolve);
+        }, 100);
+      }
     });
-})();
+  }
+
+  /**
+   *
+   * @param {string} key
+   * @param {string} value
+   */
+  set(key, value) {
+    this.db
+      .transaction('s', 'readwrite')
+      .objectStore('s')
+      .put({ k: key, v: value });
+  }
+}

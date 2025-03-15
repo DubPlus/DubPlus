@@ -6,13 +6,11 @@ import { settings } from '../stores/settings.svelte';
 const MODULE_ID = 'chat-cleaner';
 
 /**
- * @param {string} n
+ * @param {number} limit
  */
-function chatCleanerCheck(n) {
+function cleanChat(limit) {
   // these will be ordered from oldest to newest
   const chatMessages = getChatMessages();
-
-  const limit = parseInt(n ?? settings.custom[MODULE_ID], 10);
 
   if (!chatMessages?.length || isNaN(limit) || chatMessages.length < limit) {
     return;
@@ -22,6 +20,16 @@ function chatCleanerCheck(n) {
   // deleting elements at index 0 -> 9
   for (let i = 0; i < chatMessages.length - limit; i++) {
     chatMessages[i].remove();
+  }
+}
+
+function onChatMessage() {
+  const limit = settings.custom[MODULE_ID];
+  if (typeof limit === 'number') {
+    cleanChat(limit);
+  } else if (typeof limit === 'string' && limit.trim() !== '') {
+    const num = parseInt(limit, 10);
+    cleanChat(num);
   }
 }
 
@@ -50,16 +58,16 @@ export const chatCleaner = {
     },
     onConfirm: (value) => {
       if (settings.options[MODULE_ID]) {
-        chatCleanerCheck(value);
+        cleanChat(parseInt(value, 10));
       }
     },
   },
   turnOn() {
-    chatCleanerCheck(undefined);
-    window.QueUp.Events.bind(CHAT_MESSAGE, chatCleanerCheck);
+    cleanChat(undefined);
+    window.QueUp.Events.bind(CHAT_MESSAGE, onChatMessage);
   },
 
   turnOff() {
-    window.QueUp.Events.unbind(CHAT_MESSAGE, chatCleanerCheck);
+    window.QueUp.Events.unbind(CHAT_MESSAGE, onChatMessage);
   },
 };
