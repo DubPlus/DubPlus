@@ -3819,56 +3819,58 @@ var dubplus = (function () {
       maxlength: 255,
     },
   };
-  !(function () {
-    function e(t3, o2) {
-      return n
-        ? void (n.transaction('s').objectStore('s').get(t3).onsuccess =
-            function (e2) {
-              var t4 = (e2.target.result && e2.target.result.v) || null;
-              o2(t4);
-            })
-        : void setTimeout(function () {
-            e(t3, o2);
-          }, 100);
-    }
-    var t2 =
-      window.indexedDB ||
-      window.mozIndexedDB ||
-      window.webkitIndexedDB ||
-      window.msIndexedDB;
-    if (!t2) return void console.error('indexDB not supported');
-    var n,
-      o = { k: '', v: '' },
-      r = t2.open('d2', 1);
-    (r.onsuccess = function (e2) {
-      n = this.result;
-    }),
-      (r.onerror = function (e2) {
-        console.error('indexedDB request error'), console.log(e2);
-      }),
-      (r.onupgradeneeded = function (e2) {
-        n = null;
-        var t3 = e2.target.result.createObjectStore('s', { keyPath: 'k' });
-        t3.transaction.oncomplete = function (e3) {
-          n = e3.target.db;
+  class LDB {
+    constructor() {
+      this.db = null;
+      const dbReq = window.indexedDB.open('d2', 1);
+      const outerThis = this;
+      dbReq.onsuccess = function () {
+        outerThis.db = this.result;
+      };
+      dbReq.onerror = function (e) {
+        console.error('Dub+', 'indexedDB request error:', e);
+      };
+      dbReq.onupgradeneeded = function () {
+        outerThis.db = null;
+        var t2 = this.result.createObjectStore('s', { keyPath: 'k' });
+        t2.transaction.oncomplete = function () {
+          outerThis.db = this.db;
         };
-      }),
-      (window.ldb = {
-        get: e,
-        set: function (e2, t3) {
-          (o.k = e2),
-            (o.v = t3),
-            n.transaction('s', 'readwrite').objectStore('s').put(o);
-        },
+      };
+    }
+    /**
+     *
+     * @param {string} key
+     * @returns {Promise<string|null>}
+     */
+    get(key) {
+      return new Promise((resolve) => {
+        if (this.db) {
+          this.db.transaction('s').objectStore('s').get(key).onsuccess =
+            function () {
+              var _a2;
+              resolve(((_a2 = this.result) == null ? void 0 : _a2.v) || null);
+            };
+        } else {
+          setTimeout(() => {
+            this.get(key).then(resolve);
+          }, 100);
+        }
       });
-  })();
-  function ldbGet(key) {
-    return new Promise((resolve) => {
-      window.ldb.get(key, function (data) {
-        resolve(data);
-      });
-    });
+    }
+    /**
+     *
+     * @param {string} key
+     * @param {string} value
+     */
+    set(key, value) {
+      this.db
+        .transaction('s', 'readwrite')
+        .objectStore('s')
+        .put({ k: key, v: value });
+    }
   }
+  const ldb = new LDB();
   function fetchTwitchEmotes() {
     return fetch(
       '//cdn.jsdelivr.net/gh/Jiiks/BetterDiscordApp/data/emotedata_twitch_global.json',
@@ -3958,7 +3960,7 @@ var dubplus = (function () {
      */
     shouldUpdateAPIs(apiName) {
       const day = 864e5;
-      return ldbGet(`${apiName}_api`).then((savedItem) => {
+      return ldb.get(`${apiName}_api`).then((savedItem) => {
         if (savedItem) {
           try {
             const parsed = JSON.parse(savedItem);
@@ -4002,12 +4004,12 @@ var dubplus = (function () {
                 'twitch_api_timestamp',
                 Date.now().toString(),
               );
-              window.ldb.set('twitch_api', JSON.stringify(twitchEmotes));
+              ldb.set('twitch_api', JSON.stringify(twitchEmotes));
               dubplus_emoji.processTwitchEmotes(twitchEmotes);
             })
             .catch((err) => logError(err));
         } else {
-          return ldbGet('twitch_api').then((data) => {
+          return ldb.get('twitch_api').then((data) => {
             logInfo('twitch', 'loading from IndexedDB');
             const savedData = JSON.parse(data);
             dubplus_emoji.processTwitchEmotes(savedData);
@@ -4034,12 +4036,12 @@ var dubplus = (function () {
                 }
               });
               localStorage.setItem('bttv_api_timestamp', Date.now().toString());
-              window.ldb.set('bttv_api', JSON.stringify(bttvEmotes));
+              ldb.set('bttv_api', JSON.stringify(bttvEmotes));
               dubplus_emoji.processBTTVEmotes(bttvEmotes);
             })
             .catch((err) => logError(err));
         } else {
-          return ldbGet('bttv_api').then((data) => {
+          return ldb.get('bttv_api').then((data) => {
             logInfo('bttv', 'loading from IndexedDB');
             const savedData = JSON.parse(data);
             dubplus_emoji.processBTTVEmotes(savedData);
@@ -4060,7 +4062,7 @@ var dubplus = (function () {
       )
         .then((res) => res.json())
         .then((json) => {
-          window.ldb.set('tasty_api', JSON.stringify(json));
+          ldb.set('tasty_api', JSON.stringify(json));
           dubplus_emoji.processTastyEmotes(json);
         })
         .catch((err) => logError(err));
@@ -4082,12 +4084,12 @@ var dubplus = (function () {
                 'frankerfacez_api_timestamp',
                 Date.now().toString(),
               );
-              window.ldb.set('frankerfacez_api', JSON.stringify(frankerFacez));
+              ldb.set('frankerfacez_api', JSON.stringify(frankerFacez));
               dubplus_emoji.processFrankerFacez(frankerFacez);
             })
             .catch((err) => logError(err));
         } else {
-          return ldbGet('frankerfacez_api').then((data) => {
+          return ldb.get('frankerfacez_api').then((data) => {
             logInfo('frankerfacez', 'loading from IndexedDB');
             const savedData = JSON.parse(data);
             dubplus_emoji.processFrankerFacez(savedData);
@@ -4104,9 +4106,10 @@ var dubplus = (function () {
         if (Object.hasOwn(data, code)) {
           const key = code.toLowerCase();
           if (window.emojify.emojiNames.includes(key)) {
-            continue;
+            this.twitch.emotesMap.set(`${key}_twitch`, data[code]);
+          } else {
+            this.twitch.emotesMap.set(key, data[code]);
           }
-          this.twitch.emotesMap.set(key, data[code]);
         }
       }
       this.twitchJSONSLoaded = true;
@@ -4118,13 +4121,16 @@ var dubplus = (function () {
       for (const code in data) {
         if (Object.hasOwn(data, code)) {
           const key = code.toLowerCase();
-          if (code.indexOf(':') >= 0) {
+          if (code.includes(':')) {
             continue;
           }
-          if (window.emojify.emojiNames.indexOf(key) >= 0) {
-            continue;
-          }
-          if (!this.twitch.emotesMap.has(key)) {
+          if (
+            window.emojify.emojiNames.includes(key) ||
+            this.twitch.emotesMap.has(key)
+          ) {
+            console.log('bttv: found dupe with twitch', key);
+            this.bttv.emotesMap.set(`${key}_bttv`, data[code]);
+          } else {
             this.bttv.emotesMap.set(key, data[code]);
           }
         }
@@ -4148,13 +4154,17 @@ var dubplus = (function () {
       for (const emoticon of data.emoticons) {
         const code = emoticon.name;
         const key = code.toLowerCase();
-        if (code.indexOf(':') >= 0) {
+        if (code.includes(':')) {
           continue;
         }
-        if (window.emojify.emojiNames.includes(key)) {
-          continue;
-        }
-        if (!this.twitch.emotesMap.has(key) && !this.bttv.emotesMap.has(key)) {
+        if (
+          window.emojify.emojiNames.includes(key) ||
+          this.twitch.emotesMap.has(key) ||
+          this.bttv.emotesMap.has(key)
+        ) {
+          console.log('ffz: found dupe with twitch', key);
+          this.frankerFacez.emotesMap.set(`${key}_ffz`, emoticon.id);
+        } else {
           this.frankerFacez.emotesMap.set(key, emoticon.id);
         }
       }
@@ -4535,9 +4545,8 @@ var dubplus = (function () {
     },
   };
   const MODULE_ID$1 = 'chat-cleaner';
-  function chatCleanerCheck(n) {
+  function cleanChat(limit) {
     const chatMessages = getChatMessages();
-    const limit = parseInt(n ?? settings.custom[MODULE_ID$1], 10);
     if (
       !(chatMessages == null ? void 0 : chatMessages.length) ||
       isNaN(limit) ||
@@ -4547,6 +4556,15 @@ var dubplus = (function () {
     }
     for (let i = 0; i < chatMessages.length - limit; i++) {
       chatMessages[i].remove();
+    }
+  }
+  function onChatMessage() {
+    const limit = settings.custom[MODULE_ID$1];
+    if (typeof limit === 'number') {
+      cleanChat(limit);
+    } else if (typeof limit === 'string' && limit.trim() !== '') {
+      const num = parseInt(limit, 10);
+      cleanChat(num);
     }
   }
   const chatCleaner = {
@@ -4569,16 +4587,16 @@ var dubplus = (function () {
       },
       onConfirm: (value) => {
         if (settings.options[MODULE_ID$1]) {
-          chatCleanerCheck(value);
+          cleanChat(parseInt(value, 10));
         }
       },
     },
     turnOn() {
-      chatCleanerCheck(void 0);
-      window.QueUp.Events.bind(CHAT_MESSAGE, chatCleanerCheck);
+      cleanChat(void 0);
+      window.QueUp.Events.bind(CHAT_MESSAGE, onChatMessage);
     },
     turnOff() {
-      window.QueUp.Events.unbind(CHAT_MESSAGE, chatCleanerCheck);
+      window.QueUp.Events.unbind(CHAT_MESSAGE, onChatMessage);
     },
   };
   const activeTabState = proxy({ isActive: true });
@@ -5490,7 +5508,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1741980436376'}`,
+        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1742000250280'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
