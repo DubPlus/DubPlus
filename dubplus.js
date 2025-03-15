@@ -3899,7 +3899,6 @@ var dubplus = (function () {
     },
     twitchJSONSLoaded: false,
     bttvJSONSLoaded: false,
-    tastyJSONLoaded: false,
     frankerfacezJSONLoaded: false,
     twitch: {
       /**
@@ -3924,19 +3923,6 @@ var dubplus = (function () {
       },
       /**
        * @type {Map<string, string>}
-       */
-      emotesMap: /* @__PURE__ */ new Map(),
-    },
-    tasty: {
-      /**
-       * @param {string} id
-       * @returns {string}
-       */
-      template(id) {
-        return this.emotesMap.get(id).url;
-      },
-      /**
-       * @type {Map<string, {url: string, width: number, height: number}>}
        */
       emotesMap: /* @__PURE__ */ new Map(),
     },
@@ -4052,24 +4038,6 @@ var dubplus = (function () {
     /**
      * @return {Promise<void>}
      */
-    loadTastyEmotes() {
-      if (this.tastyJSONLoaded) {
-        return Promise.resolve();
-      }
-      logInfo('tasty', 'loading from api');
-      return fetch(
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}/emotes/tastyemotes.json`,
-      )
-        .then((res) => res.json())
-        .then((json) => {
-          ldb.set('tasty_api', JSON.stringify(json));
-          dubplus_emoji.processTastyEmotes(json);
-        })
-        .catch((err) => logError(err));
-    },
-    /**
-     * @return {Promise<void>}
-     */
     loadFrankerFacez() {
       if (this.frankerfacezJSONLoaded) {
         return Promise.resolve();
@@ -4128,7 +4096,6 @@ var dubplus = (function () {
             window.emojify.emojiNames.includes(key) ||
             this.twitch.emotesMap.has(key)
           ) {
-            console.log('bttv: found dupe with twitch', key);
             this.bttv.emotesMap.set(`${key}_bttv`, data[code]);
           } else {
             this.bttv.emotesMap.set(key, data[code]);
@@ -4136,16 +4103,6 @@ var dubplus = (function () {
         }
       }
       this.bttvJSONSLoaded = true;
-    },
-    /**
-     * @param {{[emote: string]: { url: string; width: number; height: number; }}} data
-     */
-    processTastyEmotes(data) {
-      this.tasty.emotes = data.emotes;
-      this.tastyJSONLoaded = true;
-      Object.keys(this.tasty.emotes).forEach((key) => {
-        this.tasty.emotesMap.set(key, data[key]);
-      });
     },
     /**
      * @param {FrankerFacezJsonResponse} data
@@ -4162,7 +4119,6 @@ var dubplus = (function () {
           this.twitch.emotesMap.has(key) ||
           this.bttv.emotesMap.has(key)
         ) {
-          console.log('ffz: found dupe with twitch', key);
           this.frankerFacez.emotesMap.set(`${key}_ffz`, emoticon.id);
         } else {
           this.frankerFacez.emotesMap.set(key, emoticon.id);
@@ -4324,7 +4280,7 @@ var dubplus = (function () {
     emojiState.emojiList = [];
   }
   function setEmojiList(listArray, searchStr) {
-    const platforms = ['emojify', 'twitch', 'bttv', 'ffz', 'tasty'];
+    const platforms = ['emojify', 'twitch', 'bttv', 'ffz'];
     emojiState.emojiList = listArray
       .filter(
         (emoji, index, self) =>
@@ -5490,6 +5446,7 @@ var dubplus = (function () {
       window.removeEventListener('beforeunload', unloader);
     },
   };
+  const CDN_ROOT = '//cdn.jsdelivr.net/gh/DubPlus';
   const makeLink = function (className, fileName) {
     const link2 = document.createElement('link');
     link2.rel = 'stylesheet';
@@ -5506,9 +5463,9 @@ var dubplus = (function () {
         : _a2.remove();
       const link2 = makeLink(
         className,
-        // @ts-ignore __SRC_ROOT__ & __TIME_STAMP__ are replaced by vite
+        // @ts-ignore __GIT_BRANCH__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@beta'}${cssFile}?${'1742000250280'}`,
+        `${CDN_ROOT}/${'DubPlus@beta-emotes-refactor'}${cssFile}?${'1742002805402'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -6067,10 +6024,10 @@ var dubplus = (function () {
   }
   delegate(['click']);
   var root_1 = /* @__PURE__ */ template(
-    `<li><div class="ac-image svelte-1pg7edp"><img class="svelte-1pg7edp"></div></li>`,
+    `<li><div class="ac-image svelte-198qtio"><img class="svelte-198qtio"></div></li>`,
   );
   var root$8 = /* @__PURE__ */ template(
-    `<div><div class="ac-header svelte-1pg7edp"><span class="sr-only"> </span> <div class="tip-container" aria-hidden="true"><span class="tip-navigate"><key class="icon-upvote"></key> &amp; <key class="icon-downvote"></key> </span> <span class="tip-complete"><key>TAB</key> or <key>ENTER</key> </span> <span class="tip-close"><key>ESC</key> </span></div></div> <ul id="autocomplete-preview" class="svelte-1pg7edp"></ul> <span class="ac-text-preview svelte-1pg7edp"> </span></div>`,
+    `<div><div class="ac-header svelte-198qtio"><span class="sr-only"> </span> <div class="tip-container" aria-hidden="true"><span class="tip-navigate"><key class="icon-upvote"></key> &amp; <key class="icon-downvote"></key> </span> <span class="tip-complete"><key>TAB</key> or <key>ENTER</key> </span> <span class="tip-close"><key>ESC</key> </span></div></div> <ul id="autocomplete-preview" class="svelte-198qtio"></ul> <span class="ac-text-preview svelte-198qtio"> </span></div>`,
   );
   function EmojiPreview($$anchor, $$props) {
     push($$props, true);
@@ -6128,7 +6085,7 @@ var dubplus = (function () {
               li,
               1,
               `preview-item ${platform()}-previews`,
-              'svelte-1pg7edp',
+              'svelte-198qtio',
               classes_1,
               $0,
             );
@@ -6160,7 +6117,7 @@ var dubplus = (function () {
         classes = set_class(
           div,
           1,
-          'ac-preview-container svelte-1pg7edp',
+          'ac-preview-container svelte-198qtio',
           null,
           classes,
           $0,

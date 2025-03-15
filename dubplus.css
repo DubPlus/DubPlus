@@ -591,7 +591,7 @@ span.svelte-1va87zs {
  * bttv logo white: https://i.imgur.com/oTfAI0O.png
  */
 
-.ac-preview-container.svelte-1pg7edp {
+.ac-preview-container.svelte-198qtio {
   position: absolute;
   bottom: 54px;
   width: 100%;
@@ -601,7 +601,7 @@ span.svelte-1va87zs {
   display: flex;
   flex-direction: column;
 }
-.ac-header.svelte-1pg7edp {
+.ac-header.svelte-198qtio {
   display: none;
   position: sticky;
   top: 0;
@@ -609,17 +609,17 @@ span.svelte-1va87zs {
   padding: 5px 10px;
   border-bottom: 1px solid #515253;
 }
-.ac-show.svelte-1pg7edp {
+.ac-show.svelte-198qtio {
   border: 1px solid #202020;
   border-bottom: 1px solid #878c8e;
   max-height: 200px;
   transition: 0.4s;
 }
-.ac-show.svelte-1pg7edp .ac-header:where(.svelte-1pg7edp) {
+.ac-show.svelte-198qtio .ac-header:where(.svelte-198qtio) {
   display: block;
 }
 
-ul.svelte-1pg7edp {
+ul.svelte-198qtio {
   display: block;
   padding: 0;
   list-style-type: none;
@@ -631,7 +631,7 @@ ul.svelte-1pg7edp {
   overflow-x: hidden;
 }
 
-li.svelte-1pg7edp {
+li.svelte-198qtio {
   width: 50px;
   display: block;
   padding: 6px 10px;
@@ -639,16 +639,16 @@ li.svelte-1pg7edp {
   color: #fff;
 }
 
-li.svelte-1pg7edp:hover,
-li.selected.svelte-1pg7edp {
+li.svelte-198qtio:hover,
+li.selected.svelte-198qtio {
   background-color: #555;
 }
 
-li.svelte-1pg7edp:focus {
+li.svelte-198qtio:focus {
   outline: none;
 }
 
-.preview-item.svelte-1pg7edp {
+.preview-item.svelte-198qtio {
   background-repeat: no-repeat;
   background-size: 25px;
   background-position: 98% center;
@@ -656,53 +656,36 @@ li.svelte-1pg7edp:focus {
   align-items: center;
 }
 
-/*
-  :global(.twitch-previews) {
-    background-image: url(https://i.imgur.com/FhzONPQ.png);
-  }
-
-  :global(.bttv-previews) {
-    background-image: url(https://i.imgur.com/oTfAI0O.png);
-  }
-
-  :global(.tasty-previews) {
-    background-image: url(#{$resourceSrc}/emotes/tastycat/21.png);
-  }
-
-  :global(.ffz-previews) {
-    background-image: url(https://i.imgur.com/DuJfI4T.png);
-  }
-*/
-.ac-text.svelte-1pg7edp {
+.ac-text.svelte-198qtio {
   font-size: 0.8em;
   padding-left: 20px;
 }
 
-.ac-image.svelte-1pg7edp {
+.ac-image.svelte-198qtio {
   width: 30px;
   height: 30px;
 }
 
-img.svelte-1pg7edp {
+img.svelte-198qtio {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
-.ac-list-press-enter.svelte-1pg7edp {
+.ac-list-press-enter.svelte-198qtio {
   flex: 1;
   text-align: center;
   font-size: 0.8em;
 }
 
-.ac-text-preview.svelte-1pg7edp {
+.ac-text-preview.svelte-198qtio {
   padding: 5px 10px;
   background-color: rgba(0, 0, 0, 0.9);
   font-size: 0.8em;
   border-top: 1px solid #515253;
   display: none;
 }
-.ac-show.svelte-1pg7edp .ac-text-preview:where(.svelte-1pg7edp) {
+.ac-show.svelte-198qtio .ac-text-preview:where(.svelte-198qtio) {
   display: block;
 }
 

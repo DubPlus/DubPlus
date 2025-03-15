@@ -19,9 +19,9 @@ function getCdnRoot() {
   const currentBranch = getCurrentBranch();
   console.log('currentBranch:', currentBranch);
   if (currentBranch) {
-    return `https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@${currentBranch}`;
+    return `DubPlus@${currentBranch}`;
   } else {
-    return 'https://cdn.jsdelivr.net/gh/DubPlus/DubPlus';
+    return 'DubPlus';
   }
 }
 
@@ -31,7 +31,7 @@ export default defineConfig(() => {
     plugins: [svelte()],
     define: {
       __TIME_STAMP__: JSON.stringify(Date.now().toString()),
-      __SRC_ROOT__: JSON.stringify(getCdnRoot()),
+      __GIT_BRANCH__: JSON.stringify(getCdnRoot()),
       __PKGINFO__: JSON.stringify(pkg),
     },
     build: {
