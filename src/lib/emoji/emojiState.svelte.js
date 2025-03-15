@@ -27,7 +27,7 @@ export function reset() {
  */
 export function setEmojiList(listArray, searchStr) {
   // make listArray unique by emoji.src and emoji.platform
-  const platforms = ['emojify', 'twitch', 'bttv', 'ffz', 'tasty'];
+  const platforms = ['emojify', 'twitch', 'bttv', 'ffz'];
 
   emojiState.emojiList = listArray
     .filter(
@@ -38,7 +38,7 @@ export function setEmojiList(listArray, searchStr) {
         ),
     )
     .sort((a, b) => {
-      // sort by platform in the following order: emojify, twitch, bttv, ffz, tasty
+      // sort by platform in the following order: emojify, twitch, bttv, ffz
       // then special sort by giving priority to words that start with the search string
       // then finally sort by text alphabetically ascending
       const platformA = platforms.indexOf(a.platform);

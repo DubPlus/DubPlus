@@ -126,7 +126,6 @@ function replaceTextWithEmote(e) {
  * Emotes
  * This module adds support for converting :emote: text into images.
  * Currently it only supports: Twitch, BTTV, and FrankerFaceZ emotes.
- * Tasty emotes are not supported at this time.
  * @type {import("./module").DubPlusModule}
  */
 export const emotes = {

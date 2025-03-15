@@ -105,7 +105,6 @@ export const dubplus_emoji = {
   },
   twitchJSONSLoaded: false,
   bttvJSONSLoaded: false,
-  tastyJSONLoaded: false,
   frankerfacezJSONLoaded: false,
 
   twitch: {
@@ -131,19 +130,6 @@ export const dubplus_emoji = {
     },
     /**
      * @type {Map<string, string>}
-     */
-    emotesMap: new Map(),
-  },
-  tasty: {
-    /**
-     * @param {string} id
-     * @returns {string}
-     */
-    template(id) {
-      return this.emotesMap.get(id).url;
-    },
-    /**
-     * @type {Map<string, {url: string, width: number, height: number}>}
      */
     emotesMap: new Map(),
   },
@@ -286,26 +272,6 @@ export const dubplus_emoji = {
   /**
    * @return {Promise<void>}
    */
-  loadTastyEmotes() {
-    if (this.tastyJSONLoaded) {
-      return Promise.resolve();
-    }
-    logInfo('tasty', 'loading from api');
-    // since we control this API we should always have it load from remote
-    // @ts-ignore __SRC_ROOT__ is replaced by vite
-    // eslint-disable-next-line no-undef
-    return fetch(`${__SRC_ROOT__}/emotes/tastyemotes.json`)
-      .then((res) => res.json())
-      .then((json) => {
-        ldb.set('tasty_api', JSON.stringify(json));
-        dubplus_emoji.processTastyEmotes(json);
-      })
-      .catch((err) => logError(err));
-  },
-
-  /**
-   * @return {Promise<void>}
-   */
   loadFrankerFacez() {
     if (this.frankerfacezJSONLoaded) {
       return Promise.resolve();
@@ -371,7 +337,6 @@ export const dubplus_emoji = {
           window.emojify.emojiNames.includes(key) ||
           this.twitch.emotesMap.has(key)
         ) {
-          console.log('bttv: found dupe with twitch', key);
           this.bttv.emotesMap.set(`${key}_bttv`, data[code]);
         } else {
           this.bttv.emotesMap.set(key, data[code]);
@@ -379,17 +344,6 @@ export const dubplus_emoji = {
       }
     }
     this.bttvJSONSLoaded = true;
-  },
-
-  /**
-   * @param {{[emote: string]: { url: string; width: number; height: number; }}} data
-   */
-  processTastyEmotes(data) {
-    this.tasty.emotes = data.emotes;
-    this.tastyJSONLoaded = true;
-    Object.keys(this.tasty.emotes).forEach((key) => {
-      this.tasty.emotesMap.set(key, data[key]);
-    });
   },
 
   /**
@@ -409,7 +363,6 @@ export const dubplus_emoji = {
         this.twitch.emotesMap.has(key) ||
         this.bttv.emotesMap.has(key)
       ) {
-        console.log('ffz: found dupe with twitch', key);
         this.frankerFacez.emotesMap.set(`${key}_ffz`, emoticon.id);
       } else {
         this.frankerFacez.emotesMap.set(key, emoticon.id);
