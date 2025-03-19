@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import pkg from './package.json' with { type: 'json' };
+import pkg from './package.json';
 import { getCurrentBranch } from './tasks/git-branch';
 
 // only want to pass a few things from package, delete the rest
