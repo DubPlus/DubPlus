@@ -19,9 +19,16 @@ export function zipExetension() {
     '".env*"',
     '"*.zip"',
   ].join(' -x ');
-  execSync(`zip -vr -FS DubPlus-Extension . -x ${excludes}`, options);
+  execSync(`zip -vrSX DubPlus-Extension . -x ${excludes}`, options);
 }
 
 if (isThisFileBeingRunViaCLI) {
   zipExetension();
 }
+
+/*
+-v verbose
+-r recursive
+-S include hidden files and folders. For us that means all of the dot files
+-X exclude extra file attributes
+*/
