@@ -7,7 +7,7 @@ import svelteConfig from './svelte.config.js';
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {
-    ignores: ['dubplus.js', 'src/utils/ldb.js', 'public/mock-queup.js'],
+    ignores: ['dubplus.js'],
   },
   js.configs.recommended,
   ...svelte.configs.recommended,
@@ -16,6 +16,9 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.node,
+      },
+      parserOptions: {
+        sourceType: 'module',
       },
     },
   },
