@@ -25,9 +25,10 @@ function handleCollapseButtonClick(event) {
 }
 
 /**
- * @param {HTMLAnchorElement} autolinkImage
+ * @param {HTMLAnchorElement} [autolinkImage]
  */
 function addCollapserToImage(autolinkImage) {
+  if (!autolinkImage) return;
   if (
     !autolinkImage.parentElement.classList.contains('dubplus-collapsible-image')
   ) {
