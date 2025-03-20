@@ -18,8 +18,9 @@ export function zipExetension() {
     '"*.vscode*"',
     '".env*"',
     '"*.zip"',
+    '".husky/_/*"',
   ].join(' -x ');
-  execSync(`zip -vrSX DubPlus-Extension . -x ${excludes}`, options);
+  execSync(`zip -vrX DubPlus-Extension . -x ${excludes}`, options);
 }
 
 if (isThisFileBeingRunViaCLI) {
