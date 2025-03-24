@@ -28,9 +28,8 @@ See the [v1 milestone for more details](https://github.com/DubPlus/DubPlus/miles
 
 Some files deleted or moved. If you were accessing these files you'll need to update your urls. Most people will not have to worry about this.
 
-**Deleted**: We no longer produce minified versions of our code because Chrome and Firefox extensions forbid them.
+**Deleted**:
 
-- ~~`dubplus.min.js`~~
 - ~~`css/dubplus.min.css`~~
 
 **Moved**:

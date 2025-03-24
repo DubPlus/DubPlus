@@ -1,6 +1,7 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
+import terser from '@rollup/plugin-terser';
 import pkg from './package.json';
 import { getCurrentBranch } from './tasks/git-branch';
 
@@ -18,7 +19,7 @@ delete pkg.engines;
 function getCdnRoot() {
   const currentBranch = getCurrentBranch();
   console.log('currentBranch:', currentBranch);
-  if (currentBranch) {
+  if (currentBranch && currentBranch !== 'master' && currentBranch !== 'main') {
     return `DubPlus@${currentBranch}`;
   } else {
     return 'DubPlus';
@@ -58,17 +59,35 @@ export default defineConfig(() => {
       },
       copyPublicDir: false,
       rollupOptions: {
-        output: {
-          // inserts the Dub+ ascii logo and license into the top of the output
-          banner: BANNER,
+        output: [
+          {
+            // inserts the Dub+ ascii logo and license into the top of the output
+            banner: BANNER,
+            format: 'iife',
+            name: 'dubplus',
 
-          // makes sure our output JS file is named dubplus.js
-          // otherwise it would create: dubplus.iife.js
-          entryFileNames: (chunkInfo) => {
-            if (chunkInfo.name === 'main') return 'dubplus.js';
-            return chunkInfo.name;
+            // makes sure our output JS file is named dubplus.js
+            // otherwise it would create: dubplus.iife.js
+            entryFileNames: (chunkInfo) => {
+              if (chunkInfo.name === 'main') return 'dubplus.js';
+              return chunkInfo.name;
+            },
           },
-        },
+          {
+            // inserts the Dub+ ascii logo and license into the top of the output
+            banner: BANNER,
+            format: 'iife',
+            name: 'dubplus',
+            plugins: [terser()],
+
+            // makes sure our output JS file is named dubplus.js
+            // otherwise it would create: dubplus.iife.js
+            entryFileNames: (chunkInfo) => {
+              if (chunkInfo.name === 'main') return 'dubplus.min.js';
+              return chunkInfo.name;
+            },
+          },
+        ],
       },
     },
   };
