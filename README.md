@@ -1,41 +1,78 @@
 # DubPlus
+
 Dub+ - A Dubtrack.fm and QueUp.net script/extension for added features and customizations
 
-### Contributing
+## How to build the extension
 
-- Fork us    
-- Run `npm install` to install packages    
-- Create separate branch(es) to develop in.
-  - only use your fork's `master` to create pull requests from 
-- run `npm run build && npm run minify` in `master` before committing and submitting your pull request
+Requires [Node](https://nodejs.org/) v20.0.0 or higher. If you're using [`nvm`](https://github.com/nvm-sh/nvm), you can run `nvm use`.
 
-The build script automatically is grabbing your Github Username and your current branch (when not in master) so that you're always pointing to your personal branch during developing & testing.  These variables are passed to both SASS files and JS files. But when you are in your own `master` branch it will hardcode those variables to the user `DubPlus`
+Run `npm install` to install dependencies.
 
+Run `npm run ext` to build and zip the extension. This will create a `DubPlus-Extension.zip` file at the root of the repo.
 
-### npm tasks
+The extension will load into any browser that supports the WebExtensions API and manifest v3 (Chrome, Firefox, Edge, Opera, Vivaldi, etc.). Please note that we've only tested the extension on Chrome and Firefox and we only make it available on their respective extension stores. See https://dub.plus for more details.
 
-**NOTE:**
-When building and/or minifying JS and Sass, the tasks inject the Rawgit url based on your Github User and branch name when not on the master branch or not using the '-release' tasks. If you're developing locally this is useful so you can point bookmarklets to your current feature dev branch.
+## Contributing
 
-`npm run build` - Builds and minifies BOTH js and sass.
+- Fork us
+- Create separate branch(es) to develop in
+- Create a Pull Request targeting DubPlus's `develop` branch
+- We will verify and test the changes before we merge it into our main branch
 
-`npm run build-release` - Builds and minifies BOTH js and sass. Sets the Rawgit location variable to /DubPlus/DubPlus/master.
+## Development
 
-`npm run bundle` - runs babel and browserify on JS files
+Requires Node v20 or higher
 
-`npm run sass` - compiles sass files
+- install dependencies: `npm install`
 
-`npm run build` - run both bundle & sass
+The UI is written in [Svelte 5](https://svelte.dev/docs/svelte/overview)
 
-`npm run minify` - produces minified files for both js and css files.
+There are 2 ways you can develop.
 
-`npm run min-release` - produces minified files for both js and css files. Sets the Rawgit location variable to /DubPlus/DubPlus/master.
+### 1. Loading the extension in Firefox
 
+- in one command line window or tab, run `npm run watch`
+- in another command line, run `npm run firefox`.
 
-`npm run watch` - starts JS and Sass file watching and compiling of each.
+This will launch firefox and with the extension already loaded.
 
-`npm run ext` - takes the `extensions/common` folder and builds the `extensions/Chrome` and `extensions/Firefox` folders.  **does not zip**, use `npm run ext-zip` to zip.
+PROS:
 
-`npm run ext-zip` - Zips the `extensions/Chrome` and `extensions/Firefox` folders
+- When you make changes and save, it will automatically reload the extension for you, no need to refresh the page (well, sometimes you need to refresh but rarely, working on fixing that)
 
-`npm run ext-deploy` - first builds each extension, then zips them, then deploys each extensions to their respective online web stores
+CONS:
+
+- The browser it loads is a completely fresh window with a clean storage (cookies and localStorage) so you'll need to log in and enable all of the features every time you start it up (just once per session, not every time you save during development)
+
+### 2. Loading the unpacked extension in Chrome
+
+This way is a little more manual but it's good to test on Chrome when you're finished developing on Firefox to make sure it works well in both browsers.
+
+- run `npm run watch`
+- open [chrome://extensions/](chrome://extensions/)
+- if you have the Dub+ extension installed from the Chrome WebStore, make sure to disable it
+- Turn on the "developer mode" switch in the top right
+- Click on "Load unpacked" button in the top left
+- select the root folder of this repo
+- Open a new tab and log in to https://queup.net and join a room
+- start developing
+
+PROS:
+
+- No need to log in every time and enable features, it uses the normal browser and has access to cookies and localStorage.
+
+CONS:
+
+- When you make changes and hit save, you'll need to go into the [chrome://extensions/](chrome://extensions/) and reload the extension every time (there's a little reload icon the left of the switch in the extension page, just click on that), and then go to the page and refresh the page as well.
+
+### npm scripts
+
+`npm run build` - creates production builds of the JS and CSS files
+
+`npm run watch` - Starts file watcher that will rebuild dubplus.js and dubplus.css on save
+
+`npm run ext` - shortcut that runs `npm run build` then `npm run zip`
+
+`npm run zip` - creates the zip file of the extension
+
+`npm run firefox` - starts an instance of firefox with our extension loaded so you can test it in Firefox. Requires that you have FireFox installed locally already

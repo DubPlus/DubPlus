@@ -1,24 +1,21 @@
 {
-  "name": "DubPlus",
-  "version": "0.3.4",
-  "description": "Dub+ - A simple script/extension for Dubtrack.fm and QueUp.net",
+  "name": "dubplus",
+  "version": "4.0.0",
+  "type": "module",
+  "description": "Dub+ - A simple script/extension for QueUp.net",
   "main": "dubplus.js",
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "build": "node ./tasks",
-    "build-release": "node ./tasks --release",
-    "watch": "node ./tasks watch",
-    "bundle": "node ./tasks bundle",
-    "minify": "node ./tasks minify",
-    "min-release": "node ./tasks min --release",
-    "sass": "node ./tasks sass",
-    "ext": "node ./tasks ext",
-    "ext-zip": "node ./tasks ext-zip",
-    "ext-deploy": "node ./tasks ext-deploy",
-    "start:firefox": "npm run ext && web-ext run --source-dir ./extensions/Firefox/"
+    "build": "eslint src && vite build",
+    "watch": "vite build --watch",
+    "ext": "npm run build && web-ext build",
+    "zip": "node ./tasks/zip.js",
+    "firefox": "web-ext run --start-url www.queup.net --watch-files dubplus.js dubplus.css manifest.json",
+    "prepare": "husky install",
+    "prettier": "prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -32,24 +29,30 @@
   "homepage": "https://dub.plus",
   "devDependencies": {
     "@babel/preset-env": "^7.13.12",
-    "autoprefixer": "^10.2.5",
-    "babelify": "^10.0.0",
-    "browserify": "^17.0.0",
-    "chalk": "^4.1.2",
-    "fs-extra": "^11.2.0",
-    "git-repo-info": "^2.1.1",
-    "postcss": "^8.4.39",
-    "uglifyify": "^5.0.2",
-    "watchify": "^4.0.0",
-    "web-ext": "^8.2.0"
+    "@playwright/test": "^1.45.1",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@types/chrome": "^0.0.304",
+    "@types/node": "^20.14.10",
+    "chalk": "^5.4.1",
+    "eslint-plugin-svelte": "^3.0.3",
+    "globals": "^16.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "prettier": "^3.5.1",
+    "prettier-plugin-svelte": "^3.3.3",
+    "svelte": "^5.20.2",
+    "vite": "^6.1.1",
+    "web-ext": "^8.4.0"
   },
   "browserslist": [
     "> 1%",
     "last 2 versions"
   ],
-  "dependencies": {
-    "@babel/core": "^7.24.7",
-    "node-fetch": "^2.7.0",
-    "sass": "^1.77.6"
+  "lint-staged": {
+    "*.{css,md}": "prettier --list-different --write",
+    "*.{js,svelte}": [
+      "prettier --list-different --write",
+      "eslint"
+    ]
   }
 }
