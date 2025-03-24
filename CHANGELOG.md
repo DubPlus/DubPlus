@@ -3,9 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.0.0] - 2025-?-?
+## [4.0.0] - 2025-03-24
 
-This is a complete rewrite of the code switching from the old jQuery code to Svelte 5 [#108](https://github.com/DubPlus/DubPlus/issues/108). Also caught some existing bugs while updating.
+The big leap in version number is to align with the version numbers we've been using for the extensions. We had 2 separate version numbers going and so now we'll just have one and be better about keeping with semantic versioning.
+
+This is a complete rewrite of the code switching away from the old jQuery code to Svelte 5 [#108](https://github.com/DubPlus/DubPlus/issues/108). Also caught some existing bugs while updating.
 
 The Chrome and Firefox extensions have been updated to use Manifest v3.
 
@@ -33,7 +35,7 @@ Some files deleted or moved. If you were accessing these files you'll need to up
 
 **Moved**:
 
-- ~~`css/dubplus.css`~~ --> `./dubplus.css`
+- `css/dubplus.css` is now at the root: `./dubplus.css`
 
 ### Fixed
 
