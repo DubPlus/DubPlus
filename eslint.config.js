@@ -7,7 +7,7 @@ import svelteConfig from './svelte.config.js';
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {
-    ignores: ['dubplus.js'],
+    ignores: ['dubplus.js', 'dubplus.min.js'],
   },
   js.configs.recommended,
   ...svelte.configs.recommended,
