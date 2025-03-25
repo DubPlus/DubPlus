@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.1] - 2025-03-25
+
+### Fixed
+
+Fixed a css bug that only affected FireFox: [issue](https://github.com/DubPlus/DubPlus/issues/136)
+
 ## [4.0.0] - 2025-03-24
 
 The big leap in version number is to align with the version numbers we've been using for the extensions. We had 2 separate version numbers going and so now we'll just have one and be better about keeping with semantic versioning.
