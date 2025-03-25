@@ -5465,7 +5465,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __GIT_BRANCH__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${CDN_ROOT}/${'DubPlus@bugfix-136-general-section-height-bug'}${cssFile}?${'1742931697871'}`,
+        `${CDN_ROOT}/${'DubPlus'}${cssFile}?${'1742941395987'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
