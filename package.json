@@ -15,7 +15,8 @@
     "zip": "node ./tasks/zip.js",
     "firefox": "web-ext run --start-url www.queup.net --watch-files dubplus.js dubplus.css manifest.json",
     "prepare": "husky install",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "purge-cache": "node ./tasks/purge-cache.js"
   },
   "repository": {
     "type": "git",
