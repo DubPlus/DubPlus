@@ -16,7 +16,19 @@
   ul {
     padding: 0 15px;
     border-bottom: 1px solid #222;
-    max-height: 516px;
+    max-height: 531px;
+
+    /* 
+       18 - number of list items in the General section.
+            General section has the most features so we use that one.
+            If we add more items, we need to update this value.
+
+       38.2px = 18.2px + 10px + 10px 
+            18.2px = height of each list item
+            10px = top margin of each list item
+            10px = bottom margin of each list item
+     */
+    max-height: calc(18 * 38.2px);
     transition: max-height 0.3s;
     overflow: hidden;
     margin: 0;

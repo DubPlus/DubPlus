@@ -3424,7 +3424,7 @@ var dubplus = (function () {
   }
   delegate(['click']);
   var root$m = /* @__PURE__ */ template(
-    `<ul class="dubplus-menu-section svelte-19n0ph7" role="region"><!></ul>`,
+    `<ul class="dubplus-menu-section svelte-1pjvan3" role="region"><!></ul>`,
   );
   function MenuSection($$anchor, $$props) {
     var ul = root$m();
@@ -5465,7 +5465,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __GIT_BRANCH__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${CDN_ROOT}/${'DubPlus'}${cssFile}?${'1742850564312'}`,
+        `${CDN_ROOT}/${'DubPlus@bugfix-136-general-section-height-bug'}${cssFile}?${'1742931697871'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -6748,7 +6748,7 @@ var dubplus = (function () {
     pop();
   }
   delegate(['click']);
-  const version = '4.0.0';
+  const version = '4.0.1';
   const pkg = {
     version,
   };
@@ -6836,7 +6836,7 @@ var dubplus = (function () {
   }
   var define_PKGINFO_default = {
     name: 'dubplus',
-    version: '4.0.0',
+    version: '4.0.1',
     description: 'Dub+ - A simple script/extension for QueUp.net',
     author: 'DubPlus',
     license: 'MIT',
