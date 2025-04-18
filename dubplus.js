@@ -5533,7 +5533,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __GIT_BRANCH__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${CDN_ROOT}/${'DubPlus@bugfixes'}${cssFile}?${'1744994673823'}`,
+        `${CDN_ROOT}/${'DubPlus'}${cssFile}?${'1744995782056'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
