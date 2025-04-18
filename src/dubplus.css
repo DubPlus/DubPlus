@@ -222,10 +222,29 @@
   font-family: icomoon;
 }
 
+/* This is the class added to the parent <p> element of an .autolink-image */
 .dubplus-collapsible-image {
   position: relative;
 }
 
+/* This adds the "Image Collapsed" text as a pseudo-element */
+.dubplus-collapsible-image::after {
+  content: 'Image Collapsed';
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin-left: 26%;
+  line-height: 1;
+  color: #878c8e;
+  border: 1px solid #878c8e;
+  padding: 0 10px !important;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+/* This is the button that is added by Dub+ that toggles the collapse */
 .dubplus-collapser {
   font-family: icomoon;
   font-size: 20px;
@@ -239,33 +258,34 @@
   right: 0;
   bottom: 0;
   z-index: 3;
+  height: 25px;
 }
 
+/* This is added to the .dubplus-collapsible-image element */
+.dubplus-collapsed {
+  padding-top: 30px !important;
+  margin-bottom: 10px !important;
+}
+
+/* This the up arrow from iconmoon font */
 .dubplus-collapser::before {
   content: '\e801';
   font-size: inherit;
 }
 
+/* hides the image. This is added to the .dubplus-collapsible-image element */
 .dubplus-collapsed [aria-hidden='true'] {
   display: none;
 }
 
+/* This the down arrow from iconmoon font */
 .dubplus-collapsed .dubplus-collapser::before {
   content: '\e802';
 }
 
-.dubplus-collapser-message {
-  display: none;
-}
-.dubplus-collapsed .dubplus-collapser-message {
-  display: inline-block;
-  margin-left: 26% !important;
-  color: #878c8e;
-  border: 1px solid #878c8e;
-  padding: 0 10px !important;
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  font-weight: bold;
+/* This displays the "Image Collapsed" text when the image is collapsed */
+.dubplus-collapsed::after {
+  display: block;
 }
 
 .sr-only,

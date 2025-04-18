@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.2] - 2025-04-18
+
+Bug fixes and Upgraded dependencies
+
+### Fixed
+
+- Fixed bug in collapsible images: [issue](https://github.com/DubPlus/DubPlus/issues/142)
+- Fixed minor bug in Show Dubs on Hover when data was `undefined`
+
 ## [4.0.1] - 2025-03-25
 
 ### Fixed

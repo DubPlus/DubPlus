@@ -46,6 +46,7 @@ var dubplus = (function () {
   var object_prototype = Object.prototype;
   var array_prototype = Array.prototype;
   var get_prototype_of = Object.getPrototypeOf;
+  var is_extensible = Object.isExtensible;
   const noop = () => {};
   function run(fn) {
     return fn();
@@ -73,6 +74,7 @@ var dubplus = (function () {
   const EFFECT_TRANSPARENT = 1 << 16;
   const HEAD_EFFECT = 1 << 19;
   const EFFECT_HAS_DERIVED = 1 << 20;
+  const EFFECT_IS_UPDATING = 1 << 21;
   const STATE_SYMBOL = Symbol('$state');
   const LOADING_ATTR_SYMBOL = Symbol('');
   function equals(value) {
@@ -116,11 +118,6 @@ var dubplus = (function () {
   function state_prototype_fixed() {
     {
       throw new Error(`https://svelte.dev/e/state_prototype_fixed`);
-    }
-  }
-  function state_unsafe_local_read() {
-    {
-      throw new Error(`https://svelte.dev/e/state_unsafe_local_read`);
     }
   }
   function state_unsafe_mutation() {
@@ -208,121 +205,7 @@ var dubplus = (function () {
       (component_context !== null && component_context.l === null)
     );
   }
-  const old_values = /* @__PURE__ */ new Map();
-  function source(v, stack) {
-    var signal = {
-      f: 0,
-      // TODO ideally we could skip this altogether, but it causes type errors
-      v,
-      reactions: null,
-      equals,
-      rv: 0,
-      wv: 0,
-    };
-    return signal;
-  }
-  function state(v) {
-    return /* @__PURE__ */ push_derived_source(source(v));
-  }
-  // @__NO_SIDE_EFFECTS__
-  function mutable_source(initial_value, immutable = false) {
-    var _a2;
-    const s = source(initial_value);
-    if (!immutable) {
-      s.equals = safe_equals;
-    }
-    if (
-      legacy_mode_flag &&
-      component_context !== null &&
-      component_context.l !== null
-    ) {
-      ((_a2 = component_context.l).s ?? (_a2.s = [])).push(s);
-    }
-    return s;
-  }
-  // @__NO_SIDE_EFFECTS__
-  function push_derived_source(source2) {
-    if (
-      active_reaction !== null &&
-      !untracking &&
-      (active_reaction.f & DERIVED) !== 0
-    ) {
-      if (derived_sources === null) {
-        set_derived_sources([source2]);
-      } else {
-        derived_sources.push(source2);
-      }
-    }
-    return source2;
-  }
-  function set(source2, value) {
-    if (
-      active_reaction !== null &&
-      !untracking &&
-      is_runes() &&
-      (active_reaction.f & (DERIVED | BLOCK_EFFECT)) !== 0 && // If the source was created locally within the current derived, then
-      // we allow the mutation.
-      (derived_sources === null || !derived_sources.includes(source2))
-    ) {
-      state_unsafe_mutation();
-    }
-    return internal_set(source2, value);
-  }
-  function internal_set(source2, value) {
-    if (!source2.equals(value)) {
-      var old_value = source2.v;
-      if (is_destroying_effect) {
-        old_values.set(source2, value);
-      } else {
-        old_values.set(source2, old_value);
-      }
-      source2.v = value;
-      source2.wv = increment_write_version();
-      mark_reactions(source2, DIRTY);
-      if (
-        is_runes() &&
-        active_effect !== null &&
-        (active_effect.f & CLEAN) !== 0 &&
-        (active_effect.f & (BRANCH_EFFECT | ROOT_EFFECT)) === 0
-      ) {
-        if (untracked_writes === null) {
-          set_untracked_writes([source2]);
-        } else {
-          untracked_writes.push(source2);
-        }
-      }
-    }
-    return value;
-  }
-  function mark_reactions(signal, status) {
-    var reactions = signal.reactions;
-    if (reactions === null) return;
-    var runes = is_runes();
-    var length = reactions.length;
-    for (var i = 0; i < length; i++) {
-      var reaction = reactions[i];
-      var flags = reaction.f;
-      if ((flags & DIRTY) !== 0) continue;
-      if (!runes && reaction === active_effect) continue;
-      set_signal_status(reaction, status);
-      if ((flags & (CLEAN | UNOWNED)) !== 0) {
-        if ((flags & DERIVED) !== 0) {
-          mark_reactions(
-            /** @type {Derived} */
-            reaction,
-            MAYBE_DIRTY,
-          );
-        } else {
-          schedule_effect(
-            /** @type {Effect} */
-            reaction,
-          );
-        }
-      }
-    }
-  }
-  let hydrating = false;
-  function proxy(value, parent = null, prev) {
+  function proxy(value) {
     if (typeof value !== 'object' || value === null || STATE_SYMBOL in value) {
       return value;
     }
@@ -332,17 +215,24 @@ var dubplus = (function () {
     }
     var sources = /* @__PURE__ */ new Map();
     var is_proxied_array = is_array(value);
-    var version2 = source(0);
+    var version2 = /* @__PURE__ */ state(0);
+    var reaction = active_reaction;
+    var with_parent = (fn) => {
+      var previous_reaction = active_reaction;
+      set_active_reaction(reaction);
+      var result = fn();
+      set_active_reaction(previous_reaction);
+      return result;
+    };
     if (is_proxied_array) {
       sources.set(
         'length',
-        source(
+        /* @__PURE__ */ state(
           /** @type {any[]} */
           value.length,
         ),
       );
     }
-    var metadata;
     return new Proxy(
       /** @type {any} */
       value,
@@ -358,10 +248,13 @@ var dubplus = (function () {
           }
           var s = sources.get(prop);
           if (s === void 0) {
-            s = source(descriptor.value);
+            s = with_parent(() => /* @__PURE__ */ state(descriptor.value));
             sources.set(prop, s);
           } else {
-            set(s, proxy(descriptor.value, metadata));
+            set(
+              s,
+              with_parent(() => proxy(descriptor.value)),
+            );
           }
           return true;
         },
@@ -369,7 +262,11 @@ var dubplus = (function () {
           var s = sources.get(prop);
           if (s === void 0) {
             if (prop in target) {
-              sources.set(prop, source(UNINITIALIZED));
+              sources.set(
+                prop,
+                with_parent(() => /* @__PURE__ */ state(UNINITIALIZED)),
+              );
+              update_version(version2);
             }
           } else {
             if (is_proxied_array && typeof prop === 'string') {
@@ -400,7 +297,11 @@ var dubplus = (function () {
                 ? void 0
                 : _a2.writable))
           ) {
-            s = source(proxy(exists ? target[prop] : UNINITIALIZED, metadata));
+            s = with_parent(() =>
+              /* @__PURE__ */ state(
+                proxy(exists ? target[prop] : UNINITIALIZED),
+              ),
+            );
             sources.set(prop, s);
           }
           if (s !== void 0) {
@@ -446,7 +347,11 @@ var dubplus = (function () {
                   : _a2.writable)))
           ) {
             if (s === void 0) {
-              s = source(has ? proxy(target[prop], metadata) : UNINITIALIZED);
+              s = with_parent(() =>
+                /* @__PURE__ */ state(
+                  has ? proxy(target[prop]) : UNINITIALIZED,
+                ),
+              );
               sources.set(prop, s);
             }
             var value2 = get(s);
@@ -470,7 +375,9 @@ var dubplus = (function () {
               if (other_s !== void 0) {
                 set(other_s, UNINITIALIZED);
               } else if (i in target) {
-                other_s = source(UNINITIALIZED);
+                other_s = with_parent(() =>
+                  /* @__PURE__ */ state(UNINITIALIZED),
+                );
                 sources.set(i + '', other_s);
               }
             }
@@ -482,13 +389,19 @@ var dubplus = (function () {
                 ? void 0
                 : _a2.writable)
             ) {
-              s = source(void 0);
-              set(s, proxy(value2, metadata));
+              s = with_parent(() => /* @__PURE__ */ state(void 0));
+              set(
+                s,
+                with_parent(() => proxy(value2)),
+              );
               sources.set(prop, s);
             }
           } else {
             has = s.v !== UNINITIALIZED;
-            set(s, proxy(value2, metadata));
+            set(
+              s,
+              with_parent(() => proxy(value2)),
+            );
           }
           var descriptor = Reflect.getOwnPropertyDescriptor(target, prop);
           if (descriptor == null ? void 0 : descriptor.set) {
@@ -530,70 +443,6 @@ var dubplus = (function () {
   function update_version(signal, d = 1) {
     set(signal, signal.v + d);
   }
-  var $window;
-  var is_firefox;
-  var first_child_getter;
-  var next_sibling_getter;
-  function init_operations() {
-    if ($window !== void 0) {
-      return;
-    }
-    $window = window;
-    is_firefox = /Firefox/.test(navigator.userAgent);
-    var element_prototype = Element.prototype;
-    var node_prototype = Node.prototype;
-    first_child_getter = get_descriptor(node_prototype, 'firstChild').get;
-    next_sibling_getter = get_descriptor(node_prototype, 'nextSibling').get;
-    element_prototype.__click = void 0;
-    element_prototype.__className = void 0;
-    element_prototype.__attributes = null;
-    element_prototype.__style = void 0;
-    element_prototype.__e = void 0;
-    Text.prototype.__t = void 0;
-  }
-  function create_text(value = '') {
-    return document.createTextNode(value);
-  }
-  // @__NO_SIDE_EFFECTS__
-  function get_first_child(node) {
-    return first_child_getter.call(node);
-  }
-  // @__NO_SIDE_EFFECTS__
-  function get_next_sibling(node) {
-    return next_sibling_getter.call(node);
-  }
-  function child(node, is_text) {
-    {
-      return /* @__PURE__ */ get_first_child(node);
-    }
-  }
-  function first_child(fragment, is_text) {
-    {
-      var first =
-        /** @type {DocumentFragment} */
-        /* @__PURE__ */ get_first_child(
-          /** @type {Node} */
-          fragment,
-        );
-      if (first instanceof Comment && first.data === '')
-        return /* @__PURE__ */ get_next_sibling(first);
-      return first;
-    }
-  }
-  function sibling(node, count = 1, is_text = false) {
-    let next_sibling = node;
-    while (count--) {
-      next_sibling =
-        /** @type {TemplateNode} */
-        /* @__PURE__ */ get_next_sibling(next_sibling);
-    }
-    {
-      return next_sibling;
-    }
-  }
-  function clear_text_content(node) {
-    node.textContent = '';
-  }
   // @__NO_SIDE_EFFECTS__
   function derived(fn) {
     var flags = DERIVED | DIRTY;
@@ -626,6 +475,12 @@ var dubplus = (function () {
       parent: parent_derived ?? active_effect,
     };
     return signal;
+  }
+  // @__NO_SIDE_EFFECTS__
+  function user_derived(fn) {
+    const d = /* @__PURE__ */ derived(fn);
+    push_reaction_value(d);
+    return d;
   }
   // @__NO_SIDE_EFFECTS__
   function derived_safe_equal(fn) {
@@ -683,6 +538,189 @@ var dubplus = (function () {
       derived2.v = value;
       derived2.wv = increment_write_version();
     }
+  }
+  const old_values = /* @__PURE__ */ new Map();
+  function source(v, stack) {
+    var signal = {
+      f: 0,
+      // TODO ideally we could skip this altogether, but it causes type errors
+      v,
+      reactions: null,
+      equals,
+      rv: 0,
+      wv: 0,
+    };
+    return signal;
+  }
+  // @__NO_SIDE_EFFECTS__
+  function state(v, stack) {
+    const s = source(v);
+    push_reaction_value(s);
+    return s;
+  }
+  // @__NO_SIDE_EFFECTS__
+  function mutable_source(initial_value, immutable = false) {
+    var _a2;
+    const s = source(initial_value);
+    if (!immutable) {
+      s.equals = safe_equals;
+    }
+    if (
+      legacy_mode_flag &&
+      component_context !== null &&
+      component_context.l !== null
+    ) {
+      ((_a2 = component_context.l).s ?? (_a2.s = [])).push(s);
+    }
+    return s;
+  }
+  function set(source2, value, should_proxy = false) {
+    if (
+      active_reaction !== null &&
+      !untracking &&
+      is_runes() &&
+      (active_reaction.f & (DERIVED | BLOCK_EFFECT)) !== 0 &&
+      !(reaction_sources == null ? void 0 : reaction_sources.includes(source2))
+    ) {
+      state_unsafe_mutation();
+    }
+    let new_value = should_proxy ? proxy(value) : value;
+    return internal_set(source2, new_value);
+  }
+  function internal_set(source2, value) {
+    if (!source2.equals(value)) {
+      var old_value = source2.v;
+      if (is_destroying_effect) {
+        old_values.set(source2, value);
+      } else {
+        old_values.set(source2, old_value);
+      }
+      source2.v = value;
+      if ((source2.f & DERIVED) !== 0) {
+        if ((source2.f & DIRTY) !== 0) {
+          execute_derived(
+            /** @type {Derived} */
+            source2,
+          );
+        }
+        set_signal_status(
+          source2,
+          (source2.f & UNOWNED) === 0 ? CLEAN : MAYBE_DIRTY,
+        );
+      }
+      source2.wv = increment_write_version();
+      mark_reactions(source2, DIRTY);
+      if (
+        is_runes() &&
+        active_effect !== null &&
+        (active_effect.f & CLEAN) !== 0 &&
+        (active_effect.f & (BRANCH_EFFECT | ROOT_EFFECT)) === 0
+      ) {
+        if (untracked_writes === null) {
+          set_untracked_writes([source2]);
+        } else {
+          untracked_writes.push(source2);
+        }
+      }
+    }
+    return value;
+  }
+  function mark_reactions(signal, status) {
+    var reactions = signal.reactions;
+    if (reactions === null) return;
+    var runes = is_runes();
+    var length = reactions.length;
+    for (var i = 0; i < length; i++) {
+      var reaction = reactions[i];
+      var flags = reaction.f;
+      if ((flags & DIRTY) !== 0) continue;
+      if (!runes && reaction === active_effect) continue;
+      set_signal_status(reaction, status);
+      if ((flags & (CLEAN | UNOWNED)) !== 0) {
+        if ((flags & DERIVED) !== 0) {
+          mark_reactions(
+            /** @type {Derived} */
+            reaction,
+            MAYBE_DIRTY,
+          );
+        } else {
+          schedule_effect(
+            /** @type {Effect} */
+            reaction,
+          );
+        }
+      }
+    }
+  }
+  let hydrating = false;
+  var $window;
+  var is_firefox;
+  var first_child_getter;
+  var next_sibling_getter;
+  function init_operations() {
+    if ($window !== void 0) {
+      return;
+    }
+    $window = window;
+    is_firefox = /Firefox/.test(navigator.userAgent);
+    var element_prototype = Element.prototype;
+    var node_prototype = Node.prototype;
+    var text_prototype = Text.prototype;
+    first_child_getter = get_descriptor(node_prototype, 'firstChild').get;
+    next_sibling_getter = get_descriptor(node_prototype, 'nextSibling').get;
+    if (is_extensible(element_prototype)) {
+      element_prototype.__click = void 0;
+      element_prototype.__className = void 0;
+      element_prototype.__attributes = null;
+      element_prototype.__style = void 0;
+      element_prototype.__e = void 0;
+    }
+    if (is_extensible(text_prototype)) {
+      text_prototype.__t = void 0;
+    }
+  }
+  function create_text(value = '') {
+    return document.createTextNode(value);
+  }
+  // @__NO_SIDE_EFFECTS__
+  function get_first_child(node) {
+    return first_child_getter.call(node);
+  }
+  // @__NO_SIDE_EFFECTS__
+  function get_next_sibling(node) {
+    return next_sibling_getter.call(node);
+  }
+  function child(node, is_text) {
+    {
+      return /* @__PURE__ */ get_first_child(node);
+    }
+  }
+  function first_child(fragment, is_text) {
+    {
+      var first =
+        /** @type {DocumentFragment} */
+        /* @__PURE__ */ get_first_child(
+          /** @type {Node} */
+          fragment,
+        );
+      if (first instanceof Comment && first.data === '')
+        return /* @__PURE__ */ get_next_sibling(first);
+      return first;
+    }
+  }
+  function sibling(node, count = 1, is_text = false) {
+    let next_sibling = node;
+    while (count--) {
+      next_sibling =
+        /** @type {TemplateNode} */
+        /* @__PURE__ */ get_next_sibling(next_sibling);
+    }
+    {
+      return next_sibling;
+    }
+  }
+  function clear_text_content(node) {
+    node.textContent = '';
   }
   function validate_effect(rune) {
     if (active_effect === null && active_reaction === null) {
@@ -866,17 +904,11 @@ var dubplus = (function () {
       (remove_dom || (effect2.f & HEAD_EFFECT) !== 0) &&
       effect2.nodes_start !== null
     ) {
-      var node = effect2.nodes_start;
-      var end = effect2.nodes_end;
-      while (node !== null) {
-        var next =
-          node === end
-            ? null
-            : /** @type {TemplateNode} */
-              /* @__PURE__ */ get_next_sibling(node);
-        node.remove();
-        node = next;
-      }
+      remove_effect_dom(
+        effect2.nodes_start,
+        /** @type {TemplateNode} */
+        effect2.nodes_end,
+      );
       removed = true;
     }
     destroy_effect_children(effect2, remove_dom && !removed);
@@ -902,6 +934,17 @@ var dubplus = (function () {
       effect2.nodes_start =
       effect2.nodes_end =
         null;
+  }
+  function remove_effect_dom(node, end) {
+    while (node !== null) {
+      var next =
+        node === end
+          ? null
+          : /** @type {TemplateNode} */
+            /* @__PURE__ */ get_next_sibling(node);
+      node.remove();
+      node = next;
+    }
   }
   function unlink_effect(effect2) {
     var parent = effect2.parent;
@@ -1014,9 +1057,15 @@ var dubplus = (function () {
   function set_active_effect(effect2) {
     active_effect = effect2;
   }
-  let derived_sources = null;
-  function set_derived_sources(sources) {
-    derived_sources = sources;
+  let reaction_sources = null;
+  function push_reaction_value(value) {
+    if (active_reaction !== null && active_reaction.f & EFFECT_IS_UPDATING) {
+      if (reaction_sources === null) {
+        reaction_sources = [value];
+      } else {
+        reaction_sources.push(value);
+      }
+    }
   }
   let new_deps = null;
   let skipped_deps = 0;
@@ -1135,9 +1184,9 @@ var dubplus = (function () {
     if (previous_effect !== null) {
       is_throwing_error = true;
     }
-    {
-      propagate_error(error, effect2);
-      return;
+    propagate_error(error, effect2);
+    if (should_rethrow_error(effect2)) {
+      throw error;
     }
   }
   function schedule_possible_effect_self_invalidation(
@@ -1149,6 +1198,8 @@ var dubplus = (function () {
     if (reactions === null) return;
     for (var i = 0; i < reactions.length; i++) {
       var reaction = reactions[i];
+      if (reaction_sources == null ? void 0 : reaction_sources.includes(signal))
+        continue;
       if ((reaction.f & DERIVED) !== 0) {
         schedule_possible_effect_self_invalidation(
           /** @type {Derived} */
@@ -1176,7 +1227,7 @@ var dubplus = (function () {
     var previous_untracked_writes = untracked_writes;
     var previous_reaction = active_reaction;
     var previous_skip_reaction = skip_reaction;
-    var prev_derived_sources = derived_sources;
+    var previous_reaction_sources = reaction_sources;
     var previous_component_context = component_context;
     var previous_untracking = untracking;
     var flags = reaction.f;
@@ -1188,10 +1239,11 @@ var dubplus = (function () {
       (untracking || !is_updating_effect || active_reaction === null);
     active_reaction =
       (flags & (BRANCH_EFFECT | ROOT_EFFECT)) === 0 ? reaction : null;
-    derived_sources = null;
+    reaction_sources = null;
     set_component_context(reaction.ctx);
     untracking = false;
     read_version++;
+    reaction.f |= EFFECT_IS_UPDATING;
     try {
       var result =
         /** @type {Function} */
@@ -1232,8 +1284,18 @@ var dubplus = (function () {
           );
         }
       }
-      if (previous_reaction !== null) {
+      if (previous_reaction !== null && previous_reaction !== reaction) {
         read_version++;
+        if (untracked_writes !== null) {
+          if (previous_untracked_writes === null) {
+            previous_untracked_writes = untracked_writes;
+          } else {
+            previous_untracked_writes.push(
+              .../** @type {Source[]} */
+              untracked_writes,
+            );
+          }
+        }
       }
       return result;
     } finally {
@@ -1242,9 +1304,10 @@ var dubplus = (function () {
       untracked_writes = previous_untracked_writes;
       active_reaction = previous_reaction;
       skip_reaction = previous_skip_reaction;
-      derived_sources = prev_derived_sources;
+      reaction_sources = previous_reaction_sources;
       set_component_context(previous_component_context);
       untracking = previous_untracking;
+      reaction.f ^= EFFECT_IS_UPDATING;
     }
   }
   function remove_reaction(signal, dependency) {
@@ -1361,12 +1424,12 @@ var dubplus = (function () {
           var collected_effects = process_effects(root_effects[i]);
           flush_queued_effects(collected_effects);
         }
+        old_values.clear();
       }
     } finally {
       is_flushing = false;
       is_updating_effect = was_updating_effect;
       last_scheduled_effect = null;
-      old_values.clear();
     }
   }
   function flush_queued_effects(effects) {
@@ -1456,22 +1519,23 @@ var dubplus = (function () {
     var flags = signal.f;
     var is_derived = (flags & DERIVED) !== 0;
     if (active_reaction !== null && !untracking) {
-      if (derived_sources !== null && derived_sources.includes(signal)) {
-        state_unsafe_local_read();
-      }
-      var deps = active_reaction.deps;
-      if (signal.rv < read_version) {
-        signal.rv = read_version;
-        if (
-          new_deps === null &&
-          deps !== null &&
-          deps[skipped_deps] === signal
-        ) {
-          skipped_deps++;
-        } else if (new_deps === null) {
-          new_deps = [signal];
-        } else if (!skip_reaction || !new_deps.includes(signal)) {
-          new_deps.push(signal);
+      if (
+        !(reaction_sources == null ? void 0 : reaction_sources.includes(signal))
+      ) {
+        var deps = active_reaction.deps;
+        if (signal.rv < read_version) {
+          signal.rv = read_version;
+          if (
+            new_deps === null &&
+            deps !== null &&
+            deps[skipped_deps] === signal
+          ) {
+            skipped_deps++;
+          } else if (new_deps === null) {
+            new_deps = [signal];
+          } else if (!skip_reaction || !new_deps.includes(signal)) {
+            new_deps.push(signal);
+          }
         }
       }
     } else if (
@@ -2438,7 +2502,7 @@ var dubplus = (function () {
   }
   function set_class(dom, is_html, value, hash, prev_classes, next_classes) {
     var prev = dom.__className;
-    if (prev !== value) {
+    if (prev !== value || prev === void 0) {
       var next_class_name = to_class(value, hash, next_classes);
       {
         if (next_class_name == null) {
@@ -2996,7 +3060,7 @@ var dubplus = (function () {
   );
   function Modal($$anchor, $$props) {
     push($$props, true);
-    let errorMessage = state('');
+    let errorMessage = /* @__PURE__ */ state('');
     let dialog;
     onMount(() => {
       dialog =
@@ -3097,7 +3161,7 @@ var dubplus = (function () {
             modalState.onConfirm(modalState.value);
             set(errorMessage, '');
           } else {
-            set(errorMessage, proxy(isValidOrErrorMessage));
+            set(errorMessage, isValidOrErrorMessage, true);
           }
         };
         var text_6 = child(button_1);
@@ -3379,8 +3443,8 @@ var dubplus = (function () {
   );
   function MenuHeader($$anchor, $$props) {
     push($$props, true);
-    let arrow = state('down');
-    let expanded = state(true);
+    let arrow = /* @__PURE__ */ state('down');
+    let expanded = /* @__PURE__ */ state(true);
     user_effect(() => {
       if (settings.menu[$$props.settingsId] === 'closed') {
         set(arrow, 'right');
@@ -3655,10 +3719,10 @@ var dubplus = (function () {
     var li = root$d();
     let classes;
     var node = child(li);
-    const expression = /* @__PURE__ */ derived(() =>
+    const expression = /* @__PURE__ */ user_derived(() =>
       $$props.modOnly ? !isMod(window.QueUp.session.id) : false,
     );
-    const expression_1 = /* @__PURE__ */ derived(() => t($$props.label));
+    const expression_1 = /* @__PURE__ */ user_derived(() => t($$props.label));
     Switch(node, {
       get disabled() {
         return get(expression);
@@ -4870,38 +4934,42 @@ var dubplus = (function () {
     });
   }
   function updateUpdubs(updubs) {
-    updubs.forEach((dub) => {
-      if (dubsState.upDubs.find((el) => el.userid === dub.userid)) {
-        return;
-      }
-      getUserName(dub.userid)
-        .then((username) => {
-          dubsState.upDubs.push({
-            userid: dub.userid,
-            username,
-          });
-        })
-        .catch((error) =>
-          logError('Failed to get username for upDubs:', error),
-        );
-    });
+    updubs == null
+      ? void 0
+      : updubs.forEach((dub) => {
+          if (dubsState.upDubs.find((el) => el.userid === dub.userid)) {
+            return;
+          }
+          getUserName(dub.userid)
+            .then((username) => {
+              dubsState.upDubs.push({
+                userid: dub.userid,
+                username,
+              });
+            })
+            .catch((error) =>
+              logError('Failed to get username for upDubs:', error),
+            );
+        });
   }
   function updateDowndubs(downdubs) {
-    downdubs.forEach((dub) => {
-      if (dubsState.downDubs.find((el) => el.userid === dub.userid)) {
-        return;
-      }
-      getUserName(dub.userid)
-        .then((username) => {
-          dubsState.downDubs.push({
-            userid: dub.userid,
-            username,
-          });
-        })
-        .catch((error) =>
-          logError('Failed to get username for downDubs', error),
-        );
-    });
+    downdubs == null
+      ? void 0
+      : downdubs.forEach((dub) => {
+          if (dubsState.downDubs.find((el) => el.userid === dub.userid)) {
+            return;
+          }
+          getUserName(dub.userid)
+            .then((username) => {
+              dubsState.downDubs.push({
+                userid: dub.userid,
+                username,
+              });
+            })
+            .catch((error) =>
+              logError('Failed to get username for downDubs', error),
+            );
+        });
   }
   function resetDubs() {
     dubsState.downDubs = [];
@@ -5465,7 +5533,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __GIT_BRANCH__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${CDN_ROOT}/${'DubPlus'}${cssFile}?${'1742941395987'}`,
+        `${CDN_ROOT}/${'DubPlus@bugfixes'}${cssFile}?${'1744994673823'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5782,10 +5850,6 @@ var dubplus = (function () {
       button.classList.add('dubplus-collapser');
       button.addEventListener('click', handleCollapseButtonClick);
       autolinkImage.parentElement.appendChild(button);
-      const p = document.createElement('p');
-      p.classList.add('dubplus-collapser-message');
-      p.textContent = 'image collapsed';
-      autolinkImage.parentElement.appendChild(p);
     }
   }
   function processChat(e) {
@@ -5809,9 +5873,6 @@ var dubplus = (function () {
       el.remove();
     });
     getImagesInChat().forEach((el) => el.removeAttribute('aria-hidden'));
-    document
-      .querySelectorAll('.dubplus-collapser-message')
-      .forEach((el) => el.remove());
   }
   const collapsibleImages = {
     id: 'collapsible-images',
@@ -5819,11 +5880,14 @@ var dubplus = (function () {
     description: 'collapsible-images.description',
     category: 'general',
     turnOn(onLoad) {
-      if (!onLoad) processChat();
       window.QueUp.Events.bind(CHAT_MESSAGE, processChat);
-      setTimeout(() => {
+      if (onLoad) {
+        setTimeout(() => {
+          processChat();
+        }, 1e3);
+      } else {
         processChat();
-      }, 1e3);
+      }
     },
     turnOff() {
       window.QueUp.Events.unbind(CHAT_MESSAGE, processChat);
@@ -5933,7 +5997,7 @@ var dubplus = (function () {
   );
   function Eta($$anchor, $$props) {
     push($$props, true);
-    let eta = state('ETA');
+    let eta = /* @__PURE__ */ state('ETA');
     function getEta() {
       var _a2, _b;
       const booth_position =
@@ -5968,7 +6032,7 @@ var dubplus = (function () {
       set_attribute(button, 'data-dp-tooltip', get(eta));
     });
     event('mouseenter', button, () => {
-      set(eta, proxy(getEta()));
+      set(eta, getEta(), true);
     });
     append($$anchor, button);
     pop();
@@ -5978,13 +6042,13 @@ var dubplus = (function () {
   );
   function Snooze($$anchor, $$props) {
     push($$props, true);
-    let tooltip = state(proxy(t('Snooze.tooltip')));
+    let tooltip = /* @__PURE__ */ state(proxy(t('Snooze.tooltip')));
     const eventUtils = { currentVol: 50, snoozed: false };
     function revert() {
       window.QueUp.room.player.setVolume(eventUtils.currentVol);
       window.QueUp.room.player.updateVolumeBar();
       eventUtils.snoozed = false;
-      set(tooltip, proxy(t('Snooze.tooltip')));
+      set(tooltip, t('Snooze.tooltip'), true);
       window.QueUp.Events.unbind(PLAYLIST_UPDATE, eventSongAdvance);
     }
     function eventSongAdvance(e) {
@@ -5999,7 +6063,7 @@ var dubplus = (function () {
         !window.QueUp.room.player.muted_player &&
         window.QueUp.playerController.volume > 2
       ) {
-        set(tooltip, proxy(t('Snooze.tooltip.undo')));
+        set(tooltip, t('Snooze.tooltip.undo'), true);
         eventUtils.currentVol = window.QueUp.playerController.volume;
         window.QueUp.room.player.mutePlayer();
         eventUtils.snoozed = true;
@@ -6156,10 +6220,12 @@ var dubplus = (function () {
   );
   function DubsInfo($$anchor, $$props) {
     push($$props, true);
-    let dubData = /* @__PURE__ */ derived(() => getDubCount($$props.dubType));
-    let positionRight = state(0);
-    let positionBottom = state(0);
-    let display = state('none');
+    let dubData = /* @__PURE__ */ user_derived(() =>
+      getDubCount($$props.dubType),
+    );
+    let positionRight = /* @__PURE__ */ state(0);
+    let positionBottom = /* @__PURE__ */ state(0);
+    let display = /* @__PURE__ */ state('none');
     function getTarget() {
       var _a2, _b;
       if ($$props.dubType === 'updub') {
@@ -6691,7 +6757,7 @@ var dubplus = (function () {
   }
   function snooze(_, SNOOZE_CLASS, tooltip, icon, eventSongAdvance, revert) {
     if (!document.body.classList.contains(SNOOZE_CLASS)) {
-      set(tooltip, proxy(t('SnoozeVideo.tooltip.undo')));
+      set(tooltip, t('SnoozeVideo.tooltip.undo'), true);
       set(icon, 'icon-eye-unblocked');
       document.body.classList.add(SNOOZE_CLASS);
       window.QueUp.Events.bind(PLAYLIST_UPDATE, eventSongAdvance);
@@ -6704,11 +6770,11 @@ var dubplus = (function () {
   );
   function SnoozeVideo($$anchor, $$props) {
     push($$props, true);
-    let icon = state('icon-eye-blocked');
-    let tooltip = state(proxy(t('SnoozeVideo.tooltip')));
+    let icon = /* @__PURE__ */ state('icon-eye-blocked');
+    let tooltip = /* @__PURE__ */ state(proxy(t('SnoozeVideo.tooltip')));
     const SNOOZE_CLASS = 'dubplus-snooze-video';
     function revert() {
-      set(tooltip, proxy(t('SnoozeVideo.tooltip')));
+      set(tooltip, t('SnoozeVideo.tooltip'), true);
       set(icon, 'icon-eye-blocked');
       document.body.classList.remove(SNOOZE_CLASS);
       window.QueUp.Events.unbind(PLAYLIST_UPDATE, eventSongAdvance);
@@ -6748,7 +6814,7 @@ var dubplus = (function () {
     pop();
   }
   delegate(['click']);
-  const version = '4.0.1';
+  const version = '4.0.2';
   const pkg = {
     version,
   };
@@ -6836,7 +6902,7 @@ var dubplus = (function () {
   }
   var define_PKGINFO_default = {
     name: 'dubplus',
-    version: '4.0.1',
+    version: '4.0.2',
     description: 'Dub+ - A simple script/extension for QueUp.net',
     author: 'DubPlus',
     license: 'MIT',
@@ -6852,7 +6918,7 @@ var dubplus = (function () {
       window.dubplus || {},
       define_PKGINFO_default,
     );
-    let status = state('loading');
+    let status = /* @__PURE__ */ state('loading');
     const checkList = [
       'QueUp.session.id',
       'QueUp.room.chat',

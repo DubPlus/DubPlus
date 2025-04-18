@@ -7,6 +7,10 @@ import { DUB } from '../../events-constants';
 import { insertQueupChat } from '../../utils/chat-message';
 import { t } from '../stores/i18n.svelte';
 
+/**
+ *
+ * @param {import('../../events').DubEvent} e
+ */
 function updubWatcher(e) {
   const isUserTheDJ =
     window.QueUp.session.id ===

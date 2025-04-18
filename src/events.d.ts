@@ -1,5 +1,6 @@
 /**
- * UpDub or DownDub event
+ * UpDub or DownDub event.
+ * 'realtime:room_playlist-dub'
  */
 export interface DubEvent {
   dubtype: string;
