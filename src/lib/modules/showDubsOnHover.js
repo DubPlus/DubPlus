@@ -44,7 +44,7 @@ function getUserName(userid) {
  * @param {Array<{ userid: string}>} updubs
  */
 function updateUpdubs(updubs) {
-  updubs.forEach((dub) => {
+  updubs?.forEach((dub) => {
     // even though we reset before calling this, because this is async we could have
     // had an upDub in the time it took to fetch the data
     if (dubsState.upDubs.find((el) => el.userid === dub.userid)) {
@@ -66,7 +66,7 @@ function updateUpdubs(updubs) {
  * @param {Array<{ userid: string}>} downdubs
  */
 function updateDowndubs(downdubs) {
-  downdubs.forEach((dub) => {
+  downdubs?.forEach((dub) => {
     // even though we reset before calling this, because this is async we could have
     // had an upDub in the time it took to fetch the data
     if (dubsState.downDubs.find((el) => el.userid === dub.userid)) {
