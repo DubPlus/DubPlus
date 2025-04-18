@@ -39,13 +39,7 @@ function addCollapserToImage(autolinkImage) {
     button.title = 'collapse image';
     button.classList.add('dubplus-collapser');
     button.addEventListener('click', handleCollapseButtonClick);
-
     autolinkImage.parentElement.appendChild(button);
-
-    const p = document.createElement('p');
-    p.classList.add('dubplus-collapser-message');
-    p.textContent = 'image collapsed';
-    autolinkImage.parentElement.appendChild(p);
   }
 }
 

@@ -4870,38 +4870,42 @@ var dubplus = (function () {
     });
   }
   function updateUpdubs(updubs) {
-    updubs.forEach((dub) => {
-      if (dubsState.upDubs.find((el) => el.userid === dub.userid)) {
-        return;
-      }
-      getUserName(dub.userid)
-        .then((username) => {
-          dubsState.upDubs.push({
-            userid: dub.userid,
-            username,
-          });
-        })
-        .catch((error) =>
-          logError('Failed to get username for upDubs:', error),
-        );
-    });
+    updubs == null
+      ? void 0
+      : updubs.forEach((dub) => {
+          if (dubsState.upDubs.find((el) => el.userid === dub.userid)) {
+            return;
+          }
+          getUserName(dub.userid)
+            .then((username) => {
+              dubsState.upDubs.push({
+                userid: dub.userid,
+                username,
+              });
+            })
+            .catch((error) =>
+              logError('Failed to get username for upDubs:', error),
+            );
+        });
   }
   function updateDowndubs(downdubs) {
-    downdubs.forEach((dub) => {
-      if (dubsState.downDubs.find((el) => el.userid === dub.userid)) {
-        return;
-      }
-      getUserName(dub.userid)
-        .then((username) => {
-          dubsState.downDubs.push({
-            userid: dub.userid,
-            username,
-          });
-        })
-        .catch((error) =>
-          logError('Failed to get username for downDubs', error),
-        );
-    });
+    downdubs == null
+      ? void 0
+      : downdubs.forEach((dub) => {
+          if (dubsState.downDubs.find((el) => el.userid === dub.userid)) {
+            return;
+          }
+          getUserName(dub.userid)
+            .then((username) => {
+              dubsState.downDubs.push({
+                userid: dub.userid,
+                username,
+              });
+            })
+            .catch((error) =>
+              logError('Failed to get username for downDubs', error),
+            );
+        });
   }
   function resetDubs() {
     dubsState.downDubs = [];
@@ -5465,7 +5469,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __GIT_BRANCH__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${CDN_ROOT}/${'DubPlus'}${cssFile}?${'1742941395987'}`,
+        `${CDN_ROOT}/${'DubPlus@bugfixes'}${cssFile}?${'1744988213438'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -5782,10 +5786,6 @@ var dubplus = (function () {
       button.classList.add('dubplus-collapser');
       button.addEventListener('click', handleCollapseButtonClick);
       autolinkImage.parentElement.appendChild(button);
-      const p = document.createElement('p');
-      p.classList.add('dubplus-collapser-message');
-      p.textContent = 'image collapsed';
-      autolinkImage.parentElement.appendChild(p);
     }
   }
   function processChat(e) {
@@ -6836,7 +6836,7 @@ var dubplus = (function () {
   }
   var define_PKGINFO_default = {
     name: 'dubplus',
-    version: '4.0.1',
+    version: '4.0.2',
     description: 'Dub+ - A simple script/extension for QueUp.net',
     author: 'DubPlus',
     license: 'MIT',
