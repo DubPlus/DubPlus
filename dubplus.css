@@ -253,14 +253,12 @@
   appearance: none;
   cursor: pointer;
   color: white;
-  display: inline-flex;
+  display: inline-block;
   position: absolute;
   right: 0;
   bottom: 0;
   z-index: 3;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
+  height: 25px;
 }
 
 /* This is added to the .dubplus-collapsible-image element */

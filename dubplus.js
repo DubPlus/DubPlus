@@ -5809,9 +5809,6 @@ var dubplus = (function () {
       el.remove();
     });
     getImagesInChat().forEach((el) => el.removeAttribute('aria-hidden'));
-    document
-      .querySelectorAll('.dubplus-collapser-message')
-      .forEach((el) => el.remove());
   }
   const collapsibleImages = {
     id: 'collapsible-images',
@@ -5819,11 +5816,14 @@ var dubplus = (function () {
     description: 'collapsible-images.description',
     category: 'general',
     turnOn(onLoad) {
-      if (!onLoad) processChat();
       window.QueUp.Events.bind(CHAT_MESSAGE, processChat);
-      setTimeout(() => {
+      if (onLoad) {
+        setTimeout(() => {
+          processChat();
+        }, 1e3);
+      } else {
         processChat();
-      }, 1e3);
+      }
     },
     turnOff() {
       window.QueUp.Events.unbind(CHAT_MESSAGE, processChat);
@@ -6748,7 +6748,7 @@ var dubplus = (function () {
     pop();
   }
   delegate(['click']);
-  const version = '4.0.1';
+  const version = '4.0.2';
   const pkg = {
     version,
   };

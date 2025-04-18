@@ -69,9 +69,6 @@ function reset() {
     el.remove();
   });
   getImagesInChat().forEach((el) => el.removeAttribute('aria-hidden'));
-  document
-    .querySelectorAll('.dubplus-collapser-message')
-    .forEach((el) => el.remove());
 }
 
 /**
@@ -83,16 +80,20 @@ export const collapsibleImages = {
   description: 'collapsible-images.description',
   category: 'general',
   turnOn(onLoad) {
-    // if the module is turned from a page load the UI can sometimes not
-    // be ready yet with messages so the switch will be on but you wont
-    // see the collapse buttons in chat. So the work around is to run it twice
-    // to make sure the buttons are added. This won't cause a problem because
-    // we check to make sure the buttons aren't already added before adding them.
-    if (!onLoad) processChat();
     window.QueUp.Events.bind(CHAT_MESSAGE, processChat);
-    setTimeout(() => {
+
+    if (onLoad) {
+      // This is coming from a page load where Dub+ auto-enables this module
+      // based on the saved user settings. Sometimes the chat message aren't
+      // fully loaded yet so we need to wait a bit before processing the chat
+      setTimeout(() => {
+        processChat();
+      }, 1000);
+    } else {
+      // when user turns it on while already on the page, we don't need to wait
+      // to process the chat messages
       processChat();
-    }, 1000);
+    }
   },
   turnOff() {
     window.QueUp.Events.unbind(CHAT_MESSAGE, processChat);
