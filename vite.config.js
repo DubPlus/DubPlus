@@ -4,6 +4,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import terser from '@rollup/plugin-terser';
 import pkg from './package.json';
 import { getCurrentBranch } from './tasks/git-branch';
+import { getTimestamp } from './tasks/timestamp';
 
 // only want to pass a few things from package, delete the rest
 delete pkg.main;
@@ -31,7 +32,7 @@ export default defineConfig(() => {
   return {
     plugins: [svelte()],
     define: {
-      __TIME_STAMP__: JSON.stringify(Date.now().toString()),
+      __TIME_STAMP__: JSON.stringify(getTimestamp()),
       __GIT_BRANCH__: JSON.stringify(getCdnRoot()),
       __PKGINFO__: JSON.stringify(pkg),
     },

@@ -4,11 +4,13 @@ Dub+ - A Dubtrack.fm and QueUp.net script/extension for added features and custo
 
 ## How to build the extension
 
-Requires [Node](https://nodejs.org/) v20.0.0 or higher. If you're using [`nvm`](https://github.com/nvm-sh/nvm), you can run `nvm use`.
+Requires [Node](https://nodejs.org/) v22 or higher. If you're using [`nvm`](https://github.com/nvm-sh/nvm), you can run `nvm use`.
 
 Run `npm install` to install dependencies.
 
-Run `npm run ext` to build and zip the extension. This will create a `DubPlus-Extension.zip` file at the root of the repo.
+Run `npm run ext` to build and zip the extension.
+
+This will create a new folder with a zip file: `web-ext-artifacts/dubplus-x.x.x.zip`
 
 The extension will load into any browser that supports the WebExtensions API and manifest v3 (Chrome, Firefox, Edge, Opera, Vivaldi, etc.). Please note that we've only tested the extension on Chrome and Firefox and we only make it available on their respective extension stores. See https://dub.plus for more details.
 
@@ -21,7 +23,7 @@ The extension will load into any browser that supports the WebExtensions API and
 
 ## Development
 
-Requires Node v20 or higher
+Requires Node v22 or higher
 
 - install dependencies: `npm install`
 

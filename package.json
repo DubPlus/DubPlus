@@ -1,6 +1,6 @@
 {
   "name": "dubplus",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "type": "module",
   "description": "Dub+ - A simple script/extension for QueUp.net",
   "main": "dubplus.js",
@@ -12,7 +12,6 @@
     "build": "eslint src && vite build",
     "watch": "vite build --watch",
     "ext": "npm run build && web-ext build",
-    "zip": "node ./tasks/zip.js",
     "firefox": "web-ext run --start-url www.queup.net --watch-files dubplus.js dubplus.css manifest.json",
     "prepare": "husky install",
     "prettier": "prettier --write .",
@@ -34,7 +33,6 @@
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@types/chrome": "^0.0.315",
     "@types/node": "^22.14.1",
-    "chalk": "^5.4.1",
     "eslint-plugin-svelte": "^3.0.3",
     "globals": "^16.0.0",
     "husky": "^9.1.7",
