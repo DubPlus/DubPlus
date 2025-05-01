@@ -1,6 +1,6 @@
 {
   "name": "dubplus",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "type": "module",
   "description": "Dub+ - A simple script/extension for QueUp.net",
   "main": "dubplus.js",

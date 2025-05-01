@@ -5533,7 +5533,7 @@ var dubplus = (function () {
         className,
         // @ts-ignore __GIT_BRANCH__ & __TIME_STAMP__ are replaced by vite
         // eslint-disable-next-line no-undef
-        `${CDN_ROOT}/${'DubPlus'}${cssFile}?${'1744995782056'}`,
+        `${CDN_ROOT}/${'DubPlus@build-refactor'}${cssFile}?${'1746130222525'}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -6814,7 +6814,7 @@ var dubplus = (function () {
     pop();
   }
   delegate(['click']);
-  const version = '4.0.2';
+  const version = '4.0.3';
   const pkg = {
     version,
   };
@@ -6902,7 +6902,7 @@ var dubplus = (function () {
   }
   var define_PKGINFO_default = {
     name: 'dubplus',
-    version: '4.0.2',
+    version: '4.0.3',
     description: 'Dub+ - A simple script/extension for QueUp.net',
     author: 'DubPlus',
     license: 'MIT',

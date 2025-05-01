@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.3] - 2025-05-01
+
+Updates to our build process. No changes to the extension itself.
+
 ## [4.0.2] - 2025-04-18
 
 Bug fixes and Upgraded dependencies
