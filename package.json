@@ -40,7 +40,7 @@
     "prettier": "^3.5.1",
     "prettier-plugin-svelte": "^3.3.3",
     "svelte": "^5.28.1",
-    "vite": "^6.3.2",
+    "vite": "^6.3.4",
     "web-ext": "^8.5.0"
   },
   "browserslist": [
