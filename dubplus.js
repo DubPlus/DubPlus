@@ -6327,7 +6327,7 @@ var dubplus = (function () {
         : _a2.remove();
       const cacheBuster = pkg.version;
       let cdnPath = 'DubPlus';
-      if ('master'.trim() !== 'main') {
+      if ('master'.trim() !== 'main' && 'master'.trim() !== 'master') {
         cdnPath += '@' + 'master'.trim();
       }
       const link2 = makeLink(
