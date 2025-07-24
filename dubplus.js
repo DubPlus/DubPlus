@@ -5080,7 +5080,7 @@ var dubplus = (function () {
     textElems.forEach((textElem) => {
       if (
         !textElem.hasAttribute('dubplus-emotes-processed') &&
-        (textElem == null ? void 0 : textElem.textContent)
+        (textElem == null ? void 0 : textElem.textContent.trim()) !== ''
       ) {
         const processedHTML = processChatText(textElem.textContent);
         textElem.replaceChildren(...processedHTML);
@@ -7636,7 +7636,7 @@ var dubplus = (function () {
     pop();
   }
   delegate(['click']);
-  const version = '4.0.3';
+  const version = '4.0.4';
   const pkg = {
     version,
   };
