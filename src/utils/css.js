@@ -1,3 +1,4 @@
+import pkg from '../../package.json';
 const CDN_ROOT = '//cdn.jsdelivr.net/gh/DubPlus';
 
 /**
@@ -16,22 +17,28 @@ const makeLink = function (className, fileName) {
 
 /**
  * Loads a CSS file into <head>.
- * It concats __GIT_BRANCH__ with the first argument (cssFile)
- * @example:
- * css.load("/options/show_timestamps.css", "show_timestamps_link");
  *
- * @param {string} cssFile    the css file location, should start with a /
+ * @example css.load("/options/show_timestamps.css", "show_timestamps_link");
+ *
+ * @param {string} cssFile    the css file location
  * @param {string} className  class name for element
  * @returns {Promise<void>}
  */
 export function link(cssFile, className) {
+  cssFile = cssFile.replace(/^\//, ''); // remove leading slash
   return new Promise((resolve, reject) => {
     document.querySelector(`link.${className}`)?.remove();
+    const cacheBuster = import.meta.env.DEV ? Date.now() : pkg.version;
+    let cdnPath = 'DubPlus';
+    if (
+      import.meta.env.VITE_GIT_BRANCH &&
+      import.meta.env.VITE_GIT_BRANCH.trim() !== 'main'
+    ) {
+      cdnPath += '@' + import.meta.env.VITE_GIT_BRANCH.trim();
+    }
     const link = makeLink(
       className,
-      // @ts-ignore __GIT_BRANCH__ & __TIME_STAMP__ are replaced by vite
-      // eslint-disable-next-line no-undef
-      `${CDN_ROOT}/${__GIT_BRANCH__}${cssFile}?${__TIME_STAMP__}`,
+      `${CDN_ROOT}/${cdnPath}/${cssFile}?${cacheBuster}`,
     );
     link.onload = () => resolve();
     link.onerror = reject;

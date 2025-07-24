@@ -26,6 +26,7 @@
         description={module.description}
         init={module.init}
         customize={module.custom}
+        secondaryAction={module.secondaryAction}
         turnOn={module.turnOn}
         turnOff={module.turnOff}
       />

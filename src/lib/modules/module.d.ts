@@ -57,4 +57,26 @@ export interface DubPlusModule {
    * the altIcon will be clickable and this function will be called
    */
   onClick?: () => void;
+
+  /**
+   * If this is provided, it will override the edit button that brings up the
+   * customizaton modal. 
+   */
+  secondaryAction?: {
+    /**
+     * The svg icon component to render for the secondary action button
+     * This should be an svg element as a .svelte file.
+     */
+    icon: Component;
+
+    /**
+     * the hover text for the secondary action button
+     */
+    description: string;
+
+    /**
+     * The function to call when the action button is clicked
+     */
+    onClick: () => void;
+  };
 }

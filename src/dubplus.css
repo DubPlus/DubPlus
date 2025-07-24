@@ -288,6 +288,24 @@
   display: block;
 }
 
+@media screen and (min-width: 72em) {
+  .dubplus-pin-menu-right #main-room {
+    padding-right: calc(var(--dubplus-menu-width) + 1rem);
+  }
+  .dubplus-pin-menu-right .dubplus-menu {
+    transform: translate3d(0, 0, 0) !important;
+  }
+
+  .dubplus-pin-menu-left #main-room {
+    padding-left: calc(var(--dubplus-menu-width) + 1rem);
+  }
+  .dubplus-pin-menu-left .dubplus-menu {
+    transform: translate3d(0, 0, 0) !important;
+    right: unset !important;
+    left: 0 !important;
+  }
+}
+
 .sr-only,
 .sr-only-focusable:not(:focus):not(:focus-within) {
   width: 1px !important;

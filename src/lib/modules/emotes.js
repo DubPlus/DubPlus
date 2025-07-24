@@ -89,7 +89,7 @@ function processChatLI(li) {
   textElems.forEach((textElem) => {
     if (
       !textElem.hasAttribute('dubplus-emotes-processed') &&
-      textElem?.textContent
+      textElem?.textContent.trim() !== ''
     ) {
       const processedHTML = processChatText(textElem.textContent);
       textElem.replaceChildren(...processedHTML);
