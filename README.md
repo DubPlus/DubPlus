@@ -4,13 +4,13 @@ Dub+ - A Dubtrack.fm and QueUp.net script/extension for added features and custo
 
 ## How to build the extension
 
-Requires [Node](https://nodejs.org/) v22 or higher. If you're using [`nvm`](https://github.com/nvm-sh/nvm), you can run `nvm use`.
+Requires [Node](https://nodejs.org/) v22 or higher, with npm v10 or higher. If you're using [`nvm`](https://github.com/nvm-sh/nvm), you can run `nvm use`.
 
 Run `npm install` to install dependencies.
 
-Run `npm run ext` to build and zip the extension.
+Run `npm run build` to build and zip the extension.
 
-This will create a new folder with a zip file: `web-ext-artifacts/dubplus-x.x.x.zip`
+This will create a new folder at the root of this repo with a zip file of the extension: `dist/dubplus-x.x.x.zip` where `x.x.x` is the version number from the package.json
 
 The extension will load into any browser that supports the WebExtensions API and manifest v3 (Chrome, Firefox, Edge, Opera, Vivaldi, etc.). Please note that we've only tested the extension on Chrome and Firefox and we only make it available on their respective extension stores. See https://dub.plus for more details.
 
@@ -69,12 +69,12 @@ CONS:
 
 ### npm scripts
 
-`npm run build` - creates production builds of the JS and CSS files
+`npm run build` - lints src, builds files from sources, then builds the extension zip
 
-`npm run watch` - Starts file watcher that will rebuild dubplus.js and dubplus.css on save
-
-`npm run ext` - shortcut that runs `npm run build` then `npm run zip`
-
-`npm run zip` - creates the zip file of the extension
+`npm run watch` - starts file watcher that will rebuild dubplus.js and dubplus.css on save
 
 `npm run firefox` - starts an instance of firefox with our extension loaded so you can test it in Firefox. Requires that you have FireFox installed locally already
+
+`npm run prettier` - format all files in the repo
+
+`npm run purge-cache` - purges the jsDelivr cache for Dub+

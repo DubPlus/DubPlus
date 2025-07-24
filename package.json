@@ -1,6 +1,6 @@
 {
   "name": "dubplus",
-  "version": "4.0.4",
+  "version": "4.1.0",
   "type": "module",
   "description": "Dub+ - A simple script/extension for QueUp.net",
   "main": "dubplus.js",
@@ -9,9 +9,9 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "build": "eslint src && vite build",
+    "build": "eslint src && vite build && web-ext build --overwrite-dest --artifacts-dir dist",
+    "ci:build": "eslint src && vite build",
     "watch": "vite build --watch",
-    "ext": "npm run build && web-ext build",
     "firefox": "web-ext run --start-url www.queup.net --watch-files dubplus.js dubplus.css manifest.json",
     "prepare": "husky install",
     "prettier": "prettier --write .",
