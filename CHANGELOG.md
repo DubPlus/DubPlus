@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.1.0] - 2025-07-24
+
+### New Features
+
+- "Pin Menu", allows user to pin the menu to the left or right and pushes over the content of the page so that it's no longer floating on top of it
+
+### Fixed
+
+- Emotes removes some emoji - https://github.com/DubPlus/DubPlus/issues/147
+
 ## [4.0.3] - 2025-05-01
 
 Updates to our build process. No changes to the extension itself.
