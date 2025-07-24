@@ -32,7 +32,8 @@ export function link(cssFile, className) {
     let cdnPath = 'DubPlus';
     if (
       import.meta.env.VITE_GIT_BRANCH &&
-      import.meta.env.VITE_GIT_BRANCH.trim() !== 'main'
+      import.meta.env.VITE_GIT_BRANCH.trim() !== 'main' &&
+      import.meta.env.VITE_GIT_BRANCH.trim() !== 'master'
     ) {
       cdnPath += '@' + import.meta.env.VITE_GIT_BRANCH.trim();
     }
