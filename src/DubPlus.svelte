@@ -5,10 +5,15 @@
   import Menu from './lib/menu/Menu.svelte';
   import { modalState } from './lib/stores/modalState.svelte';
   import { t } from './lib/stores/i18n.svelte';
+  import pkg from '../package.json';
 
-  // @ts-ignore __PKGINFO__ is injected by the build process
-  // eslint-disable-next-line no-undef
-  window.dubplus = Object.assign(window.dubplus || {}, __PKGINFO__);
+  window.dubplus = Object.assign(window.dubplus || {}, {
+    name: pkg.name,
+    version: pkg.version,
+    description: pkg.description,
+    license: pkg.license,
+    homepage: pkg.homepage,
+  });
 
   /** @type {"loading" | "ready" | "loggedout" | "error"} */
   let status = $state('loading');

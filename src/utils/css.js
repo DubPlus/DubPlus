@@ -1,3 +1,4 @@
+import pkg from '../../package.json';
 const CDN_ROOT = '//cdn.jsdelivr.net/gh/DubPlus';
 
 /**
@@ -27,11 +28,12 @@ const makeLink = function (className, fileName) {
 export function link(cssFile, className) {
   return new Promise((resolve, reject) => {
     document.querySelector(`link.${className}`)?.remove();
+    const cacheBuster = import.meta.env.DEV ? Date.now() : pkg.version;
     const link = makeLink(
       className,
-      // @ts-ignore __GIT_BRANCH__ & __TIME_STAMP__ are replaced by vite
+      // @ts-ignore __GIT_BRANCH__ is replaced by vite
       // eslint-disable-next-line no-undef
-      `${CDN_ROOT}/${__GIT_BRANCH__}${cssFile}?${__TIME_STAMP__}`,
+      `${CDN_ROOT}/${__GIT_BRANCH__}${cssFile}?${cacheBuster}`,
     );
     link.onload = () => resolve();
     link.onerror = reject;

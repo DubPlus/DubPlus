@@ -156,7 +156,7 @@ var dubplus = (function () {
       throw new Error(`https://svelte.dev/e/await_outside_boundary`);
     }
   }
-  function lifecycle_outside_component(name) {
+  function lifecycle_outside_component(name2) {
     {
       throw new Error(`https://svelte.dev/e/lifecycle_outside_component`);
     }
@@ -2207,8 +2207,8 @@ var dubplus = (function () {
     }
   }
   const PASSIVE_EVENTS = ['touchstart', 'touchmove'];
-  function is_passive_event(name) {
-    return PASSIVE_EVENTS.includes(name);
+  function is_passive_event(name2) {
+    return PASSIVE_EVENTS.includes(name2);
   }
   let listening_to_form_reset = false;
   function add_form_reset_listener() {
@@ -5027,11 +5027,11 @@ var dubplus = (function () {
       return matches;
     },
   };
-  function makeImage(type, src, name, w, h) {
+  function makeImage(type, src, name2, w, h) {
     const img = document.createElement('img');
     img.className = `emoji ${type}-emote`;
-    img.title = name;
-    img.alt = name;
+    img.title = name2;
+    img.alt = name2;
     img.src = src;
     return img;
   }
@@ -6297,6 +6297,18 @@ var dubplus = (function () {
       window.removeEventListener('beforeunload', unloader);
     },
   };
+  const name = 'dubplus';
+  const version = '4.1.0';
+  const description = 'Dub+ - A simple script/extension for QueUp.net';
+  const license = 'MIT';
+  const homepage = 'https://dub.plus';
+  const pkg = {
+    name,
+    version,
+    description,
+    license,
+    homepage,
+  };
   const CDN_ROOT = '//cdn.jsdelivr.net/gh/DubPlus';
   const makeLink = function (className, fileName) {
     const link2 = document.createElement('link');
@@ -6312,11 +6324,12 @@ var dubplus = (function () {
       (_a2 = document.querySelector(`link.${className}`)) == null
         ? void 0
         : _a2.remove();
+      const cacheBuster = pkg.version;
       const link2 = makeLink(
         className,
-        // @ts-ignore __GIT_BRANCH__ & __TIME_STAMP__ are replaced by vite
+        // @ts-ignore __GIT_BRANCH__ is replaced by vite
         // eslint-disable-next-line no-undef
-        `${CDN_ROOT}/${'DubPlus'}${cssFile}?${'1753324159104'}`,
+        `${CDN_ROOT}/${'DubPlus@feature-pinned-menu'}${cssFile}?${cacheBuster}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
@@ -7636,10 +7649,6 @@ var dubplus = (function () {
     pop();
   }
   delegate(['click']);
-  const version = '4.0.4';
-  const pkg = {
-    version,
-  };
   var root_2 = /* @__PURE__ */ from_html(`<!> <!> <!>`, 1);
   var root = /* @__PURE__ */ from_html(
     `<!> <!> <!> <!> <!> <!> <!> <aside class="dubplus-menu svelte-yl0u1x"><p class="dubplus-menu-header svelte-yl0u1x"> <span class="version svelte-yl0u1x"> </span></p> <!> <!> <!> <!> <!></aside> <!>`,
@@ -7721,24 +7730,15 @@ var dubplus = (function () {
     append($$anchor, fragment);
     pop();
   }
-  var define_PKGINFO_default = {
-    name: 'dubplus',
-    version: '4.0.3',
-    description: 'Dub+ - A simple script/extension for QueUp.net',
-    author: 'DubPlus',
-    license: 'MIT',
-    homepage: 'https://dub.plus',
-    'lint-staged': {
-      '*.{css,md}': 'prettier --list-different --write',
-      '*.{js,svelte}': ['prettier --list-different --write', 'eslint'],
-    },
-  };
   function DubPlus($$anchor, $$props) {
     push($$props, true);
-    window.dubplus = Object.assign(
-      window.dubplus || {},
-      define_PKGINFO_default,
-    );
+    window.dubplus = Object.assign(window.dubplus || {}, {
+      name: pkg.name,
+      version: pkg.version,
+      description: pkg.description,
+      license: pkg.license,
+      homepage: pkg.homepage,
+    });
     let status = /* @__PURE__ */ state('loading');
     const checkList = [
       'QueUp.session.id',

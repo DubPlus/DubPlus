@@ -2,20 +2,7 @@ import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import terser from '@rollup/plugin-terser';
-import pkg from './package.json';
 import { getCurrentBranch } from './tasks/git-branch';
-import { getTimestamp } from './tasks/timestamp';
-
-// only want to pass a few things from package, delete the rest
-delete pkg.main;
-delete pkg.scripts;
-delete pkg.repository;
-delete pkg.bugs;
-delete pkg.devDependencies;
-delete pkg.dependencies;
-delete pkg.type;
-delete pkg.browserslist;
-delete pkg.engines;
 
 function getCdnRoot() {
   const currentBranch = getCurrentBranch();
@@ -31,9 +18,7 @@ export default defineConfig(() => {
   return {
     plugins: [svelte()],
     define: {
-      __TIME_STAMP__: JSON.stringify(getTimestamp()),
       __GIT_BRANCH__: JSON.stringify(getCdnRoot()),
-      __PKGINFO__: JSON.stringify(pkg),
     },
     build: {
       sourcemap: false,
