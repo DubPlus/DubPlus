@@ -18,14 +18,26 @@
    * @property {() => void} [init] always runs when the component mounts, whether
    * the switch is on or off
    * @property {import('../../global').ModalProps} [customize]
+   * @property {import('../modules/module').DubPlusModule['secondaryAction']} [secondaryAction]
    *
    */
 
   /**
    * @type {MenuSwitchProps}
    */
-  let { id, label, description, customize, turnOn, turnOff, init, modOnly } =
-    $props();
+  let {
+    id,
+    label,
+    description,
+    customize,
+    turnOn,
+    turnOff,
+    init,
+    modOnly,
+    secondaryAction,
+  } = $props();
+
+  const SecondaryIcon = secondaryAction?.icon || IconPencil;
 
   onMount(() => {
     if (init) init();
@@ -113,6 +125,16 @@
     <button onclick={openEditModal} type="button">
       <IconPencil />
       <span class="sr-only">{t('MenuItem.edit')}</span>
+    </button>
+  {/if}
+  {#if secondaryAction}
+    <button
+      onclick={secondaryAction.onClick}
+      type="button"
+      title={t(secondaryAction.description)}
+    >
+      <SecondaryIcon />
+      <span class="sr-only">{t(secondaryAction.description)}</span>
     </button>
   {/if}
 </li>

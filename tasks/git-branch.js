@@ -19,11 +19,7 @@ export function getCurrentBranch() {
       .toString()
       .trim()
       .replace('refs/heads/', '');
-  } catch (e) {
-    console.warn(
-      "Couldn't get the current branch name. This is likely because this is not being run in a git repository.",
-      e.message,
-    );
+  } catch {
     return '';
   }
 }

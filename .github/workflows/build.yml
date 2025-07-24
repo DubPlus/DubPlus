@@ -1,5 +1,5 @@
 # In this action we build the project
-# which inserts the git branch name replacing __GIT_BRANCH__ in dubplus.js
+# which inserts the git branch name in dubplus.js
 # then we commit this change to the target branch
 
 name: Build
@@ -27,11 +27,13 @@ jobs:
           node-version: 22.x
           cache: 'npm'
 
+      - run: echo "VITE_GIT_BRANCH=${{github.event.pull_request.base.ref}}" >> $GITHUB_ENV
+
       - run: npm ci
-      
+
       - name: build to insert branch name
-        run: npm run build
-      
+        run: npm run ci:build
+
       - name: commit
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"

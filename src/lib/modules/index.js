@@ -30,6 +30,7 @@ import { flipInterface } from './flipInterface';
 import { autoAfk } from './auto-afk';
 import { grabResponse } from './grabResponse';
 import { collapsibleImages } from './collapsible-images';
+import { pinMenu } from './pin-menu';
 
 /**
  * @type {import("./module").DubPlusModule[]}
@@ -67,6 +68,7 @@ export const userInterface = [
   hideBackground,
   showTimestamps,
   flipInterface,
+  pinMenu,
 ];
 
 /**

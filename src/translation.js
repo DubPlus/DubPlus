@@ -165,6 +165,12 @@ export const translations = {
     'flip-interface.label': 'Flip Interface',
     'flip-interface.description': 'Swap the video and chat positions',
 
+    'pin-menu.label': 'Pin Menu',
+    'pin-menu.description':
+      'Pin the Dub+ menu to the left or right side. Use the action button to toggle which side it is pinned to. Only works in the non-mobile view',
+    'pin-menu.secondaryAction.description':
+      'Click to toggle between pinning to the left or right side',
+
     'spacebar-mute.label': 'Spacebar Mute',
     'spacebar-mute.description':
       'Turn on/off the ability to mute current song with the spacebar',

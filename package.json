@@ -1,6 +1,6 @@
 {
   "name": "dubplus",
-  "version": "4.0.3",
+  "version": "4.1.0",
   "type": "module",
   "description": "Dub+ - A simple script/extension for QueUp.net",
   "main": "dubplus.js",
@@ -9,9 +9,9 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "build": "eslint src && vite build",
+    "build": "eslint src && vite build && web-ext build --filename dubplus-extension.zip --overwrite-dest --artifacts-dir dist",
+    "ci:build": "eslint src && vite build",
     "watch": "vite build --watch",
-    "ext": "npm run build && web-ext build",
     "firefox": "web-ext run --start-url www.queup.net --watch-files dubplus.js dubplus.css manifest.json",
     "prepare": "husky install",
     "prettier": "prettier --write .",
@@ -28,20 +28,20 @@
   },
   "homepage": "https://dub.plus",
   "devDependencies": {
-    "@babel/preset-env": "^7.13.12",
+    "@babel/preset-env": "^7.28.0",
     "@rollup/plugin-terser": "^0.4.4",
-    "@sveltejs/vite-plugin-svelte": "^5.0.3",
-    "@types/chrome": "^0.0.315",
-    "@types/node": "^22.14.1",
-    "eslint-plugin-svelte": "^3.0.3",
-    "globals": "^16.0.0",
+    "@sveltejs/vite-plugin-svelte": "^5.1.1",
+    "@types/chrome": "^0.0.322",
+    "@types/node": "^22.16.5",
+    "eslint-plugin-svelte": "^3.11.0",
+    "globals": "^16.3.0",
     "husky": "^9.1.7",
-    "lint-staged": "^15.5.1",
-    "prettier": "^3.5.1",
-    "prettier-plugin-svelte": "^3.3.3",
-    "svelte": "^5.28.1",
-    "vite": "^6.3.2",
-    "web-ext": "^8.5.0"
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.6.2",
+    "prettier-plugin-svelte": "^3.4.0",
+    "svelte": "^5.36.14",
+    "vite": "^6.3.5",
+    "web-ext": "^8.9.0"
   },
   "browserslist": [
     "> 1%",

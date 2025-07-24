@@ -2,46 +2,20 @@ import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import terser from '@rollup/plugin-terser';
-import pkg from './package.json';
-import { getCurrentBranch } from './tasks/git-branch';
-import { getTimestamp } from './tasks/timestamp';
-
-// only want to pass a few things from package, delete the rest
-delete pkg.main;
-delete pkg.scripts;
-delete pkg.repository;
-delete pkg.bugs;
-delete pkg.devDependencies;
-delete pkg.dependencies;
-delete pkg.type;
-delete pkg.browserslist;
-delete pkg.engines;
-
-function getCdnRoot() {
-  const currentBranch = getCurrentBranch();
-  console.log('currentBranch:', currentBranch);
-  if (currentBranch && currentBranch !== 'master' && currentBranch !== 'main') {
-    return `DubPlus@${currentBranch}`;
-  } else {
-    return 'DubPlus';
-  }
-}
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   return {
     plugins: [svelte()],
-    define: {
-      __TIME_STAMP__: JSON.stringify(getTimestamp()),
-      __GIT_BRANCH__: JSON.stringify(getCdnRoot()),
-      __PKGINFO__: JSON.stringify(pkg),
-    },
     build: {
       sourcemap: false,
       minify: false,
 
       // This places the "dubplus.js" and "dubplus.css" files in the root
-      // of this repo.
+      // of this repo. We are doing this instead of a subdirectory for
+      // legacy reasons. If we change it, then many people who have linked
+      // directly to the dubplus.js file will see it break and have to manually
+      // update their links. So we are keeping it in the root for now.
       outDir: '.',
 
       /*************************************************
@@ -81,7 +55,7 @@ export default defineConfig(() => {
             name: 'dubplus',
             plugins: [terser()],
 
-            // makes sure our output JS file is named dubplus.js
+            // makes sure our output JS file is named dubplus.min.js
             // otherwise it would create: dubplus.iife.js
             entryFileNames: (chunkInfo) => {
               if (chunkInfo.name === 'main') return 'dubplus.min.js';
