@@ -13,6 +13,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Emotes removes some emoji - https://github.com/DubPlus/DubPlus/issues/147
 
+### Other
+
+- Build process related fixes and updates to address FireFox Add-On review comments.
+- update most packages to latest minor versions
+
 ## [4.0.3] - 2025-05-01
 
 Updates to our build process. No changes to the extension itself.
