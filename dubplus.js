@@ -6319,17 +6319,17 @@ var dubplus = (function () {
     return link2;
   };
   function link(cssFile, className) {
+    cssFile = cssFile.replace(/^\//, '');
     return new Promise((resolve, reject) => {
       var _a2;
       (_a2 = document.querySelector(`link.${className}`)) == null
         ? void 0
         : _a2.remove();
       const cacheBuster = pkg.version;
+      let cdnPath = 'DubPlus';
       const link2 = makeLink(
         className,
-        // @ts-ignore __GIT_BRANCH__ is replaced by vite
-        // eslint-disable-next-line no-undef
-        `${CDN_ROOT}/${'DubPlus@feature-pinned-menu'}${cssFile}?${cacheBuster}`,
+        `${CDN_ROOT}/${cdnPath}/${cssFile}?${cacheBuster}`,
       );
       link2.onload = () => resolve();
       link2.onerror = reject;
