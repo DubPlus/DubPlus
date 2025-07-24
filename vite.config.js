@@ -19,7 +19,6 @@ delete pkg.engines;
 
 function getCdnRoot() {
   const currentBranch = getCurrentBranch();
-  console.log('currentBranch:', currentBranch);
   if (currentBranch && currentBranch !== 'master' && currentBranch !== 'main') {
     return `DubPlus@${currentBranch}`;
   } else {
@@ -41,7 +40,10 @@ export default defineConfig(() => {
       minify: false,
 
       // This places the "dubplus.js" and "dubplus.css" files in the root
-      // of this repo.
+      // of this repo. We are doing this instead of a subdirectory for
+      // legacy reasons. If we change it, then many people who have linked
+      // directly to the dubplus.js file will see it break and have to manually
+      // update their links. So we are keeping it in the root for now.
       outDir: '.',
 
       /*************************************************
@@ -81,7 +83,7 @@ export default defineConfig(() => {
             name: 'dubplus',
             plugins: [terser()],
 
-            // makes sure our output JS file is named dubplus.js
+            // makes sure our output JS file is named dubplus.min.js
             // otherwise it would create: dubplus.iife.js
             entryFileNames: (chunkInfo) => {
               if (chunkInfo.name === 'main') return 'dubplus.min.js';
