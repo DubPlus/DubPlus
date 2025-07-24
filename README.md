@@ -4,15 +4,12 @@ Dub+ - A Dubtrack.fm and QueUp.net script/extension for added features and custo
 
 ## How to build the extension
 
-Requires [Node](https://nodejs.org/) v22 or higher, with npm v10 or higher. If you're using [`nvm`](https://github.com/nvm-sh/nvm), you can run `nvm use`.
+1. Install [Node](https://nodejs.org/) (version >= v22)
+2. Run `npm install` in the root of this repo
+3. Run `npm run build` to build and zip the extension.
+   - This will create a zip file of the extension at: `./dist/dubplus-extension.zip`
 
-Run `npm install` to install dependencies.
-
-Run `npm run build` to build and zip the extension.
-
-This will create a new folder at the root of this repo with a zip file of the extension: `dist/dubplus-x.x.x.zip` where `x.x.x` is the version number from the package.json
-
-The extension will load into any browser that supports the WebExtensions API and manifest v3 (Chrome, Firefox, Edge, Opera, Vivaldi, etc.). Please note that we've only tested the extension on Chrome and Firefox and we only make it available on their respective extension stores. See https://dub.plus for more details.
+The extension will load into any browser that supports the WebExtensions API and manifest v3 (Chrome, Firefox, Edge, etc.). Please note that we've only tested the extension on Chrome and Firefox and we only make it available on their respective extension stores. See https://dub.plus for more details.
 
 ## Contributing
 
@@ -23,7 +20,7 @@ The extension will load into any browser that supports the WebExtensions API and
 
 ## Development
 
-Requires Node v22 or higher
+Requires [Node](https://nodejs.org/) version >= 22 with `npm` version >= 10
 
 - install dependencies: `npm install`
 
@@ -34,7 +31,7 @@ There are 2 ways you can develop.
 ### 1. Loading the extension in Firefox
 
 - in one command line window or tab, run `npm run watch`
-- in another command line, run `npm run firefox`.
+- in a separate command line, run `npm run firefox`.
 
 This will launch firefox and with the extension already loaded.
 
@@ -57,7 +54,13 @@ This way is a little more manual but it's good to test on Chrome when you're fin
 - Click on "Load unpacked" button in the top left
 - select the root folder of this repo
 - Open a new tab and log in to https://queup.net and join a room
-- start developing
+- Start developing.
+
+When you hit save, the `watch` will automatically rebuid the JS and CSS files. When you're ready to test your changes you'll need to do the following:
+
+- go back to the [chrome://extensions/](chrome://extensions/)
+- click on the little refresh icon next to the switch in the bottom right corner of the "unpacked extension"
+- then go back to the QueUp page and refresh the browser
 
 PROS:
 
@@ -65,15 +68,17 @@ PROS:
 
 CONS:
 
-- When you make changes and hit save, you'll need to go into the [chrome://extensions/](chrome://extensions/) and reload the extension every time (there's a little reload icon the left of the switch in the extension page, just click on that), and then go to the page and refresh the page as well.
+- The process of seeing your changes after save is a little slower and not automatic.
 
 ### npm scripts
 
-`npm run build` - lints src, builds files from sources, then builds the extension zip
+`npm run build` - Lints src, builds files from sources, then builds the extension zip
+
+`npm run ci:build` - Lints and compiles the JS and CSS files. Does **not** build the zip
 
 `npm run watch` - starts file watcher that will rebuild dubplus.js and dubplus.css on save
 
-`npm run firefox` - starts an instance of firefox with our extension loaded so you can test it in Firefox. Requires that you have FireFox installed locally already
+`npm run firefox` - starts an instance of Firefox with our extension loaded so you can test it in Firefox. Requires that you have Firefox installed locally already
 
 `npm run prettier` - format all files in the repo
 
