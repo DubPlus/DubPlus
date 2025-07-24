@@ -2,24 +2,11 @@ import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import terser from '@rollup/plugin-terser';
-import { getCurrentBranch } from './tasks/git-branch';
-
-function getCdnRoot() {
-  const currentBranch = getCurrentBranch();
-  if (currentBranch && currentBranch !== 'master' && currentBranch !== 'main') {
-    return `DubPlus@${currentBranch}`;
-  } else {
-    return 'DubPlus';
-  }
-}
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   return {
     plugins: [svelte()],
-    define: {
-      __GIT_BRANCH__: JSON.stringify(getCdnRoot()),
-    },
     build: {
       sourcemap: false,
       minify: false,
