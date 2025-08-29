@@ -3497,12 +3497,11 @@ var dubplus = (function () {
     }
     return true;
   }
-  function waitFor(waitingFor, options = {}) {
+  function waitFor(callback, options = {}) {
     const defaults2 = {
       interval: 500,
       // every XX ms we check to see if all variables are defined
-      seconds: 5,
-      // how many total seconds we wish to continue pinging
+      seconds: 10,
     };
     const opts = Object.assign({}, defaults2, options);
     return new Promise((resolve, reject) => {
@@ -3510,7 +3509,7 @@ var dubplus = (function () {
       const tryLimit = (opts.seconds * 1e3) / opts.interval;
       const check = () => {
         tryCount++;
-        if (arrayDeepCheck(waitingFor)) {
+        if (callback()) {
           resolve();
         } else if (tryCount < tryLimit) {
           window.setTimeout(check, opts.interval);
@@ -4666,6 +4665,7 @@ var dubplus = (function () {
       maxlength: 255,
     },
   };
+  const OBJECT_STORE_NAME = 's';
   class LDB {
     constructor() {
       this.db = null;
@@ -4679,7 +4679,9 @@ var dubplus = (function () {
       };
       dbReq.onupgradeneeded = function () {
         outerThis.db = null;
-        var t2 = this.result.createObjectStore('s', { keyPath: 'k' });
+        var t2 = this.result.createObjectStore(OBJECT_STORE_NAME, {
+          keyPath: 'k',
+        });
         t2.transaction.oncomplete = function () {
           outerThis.db = this.db;
         };
@@ -4693,11 +4695,13 @@ var dubplus = (function () {
     get(key) {
       return new Promise((resolve) => {
         if (this.db) {
-          this.db.transaction('s').objectStore('s').get(key).onsuccess =
-            function () {
-              var _a2;
-              resolve(((_a2 = this.result) == null ? void 0 : _a2.v) || null);
-            };
+          this.db
+            .transaction(OBJECT_STORE_NAME)
+            .objectStore(OBJECT_STORE_NAME)
+            .get(key).onsuccess = function () {
+            var _a2;
+            resolve(((_a2 = this.result) == null ? void 0 : _a2.v) || null);
+          };
         } else {
           setTimeout(() => {
             this.get(key).then(resolve);
@@ -4712,8 +4716,8 @@ var dubplus = (function () {
      */
     set(key, value) {
       this.db
-        .transaction('s', 'readwrite')
-        .objectStore('s')
+        .transaction(OBJECT_STORE_NAME, 'readwrite')
+        .objectStore(OBJECT_STORE_NAME)
         .put({ k: key, v: value });
     }
   }
@@ -6327,9 +6331,6 @@ var dubplus = (function () {
         : _a2.remove();
       const cacheBuster = pkg.version;
       let cdnPath = 'DubPlus';
-      if ('master'.trim() !== 'main' && 'master'.trim() !== 'master') {
-        cdnPath += '@' + 'master'.trim();
-      }
       const link2 = makeLink(
         className,
         `${CDN_ROOT}/${cdnPath}/${cssFile}?${cacheBuster}`,
@@ -6618,78 +6619,121 @@ var dubplus = (function () {
       maxlength: 255,
     },
   };
-  function handleCollapseButtonClick(event2) {
-    const parentElement = event2.target.parentElement;
-    const imageContaner =
+  const COLLAPSED = 'dubplus-collapsed';
+  const COLLAPSIBLE = 'dubplus-collapsible-image';
+  const COLLAPSER = 'dubplus-collapser';
+  const IMAGE_CONTAINER = 'autolink-image';
+  function handleCollapseButtonClick(button) {
+    const imageContainer =
       /**@type {HTMLAnchorElement}*/
-      event2.target.previousElementSibling;
-    if (!parentElement.classList.contains('dubplus-collapsed')) {
-      parentElement.classList.add('dubplus-collapsed');
-      event2.target.title = 'expand image';
-      imageContaner.setAttribute('aria-hidden', 'true');
-      event2.target.setAttribute('aria-expanded', 'false');
+      button.parentElement;
+    const image = imageContainer.querySelector('img');
+    if (!imageContainer.classList.contains(COLLAPSED)) {
+      imageContainer.classList.add(COLLAPSED);
+      button.title = 'expand image';
+      image.setAttribute('aria-hidden', 'true');
+      button.setAttribute('aria-expanded', 'false');
     } else {
-      parentElement.classList.remove('dubplus-collapsed');
-      event2.target.title = 'collapse image';
-      imageContaner.setAttribute('aria-hidden', 'false');
-      event2.target.setAttribute('aria-expanded', 'true');
+      imageContainer.classList.remove(COLLAPSED);
+      button.title = 'collapse image';
+      image.setAttribute('aria-hidden', 'false');
+      button.setAttribute('aria-expanded', 'true');
+    }
+  }
+  function eventDelegatorHandler(event2) {
+    if (
+      event2.target instanceof HTMLButtonElement &&
+      event2.target.classList.contains(COLLAPSER)
+    ) {
+      event2.stopPropagation();
+      event2.preventDefault();
+      handleCollapseButtonClick(event2.target);
     }
   }
   function addCollapserToImage(autolinkImage) {
     if (!autolinkImage) return;
-    if (
-      !autolinkImage.parentElement.classList.contains(
-        'dubplus-collapsible-image',
-      )
-    ) {
-      autolinkImage.parentElement.classList.add('dubplus-collapsible-image');
+    if (!autolinkImage.classList.contains(COLLAPSIBLE)) {
+      autolinkImage.classList.add(COLLAPSIBLE);
       const button = document.createElement('button');
       button.type = 'button';
       button.title = 'collapse image';
-      button.classList.add('dubplus-collapser');
-      button.addEventListener('click', handleCollapseButtonClick);
-      autolinkImage.parentElement.appendChild(button);
+      button.setAttribute('aria-expanded', 'true');
+      button.classList.add(COLLAPSER);
+      autolinkImage.appendChild(button);
     }
   }
-  function processChat(e) {
-    if (e == null ? void 0 : e.chatid) {
-      const chatMessage = document.querySelector(`.chat-id-${e.chatid}`);
-      if (chatMessage) {
-        addCollapserToImage(chatMessage.querySelector('.autolink-image'));
-        return;
-      }
-    }
+  function processAllChatMessages() {
     const chatImages = getImagesInChat();
     chatImages.forEach(addCollapserToImage);
   }
   function reset() {
-    document.querySelectorAll('.dubplus-collapsible-image').forEach((el) => {
-      el.classList.remove('dubplus-collapsible-image');
-      el.classList.remove('dubplus-collapsed');
+    document.querySelectorAll(`.${COLLAPSIBLE}`).forEach((el) => {
+      el.classList.remove(COLLAPSIBLE, COLLAPSED);
     });
-    document.querySelectorAll('.dubplus-collapser').forEach((el) => {
-      el.removeEventListener('click', handleCollapseButtonClick);
+    document.querySelectorAll(`.${COLLAPSER}`).forEach((el) => {
       el.remove();
     });
     getImagesInChat().forEach((el) => el.removeAttribute('aria-hidden'));
   }
+  function findUnProcessedImages(container2) {
+    const images = container2.querySelectorAll(`.${IMAGE_CONTAINER}`);
+    return Array.from(images).filter(
+      (el) => !el.classList.contains(COLLAPSIBLE),
+    );
+  }
+  function observerCallback(mutations) {
+    for (const mutation of mutations) {
+      if (
+        mutation.type === 'childList' &&
+        mutation.target.nodeType === Node.ELEMENT_NODE
+      ) {
+        const el =
+          /** @type {HTMLElement} */
+          mutation.target;
+        if (el.classList.contains('text')) {
+          const autoLinks = findUnProcessedImages(el);
+          autoLinks.forEach(addCollapserToImage);
+        }
+      }
+    }
+  }
+  let observer = null;
   const collapsibleImages = {
     id: 'collapsible-images',
     label: 'collapsible-images.label',
     description: 'collapsible-images.description',
     category: 'general',
-    turnOn(onLoad) {
-      window.QueUp.Events.bind(CHAT_MESSAGE, processChat);
-      if (onLoad) {
-        setTimeout(() => {
-          processChat();
-        }, 1e3);
-      } else {
-        processChat();
-      }
+    turnOn() {
+      observer = new MutationObserver(observerCallback);
+      waitFor(() => {
+        return Boolean(getChatContainer());
+      }).then(() => {
+        const chatContainer = getChatContainer();
+        if (chatContainer) {
+          chatContainer.addEventListener('click', eventDelegatorHandler);
+          observer.observe(chatContainer, {
+            childList: true,
+            subtree: true,
+            attributes: false,
+          });
+        } else {
+          logError('Collapsible Images: No chat container found');
+        }
+      });
+      waitFor(() => {
+        return Boolean(getImagesInChat().length);
+      }).then(() => {
+        processAllChatMessages();
+      });
     },
     turnOff() {
-      window.QueUp.Events.unbind(CHAT_MESSAGE, processChat);
+      var _a2;
+      if (observer) {
+        observer.disconnect();
+      }
+      (_a2 = getChatContainer()) == null
+        ? void 0
+        : _a2.removeEventListener('click', eventDelegatorHandler);
       reset();
     },
   };
@@ -7752,7 +7796,9 @@ var dubplus = (function () {
       'QueUp.room.model',
       'QueUp.room.users',
     ];
-    waitFor(checkList)
+    waitFor(function () {
+      return arrayDeepCheck(checkList);
+    })
       .then(() => {
         set(status, 'ready');
       })
