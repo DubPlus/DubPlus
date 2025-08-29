@@ -1,5 +1,5 @@
 <script>
-  import { waitFor } from './utils/waitFor';
+  import { arrayDeepCheck, waitFor } from './utils/waitFor';
   import Loading from './lib/Loading.svelte';
   import Modal from './lib/Modal.svelte';
   import Menu from './lib/menu/Menu.svelte';
@@ -28,7 +28,9 @@
     'QueUp.room.users',
   ];
 
-  waitFor(checkList)
+  waitFor(function () {
+    return arrayDeepCheck(checkList);
+  })
     .then(() => {
       status = 'ready';
     })
