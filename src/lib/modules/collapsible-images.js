@@ -121,6 +121,21 @@ export const collapsibleImages = {
   description: 'collapsible-images.description',
   category: 'general',
   turnOn() {
+    /**
+     * 3 things happen when this feature is turned on:
+     *
+     * 1. We add a mutation obsever to the chat container so we can detect when
+     * new chat messages have been added. This works better than listening to
+     * the QueUp's chat-message event because we kept running into race conditions
+     * since that event would sometimes trigger before the chat message was in
+     * the DOM and new chat messages would not get the collapse button.
+     *
+     * 2. We attached a single click event listener to the chat container and
+     * use event delegation to handle clicks on the collapse buttons. This makes
+     * it easier to clean up event listeners when the feature is turned off.
+     *
+     * 3. We process all existing chat messages to add the collapse buttons.
+     */
     observer = new MutationObserver(observerCallback);
 
     waitFor(() => {
