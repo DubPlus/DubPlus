@@ -6302,7 +6302,7 @@ var dubplus = (function () {
     },
   };
   const name = 'dubplus';
-  const version = '4.1.0';
+  const version = '4.1.1';
   const description = 'Dub+ - A simple script/extension for QueUp.net';
   const license = 'MIT';
   const homepage = 'https://dub.plus';
