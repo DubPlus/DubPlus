@@ -1,11 +1,11 @@
-import { logError, logInfo } from '../../utils/logger';
+import { logError } from '../../utils/logger';
 import { waitFor } from '../../utils/waitFor';
 import { getChatContainer, getImagesInChat } from '../queup.ui';
 
 const COLLAPSED = 'dubplus-collapsed';
 const COLLAPSIBLE = 'dubplus-collapsible-image';
 const COLLAPSER = 'dubplus-collapser';
-const IMAGE_SELECTOR = 'autolink-image';
+const IMAGE_CONTAINER = 'autolink-image';
 
 /**
  *
@@ -13,33 +13,20 @@ const IMAGE_SELECTOR = 'autolink-image';
  * chat message near each image which will collapse/expand the image
  */
 function handleCollapseButtonClick(button) {
-  /**
-   * @type {HTMLElement} this will be the <p class="dubplus-collapsible-image">
-   * element that the button is inside of
-   */
-  const parentElement = button.parentElement;
+  // the <a class="autolink-image"> element that wraps both the image and the button
+  const imageContainer = /**@type {HTMLAnchorElement}*/ (button.parentElement);
+  const image = imageContainer.querySelector('img');
 
-  // the <a class="autolink-image"> element inside the parent.
-  // there should only be 1 autolink-image per parent. There is the possibility
-  // that there are img tags for emojis within the same parent.
-  const imageContainer = /**@type {HTMLAnchorElement}*/ (
-    parentElement.querySelector(`.${IMAGE_SELECTOR}`)
-  );
-
-  if (imageContainer) {
-    if (!parentElement.classList.contains(COLLAPSED)) {
-      parentElement.classList.add(COLLAPSED);
-      button.title = 'expand image';
-      imageContainer.setAttribute('aria-hidden', 'true');
-      button.setAttribute('aria-expanded', 'false');
-    } else {
-      parentElement.classList.remove(COLLAPSED);
-      button.title = 'collapse image';
-      imageContainer.setAttribute('aria-hidden', 'false');
-      button.setAttribute('aria-expanded', 'true');
-    }
+  if (!imageContainer.classList.contains(COLLAPSED)) {
+    imageContainer.classList.add(COLLAPSED);
+    button.title = 'expand image';
+    image.setAttribute('aria-hidden', 'true');
+    button.setAttribute('aria-expanded', 'false');
   } else {
-    logInfo('No image container found in:', parentElement);
+    imageContainer.classList.remove(COLLAPSED);
+    button.title = 'collapse image';
+    image.setAttribute('aria-hidden', 'false');
+    button.setAttribute('aria-expanded', 'true');
   }
 }
 
@@ -52,6 +39,8 @@ function eventDelegatorHandler(event) {
     event.target instanceof HTMLButtonElement &&
     event.target.classList.contains(COLLAPSER)
   ) {
+    event.stopPropagation();
+    event.preventDefault();
     handleCollapseButtonClick(event.target);
   }
 }
@@ -61,16 +50,15 @@ function eventDelegatorHandler(event) {
  */
 function addCollapserToImage(autolinkImage) {
   if (!autolinkImage) return;
-  if (!autolinkImage.parentElement.classList.contains(COLLAPSIBLE)) {
-    autolinkImage.parentElement.classList.add(COLLAPSIBLE);
+  if (!autolinkImage.classList.contains(COLLAPSIBLE)) {
+    autolinkImage.classList.add(COLLAPSIBLE);
 
     const button = document.createElement('button');
     button.type = 'button';
     button.title = 'collapse image';
     button.setAttribute('aria-expanded', 'true');
     button.classList.add(COLLAPSER);
-    // button.addEventListener('click', handleCollapseButtonClick);
-    autolinkImage.parentElement.appendChild(button);
+    autolinkImage.appendChild(button);
   }
 }
 
@@ -99,10 +87,8 @@ function reset() {
  * @returns {Element[]}
  */
 function findUnProcessedImages(container) {
-  const images = container.querySelectorAll(`.${IMAGE_SELECTOR}`);
-  return Array.from(images).filter(
-    (el) => !el.parentElement.classList.contains(COLLAPSIBLE),
-  );
+  const images = container.querySelectorAll(`.${IMAGE_CONTAINER}`);
+  return Array.from(images).filter((el) => !el.classList.contains(COLLAPSIBLE));
 }
 
 /**
