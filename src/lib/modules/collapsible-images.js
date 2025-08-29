@@ -1,6 +1,4 @@
-// import { CHAT_MESSAGE } from '../../events-constants';
-import { CHAT_MESSAGE } from '../../events-constants';
-import { logInfo } from '../../utils/logger';
+import { logError, logInfo } from '../../utils/logger';
 import { waitFor } from '../../utils/waitFor';
 import { getChatContainer, getImagesInChat } from '../queup.ui';
 
@@ -11,14 +9,15 @@ const IMAGE_SELECTOR = 'autolink-image';
 
 /**
  *
- * @param {HTMLButtonElement} expandButton
+ * @param {HTMLButtonElement} button the button element we inserted into each
+ * chat message near each image which will collapse/expand the image
  */
-function handleCollapseButtonClick(expandButton) {
+function handleCollapseButtonClick(button) {
   /**
    * @type {HTMLElement} this will be the <p class="dubplus-collapsible-image">
    * element that the button is inside of
    */
-  const parentElement = expandButton.parentElement;
+  const parentElement = button.parentElement;
 
   // the <a class="autolink-image"> element inside the parent.
   // there should only be 1 autolink-image per parent. There is the possibility
@@ -30,14 +29,14 @@ function handleCollapseButtonClick(expandButton) {
   if (imageContainer) {
     if (!parentElement.classList.contains(COLLAPSED)) {
       parentElement.classList.add(COLLAPSED);
-      expandButton.title = 'expand image';
+      button.title = 'expand image';
       imageContainer.setAttribute('aria-hidden', 'true');
-      expandButton.setAttribute('aria-expanded', 'false');
+      button.setAttribute('aria-expanded', 'false');
     } else {
       parentElement.classList.remove(COLLAPSED);
-      expandButton.title = 'collapse image';
+      button.title = 'collapse image';
       imageContainer.setAttribute('aria-hidden', 'false');
-      expandButton.setAttribute('aria-expanded', 'true');
+      button.setAttribute('aria-expanded', 'true');
     }
   } else {
     logInfo('No image container found in:', parentElement);
@@ -75,28 +74,6 @@ function addCollapserToImage(autolinkImage) {
   }
 }
 
-/**
- *
- * @param {import('../../events').ChatMessageEvent} e
- */
-function processNewChatMessage(e) {
-  if (e?.chatid) {
-    const chatSelector = `.chat-id-${e.chatid}`;
-
-    // sometimes the chat message isn't fully in the DOM yet when this event
-    // fires, so we wait for it to appear
-    waitFor(() => {
-      return !!document.querySelector(chatSelector);
-    }).then(() => {
-      const chatMessage = document.querySelector(chatSelector);
-      if (chatMessage) {
-        const unprocessedImages = findUnProcessedImages(chatMessage);
-        unprocessedImages.forEach(addCollapserToImage);
-      }
-    });
-  }
-}
-
 function processAllChatMessages() {
   const chatImages = getImagesInChat();
   chatImages.forEach(addCollapserToImage);
@@ -129,6 +106,27 @@ function findUnProcessedImages(container) {
 }
 
 /**
+ *
+ * @param {MutationRecord[]} mutations
+ */
+function observerCallback(mutations) {
+  for (const mutation of mutations) {
+    if (
+      mutation.type === 'childList' &&
+      mutation.target.nodeType === Node.ELEMENT_NODE
+    ) {
+      const el = /** @type {HTMLElement} */ (mutation.target);
+      if (el.classList.contains('text')) {
+        const autoLinks = findUnProcessedImages(el);
+        autoLinks.forEach(addCollapserToImage);
+      }
+    }
+  }
+}
+
+let observer = null;
+
+/**
  * @type {import("./module").DubPlusModule}
  */
 export const collapsibleImages = {
@@ -137,22 +135,34 @@ export const collapsibleImages = {
   description: 'collapsible-images.description',
   category: 'general',
   turnOn() {
-    window.QueUp.Events.bind(CHAT_MESSAGE, processNewChatMessage);
+    observer = new MutationObserver(observerCallback);
+
+    waitFor(() => {
+      return Boolean(getChatContainer());
+    }).then(() => {
+      const chatContainer = getChatContainer();
+      if (chatContainer) {
+        chatContainer.addEventListener('click', eventDelegatorHandler);
+        observer.observe(chatContainer, {
+          childList: true,
+          subtree: true,
+          attributes: false,
+        });
+      } else {
+        logError('Collapsible Images: No chat container found');
+      }
+    });
 
     waitFor(() => {
       return Boolean(getImagesInChat().length);
     }).then(() => {
       processAllChatMessages();
     });
-
-    waitFor(() => {
-      return Boolean(getChatContainer());
-    }).then(() => {
-      getChatContainer()?.addEventListener('click', eventDelegatorHandler);
-    });
   },
   turnOff() {
-    window.QueUp.Events.unbind(CHAT_MESSAGE, processNewChatMessage);
+    if (observer) {
+      observer.disconnect();
+    }
     getChatContainer()?.removeEventListener('click', eventDelegatorHandler);
     reset();
   },
