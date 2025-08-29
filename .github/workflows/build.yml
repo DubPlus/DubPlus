@@ -37,9 +37,9 @@ jobs:
       # we need to copy these files to root because bookmarklets expect them there
       - name: copy files to root
         run: |
-          cp extension/dist/dubplus.js .
-          cp extension/dist/dubplus.min.js .
-          cp extension/dist/dubplus.css .
+          cp -f extension/dist/dubplus.js .
+          cp -f extension/dist/dubplus.min.js .
+          cp -f extension/dist/dubplus.css .
 
       - name: commit
         run: |
