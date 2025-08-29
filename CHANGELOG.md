@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.1.1] - 2025-08-29
+
+### Fixed
+
+- Fixed Collapsible Images bug: https://github.com/DubPlus/DubPlus/issues/154
+
 ## [4.1.0] - 2025-07-24
 
 ### New Features

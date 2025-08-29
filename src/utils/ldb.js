@@ -3,6 +3,8 @@
  * IndexedDB has a higher storage limit (50mb) compared to localstorage (5mb).
  */
 
+const OBJECT_STORE_NAME = 's';
+
 export class LDB {
   constructor() {
     /**
@@ -24,7 +26,9 @@ export class LDB {
 
     dbReq.onupgradeneeded = function () {
       outerThis.db = null;
-      var t = this.result.createObjectStore('s', { keyPath: 'k' });
+      var t = this.result.createObjectStore(OBJECT_STORE_NAME, {
+        keyPath: 'k',
+      });
       t.transaction.oncomplete = function () {
         outerThis.db = this.db;
       };
@@ -39,10 +43,12 @@ export class LDB {
   get(key) {
     return new Promise((resolve) => {
       if (this.db) {
-        this.db.transaction('s').objectStore('s').get(key).onsuccess =
-          function () {
-            resolve(this.result?.v || null);
-          };
+        this.db
+          .transaction(OBJECT_STORE_NAME)
+          .objectStore(OBJECT_STORE_NAME)
+          .get(key).onsuccess = function () {
+          resolve(this.result?.v || null);
+        };
       } else {
         setTimeout(() => {
           this.get(key).then(resolve);
@@ -58,8 +64,8 @@ export class LDB {
    */
   set(key, value) {
     this.db
-      .transaction('s', 'readwrite')
-      .objectStore('s')
+      .transaction(OBJECT_STORE_NAME, 'readwrite')
+      .objectStore(OBJECT_STORE_NAME)
       .put({ k: key, v: value });
   }
 }

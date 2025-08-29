@@ -222,9 +222,14 @@
   font-family: icomoon;
 }
 
-/* This is the class added to the parent <p> element of an .autolink-image */
+/************************************************
+ * Collapsible Images styles
+ */
+
+/* This is the class added to the image wrapper a.autolink-image */
 .dubplus-collapsible-image {
   position: relative;
+  display: block;
 }
 
 /* This adds the "Image Collapsed" text as a pseudo-element */
@@ -232,7 +237,7 @@
   content: 'Image Collapsed';
   display: none;
   position: absolute;
-  bottom: 0;
+  top: 15px;
   left: 0;
   margin-left: 26%;
   line-height: 1;
@@ -274,8 +279,10 @@
 }
 
 /* hides the image. This is added to the .dubplus-collapsible-image element */
-.dubplus-collapsed [aria-hidden='true'] {
-  display: none;
+.dubplus-collapsed img[aria-hidden='true'] {
+  display: block;
+  visibility: hidden;
+  height: 0.65rem;
 }
 
 /* This the down arrow from iconmoon font */
@@ -287,6 +294,10 @@
 .dubplus-collapsed::after {
   display: block;
 }
+
+/************************************************
+ * Pin Menu styles
+ */
 
 @media screen and (min-width: 72em) {
   .dubplus-pin-menu-right #main-room {

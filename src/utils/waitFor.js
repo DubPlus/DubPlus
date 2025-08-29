@@ -2,7 +2,8 @@ import { logInfo } from './logger';
 
 /**
  * Looks for a property to exist in the provided starting scope. Handles
- * nested property lookups.
+ * nested property lookups. Similar to lodash `_.get()` but only checks for
+ * existence, not the value.
  *
  * For example:
  * if `objectPath` is `"QueUp.room.chat"` and the `startingScope` is the window
@@ -31,12 +32,13 @@ function deepCheck(objectPath, startingScope = window) {
 }
 
 /**
- *
+ * Iterates over an array and checks for the existence of each item in the
+ * provided starting scope.
  * @param {string[]} arr
  * @param {object} [startingScope=window] default: `window`
  * @returns
  */
-function arrayDeepCheck(arr, startingScope = window) {
+export function arrayDeepCheck(arr, startingScope = window) {
   const scope = startingScope;
 
   for (let i = 0; i < arr.length; i++) {
@@ -50,16 +52,16 @@ function arrayDeepCheck(arr, startingScope = window) {
 
 /**
  * Checks for the existence of the provides properties
- * @param {string[]} waitingFor what you are waiting for
+ * @param {() => boolean} callback a function that returns true when ready
  * @param {object} [options] options to pass
  * @param {number} [options.interval] how often to ping
- * @param {number} [options.seconds] how long to keep trying before failing
+ * @param {number} [options.seconds] how long to keep trying before failing, default 10
  * @return {Promise<void>}
  */
-export function waitFor(waitingFor, options = {}) {
+export function waitFor(callback, options = {}) {
   const defaults = {
     interval: 500, // every XX ms we check to see if all variables are defined
-    seconds: 5, // how many total seconds we wish to continue pinging
+    seconds: 10,
   };
   const opts = Object.assign({}, defaults, options);
 
@@ -69,7 +71,7 @@ export function waitFor(waitingFor, options = {}) {
 
     const check = () => {
       tryCount++;
-      if (arrayDeepCheck(waitingFor)) {
+      if (callback()) {
         resolve();
       } else if (tryCount < tryLimit) {
         window.setTimeout(check, opts.interval);
