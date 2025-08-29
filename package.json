@@ -9,13 +9,14 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "build": "eslint src && vite build && web-ext build --filename dubplus-extension.zip --overwrite-dest --artifacts-dir dist",
+    "build": "vite build && cd extension && web-ext build --filename dubplus-extension.zip --overwrite-dest --artifacts-dir ../dist",
     "ci:build": "eslint src && vite build",
     "watch": "vite build --watch",
-    "firefox": "web-ext run --start-url www.queup.net --watch-files dubplus.js dubplus.css manifest.json",
+    "firefox": "cd extension && web-ext run --start-url www.queup.net --watch-files dist/dubplus.js dist/dubplus.css",
     "prepare": "husky install",
     "prettier": "prettier --write .",
-    "purge-cache": "node ./tasks/purge-cache.js"
+    "purge-cache": "node ./tasks/purge-cache.js",
+    "zip-source": "rm -rf extension/dist && rm -f dist/dubplus-source.zip && node ./tasks/zip.js"
   },
   "repository": {
     "type": "git",

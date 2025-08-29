@@ -11,20 +11,7 @@ export default defineConfig(() => {
       sourcemap: false,
       minify: false,
 
-      // This places the "dubplus.js" and "dubplus.css" files in the root
-      // of this repo. We are doing this instead of a subdirectory for
-      // legacy reasons. If we change it, then many people who have linked
-      // directly to the dubplus.js file will see it break and have to manually
-      // update their links. So we are keeping it in the root for now.
-      outDir: '.',
-
-      /*************************************************
-       * !! DO NOT CHANGE THIS !!
-       * 'emptyOutDir' must always be 'false'.
-       * If set to 'true', it will delete the entire repo
-       */
-      emptyOutDir: false,
-      /************************************************* */
+      outDir: './extension/dist',
 
       lib: {
         entry: resolve(__dirname, '/src/main.js'),

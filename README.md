@@ -52,7 +52,7 @@ This way is a little more manual but it's good to test on Chrome when you're fin
 - if you have the Dub+ extension installed from the Chrome WebStore, make sure to disable it
 - Turn on the "developer mode" switch in the top right
 - Click on "Load unpacked" button in the top left
-- select the root folder of this repo
+- select the `extension` folder of this repo
 - Open a new tab and log in to https://queup.net and join a room
 - Start developing.
 
