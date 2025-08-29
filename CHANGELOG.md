@@ -9,6 +9,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Fixed Collapsible Images bug: https://github.com/DubPlus/DubPlus/issues/154
 
+### Other
+
+- Re-organized build outputs so that built files are inside `extension/dist` folder.
+- Added new task that zips the source code of the repo to help with Firefox add-on submission issues.
+
 ## [4.1.0] - 2025-07-24
 
 ### New Features
