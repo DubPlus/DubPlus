@@ -34,6 +34,13 @@ jobs:
       - name: build to insert branch name
         run: npm run ci:build
 
+      # we need to copy these files to root because bookmarklets expect them there
+      - name: copy files to root
+        run: |
+          cp extension/dist/dubplus.js .
+          cp extension/dist/dubplus.min.js .
+          cp extension/dist/dubplus.css .
+
       - name: commit
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"

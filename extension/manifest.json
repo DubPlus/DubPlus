@@ -8,33 +8,33 @@
   "homepage_url": "https://dub.plus/",
   "action": {
     "default_icon": {
-      "16": "extension/icons/18.png",
-      "32": "extension/icons/32.png",
-      "48": "extension/icons/48.png"
+      "16": "icons/18.png",
+      "32": "icons/32.png",
+      "48": "icons/48.png"
     }
   },
   "content_scripts": [
     {
-      "js": ["extension/register-dubplus.js"],
+      "js": ["register-dubplus.js"],
       "matches": ["*://*.dubtrack.fm/join/*", "*://*.queup.net/join/*"],
       "run_at": "document_start",
       "world": "MAIN"
     },
     {
-      "js": ["dubplus.js"],
-      "css": ["dubplus.css"],
+      "js": ["dist/dubplus.js"],
+      "css": ["dist/dubplus.css"],
       "matches": ["*://*.dubtrack.fm/join/*", "*://*.queup.net/join/*"],
       "run_at": "document_end",
       "world": "MAIN"
     }
   ],
   "icons": {
-    "18": "extension/icons/18.png",
-    "19": "extension/icons/19.png",
-    "32": "extension/icons/32.png",
-    "48": "extension/icons/48.png",
-    "96": "extension/icons/96.png",
-    "128": "extension/icons/128.png"
+    "18": "icons/18.png",
+    "19": "icons/19.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "96": "icons/96.png",
+    "128": "icons/128.png"
   },
   "host_permissions": ["*://*.dubtrack.fm/*", "*://*.queup.net/*"],
   "browser_specific_settings": {
