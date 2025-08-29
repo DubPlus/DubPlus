@@ -11,7 +11,7 @@ export default defineConfig(() => {
       sourcemap: false,
       minify: false,
 
-      outDir: './extension/dist',
+      outDir: process.env.OUTPUT_DIR || './extension/dist',
 
       lib: {
         entry: resolve(__dirname, '/src/main.js'),

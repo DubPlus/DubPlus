@@ -49,10 +49,11 @@
     "last 2 versions"
   ],
   "lint-staged": {
-    "*.{css,md}": "prettier --list-different --write",
-    "*.{js,svelte}": [
+    "src/*.{css,ts}": "prettier --list-different --write",
+    "src/*.{js,svelte}": [
       "prettier --list-different --write",
       "eslint"
-    ]
+    ],
+    "*.md": "prettier --list-different --write"
   }
 }
