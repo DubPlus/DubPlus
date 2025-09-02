@@ -2,12 +2,17 @@
 // https://github.com/marketplace/actions/jsdelivr-cache-purge
 import { getCurrentBranch } from './git-branch.js';
 
+/**
+ * jsdelivr purge-cached documentation:
+ * https://www.jsdelivr.com/documentation#id-purge-cache
+ */
+
 function branch() {
   const currentBranch = getCurrentBranch();
   if (currentBranch && currentBranch !== 'master' && currentBranch !== 'main') {
     return `@${currentBranch}`;
   } else {
-    return '';
+    return '@latest';
   }
 }
 const branchName = branch();
