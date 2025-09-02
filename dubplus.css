@@ -1,3 +1,41 @@
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
 :root {
   /* colors */
   --dubplus-primary-color: #eb008b;
@@ -333,8 +371,81 @@
 .sr-only-focusable:not(:focus):not(:focus-within):not(caption) {
   position: absolute !important;
 }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
 
-  .dubplus-waiting.svelte-16mmbc {
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+.dubplus-waiting.svelte-1534qoa {
     font-family: var(--dubplus-font-family);
     z-index: 2147483647;
     color: white;
@@ -351,13 +462,88 @@
     display: flex;
     align-items: center;
   }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
 
-  dialog.svelte-ascx4b::backdrop {
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+  /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+  dialog.svelte-49mw5b::backdrop {
     background: rgba(0, 0, 0, 0.6);
-    animation: svelte-ascx4b-fade-in 250ms;
+    animation: svelte-49mw5b-fade-in 250ms;
   }
 
-  dialog.svelte-ascx4b {
+  dialog.svelte-49mw5b {
     box-shadow: 0 0 5px #000;
     background: #111;
     color: #fff;
@@ -367,7 +553,7 @@
     border: none;
   }
 
-  h1.svelte-ascx4b {
+  h1.svelte-49mw5b {
     height: 54px;
     background: #333;
     margin: 0;
@@ -375,17 +561,17 @@
     padding-top: 12px;
     font-weight: 400;
   }
-  .content.svelte-ascx4b {
+  .content.svelte-49mw5b {
     padding: 27px 0;
     font-size: 16px;
   }
 
-  .content.svelte-ascx4b p:where(.svelte-ascx4b) {
+  .content.svelte-49mw5b p:where(.svelte-49mw5b) {
     margin: 0;
     padding: 0 16px 16px;
   }
 
-  .default.svelte-ascx4b {
+  .default.svelte-49mw5b {
     font-size: 1rem;
     margin: 6px 10px;
     display: flex;
@@ -393,20 +579,20 @@
     align-items: center;
   }
 
-  .default-label.svelte-ascx4b {
+  .default-label.svelte-49mw5b {
     font-weight: bold;
     border-radius: 5px;
     padding: 10px;
   }
 
-  .default-value.svelte-ascx4b {
+  .default-value.svelte-49mw5b {
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 5px;
     padding: 10px;
     flex: 1;
   }
 
-  textarea.svelte-ascx4b {
+  textarea.svelte-49mw5b {
     width: 100% !important;
     min-height: 108px !important;
     background: #333;
@@ -417,16 +603,16 @@
     resize: vertical;
   }
 
-  .dp-modal--error.svelte-ascx4b {
+  .dp-modal--error.svelte-49mw5b {
     color: red;
   }
 
-  .buttons.svelte-ascx4b {
+  .buttons.svelte-49mw5b {
     display: flex;
     justify-content: flex-end;
   }
 
-  button.svelte-ascx4b {
+  button.svelte-49mw5b {
     width: 50%;
     text-align: center;
     padding: 1em 0;
@@ -437,16 +623,16 @@
     cursor: pointer;
   }
 
-  .confirm.svelte-ascx4b {
+  .confirm.svelte-49mw5b {
     background: #0ff;
     color: #555;
   }
 
-  .cancel.svelte-ascx4b {
+  .cancel.svelte-49mw5b {
     background: #333;
   }
 
-  @keyframes svelte-ascx4b-fade-in {
+  @keyframes svelte-49mw5b-fade-in {
     from {
       opacity: 0;
     }
@@ -454,10 +640,83 @@
       opacity: 1;
     }
   }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
 
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
   /* This is the Dub+ icon in the top right that's always showing
      and triggers the open/close of Dub+ */
-  .dubplus-icon.svelte-9z7rrn {
+  .dubplus-icon.svelte-1mgyw5n {
     /* clear button styles */
     background: none;
     border: none;
@@ -474,8 +733,81 @@
 
     top: -4px;
   }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
 
-  button.svelte-31yg9a {
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  button.svelte-u8cia4 {
     border: none;
     display: block;
     width: 100%;
@@ -487,19 +819,92 @@
     cursor: pointer;
     background-color: #202020;
   }
-  button.svelte-31yg9a span:where(.svelte-31yg9a) {
+  button.svelte-u8cia4 span:where(.svelte-u8cia4) {
     display: block;
     width: 10%;
     float: left;
   }
-  button.svelte-31yg9a p:where(.svelte-31yg9a) {
+  button.svelte-u8cia4 p:where(.svelte-u8cia4) {
     width: 90%;
     float: left;
     margin: 0;
     line-height: 1;
   }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
 
-  ul.svelte-1pjvan3 {
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  ul.svelte-3hh5nj {
     padding: 0 15px;
     border-bottom: 1px solid #222;
     max-height: 531px;
@@ -520,53 +925,201 @@
     margin: 0;
     list-style-type: none;
   }
-  [aria-expanded='false'] + ul.svelte-1pjvan3 {
+  [aria-expanded='false'] + ul.svelte-3hh5nj {
     max-height: 0;
     border: none;
   }
   @supports (height: calc-size(auto, size)) {
-    ul.svelte-1pjvan3 {
+    ul.svelte-3hh5nj {
       max-height: unset;
       height: calc-size(auto, size);
       transition: height 0.3s;
     }
-    [aria-expanded='false'] + ul.svelte-1pjvan3 {
+    [aria-expanded='false'] + ul.svelte-3hh5nj {
       height: 0;
       max-height: unset;
     }
   }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
 
-  li.svelte-1oilhp7 {
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  li.svelte-1ey8zf7 {
     display: flex;
     align-items: center;
     margin: 10px 0;
   }
-  li.svelte-1oilhp7 path {
+  li.svelte-1ey8zf7 path {
     fill: var(--dubplus-primary-color);
   }
-  li.svelte-1oilhp7 svg {
+  li.svelte-1ey8zf7 svg {
     width: 20px;
     height: 20px;
     display: block;
   }
 
-  a.svelte-1oilhp7 {
+  a.svelte-1ey8zf7 {
     text-decoration: none;
     margin-left: 11px;
   }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
 
-  [role='switch'].svelte-1mny4ma {
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+  /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+  [role='switch'].svelte-1n5gfe6 {
     user-select: none;
     display: flex;
     align-items: center;
   }
 
-  .dubplus-switch-label.svelte-1mny4ma {
+  .dubplus-switch-label.svelte-1n5gfe6 {
     flex: 1;
     padding-left: 11px;
   }
 
-  .dubplus-switch.svelte-1mny4ma {
+  .dubplus-switch.svelte-1n5gfe6 {
     position: relative;
     padding: 1px;
     height: 16px;
@@ -576,7 +1129,7 @@
     border: 2px solid #666;
     cursor: pointer;
   }
-  .dubplus-switch.svelte-1mny4ma span:where(.svelte-1mny4ma) {
+  .dubplus-switch.svelte-1n5gfe6 span:where(.svelte-1n5gfe6) {
     display: inline-block;
     width: 12px;
     height: 12px;
@@ -589,23 +1142,98 @@
     background: var(--dubplus-primary-color);
     transition: left 0.2s cubic-bezier(0.8, 0, 0.05, 1);
   }
-  [role='switch'][aria-checked='true'].svelte-1mny4ma .dubplus-switch:where(.svelte-1mny4ma) {
+  [role='switch'][aria-checked='true'].svelte-1n5gfe6 .dubplus-switch:where(.svelte-1n5gfe6) {
     background: #666;
   }
-  [role='switch'][aria-checked='true'].svelte-1mny4ma .dubplus-switch:where(.svelte-1mny4ma) span:where(.svelte-1mny4ma) {
+  [role='switch'][aria-checked='true'].svelte-1n5gfe6 .dubplus-switch:where(.svelte-1n5gfe6) span:where(.svelte-1n5gfe6) {
     background: var(--dubplus-secondary-color);
     border-color: var(--dubplus-secondary-color);
     left: 13px;
   }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
 
-  li.svelte-1dzj03i {
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+  /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+  li.svelte-1n4rvve {
     display: flex;
     align-items: center;
     margin: 10px 0;
     justify-content: space-between;
   }
 
-  button.svelte-1dzj03i {
+  button.svelte-1n4rvve {
     appearance: none;
     background: none;
     border: none;
@@ -616,32 +1244,180 @@
     height: 13px;
     width: 13px;
   }
-  button.svelte-1dzj03i svg {
+  button.svelte-1n4rvve svg {
     display: block;
     width: 100%;
     height: 100%;
   }
-  button.svelte-1dzj03i path {
+  button.svelte-1n4rvve path {
     fill: var(--dubplus-text-color);
   }
 
-  .disabled.svelte-1dzj03i {
+  .disabled.svelte-1n4rvve {
     opacity: 0.5;
   }
-  .disabled.svelte-1dzj03i:hover {
+  .disabled.svelte-1n4rvve:hover {
     cursor: not-allowed;
   }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
 
-  button.svelte-1va87zs::after {
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  button.svelte-1fdqq2::after {
     width: 186px;
   }
-  span.svelte-1va87zs {
+  span.svelte-1fdqq2 {
     content: '1';
     vertical-align: top;
     font-size: 0.75rem !important;
     font-weight: 700;
     margin-right: 0 !important;
   }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+  /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
 
   /****************************************************
  * Emoji and emote section
@@ -649,7 +1425,7 @@
  * bttv logo white: https://i.imgur.com/oTfAI0O.png
  */
 
-  .ac-preview-container.svelte-198qtio {
+  .ac-preview-container.svelte-loyf0w {
     position: absolute;
     bottom: 54px;
     width: 100%;
@@ -659,7 +1435,7 @@
     display: flex;
     flex-direction: column;
   }
-  .ac-header.svelte-198qtio {
+  .ac-header.svelte-loyf0w {
     display: none;
     position: sticky;
     top: 0;
@@ -667,17 +1443,17 @@
     padding: 5px 10px;
     border-bottom: 1px solid #515253;
   }
-  .ac-show.svelte-198qtio {
+  .ac-show.svelte-loyf0w {
     border: 1px solid #202020;
     border-bottom: 1px solid #878c8e;
     max-height: 200px;
     transition: 0.4s;
   }
-  .ac-show.svelte-198qtio .ac-header:where(.svelte-198qtio) {
+  .ac-show.svelte-loyf0w .ac-header:where(.svelte-loyf0w) {
     display: block;
   }
 
-  ul.svelte-198qtio {
+  ul.svelte-loyf0w {
     display: block;
     padding: 0;
     list-style-type: none;
@@ -689,7 +1465,7 @@
     overflow-x: hidden;
   }
 
-  li.svelte-198qtio {
+  li.svelte-loyf0w {
     width: 50px;
     display: block;
     padding: 6px 10px;
@@ -697,16 +1473,16 @@
     color: #fff;
   }
 
-  li.svelte-198qtio:hover,
-  li.selected.svelte-198qtio {
+  li.svelte-loyf0w:hover,
+  li.selected.svelte-loyf0w {
     background-color: #555;
   }
 
-  li.svelte-198qtio:focus {
+  li.svelte-loyf0w:focus {
     outline: none;
   }
 
-  .preview-item.svelte-198qtio {
+  .preview-item.svelte-loyf0w {
     background-repeat: no-repeat;
     background-size: 25px;
     background-position: 98% center;
@@ -714,40 +1490,113 @@
     align-items: center;
   }
 
-  .ac-text.svelte-198qtio {
+  .ac-text.svelte-loyf0w {
     font-size: 0.8em;
     padding-left: 20px;
   }
 
-  .ac-image.svelte-198qtio {
+  .ac-image.svelte-loyf0w {
     width: 30px;
     height: 30px;
   }
 
-  img.svelte-198qtio {
+  img.svelte-loyf0w {
     width: 100%;
     height: 100%;
     object-fit: contain;
   }
 
-  .ac-list-press-enter.svelte-198qtio {
+  .ac-list-press-enter.svelte-loyf0w {
     flex: 1;
     text-align: center;
     font-size: 0.8em;
   }
 
-  .ac-text-preview.svelte-198qtio {
+  .ac-text-preview.svelte-loyf0w {
     padding: 5px 10px;
     background-color: rgba(0, 0, 0, 0.9);
     font-size: 0.8em;
     border-top: 1px solid #515253;
     display: none;
   }
-  .ac-show.svelte-198qtio .ac-text-preview:where(.svelte-198qtio) {
+  .ac-show.svelte-loyf0w .ac-text-preview:where(.svelte-loyf0w) {
     display: block;
   }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
 
-  .dubplus-dubs-container.svelte-ujv5bp {
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  .dubplus-dubs-container.svelte-1azun41 {
     position: fixed;
     overflow-y: auto;
     overflow-x: visible;
@@ -769,7 +1618,7 @@
     border-color: var(--queup-green) !important;
   }
 
-  ul.svelte-ujv5bp {
+  ul.svelte-1azun41 {
     display: block;
     padding: 0;
     list-style-type: none;
@@ -778,31 +1627,31 @@
     color: white;
     height: 100%;
   }
-  .dubplus-no-dubs.svelte-ujv5bp {
+  .dubplus-no-dubs.svelte-1azun41 {
     display: flex;
     align-items: center;
     justify-self: center;
     text-align: center;
   }
-  .preview-dubinfo-item.svelte-ujv5bp {
+  .preview-dubinfo-item.svelte-1azun41 {
     display: flex;
     align-items: center;
     padding: 6px 10px;
   }
 
-  .dubinfo-image.svelte-ujv5bp {
+  .dubinfo-image.svelte-1azun41 {
     width: 1.4em;
     border-radius: 10%;
     overflow: hidden;
   }
 
-  img.svelte-ujv5bp {
+  img.svelte-1azun41 {
     display: block;
     width: 100%;
     height: auto;
   }
 
-  button.svelte-ujv5bp {
+  button.svelte-1azun41 {
     appearance: none;
     background: none;
     border: none;
@@ -817,11 +1666,84 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  button.svelte-ujv5bp:hover {
+  button.svelte-1azun41:hover {
     background-color: rgba(255, 255, 255, 0.2);
   }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
 
-  #snow-container.svelte-qgqre1 {
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  #snow-container.svelte-1uqahdp {
     height: 100vh;
     width: 100vw;
     overflow: hidden;
@@ -837,11 +1759,84 @@
     border-radius: 50%;
     filter: drop-shadow(0 0 10px white);
   }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
 
-  li.svelte-psnl7x {
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  li.svelte-4k774p {
     margin: 10px 0;
   }
-  button.svelte-psnl7x {
+  button.svelte-4k774p {
     display: flex;
     align-items: center;
     background: none;
@@ -853,30 +1848,176 @@
     font-size: inherit;
   }
 
-  button.svelte-psnl7x svg {
+  button.svelte-4k774p svg {
     width: 29px;
     height: 18px;
     fill: var(--dubplus-primary-color);
   }
 
-  .dubplus-menu-label.svelte-psnl7x {
+  .dubplus-menu-label.svelte-4k774p {
     flex: 1;
     padding-left: 11px;
   }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
 
-  button.svelte-1va87zs::after {
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  button.svelte-1fdqq2::after {
     width: 186px;
   }
-  span.svelte-1va87zs {
+  span.svelte-1fdqq2 {
     content: '1';
     vertical-align: top;
     font-size: 0.75rem !important;
     font-weight: 700;
     margin-right: 0 !important;
   }
+/*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
 
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+  /*!
+     /#######            /##                
+    | ##__  ##          | ##          /##   
+    | ##  \ ## /##   /##| #######    | ##   
+    | ##  | ##| ##  | ##| ##__  ## /########
+    | ##  | ##| ##  | ##| ##  \ ##|__  ##__/
+    | ##  | ##| ##  | ##| ##  | ##   | ##   
+    | #######/|  ######/| #######/   |__/   
+    |_______/  \______/ |_______/           
+                                            
+                                            
+    https://github.com/DubPlus/DubPlus
+
+    v4.1.1
+
+    MIT License 
+
+    Copyright (c) 2025 DubPlus
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
   /* the main container for the whole menu that slides in */
-  .dubplus-menu.svelte-yl0u1x {
+  .dubplus-menu.svelte-9z8qwh {
     position: fixed;
     z-index: 999;
     background-color: rgba(10, 10, 10, 0.98);
@@ -898,7 +2039,7 @@
     scrollbar-width: thin;
   }
 
-  .dubplus-menu-header.svelte-yl0u1x {
+  .dubplus-menu-header.svelte-9z8qwh {
     padding: 12px 15px;
     line-height: 1;
     margin: 0;
@@ -912,11 +2053,11 @@
   }
 
   /* this is toggled in MenuIcon component */
-  .dubplus-menu.svelte-yl0u1x.dubplus-menu-open {
+  .dubplus-menu.svelte-9z8qwh.dubplus-menu-open {
     transform: translate3d(0, 0, 0);
   }
 
-  .version.svelte-yl0u1x {
+  .version.svelte-9z8qwh {
     font-size: 0.8em;
     color: #666;
   }

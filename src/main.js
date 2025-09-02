@@ -6,7 +6,6 @@ import { logError, logInfo } from './utils/logger';
 
 const loadedAsExtension = 'dubplusExtensionLoaded' in window;
 
-// @ts-ignore
 logInfo('Dub+: loaded as extension:', loadedAsExtension);
 
 // We only load the CSS if we're NOT loaded as an extension
