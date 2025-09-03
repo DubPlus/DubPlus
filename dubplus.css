@@ -11,7 +11,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -384,7 +384,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -421,7 +421,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -445,7 +445,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-.dubplus-waiting.svelte-1534qoa {
+.dubplus-waiting.svelte-d2q0b {
     font-family: var(--dubplus-font-family);
     z-index: 2147483647;
     color: white;
@@ -475,7 +475,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -513,7 +513,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -538,12 +538,12 @@
     SOFTWARE.
 */
 
-  dialog.svelte-49mw5b::backdrop {
+  dialog.svelte-13gllby::backdrop {
     background: rgba(0, 0, 0, 0.6);
-    animation: svelte-49mw5b-fade-in 250ms;
+    animation: svelte-13gllby-fade-in 250ms;
   }
 
-  dialog.svelte-49mw5b {
+  dialog.svelte-13gllby {
     box-shadow: 0 0 5px #000;
     background: #111;
     color: #fff;
@@ -553,7 +553,7 @@
     border: none;
   }
 
-  h1.svelte-49mw5b {
+  h1.svelte-13gllby {
     height: 54px;
     background: #333;
     margin: 0;
@@ -561,17 +561,17 @@
     padding-top: 12px;
     font-weight: 400;
   }
-  .content.svelte-49mw5b {
+  .content.svelte-13gllby {
     padding: 27px 0;
     font-size: 16px;
   }
 
-  .content.svelte-49mw5b p:where(.svelte-49mw5b) {
+  .content.svelte-13gllby p:where(.svelte-13gllby) {
     margin: 0;
     padding: 0 16px 16px;
   }
 
-  .default.svelte-49mw5b {
+  .default.svelte-13gllby {
     font-size: 1rem;
     margin: 6px 10px;
     display: flex;
@@ -579,20 +579,20 @@
     align-items: center;
   }
 
-  .default-label.svelte-49mw5b {
+  .default-label.svelte-13gllby {
     font-weight: bold;
     border-radius: 5px;
     padding: 10px;
   }
 
-  .default-value.svelte-49mw5b {
+  .default-value.svelte-13gllby {
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 5px;
     padding: 10px;
     flex: 1;
   }
 
-  textarea.svelte-49mw5b {
+  textarea.svelte-13gllby {
     width: 100% !important;
     min-height: 108px !important;
     background: #333;
@@ -603,16 +603,16 @@
     resize: vertical;
   }
 
-  .dp-modal--error.svelte-49mw5b {
+  .dp-modal--error.svelte-13gllby {
     color: red;
   }
 
-  .buttons.svelte-49mw5b {
+  .buttons.svelte-13gllby {
     display: flex;
     justify-content: flex-end;
   }
 
-  button.svelte-49mw5b {
+  button.svelte-13gllby {
     width: 50%;
     text-align: center;
     padding: 1em 0;
@@ -623,16 +623,16 @@
     cursor: pointer;
   }
 
-  .confirm.svelte-49mw5b {
+  .confirm.svelte-13gllby {
     background: #0ff;
     color: #555;
   }
 
-  .cancel.svelte-49mw5b {
+  .cancel.svelte-13gllby {
     background: #333;
   }
 
-  @keyframes svelte-49mw5b-fade-in {
+  @keyframes svelte-13gllby-fade-in {
     from {
       opacity: 0;
     }
@@ -653,7 +653,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -690,7 +690,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -716,7 +716,7 @@
 */
   /* This is the Dub+ icon in the top right that's always showing
      and triggers the open/close of Dub+ */
-  .dubplus-icon.svelte-1mgyw5n {
+  .dubplus-icon.svelte-tqf6wa {
     /* clear button styles */
     background: none;
     border: none;
@@ -746,7 +746,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -783,7 +783,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -807,7 +807,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-  button.svelte-u8cia4 {
+  button.svelte-1fur3ft {
     border: none;
     display: block;
     width: 100%;
@@ -819,12 +819,12 @@
     cursor: pointer;
     background-color: #202020;
   }
-  button.svelte-u8cia4 span:where(.svelte-u8cia4) {
+  button.svelte-1fur3ft span:where(.svelte-1fur3ft) {
     display: block;
     width: 10%;
     float: left;
   }
-  button.svelte-u8cia4 p:where(.svelte-u8cia4) {
+  button.svelte-1fur3ft p:where(.svelte-1fur3ft) {
     width: 90%;
     float: left;
     margin: 0;
@@ -843,7 +843,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -880,7 +880,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -904,7 +904,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-  ul.svelte-3hh5nj {
+  ul.svelte-zemo66 {
     padding: 0 15px;
     border-bottom: 1px solid #222;
     max-height: 531px;
@@ -925,17 +925,17 @@
     margin: 0;
     list-style-type: none;
   }
-  [aria-expanded='false'] + ul.svelte-3hh5nj {
+  [aria-expanded='false'] + ul.svelte-zemo66 {
     max-height: 0;
     border: none;
   }
   @supports (height: calc-size(auto, size)) {
-    ul.svelte-3hh5nj {
+    ul.svelte-zemo66 {
       max-height: unset;
       height: calc-size(auto, size);
       transition: height 0.3s;
     }
-    [aria-expanded='false'] + ul.svelte-3hh5nj {
+    [aria-expanded='false'] + ul.svelte-zemo66 {
       height: 0;
       max-height: unset;
     }
@@ -953,7 +953,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -990,7 +990,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1014,21 +1014,21 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-  li.svelte-1ey8zf7 {
+  li.svelte-xz8po2 {
     display: flex;
     align-items: center;
     margin: 10px 0;
   }
-  li.svelte-1ey8zf7 path {
+  li.svelte-xz8po2 path {
     fill: var(--dubplus-primary-color);
   }
-  li.svelte-1ey8zf7 svg {
+  li.svelte-xz8po2 svg {
     width: 20px;
     height: 20px;
     display: block;
   }
 
-  a.svelte-1ey8zf7 {
+  a.svelte-xz8po2 {
     text-decoration: none;
     margin-left: 11px;
   }
@@ -1045,7 +1045,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1083,7 +1083,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1108,18 +1108,18 @@
     SOFTWARE.
 */
 
-  [role='switch'].svelte-1n5gfe6 {
+  [role='switch'].svelte-3uqoxb {
     user-select: none;
     display: flex;
     align-items: center;
   }
 
-  .dubplus-switch-label.svelte-1n5gfe6 {
+  .dubplus-switch-label.svelte-3uqoxb {
     flex: 1;
     padding-left: 11px;
   }
 
-  .dubplus-switch.svelte-1n5gfe6 {
+  .dubplus-switch.svelte-3uqoxb {
     position: relative;
     padding: 1px;
     height: 16px;
@@ -1129,7 +1129,7 @@
     border: 2px solid #666;
     cursor: pointer;
   }
-  .dubplus-switch.svelte-1n5gfe6 span:where(.svelte-1n5gfe6) {
+  .dubplus-switch.svelte-3uqoxb span:where(.svelte-3uqoxb) {
     display: inline-block;
     width: 12px;
     height: 12px;
@@ -1142,10 +1142,10 @@
     background: var(--dubplus-primary-color);
     transition: left 0.2s cubic-bezier(0.8, 0, 0.05, 1);
   }
-  [role='switch'][aria-checked='true'].svelte-1n5gfe6 .dubplus-switch:where(.svelte-1n5gfe6) {
+  [role='switch'][aria-checked='true'].svelte-3uqoxb .dubplus-switch:where(.svelte-3uqoxb) {
     background: #666;
   }
-  [role='switch'][aria-checked='true'].svelte-1n5gfe6 .dubplus-switch:where(.svelte-1n5gfe6) span:where(.svelte-1n5gfe6) {
+  [role='switch'][aria-checked='true'].svelte-3uqoxb .dubplus-switch:where(.svelte-3uqoxb) span:where(.svelte-3uqoxb) {
     background: var(--dubplus-secondary-color);
     border-color: var(--dubplus-secondary-color);
     left: 13px;
@@ -1163,7 +1163,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1201,7 +1201,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1226,14 +1226,14 @@
     SOFTWARE.
 */
 
-  li.svelte-1n4rvve {
+  li.svelte-xhis6z {
     display: flex;
     align-items: center;
     margin: 10px 0;
     justify-content: space-between;
   }
 
-  button.svelte-1n4rvve {
+  button.svelte-xhis6z {
     appearance: none;
     background: none;
     border: none;
@@ -1244,19 +1244,19 @@
     height: 13px;
     width: 13px;
   }
-  button.svelte-1n4rvve svg {
+  button.svelte-xhis6z svg {
     display: block;
     width: 100%;
     height: 100%;
   }
-  button.svelte-1n4rvve path {
+  button.svelte-xhis6z path {
     fill: var(--dubplus-text-color);
   }
 
-  .disabled.svelte-1n4rvve {
+  .disabled.svelte-xhis6z {
     opacity: 0.5;
   }
-  .disabled.svelte-1n4rvve:hover {
+  .disabled.svelte-xhis6z:hover {
     cursor: not-allowed;
   }
 /*!
@@ -1272,7 +1272,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1309,7 +1309,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1333,10 +1333,10 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-  button.svelte-1fdqq2::after {
+  button.svelte-vqfs17::after {
     width: 186px;
   }
-  span.svelte-1fdqq2 {
+  span.svelte-vqfs17 {
     content: '1';
     vertical-align: top;
     font-size: 0.75rem !important;
@@ -1356,7 +1356,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1394,7 +1394,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1425,7 +1425,7 @@
  * bttv logo white: https://i.imgur.com/oTfAI0O.png
  */
 
-  .ac-preview-container.svelte-loyf0w {
+  .ac-preview-container.svelte-1o2s5rh {
     position: absolute;
     bottom: 54px;
     width: 100%;
@@ -1435,7 +1435,7 @@
     display: flex;
     flex-direction: column;
   }
-  .ac-header.svelte-loyf0w {
+  .ac-header.svelte-1o2s5rh {
     display: none;
     position: sticky;
     top: 0;
@@ -1443,17 +1443,17 @@
     padding: 5px 10px;
     border-bottom: 1px solid #515253;
   }
-  .ac-show.svelte-loyf0w {
+  .ac-show.svelte-1o2s5rh {
     border: 1px solid #202020;
     border-bottom: 1px solid #878c8e;
     max-height: 200px;
     transition: 0.4s;
   }
-  .ac-show.svelte-loyf0w .ac-header:where(.svelte-loyf0w) {
+  .ac-show.svelte-1o2s5rh .ac-header:where(.svelte-1o2s5rh) {
     display: block;
   }
 
-  ul.svelte-loyf0w {
+  ul.svelte-1o2s5rh {
     display: block;
     padding: 0;
     list-style-type: none;
@@ -1465,7 +1465,7 @@
     overflow-x: hidden;
   }
 
-  li.svelte-loyf0w {
+  li.svelte-1o2s5rh {
     width: 50px;
     display: block;
     padding: 6px 10px;
@@ -1473,16 +1473,16 @@
     color: #fff;
   }
 
-  li.svelte-loyf0w:hover,
-  li.selected.svelte-loyf0w {
+  li.svelte-1o2s5rh:hover,
+  li.selected.svelte-1o2s5rh {
     background-color: #555;
   }
 
-  li.svelte-loyf0w:focus {
+  li.svelte-1o2s5rh:focus {
     outline: none;
   }
 
-  .preview-item.svelte-loyf0w {
+  .preview-item.svelte-1o2s5rh {
     background-repeat: no-repeat;
     background-size: 25px;
     background-position: 98% center;
@@ -1490,36 +1490,36 @@
     align-items: center;
   }
 
-  .ac-text.svelte-loyf0w {
+  .ac-text.svelte-1o2s5rh {
     font-size: 0.8em;
     padding-left: 20px;
   }
 
-  .ac-image.svelte-loyf0w {
+  .ac-image.svelte-1o2s5rh {
     width: 30px;
     height: 30px;
   }
 
-  img.svelte-loyf0w {
+  img.svelte-1o2s5rh {
     width: 100%;
     height: 100%;
     object-fit: contain;
   }
 
-  .ac-list-press-enter.svelte-loyf0w {
+  .ac-list-press-enter.svelte-1o2s5rh {
     flex: 1;
     text-align: center;
     font-size: 0.8em;
   }
 
-  .ac-text-preview.svelte-loyf0w {
+  .ac-text-preview.svelte-1o2s5rh {
     padding: 5px 10px;
     background-color: rgba(0, 0, 0, 0.9);
     font-size: 0.8em;
     border-top: 1px solid #515253;
     display: none;
   }
-  .ac-show.svelte-loyf0w .ac-text-preview:where(.svelte-loyf0w) {
+  .ac-show.svelte-1o2s5rh .ac-text-preview:where(.svelte-1o2s5rh) {
     display: block;
   }
 /*!
@@ -1535,7 +1535,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1572,7 +1572,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1596,7 +1596,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-  .dubplus-dubs-container.svelte-1azun41 {
+  .dubplus-dubs-container.svelte-1e954qs {
     position: fixed;
     overflow-y: auto;
     overflow-x: visible;
@@ -1618,7 +1618,7 @@
     border-color: var(--queup-green) !important;
   }
 
-  ul.svelte-1azun41 {
+  ul.svelte-1e954qs {
     display: block;
     padding: 0;
     list-style-type: none;
@@ -1627,31 +1627,31 @@
     color: white;
     height: 100%;
   }
-  .dubplus-no-dubs.svelte-1azun41 {
+  .dubplus-no-dubs.svelte-1e954qs {
     display: flex;
     align-items: center;
     justify-self: center;
     text-align: center;
   }
-  .preview-dubinfo-item.svelte-1azun41 {
+  .preview-dubinfo-item.svelte-1e954qs {
     display: flex;
     align-items: center;
     padding: 6px 10px;
   }
 
-  .dubinfo-image.svelte-1azun41 {
+  .dubinfo-image.svelte-1e954qs {
     width: 1.4em;
     border-radius: 10%;
     overflow: hidden;
   }
 
-  img.svelte-1azun41 {
+  img.svelte-1e954qs {
     display: block;
     width: 100%;
     height: auto;
   }
 
-  button.svelte-1azun41 {
+  button.svelte-1e954qs {
     appearance: none;
     background: none;
     border: none;
@@ -1666,7 +1666,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  button.svelte-1azun41:hover {
+  button.svelte-1e954qs:hover {
     background-color: rgba(255, 255, 255, 0.2);
   }
 /*!
@@ -1682,7 +1682,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1719,7 +1719,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1743,7 +1743,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-  #snow-container.svelte-1uqahdp {
+  #snow-container.svelte-43mrfk {
     height: 100vh;
     width: 100vw;
     overflow: hidden;
@@ -1772,7 +1772,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1809,7 +1809,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1833,10 +1833,10 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-  li.svelte-4k774p {
+  li.svelte-1nfdnng {
     margin: 10px 0;
   }
-  button.svelte-4k774p {
+  button.svelte-1nfdnng {
     display: flex;
     align-items: center;
     background: none;
@@ -1848,13 +1848,13 @@
     font-size: inherit;
   }
 
-  button.svelte-4k774p svg {
+  button.svelte-1nfdnng svg {
     width: 29px;
     height: 18px;
     fill: var(--dubplus-primary-color);
   }
 
-  .dubplus-menu-label.svelte-4k774p {
+  .dubplus-menu-label.svelte-1nfdnng {
     flex: 1;
     padding-left: 11px;
   }
@@ -1871,7 +1871,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1908,7 +1908,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1932,10 +1932,10 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-  button.svelte-1fdqq2::after {
+  button.svelte-vqfs17::after {
     width: 186px;
   }
-  span.svelte-1fdqq2 {
+  span.svelte-vqfs17 {
     content: '1';
     vertical-align: top;
     font-size: 0.75rem !important;
@@ -1955,7 +1955,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -1992,7 +1992,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -2017,7 +2017,7 @@
     SOFTWARE.
 */
   /* the main container for the whole menu that slides in */
-  .dubplus-menu.svelte-9z8qwh {
+  .dubplus-menu.svelte-dbs9ys {
     position: fixed;
     z-index: 999;
     background-color: rgba(10, 10, 10, 0.98);
@@ -2039,7 +2039,7 @@
     scrollbar-width: thin;
   }
 
-  .dubplus-menu-header.svelte-9z8qwh {
+  .dubplus-menu-header.svelte-dbs9ys {
     padding: 12px 15px;
     line-height: 1;
     margin: 0;
@@ -2053,11 +2053,11 @@
   }
 
   /* this is toggled in MenuIcon component */
-  .dubplus-menu.svelte-9z8qwh.dubplus-menu-open {
+  .dubplus-menu.svelte-dbs9ys.dubplus-menu-open {
     transform: translate3d(0, 0, 0);
   }
 
-  .version.svelte-9z8qwh {
+  .version.svelte-dbs9ys {
     font-size: 0.8em;
     color: #666;
   }

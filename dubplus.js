@@ -11,7 +11,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.1
+    v4.1.2
 
     MIT License 
 
@@ -3386,7 +3386,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
   function t(key, vars = {}) {
     return translate(locale.current, key, vars);
   }
-  var root$r = /* @__PURE__ */ from_html(`<div class="dubplus-waiting svelte-1534qoa"><div style="width: 26px; margin-right:5px"><!></div> <span style="flex: 1;"> </span></div>`);
+  var root$r = /* @__PURE__ */ from_html(`<div class="dubplus-waiting svelte-d2q0b"><div style="width: 26px; margin-right:5px"><!></div> <span style="flex: 1;"> </span></div>`);
   function Loading($$anchor, $$props) {
     push($$props, false);
     init();
@@ -3432,13 +3432,13 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
     modalState.onCancel = nextState.onCancel;
     modalState.validation = nextState.validation || (() => true);
   }
-  var root_1$3 = /* @__PURE__ */ from_html(`<div class="default svelte-49mw5b"><span class="default-label svelte-49mw5b"> </span> <span class="default-value svelte-49mw5b"> </span></div>`);
-  var root_2$3 = /* @__PURE__ */ from_html(`<textarea class="svelte-49mw5b">
+  var root_1$3 = /* @__PURE__ */ from_html(`<div class="default svelte-13gllby"><span class="default-label svelte-13gllby"> </span> <span class="default-value svelte-13gllby"> </span></div>`);
+  var root_2$3 = /* @__PURE__ */ from_html(`<textarea class="svelte-13gllby">
       </textarea>`);
-  var root_3$1 = /* @__PURE__ */ from_html(`<p class="dp-modal--error svelte-49mw5b"> </p>`);
-  var root_4 = /* @__PURE__ */ from_html(`<button class="dp-modal--cancel cancel svelte-49mw5b"> </button> <button class="dp-modal--confirm confirm svelte-49mw5b"> </button>`, 1);
-  var root_5 = /* @__PURE__ */ from_html(`<button class="dp-modal--cancel cancel svelte-49mw5b"> </button>`);
-  var root$q = /* @__PURE__ */ from_html(`<dialog id="dubplus-dialog" class="dp-modal svelte-49mw5b"><h1 class="svelte-49mw5b"> </h1> <div class="dp-modal--content content svelte-49mw5b"><p class="svelte-49mw5b"> </p> <!> <!> <!></div> <div class="dp-modal--buttons buttons svelte-49mw5b"><!></div></dialog>`);
+  var root_3$1 = /* @__PURE__ */ from_html(`<p class="dp-modal--error svelte-13gllby"> </p>`);
+  var root_4 = /* @__PURE__ */ from_html(`<button class="dp-modal--cancel cancel svelte-13gllby"> </button> <button class="dp-modal--confirm confirm svelte-13gllby"> </button>`, 1);
+  var root_5 = /* @__PURE__ */ from_html(`<button class="dp-modal--cancel cancel svelte-13gllby"> </button>`);
+  var root$q = /* @__PURE__ */ from_html(`<dialog id="dubplus-dialog" class="dp-modal svelte-13gllby"><h1 class="svelte-13gllby"> </h1> <div class="dp-modal--content content svelte-13gllby"><p class="svelte-13gllby"> </p> <!> <!> <!></div> <div class="dp-modal--buttons buttons svelte-13gllby"><!></div></dialog>`);
   function Modal($$anchor, $$props) {
     push($$props, true);
     let errorMessage = /* @__PURE__ */ state("");
@@ -3638,7 +3638,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
   var on_click$1 = () => {
     document.querySelector(".dubplus-menu").classList.toggle("dubplus-menu-open");
   };
-  var root$p = /* @__PURE__ */ from_html(`<button id="dubplus-menu-icon" type="button" aria-label="Dub+ menu" class="dubplus-icon svelte-1mgyw5n"><!></button>`);
+  var root$p = /* @__PURE__ */ from_html(`<button id="dubplus-menu-icon" type="button" aria-label="Dub+ menu" class="dubplus-icon svelte-tqf6wa"><!></button>`);
   function MenuIcon($$anchor, $$props) {
     push($$props, false);
     init();
@@ -3793,7 +3793,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
     }
     throw new Error(`Invalid section: "${section}"`);
   }
-  var root$o = /* @__PURE__ */ from_html(`<button type="button" class="dubplus-menu-section-header svelte-u8cia4"><span></span> <p class="svelte-u8cia4"> </p></button>`);
+  var root$o = /* @__PURE__ */ from_html(`<button type="button" class="dubplus-menu-section-header svelte-1fur3ft"><span></span> <p class="svelte-1fur3ft"> </p></button>`);
   function MenuHeader($$anchor, $$props) {
     push($$props, true);
     let arrow = /* @__PURE__ */ state("down");
@@ -3820,14 +3820,14 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
       set_attribute(button, "id", `dubplus-menu-section-header-${$$props.settingsId}`);
       set_attribute(button, "aria-expanded", get(expanded));
       set_attribute(button, "aria-controls", `dubplus-menu-section-${$$props.settingsId}`);
-      set_class(span, 1, `fa fa-angle-${get(arrow) ?? ""}`, "svelte-u8cia4");
+      set_class(span, 1, `fa fa-angle-${get(arrow) ?? ""}`, "svelte-1fur3ft");
       set_text(text2, $$props.name);
     });
     append($$anchor, button);
     pop();
   }
   delegate(["click"]);
-  var root$n = /* @__PURE__ */ from_html(`<ul class="dubplus-menu-section svelte-3hh5nj" role="region"><!></ul>`);
+  var root$n = /* @__PURE__ */ from_html(`<ul class="dubplus-menu-section svelte-zemo66" role="region"><!></ul>`);
   function MenuSection($$anchor, $$props) {
     var ul = root$n();
     var node = child(ul);
@@ -3838,7 +3838,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
     });
     append($$anchor, ul);
   }
-  var root$m = /* @__PURE__ */ from_html(`<li class="dubplus-menu-icon svelte-1ey8zf7"><!> <a class="dubplus-menu-label svelte-1ey8zf7" target="_blank"> </a></li>`);
+  var root$m = /* @__PURE__ */ from_html(`<li class="dubplus-menu-icon svelte-xz8po2"><!> <a class="dubplus-menu-label svelte-xz8po2" target="_blank"> </a></li>`);
   function MenuLink($$anchor, $$props) {
     var li = root$m();
     var node = child(li);
@@ -3948,7 +3948,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
     if ($$props.disabled) return;
     toggleOption();
   }
-  var root$g = /* @__PURE__ */ from_html(`<div role="switch" tabindex="0" class="svelte-1n5gfe6"><span class="dubplus-switch svelte-1n5gfe6"><span class="svelte-1n5gfe6"></span></span> <span class="dubplus-switch-label svelte-1n5gfe6"> </span></div>`);
+  var root$g = /* @__PURE__ */ from_html(`<div role="switch" tabindex="0" class="svelte-3uqoxb"><span class="dubplus-switch svelte-3uqoxb"><span class="svelte-3uqoxb"></span></span> <span class="dubplus-switch-label svelte-3uqoxb"> </span></div>`);
   function Switch($$anchor, $$props) {
     push($$props, true);
     function toggleOption() {
@@ -3984,8 +3984,8 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
   function isMod(userid) {
     return window.QueUp.helpers.isSiteAdmin(userid) || window.QueUp.room.users.getIfOwner(userid) || window.QueUp.room.users.getIfManager(userid) || window.QueUp.room.users.getIfMod(userid);
   }
-  var root_1$1 = /* @__PURE__ */ from_html(`<button type="button" class="svelte-1n4rvve"><!> <span class="sr-only"> </span></button>`);
-  var root_2$2 = /* @__PURE__ */ from_html(`<button type="button" class="svelte-1n4rvve"><!> <span class="sr-only"> </span></button>`);
+  var root_1$1 = /* @__PURE__ */ from_html(`<button type="button" class="svelte-xhis6z"><!> <span class="sr-only"> </span></button>`);
+  var root_2$2 = /* @__PURE__ */ from_html(`<button type="button" class="svelte-xhis6z"><!> <span class="sr-only"> </span></button>`);
   var root$e = /* @__PURE__ */ from_html(`<li><!> <!> <!></li>`);
   function MenuSwitch($$anchor, $$props) {
     var _a2;
@@ -4110,7 +4110,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
       ($0, $1) => {
         set_attribute(li, "id", `dubplus-${$$props.id}`);
         set_attribute(li, "title", $0);
-        classes = set_class(li, 1, "svelte-1n4rvve", null, classes, $1);
+        classes = set_class(li, 1, "svelte-xhis6z", null, classes, $1);
       },
       [
         () => t($$props.description),
@@ -5690,7 +5690,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
     }
   };
   const name = "dubplus";
-  const version = "4.1.1";
+  const version = "4.1.2";
   const description = "Dub+ - A simple script/extension for QueUp.net";
   const license = "MIT";
   const homepage = "https://dub.plus";
@@ -5717,6 +5717,14 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
       (_a2 = document.querySelector(`link.${className}`)) == null ? void 0 : _a2.remove();
       const cacheBuster = pkg.version;
       let cdnPath = "DubPlus";
+      const branch2 = "develop" == null ? void 0 : "develop".trim();
+      if (branch2) {
+        if (branch2 === "main" || branch2 === "master") {
+          cdnPath += "@latest";
+        } else {
+          cdnPath += `@${branch2}`;
+        }
+      }
       const link2 = makeLink(
         className,
         `${CDN_ROOT}/${cdnPath}/${cssFile}?${cacheBuster}`
@@ -6260,7 +6268,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
     append($$anchor, button);
     pop();
   }
-  var root$9 = /* @__PURE__ */ from_html(`<button id="dubplus-snooze" type="button" class="icon-mute snooze_btn dubplus-btn-player svelte-1fdqq2"><span class="svelte-1fdqq2">1</span></button>`);
+  var root$9 = /* @__PURE__ */ from_html(`<button id="dubplus-snooze" type="button" class="icon-mute snooze_btn dubplus-btn-player svelte-vqfs17"><span class="svelte-vqfs17">1</span></button>`);
   function Snooze($$anchor, $$props) {
     push($$props, true);
     let tooltip = /* @__PURE__ */ state(proxy(t("Snooze.tooltip")));
@@ -6300,8 +6308,8 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
     pop();
   }
   delegate(["click"]);
-  var root_1 = /* @__PURE__ */ from_html(`<li><div class="ac-image svelte-loyf0w"><img class="svelte-loyf0w"/></div></li>`);
-  var root$8 = /* @__PURE__ */ from_html(`<div><div class="ac-header svelte-loyf0w"><span class="sr-only"> </span> <div class="tip-container" aria-hidden="true"><span class="tip-navigate"><key class="icon-upvote"></key> &amp; <key class="icon-downvote"></key> </span> <span class="tip-complete"><key>TAB</key> or <key>ENTER</key> </span> <span class="tip-close"><key>ESC</key> </span></div></div> <ul id="autocomplete-preview" class="svelte-loyf0w"></ul> <span class="ac-text-preview svelte-loyf0w"> </span></div>`);
+  var root_1 = /* @__PURE__ */ from_html(`<li><div class="ac-image svelte-1o2s5rh"><img class="svelte-1o2s5rh"/></div></li>`);
+  var root$8 = /* @__PURE__ */ from_html(`<div><div class="ac-header svelte-1o2s5rh"><span class="sr-only"> </span> <div class="tip-container" aria-hidden="true"><span class="tip-navigate"><key class="icon-upvote"></key> &amp; <key class="icon-downvote"></key> </span> <span class="tip-complete"><key>TAB</key> or <key>ENTER</key> </span> <span class="tip-close"><key>ESC</key> </span></div></div> <ul id="autocomplete-preview" class="svelte-1o2s5rh"></ul> <span class="ac-text-preview svelte-1o2s5rh"> </span></div>`);
   function EmojiPreview($$anchor, $$props) {
     push($$props, true);
     user_effect(() => {
@@ -6342,7 +6350,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
       var img = child(div_3);
       template_effect(
         ($0) => {
-          classes_1 = set_class(li, 1, `preview-item ${platform()}-previews`, "svelte-loyf0w", classes_1, $0);
+          classes_1 = set_class(li, 1, `preview-item ${platform()}-previews`, "svelte-1o2s5rh", classes_1, $0);
           set_attribute(li, "title", text2());
           set_attribute(img, "src", src());
           set_attribute(img, "alt", alt());
@@ -6358,7 +6366,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
     template_effect(
       ($0, $1, $2, $3, $4) => {
         var _a2;
-        classes = set_class(div, 1, "ac-preview-container svelte-loyf0w", null, classes, $0);
+        classes = set_class(div, 1, "ac-preview-container svelte-1o2s5rh", null, classes, $0);
         set_text(text_1, $1);
         set_text(text_2, ` (${$2 ?? ""})`);
         set_text(text_3, ` (${$3 ?? ""})`);
@@ -6378,7 +6386,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
   }
   delegate(["click"]);
   var on_click = (_, handleClick2, dub) => handleClick2(get(dub).username);
-  var root_2$1 = /* @__PURE__ */ from_html(`<li class="preview-dubinfo-item users-previews svelte-1azun41"><div class="dubinfo-image svelte-1azun41"><img alt="User Avatar" class="svelte-1azun41"/></div> <button type="button" class="dubinfo-text svelte-1azun41"> </button></li>`);
+  var root_2$1 = /* @__PURE__ */ from_html(`<li class="preview-dubinfo-item users-previews svelte-1e954qs"><div class="dubinfo-image svelte-1e954qs"><img alt="User Avatar" class="svelte-1e954qs"/></div> <button type="button" class="dubinfo-text svelte-1e954qs"> </button></li>`);
   var root_3 = /* @__PURE__ */ from_html(`<li><!></li>`);
   var root$7 = /* @__PURE__ */ from_html(`<div role="none"><ul id="dubinfo-preview"><!></ul></div>`);
   function DubsInfo($$anchor, $$props) {
@@ -6495,9 +6503,9 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
     template_effect(
       ($0) => {
         set_attribute(div, "id", `dubplus-${$$props.dubType}s-container`);
-        set_class(div, 1, `dubplus-dubs-container dubplus-${$$props.dubType}s-container`, "svelte-1azun41");
+        set_class(div, 1, `dubplus-dubs-container dubplus-${$$props.dubType}s-container`, "svelte-1e954qs");
         set_style(div, `bottom: ${get(positionBottom)}px; right: ${get(positionRight)}px; display: ${get(display)};`);
-        classes = set_class(ul, 1, "dubinfo-show svelte-1azun41", null, classes, $0);
+        classes = set_class(ul, 1, "dubinfo-show svelte-1e954qs", null, classes, $0);
       },
       [() => ({ "dubplus-no-dubs": get(dubData).length === 0 })]
     );
@@ -6589,7 +6597,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
     generateSnowCSS(snowflakesCount);
     generateSnow(snowflakesCount);
   }
-  var root$6 = /* @__PURE__ */ from_html(`<div id="snow-container" class="svelte-1uqahdp"></div>`);
+  var root$6 = /* @__PURE__ */ from_html(`<div id="snow-container" class="svelte-43mrfk"></div>`);
   function Snow($$anchor, $$props) {
     push($$props, false);
     onMount(() => {
@@ -6605,7 +6613,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
     append($$anchor, div);
     pop();
   }
-  var root$5 = /* @__PURE__ */ from_html(`<li class="svelte-4k774p"><button type="button" class="svelte-4k774p"><!> <span class="dubplus-menu-label svelte-4k774p"> </span></button></li>`);
+  var root$5 = /* @__PURE__ */ from_html(`<li class="svelte-1nfdnng"><button type="button" class="svelte-1nfdnng"><!> <span class="dubplus-menu-label svelte-1nfdnng"> </span></button></li>`);
   function MenuAction($$anchor, $$props) {
     push($$props, true);
     onMount(() => {
@@ -6848,7 +6856,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
       revert();
     }
   }
-  var root$1 = /* @__PURE__ */ from_html(`<button id="dubplus-snooze-video" type="button"><span class="svelte-1fdqq2">1</span></button>`);
+  var root$1 = /* @__PURE__ */ from_html(`<button id="dubplus-snooze-video" type="button"><span class="svelte-vqfs17">1</span></button>`);
   function SnoozeVideo($$anchor, $$props) {
     push($$props, true);
     let icon = /* @__PURE__ */ state("icon-eye-blocked");
@@ -6880,7 +6888,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
     ];
     action(button, ($$node, $$action_arg) => teleport == null ? void 0 : teleport($$node, $$action_arg), () => ({ to: PLAYER_SHARING_CONTAINER }));
     template_effect(() => {
-      set_class(button, 1, `${get(icon)} snooze-video-btn dubplus-btn-player`, "svelte-1fdqq2");
+      set_class(button, 1, `${get(icon)} snooze-video-btn dubplus-btn-player`, "svelte-vqfs17");
       set_attribute(button, "aria-label", get(tooltip));
       set_attribute(button, "data-dp-tooltip", get(tooltip));
     });
@@ -6889,7 +6897,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
   }
   delegate(["click"]);
   var root_2 = /* @__PURE__ */ from_html(`<!> <!> <!>`, 1);
-  var root = /* @__PURE__ */ from_html(`<!> <!> <!> <!> <!> <!> <!> <aside class="dubplus-menu svelte-9z8qwh"><p class="dubplus-menu-header svelte-9z8qwh"> <span class="version svelte-9z8qwh"> </span></p> <!> <!> <!> <!> <!></aside> <!>`, 1);
+  var root = /* @__PURE__ */ from_html(`<!> <!> <!> <!> <!> <!> <!> <aside class="dubplus-menu svelte-dbs9ys"><p class="dubplus-menu-header svelte-dbs9ys"> <span class="version svelte-dbs9ys"> </span></p> <!> <!> <!> <!> <!></aside> <!>`, 1);
   function Menu($$anchor, $$props) {
     push($$props, false);
     onMount(() => {
@@ -7045,7 +7053,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
     pop();
   }
   const loadedAsExtension = "dubplusExtensionLoaded" in window;
-  logInfo("Dub+: loaded as extension:", loadedAsExtension);
+  logInfo("loaded as extension:", loadedAsExtension);
   if (!loadedAsExtension) {
     link("/dubplus.css", "dubplus-css").catch((e) => {
       logError("Failed to load dubplus.css", e);
