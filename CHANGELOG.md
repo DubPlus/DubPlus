@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.1.2] - TBD
+
+### Other
+
+Internal tooling and build process related changes. See this PR: https://github.com/DubPlus/DubPlus/pull/161
+
 ## [4.1.1] - 2025-08-29
 
 ### Fixed
