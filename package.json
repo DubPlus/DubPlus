@@ -1,6 +1,6 @@
 {
   "name": "dubplus",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "type": "module",
   "description": "Dub+ - A simple script/extension for QueUp.net",
   "main": "dubplus.js",
@@ -16,7 +16,8 @@
     "prepare": "husky install",
     "prettier": "prettier --write .",
     "purge-cache": "node ./tasks/purge-cache.js",
-    "zip-source": "rm -rf extension/dist && rm -f dist/dubplus-source.zip && node ./tasks/zip.js"
+    "zip-source": "rm -rf extension/dist && rm -f dist/dubplus-source.zip && node ./tasks/zip.js",
+    "addon-submit": "npm run zip-source && npm run ci:build && node --env-file .env ./tasks/ff-add-on-submit.js"
   },
   "repository": {
     "type": "git",

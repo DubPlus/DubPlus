@@ -43,6 +43,3 @@ jobs:
           git add dubplus.css
           git commit -m "[auto]: Update dubplus.js with branch name"
           git push
-
-      - name: Purge jsDelivr cache
-        run: npm run purge-cache

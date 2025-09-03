@@ -30,12 +30,13 @@ export function link(cssFile, className) {
     document.querySelector(`link.${className}`)?.remove();
     const cacheBuster = import.meta.env.DEV ? Date.now() : pkg.version;
     let cdnPath = 'DubPlus';
-    if (
-      import.meta.env.VITE_GIT_BRANCH &&
-      import.meta.env.VITE_GIT_BRANCH.trim() !== 'main' &&
-      import.meta.env.VITE_GIT_BRANCH.trim() !== 'master'
-    ) {
-      cdnPath += '@' + import.meta.env.VITE_GIT_BRANCH.trim();
+    const branch = import.meta.env.VITE_GIT_BRANCH?.trim();
+    if (branch) {
+      if (branch === 'main' || branch === 'master') {
+        cdnPath += '@latest';
+      } else {
+        cdnPath += `@${branch}`;
+      }
     }
     const link = makeLink(
       className,
