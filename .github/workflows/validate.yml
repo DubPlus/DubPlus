@@ -36,7 +36,10 @@ jobs:
       - run: npm run ci:build
 
       # If we are merging any changes into master/main, we should be bumping the version.
-      # This step ensures that we don't forget to do that.
+      # This step ensures that we don't forget to do that. We should only merge into
+      # the default branch when we are ready to push a new release, otherwise if you 
+      # plan on breaking up work into smaller changes and having multiple PRs, use an
+      # intermediate branch like 'develop' 
       - name: Check version bump
         if: github.base_ref == 'master' || github.base_ref == 'main'
         run: |
