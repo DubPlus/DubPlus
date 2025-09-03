@@ -1,12 +1,16 @@
 # In this action we validate that:
 # - the project builds without error
-# - that it doesn't contain code not meant to be committed
+# - when targeting master/main, both package.json and manifest.json versions have been updated
+# - when targeting master/main, CHANGELOG.md has been updated with the new version
 
 name: Validate
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    # opened - A pull request was created
+    # synchronize - A pull request was updated
+    # reopened - A pull request was reopened
 
 jobs:
   validate:
@@ -30,3 +34,65 @@ jobs:
 
       # build should succeed
       - run: npm run ci:build
+
+      # If we are merging any changes into master/main, we should be bumping the version.
+      # This step ensures that we don't forget to do that.
+      - name: Check version bump
+        if: github.base_ref == 'master' || github.base_ref == 'main'
+        run: |
+          # Get versions from target branch
+          git fetch origin ${{ github.base_ref }}
+          TARGET_PKG_VERSION=$(git show origin/${{ github.base_ref }}:package.json | jq -r '.version')
+          TARGET_MANIFEST_VERSION=$(git show origin/${{ github.base_ref }}:extension/manifest.json | jq -r '.version')
+          
+          # Get versions from current branch
+          CURRENT_PKG_VERSION=$(jq -r '.version' package.json)
+          CURRENT_MANIFEST_VERSION=$(jq -r '.version' extension/manifest.json)
+          
+          echo "Target branch (${{ github.base_ref }}) versions:"
+          echo "  package.json: $TARGET_PKG_VERSION"
+          echo "  manifest.json: $TARGET_MANIFEST_VERSION"
+          echo ""
+          echo "Current branch versions:"
+          echo "  package.json: $CURRENT_PKG_VERSION"
+          echo "  manifest.json: $CURRENT_MANIFEST_VERSION"
+          echo ""
+          
+          # Check if versions have changed
+          if [ "$TARGET_PKG_VERSION" = "$CURRENT_PKG_VERSION" ]; then
+            echo "❌ ERROR: package.json version has not been updated!"
+            echo "   Target: $TARGET_PKG_VERSION"
+            echo "   Current: $CURRENT_PKG_VERSION"
+            exit 1
+          fi
+          
+          if [ "$TARGET_MANIFEST_VERSION" = "$CURRENT_MANIFEST_VERSION" ]; then
+            echo "❌ ERROR: extension/manifest.json version has not been updated!"
+            echo "   Target: $TARGET_MANIFEST_VERSION"
+            echo "   Current: $CURRENT_MANIFEST_VERSION"
+            exit 1
+          fi
+          
+          echo "✅ Version validation passed - both versions have been updated"
+
+      # We should also not forget to update the changelog
+      - name: Check changelog update
+        if: github.base_ref == 'master' || github.base_ref == 'main'
+        run: |
+          CURRENT_PKG_VERSION=$(jq -r '.version' package.json)
+          
+          echo "Checking if CHANGELOG.md contains version $CURRENT_PKG_VERSION..."
+          
+          if grep -q "## \[$CURRENT_PKG_VERSION\]" CHANGELOG.md; then
+            echo "✅ CHANGELOG.md has been updated with version $CURRENT_PKG_VERSION"
+          else
+            echo "❌ ERROR: CHANGELOG.md has not been updated!"
+            echo "   Please add a section with: ## [$CURRENT_PKG_VERSION]"
+            echo ""
+            echo "Expected format:"
+            echo "## [$CURRENT_PKG_VERSION] - YYYY-MM-DD"
+            echo ""
+            exit 1
+          fi
+
+      
