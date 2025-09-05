@@ -5710,20 +5710,15 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
     link2.href = fileName;
     return link2;
   };
-  function link(cssFile, className) {
+  function link(cssFile, className, specificVersion = "") {
     cssFile = cssFile.replace(/^\//, "");
     return new Promise((resolve, reject) => {
       var _a2;
       (_a2 = document.querySelector(`link.${className}`)) == null ? void 0 : _a2.remove();
       const cacheBuster = pkg.version;
       let cdnPath = "DubPlus";
-      const branch2 = "develop" == null ? void 0 : "develop".trim();
-      if (branch2) {
-        if (branch2 === "main" || branch2 === "master") {
-          cdnPath += "@latest";
-        } else {
-          cdnPath += `@${branch2}`;
-        }
+      if (specificVersion) {
+        cdnPath += `@${specificVersion}`;
       }
       const link2 = makeLink(
         className,
@@ -5743,6 +5738,26 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
       style2.textContent = css;
       document.head.appendChild(style2);
     });
+  }
+  async function loadDubPlusCSSforBookmarklet() {
+    let version2 = "";
+    const branch2 = "develop" == null ? void 0 : "develop".trim();
+    if (branch2 && branch2 !== "main" && branch2 !== "master") {
+      version2 = branch2;
+    } else if (!branch2 || branch2 === "main" || branch2 === "master") {
+      version2 = pkg.version;
+    }
+    try {
+      await link("/dubplus.css", "dubplus-css", version2);
+      return;
+    } catch (e) {
+      logError(`Failed to load dubplus.css at version @${version2}`, e);
+    }
+    try {
+      await link("/dubplus.css", "dubplus-css", "latest");
+    } catch (e) {
+      logError("Failed to load dubplus.css", e);
+    }
   }
   const LINK_ELEM_ID$1 = "dubplus-community-css";
   const communityTheme = {
@@ -7055,9 +7070,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
   const loadedAsExtension = "dubplusExtensionLoaded" in window;
   logInfo("loaded as extension:", loadedAsExtension);
   if (!loadedAsExtension) {
-    link("/dubplus.css", "dubplus-css").catch((e) => {
-      logError("Failed to load dubplus.css", e);
-    });
+    loadDubPlusCSSforBookmarklet();
   }
   let container = document.getElementById("dubplus-container");
   if (!container) {
