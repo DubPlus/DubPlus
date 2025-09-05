@@ -60,7 +60,7 @@ export interface DubPlusModule {
 
   /**
    * If this is provided, it will override the edit button that brings up the
-   * customizaton modal. 
+   * customizaton modal.
    */
   secondaryAction?: {
     /**
