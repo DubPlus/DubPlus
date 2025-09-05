@@ -5,22 +5,38 @@ import { getCurrentBranch } from './git-branch.js';
 /**
  * jsdelivr purge-cached documentation:
  * https://www.jsdelivr.com/documentation#id-purge-cache
+ *
+ * This script purges the jsDelivr cache for the current branch files.
+ *
+ * It is intended to be run as part of a CI/CD pipeline.
+ *
+ * Usage: node tasks/purge-cache.js
+ *
+ * The script will attempt to purge each URL up to 2 times if it encounters
+ * throttling or errors.
+ *
+ * Successful purges will log a confirmation message.
+ *
+ * This script will always exit without error even if the purge fails to avoid
+ * failing the CI/CD pipeline.
+ *
+ * Note: jsDelivr may take some time to fully propagate the purge across their
+ * CDN network.
  */
 
-function branch() {
-  const currentBranch = getCurrentBranch();
-  if (currentBranch && currentBranch !== 'master' && currentBranch !== 'main') {
-    return `@${currentBranch}`;
-  } else {
-    return '@latest';
-  }
+const branchName = getCurrentBranch();
+
+if (!branchName) {
+  console.error('❌ Exiting because branch name is missing');
+  // exiting without error so that we don't fail CI/CD
+  process.exit(0);
 }
-const branchName = branch();
+
 const input = {
   urls: [
-    `https://cdn.jsdelivr.net/gh/DubPlus/DubPlus${branchName}/dubplus.min.js`,
-    `https://cdn.jsdelivr.net/gh/DubPlus/DubPlus${branchName}/dubplus.js`,
-    `https://cdn.jsdelivr.net/gh/DubPlus/DubPlus${branchName}/dubplus.css`,
+    `https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@${branchName}/dubplus.min.js`,
+    `https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@${branchName}/dubplus.js`,
+    `https://cdn.jsdelivr.net/gh/DubPlus/DubPlus@${branchName}/dubplus.css`,
   ],
   attempts: 2,
 };
@@ -37,13 +53,14 @@ async function run() {
 
     for (let attemptNumber = 1; ; attemptNumber++) {
       if (attemptNumber > input.attempts) {
-        throw new Error(`✖ Too many (${attemptNumber - 1}) attempts`);
+        console.error(`❌ Too many (${attemptNumber - 1}) attempts`);
+        process.exit(0);
       }
 
       const res = await fetch(purgingUrl);
 
       if (!res.ok) {
-        console.log(`✖ Wrong response status code = ${res.status}`);
+        console.log(`❌ Wrong response status code = ${res.status}`);
         continue;
       }
 
@@ -53,7 +70,7 @@ async function run() {
         Object.hasOwn(body, 'status') &&
         body.status.toLowerCase() !== 'finished'
       ) {
-        console.log(`✖ Wrong status state (${body['status']})`);
+        console.log(`❌ Wrong status state (${body['status']})`);
         continue;
       }
 
@@ -67,14 +84,15 @@ async function run() {
           ) {
             console.log(JSON.stringify(pathData, null, 2));
 
-            throw new Error(
-              `✖ Purging request for the file "${path}" was throttled`,
+            console.log(
+              `❌ Purging request for the file "${path}" was throttled`,
             );
+            process.exit(0);
           }
         }
       }
 
-      console.log(`✔ Successfully purged cache for "${input.urls[i]}"`);
+      console.log(`✅ Successfully purged cache for "${input.urls[i]}"`);
 
       break;
     }

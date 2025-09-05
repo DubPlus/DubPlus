@@ -16,8 +16,7 @@ export function branchName() {
 
 export function getCurrentBranch() {
   try {
-    const name = branchName();
-    return name;
+    return branchName() || '';
   } catch {
     return '';
   }
