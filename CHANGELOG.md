@@ -5,9 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [4.1.2] - TBD
 
+This version does not affect the extensions so we do not need to release new versions of them for Chrome and FireFox.
+
+### Fixed
+
+Refactored how we selected which CSS file to load from the CDN when using Dub+ from a bookmarklet. Now it tries to match the same version as the dubplus.js.
+
 ### Other
 
-Internal tooling and build process related changes. See this PR: https://github.com/DubPlus/DubPlus/pull/161
+Internal tooling and build process related changes.
 
 ## [4.1.1] - 2025-08-29
 
