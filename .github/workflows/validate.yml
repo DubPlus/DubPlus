@@ -37,9 +37,9 @@ jobs:
 
       # If we are merging any changes into master/main, we should be bumping the version.
       # This step ensures that we don't forget to do that. We should only merge into
-      # the default branch when we are ready to push a new release, otherwise if you 
+      # the default branch when we are ready to push a new release, otherwise if you
       # plan on breaking up work into smaller changes and having multiple PRs, use an
-      # intermediate branch like 'develop' 
+      # intermediate branch like 'develop'
       - name: Check version bump
         if: github.base_ref == 'master' || github.base_ref == 'main'
         run: |
@@ -47,11 +47,11 @@ jobs:
           git fetch origin ${{ github.base_ref }}
           TARGET_PKG_VERSION=$(git show origin/${{ github.base_ref }}:package.json | jq -r '.version')
           TARGET_MANIFEST_VERSION=$(git show origin/${{ github.base_ref }}:extension/manifest.json | jq -r '.version')
-          
+
           # Get versions from current branch
           CURRENT_PKG_VERSION=$(jq -r '.version' package.json)
           CURRENT_MANIFEST_VERSION=$(jq -r '.version' extension/manifest.json)
-          
+
           echo "Target branch (${{ github.base_ref }}) versions:"
           echo "  package.json: $TARGET_PKG_VERSION"
           echo "  manifest.json: $TARGET_MANIFEST_VERSION"
@@ -60,7 +60,7 @@ jobs:
           echo "  package.json: $CURRENT_PKG_VERSION"
           echo "  manifest.json: $CURRENT_MANIFEST_VERSION"
           echo ""
-          
+
           # Check if versions have changed
           if [ "$TARGET_PKG_VERSION" = "$CURRENT_PKG_VERSION" ]; then
             echo "❌ ERROR: package.json version has not been updated!"
@@ -68,14 +68,14 @@ jobs:
             echo "   Current: $CURRENT_PKG_VERSION"
             exit 1
           fi
-          
+
           if [ "$TARGET_MANIFEST_VERSION" = "$CURRENT_MANIFEST_VERSION" ]; then
             echo "❌ ERROR: extension/manifest.json version has not been updated!"
             echo "   Target: $TARGET_MANIFEST_VERSION"
             echo "   Current: $CURRENT_MANIFEST_VERSION"
             exit 1
           fi
-          
+
           echo "✅ Version validation passed - both versions have been updated"
 
       # We should also not forget to update the changelog
@@ -83,9 +83,9 @@ jobs:
         if: github.base_ref == 'master' || github.base_ref == 'main'
         run: |
           CURRENT_PKG_VERSION=$(jq -r '.version' package.json)
-          
+
           echo "Checking if CHANGELOG.md contains version $CURRENT_PKG_VERSION..."
-          
+
           if grep -q "## \[$CURRENT_PKG_VERSION\]" CHANGELOG.md; then
             echo "✅ CHANGELOG.md has been updated with version $CURRENT_PKG_VERSION"
           else
@@ -97,5 +97,3 @@ jobs:
             echo ""
             exit 1
           fi
-
-      

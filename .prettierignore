@@ -1,5 +1,6 @@
-./dubplus.js
-./dubplus.min.js
-./extension/dist/dubplus.js
-./extension/dist/dubplus.min.js
-./extension/dist/dubplus.css
+dubplus.js
+dubplus.css
+dubplus.min.js
+extension/dist/dubplus.js
+extension/dist/dubplus.min.js
+extension/dist/dubplus.css
