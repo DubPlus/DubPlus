@@ -4,8 +4,8 @@ Dub+ - A Dubtrack.fm and QueUp.net script/extension for added features and custo
 
 ## How to build the extension
 
-1. Install [Node](https://nodejs.org/) (version >= v22)
-2. Run `npm install` in the root of this repo
+1. Install [Node](https://nodejs.org/) (version >= `22.12`)
+2. Run `npm ci` in the root of this repo
 3. Run `npm run build` to build and zip the extension.
    - This will create a zip file of the extension at: `./dist/dubplus-extension.zip`
 
@@ -20,9 +20,9 @@ The extension will load into any browser that supports the WebExtensions API and
 
 ## Development
 
-Requires [Node](https://nodejs.org/) version >= 22 with `npm` version >= 10
+Requires [Node](https://nodejs.org/) version >= `22.12` with `npm` version >= `10`
 
-- install dependencies: `npm install`
+- install dependencies: `npm ci`
 
 The UI is written in [Svelte 5](https://svelte.dev/docs/svelte/overview)
 
@@ -56,7 +56,7 @@ This way is a little more manual but it's good to test on Chrome when you're fin
 - Open a new tab and log in to https://queup.net and join a room
 - Start developing.
 
-When you hit save, the `watch` will automatically rebuid the JS and CSS files. When you're ready to test your changes you'll need to do the following:
+When you hit save, the `watch` will automatically rebuild the JS and CSS files. When you're ready to test your changes you'll need to do the following:
 
 - go back to the [chrome://extensions/](chrome://extensions/)
 - click on the little refresh icon next to the switch in the bottom right corner of the "unpacked extension"
