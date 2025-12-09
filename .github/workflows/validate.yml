@@ -30,7 +30,10 @@ jobs:
         with:
           node-version: 24.x
           cache: 'npm'
-      - run: npm ci
+
+      - run: npm audit --audit-level=critical
+
+      - run: npm ci --ignore-scripts
 
       # build should succeed
       - run: npm run ci:build

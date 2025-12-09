@@ -29,7 +29,9 @@ jobs:
 
       - run: echo "VITE_GIT_BRANCH=${{github.event.pull_request.base.ref}}" >> $GITHUB_ENV
 
-      - run: npm ci
+      - run: npm audit --audit-level=critical
+
+      - run: npm ci --ignore-scripts
 
       - name: build to insert branch name
         run: OUTPUT_DIR=. npm run ci:build
