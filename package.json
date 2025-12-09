@@ -5,8 +5,8 @@
   "description": "Dub+ - A simple script/extension for QueUp.net",
   "main": "dubplus.js",
   "engines": {
-    "node": ">=22.0.0",
-    "npm": ">=10.0.0"
+    "node": ">=24.0.0",
+    "npm": ">=11.0.0"
   },
   "scripts": {
     "build": "vite build && cd extension && web-ext build --filename dubplus-extension.zip --overwrite-dest --artifacts-dir ../dist",
