@@ -6299,7 +6299,7 @@ var dubplus = (function() {
   }
   async function loadDubPlusCSSforBookmarklet() {
     let version2 = "";
-    const branch2 = "develop"?.trim();
+    const branch2 = "master"?.trim();
     if (branch2 && branch2 !== "main" && branch2 !== "master") {
       version2 = branch2;
     } else if (!branch2 || branch2 === "main" || branch2 === "master") {
