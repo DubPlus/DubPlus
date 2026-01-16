@@ -15,7 +15,7 @@
 
     MIT License 
 
-    Copyright (c) 2025 DubPlus
+    Copyright (c) 2026 DubPlus
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-var dubplus = function() {
+var dubplus = (function() {
   "use strict";
   const DEV = false;
   var is_array = Array.isArray;
@@ -90,8 +90,8 @@ var dubplus = function() {
   const REACTION_IS_UPDATING = 1 << 21;
   const ASYNC = 1 << 22;
   const ERROR_VALUE = 1 << 23;
-  const STATE_SYMBOL = Symbol("$state");
-  const LOADING_ATTR_SYMBOL = Symbol("");
+  const STATE_SYMBOL = /* @__PURE__ */ Symbol("$state");
+  const LOADING_ATTR_SYMBOL = /* @__PURE__ */ Symbol("");
   const STALE_REACTION = new class StaleReactionError extends Error {
     name = "StaleReactionError";
     message = "The reaction that called `getAbortSignal()` was re-run or destroyed";
@@ -153,7 +153,7 @@ var dubplus = function() {
   const EACH_ITEM_IMMUTABLE = 1 << 4;
   const TEMPLATE_FRAGMENT = 1;
   const TEMPLATE_USE_IMPORT_NODE = 1 << 1;
-  const UNINITIALIZED = Symbol();
+  const UNINITIALIZED = /* @__PURE__ */ Symbol();
   const NAMESPACE_HTML = "http://www.w3.org/1999/xhtml";
   function svelte_boundary_reset_noop() {
     {
@@ -260,6 +260,39 @@ var dubplus = function() {
     }
     throw error;
   }
+  const STATUS_MASK = -7169;
+  function set_signal_status(signal, status) {
+    signal.f = signal.f & STATUS_MASK | status;
+  }
+  function update_derived_status(derived2) {
+    if ((derived2.f & CONNECTED) !== 0 || derived2.deps === null) {
+      set_signal_status(derived2, CLEAN);
+    } else {
+      set_signal_status(derived2, MAYBE_DIRTY);
+    }
+  }
+  function clear_marked(deps) {
+    if (deps === null) return;
+    for (const dep of deps) {
+      if ((dep.f & DERIVED) === 0 || (dep.f & WAS_MARKED) === 0) {
+        continue;
+      }
+      dep.f ^= WAS_MARKED;
+      clear_marked(
+        /** @type {Derived} */
+        dep.deps
+      );
+    }
+  }
+  function defer_effect(effect2, dirty_effects, maybe_dirty_effects) {
+    if ((effect2.f & DIRTY) !== 0) {
+      dirty_effects.add(effect2);
+    } else if ((effect2.f & MAYBE_DIRTY) !== 0) {
+      maybe_dirty_effects.add(effect2);
+    }
+    clear_marked(effect2.deps);
+    set_signal_status(effect2, CLEAN);
+  }
   const batches = /* @__PURE__ */ new Set();
   let current_batch = null;
   let previous_batch = null;
@@ -309,14 +342,14 @@ var dubplus = function() {
     #deferred = null;
     /**
      * Deferred effects (which run after async work has completed) that are DIRTY
-     * @type {Effect[]}
+     * @type {Set<Effect>}
      */
-    #dirty_effects = [];
+    #dirty_effects = /* @__PURE__ */ new Set();
     /**
      * Deferred effects that are MAYBE_DIRTY
-     * @type {Effect[]}
+     * @type {Set<Effect>}
      */
-    #maybe_dirty_effects = [];
+    #maybe_dirty_effects = /* @__PURE__ */ new Set();
     /**
      * A set of branches that still exist, but will be destroyed when this batch
      * is committed — we skip over these during `process`
@@ -335,28 +368,22 @@ var dubplus = function() {
       queued_root_effects = [];
       previous_batch = null;
       this.apply();
-      var target = {
-        parent: null,
-        effect: null,
-        effects: [],
-        render_effects: [],
-        block_effects: []
-      };
+      var effects = [];
+      var render_effects = [];
       for (const root2 of root_effects) {
-        this.#traverse_effect_tree(root2, target);
+        this.#traverse_effect_tree(root2, effects, render_effects);
       }
       if (!this.is_fork) {
         this.#resolve();
       }
       if (this.is_deferred()) {
-        this.#defer_effects(target.effects);
-        this.#defer_effects(target.render_effects);
-        this.#defer_effects(target.block_effects);
+        this.#defer_effects(render_effects);
+        this.#defer_effects(effects);
       } else {
         previous_batch = this;
         current_batch = null;
-        flush_queued_effects(target.render_effects);
-        flush_queued_effects(target.effects);
+        flush_queued_effects(render_effects);
+        flush_queued_effects(effects);
         previous_batch = null;
         this.#deferred?.resolve();
       }
@@ -366,32 +393,27 @@ var dubplus = function() {
      * Traverse the effect tree, executing effects or stashing
      * them for later execution as appropriate
      * @param {Effect} root
-     * @param {EffectTarget} target
+     * @param {Effect[]} effects
+     * @param {Effect[]} render_effects
      */
-    #traverse_effect_tree(root2, target) {
+    #traverse_effect_tree(root2, effects, render_effects) {
       root2.f ^= CLEAN;
       var effect2 = root2.first;
+      var pending_boundary = null;
       while (effect2 !== null) {
         var flags2 = effect2.f;
         var is_branch = (flags2 & (BRANCH_EFFECT | ROOT_EFFECT)) !== 0;
         var is_skippable_branch = is_branch && (flags2 & CLEAN) !== 0;
         var skip = is_skippable_branch || (flags2 & INERT) !== 0 || this.skipped_effects.has(effect2);
-        if ((effect2.f & BOUNDARY_EFFECT) !== 0 && effect2.b?.is_pending()) {
-          target = {
-            parent: target,
-            effect: effect2,
-            effects: [],
-            render_effects: [],
-            block_effects: []
-          };
-        }
         if (!skip && effect2.fn !== null) {
           if (is_branch) {
             effect2.f ^= CLEAN;
+          } else if (pending_boundary !== null && (flags2 & (EFFECT | RENDER_EFFECT | MANAGED_EFFECT)) !== 0) {
+            pending_boundary.b.defer_effect(effect2);
           } else if ((flags2 & EFFECT) !== 0) {
-            target.effects.push(effect2);
+            effects.push(effect2);
           } else if (is_dirty(effect2)) {
-            if ((effect2.f & BLOCK_EFFECT) !== 0) target.block_effects.push(effect2);
+            if ((flags2 & BLOCK_EFFECT) !== 0) this.#dirty_effects.add(effect2);
             update_effect(effect2);
           }
           var child2 = effect2.first;
@@ -403,12 +425,8 @@ var dubplus = function() {
         var parent = effect2.parent;
         effect2 = effect2.next;
         while (effect2 === null && parent !== null) {
-          if (parent === target.effect) {
-            this.#defer_effects(target.effects);
-            this.#defer_effects(target.render_effects);
-            this.#defer_effects(target.block_effects);
-            target = /** @type {EffectTarget} */
-            target.parent;
+          if (parent === pending_boundary) {
+            pending_boundary = null;
           }
           effect2 = parent.next;
           parent = parent.parent;
@@ -419,27 +437,8 @@ var dubplus = function() {
      * @param {Effect[]} effects
      */
     #defer_effects(effects) {
-      for (const e of effects) {
-        const target = (e.f & DIRTY) !== 0 ? this.#dirty_effects : this.#maybe_dirty_effects;
-        target.push(e);
-        this.#clear_marked(e.deps);
-        set_signal_status(e, CLEAN);
-      }
-    }
-    /**
-     * @param {Value[] | null} deps
-     */
-    #clear_marked(deps) {
-      if (deps === null) return;
-      for (const dep of deps) {
-        if ((dep.f & DERIVED) === 0 || (dep.f & WAS_MARKED) === 0) {
-          continue;
-        }
-        dep.f ^= WAS_MARKED;
-        this.#clear_marked(
-          /** @type {Derived} */
-          dep.deps
-        );
+      for (var i = 0; i < effects.length; i += 1) {
+        defer_effect(effects[i], this.#dirty_effects, this.#maybe_dirty_effects);
       }
     }
     /**
@@ -449,7 +448,7 @@ var dubplus = function() {
      * @param {any} value
      */
     capture(source2, value) {
-      if (!this.previous.has(source2)) {
+      if (value !== UNINITIALIZED && !this.previous.has(source2)) {
         this.previous.set(source2, value);
       }
       if ((source2.f & ERROR_VALUE) === 0) {
@@ -496,13 +495,6 @@ var dubplus = function() {
         this.previous.clear();
         var previous_batch_values = batch_values;
         var is_earlier = true;
-        var dummy_target = {
-          parent: null,
-          effect: null,
-          effects: [],
-          render_effects: [],
-          block_effects: []
-        };
         for (const batch of batches) {
           if (batch === this) {
             is_earlier = false;
@@ -535,7 +527,7 @@ var dubplus = function() {
               current_batch = batch;
               batch.apply();
               for (const root2 of queued_root_effects) {
-                batch.#traverse_effect_tree(root2, dummy_target);
+                batch.#traverse_effect_tree(root2, [], []);
               }
               batch.deactivate();
             }
@@ -567,6 +559,7 @@ var dubplus = function() {
     }
     revive() {
       for (const e of this.#dirty_effects) {
+        this.#maybe_dirty_effects.delete(e);
         set_signal_status(e, DIRTY);
         schedule_effect(e);
       }
@@ -574,8 +567,6 @@ var dubplus = function() {
         set_signal_status(e, MAYBE_DIRTY);
         schedule_effect(e);
       }
-      this.#dirty_effects = [];
-      this.#maybe_dirty_effects = [];
       this.flush();
     }
     /** @param {() => void} fn */
@@ -807,7 +798,7 @@ var dubplus = function() {
   class Boundary {
     /** @type {Boundary | null} */
     parent;
-    #pending = false;
+    is_pending = false;
     /** @type {TemplateNode} */
     #anchor;
     /** @type {TemplateNode | null} */
@@ -831,6 +822,10 @@ var dubplus = function() {
     #local_pending_count = 0;
     #pending_count = 0;
     #is_creating_fallback = false;
+    /** @type {Set<Effect>} */
+    #dirty_effects = /* @__PURE__ */ new Set();
+    /** @type {Set<Effect>} */
+    #maybe_dirty_effects = /* @__PURE__ */ new Set();
     /**
      * A source containing the number of pending async deriveds/expressions.
      * Only created if `$effect.pending()` is used inside the boundary,
@@ -856,7 +851,7 @@ var dubplus = function() {
       this.#children = children;
       this.parent = /** @type {Effect} */
       active_effect.b;
-      this.#pending = !!this.#props.pending;
+      this.is_pending = !!this.#props.pending;
       this.#effect = block(() => {
         active_effect.b = this;
         {
@@ -869,7 +864,7 @@ var dubplus = function() {
           if (this.#pending_count > 0) {
             this.#show_pending_snippet();
           } else {
-            this.#pending = false;
+            this.is_pending = false;
           }
         }
         return () => {
@@ -883,7 +878,6 @@ var dubplus = function() {
       } catch (error) {
         this.error(error);
       }
-      this.#pending = false;
     }
     #hydrate_pending_content() {
       const pending = this.#props.pending;
@@ -907,13 +901,13 @@ var dubplus = function() {
               this.#pending_effect = null;
             }
           );
-          this.#pending = false;
+          this.is_pending = false;
         }
       });
     }
     #get_anchor() {
       var anchor = this.#anchor;
-      if (this.#pending) {
+      if (this.is_pending) {
         this.#pending_anchor = create_text();
         this.#anchor.before(this.#pending_anchor);
         anchor = this.#pending_anchor;
@@ -921,11 +915,18 @@ var dubplus = function() {
       return anchor;
     }
     /**
-     * Returns `true` if the effect exists inside a boundary whose pending snippet is shown
+     * Defer an effect inside a pending boundary until the boundary resolves
+     * @param {Effect} effect
+     */
+    defer_effect(effect2) {
+      defer_effect(effect2, this.#dirty_effects, this.#maybe_dirty_effects);
+    }
+    /**
+     * Returns `false` if the effect exists inside a boundary whose pending snippet is shown
      * @returns {boolean}
      */
-    is_pending() {
-      return this.#pending || !!this.parent && this.parent.is_pending();
+    is_rendered() {
+      return !this.is_pending && (!this.parent || this.parent.is_rendered());
     }
     has_pending_snippet() {
       return !!this.#props.pending;
@@ -982,7 +983,17 @@ var dubplus = function() {
       }
       this.#pending_count += d;
       if (this.#pending_count === 0) {
-        this.#pending = false;
+        this.is_pending = false;
+        for (const e of this.#dirty_effects) {
+          set_signal_status(e, DIRTY);
+          schedule_effect(e);
+        }
+        for (const e of this.#maybe_dirty_effects) {
+          set_signal_status(e, MAYBE_DIRTY);
+          schedule_effect(e);
+        }
+        this.#dirty_effects.clear();
+        this.#maybe_dirty_effects.clear();
         if (this.#pending_effect) {
           pause_effect(this.#pending_effect, () => {
             this.#pending_effect = null;
@@ -1051,7 +1062,7 @@ var dubplus = function() {
             this.#failed_effect = null;
           });
         }
-        this.#pending = this.has_pending_snippet();
+        this.is_pending = this.has_pending_snippet();
         this.#main_effect = this.#run(() => {
           this.#is_creating_fallback = false;
           return branch(() => this.#children(this.#anchor));
@@ -1059,7 +1070,7 @@ var dubplus = function() {
         if (this.#pending_count > 0) {
           this.#show_pending_snippet();
         } else {
-          this.#pending = false;
+          this.is_pending = false;
         }
       };
       var previous_reaction = active_reaction;
@@ -1190,7 +1201,7 @@ var dubplus = function() {
     return signal;
   }
   // @__NO_SIDE_EFFECTS__
-  function async_derived(fn, location) {
+  function async_derived(fn, label, location) {
     let parent = (
       /** @type {Effect | null} */
       active_effect
@@ -1232,7 +1243,7 @@ var dubplus = function() {
         current_batch
       );
       if (should_suspend) {
-        var blocking = !boundary2.is_pending();
+        var blocking = boundary2.is_rendered();
         boundary2.update_pending_count(1);
         batch.increment(blocking);
         deferreds.get(batch)?.reject(STALE_REACTION);
@@ -1338,10 +1349,14 @@ var dubplus = function() {
   function update_derived(derived2) {
     var value = execute_derived(derived2);
     if (!derived2.equals(value)) {
-      if (!current_batch?.is_fork) {
-        derived2.v = value;
-      }
       derived2.wv = increment_write_version();
+      if (!current_batch?.is_fork || derived2.deps === null) {
+        derived2.v = value;
+        if (derived2.deps === null) {
+          set_signal_status(derived2, CLEAN);
+          return;
+        }
+      }
     }
     if (is_destroying_effect) {
       return;
@@ -1351,8 +1366,7 @@ var dubplus = function() {
         batch_values.set(derived2, value);
       }
     } else {
-      var status = (derived2.f & CONNECTED) === 0 ? MAYBE_DIRTY : CLEAN;
-      set_signal_status(derived2, status);
+      update_derived_status(derived2);
     }
   }
   let eager_effects = /* @__PURE__ */ new Set();
@@ -1408,13 +1422,14 @@ var dubplus = function() {
       var batch = Batch.ensure();
       batch.capture(source2, old_value);
       if ((source2.f & DERIVED) !== 0) {
+        const derived2 = (
+          /** @type {Derived} */
+          source2
+        );
         if ((source2.f & DIRTY) !== 0) {
-          execute_derived(
-            /** @type {Derived} */
-            source2
-          );
+          execute_derived(derived2);
         }
-        set_signal_status(source2, (source2.f & CONNECTED) !== 0 ? CLEAN : MAYBE_DIRTY);
+        update_derived_status(derived2);
       }
       source2.wv = increment_write_version();
       mark_reactions(source2, DIRTY);
@@ -2163,23 +2178,24 @@ var dubplus = function() {
       reaction.f &= ~WAS_MARKED;
     }
     if ((flags2 & MAYBE_DIRTY) !== 0) {
-      var dependencies = reaction.deps;
-      if (dependencies !== null) {
-        var length = dependencies.length;
-        for (var i = 0; i < length; i++) {
-          var dependency = dependencies[i];
-          if (is_dirty(
+      var dependencies = (
+        /** @type {Value[]} */
+        reaction.deps
+      );
+      var length = dependencies.length;
+      for (var i = 0; i < length; i++) {
+        var dependency = dependencies[i];
+        if (is_dirty(
+          /** @type {Derived} */
+          dependency
+        )) {
+          update_derived(
             /** @type {Derived} */
             dependency
-          )) {
-            update_derived(
-              /** @type {Derived} */
-              dependency
-            );
-          }
-          if (dependency.wv > reaction.wv) {
-            return true;
-          }
+          );
+        }
+        if (dependency.wv > reaction.wv) {
+          return true;
         }
       }
       if ((flags2 & CONNECTED) !== 0 && // During time traveling we don't want to reset the status so that
@@ -2328,20 +2344,17 @@ var dubplus = function() {
     // to be unused, when in fact it is used by the currently-updating parent. Checking `new_deps`
     // allows us to skip the expensive work of disconnecting and immediately reconnecting it
     (new_deps === null || !new_deps.includes(dependency))) {
-      set_signal_status(dependency, MAYBE_DIRTY);
-      if ((dependency.f & CONNECTED) !== 0) {
-        dependency.f ^= CONNECTED;
-        dependency.f &= ~WAS_MARKED;
-      }
-      destroy_derived_effects(
-        /** @type {Derived} **/
+      var derived2 = (
+        /** @type {Derived} */
         dependency
       );
-      remove_reactions(
-        /** @type {Derived} **/
-        dependency,
-        0
-      );
+      if ((derived2.f & CONNECTED) !== 0) {
+        derived2.f ^= CONNECTED;
+        derived2.f &= ~WAS_MARKED;
+      }
+      update_derived_status(derived2);
+      destroy_derived_effects(derived2);
+      remove_reactions(derived2, 0);
     }
   }
   function remove_reactions(signal, start_index) {
@@ -2411,15 +2424,15 @@ var dubplus = function() {
         }
       }
     }
-    if (is_destroying_effect) {
-      if (old_values.has(signal)) {
-        return old_values.get(signal);
-      }
-      if (is_derived) {
-        var derived2 = (
-          /** @type {Derived} */
-          signal
-        );
+    if (is_destroying_effect && old_values.has(signal)) {
+      return old_values.get(signal);
+    }
+    if (is_derived) {
+      var derived2 = (
+        /** @type {Derived} */
+        signal
+      );
+      if (is_destroying_effect) {
         var value = derived2.v;
         if ((derived2.f & CLEAN) === 0 && derived2.reactions !== null || depends_on_old_values(derived2)) {
           value = execute_derived(derived2);
@@ -2427,13 +2440,15 @@ var dubplus = function() {
         old_values.set(derived2, value);
         return value;
       }
-    } else if (is_derived && (!batch_values?.has(signal) || current_batch?.is_fork && !effect_tracking())) {
-      derived2 = /** @type {Derived} */
-      signal;
+      var should_connect = (derived2.f & CONNECTED) === 0 && !untracking && active_reaction !== null && (is_updating_effect || (active_reaction.f & CONNECTED) !== 0);
+      var is_new = derived2.deps === null;
       if (is_dirty(derived2)) {
+        if (should_connect) {
+          derived2.f |= CONNECTED;
+        }
         update_derived(derived2);
       }
-      if (is_updating_effect && effect_tracking() && (derived2.f & CONNECTED) === 0) {
+      if (should_connect && !is_new) {
         reconnect(derived2);
       }
     }
@@ -2447,7 +2462,7 @@ var dubplus = function() {
   }
   function reconnect(derived2) {
     if (derived2.deps === null) return;
-    derived2.f ^= CONNECTED;
+    derived2.f |= CONNECTED;
     for (const dep of derived2.deps) {
       (dep.reactions ??= []).push(derived2);
       if ((dep.f & DERIVED) !== 0 && (dep.f & CONNECTED) === 0) {
@@ -2482,10 +2497,6 @@ var dubplus = function() {
     } finally {
       untracking = previous_untracking;
     }
-  }
-  const STATUS_MASK = -7169;
-  function set_signal_status(signal, status) {
-    signal.f = signal.f & STATUS_MASK | status;
   }
   function deep_read_state(value) {
     if (typeof value !== "object" || !value || value instanceof EventTarget) {
@@ -3517,8 +3528,8 @@ var dubplus = function() {
     }
     return next_styles;
   }
-  const IS_CUSTOM_ELEMENT = Symbol("is custom element");
-  const IS_HTML = Symbol("is html");
+  const IS_CUSTOM_ELEMENT = /* @__PURE__ */ Symbol("is custom element");
+  const IS_HTML = /* @__PURE__ */ Symbol("is html");
   function set_attribute(element, attribute, value, skip_warning) {
     var attributes = get_attributes(element);
     if (attributes[attribute] === (attributes[attribute] = value)) return;
@@ -7604,4 +7615,4 @@ var dubplus = function() {
     target: container
   });
   return app;
-}();
+})();
