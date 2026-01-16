@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.1.2] - 2026-01-16
+
+Most of the changes in this release are related to development.
+
+### Fixed
+
+- Refactored how we selected which CSS file to load from the CDN when using Dub+ from a bookmarklet. Now it tries to match the same version as the dubplus.js.
+
+### Other
+
+- Set min version of Node to 24 and npm to 11 for development
+- Upgraded dependencies, the most important one being Svelte due to this [CVE](https://svelte.dev/blog/cves-affecting-the-svelte-ecosystem), but it really doesn't affect us because we don't do any server rendering. Still good to updated anyways.
+- Adding scripts to automate extension submitting. They are still experimental.
+- Refactored purge-cache.js to not fail CI/CD on errors
+- Updated git-branch.js with improvements
+- Added .npmrc file configuration
+- updated validate workflow to check if version numbers have been bumped
+- added npm audit check in workflow
+- update vite config to improve how our banner is inserted into the output files
+
 ## [4.1.1] - 2025-08-29
 
 ### Fixed
