@@ -31,13 +31,13 @@ if (document.hidden !== undefined) {
 function handleChange(evt) {
   if (
     activeTabState.isActive &&
-    (['blur', 'pagehide'].includes(evt.type) || document.hidden)
+    (['blur', 'pagehide'].includes(evt.type ?? '') || document.hidden)
   ) {
     activeTabState.isActive = false;
     onOut.forEach((fn) => fn());
   } else if (
     !activeTabState.isActive &&
-    (['focus', 'pageshow'].includes(evt.type) || !document.hidden)
+    (['focus', 'pageshow'].includes(evt.type ?? '') || !document.hidden)
   ) {
     activeTabState.isActive = true;
     onIn.forEach((fn) => fn());

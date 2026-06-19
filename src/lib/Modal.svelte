@@ -42,9 +42,9 @@
       <textarea
         bind:value={modalState.value}
         placeholder={modalState.placeholder}
-        maxlength={modalState.maxlength < 999 ? modalState.maxlength : 999}
-      >
-      </textarea>
+        maxlength={modalState.maxlength && modalState.maxlength < 999
+          ? modalState.maxlength
+          : 999}></textarea>
     {/if}
     {#if errorMessage}
       <p class="dp-modal--error">{errorMessage}</p>
@@ -67,11 +67,12 @@
       <button
         class="dp-modal--confirm confirm"
         onclick={() => {
-          const isValidOrErrorMessage = modalState.validation(modalState.value);
+          const isValidOrErrorMessage =
+            modalState.validation?.(modalState.value ?? '') ?? true;
           if (isValidOrErrorMessage === true) {
             dialog.close();
             modalState.open = false;
-            modalState.onConfirm(modalState.value);
+            modalState.onConfirm?.(modalState.value ?? '');
             errorMessage = '';
           } else {
             errorMessage = isValidOrErrorMessage;

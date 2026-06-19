@@ -109,10 +109,13 @@ export const dubplus_emoji = {
 
   twitch: {
     /**
-     * @param {string} id
+     * @param {string} [id]
      * @returns {string}
      */
     template(id) {
+      if (!id) {
+        return '';
+      }
       return `//static-cdn.jtvnw.net/emoticons/v1/${id}/3.0`;
     },
     /**
@@ -122,10 +125,13 @@ export const dubplus_emoji = {
   },
   bttv: {
     /**
-     * @param {string} id
+     * @param {string} [id]
      * @returns {string}
      */
     template(id) {
+      if (!id) {
+        return '';
+      }
       return `//cdn.betterttv.net/emote/${id}/3x`;
     },
     /**
@@ -135,10 +141,13 @@ export const dubplus_emoji = {
   },
   frankerFacez: {
     /**
-     * @param {number} id
+     * @param {number} [id]
      * @returns {string}
      */
     template(id) {
+      if (typeof id !== 'number') {
+        return '';
+      }
       return `//cdn.frankerfacez.com/emoticon/${id}/1`;
     },
     /**
@@ -170,7 +179,7 @@ export const dubplus_emoji = {
 
       const today = Date.now();
       const lastSaved = parseInt(
-        localStorage.getItem(`${apiName}_api_timestamp`),
+        localStorage.getItem(`${apiName}_api_timestamp`) || '',
       );
       // Is the lastsaved not a number for some strange reason, then we should update
       // are we past 5 days from last update? then we should update
@@ -219,7 +228,7 @@ export const dubplus_emoji = {
           /**
            * @type {{[emote: string]: string}}
            */
-          const savedData = JSON.parse(data);
+          const savedData = JSON.parse(data || '{}');
           dubplus_emoji.processTwitchEmotes(savedData);
         });
       }
@@ -262,7 +271,7 @@ export const dubplus_emoji = {
           /**
            * @type {{[emote: string]: string}}
            */
-          const savedData = JSON.parse(data);
+          const savedData = JSON.parse(data || '{}');
           dubplus_emoji.processBTTVEmotes(savedData);
         });
       }
@@ -295,7 +304,7 @@ export const dubplus_emoji = {
       } else {
         return ldb.get('frankerfacez_api').then((data) => {
           logInfo('frankerfacez', 'loading from IndexedDB');
-          const savedData = JSON.parse(data);
+          const savedData = JSON.parse(data || '{}');
           dubplus_emoji.processFrankerFacez(savedData);
         });
       }

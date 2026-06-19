@@ -32,6 +32,9 @@ const KEYS = {
  */
 const MIN_CHAR = 2;
 let acPreview = document.querySelector('#autocomplete-preview');
+/**
+ * @type {string}
+ */
 let originalKeyDownEventHandler;
 
 /**
@@ -103,6 +106,9 @@ function checkInput(e) {
  */
 function chatInputKeyupFunc(e) {
   acPreview = acPreview || document.querySelector('#autocomplete-preview');
+  if (!acPreview) {
+    return;
+  }
   const hasItems = acPreview.children.length > 0;
   const isModifierKey = e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
 
@@ -157,6 +163,9 @@ function chatInputKeyupFunc(e) {
  */
 function chatInputKeydownFunc(e) {
   acPreview = acPreview || document.querySelector('#autocomplete-preview');
+  if (!acPreview) {
+    return;
+  }
   const emptyPreview = acPreview.children.length === 0;
   const isValidKey = [KEYS.tab, KEYS.enter, KEYS.up, KEYS.down].includes(e.key);
   const isModifierKey = e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
@@ -199,6 +208,9 @@ export const autocomplete = {
     window.QueUp.room.chat.delegateEvents(newEventsObject);
 
     const chatInput = getChatInput();
+    if (!chatInput) {
+      return;
+    }
     chatInput.addEventListener('keydown', chatInputKeydownFunc);
     chatInput.addEventListener('keyup', chatInputKeyupFunc);
     chatInput.addEventListener('click', checkInput);
@@ -210,6 +222,9 @@ export const autocomplete = {
       originalKeyDownEventHandler;
     window.QueUp.room.chat.delegateEvents(window.QueUp.room.chat.events);
     const chatInput = getChatInput();
+    if (!chatInput) {
+      return;
+    }
     chatInput.removeEventListener('keydown', chatInputKeydownFunc);
     chatInput.removeEventListener('keyup', chatInputKeyupFunc);
     chatInput.removeEventListener('click', checkInput);

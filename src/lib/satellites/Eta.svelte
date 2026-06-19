@@ -22,7 +22,7 @@
     const average_song_minutes = 4;
 
     // current_time is the minutes of the currently playing song
-    const current_time = parseInt(getCurrentSongMinutes()?.textContent);
+    const current_time = parseInt(getCurrentSongMinutes()?.textContent ?? '');
 
     const position_in_queue = parseInt(booth_position);
 

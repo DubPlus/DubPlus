@@ -27,6 +27,7 @@
    */
   function handleClick(index) {
     const inputEl = getChatInput();
+    if (!inputEl) return;
     insertEmote(inputEl, index);
     inputEl.focus();
   }

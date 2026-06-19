@@ -18,7 +18,7 @@
   import pkg from '../../../package.json';
 
   onMount(() => {
-    document.querySelector('html').classList.add('dubplus');
+    document.querySelector('html')?.classList.add('dubplus');
   });
 </script>
 

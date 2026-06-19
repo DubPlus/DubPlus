@@ -16,6 +16,7 @@ function handleCollapseButtonClick(button) {
   // the <a class="autolink-image"> element that wraps both the image and the button
   const imageContainer = /**@type {HTMLAnchorElement}*/ (button.parentElement);
   const image = imageContainer.querySelector('img');
+  if (!image) return;
 
   if (!imageContainer.classList.contains(COLLAPSED)) {
     imageContainer.classList.add(COLLAPSED);
@@ -84,10 +85,12 @@ function reset() {
 /**
  *
  * @param {Element} container
- * @returns {Element[]}
+ * @returns {HTMLAnchorElement[]}
  */
 function findUnProcessedImages(container) {
-  const images = container.querySelectorAll(`.${IMAGE_CONTAINER}`);
+  const images = /** @type {NodeListOf<HTMLAnchorElement>} */ (
+    container.querySelectorAll(`.${IMAGE_CONTAINER}`)
+  );
   return Array.from(images).filter((el) => !el.classList.contains(COLLAPSIBLE));
 }
 
@@ -110,6 +113,7 @@ function observerCallback(mutations) {
   }
 }
 
+/** @type {MutationObserver | null} */
 let observer = null;
 
 /**
@@ -142,7 +146,7 @@ export const collapsibleImages = {
       return Boolean(getChatContainer());
     }).then(() => {
       const chatContainer = getChatContainer();
-      if (chatContainer) {
+      if (chatContainer && observer) {
         chatContainer.addEventListener('click', eventDelegatorHandler);
         observer.observe(chatContainer, {
           childList: true,

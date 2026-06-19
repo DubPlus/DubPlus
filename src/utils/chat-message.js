@@ -1,4 +1,5 @@
 import { getChatContainer, getChatInput } from '../lib/queup.ui';
+import { logError } from './logger';
 
 /**
  * This inserts a chat message row into the chat.
@@ -6,13 +7,21 @@ import { getChatContainer, getChatInput } from '../lib/queup.ui';
  * @param {string} textContent
  */
 export function insertQueupChat(className, textContent) {
+  const chatContainer = getChatContainer();
+  if (!chatContainer) {
+    logError(
+      'insertQueupChat: Chat container not found, can not insert message',
+      { className, textContent },
+    );
+    return;
+  }
   const li = document.createElement('li');
   li.className = `dubplus-chat-system ${className}`;
 
   const chatDelete = document.createElement('div');
   chatDelete.className = 'chatDelete';
   chatDelete.onclick = function (e) {
-    /**@type {HTMLDivElement}*/ (e.target).parentElement.remove();
+    /**@type {HTMLDivElement}*/ (e.target).parentElement?.remove();
   };
 
   const span = document.createElement('span');
@@ -25,7 +34,7 @@ export function insertQueupChat(className, textContent) {
   text.className = 'text';
   text.textContent = textContent;
   li.appendChild(text);
-  getChatContainer().appendChild(li);
+  chatContainer.appendChild(li);
 }
 
 /**
@@ -35,10 +44,16 @@ export function insertQueupChat(className, textContent) {
  */
 export function sendChatMessage(message) {
   const chatInput = getChatInput();
-  // store original message
-  const messageOriginal = chatInput.value;
-  chatInput.value = message;
-  window.QueUp.room.chat.sendMessage();
-  // restore original message
-  if (messageOriginal) chatInput.value = messageOriginal;
+  if (chatInput) {
+    // store original message
+    const messageOriginal = chatInput.value;
+    chatInput.value = message;
+    window.QueUp.room.chat.sendMessage();
+    // restore original message
+    if (messageOriginal) chatInput.value = messageOriginal;
+  } else {
+    logError('sendChatMessage: Chat input not found, can not send message', {
+      message,
+    });
+  }
 }

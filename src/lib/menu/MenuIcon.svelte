@@ -13,7 +13,7 @@
   onclick={() => {
     document
       .querySelector('.dubplus-menu')
-      .classList.toggle('dubplus-menu-open');
+      ?.classList.toggle('dubplus-menu-open');
   }}
 >
   <Logo />

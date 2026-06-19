@@ -2,7 +2,7 @@ import { t } from '../stores/i18n.svelte';
 import { settings } from '../stores/settings.svelte';
 
 // store original sound from QueUp before we alter it
-let DubtrackDefaultSound;
+let DubtrackDefaultSound = '';
 
 /**
  * @type {import("./module").DubPlusModule}

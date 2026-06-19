@@ -6,13 +6,18 @@ import { settings } from '../stores/settings.svelte';
 const MODULE_ID = 'chat-cleaner';
 
 /**
- * @param {number} limit
+ * @param {number} [limit]
  */
 function cleanChat(limit) {
   // these will be ordered from oldest to newest
   const chatMessages = getChatMessages();
 
-  if (!chatMessages?.length || isNaN(limit) || chatMessages.length < limit) {
+  if (
+    !chatMessages?.length ||
+    limit === undefined ||
+    isNaN(limit) ||
+    chatMessages.length < limit
+  ) {
     return;
   }
 
