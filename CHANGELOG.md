@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.1.3] - 2026-06-19
+
+This is all internal development related updates so no new extension versions need to be published.
+
+- Updated packages
+- Fixed some type errors
+- github actions improvements and updated versions
+
 ## [4.1.2] - 2026-01-16
 
 Most of the changes in this release are related to development.
