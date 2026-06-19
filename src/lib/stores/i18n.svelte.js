@@ -10,16 +10,23 @@ export const locales = Object.keys(translations);
 /**
  *
  * @param {string} loc
- * @param {string} key
- * @param {Record<string, string|number|boolean>} vars
+ * @param {string} [key]
+ * @param {Record<string, string|number|boolean>} [vars]
  */
-export function translate(loc, key, vars) {
+export function translate(loc, key, vars = {}) {
+  if (!key) {
+    logError('No translation key provided', { locale: loc, key, vars });
+    return '';
+  }
+
+  const normalizedLocale = normalizeLocale(loc);
+
   // try getting the translated text
-  let text = translations[loc][key];
+  let text = translations[normalizedLocale]?.[key];
 
   // default to english if no translation found.
   // we should at least have all text for english.
-  if (!text && loc !== 'en') {
+  if (!text && normalizedLocale !== 'en') {
     text = translations['en'][key];
   }
 
@@ -29,14 +36,14 @@ export function translate(loc, key, vars) {
   // directly in place of the key. We really shouldn't
   // do that but it could prove useful in some cases
   if (!text) {
-    logError(`No translation found for ${loc}.${key}`);
+    logError(`No translation found for ${normalizedLocale}.${key}`);
     return key;
   }
 
   // replace any variables
   Object.keys(vars).forEach((item) => {
     const regex = new RegExp(`{{${item}}}`, 'g');
-    text = text.replace(regex, vars[item]);
+    text = text.replace(regex, () => String(vars[item]));
   });
 
   return text;
@@ -44,8 +51,8 @@ export function translate(loc, key, vars) {
 
 /**
  *
- * @param {string} key
- * @param {Record<string, string|number|boolean>} vars
+ * @param {string} [key]
+ * @param {Record<string, string|number|boolean>} [vars]
  * @returns
  */
 export function t(key, vars = {}) {
@@ -59,7 +66,7 @@ export function t(key, vars = {}) {
 export function normalizeLocale(loc) {
   // all english locales get the same translation
   // en-US, en-GB, en-CA, en-AU, etc ---> all get "en"
-  if (loc.startsWith('en')) {
+  if (loc.toLowerCase().startsWith('en')) {
     return 'en';
   }
   return loc;

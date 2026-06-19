@@ -1,3 +1,6 @@
+/**
+ * @type {Record<string, Record<string, string>>}
+ */
 export const translations = {
   en: {
     'Modal.confirm': 'OK',

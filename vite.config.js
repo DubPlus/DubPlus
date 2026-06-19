@@ -1,4 +1,3 @@
-import terser from '@rollup/plugin-terser';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -43,10 +42,9 @@ export default defineConfig(() => {
         entry: resolve(__dirname, '/src/main.js'),
         name: 'dubplus',
         fileName: 'dubplus',
-        formats: ['iife'],
       },
       copyPublicDir: false,
-      rollupOptions: {
+      rolldownOptions: {
         output: [
           {
             format: 'iife',
@@ -63,7 +61,8 @@ export default defineConfig(() => {
           {
             format: 'iife',
             name: 'dubplus',
-            plugins: [terser()],
+            // Vite 8 / Rolldown's built-in (Oxc) minifier, replaces @rollup/plugin-terser
+            minify: true,
             dir: '.',
 
             // makes sure our output JS file is named dubplus.min.js

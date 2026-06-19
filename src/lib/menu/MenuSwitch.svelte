@@ -37,6 +37,7 @@
     secondaryAction,
   } = $props();
 
+  // svelte-ignore state_referenced_locally (this won't change after first mount)
   const SecondaryIcon = secondaryAction?.icon || IconPencil;
 
   onMount(() => {
@@ -57,24 +58,24 @@
 
   function openEditModal() {
     updateModalState({
-      title: t(customize.title),
-      content: t(customize.content),
-      placeholder: t(customize.placeholder),
-      defaultValue: customize.defaultValue ? t(customize.defaultValue) : '',
-      maxlength: customize.maxlength,
+      title: t(customize?.title),
+      content: t(customize?.content),
+      placeholder: t(customize?.placeholder),
+      defaultValue: customize?.defaultValue ? t(customize.defaultValue) : '',
+      maxlength: customize?.maxlength,
       value: settings.custom[id] || '',
-      validation: customize.validation,
+      validation: customize?.validation,
       onConfirm: (value) => {
         saveSetting('custom', id, value);
 
         // if the value is empty and there is no default value, then we
         // turn off the feature
-        if (value.trim() === '' && !customize.defaultValue) {
+        if (value.trim() === '' && !customize?.defaultValue) {
           saveSetting('option', id, false);
           turnOff();
         }
 
-        if (typeof customize.onConfirm === 'function') {
+        if (typeof customize?.onConfirm === 'function') {
           customize.onConfirm(value);
         }
       },
@@ -82,14 +83,14 @@
         // if the saved custom setting is empty and there is no default value,
         // then we turn off the feature
         if (
-          !customize.defaultValue &&
+          !customize?.defaultValue &&
           (typeof settings.custom[id] === 'undefined' ||
             settings.custom[id] === '')
         ) {
           saveSetting('option', id, false);
           turnOff();
         }
-        if (typeof customize.onCancel === 'function') customize.onCancel();
+        if (typeof customize?.onCancel === 'function') customize?.onCancel();
       },
     });
 
