@@ -19,15 +19,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
 
       - name: Use Node.js 24.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24.x
           cache: 'npm'
 
-      - run: echo "VITE_GIT_BRANCH=${{github.event.pull_request.base.ref}}" >> $GITHUB_ENV
+      - name: Set git branch env var
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: echo "VITE_GIT_BRANCH=$BASE_REF" >> "$GITHUB_ENV"
 
       - run: npm audit --audit-level=critical
 
@@ -40,10 +45,8 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git add dubplus.js
-          git add dubplus.min.js
-          git add dubplus.css
-          git commit -m "[auto]: Update dubplus.js with branch name"
+          git add dubplus.js dubplus.min.js dubplus.css
+          git diff --staged --quiet || git commit -m "[auto]: Update dubplus.js with branch name"
           git push
 
       - name: Purge jsDelivr cache
