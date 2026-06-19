@@ -3,6 +3,9 @@
  * Warns you when accidentally clicking on a link that takes you out of dubtrack
  */
 
+/**
+ * @param {BeforeUnloadEvent} e
+ */
 function unloader(e) {
   let confirmationMessage = 'You are leaving';
   e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+

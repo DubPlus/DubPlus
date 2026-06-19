@@ -1,7 +1,30 @@
+/**
+ * @typedef {Object} RainParticle
+ * @property {number} speedX
+ * @property {number} speedY
+ * @property {number} X
+ * @property {number} Y
+ * @property {number} alpha
+ * @property {string} color
+ */
+
+/**
+ * @typedef {Object} RainDrop
+ * @property {number} speedX
+ * @property {number} speedY
+ * @property {number} X
+ * @property {number} Y
+ * @property {number} radius
+ * @property {number} alpha
+ * @property {string} color
+ */
+
 class RainEffect {
   constructor() {
     // Rain settings
+    /** @type {RainParticle[]} */
     this.particles = [];
+    /** @type {RainDrop[]} */
     this.drops = [];
     this.numbase = 5;
     this.numb = 2;
@@ -21,10 +44,11 @@ class RainEffect {
       speed: 1,
     };
 
+    /** @type {((callback: FrameRequestCallback) => void) | null} */
     this.requestAnimFrame = null;
 
     /**
-     * @type {HTMLCanvasElement}
+     * @type {HTMLCanvasElement | null}
      */
     this.canvas = null;
   }
@@ -50,6 +74,7 @@ class RainEffect {
   }
 
   onWindowResize() {
+    if (!this.canvas) return;
     this.width = this.canvas.width = window.innerWidth;
     this.height = this.canvas.height = window.innerHeight;
   }
@@ -61,8 +86,9 @@ class RainEffect {
     if (!this.canvas) return;
 
     const ctx = this.canvas.getContext('2d');
+    if (!ctx) return;
 
-    this.width, (this.height = 0);
+    (this.width, (this.height = 0));
 
     this.onWindowResize();
     window.onresize = this.onWindowResize.bind(this);
@@ -75,7 +101,7 @@ class RainEffect {
     let that = this;
 
     (function boucle() {
-      that.requestAnimFrame(boucle);
+      that.requestAnimFrame?.(boucle);
       that.update();
       that.rendu(ctx);
     })();
@@ -116,7 +142,7 @@ class RainEffect {
    *
    * @param {number} X
    * @param {number} Y
-   * @param {any} color
+   * @param {string} color
    * @param {number} [num]
    */
   explosion(X, Y, color, num) {
@@ -226,6 +252,17 @@ class RainEffect {
   }
 }
 
+/**
+ * @type {{
+ *   id: string,
+ *   label: string,
+ *   description: string,
+ *   category: string,
+ *   rainEffect?: RainEffect,
+ *   turnOn(): void,
+ *   turnOff(): void,
+ * }}
+ */
 export const rain = {
   id: 'rain',
   label: 'rain.label',
@@ -236,7 +273,7 @@ export const rain = {
     this.rainEffect.start();
   },
   turnOff() {
-    this.rainEffect.stop();
+    this.rainEffect?.stop();
     delete this.rainEffect;
   },
 };

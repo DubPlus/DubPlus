@@ -107,7 +107,7 @@ function processChatLI(li) {
 function replaceTextWithEmote(e) {
   if (e?.chatid) {
     /**
-     * @type {HTMLLIElement}
+     * @type {HTMLLIElement | null}
      */
     const chatMessage = document.querySelector(`.chat-id-${e.chatid}`);
     if (chatMessage) {

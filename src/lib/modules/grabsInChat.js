@@ -6,6 +6,9 @@
 import { insertQueupChat } from '../../utils/chat-message';
 import { t } from '../stores/i18n.svelte';
 
+/**
+ * @param {{ user: { username: string } }} e
+ */
 function grabChatWatcher(e) {
   const isUserTheDJ =
     window.QueUp.session.id ===

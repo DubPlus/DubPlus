@@ -90,6 +90,10 @@
    */
   function handleClick(username) {
     const chatInput = getChatInput();
+    if (!chatInput) {
+      logError('Chat input not found, can not insert username', { username });
+      return;
+    }
     chatInput.value = `${chatInput.value}@${username} `.trimStart();
     chatInput.focus();
   }

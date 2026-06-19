@@ -13,8 +13,8 @@
    * @property {string} label
    * @property {string} description
    * @property {boolean} [modOnly]
-   * @property {(onLoad?: boolean) => void} turnOn runs when the switch is turned on
-   * @property {() => void} turnOff runs when the switch is turned off
+   * @property {(onLoad?: boolean) => void} [turnOn] runs when the switch is turned on
+   * @property {() => void} [turnOff] runs when the switch is turned off
    * @property {() => void} [init] always runs when the component mounts, whether
    * the switch is on or off
    * @property {import('../../global').ModalProps} [customize]
@@ -46,13 +46,13 @@
     if (settings.options[id]) {
       // check user mod status if this is a mod only feature
       const allowed = modOnly ? isMod(window.QueUp.session.id) : true;
-      if (allowed) turnOn(true);
+      if (allowed) turnOn?.(true);
     }
   });
 
   onDestroy(() => {
     if (settings.options[id]) {
-      turnOff();
+      turnOff?.();
     }
   });
 
@@ -72,7 +72,7 @@
         // turn off the feature
         if (value.trim() === '' && !customize?.defaultValue) {
           saveSetting('option', id, false);
-          turnOff();
+          turnOff?.();
         }
 
         if (typeof customize?.onConfirm === 'function') {
@@ -88,7 +88,7 @@
             settings.custom[id] === '')
         ) {
           saveSetting('option', id, false);
-          turnOff();
+          turnOff?.();
         }
         if (typeof customize?.onCancel === 'function') customize?.onCancel();
       },
@@ -115,9 +115,9 @@
       }
       saveSetting('option', id, state);
       if (state) {
-        turnOn();
+        turnOn?.();
       } else {
-        turnOff();
+        turnOff?.();
       }
     }}
     optionId={id}

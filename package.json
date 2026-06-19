@@ -17,7 +17,8 @@
     "prettier": "prettier --write .",
     "purge-cache": "node ./tasks/purge-cache.js",
     "zip-source": "rm -rf extension/dist && rm -f dist/dubplus-source.zip && node ./tasks/zip.js",
-    "addon-submit": "npm run zip-source && npm run ci:build && node --env-file .env ./tasks/ff-add-on-submit.js"
+    "addon-submit": "npm run zip-source && npm run ci:build && node --env-file .env ./tasks/ff-add-on-submit.js",
+    "check": "svelte-check --tsconfig ./jsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -41,6 +42,7 @@
     "prettier": "3.8.4",
     "prettier-plugin-svelte": "4.1.1",
     "svelte": "5.56.3",
+    "svelte-check": "4.6.0",
     "vite": "8.0.16",
     "web-ext": "10.4.0"
   },

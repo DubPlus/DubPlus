@@ -18,13 +18,14 @@ idle -> active
   - FYI: not going to disable AFK, once it's on the user must manually disable it
 */
 
+/** @type {ReturnType<typeof setTimeout> | null} */
 let timer = null;
 
 function onTimerExpired() {
   if (!settings.options.afk) {
     logInfo('auto-afk timer expired, enabling afk');
     /**
-     * @type {HTMLElement}
+     * @type {HTMLElement | null}
      */
     const afkSwitch = document.querySelector('#dubplus-afk [role=switch]');
     afkSwitch?.click();
