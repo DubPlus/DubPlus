@@ -57,6 +57,11 @@ export function setEmojiList(listArray, searchStr) {
       }
       return platformA - platformB;
     });
+
+  // Reset the highlight to the top match. Without this, navigating with the
+  // arrow keys and then typing another character would leave selectedIndex
+  // pointing at a stale or out-of-range item in the new (often shorter) list.
+  emojiState.selectedIndex = 0;
 }
 
 export function decrement() {

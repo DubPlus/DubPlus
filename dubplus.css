@@ -11,7 +11,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -384,7 +384,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -421,7 +421,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -475,7 +475,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -513,7 +513,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -653,7 +653,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -690,7 +690,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -746,7 +746,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -783,7 +783,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -843,7 +843,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -880,7 +880,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -953,7 +953,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -990,7 +990,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1045,7 +1045,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1083,7 +1083,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1163,7 +1163,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1201,7 +1201,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1253,6 +1253,11 @@
     fill: var(--dubplus-text-color);
   }
 
+  button.svelte-1aj88xa:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
   .disabled.svelte-1aj88xa {
     opacity: 0.5;
   }
@@ -1272,7 +1277,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1309,7 +1314,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1356,7 +1361,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1394,7 +1399,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1535,7 +1540,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1572,7 +1577,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1682,7 +1687,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1719,7 +1724,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1772,7 +1777,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1809,7 +1814,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1871,7 +1876,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1908,7 +1913,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1955,7 +1960,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -1992,7 +1997,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.2
+    v4.1.3
 
     MIT License 
 
@@ -2061,3 +2066,4 @@
     font-size: 0.8em;
     color: #666;
   }
+/*$vite$:1*/
