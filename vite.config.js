@@ -6,6 +6,7 @@ import { defineConfig } from 'vite';
 // Read version from package.json
 const packageJson = JSON.parse(readFileSync('./package.json', 'utf8'));
 const version = packageJson.version;
+const outputDir = process.env.OUTPUT_DIR || './extension/dist';
 
 /**
  * Rollup has a "banner" option but it doesn't work for minified files. So
@@ -49,7 +50,7 @@ export default defineConfig(() => {
           {
             format: 'iife',
             name: 'dubplus',
-            dir: process.env.OUTPUT_DIR || './extension/dist',
+            dir: outputDir,
 
             // makes sure our output JS file is named dubplus.js
             // otherwise it would create: dubplus.iife.js
@@ -63,7 +64,7 @@ export default defineConfig(() => {
             name: 'dubplus',
             // Vite 8 / Rolldown's built-in (Oxc) minifier, replaces @rollup/plugin-terser
             minify: true,
-            dir: '.',
+            dir: outputDir,
 
             // makes sure our output JS file is named dubplus.min.js
             // otherwise it would create: dubplus.iife.js

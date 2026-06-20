@@ -9,14 +9,15 @@
     "npm": ">=11.0.0"
   },
   "scripts": {
-    "build": "vite build && cd extension && web-ext build --filename dubplus-extension.zip --overwrite-dest --artifacts-dir ../dist",
+    "clean": "rm -rf extension/dist",
+    "build": "npm run clean && vite build && cd extension && web-ext build --filename dubplus-extension.zip --overwrite-dest --artifacts-dir ../dist",
     "ci:build": "eslint src && vite build",
     "watch": "vite build --watch",
     "firefox": "cd extension && web-ext run --start-url www.queup.net --watch-files dist/dubplus.js dist/dubplus.css",
     "prepare": "husky install",
     "prettier": "prettier --write .",
     "purge-cache": "node ./tasks/purge-cache.js",
-    "zip-source": "rm -rf extension/dist && rm -f dist/dubplus-source.zip && node ./tasks/zip.js",
+    "zip-source": "npm run clean && rm -f dist/dubplus-source.zip && node ./tasks/zip.js",
     "addon-submit": "npm run zip-source && npm run ci:build && node --env-file .env ./tasks/ff-add-on-submit.js",
     "check": "svelte-check --tsconfig ./jsconfig.json"
   },
