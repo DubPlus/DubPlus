@@ -2,6 +2,7 @@
  * Custom Background
  * Add your own custom background
  */
+import { logError } from '../../utils/logger';
 import { getBackgroundImage } from '../queup.ui';
 import { t } from '../stores/i18n.svelte';
 import { settings } from '../stores/settings.svelte';
@@ -21,8 +22,17 @@ function addCustomBG(url) {
 function removeCustomBG() {
   const img = getBackgroundImage();
   if (img && img.hasAttribute('data-original')) {
-    img.src = img.getAttribute('data-original');
-    img.removeAttribute;
+    const originalSrc = img.getAttribute('data-original') ?? '';
+    if (originalSrc) {
+      img.src = originalSrc;
+    } else {
+      logError(
+        'customBackground',
+        'removeCustomBG',
+        'No original background image found',
+      );
+    }
+    img.removeAttribute('data-original');
   }
 }
 

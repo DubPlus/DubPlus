@@ -12,6 +12,8 @@ import {
 import { settings } from '../stores/settings.svelte';
 import { getSelection, isEdge } from '../emoji/helpers';
 import { getChatInput } from '../queup.ui';
+import { waitFor } from '../../utils/waitFor';
+import { logError } from '../../utils/logger';
 
 const KEYS = {
   up: 'ArrowUp',
@@ -31,7 +33,18 @@ const KEYS = {
  * Includes the ":" character so ":sm" is 3 characters.
  */
 const MIN_CHAR = 2;
-let acPreview = document.querySelector('#autocomplete-preview');
+
+/**
+ *
+ * @returns {HTMLUListElement | null}
+ */
+function getAutocompletePreview() {
+  return document.querySelector('#autocomplete-preview');
+}
+
+/**
+ * @type {string}
+ */
 let originalKeyDownEventHandler;
 
 /**
@@ -41,9 +54,16 @@ let originalKeyDownEventHandler;
  */
 export function insertEmote(inputEl, index) {
   const selected = emojiState.emojiList[index];
+  if (!selected) return;
   const [start, end] = getSelection(inputEl.value, inputEl.selectionStart);
-  const target = inputEl.value.substring(start, end);
-  inputEl.value = inputEl.value.replace(target, `:${selected.text}:`);
+  // Splice in the emote using the exact [start, end] range of the partial at the
+  // cursor. Using String.replace(target, ...) would rewrite the FIRST matching
+  // substring anywhere in the input (e.g. a ":ca" inside an earlier ":cats:"),
+  // not necessarily the token the cursor is actually on.
+  inputEl.value =
+    inputEl.value.slice(0, start) +
+    `:${selected.text}:` +
+    inputEl.value.slice(end);
   reset();
 }
 
@@ -102,7 +122,10 @@ function checkInput(e) {
  * @returns
  */
 function chatInputKeyupFunc(e) {
-  acPreview = acPreview || document.querySelector('#autocomplete-preview');
+  const acPreview = getAutocompletePreview();
+  if (!acPreview) {
+    return;
+  }
   const hasItems = acPreview.children.length > 0;
   const isModifierKey = e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
 
@@ -112,13 +135,11 @@ function chatInputKeyupFunc(e) {
   }
 
   if (e.key === KEYS.up && hasItems) {
-    e.preventDefault();
     decrement();
     return;
   }
 
   if (e.key === KEYS.down && hasItems) {
-    e.preventDefault();
     increment();
     return;
   }
@@ -132,7 +153,7 @@ function chatInputKeyupFunc(e) {
     return;
   }
 
-  if (e.key === KEYS.enter && !hasItems && !e.shiftKey) {
+  if (e.key === KEYS.enter && !hasItems) {
     // let Queup handle submitting the message
     // but we need to resize the textarea after the message is sent
     setTimeout(() => {
@@ -156,7 +177,10 @@ function chatInputKeyupFunc(e) {
  * @returns
  */
 function chatInputKeydownFunc(e) {
-  acPreview = acPreview || document.querySelector('#autocomplete-preview');
+  const acPreview = getAutocompletePreview();
+  if (!acPreview) {
+    return;
+  }
   const emptyPreview = acPreview.children.length === 0;
   const isValidKey = [KEYS.tab, KEYS.enter, KEYS.up, KEYS.down].includes(e.key);
   const isModifierKey = e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
@@ -188,28 +212,50 @@ export const autocomplete = {
   category: 'general',
   description: 'autocomplete.description',
   turnOn() {
-    acPreview = document.querySelector('#autocomplete-preview');
     reset();
 
-    originalKeyDownEventHandler =
-      window.QueUp.room.chat.events['keydown #chat-txt-message'];
+    // Wait until both the chat input and QueUp's chat view exist before we swap
+    // out QueUp's native keydown handler.
+    waitFor(() => Boolean(getChatInput()) && Boolean(window.QueUp?.room?.chat))
+      .then(() => {
+        const chatInput = getChatInput();
+        if (!chatInput) {
+          // This should never happen because of the waitFor above, but need it
+          // to satisfy TypeScript that chatInput is not null below.
+          return;
+        }
 
-    const newEventsObject = { ...window.QueUp.room.chat.events };
-    delete newEventsObject['keydown #chat-txt-message'];
-    window.QueUp.room.chat.delegateEvents(newEventsObject);
+        originalKeyDownEventHandler =
+          window.QueUp.room.chat.events['keydown #chat-txt-message'];
 
-    const chatInput = getChatInput();
-    chatInput.addEventListener('keydown', chatInputKeydownFunc);
-    chatInput.addEventListener('keyup', chatInputKeyupFunc);
-    chatInput.addEventListener('click', checkInput);
+        const newEventsObject = { ...window.QueUp.room.chat.events };
+        delete newEventsObject['keydown #chat-txt-message'];
+        window.QueUp.room.chat.delegateEvents(newEventsObject);
+
+        chatInput.addEventListener('keydown', chatInputKeydownFunc);
+        chatInput.addEventListener('keyup', chatInputKeyupFunc);
+        chatInput.addEventListener('click', checkInput);
+      })
+      .catch(() => {
+        logError(
+          'Autocomplete: chat input never appeared; module not enabled.',
+        );
+      });
   },
 
   turnOff() {
     reset();
-    window.QueUp.room.chat.events['keydown #chat-txt-message'] =
-      originalKeyDownEventHandler;
-    window.QueUp.room.chat.delegateEvents(window.QueUp.room.chat.events);
+    // Only restore QueUp's handler if turnOn actually captured and swapped it
+    // (it may have timed out without ever doing so).
+    if (originalKeyDownEventHandler) {
+      window.QueUp.room.chat.events['keydown #chat-txt-message'] =
+        originalKeyDownEventHandler;
+      window.QueUp.room.chat.delegateEvents(window.QueUp.room.chat.events);
+    }
     const chatInput = getChatInput();
+    if (!chatInput) {
+      return;
+    }
     chatInput.removeEventListener('keydown', chatInputKeydownFunc);
     chatInput.removeEventListener('keyup', chatInputKeyupFunc);
     chatInput.removeEventListener('click', checkInput);

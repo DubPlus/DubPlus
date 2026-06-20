@@ -4,7 +4,7 @@
  */
 
 /**
- * @returns {HTMLTextAreaElement}
+ * @returns {HTMLTextAreaElement | null}
  */
 export function getChatInput() {
   return document.querySelector('#chat-txt-message');
@@ -30,28 +30,28 @@ export function getImagesInChat() {
 }
 
 /**
- * @returns {HTMLImageElement}
+ * @returns {HTMLImageElement | null}
  */
 export function getBackgroundImage() {
   return document.querySelector('.backstretch img');
 }
 
 /**
- * @returns {HTMLSpanElement}
+ * @returns {HTMLSpanElement | null}
  */
 export function getQueuePosition() {
   return document.querySelector('.queue-position');
 }
 
 /**
- * @returns {HTMLSpanElement}
+ * @returns {HTMLSpanElement | null}
  */
 export function getQueueTotal() {
   return document.querySelector('.queue-total');
 }
 
 /**
- * @returns {HTMLIFrameElement}
+ * @returns {HTMLIFrameElement | null}
  */
 export function getPlayerIframe() {
   return document.querySelector('.player_container iframe');
@@ -59,7 +59,7 @@ export function getPlayerIframe() {
 
 /**
  *
- * @returns {HTMLDivElement}
+ * @returns {HTMLDivElement | null}
  */
 export function getPrivateMessageButton() {
   return document.querySelector('.user-messages');
@@ -67,33 +67,36 @@ export function getPrivateMessageButton() {
 
 /**
  * @param {string} messageId
- * @returns {HTMLLIElement}
+ * @returns {HTMLLIElement | null}
  */
 export function getPrivateMessage(messageId) {
   return document.querySelector(`.message-item[data-messageid="${messageId}"]`);
 }
 
 /**
- * @returns {HTMLAnchorElement}
+ * @returns {HTMLAnchorElement | null}
  */
 export function getDubUp() {
   return document.querySelector('.dubup');
 }
 
 /**
- * @returns {HTMLAnchorElement}
+ * @returns {HTMLAnchorElement | null}
  */
 export function getDubDown() {
   return document.querySelector('.dubdown');
 }
 
 /**
- * @returns {HTMLLIElement}
+ * @returns {HTMLLIElement | null}
  */
 export function getAddToPlaylist() {
   return document.querySelector('.add-to-playlist');
 }
 
+/**
+ * @returns {HTMLSpanElement | null}
+ */
 export function getCurrentSongMinutes() {
   return document.querySelector('div.currentTime span.min');
 }

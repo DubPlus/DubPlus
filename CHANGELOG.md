@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.1.3] - 2026-06-19
+
+### Fixed
+
+- Fixed issue with emoji/emotes being wiped out when inserted into chat
+- Improvements and fixes to autocomplete
+- Improvements and fixes in collapsible images
+- Fixed bug in MenuSwitch with secondary action where action was clickable even when switch was off
+
+### Other
+
+- Updated packages
+- Fixed type errors across whole codebase
+- github actions improvements and updated versions
+
 ## [4.1.2] - 2026-01-16
 
 Most of the changes in this release are related to development.

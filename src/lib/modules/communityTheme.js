@@ -39,9 +39,20 @@ export const communityTheme = {
           'i',
         );
         let community = null;
-        content.replace(themeCheck, function (match, p1, p2, p3) {
-          community = p3;
-        });
+        content.replace(
+          themeCheck,
+          /**
+           * @param {string} match
+           * @param {string} p1
+           * @param {string} p2
+           * @param {string} p3
+           * @returns {string}
+           */
+          function (match, p1, p2, p3) {
+            community = p3;
+            return match;
+          },
+        );
 
         if (!community) {
           logInfo('No community CSS theme found');

@@ -13,8 +13,8 @@
    * @property {string} label
    * @property {string} description
    * @property {boolean} [modOnly]
-   * @property {(onLoad?: boolean) => void} turnOn runs when the switch is turned on
-   * @property {() => void} turnOff runs when the switch is turned off
+   * @property {(onLoad?: boolean) => void} [turnOn] runs when the switch is turned on
+   * @property {() => void} [turnOff] runs when the switch is turned off
    * @property {() => void} [init] always runs when the component mounts, whether
    * the switch is on or off
    * @property {import('../../global').ModalProps} [customize]
@@ -37,6 +37,7 @@
     secondaryAction,
   } = $props();
 
+  // svelte-ignore state_referenced_locally (this won't change after first mount)
   const SecondaryIcon = secondaryAction?.icon || IconPencil;
 
   onMount(() => {
@@ -45,36 +46,36 @@
     if (settings.options[id]) {
       // check user mod status if this is a mod only feature
       const allowed = modOnly ? isMod(window.QueUp.session.id) : true;
-      if (allowed) turnOn(true);
+      if (allowed) turnOn?.(true);
     }
   });
 
   onDestroy(() => {
     if (settings.options[id]) {
-      turnOff();
+      turnOff?.();
     }
   });
 
   function openEditModal() {
     updateModalState({
-      title: t(customize.title),
-      content: t(customize.content),
-      placeholder: t(customize.placeholder),
-      defaultValue: customize.defaultValue ? t(customize.defaultValue) : '',
-      maxlength: customize.maxlength,
+      title: t(customize?.title),
+      content: t(customize?.content),
+      placeholder: t(customize?.placeholder),
+      defaultValue: customize?.defaultValue ? t(customize.defaultValue) : '',
+      maxlength: customize?.maxlength,
       value: settings.custom[id] || '',
-      validation: customize.validation,
+      validation: customize?.validation,
       onConfirm: (value) => {
         saveSetting('custom', id, value);
 
         // if the value is empty and there is no default value, then we
         // turn off the feature
-        if (value.trim() === '' && !customize.defaultValue) {
+        if (value.trim() === '' && !customize?.defaultValue) {
           saveSetting('option', id, false);
-          turnOff();
+          turnOff?.();
         }
 
-        if (typeof customize.onConfirm === 'function') {
+        if (typeof customize?.onConfirm === 'function') {
           customize.onConfirm(value);
         }
       },
@@ -82,14 +83,14 @@
         // if the saved custom setting is empty and there is no default value,
         // then we turn off the feature
         if (
-          !customize.defaultValue &&
+          !customize?.defaultValue &&
           (typeof settings.custom[id] === 'undefined' ||
             settings.custom[id] === '')
         ) {
           saveSetting('option', id, false);
-          turnOff();
+          turnOff?.();
         }
-        if (typeof customize.onCancel === 'function') customize.onCancel();
+        if (typeof customize?.onCancel === 'function') customize?.onCancel();
       },
     });
 
@@ -114,9 +115,9 @@
       }
       saveSetting('option', id, state);
       if (state) {
-        turnOn();
+        turnOn?.();
       } else {
-        turnOff();
+        turnOff?.();
       }
     }}
     optionId={id}
@@ -131,6 +132,7 @@
     <button
       onclick={secondaryAction.onClick}
       type="button"
+      disabled={!settings.options[id]}
       title={t(secondaryAction.description)}
     >
       <SecondaryIcon />
@@ -165,6 +167,11 @@
   }
   button :global(path) {
     fill: var(--dubplus-text-color);
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .disabled {

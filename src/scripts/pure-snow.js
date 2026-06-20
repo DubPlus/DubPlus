@@ -32,6 +32,7 @@ function getSnowAttributes() {
 function generateSnow(snowDensity = 200) {
   snowDensity -= 1;
   const snowWrapper = getSnowConatiner();
+  if (!snowWrapper) return;
   snowWrapper.replaceChildren(); // clear previous snowflakes
   for (let i = 0; i < snowDensity; i++) {
     let board = document.createElement('div');

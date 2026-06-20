@@ -73,13 +73,14 @@ export function migrate(oldSettings) {
   };
 
   for (const [oldKey, boolValue] of Object.entries(oldSettings.options)) {
-    const newKey = optionsKeyMap[oldKey];
+    const newKey =
+      optionsKeyMap[/** @type {keyof typeof optionsKeyMap} */ (oldKey)];
     try {
       newOptions.options[newKey] = boolValue;
     } catch (e) {
       logError(
         'Error converting options',
-        e.message,
+        /** @type {Error} */ (e).message,
         oldKey,
         newKey,
         boolValue,
@@ -88,13 +89,14 @@ export function migrate(oldSettings) {
   }
 
   for (const [oldKey, stringValue] of Object.entries(oldSettings.custom)) {
-    const newKey = customKeyMap[oldKey];
+    const newKey =
+      customKeyMap[/** @type {keyof typeof customKeyMap} */ (oldKey)];
     try {
       newOptions.custom[newKey] = stringValue;
     } catch (e) {
       logError(
         'Error converting custom',
-        e.message,
+        /** @type {Error} */ (e).message,
         oldKey,
         newKey,
         stringValue,

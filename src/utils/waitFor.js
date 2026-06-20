@@ -21,12 +21,12 @@ import { logInfo } from './logger';
 function deepCheck(objectPath, startingScope = window) {
   const props = objectPath.split('.');
 
-  let depth = startingScope;
+  let depth = /** @type {Record<string, unknown>} */ (startingScope);
   for (let i = 0; i < props.length; i++) {
     if (typeof depth[props[i]] === 'undefined') {
       return false;
     }
-    depth = depth[props[i]];
+    depth = /** @type {Record<string, unknown>} */ (depth[props[i]]);
   }
   return true;
 }

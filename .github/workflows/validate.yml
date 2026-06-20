@@ -24,9 +24,9 @@ jobs:
       cancel-in-progress: true
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Use Node.js 24.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24.x
           cache: 'npm'
@@ -38,24 +38,27 @@ jobs:
       # build should succeed
       - run: npm run ci:build
 
-      # If we are merging any changes into master/main, we should be bumping the version.
+      # If we are merging any changes into master/main, we should be bumping the version,
+      # and we should be updating the changelog.
       # This step ensures that we don't forget to do that. We should only merge into
       # the default branch when we are ready to push a new release, otherwise if you
       # plan on breaking up work into smaller changes and having multiple PRs, use an
       # intermediate branch like 'develop'
-      - name: Check version bump
+      - name: Check version bump and changelog update
         if: github.base_ref == 'master' || github.base_ref == 'main'
+        env:
+          BASE_REF: ${{ github.base_ref }}
         run: |
           # Get versions from target branch
-          git fetch origin ${{ github.base_ref }}
-          TARGET_PKG_VERSION=$(git show origin/${{ github.base_ref }}:package.json | jq -r '.version')
-          TARGET_MANIFEST_VERSION=$(git show origin/${{ github.base_ref }}:extension/manifest.json | jq -r '.version')
+          git fetch origin "$BASE_REF"
+          TARGET_PKG_VERSION=$(git show "origin/$BASE_REF:package.json" | jq -r '.version')
+          TARGET_MANIFEST_VERSION=$(git show "origin/$BASE_REF:extension/manifest.json" | jq -r '.version')
 
           # Get versions from current branch
           CURRENT_PKG_VERSION=$(jq -r '.version' package.json)
           CURRENT_MANIFEST_VERSION=$(jq -r '.version' extension/manifest.json)
 
-          echo "Target branch (${{ github.base_ref }}) versions:"
+          echo "Target branch ($BASE_REF) versions:"
           echo "  package.json: $TARGET_PKG_VERSION"
           echo "  manifest.json: $TARGET_MANIFEST_VERSION"
           echo ""
@@ -65,29 +68,25 @@ jobs:
           echo ""
 
           # Check if versions have changed
+          HAS_ERROR=0
+
           if [ "$TARGET_PKG_VERSION" = "$CURRENT_PKG_VERSION" ]; then
             echo "❌ ERROR: package.json version has not been updated!"
             echo "   Target: $TARGET_PKG_VERSION"
             echo "   Current: $CURRENT_PKG_VERSION"
-            exit 1
+            HAS_ERROR=1
+          else
+            echo "✅ package.json version has been updated to $CURRENT_PKG_VERSION"
           fi
 
           if [ "$TARGET_MANIFEST_VERSION" = "$CURRENT_MANIFEST_VERSION" ]; then
             echo "❌ ERROR: extension/manifest.json version has not been updated!"
             echo "   Target: $TARGET_MANIFEST_VERSION"
             echo "   Current: $CURRENT_MANIFEST_VERSION"
-            exit 1
+            HAS_ERROR=1
+          else
+            echo "✅ extension/manifest.json version has been updated to $CURRENT_MANIFEST_VERSION"
           fi
-
-          echo "✅ Version validation passed - both versions have been updated"
-
-      # We should also not forget to update the changelog
-      - name: Check changelog update
-        if: github.base_ref == 'master' || github.base_ref == 'main'
-        run: |
-          CURRENT_PKG_VERSION=$(jq -r '.version' package.json)
-
-          echo "Checking if CHANGELOG.md contains version $CURRENT_PKG_VERSION..."
 
           if grep -q "## \[$CURRENT_PKG_VERSION\]" CHANGELOG.md; then
             echo "✅ CHANGELOG.md has been updated with version $CURRENT_PKG_VERSION"
@@ -98,5 +97,11 @@ jobs:
             echo "Expected format:"
             echo "## [$CURRENT_PKG_VERSION] - YYYY-MM-DD"
             echo ""
+            HAS_ERROR=1
+          fi
+
+          if [ "$HAS_ERROR" -eq 1 ]; then
             exit 1
           fi
+
+          echo "✅ validation passed"
