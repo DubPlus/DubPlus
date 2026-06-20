@@ -132,6 +132,7 @@
     <button
       onclick={secondaryAction.onClick}
       type="button"
+      disabled={!settings.options[id]}
       title={t(secondaryAction.description)}
     >
       <SecondaryIcon />
@@ -166,6 +167,11 @@
   }
   button :global(path) {
     fill: var(--dubplus-text-color);
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .disabled {

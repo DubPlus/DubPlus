@@ -91,8 +91,16 @@ function processChatLI(li) {
       !textElem.hasAttribute('dubplus-emotes-processed') &&
       textElem?.textContent.trim() !== ''
     ) {
-      const processedHTML = processChatText(textElem.textContent);
-      textElem.replaceChildren(...processedHTML);
+      // Only convert :emote: tokens that are still plain text. Existing elements
+      // (QueUp's native emoji <img>, autolinked images, etc.) are left untouched
+      // so we don't destroy already-rendered content. Reading textContent + a
+      // full replaceChildren() used to wipe those imgs, since an emoji's shortcode
+      // lives in its alt attribute and isn't part of textContent.
+      [...textElem.childNodes]
+        .filter((node) => node.nodeType === Node.TEXT_NODE)
+        .forEach((textNode) => {
+          textNode.replaceWith(...processChatText(textNode.textContent ?? ''));
+        });
       textElem.setAttribute('dubplus-emotes-processed', 'true');
     }
   });

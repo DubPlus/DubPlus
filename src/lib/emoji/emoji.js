@@ -359,6 +359,16 @@ export const dubplus_emoji = {
    * @param {FrankerFacezJsonResponse} data
    */
   processFrankerFacez(data) {
+    if (!Array.isArray(data.emoticons)) {
+      // Cached data is missing or malformed — e.g. IndexedDB was cleared while
+      // the localStorage freshness timestamp survived (the two are stored
+      // separately). Clear the stale timestamp so the next load refetches from
+      // the API, and bail out instead of throwing on `for...of undefined`, which
+      // would otherwise reject the whole emote-loading chain and break emotes.
+      logInfo('frankerfacez', 'cached data invalid, will refetch next load');
+      localStorage.removeItem('frankerfacez_api_timestamp');
+      return;
+    }
     for (const emoticon of data.emoticons) {
       const code = emoticon.name;
       const key = code.toLowerCase();

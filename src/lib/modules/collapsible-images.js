@@ -14,25 +14,29 @@ const IMAGE_CONTAINER = 'autolink-image';
  */
 function handleCollapseButtonClick(button) {
   // the <a class="autolink-image"> element that wraps both the image and the button
-  const imageContainer = /**@type {HTMLAnchorElement}*/ (button.parentElement);
-  const image = imageContainer.querySelector('img');
-  if (!image) return;
+  const imageContainer = /**@type {HTMLAnchorElement | null}*/ (
+    button.parentElement
+  );
+  const image = imageContainer?.querySelector('img');
+  if (!imageContainer || !image) return;
 
   if (!imageContainer.classList.contains(COLLAPSED)) {
     imageContainer.classList.add(COLLAPSED);
     button.title = 'expand image';
+    button.setAttribute('aria-label', 'Expand image');
     image.setAttribute('aria-hidden', 'true');
     button.setAttribute('aria-expanded', 'false');
   } else {
     imageContainer.classList.remove(COLLAPSED);
     button.title = 'collapse image';
+    button.setAttribute('aria-label', 'Collapse image');
     image.setAttribute('aria-hidden', 'false');
     button.setAttribute('aria-expanded', 'true');
   }
 }
 
 /**
- * This is the handler should be attached the chat container.
+ * This is the handler that should be attached to the chat container.
  * @param {Event} event
  */
 function eventDelegatorHandler(event) {
@@ -57,6 +61,7 @@ function addCollapserToImage(autolinkImage) {
     const button = document.createElement('button');
     button.type = 'button';
     button.title = 'collapse image';
+    button.setAttribute('aria-label', 'Collapse image');
     button.setAttribute('aria-expanded', 'true');
     button.classList.add(COLLAPSER);
     autolinkImage.appendChild(button);
@@ -100,21 +105,40 @@ function findUnProcessedImages(container) {
  */
 function observerCallback(mutations) {
   for (const mutation of mutations) {
-    if (
-      mutation.type === 'childList' &&
-      mutation.target.nodeType === Node.ELEMENT_NODE
-    ) {
-      const el = /** @type {HTMLElement} */ (mutation.target);
-      if (el.classList.contains('text')) {
-        const autoLinks = findUnProcessedImages(el);
-        autoLinks.forEach(addCollapserToImage);
+    if (mutation.type !== 'childList') {
+      continue;
+    }
+    // Inspect the nodes that were actually added rather than gating on the
+    // mutation target being the `.text` element. QueUp can insert an
+    // autolink-image directly (when it autolinks a URL after the message is
+    // already in the DOM) or as part of a larger subtree (a whole new chat
+    // <li>); checking the added nodes catches both cases.
+    for (const node of mutation.addedNodes) {
+      if (node.nodeType !== Node.ELEMENT_NODE) {
+        continue;
       }
+      const el = /** @type {HTMLElement} */ (node);
+      if (
+        el.classList.contains(IMAGE_CONTAINER) &&
+        !el.classList.contains(COLLAPSIBLE)
+      ) {
+        addCollapserToImage(/** @type {HTMLAnchorElement} */ (el));
+      }
+      findUnProcessedImages(el).forEach(addCollapserToImage);
     }
   }
 }
 
 /** @type {MutationObserver | null} */
 let observer = null;
+
+/**
+ * Tracks whether the feature is currently enabled so that async setup scheduled
+ * by waitFor() in turnOn() doesn't re-attach the observer/listener after
+ * turnOff() has already torn everything down.
+ * @type {boolean}
+ */
+let enabled = false;
 
 /**
  * @type {import("./module").DubPlusModule}
@@ -126,45 +150,54 @@ export const collapsibleImages = {
   category: 'general',
   turnOn() {
     /**
-     * 3 things happen when this feature is turned on:
+     * When this feature is turned on we:
      *
-     * 1. We add a mutation obsever to the chat container so we can detect when
-     * new chat messages have been added. This works better than listening to
-     * the QueUp's chat-message event because we kept running into race conditions
-     * since that event would sometimes trigger before the chat message was in
-     * the DOM and new chat messages would not get the collapse button.
+     * 1. Add a MutationObserver to the chat container to detect new chat
+     * messages. This works better than QueUp's chat-message event, which could
+     * fire before the message was in the DOM (race condition), leaving new
+     * messages without a collapse button.
      *
-     * 2. We attached a single click event listener to the chat container and
-     * use event delegation to handle clicks on the collapse buttons. This makes
-     * it easier to clean up event listeners when the feature is turned off.
+     * 2. Attach a single delegated click listener to the chat container so the
+     * collapse buttons are easy to clean up when the feature is turned off.
      *
-     * 3. We process all existing chat messages to add the collapse buttons.
+     * 3. Process any images already in chat.
+     *
+     * All of this waits for the chat container to exist, and the async callback
+     * is guarded with `enabled` so toggling the feature off while we're still
+     * waiting doesn't re-attach everything after turnOff() has already run.
      */
-    observer = new MutationObserver(observerCallback);
+    enabled = true;
 
-    waitFor(() => {
-      return Boolean(getChatContainer());
-    }).then(() => {
-      const chatContainer = getChatContainer();
-      if (chatContainer && observer) {
+    waitFor(() => Boolean(getChatContainer()))
+      .then(() => {
+        if (!enabled) {
+          return;
+        }
+        const chatContainer = getChatContainer();
+        if (!chatContainer) {
+          logError('Collapsible Images: No chat container found');
+          return;
+        }
+
+        observer = new MutationObserver(observerCallback);
         chatContainer.addEventListener('click', eventDelegatorHandler);
         observer.observe(chatContainer, {
           childList: true,
           subtree: true,
           attributes: false,
         });
-      } else {
-        logError('Collapsible Images: No chat container found');
-      }
-    });
-
-    waitFor(() => {
-      return Boolean(getImagesInChat().length);
-    }).then(() => {
-      processAllChatMessages();
-    });
+        // Add collapse buttons to any images already present on load. The
+        // observer above handles everything added afterwards, so there's no
+        // need to wait for images to exist (the old code did, which rejected in
+        // every room that had no images in chat yet).
+        processAllChatMessages();
+      })
+      .catch(() => {
+        logError('Collapsible Images: chat container never appeared.');
+      });
   },
   turnOff() {
+    enabled = false;
     if (observer) {
       observer.disconnect();
     }
