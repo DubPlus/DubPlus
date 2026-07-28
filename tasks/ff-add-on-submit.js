@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process';
 import path from 'node:path';
-import { getCurrentBranch } from './git-branch';
+import { getCurrentBranch } from './git-branch.js';
 
 /**
  * This script handles signing the Firefox add-on which submits it to the Mozilla Add-ons site.
@@ -41,6 +41,8 @@ function runWebExtSign() {
     extensionDir,
     '--upload-source-code', // The path to an archive file containing human-readable source code for this submission.
     sourceZipPath,
+    '--approval-timeout',
+    '0', // Disable waiting for approval of the add-on
   ];
   const command = `web-ext sign ${args.join(' ')}`;
   execSync(command, {
