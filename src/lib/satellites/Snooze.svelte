@@ -3,6 +3,15 @@
   import { teleport } from '../actions/teleport.svelte';
   import { PLAYER_SHARING_CONTAINER } from '../queup.ui';
   import { t } from '../stores/i18n.svelte';
+  import {
+    bindEvent,
+    getPlayerVolume,
+    isPlayerMuted,
+    mutePlayer,
+    setPlayerVolume,
+    unbindEvent,
+    updateVolumeBar,
+  } from '../queup';
 
   let tooltip = $state(t('Snooze.tooltip'));
 
@@ -20,11 +29,11 @@
   };
 
   function revert() {
-    window.QueUp.room.player.setVolume(eventUtils.currentVol);
-    window.QueUp.room.player.updateVolumeBar();
+    setPlayerVolume(eventUtils.currentVol);
+    updateVolumeBar();
     eventUtils.snoozed = false;
     tooltip = t('Snooze.tooltip');
-    window.QueUp.Events.unbind(PLAYLIST_UPDATE, eventSongAdvance);
+    unbindEvent(PLAYLIST_UPDATE, eventSongAdvance);
   }
 
   /**
@@ -40,20 +49,16 @@
   }
 
   function snooze() {
-    if (
-      !eventUtils.snoozed &&
-      !window.QueUp.room.player.muted_player &&
-      window.QueUp.playerController.volume > 2
-    ) {
+    if (!eventUtils.snoozed && !isPlayerMuted() && getPlayerVolume() > 2) {
       tooltip = t('Snooze.tooltip.undo');
       // save current volume so we can restore it later
-      eventUtils.currentVol = window.QueUp.playerController.volume;
+      eventUtils.currentVol = getPlayerVolume();
       // mute the player
-      window.QueUp.room.player.mutePlayer();
+      mutePlayer();
       eventUtils.snoozed = true;
       // setup event listener for song advance to restore volume
       // when the song changes
-      window.QueUp.Events.bind(PLAYLIST_UPDATE, eventSongAdvance);
+      bindEvent(PLAYLIST_UPDATE, eventSongAdvance);
     } else if (eventUtils.snoozed) {
       revert();
     }

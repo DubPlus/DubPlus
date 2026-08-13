@@ -6,6 +6,7 @@
   import { modalState, updateModalState } from '../stores/modalState.svelte';
   import { t } from '../stores/i18n.svelte';
   import { isMod } from '../../utils/modcheck';
+  import { getSessionId } from '../queup';
 
   /**
    * @typedef {object} MenuSwitchProps
@@ -43,11 +44,11 @@
   onMount(() => {
     if (init) init();
 
-    if (settings.options[id]) {
-      // check user mod status if this is a mod only feature
-      const allowed = modOnly ? isMod(window.QueUp.session.id) : true;
-      if (allowed) turnOn?.(true);
-    }
+    // if (settings.options[id]) {
+    //   // check user mod status if this is a mod only feature
+    //   const allowed = modOnly ? isMod(getSessionId()) : true;
+    //   if (allowed) turnOn?.(true);
+    // }
   });
 
   onDestroy(() => {
@@ -101,10 +102,10 @@
 <li
   id={`dubplus-${id}`}
   title={t(description)}
-  class:disabled={modOnly ? !isMod(window.QueUp.session.id) : false}
+  class:disabled={modOnly ? !isMod(getSessionId()) : false}
 >
   <Switch
-    disabled={modOnly ? !isMod(window.QueUp.session.id) : false}
+    disabled={modOnly ? !isMod(getSessionId()) : false}
     label={t(label)}
     onToggle={(state) => {
       // When turning on a feature that requires a custom value, and that

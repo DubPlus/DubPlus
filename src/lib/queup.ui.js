@@ -110,7 +110,7 @@ export const CHAT_INPUT_CONTAINER = '.pusher-chat-widget-input';
 /**
  * This is the location where the DubPlus menu will be placed.
  */
-export const DUBPLUS_MENU_CONTAINER = '.header-right-navigation';
+export const DUBPLUS_MENU_CONTAINER = 'header > div:last-child';
 
 /**
  * This is where the ETA, Snooze, and Snooze Video buttons are placed.

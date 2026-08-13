@@ -3,6 +3,7 @@
   import { teleport } from '../actions/teleport.svelte';
   import { PLAYER_SHARING_CONTAINER } from '../queup.ui';
   import { t } from '../stores/i18n.svelte';
+  import { bindEvent, unbindEvent } from '../queup';
 
   let icon = $state('icon-eye-blocked');
   let tooltip = $state(t('SnoozeVideo.tooltip'));
@@ -21,7 +22,7 @@
     tooltip = t('SnoozeVideo.tooltip');
     icon = 'icon-eye-blocked';
     document.body.classList.remove(SNOOZE_CLASS);
-    window.QueUp.Events.unbind(PLAYLIST_UPDATE, eventSongAdvance);
+    unbindEvent(PLAYLIST_UPDATE, eventSongAdvance);
   }
 
   /**
@@ -49,7 +50,7 @@
       tooltip = t('SnoozeVideo.tooltip.undo');
       icon = 'icon-eye-unblocked';
       document.body.classList.add(SNOOZE_CLASS);
-      window.QueUp.Events.bind(PLAYLIST_UPDATE, eventSongAdvance);
+      bindEvent(PLAYLIST_UPDATE, eventSongAdvance);
     } else {
       revert();
     }

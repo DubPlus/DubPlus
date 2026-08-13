@@ -6,21 +6,26 @@ import { isMod } from '../../utils/modcheck';
 import { insertQueupChat } from '../../utils/chat-message';
 import { t } from '../stores/i18n.svelte';
 import { DUB } from '../../events-constants';
+import {
+  bindEvent,
+  getActiveSongName,
+  getActiveSongUserId,
+  getSessionId,
+  unbindEvent,
+} from '../queup';
 
 /**
  * @param {{ dubtype: string, user: { username: string } }} e
  */
 function downdubWatcher(e) {
-  const isUserTheDJ =
-    window.QueUp.session.id ===
-    window.QueUp.room.player.activeSong.attributes.song.userid;
+  const isUserTheDJ = getSessionId() === getActiveSongUserId();
 
   if (isUserTheDJ && e.dubtype === 'downdub') {
     insertQueupChat(
       'dubplus-chat-system-downdub',
       t('downdubs-in-chat.chat-message', {
         username: e.user.username,
-        song_name: window.QueUp.room.player.activeSong.attributes.songInfo.name,
+        song_name: getActiveSongName(),
       }),
     );
   }
@@ -33,12 +38,12 @@ export const downdubsInChat = {
   category: 'general',
   modOnly: true,
   turnOn() {
-    if (isMod(window.QueUp.session.id)) {
-      window.QueUp.Events.bind(DUB, downdubWatcher);
+    if (isMod(getSessionId())) {
+      bindEvent(DUB, downdubWatcher);
     }
   },
 
   turnOff() {
-    window.QueUp.Events.unbind(DUB, downdubWatcher);
+    unbindEvent(DUB, downdubWatcher);
   },
 };

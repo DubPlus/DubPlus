@@ -2,6 +2,12 @@ import { notifyCheckPermission, showNotification } from '../../utils/notify';
 import { settings } from '../stores/settings.svelte';
 import { activeTabState } from '../stores/activeTabState.svelte';
 import { CHAT_MESSAGE } from '../../events-constants';
+import {
+  bindEvent,
+  getSessionId,
+  getSessionUsername,
+  unbindEvent,
+} from '../queup';
 
 /**
  *
@@ -9,7 +15,7 @@ import { CHAT_MESSAGE } from '../../events-constants';
  */
 function notifyOnMention(e) {
   const content = e.message;
-  const user = window.QueUp.session.get('username').toLowerCase();
+  const user = getSessionUsername().toLowerCase();
   let mentionTriggers = ['@' + user];
 
   // is custom mentions enabled AND user has entered text in the custom mentions modal
@@ -34,7 +40,7 @@ function notifyOnMention(e) {
   if (
     bigRegex.test(content) &&
     !activeTabState.isActive && // notifications only if you're not focused on the tab
-    window.QueUp.session.id !== e.user.userInfo.userid
+    getSessionId() !== e.user.userInfo.userid
   ) {
     showNotification({
       title: `Message from ${e.user.username}`,
@@ -58,7 +64,7 @@ export const mentionNotifications = {
   turnOn() {
     notifyCheckPermission()
       .then(() => {
-        window.QueUp.Events.bind(CHAT_MESSAGE, notifyOnMention);
+        bindEvent(CHAT_MESSAGE, notifyOnMention);
       })
       .catch(() => {
         // turn back off until it's granted
@@ -67,6 +73,6 @@ export const mentionNotifications = {
   },
 
   turnOff() {
-    window.QueUp.Events.unbind(CHAT_MESSAGE, notifyOnMention);
+    unbindEvent(CHAT_MESSAGE, notifyOnMention);
   },
 };

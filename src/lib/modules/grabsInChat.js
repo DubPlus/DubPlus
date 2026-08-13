@@ -5,14 +5,20 @@
 
 import { insertQueupChat } from '../../utils/chat-message';
 import { t } from '../stores/i18n.svelte';
+import {
+  bindEvent,
+  getActiveSongName,
+  getActiveSongUserId,
+  getDisplayUserGrab,
+  getSessionId,
+  unbindEvent,
+} from '../queup';
 
 /**
  * @param {{ user: { username: string } }} e
  */
 function grabChatWatcher(e) {
-  const isUserTheDJ =
-    window.QueUp.session.id ===
-    window.QueUp.room.player.activeSong.attributes.song.userid;
+  const isUserTheDJ = getSessionId() === getActiveSongUserId();
 
   // The owner of the room can set if grabs show in chat or not. If it is
   // disabled, we only show grabs in chat if the user is the DJ.
@@ -21,7 +27,7 @@ function grabChatWatcher(e) {
       'dubplus-chat-system-grab',
       t('grabs-in-chat.chat-message', {
         username: e.user.username,
-        song_name: window.QueUp.room.player.activeSong.attributes.songInfo.name,
+        song_name: getActiveSongName(),
       }),
     );
   }
@@ -33,20 +39,14 @@ export const grabsInChat = {
   description: 'grabs-in-chat.description',
   category: 'general',
   turnOn() {
-    if (!window.QueUp.room.model.get('displayUserGrab')) {
-      window.QueUp.Events.bind(
-        'realtime:room_playlist-queue-update-grabs',
-        grabChatWatcher,
-      );
+    if (!getDisplayUserGrab()) {
+      bindEvent('realtime:room_playlist-queue-update-grabs', grabChatWatcher);
     }
   },
 
   turnOff() {
-    if (!window.QueUp.room.model.get('displayUserGrab')) {
-      window.QueUp.Events.unbind(
-        'realtime:room_playlist-queue-update-grabs',
-        grabChatWatcher,
-      );
+    if (!getDisplayUserGrab()) {
+      unbindEvent('realtime:room_playlist-queue-update-grabs', grabChatWatcher);
     }
   },
 };

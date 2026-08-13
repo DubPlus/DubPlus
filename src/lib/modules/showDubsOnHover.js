@@ -8,6 +8,16 @@ import {
   USER_LEAVE,
 } from '../../events-constants.js';
 import { activeDubs, userData } from '../api.js';
+import {
+  bindEvent,
+  getActiveSongDowndubs,
+  getActiveSongPlayedAt,
+  getActiveSongUpdubs,
+  getRoomId,
+  getSessionId,
+  getUsernameById,
+  unbindEvent,
+} from '../queup.js';
 
 /**
  * @param {string} userid
@@ -16,9 +26,7 @@ import { activeDubs, userData } from '../api.js';
 function getUserName(userid) {
   return new Promise((resolve, reject) => {
     // check if we already have the username
-    const username = window.QueUp.room.users.collection.findWhere({
-      userid,
-    })?.attributes?._user?.username;
+    const username = getUsernameById(userid);
 
     if (username) {
       resolve(username);
@@ -109,7 +117,7 @@ function resetDubs() {
   dubsState.upDubs = [];
   dubsState.grabs = [];
 
-  const dubsURL = activeDubs(window.QueUp.room.model.id);
+  const dubsURL = activeDubs(getRoomId());
   fetch(dubsURL)
     .then((response) => response.json())
     .then((response) => {
@@ -117,7 +125,7 @@ function resetDubs() {
       // updateGrabs(response.data.grabs);
 
       //Only let mods or higher access down dubs
-      if (isMod(window.QueUp.session.id)) {
+      if (isMod(getSessionId())) {
         updateDowndubs(response.data.downDubs);
       }
     })
@@ -141,7 +149,7 @@ function dubWatcher(e) {
     dubsState.downDubs = dubsState.downDubs.filter(
       (el) => el.userid !== e.user._id,
     );
-  } else if (e.dubtype === 'downdub' && isMod(window.QueUp.session.id)) {
+  } else if (e.dubtype === 'downdub' && isMod(getSessionId())) {
     if (!dubsState.downDubs.find((el) => el.userid === e.user._id)) {
       dubsState.downDubs.push({
         userid: e.user._id,
@@ -155,8 +163,7 @@ function dubWatcher(e) {
     );
   }
 
-  const msSinceSongStart =
-    Date.now() - window.QueUp.room.player.activeSong.attributes.song.played;
+  const msSinceSongStart = Date.now() - getActiveSongPlayedAt();
 
   // not sure why we are checking this, maybe to give the API time to update?
   // if the song started less than 1 second ago, don't reset the dubs
@@ -165,15 +172,11 @@ function dubWatcher(e) {
   }
 
   // if the dubs don't match the API, reset them
-  if (
-    dubsState.upDubs.length !==
-    window.QueUp.room.player.activeSong.attributes.song.updubs
-  ) {
+  if (dubsState.upDubs.length !== getActiveSongUpdubs()) {
     resetDubs();
   } else if (
-    isMod(window.QueUp.session.id) &&
-    dubsState.downDubs.length !==
-      window.QueUp.room.player.activeSong.attributes.song.downdubs
+    isMod(getSessionId()) &&
+    dubsState.downDubs.length !== getActiveSongDowndubs()
   ) {
     resetDubs();
   }
@@ -215,16 +218,16 @@ export const showDubsOnHover = {
   category: 'general',
   turnOn() {
     resetDubs();
-    window.QueUp.Events.bind(DUB, dubWatcher);
-    window.QueUp.Events.bind(GRAB, grabWatcher);
-    window.QueUp.Events.bind(USER_LEAVE, dubUserLeaveWatcher);
-    window.QueUp.Events.bind(PLAYLIST_UPDATE, resetDubs);
+    bindEvent(DUB, dubWatcher);
+    bindEvent(GRAB, grabWatcher);
+    bindEvent(USER_LEAVE, dubUserLeaveWatcher);
+    bindEvent(PLAYLIST_UPDATE, resetDubs);
   },
 
   turnOff() {
-    window.QueUp.Events.unbind(DUB, dubWatcher);
-    window.QueUp.Events.unbind(GRAB, grabWatcher);
-    window.QueUp.Events.unbind(USER_LEAVE, dubUserLeaveWatcher);
-    window.QueUp.Events.unbind(PLAYLIST_UPDATE, resetDubs);
+    unbindEvent(DUB, dubWatcher);
+    unbindEvent(GRAB, grabWatcher);
+    unbindEvent(USER_LEAVE, dubUserLeaveWatcher);
+    unbindEvent(PLAYLIST_UPDATE, resetDubs);
   },
 };

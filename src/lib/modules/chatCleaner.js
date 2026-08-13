@@ -1,5 +1,6 @@
 import { CHAT_MESSAGE } from '../../events-constants';
 import { getChatMessages } from '../queup.ui';
+import { bindEvent, unbindEvent } from '../queup';
 import { t } from '../stores/i18n.svelte';
 import { settings } from '../stores/settings.svelte';
 
@@ -69,10 +70,10 @@ export const chatCleaner = {
   },
   turnOn() {
     cleanChat(undefined);
-    window.QueUp.Events.bind(CHAT_MESSAGE, onChatMessage);
+    bindEvent(CHAT_MESSAGE, onChatMessage);
   },
 
   turnOff() {
-    window.QueUp.Events.unbind(CHAT_MESSAGE, onChatMessage);
+    unbindEvent(CHAT_MESSAGE, onChatMessage);
   },
 };

@@ -60,8 +60,8 @@ export function arrayDeepCheck(arr, startingScope = window) {
  */
 export function waitFor(callback, options = {}) {
   const defaults = {
-    interval: 500, // every XX ms we check to see if all variables are defined
-    seconds: 10,
+    interval: 500, // every XX ms we check to see callback returns true
+    seconds: 10, // how long to keep trying before failing
   };
   const opts = Object.assign({}, defaults, options);
 

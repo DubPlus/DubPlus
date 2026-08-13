@@ -1,8 +1,9 @@
 import { PLAYLIST_UPDATE } from '../../events-constants';
+import { bindEvent, clickVoteUp, unbindEvent } from '../queup';
 
 function voteCheck() {
   // we can call this as many times as we want, it will only vote once per song
-  window.QueUp?.playerController?.voteUp?.click();
+  clickVoteUp();
 }
 
 /**
@@ -14,10 +15,10 @@ export const autovote = {
   description: 'autovote.description',
   category: 'general',
   turnOff() {
-    window.QueUp.Events.unbind(PLAYLIST_UPDATE, voteCheck);
+    unbindEvent(PLAYLIST_UPDATE, voteCheck);
   },
   turnOn() {
     voteCheck();
-    window.QueUp.Events.bind(PLAYLIST_UPDATE, voteCheck);
+    bindEvent(PLAYLIST_UPDATE, voteCheck);
   },
 };

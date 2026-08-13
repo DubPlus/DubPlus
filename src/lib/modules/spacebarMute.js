@@ -1,10 +1,12 @@
+import { mutePlayer } from '../queup';
+
 /**
  * @param {KeyboardEvent} e
  */
 function handleMute(e) {
   const tag = /**@type {HTMLElement}*/ (e.target).tagName.toLowerCase();
   if (e.key === ' ' && tag !== 'input' && tag !== 'textarea') {
-    window.QueUp.room.player.mutePlayer();
+    mutePlayer();
   }
 }
 

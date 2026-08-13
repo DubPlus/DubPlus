@@ -1,5 +1,6 @@
 import { logError, logInfo } from '../../utils/logger';
 import { style } from '../../utils/css';
+import { getRoomUrl } from '../queup';
 /**
  * Community Theme
  * Toggle Community CSS theme
@@ -26,7 +27,7 @@ export const communityTheme = {
   description: 'community-theme.description',
   category: 'customize',
   turnOn() {
-    const location = window.QueUp.room.model.get('roomUrl');
+    const location = getRoomUrl();
     fetch(`https://api.queup.net/room/${location}`)
       .then((response) => response.json())
       .then((e) => {

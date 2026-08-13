@@ -1,5 +1,11 @@
 import { CHAT_MESSAGE } from '../../events-constants';
 import { settings } from '../stores/settings.svelte';
+import {
+  bindEvent,
+  getSessionId,
+  playMentionChatSound,
+  unbindEvent,
+} from '../queup';
 /**
  * Custom Mentions
  *
@@ -21,7 +27,7 @@ function customMentionCheck(e) {
   if (
     enabled &&
     // we only want to play the sound if the message is not from the current user
-    window.QueUp.session.id !== e.user.userInfo.userid
+    getSessionId() !== e.user.userInfo.userid
   ) {
     const shouldPlaySound = custom.split(',').some(function (v) {
       const reg = new RegExp(`\\b@?${v.trim()}\\b`, 'ig');
@@ -29,7 +35,7 @@ function customMentionCheck(e) {
     });
 
     if (shouldPlaySound) {
-      window.QueUp.room.chat.mentionChatSound.play();
+      playMentionChatSound();
     }
   }
 }
@@ -50,9 +56,9 @@ export const customMentions = {
   },
 
   turnOn() {
-    window.QueUp.Events.bind(CHAT_MESSAGE, customMentionCheck);
+    bindEvent(CHAT_MESSAGE, customMentionCheck);
   },
   turnOff() {
-    window.QueUp.Events.unbind(CHAT_MESSAGE, customMentionCheck);
+    unbindEvent(CHAT_MESSAGE, customMentionCheck);
   },
 };

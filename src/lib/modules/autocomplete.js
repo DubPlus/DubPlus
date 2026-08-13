@@ -14,6 +14,14 @@ import { getSelection, isEdge } from '../emoji/helpers';
 import { getChatInput } from '../queup.ui';
 import { waitFor } from '../../utils/waitFor';
 import { logError } from '../../utils/logger';
+import {
+  chatNcKeyDown,
+  disableChatKeydownHandler,
+  isChatReady,
+  resizeChatTextarea,
+  restoreChatKeydownHandler,
+  submitChatMessage,
+} from '../queup';
 
 const KEYS = {
   up: 'ArrowUp',
@@ -157,7 +165,7 @@ function chatInputKeyupFunc(e) {
     // let Queup handle submitting the message
     // but we need to resize the textarea after the message is sent
     setTimeout(() => {
-      window.QueUp.room.chat.resizeTextarea();
+      resizeChatTextarea();
     }, 10);
     return;
   }
@@ -193,10 +201,10 @@ function chatInputKeydownFunc(e) {
   // temporary fix to restore enter key functionality for sending messages
   // due to the new multiline chat textarea
   if (!isModifierKey && e.key === KEYS.enter) {
-    window.QueUp.room.chat.sendMessage();
-    window.QueUp.room.chat.resizeTextarea();
+    submitChatMessage();
+    resizeChatTextarea();
   } else if (!isModifierKey) {
-    window.QueUp.room.chat.ncKeyDown(e);
+    chatNcKeyDown(e);
   }
 }
 
@@ -216,7 +224,7 @@ export const autocomplete = {
 
     // Wait until both the chat input and QueUp's chat view exist before we swap
     // out QueUp's native keydown handler.
-    waitFor(() => Boolean(getChatInput()) && Boolean(window.QueUp?.room?.chat))
+    waitFor(() => Boolean(getChatInput()) && isChatReady())
       .then(() => {
         const chatInput = getChatInput();
         if (!chatInput) {
@@ -225,12 +233,7 @@ export const autocomplete = {
           return;
         }
 
-        originalKeyDownEventHandler =
-          window.QueUp.room.chat.events['keydown #chat-txt-message'];
-
-        const newEventsObject = { ...window.QueUp.room.chat.events };
-        delete newEventsObject['keydown #chat-txt-message'];
-        window.QueUp.room.chat.delegateEvents(newEventsObject);
+        originalKeyDownEventHandler = disableChatKeydownHandler();
 
         chatInput.addEventListener('keydown', chatInputKeydownFunc);
         chatInput.addEventListener('keyup', chatInputKeyupFunc);
@@ -248,9 +251,7 @@ export const autocomplete = {
     // Only restore QueUp's handler if turnOn actually captured and swapped it
     // (it may have timed out without ever doing so).
     if (originalKeyDownEventHandler) {
-      window.QueUp.room.chat.events['keydown #chat-txt-message'] =
-        originalKeyDownEventHandler;
-      window.QueUp.room.chat.delegateEvents(window.QueUp.room.chat.events);
+      restoreChatKeydownHandler(originalKeyDownEventHandler);
     }
     const chatInput = getChatInput();
     if (!chatInput) {

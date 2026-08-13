@@ -1,4 +1,5 @@
 import { getChatContainer, getChatInput } from '../lib/queup.ui';
+import { submitChatMessage } from '../lib/queup';
 import { logError } from './logger';
 
 /**
@@ -48,7 +49,7 @@ export function sendChatMessage(message) {
     // store original message
     const messageOriginal = chatInput.value;
     chatInput.value = message;
-    window.QueUp.room.chat.sendMessage();
+    submitChatMessage();
     // restore original message
     if (messageOriginal) chatInput.value = messageOriginal;
   } else {

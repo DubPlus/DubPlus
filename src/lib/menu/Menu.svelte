@@ -4,7 +4,6 @@
   import Contact from '../sections/Contact.svelte';
   import General from '../sections/General.svelte';
   import Eta from '../satellites/Eta.svelte';
-  import Snooze from '../satellites/Snooze.svelte';
   import Modal from '../Modal.svelte';
   import EmojiPreview from '../emoji/EmojiPreview.svelte';
   import { t } from '../stores/i18n.svelte';
@@ -14,7 +13,7 @@
   import UserInterface from '../sections/UserInterface.svelte';
   import Settings from '../sections/Settings.svelte';
   import Customize from '../sections/Customize.svelte';
-  import SnoozeVideo from '../satellites/SnoozeVideo.svelte';
+  // import SnoozeVideo from '../satellites/SnoozeVideo.svelte';
   import pkg from '../../../package.json';
 
   onMount(() => {
@@ -26,10 +25,9 @@
   these components are controlled by Svelte but
   placed outside of the root menu container 
 -->
-<Snooze />
 <MenuIcon />
 <Eta />
-<SnoozeVideo />
+<!-- <SnoozeVideo /> -->
 {#if settings.options.autocomplete}
   <EmojiPreview />
 {/if}

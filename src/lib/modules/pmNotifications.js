@@ -3,6 +3,7 @@ import { settings } from '../stores/settings.svelte';
 import { t } from '../stores/i18n.svelte';
 import { NEW_PM_MESSAGE } from '../../events-constants';
 import { getPrivateMessage, getPrivateMessageButton } from '../queup.ui';
+import { bindEvent, getSessionId, unbindEvent } from '../queup';
 
 /**
  *
@@ -10,7 +11,7 @@ import { getPrivateMessage, getPrivateMessageButton } from '../queup.ui';
  * @returns
  */
 function pmNotify(e) {
-  if (window.QueUp.session.id === e.userid) {
+  if (getSessionId() === e.userid) {
     return;
   }
   showNotification({
@@ -39,7 +40,7 @@ export const pmNotifications = {
   turnOn() {
     notifyCheckPermission()
       .then(() => {
-        window.QueUp.Events.bind(NEW_PM_MESSAGE, pmNotify);
+        bindEvent(NEW_PM_MESSAGE, pmNotify);
       })
       .catch(() => {
         // turn back off until it's granted
@@ -47,6 +48,6 @@ export const pmNotifications = {
       });
   },
   turnOff() {
-    window.QueUp.Events.unbind(NEW_PM_MESSAGE, pmNotify);
+    unbindEvent(NEW_PM_MESSAGE, pmNotify);
   },
 };

@@ -4,6 +4,7 @@ import { notifyCheckPermission, showNotification } from '../../utils/notify';
 import { getQueuePosition, getQueueTotal } from '../queup.ui';
 import { t } from '../stores/i18n.svelte';
 import { settings } from '../stores/settings.svelte';
+import { bindEvent, playMentionChatSound, unbindEvent } from '../queup';
 
 const MODULE_ID = 'dj-notification';
 
@@ -59,7 +60,7 @@ function djNotificationCheck(e) {
         ignoreActiveTab: true,
         wait: 10000,
       });
-      window.QueUp.room.chat.mentionChatSound.play();
+      playMentionChatSound();
       return;
     }
   }, 1000);
@@ -98,10 +99,10 @@ export const djNotification = {
   turnOn() {
     notifyCheckPermission().then(() => {
       djNotificationCheck();
-      window.QueUp.Events.bind(PLAYLIST_UPDATE, djNotificationCheck);
+      bindEvent(PLAYLIST_UPDATE, djNotificationCheck);
     });
   },
   turnOff() {
-    window.QueUp.Events.unbind(PLAYLIST_UPDATE, djNotificationCheck);
+    unbindEvent(PLAYLIST_UPDATE, djNotificationCheck);
   },
 };

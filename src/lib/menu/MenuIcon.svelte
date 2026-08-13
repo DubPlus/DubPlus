@@ -32,11 +32,5 @@
     width: 26px;
     height: 26px;
     cursor: pointer;
-    position: relative;
-    display: inline-block;
-    vertical-align: bottom;
-    margin-left: 1rem;
-
-    top: -4px;
   }
 </style>

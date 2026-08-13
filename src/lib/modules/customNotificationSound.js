@@ -1,5 +1,6 @@
 import { t } from '../stores/i18n.svelte';
 import { settings } from '../stores/settings.svelte';
+import { getMentionChatSoundUrl, setMentionChatSoundUrl } from '../queup';
 
 // store original sound from QueUp before we alter it
 let DubtrackDefaultSound = '';
@@ -31,24 +32,24 @@ export const customNotificationSound = {
       if (!value) {
         // a blank value means the user wanted to remove the custom notification sound
         // so we default back to the QueUp sound
-        window.QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
+        setMentionChatSoundUrl(DubtrackDefaultSound);
         settings.options[customNotificationSound.id] = false; // turn it back off
       } else {
-        window.QueUp.room.chat.mentionChatSound.url = value;
+        setMentionChatSoundUrl(value);
       }
     },
   },
   turnOn() {
     // store original sound
-    DubtrackDefaultSound = window.QueUp.room.chat.mentionChatSound.url;
+    DubtrackDefaultSound = getMentionChatSoundUrl();
 
     // show modal if no image is in settings
     if (settings.custom[this.id]) {
-      window.QueUp.room.chat.mentionChatSound.url = settings.custom[this.id];
+      setMentionChatSoundUrl(settings.custom[this.id]);
     }
   },
 
   turnOff() {
-    window.QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
+    setMentionChatSoundUrl(DubtrackDefaultSound);
   },
 };
