@@ -32,7 +32,9 @@ function loadSettings() {
   // if that doesn't exist, try the old settings and migrate them
 
   try {
-    const v2Settings = JSON.parse(localStorage.getItem(STORAGE_KEY_NEW) ?? '');
+    const v2Settings = JSON.parse(
+      localStorage.getItem(STORAGE_KEY_NEW) ?? '{}',
+    );
     if (v2Settings) {
       return /**@type {import("../../global").Settings}*/ (v2Settings);
     }
@@ -41,7 +43,9 @@ function loadSettings() {
   }
 
   try {
-    const oldSettings = JSON.parse(localStorage.getItem(STORAGE_KEY_OLD) ?? '');
+    const oldSettings = JSON.parse(
+      localStorage.getItem(STORAGE_KEY_OLD) ?? '{}',
+    );
     if (oldSettings) {
       return migrate(
         /**@type {import("../../global").Settings}*/ (oldSettings),

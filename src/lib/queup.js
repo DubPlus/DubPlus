@@ -68,7 +68,7 @@ const CHAT_KEYDOWN_EVENT = 'keydown #chat-txt-message';
  * Removes QueUp's native keydown handler on the chat input so a custom one
  * can take over. Returns the original handler so it can be restored later
  * with {@link restoreChatKeydownHandler}.
- * @returns {Function | undefined}
+ * @returns {string}
  */
 export function disableChatKeydownHandler() {
   const original = window.QueUp.room.chat.events[CHAT_KEYDOWN_EVENT];
@@ -79,7 +79,7 @@ export function disableChatKeydownHandler() {
 }
 
 /**
- * @param {Function} handler
+ * @param {string} handler
  */
 export function restoreChatKeydownHandler(handler) {
   window.QueUp.room.chat.events[CHAT_KEYDOWN_EVENT] = handler;

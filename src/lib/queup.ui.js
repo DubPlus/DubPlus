@@ -10,23 +10,29 @@ export function getChatInput() {
   return document.querySelector('#chat-txt-message');
 }
 
+const CHAT_CONTAINER_SELECTOR =
+  'main ~ div > div > div > div > div:nth-child(2) > div > div > div > div';
+
 export function getChatContainer() {
-  return document.querySelector('ul.chat-main');
+  return document.querySelector(CHAT_CONTAINER_SELECTOR);
 }
 
 /**
- * @param {string} [extra] example: ":not([data-emote-processed])"
- * @returns {NodeListOf<HTMLLIElement>}
+ * @param {string} [extra] additional css selector or pseudo class. example: ":not([data-emote-processed])"
+ * @returns {HTMLDivElement[]}
  */
 export function getChatMessages(extra = '') {
-  return document.querySelectorAll(`ul.chat-main > li${extra}`);
+  const selector = `${CHAT_CONTAINER_SELECTOR} > div${extra}`;
+  return Array.from(document.querySelectorAll(selector));
 }
 
 /**
- * @returns {NodeListOf<HTMLAnchorElement>}
+ * @returns {HTMLAnchorElement[]}
  */
 export function getImagesInChat() {
-  return document.querySelectorAll('.chat-main > li .autolink-image');
+  return Array.from(
+    document.querySelectorAll('.chat-main > li .autolink-image'),
+  );
 }
 
 /**
@@ -54,7 +60,9 @@ export function getQueueTotal() {
  * @returns {HTMLIFrameElement | null}
  */
 export function getPlayerIframe() {
-  return document.querySelector('.player_container iframe');
+  // there's only 1 iframe on the page but just in case I'm adding the
+  // `main` parent selector
+  return document.querySelector('main iframe');
 }
 
 /**
@@ -105,7 +113,9 @@ export function getCurrentSongMinutes() {
  * Selectors for some elements
  */
 
-export const CHAT_INPUT_CONTAINER = '.pusher-chat-widget-input';
+// The chat input is actually a contenteditable div and is the only contenteditable
+// element on the page. if that ever changes, we can add `[aria-label="Type a message..."]`
+export const CHAT_INPUT_CONTAINER = '[contenteditable="true"]';
 
 /**
  * This is the location where the DubPlus menu will be placed.
@@ -115,4 +125,5 @@ export const DUBPLUS_MENU_CONTAINER = 'header > div:last-child';
 /**
  * This is where the ETA, Snooze, and Snooze Video buttons are placed.
  */
-export const PLAYER_SHARING_CONTAINER = '.player_sharing';
+export const PLAYER_BUTTONS_CONTAINER =
+  'main > div > div > div > div > div > div > div:last-child > div:last-child';

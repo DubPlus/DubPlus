@@ -52,7 +52,7 @@
     "last 2 versions"
   ],
   "lint-staged": {
-    "{dubplus.js,dubplus.min.js,dubplus.css}": "node ./tasks/no-commit-build-files.js",
+    "{dubplus.js,dubplus.min.js,./dubplus.css}": "node ./tasks/no-commit-build-files.js",
     "*.{js,svelte}": "eslint",
     "*.{js,svelte,css,ts,yml,yaml,md}": "prettier --list-different --write"
   }

@@ -13,7 +13,6 @@
   import UserInterface from '../sections/UserInterface.svelte';
   import Settings from '../sections/Settings.svelte';
   import Customize from '../sections/Customize.svelte';
-  // import SnoozeVideo from '../satellites/SnoozeVideo.svelte';
   import pkg from '../../../package.json';
 
   onMount(() => {
@@ -27,7 +26,6 @@
 -->
 <MenuIcon />
 <Eta />
-<!-- <SnoozeVideo /> -->
 {#if settings.options.autocomplete}
   <EmojiPreview />
 {/if}
