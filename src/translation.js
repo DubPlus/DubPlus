@@ -16,8 +16,6 @@ export const translations = {
     'Loading.text': 'Waiting for QueUp...',
     'Eta.tooltip.notInQueue': "You're not in the queue",
     'Eta.tootltip': 'ETA: {{minutes}} minutes',
-    'Snooze.tooltip': 'Mute for current song',
-    'Snooze.tooltip.undo': 'Cancel mute for current song',
     'SnoozeVideo.tooltip': 'Hide video for current song',
     'SnoozeVideo.tooltip.undo': 'Cancel hiding video for current song',
 
@@ -131,11 +129,6 @@ export const translations = {
     'updubs-in-chat.description': 'Toggle showing updubs in the chat box',
     'updubs-in-chat.chat-message':
       '@{{username}} has updubbed your song {{song_name}}',
-
-    'grabs-in-chat.label': 'Grabs in Chat',
-    'grabs-in-chat.description': 'Toggle showing grabs in the chat box',
-    'grabs-in-chat.chat-message':
-      '@{{username}} has grabbed your song {{song_name}}',
 
     'snow.label': 'Snow',
     'snow.description': 'Make it snow!',

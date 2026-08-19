@@ -5,11 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [5.0.0] - 2026-??-??
 
-Updated to handle the new version of Queup (codename: Remix)
+Updated to handle the new version of Queup.
 
 Some features have been removed because Queup now natively handles them:
 
-- Snooze and Snooze Video - Queup now handles both of this as one!
+- Snooze
 - Grabs in Chat
 
 ## [4.1.3] - 2026-06-19
