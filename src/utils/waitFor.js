@@ -83,3 +83,55 @@ export function waitFor(callback, options = {}) {
     check();
   });
 }
+
+/**
+ * Uses MutationObserver (starting from the body) to wait for a DOM element to be added to the page.
+ * Instead of polling the DOM every X milliseconds, this will only trigger when a mutation occurs in the DOM.
+ * @param {string | (() => Element | null)} selectorOrGetter
+ * @param {number} [timeoutMs=60000] will reject the promise after this many milliseconds. Default is 60 seconds.
+ * @returns {Promise<Element>} resolves with the element when it is found, or rejects if the timeout
+ * is reached.
+ * @throws {Error} if the body element is not found
+ * @example
+ * await waitForDomElement('.my-element');
+ * // or
+ * await waitForDomElement('.my-element', 1000);
+ * // or
+ * await waitForDomElement(() => document.querySelector('.my-element'), 1000);
+ */
+export function waitForDomElement(selectorOrGetter, timeoutMs = 60000) {
+  return new Promise((resolve, reject) => {
+    const body = document.body;
+    if (!body) {
+      reject(new Error('waitForDomElement: could not find body'));
+      return;
+    }
+
+    const observer = new MutationObserver(() => {
+      let element;
+      if (typeof selectorOrGetter === 'string') {
+        element = document.querySelector(selectorOrGetter);
+      } else if (typeof selectorOrGetter === 'function') {
+        element = selectorOrGetter();
+      }
+
+      if (element) {
+        observer.disconnect();
+        resolve(element);
+      }
+    });
+
+    observer.observe(body, { childList: true, subtree: true });
+
+    if (timeoutMs) {
+      setTimeout(() => {
+        observer.disconnect();
+        reject(
+          new Error(
+            `waitForDomElement: timed out after ${timeoutMs} milliseconds`,
+          ),
+        );
+      }, timeoutMs);
+    }
+  });
+}

@@ -44,7 +44,7 @@
   id="dubplus-eta"
   aria-label={eta}
   type="button"
-  class="text-white/50 hover:text-white transition-colors eta_tooltip_t"
+  class="text-white/50 hover:text-white transition-colors eta_tooltip_t dubplus-btn-player"
   data-dp-tooltip={eta}
   onmouseenter={() => {
     eta = getEta();
@@ -60,9 +60,10 @@
     stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
-    class="lucide lucide-rotate-ccw-clock-icon lucide-rotate-ccw-clock"
-    ><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path
-      d="M3 3v5h5"
-    /><path d="M12 7v5l4 2" /></svg
+    class="w-5 h-5 lucide lucide-rotate-ccw-clock-icon lucide-rotate-ccw-clock"
   >
+    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+    <path d="M3 3v5h5" />
+    <path d="M12 7v5l4 2" />
+  </svg>
 </button>

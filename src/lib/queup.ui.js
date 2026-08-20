@@ -126,4 +126,10 @@ export const DUBPLUS_MENU_CONTAINER = 'header > div:last-child';
  * This is where the ETA, Snooze, and Snooze Video buttons are placed.
  */
 export const PLAYER_BUTTONS_CONTAINER =
-  'main > div > div > div > div > div > div > div:last-child > div:last-child';
+  'main > div > div > div > div > div > div:last-child > div > div:last-child';
+
+export function getCurrentlyPlayingSong() {
+  return document.querySelector(
+    'body > div > div > div > div:last-child > div:last-child > div:last-child > div > div > div:last-child',
+  );
+}

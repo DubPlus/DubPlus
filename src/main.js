@@ -29,4 +29,11 @@ const app = mount(DubPlus, {
   target: container,
 });
 
+export const DUBLUS_LOADED_EVENT = 'dubplusLoaded';
+// fire a custom event to let other scripts know that Dub+ has been loaded
+const dubplusLoadedEvent = new CustomEvent(DUBLUS_LOADED_EVENT, {
+  detail: { loadedAsExtension },
+});
+window.dispatchEvent(dubplusLoadedEvent);
+
 export default app;

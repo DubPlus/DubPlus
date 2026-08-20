@@ -14,6 +14,13 @@ export function logInfo(...args) {
 /**
  * @param {unknown[]} args
  */
+export function logDebug(...args) {
+  console.debug(`[${getTimeStamp()}] ${PREFIX}:`, ...args);
+}
+
+/**
+ * @param {unknown[]} args
+ */
 export function logWarn(...args) {
   console.warn(`[${getTimeStamp()}] ${PREFIX}:`, ...args);
 }

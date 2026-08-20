@@ -1,12 +1,11 @@
 <script>
-  import { PLAYLIST_UPDATE } from '../../events-constants';
   import { teleport } from '../actions/teleport.svelte';
-  import { PLAYER_BUTTONS_CONTAINER } from '../queup.ui';
+  import { getPlayerIframe, PLAYER_BUTTONS_CONTAINER } from '../queup.ui';
   import { t } from '../stores/i18n.svelte';
-  import { bindEvent, unbindEvent } from '../queup';
-
-  let icon = $state('icon-eye-blocked');
-  let tooltip = $state(t('SnoozeVideo.tooltip'));
+  import { onPlayerAdvance, offPlayerAdvance } from '../queup.v2';
+  import Monitor from '../svg/Monitor.svelte';
+  import MonitorOff from '../svg/MonitorOff.svelte';
+  import { onDestroy } from 'svelte';
 
   /**
    * Snooze Video
@@ -16,68 +15,64 @@
    * that will always be automatically run on load.
    */
 
-  const SNOOZE_CLASS = 'dubplus-snooze-video';
+  let isSnoozed = $state(false);
+  let tooltip = $state(t('SnoozeVideo.tooltip'));
+
+  // During dev when doing HMR, svelte 5 doesn't re-run lifecycle hooks,
+  // but will re-run the script so isSnoozed will be reset to false but the UI
+  // will still be showing the overlay. This effect will clean up the dangling overlay.
+  $effect(() => {
+    if (!isSnoozed) {
+      document.getElementById('dubplus-snooze-video-overlay')?.remove();
+    }
+  });
 
   function revert() {
     tooltip = t('SnoozeVideo.tooltip');
-    icon = 'icon-eye-blocked';
-    document.body.classList.remove(SNOOZE_CLASS);
-    unbindEvent(PLAYLIST_UPDATE, eventSongAdvance);
-  }
-
-  /**
-   * Show the video again when the song changes
-   * @param {{startTime: number}} e
-   */
-  function eventSongAdvance(e) {
-    // the reason we use e.startTime is because the PLAYLIST_UPDATE can be triggered
-    // when anything in the room's queue is updated, such as: a user joins the queue,
-    // a user leaves the queue, a user changes their song in the queue, a new song
-    // starts playing, etc.
-    // The startTime is the time of the song that is currently playing and so the lower
-    // the startTime, the more likely it is that the song has just started playing.
-    if (e.startTime < 2) {
-      revert();
-      return true;
-    }
+    isSnoozed = false;
+    offPlayerAdvance(revert);
   }
 
   /**
    * Hide the video
    */
   function snooze() {
-    if (!document.body.classList.contains(SNOOZE_CLASS)) {
+    if (!isSnoozed) {
       tooltip = t('SnoozeVideo.tooltip.undo');
-      icon = 'icon-eye-unblocked';
-      document.body.classList.add(SNOOZE_CLASS);
-      bindEvent(PLAYLIST_UPDATE, eventSongAdvance);
+      isSnoozed = true;
+      onPlayerAdvance(revert);
     } else {
       revert();
     }
   }
+
+  onDestroy(() => {
+    offPlayerAdvance(revert);
+  });
 </script>
 
 <button
   use:teleport={{ to: PLAYER_BUTTONS_CONTAINER }}
   id="dubplus-snooze-video"
   type="button"
-  class={`${icon} snooze-video-btn dubplus-btn-player`}
+  class="snooze-video-btn dubplus-btn-player text-white/50 hover:text-white transition-colors"
   aria-label={tooltip}
   data-dp-tooltip={tooltip}
   onclick={snooze}
 >
-  <span>1</span>
+  {#if isSnoozed}
+    <Monitor class="w-5 h-5" />
+  {:else}
+    <MonitorOff class="w-5 h-5" />
+  {/if}
 </button>
 
-<style>
-  button::after {
-    width: 186px;
-  }
-  span {
-    content: '1';
-    vertical-align: top;
-    font-size: 0.75rem !important;
-    font-weight: 700;
-    margin-right: 0 !important;
-  }
-</style>
+{#if isSnoozed}
+  <div
+    use:teleport={{ to: () => getPlayerIframe()?.parentElement }}
+    class="dubplus-snooze-video-overlay absolute top-0 left-0 w-full h-full bg-black flex items-center justify-center"
+    id="dubplus-snooze-video-overlay"
+  >
+    <MonitorOff class="w-5 h-5" />
+  </div>
+{/if}
