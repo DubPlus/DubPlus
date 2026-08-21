@@ -15,7 +15,7 @@ export const translations = {
 
     'Loading.text': 'Waiting for QueUp...',
     'Eta.tooltip.notInQueue': "You're not in the queue",
-    'Eta.tootltip': 'ETA: {{minutes}} minutes',
+    'Eta.tootltip': 'ETA: {{time}}',
     'SnoozeVideo.tooltip': 'Hide video for current song',
     'SnoozeVideo.tooltip.undo': 'Cancel hiding video for current song',
 

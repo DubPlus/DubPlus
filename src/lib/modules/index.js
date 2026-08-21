@@ -1,4 +1,4 @@
-// import { autovote } from './autovote';
+import { autovote } from './autovote';
 // import { afk } from './afk';
 // import { emotes } from './emotes';
 // import { autocomplete } from './autocomplete';
@@ -20,7 +20,7 @@ import { hideVideo } from './hideVideo';
 import { hideAvatars } from './hideAvatars';
 import { hideBackground } from './hideBackground';
 import { showTimestamps } from './showTimestamps';
-// import { spacebarMute } from './spacebarMute';
+import { spacebarMute } from './spacebarMute';
 import { warnOnNavigation } from './warnOnNavigation';
 import { communityTheme } from './communityTheme';
 import { customCss } from './customCSS';
@@ -36,7 +36,7 @@ import { pinMenu } from './pin-menu';
  * @type {import("./module").DubPlusModule[]}
  */
 export const general = [
-  // autovote,
+  autovote,
   // afk,
   // autoAfk,
   // emotes,
@@ -74,10 +74,7 @@ export const userInterface = [
 /**
  * @type {import("./module").DubPlusModule[]}
  */
-export const settingsModules = [
-  // spacebarMute,
-  warnOnNavigation,
-];
+export const settingsModules = [spacebarMute, warnOnNavigation];
 
 /**
  * @type {import("./module").DubPlusModule[]}

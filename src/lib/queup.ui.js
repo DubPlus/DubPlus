@@ -7,7 +7,8 @@
  * @returns {HTMLTextAreaElement | null}
  */
 export function getChatInput() {
-  return document.querySelector('#chat-txt-message');
+  return document.querySelector('[role="textbox"]');
+  // also '[contenteditable]' and '[aria-label="Type a message..."]'
 }
 
 const CHAT_CONTAINER_SELECTOR =
@@ -27,11 +28,13 @@ export function getChatMessages(extra = '') {
 }
 
 /**
+ * Queup proxies every non-emoji image through images.queup.net,
+ * so we can use that to find all images in the chat.
  * @returns {HTMLAnchorElement[]}
  */
 export function getImagesInChat() {
   return Array.from(
-    document.querySelectorAll('.chat-main > li .autolink-image'),
+    getChatContainer()?.querySelectorAll('img[src*="images.queup.net"]') ?? [],
   );
 }
 
@@ -39,21 +42,7 @@ export function getImagesInChat() {
  * @returns {HTMLImageElement | null}
  */
 export function getBackgroundImage() {
-  return document.querySelector('.backstretch img');
-}
-
-/**
- * @returns {HTMLSpanElement | null}
- */
-export function getQueuePosition() {
-  return document.querySelector('.queue-position');
-}
-
-/**
- * @returns {HTMLSpanElement | null}
- */
-export function getQueueTotal() {
-  return document.querySelector('.queue-total');
+  return document.querySelector('.bg-cover');
 }
 
 /**
@@ -66,7 +55,7 @@ export function getPlayerIframe() {
 }
 
 /**
- *
+ * TODO: update this for queup v2
  * @returns {HTMLDivElement | null}
  */
 export function getPrivateMessageButton() {
@@ -74,6 +63,7 @@ export function getPrivateMessageButton() {
 }
 
 /**
+ * TODO: update this for queup v2
  * @param {string} messageId
  * @returns {HTMLLIElement | null}
  */
@@ -82,31 +72,30 @@ export function getPrivateMessage(messageId) {
 }
 
 /**
- * @returns {HTMLAnchorElement | null}
+ * @returns {HTMLButtonElement | null | undefined}
  */
 export function getDubUp() {
-  return document.querySelector('.dubup');
+  return /** @type {HTMLButtonElement | null} */ (
+    document.querySelector('.lucide-chevron-up')?.parentElement
+  );
 }
 
 /**
- * @returns {HTMLAnchorElement | null}
+ * @returns {HTMLButtonElement | null}
  */
 export function getDubDown() {
-  return document.querySelector('.dubdown');
+  return /** @type {HTMLButtonElement | null} */ (
+    document.querySelector('.lucide-chevron-down')?.parentElement
+  );
 }
 
 /**
- * @returns {HTMLLIElement | null}
+ * @returns {HTMLButtonElement | null}
  */
 export function getAddToPlaylist() {
-  return document.querySelector('.add-to-playlist');
-}
-
-/**
- * @returns {HTMLSpanElement | null}
- */
-export function getCurrentSongMinutes() {
-  return document.querySelector('div.currentTime span.min');
+  return /** @type {HTMLButtonElement | null} */ (
+    document.querySelector('.lucide-heart')?.parentElement
+  );
 }
 
 /**
@@ -128,8 +117,68 @@ export const DUBPLUS_MENU_CONTAINER = 'header > div:last-child';
 export const PLAYER_BUTTONS_CONTAINER =
   'main > div > div > div > div > div > div:last-child > div > div:last-child';
 
-export function getCurrentlyPlayingSong() {
+export function getBottomBar() {
   return document.querySelector(
-    'body > div > div > div > div:last-child > div:last-child > div:last-child > div > div > div:last-child',
+    'body > div > div > div > div:last-child > div:last-child',
   );
+}
+
+export function getCurrentlyPlayingSong() {
+  // bottom bar
+  //     div DJ pic, div everything else
+  //                     div song info, div track time, div buttons
+  //                          div
+  //                             div DJ, div title
+  const bottomBar = getBottomBar();
+  const bottomBarRight = bottomBar?.children[1];
+  const songInfo = bottomBarRight?.children[0];
+  const songTitleContainer = songInfo?.children[0];
+  return songTitleContainer?.children[1];
+}
+
+/**
+ * @returns {{ position?: number; total: number } | null}
+ */
+export function getQueuePosition() {
+  const queueInfo = getBottomBar()
+    ?.querySelector('.lucide-users')
+    ?.parentElement?.textContent?.trim();
+  if (!queueInfo) {
+    return null;
+  }
+  // if user is not in the queue it will just be a single number by itself
+  if (!queueInfo.includes('/')) {
+    return { total: parseInt(queueInfo) };
+  }
+  // when user joins the queue it will be "3 / 5" format.
+  const [position, total] = queueInfo.split('/').map(Number);
+  return { position, total };
+}
+
+/**
+ * Returns how long is left in seconds the currently playing song.
+ * Returns null if it can't be determined.
+ * @returns {[minutes: number, seconds: number] | null}
+ */
+export function getCurrentSongTime() {
+  const bottomBar = getBottomBar();
+  const bottomBarRight = bottomBar?.children[1];
+  const countdown = bottomBarRight?.children[1];
+  const timeParts = countdown?.textContent?.split(':');
+  if (timeParts?.length === 2) {
+    return [Number(timeParts[0]), Number(timeParts[1])];
+  } else if (timeParts?.length === 3) {
+    return [
+      Number(timeParts[0]) * 3600 + Number(timeParts[1]) * 60,
+      Number(timeParts[2]),
+    ];
+  }
+  return null;
+}
+
+/**
+ * @returns {HTMLSpanElement | null}
+ */
+export function getQueueTotal() {
+  return document.querySelector('.queue-total');
 }

@@ -4,6 +4,8 @@
  * we'll just need to update this file.
  */
 
+import { getDubUp } from './queup.ui';
+
 // ----- Session -----
 
 /**
@@ -17,7 +19,9 @@ export function getSessionId() {
  * @returns {string}
  */
 export function getSessionUsername() {
-  return window.QueUp.session.get('username');
+  // there are 2 links with href="/user/username" in the header,
+  //  one for the avatar and one for the username. The user name is first
+  return document.querySelector('a[href^="/user/"]')?.textContent || '';
 }
 
 // ----- Events -----
@@ -107,7 +111,7 @@ export function setMentionChatSoundUrl(url) {
 // ----- Player -----
 
 export function clickVoteUp() {
-  window.QueUp?.playerController?.voteUp?.click();
+  getDubUp()?.click();
 }
 
 /**
@@ -117,8 +121,8 @@ export function getPlayerVolume() {
   return window.QueUp.playerController.volume;
 }
 
-export function mutePlayer() {
-  window.QueUp.room.player.mutePlayer();
+export function toggleMute() {
+  document.querySelector('[class*="lucide-volume"]')?.parentElement?.click();
 }
 
 /**
@@ -136,7 +140,7 @@ export function updateVolumeBar() {
  * @returns {boolean}
  */
 export function isPlayerMuted() {
-  return window.QueUp.room.player.muted_player;
+  return !!document.querySelector('.lucide-volume-x');
 }
 
 /**

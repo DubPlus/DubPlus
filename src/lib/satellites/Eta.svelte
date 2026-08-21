@@ -2,7 +2,7 @@
   import { teleport } from '../actions/teleport.svelte';
   import {
     getQueuePosition,
-    getCurrentSongMinutes,
+    getCurrentSongTime,
     PLAYER_BUTTONS_CONTAINER,
   } from '../queup.ui';
   import { t } from '../stores/i18n.svelte';
@@ -13,29 +13,28 @@
    * @returns {string}
    */
   function getEta() {
-    const booth_position = getQueuePosition()?.textContent;
-    if (!booth_position) {
+    const booth_position = getQueuePosition()?.position;
+    if (typeof booth_position !== 'number') {
       return t('Eta.tooltip.notInQueue');
     }
 
     // average time of a song in minutes
     const average_song_minutes = 4;
 
-    // current_time is the minutes of the currently playing song
-    const current_time = parseInt(getCurrentSongMinutes()?.textContent ?? '');
-
-    const position_in_queue = parseInt(booth_position);
-
-    // we caclulate an ESTIMATE using the position in the queue * the average time of a song + the current time
-    const booth_time =
-      position_in_queue * average_song_minutes -
-      average_song_minutes +
-      current_time;
-    if (booth_time >= 0) {
-      return t('Eta.tootltip', { minutes: booth_time });
-    } else {
-      return t('Eta.tooltip.notInQueue');
+    // current_time is the total seconds left for the currently playing song
+    const current_time = getCurrentSongTime();
+    if (current_time !== null) {
+      // we caclulate an ESTIMATE using the position in the queue * the
+      // average time of a song + the current time
+      const [minutes, seconds] = current_time;
+      const booth_time = (booth_position - 1) * average_song_minutes + minutes;
+      if (booth_time >= 0) {
+        return t('Eta.tootltip', { time: `${booth_time}m ${seconds}s` });
+      } else {
+        return t('Eta.tooltip.notInQueue');
+      }
     }
+    return 'something went wrong';
   }
 </script>
 
