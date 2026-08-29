@@ -1,5 +1,5 @@
 import { logDebug, logError } from '../utils/logger';
-import { waitForDomElement } from '../utils/waitFor';
+import { waitFor } from '../utils/waitFor';
 import { getCurrentlyPlayingSong } from './queup.ui';
 
 /**
@@ -70,12 +70,20 @@ function observeCurrentlyPlayingSong(songElement) {
 }
 
 function setupPlayerAdvance() {
-  waitForDomElement(getCurrentlyPlayingSong, 10000)
-    .then((songElement) => {
-      observeCurrentlyPlayingSong(songElement);
+  waitFor(
+    () => !!getCurrentlyPlayingSong(),
+    // setting up an infinite poll every 10s to wait for someone to start DJing.
+    { interval: 10000, seconds: Number.POSITIVE_INFINITY },
+  )
+    .then(() => {
+      const songElement = getCurrentlyPlayingSong();
+      if (songElement) {
+        // it's definitely available but need this conditional because TS doesn't know that
+        observeCurrentlyPlayingSong(songElement);
+      }
     })
     .catch((err) => {
-      logError('setupPlayerAdvance: wait for song title element failed', err);
+      logError('setupPlayerAdvance: wait for DJing failed', err);
     });
 }
 setupPlayerAdvance();

@@ -44,11 +44,14 @@
   onMount(() => {
     if (init) init();
 
-    // if (settings.options[id]) {
-    //   // check user mod status if this is a mod only feature
-    //   const allowed = modOnly ? isMod(getSessionId()) : true;
-    //   if (allowed) turnOn?.(true);
-    // }
+    if (settings.options[id]) {
+      // check user mod status if this is a mod only feature
+      // const allowed = modOnly ? isMod(getSessionId()) : true;
+      // if (allowed) turnOn?.(true);
+
+      // TODO: for now we just turn it on since we Queup v2 doesn't have mod check anymore
+      turnOn?.(true);
+    }
   });
 
   onDestroy(() => {

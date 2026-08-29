@@ -149,15 +149,13 @@
   opacity: 1 !important;
 }
 
-@media screen and (min-width: 72em) {
-  .dubplus-flip-interface #main-room .left_section {
-    padding-left: 32rem;
-    padding-right: 0;
-  }
-  .dubplus-flip-interface #main-room .right_section {
-    right: auto;
-    left: 0;
-  }
+.dubplus-flip-interface .lucide-panel-right-close,
+.dubplus-flip-interface .lucide-panel-left-close,
+.dubplus-flip-interface .lucide-panel-right-open,
+.dubplus-flip-interface .lucide-panel-left-open,
+.dubplus-flip-interface .lucide-chevron-left {
+  /* flip horizontally */
+  transform: scaleX(-1);
 }
 
 .dubplus-chat-system-grab,
