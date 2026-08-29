@@ -11,6 +11,7 @@ Some features have been removed because Queup now natively handles them:
 
 - Snooze
 - Grabs in Chat
+- Show Timestamps
 
 ## [4.1.3] - 2026-06-19
 

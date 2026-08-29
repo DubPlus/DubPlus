@@ -19,7 +19,7 @@ import { hideChat } from './hideChat';
 import { hideVideo } from './hideVideo';
 import { hideAvatars } from './hideAvatars';
 import { hideBackground } from './hideBackground';
-import { showTimestamps } from './showTimestamps';
+// import { showTimestamps } from './showTimestamps';
 import { spacebarMute } from './spacebarMute';
 import { warnOnNavigation } from './warnOnNavigation';
 import { communityTheme } from './communityTheme';
@@ -66,7 +66,7 @@ export const userInterface = [
   hideVideo,
   hideAvatars,
   hideBackground,
-  showTimestamps,
+  // showTimestamps,
   flipInterface,
   pinMenu,
 ];
