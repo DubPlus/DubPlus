@@ -1,11 +1,3 @@
-import { CHAT_MESSAGE } from '../../events-constants';
-import { settings } from '../stores/settings.svelte';
-import {
-  bindEvent,
-  getSessionId,
-  playMentionChatSound,
-  unbindEvent,
-} from '../queup';
 /**
  * Custom Mentions
  *
@@ -15,6 +7,9 @@ import {
  * This works with or without the "@". So if you set your custom mention to
  * be dubplus, it will trigger the sound when someone says "dubplus" or "@dubplus".
  */
+import { settings } from '../stores/settings.svelte';
+import { playSound } from '../../utils/play-sound.js';
+import { queupEvents, CHAT_MESSAGE } from '../../utils/events.js';
 
 const MODULE_ID = 'custom-mentions';
 
@@ -25,17 +20,27 @@ function customMentionCheck(e) {
   const enabled = settings.options[MODULE_ID];
   const custom = settings.custom[MODULE_ID];
   if (
+    typeof custom === 'string' &&
+    custom.trim() !== '' &&
     enabled &&
     // we only want to play the sound if the message is not from the current user
-    getSessionId() !== e.user.userInfo.userid
+    window.dubplus.userId !== e.user.userInfo.userid
   ) {
-    const shouldPlaySound = custom.split(',').some(function (v) {
-      const reg = new RegExp(`\\b@?${v.trim()}\\b`, 'ig');
-      return reg.test(e.message);
-    });
+    const namesForRegex = custom
+      .split(',')
+      .map((name) =>
+        name.replace(/\s+/g, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+      )
+      .filter(Boolean)
+      .join('|');
+
+    if (namesForRegex === '') return;
+
+    const reg = new RegExp(`\\b@?(${namesForRegex})\\b`, 'ig');
+    const shouldPlaySound = reg.test(e.message);
 
     if (shouldPlaySound) {
-      playMentionChatSound();
+      playSound();
     }
   }
 }
@@ -56,9 +61,9 @@ export const customMentions = {
   },
 
   turnOn() {
-    bindEvent(CHAT_MESSAGE, customMentionCheck);
+    queupEvents.on(CHAT_MESSAGE, customMentionCheck);
   },
   turnOff() {
-    unbindEvent(CHAT_MESSAGE, customMentionCheck);
+    queupEvents.off(CHAT_MESSAGE, customMentionCheck);
   },
 };

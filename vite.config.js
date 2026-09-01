@@ -40,8 +40,8 @@ export default defineConfig(() => {
       minify: false,
       emptyOutDir: false,
       lib: {
-        entry: resolve(__dirname, '/src/main.js'),
-        name: 'dubplus',
+        entry: resolve(import.meta.dirname, '/src/main.js'),
+        name: 'dubplusBundle',
         fileName: 'dubplus',
       },
       copyPublicDir: false,
@@ -49,7 +49,7 @@ export default defineConfig(() => {
         output: [
           {
             format: 'iife',
-            name: 'dubplus',
+            name: 'dubplusBundle',
             dir: outputDir,
 
             // makes sure our output JS file is named dubplus.js
@@ -61,7 +61,7 @@ export default defineConfig(() => {
           },
           {
             format: 'iife',
-            name: 'dubplus',
+            name: 'dubplusBundle',
             // Vite 8 / Rolldown's built-in (Oxc) minifier, replaces @rollup/plugin-terser
             minify: true,
             dir: outputDir,

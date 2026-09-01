@@ -2,7 +2,7 @@ import { autovote } from './autovote';
 import { afk } from './afk';
 // import { emotes } from './emotes';
 // import { autocomplete } from './autocomplete';
-// import { customMentions } from './customMentions';
+import { customMentions } from './customMentions';
 // import { chatCleaner } from './chatCleaner';
 // import { mentionNotifications } from './mentionNotifications';
 // import { pmNotifications } from './pmNotifications';
@@ -20,7 +20,7 @@ import { warnOnNavigation } from './warnOnNavigation';
 import { communityTheme } from './communityTheme';
 import { customCss } from './customCSS';
 import { customBackground } from './customBackground';
-import { customNotificationSound } from './customNotificationSound';
+// import { customNotificationSound } from './customNotificationSound';
 import { flipInterface } from './flipInterface';
 import { autoAfk } from './auto-afk';
 // import { grabResponse } from './grabResponse';
@@ -36,7 +36,7 @@ export const general = [
   autoAfk,
   // emotes,
   // autocomplete,
-  // customMentions,
+  customMentions,
   // chatCleaner,
   collapsibleImages,
   // mentionNotifications,
@@ -73,5 +73,5 @@ export const customize = [
   communityTheme,
   customCss,
   customBackground,
-  customNotificationSound,
+  // customNotificationSound,
 ];
