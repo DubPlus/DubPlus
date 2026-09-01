@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 Updated to handle the new version of Queup (v2).
 
+## Removed
+
 Some features have been removed because v2 now natively handles them or it doesn't support it.
 
 - Snooze - Natively handled by v2
@@ -15,6 +17,10 @@ Some features have been removed because v2 now natively handles them or it doesn
 - Downdubs in Chat - ^
 - Show Timestamps - timestamps are always showing now so it's no longer needed. There's also other timestamps that show on hover but I can't force show them with CSS as they are insert during hover
 - Hide Chat - v2 now allows you to collapse the whole chat area so this is no longer necessary
+
+## Changed
+
+- Hide Video - now just blacks out the video itself. The controls are still visible and the space it takes up is still there.
 
 ## [4.1.3] - 2026-06-19
 

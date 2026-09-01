@@ -82,45 +82,19 @@
 }
 
 /* turns off the video and only shows the chat */
-.dubplus-chat-only .left_section {
+.dubplus-chat-only main > div > div > div > div > div > div:first-child {
   display: none !important;
 }
 
-.dubplus-chat-only .right_section {
-  width: 40rem !important;
-  margin: 0 auto !important;
-  right: initial !important;
-  position: relative !important;
-  float: inherit !important;
-}
-
-.dubplus-chat-only .activity-row .text img {
-  max-height: 30rem;
-}
 
 /* Hide all avatars in chat, header, and footer */
-.dubplus-hide-avatars .chat-main .image_row,
-.dubplus-hide-avatars #header-global .user-info .user-image,
-.dubplus-hide-avatars #player-controller .imgEl {
+.dubplus-hide-avatars img[src^='https://api.queup.net/user/'] {
   display: none !important;
 }
 
-.dubplus-hide-avatars .chat-main .activity-row,
-.dubplus-hide-avatars #player-controller .infoContainer {
-  padding-left: 0rem !important;
-}
-
-.dubplus-hide-avatars #header-global .header-right-navigation {
-  padding-top: 5px !important;
-}
-
-.dubplus-hide-bg .backstretch {
+/* Hide the background image */
+.dubplus-hide-bg div[style^='background-image: url'] {
   display: none !important;
-}
-
-.dubplus-show-timestamp #chat .timeinfo {
-  display: block !important;
-  opacity: 1 !important;
 }
 
 .dubplus-flip-interface .lucide-panel-right-close,
@@ -227,16 +201,16 @@
  */
 
 @media screen and (min-width: 72em) {
-  .dubplus-pin-menu-right #main-room {
-    padding-right: calc(var(--dubplus-menu-width) + 1rem);
+  .dubplus-pin-menu-right > div:nth-child(2) > div > div:nth-child(2) > div:nth-child(2) {
+    padding-right: calc(var(--dubplus-menu-width));
   }
 
   .dubplus-pin-menu-right .dubplus-menu {
     transform: translate3d(0, 0, 0) !important;
   }
 
-  .dubplus-pin-menu-left #main-room {
-    padding-left: calc(var(--dubplus-menu-width) + 1rem);
+  .dubplus-pin-menu-left > div:nth-child(2) > div > div:nth-child(2) > div:nth-child(2) {
+    padding-left: calc(var(--dubplus-menu-width));
   }
 
   .dubplus-pin-menu-left .dubplus-menu {
