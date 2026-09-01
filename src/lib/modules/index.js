@@ -12,7 +12,6 @@ import { snow } from './snow';
 import { rain } from './rain';
 import { fullscreen } from './fullscreen';
 import { splitChat } from './splitchat';
-import { hideChat } from './hideChat';
 import { hideVideo } from './hideVideo';
 import { hideAvatars } from './hideAvatars';
 import { hideBackground } from './hideBackground';
@@ -23,7 +22,7 @@ import { customCss } from './customCSS';
 import { customBackground } from './customBackground';
 import { customNotificationSound } from './customNotificationSound';
 import { flipInterface } from './flipInterface';
-// import { autoAfk } from './auto-afk';
+import { autoAfk } from './auto-afk';
 // import { grabResponse } from './grabResponse';
 import { collapsibleImages } from './collapsible-images';
 import { pinMenu } from './pin-menu';
@@ -34,7 +33,7 @@ import { pinMenu } from './pin-menu';
 export const general = [
   autovote,
   afk,
-  // autoAfk,
+  autoAfk,
   // emotes,
   // autocomplete,
   // customMentions,
@@ -55,7 +54,6 @@ export const general = [
 export const userInterface = [
   fullscreen,
   splitChat,
-  hideChat,
   hideVideo,
   hideAvatars,
   hideBackground,

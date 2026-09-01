@@ -14,6 +14,7 @@ Some features have been removed because v2 now natively handles them or it doesn
 - Updubs in Chat - Can no longer insert our own DOM elements into the Chat container
 - Downdubs in Chat - ^
 - Show Timestamps - timestamps are always showing now so it's no longer needed. There's also other timestamps that show on hover but I can't force show them with CSS as they are insert during hover
+- Hide Chat - v2 now allows you to collapse the whole chat area so this is no longer necessary
 
 ## [4.1.3] - 2026-06-19
 
