@@ -5,13 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [5.0.0] - 2026-??-??
 
-Updated to handle the new version of Queup.
+Updated to handle the new version of Queup (v2).
 
-Some features have been removed because Queup now natively handles them:
+Some features have been removed because v2 now natively handles them or it doesn't support it.
 
-- Snooze
-- Grabs in Chat
-- Show Timestamps
+- Snooze - Natively handled by v2
+- Grabs in Chat - v2 now natively handles this
+- Updubs in Chat - Can no longer insert our own DOM elements into the Chat container
+- Downdubs in Chat - ^
+- Show Timestamps - timestamps are always showing now so it's no longer needed. There's also other timestamps that show on hover but I can't force show them with CSS as they are insert during hover
 
 ## [4.1.3] - 2026-06-19
 
