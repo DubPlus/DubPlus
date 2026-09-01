@@ -82,7 +82,7 @@
 }
 
 /* turns off the video and only shows the chat */
-.dubplus-chat-only main > div > div > div > div > div > div:first-child {
+.dubplus-chat-only main>div>div>div>div>div>div:first-child {
   display: none !important;
 }
 
@@ -127,81 +127,25 @@
  * Collapsible Images styles
  */
 
-/* This is the class added to the image wrapper a.autolink-image */
-.dubplus-collapsible-image {
-  position: relative;
-  display: block;
+.dubplus-collapsible-images main~div>div>div>div>div:nth-child(2)>div:nth-child(1)>div:nth-child(1)>div:nth-child(1)>div>div {
+  a:has(img) {
+    img {
+      max-height: 2rem;
+      transition: max-height .2s ease;
+    }
+    &:hover img {
+      max-height: 25rem;
+    }
+  }
 }
 
-/* This adds the "Image Collapsed" text as a pseudo-element */
-.dubplus-collapsible-image::after {
-  content: 'Image Collapsed';
-  display: none;
-  position: absolute;
-  top: 15px;
-  left: 0;
-  margin-left: 26%;
-  line-height: 1;
-  color: #878c8e;
-  border: 1px solid #878c8e;
-  padding: 0 10px !important;
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
-/* This is the button that is added by Dub+ that toggles the collapse */
-.dubplus-collapser {
-  font-family: icomoon;
-  font-size: 20px;
-  background: none;
-  border: none;
-  appearance: none;
-  cursor: pointer;
-  color: white;
-  display: inline-block;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  z-index: 3;
-  height: 25px;
-}
-
-/* This is added to the .dubplus-collapsible-image element */
-.dubplus-collapsed {
-  padding-top: 30px !important;
-  margin-bottom: 10px !important;
-}
-
-/* This the up arrow from iconmoon font */
-.dubplus-collapser::before {
-  content: '\e801';
-  font-size: inherit;
-}
-
-/* hides the image. This is added to the .dubplus-collapsible-image element */
-.dubplus-collapsed img[aria-hidden='true'] {
-  display: block;
-  visibility: hidden;
-  height: 0.65rem;
-}
-
-/* This the down arrow from iconmoon font */
-.dubplus-collapsed .dubplus-collapser::before {
-  content: '\e802';
-}
-
-/* This displays the "Image Collapsed" text when the image is collapsed */
-.dubplus-collapsed::after {
-  display: block;
-}
 
 /************************************************
  * Pin Menu styles
  */
 
 @media screen and (min-width: 72em) {
-  .dubplus-pin-menu-right > div:nth-child(2) > div > div:nth-child(2) > div:nth-child(2) {
+  .dubplus-pin-menu-right>div:nth-child(2)>div>div:nth-child(2)>div:nth-child(2) {
     padding-right: calc(var(--dubplus-menu-width));
   }
 
@@ -209,7 +153,7 @@
     transform: translate3d(0, 0, 0) !important;
   }
 
-  .dubplus-pin-menu-left > div:nth-child(2) > div > div:nth-child(2) > div:nth-child(2) {
+  .dubplus-pin-menu-left>div:nth-child(2)>div>div:nth-child(2)>div:nth-child(2) {
     padding-left: calc(var(--dubplus-menu-width));
   }
 

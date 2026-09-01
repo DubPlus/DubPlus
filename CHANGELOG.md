@@ -13,14 +13,18 @@ Some features have been removed because v2 now natively handles them or it doesn
 
 - Snooze - Natively handled by v2
 - Grabs in Chat - v2 now natively handles this
-- Updubs in Chat - Can no longer insert our own DOM elements into the Chat container
-- Downdubs in Chat - ^
 - Show Timestamps - timestamps are always showing now so it's no longer needed. There's also other timestamps that show on hover but I can't force show them with CSS as they are insert during hover
 - Hide Chat - v2 now allows you to collapse the whole chat area so this is no longer necessary
+
+Because v2 now uses React and the chat message area uses virtualization, we can no longer insert elements into the chat area because they will get removed by React when a new message comes in or a user scrolls. So the following features are no longer available:
+
+- Updubs in Chat
+- Downdubs in Chat
 
 ## Changed
 
 - Hide Video - now just blacks out the video itself. The controls are still visible and the space it takes up is still there.
+- Collapsible Images - works a little differently now. The image is now reduced to a small thumbnail size and when you hover over it, the image will expand back to the original size. I had to do it this way because I could no longer insert elements into the DOM anymore.
 
 ## [4.1.3] - 2026-06-19
 
