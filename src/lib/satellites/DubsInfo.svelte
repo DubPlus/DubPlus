@@ -1,89 +1,25 @@
 <script>
-  import { onDestroy, onMount } from 'svelte';
-  import { teleport } from '../actions/teleport.svelte.js';
   import { userImage } from '../api.js';
   import { getDubCount } from '../stores/dubsState.svelte';
   import { logError } from '../../utils/logger.js';
   import { t } from '../stores/i18n.svelte.js';
-  import {
-    getAddToPlaylist,
-    getChatInput,
-    getDubDown,
-    getDubUp,
-  } from '../queup.ui.js';
+  import { getChatInput } from '../queup.ui.js';
 
   /**
    * @typedef {object} DubsInfoProps
    * @property {"updub" | "downdub" | "grab"} dubType
+   * @property {object} position the position of the hover target
+   * @property {number} position.top
+   * @property {number} position.left
+   * @property {number} position.right
    */
 
   /**
    * @type {DubsInfoProps}
    */
-  let { dubType } = $props();
+  let { dubType, position } = $props();
 
   let dubData = $derived(getDubCount(dubType));
-  let positionRight = $state(0);
-  let positionBottom = $state(0);
-  let display = $state('none');
-
-  function getTarget() {
-    if (dubType === 'updub') {
-      return getDubUp()?.parentElement;
-    } else if (dubType === 'downdub') {
-      return getDubDown()?.parentElement;
-    } else if (dubType === 'grab') {
-      return getAddToPlaylist();
-    }
-    return null;
-  }
-
-  function onHover() {
-    const hoverTarget = getTarget();
-    if (hoverTarget) {
-      const rect = hoverTarget.getBoundingClientRect();
-      positionRight = window.innerWidth - rect.right;
-      positionBottom = rect.height - 2;
-      display = 'block';
-    } else {
-      logError(`Could not find hover target for ${dubType} in onHover`);
-    }
-  }
-
-  /**
-   * @param {MouseEvent} e
-   */
-  function onLeave(e) {
-    if (
-      e.relatedTarget &&
-      /**@type {HTMLDivElement}*/ (e.relatedTarget).closest(
-        '.dubplus-dubs-container',
-      )
-    ) {
-      return;
-    }
-    display = 'none';
-  }
-
-  onMount(() => {
-    const hoverTarget = getTarget();
-    if (hoverTarget) {
-      hoverTarget.addEventListener('mouseenter', onHover);
-      hoverTarget.addEventListener('mouseleave', onLeave);
-    } else {
-      logError(`Could not find hover target for ${dubType} in onMount`);
-    }
-  });
-
-  onDestroy(() => {
-    const hoverTarget = getTarget();
-    if (hoverTarget) {
-      hoverTarget.removeEventListener('mouseenter', onHover);
-      hoverTarget.removeEventListener('mouseleave', onLeave);
-    } else {
-      logError(`Could not find hover target for ${dubType} in onDestroy`);
-    }
-  });
 
   /**
    * @param {string} username
@@ -94,17 +30,16 @@
       logError('Chat input not found, can not insert username', { username });
       return;
     }
-    chatInput.value = `${chatInput.value}@${username} `.trimStart();
+    chatInput.textContent =
+      `${chatInput.textContent || ''} @${username} `.trimStart();
     chatInput.focus();
   }
 </script>
 
 <div
   id={`dubplus-${dubType}s-container`}
-  use:teleport={{ to: 'body' }}
   class={`dubplus-dubs-container dubplus-${dubType}s-container`}
-  style={`bottom: ${positionBottom}px; right: ${positionRight}px; display: ${display};`}
-  onmouseleave={() => (display = 'none')}
+  style={`top: ${position.top - 150}px; right: ${position.right}px;`}
   role="none"
 >
   <ul

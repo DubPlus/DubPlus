@@ -7,7 +7,6 @@
   import Modal from '../Modal.svelte';
   import EmojiPreview from '../emoji/EmojiPreview.svelte';
   import { t } from '../stores/i18n.svelte';
-  import DubsInfo from '../satellites/DubsInfo.svelte';
   import { settings } from '../stores/settings.svelte';
   import Snow from '../satellites/Snow.svelte';
   import UserInterface from '../sections/UserInterface.svelte';
@@ -30,11 +29,6 @@
 <SnoozeVideo />
 {#if settings.options.autocomplete}
   <EmojiPreview />
-{/if}
-{#if settings.options['dubs-hover']}
-  <DubsInfo dubType="updub" />
-  <DubsInfo dubType="downdub" />
-  <DubsInfo dubType="grab" />
 {/if}
 {#if settings.options.snow}
   <Snow />

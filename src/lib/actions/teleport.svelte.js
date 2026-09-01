@@ -4,7 +4,7 @@ import { waitFor } from '../../utils/waitFor.js';
 /**
  * This helps render an element to a different part of the DOM
  * outside of the component's parent.
- * @type {import('svelte/action').Action<HTMLElement, {to: string | (() => HTMLElement | null | undefined), position?: "append" | "prepend"}>}
+ * @type {import('svelte/action').Action<HTMLElement, {to: string | (() => Element | null | undefined), position?: "append" | "prepend"}>}
  */
 export const teleport = (node, initialParams) => {
   let { to, position = 'append' } = initialParams;

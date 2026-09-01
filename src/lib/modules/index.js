@@ -7,7 +7,7 @@ import { afk } from './afk';
 // import { mentionNotifications } from './mentionNotifications';
 // import { pmNotifications } from './pmNotifications';
 // import { djNotification } from './djNotification';
-// import { showDubsOnHover } from './showDubsOnHover';
+import { showDubsOnHover } from './showDubsOnHover';
 import { snow } from './snow';
 import { rain } from './rain';
 import { fullscreen } from './fullscreen';
@@ -42,7 +42,7 @@ export const general = [
   // mentionNotifications,
   // pmNotifications,
   // djNotification,
-  // showDubsOnHover,
+  showDubsOnHover,
   // grabResponse,
   snow,
   rain,

@@ -52,13 +52,15 @@ export const NEW_PM_MESSAGE = 'new-message';
  * the events we need, so until Queup exposes a public API for this,
  */
 
-class QueupEvents {
+export class QueupEvents {
   /**
    * @type {Map<string, Set<(data: any) => void>>}
    */
   handlers = new Map();
 
-  constructor() {}
+  constructor() {
+    logDebug('QueupEvents initialized');
+  }
 
   /**
    * @template T
@@ -105,6 +107,7 @@ class QueupEvents {
    * @param {T} data
    */
   emit(eventName, data) {
+    logDebug(`QueupEvents: emitting event ${eventName} with data:`, data);
     if (this.handlers.has(eventName)) {
       this.handlers.get(eventName)?.forEach((handler) => {
         handler(data);
@@ -117,19 +120,37 @@ class QueupEvents {
   }
 }
 
+window.dubplus = window.dubplus || {};
 const queupEvents = new QueupEvents();
+window.dubplus.queupEvents = queupEvents;
 
 // Wrap console.log and look for any log that starts with "RealtimeManager"
-const originalConsoleLog = console.log;
+// Store the true native console.log on window.dubplus to prevent repeated dev
+// rebuilds (which re-run this module while the page's window persists) from
+// re-wrapping the console.log on every rebuild.
+window.dubplus.__originalConsoleLog =
+  window.dubplus.__originalConsoleLog || console.log;
+
+const originalConsoleLog = window.dubplus.__originalConsoleLog;
+
 console.log = function (...args) {
   originalConsoleLog.apply(console, args);
   if (
     typeof args[0] === 'string' &&
-    args[0].includes('RealtimeManager: real time response')
+    args[0].trim().startsWith('RealtimeManager:')
   ) {
-    logDebug('RealtimeManager log detected:', args[1]);
-    if (args[1]?.name) {
-      queupEvents.emit(args[1].name, args[1].data);
+    if (args[0].includes('RealtimeManager: connected to real channel room:')) {
+      const roomId = args[0].split('room:')[1].trim();
+      logDebug('Room ID:', roomId);
+      window.dubplus.roomId = roomId;
+    } else if (args[0].includes('RealtimeManager: real time response')) {
+      logDebug('RealtimeManager event log detected:', args[1]);
+      if (args[1]?.name) {
+        // using the one on the window.dubplus object to make sure we
+        // reading the latest version during development, since hot reloading
+        // can cause the module to be reloaded and the instance to be replaced
+        window.dubplus?.queupEvents?.emit(args[1].name, args[1].data);
+      }
     }
   }
 };

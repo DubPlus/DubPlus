@@ -1,3 +1,5 @@
+import { QueupEvents } from './utils/events.js';
+
 export type SettingsSections = 'option' | 'menu' | 'custom';
 
 export interface Settings {
@@ -108,13 +110,22 @@ interface LDB {
 
 declare global {
   interface Window {
-    QueUp: QueUp;
-    emojify: Emojify;
-    ldb: LDB;
-    soundManager: {
-      canPlayURL: (url: string) => boolean;
+    QueUp: QueUp; // this doesn't work or exist anymore
+    dubplus: {
+      name: string;
+      version: string;
+      description: string;
+      license: string;
+      homepage: string;
+      roomId: string;
+      queupEvents: InstanceType<typeof QueupEvents>;
+      /**
+       * The native console.log, captured once so dev rebuilds (which
+       * re-run modules while the page persists) don't nest console.log
+       * wrappers on top of each other.
+       */
+      __originalConsoleLog?: typeof console.log;
     };
-    dubplus: any;
   }
 }
 

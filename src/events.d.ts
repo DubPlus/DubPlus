@@ -1,92 +1,87 @@
 /**
+ * These types are re-used in multiple events
+ */
+
+interface User {
+  roleid: number;
+  status: number;
+  username: string;
+  _id: string; // same as userinfo.userid
+  userinfo: {
+    userid: string;
+  };
+}
+
+interface Playlist {
+  songLength: number;
+  isActive: boolean;
+  isPlayed: boolean;
+  skipped: boolean;
+  updubs: number;
+  downdubs: number;
+  order: number;
+  songid: string;
+  roomid: string;
+  userid: string;
+  played: number;
+}
+
+/******************************************* */
+/**
  * UpDub or DownDub event.
  * 'realtime:room_playlist-dub'
  */
 export interface DubEvent {
-  dubtype: string;
-  user: {
-    _id: string;
-    username: string;
-    // userInfo: {
-    //   userid: string;
-    // };
-  };
+  type: 'room_playlist-dub';
+  dubtype: 'updub' | 'downdub';
+  user: User;
+  playlist: Playlist;
 }
 
 /**
  * Grab Event
  */
 export interface GrabEvent {
-  user: {
-    _id: string;
-    username: string;
-    // userInfo: {
-    //   userid: string;
-    // };
-  };
+  type: 'room_playlist-queue-update-grabs';
+  user: User;
+  playlist: Playlist;
 }
 
 export interface PlaylistUpdateEvent {
   // we only use this property
   startTime: number;
-
-  // type: string;
-  // song: {
-  //   _id: string;
-  //   created: number;
-  //   isActive: boolean;
-  //   isPlayed: boolean;
-  //   skipped: boolean;
-  //   order: number;
-  //   roomid: string;
-  //   songLength: number;
-  //   updubs: number;
-  //   downdubs: number;
-  //   userid: string;
-  //   songid: string;
-  //   _user: string;
-  //   _song: string;
-  //   played: number;
-  // };
-  // songInfo: {
-  //   _id: string;
-  //   name: string;
-  //   images: {
-  //     thumbnail: string;
-  //   };
-  //   type: string;
-  //   songLength: number;
-  //   fkid: string;
-  //   created: string;
-  //   categoryId: string;
-  //   genre: string;
-  //   lastUpdated: string;
-  //   regionRestriction: string;
-  // };
 }
 
 export interface ChatMessageEvent {
+  type: 'chat-message';
   message: string;
   chatid: string;
-  user: {
-    _id: string;
-    username: string;
-    userInfo: {
-      userid: string;
-    };
-  };
+  user: User;
+  time: string;
 }
 
 export interface UserLeaveEvent {
-  user: {
-    _id: string;
-    username: string;
-  };
-  type: string;
+  type: 'user-leave';
+  room: string; // the id of the room the user left
+  user: User;
 }
 
 export interface NewMessageEvent {
   type: string;
   userid: string;
   messageid: string;
+}
+
+export interface UserJoinEvent {
+  type: 'user-join';
+  roomUser: {
+    roleid: {
+      label: string; // "Co-Owner"
+      type: string; // "co-owner"
+      rights: string[]; // a list of things user can do
+      roomid: string;
+      userid: string;
+    };
+  };
+  user: User;
 }
