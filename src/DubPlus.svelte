@@ -2,13 +2,12 @@
   import Menu from './lib/menu/Menu.svelte';
   import pkg from '../package.json';
 
-  window.dubplus = Object.assign(window.dubplus || {}, {
-    name: pkg.name,
-    version: pkg.version,
-    description: pkg.description,
-    license: pkg.license,
-    homepage: pkg.homepage,
-  });
+  window.dubplus = window.dubplus || {};
+  window.dubplus.name = pkg.name;
+  window.dubplus.version = pkg.version;
+  window.dubplus.description = pkg.description;
+  window.dubplus.license = pkg.license;
+  window.dubplus.homepage = pkg.homepage;
 </script>
 
 <Menu />

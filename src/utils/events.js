@@ -139,13 +139,20 @@ console.log = function (...args) {
     typeof args[0] === 'string' &&
     args[0].trim().startsWith('RealtimeManager:')
   ) {
-    if (args[0].includes('RealtimeManager: connected to real channel room:')) {
+    if (args[0].includes('RealtimeManager: setting current user')) {
+      const userId = args[0].trim().split(' ').at(-1);
+      logDebug('Setting userId to:', userId);
+      if (userId) window.dubplus.userId = userId;
+    } else if (
+      args[0].includes('RealtimeManager: connected to real channel room:')
+    ) {
       const roomId = args[0].split('room:')[1].trim();
       logDebug('Room ID:', roomId);
       window.dubplus.roomId = roomId;
     } else if (args[0].includes('RealtimeManager: real time response')) {
       logDebug('RealtimeManager event log detected:', args[1]);
       if (args[1]?.name) {
+        logDebug(`QueupEvents:`, window.dubplus?.queupEvents);
         // using the one on the window.dubplus object to make sure we
         // reading the latest version during development, since hot reloading
         // can cause the module to be reloaded and the instance to be replaced

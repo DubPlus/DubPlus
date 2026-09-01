@@ -112,13 +112,14 @@ declare global {
   interface Window {
     QueUp: QueUp; // this doesn't work or exist anymore
     dubplus: {
-      name: string;
-      version: string;
-      description: string;
-      license: string;
-      homepage: string;
-      roomId: string;
-      queupEvents: InstanceType<typeof QueupEvents>;
+      name?: string;
+      version?: string;
+      description?: string;
+      license?: string;
+      homepage?: string;
+      roomId?: string;
+      userId?: string;
+      queupEvents?: InstanceType<typeof QueupEvents>;
       /**
        * The native console.log, captured once so dev rebuilds (which
        * re-run modules while the page persists) don't nest console.log

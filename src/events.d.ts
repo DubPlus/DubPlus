@@ -7,7 +7,7 @@ interface User {
   status: number;
   username: string;
   _id: string; // same as userinfo.userid
-  userinfo: {
+  userInfo: {
     userid: string;
   };
 }

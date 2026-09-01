@@ -8,10 +8,12 @@
 export const CHAT_INPUT_CONTAINER = '[contenteditable="true"]';
 
 /**
- * @returns {HTMLTextAreaElement | null}
+ * @returns {HTMLDivElement | null}
  */
 export function getChatInput() {
-  return document.querySelector(CHAT_INPUT_CONTAINER);
+  return /** @type {HTMLDivElement | null} */ (
+    document.querySelector(CHAT_INPUT_CONTAINER)
+  );
 }
 
 const CHAT_CONTAINER_SELECTOR =
