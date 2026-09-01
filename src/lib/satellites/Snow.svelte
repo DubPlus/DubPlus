@@ -11,9 +11,13 @@
   onDestroy(() => {
     window.removeEventListener('resize', createSnow);
   });
+
+  function teleportTo() {
+    return document.querySelector('body > div:nth-child(2) > div');
+  }
 </script>
 
-<div use:teleport={{ to: 'body' }} id="snow-container"></div>
+<div use:teleport={{ to: teleportTo }} id="snow-container"></div>
 
 <style>
   #snow-container {
