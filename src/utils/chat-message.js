@@ -1,60 +1,79 @@
-import { getChatContainer, getChatInput } from '../lib/queup.ui';
-import { submitChatMessage } from '../lib/queup';
-import { logError } from './logger';
+import { getChatInput } from '../lib/queup.ui';
+import { logError, logDebug } from './logger';
 
 /**
- * This inserts a chat message row into the chat.
- * @param {string} className
- * @param {string} textContent
+ *
+ * @param {HTMLElement} el
+ * @param {string} text
+ * @returns {boolean} True if the operation was successful, false otherwise.
  */
-export function insertQueupChat(className, textContent) {
-  const chatContainer = getChatContainer();
-  if (!chatContainer) {
-    logError(
-      'insertQueupChat: Chat container not found, can not insert message',
-      { className, textContent },
-    );
-    return;
-  }
-  const li = document.createElement('li');
-  li.className = `dubplus-chat-system ${className}`;
-
-  const chatDelete = document.createElement('div');
-  chatDelete.className = 'chatDelete';
-  chatDelete.onclick = function (e) {
-    /**@type {HTMLDivElement}*/ (e.target).parentElement?.remove();
-  };
-
-  const span = document.createElement('span');
-  span.className = 'icon-close';
-
-  chatDelete.appendChild(span);
-  li.appendChild(chatDelete);
-
-  const text = document.createElement('div');
-  text.className = 'text';
-  text.textContent = textContent;
-  li.appendChild(text);
-  chatContainer.appendChild(li);
+function replaceContent(el, text) {
+  el.focus();
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const sel = window.getSelection();
+  sel?.removeAllRanges();
+  sel?.addRange(range);
+  return text
+    ? document.execCommand('insertText', false, text)
+    : document.execCommand('delete');
 }
 
 /**
- * This inserts text into the chat input and programmatically
- * submits the chat message.
+ *
+ * @param {HTMLElement} el
+ * @param {string} original
+ * @param {number} [attempts]
+ * @returns {void}
+ */
+function restoreWhenCleared(el, original, attempts = 20) {
+  if (attempts <= 0) return;
+  if (el.textContent === '' || el.textContent !== original) {
+    // hasn't cleared yet if it still holds the sent message
+  }
+  requestAnimationFrame(() => {
+    if (el.textContent.trim() === '') {
+      replaceContent(el, original);
+    } else {
+      restoreWhenCleared(el, original, attempts - 1);
+    }
+  });
+}
+
+/**
+ * Inserts text into the chat input and programmatically submits it.
  * @param {string} message
  */
 export function sendChatMessage(message) {
   const chatInput = getChatInput();
-  if (chatInput) {
-    // store original message
-    const messageOriginal = chatInput.value;
-    chatInput.value = message;
-    submitChatMessage();
-    // restore original message
-    if (messageOriginal) chatInput.value = messageOriginal;
-  } else {
+  if (!chatInput) {
     logError('sendChatMessage: Chat input not found, can not send message', {
       message,
     });
+    return;
   }
+
+  const messageOriginal = chatInput.textContent;
+
+  if (!replaceContent(chatInput, message)) {
+    logError('sendChatMessage: insertText failed', { message });
+    return;
+  }
+
+  logDebug('sendChatMessage: sending message', { message });
+  setTimeout(() => {
+    chatInput.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Enter',
+        code: 'Enter',
+        keyCode: 13,
+        which: 13,
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+      }),
+    );
+  }, 0);
+
+  if (messageOriginal) restoreWhenCleared(chatInput, messageOriginal);
 }

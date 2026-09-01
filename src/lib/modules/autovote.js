@@ -1,5 +1,5 @@
 import { clickVoteUp } from '../queup';
-import { offPlayerAdvance, onPlayerAdvance } from '../queup.v2';
+import { PLAYER_ADVANCE, queupEvents } from '../../utils/events';
 
 /**
  * @type {import("./module").DubPlusModule}
@@ -9,11 +9,11 @@ export const autovote = {
   label: 'autovote.label',
   description: 'autovote.description',
   category: 'general',
-  turnOff() {
-    offPlayerAdvance(clickVoteUp);
-  },
   turnOn() {
     clickVoteUp();
-    onPlayerAdvance(clickVoteUp);
+    queupEvents.on(PLAYER_ADVANCE, clickVoteUp);
+  },
+  turnOff() {
+    queupEvents.off(PLAYER_ADVANCE, clickVoteUp);
   },
 };

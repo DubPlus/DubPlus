@@ -1,23 +1,34 @@
 import { logDebug, logError } from '../utils/logger';
 import { waitFor } from '../utils/waitFor';
-import { getCurrentlyPlayingSong } from './queup.ui';
+import { getCurrentDjEl, getCurrentlyPlayingSong } from './queup.ui';
+import { PLAYER_ADVANCE, queupEvents } from '../utils/events';
 
 /**
- * This file is a temporary workaround for the lack of public APIs in Queup v2.
- * It uses DOM observation to detect and notify when certain events happen,
- * such as the player advancing to the next song.
+ * This file is a bunch of temporary hacks because Queup v2 (remix) removed their
+ * public API.
  */
 
 /**
- * @type {Map<string, Set<(songTitle: string) => void>>}
+ * Get the name of the currently logged in user.
+ * @returns {string}
  */
-const eventHandlers = new Map();
+export function getUserName() {
+  // there are 2 links with href="/user/username" in the header,
+  //  one for the avatar and one for the username. The user name just has text,
+  // the avatar has an img inside it, so we can use that to differentiate between the two.
+  return (
+    document
+      .querySelector('a[href^="/user/"]:not(:has(img))')
+      ?.textContent?.trim() || ''
+  );
+}
 
 /**
- * @param {string} songTitle
+ *
+ * @returns {string}
  */
-function notifyPlayerAdvance(songTitle) {
-  eventHandlers.get('playerAdvance')?.forEach((handler) => handler(songTitle));
+export function getCurrentDjName() {
+  return getCurrentDjEl()?.textContent?.trim() || '';
 }
 
 /**
@@ -61,7 +72,7 @@ function observeCurrentlyPlayingSong(songElement) {
     // the song title text changed, which means the player advanced to the next song
     // get new text from records, which is the new song title, and pass it to the handlers
     const songTitle = records[0]?.target?.textContent || '';
-    notifyPlayerAdvance(songTitle);
+    queupEvents.emit(PLAYER_ADVANCE, songTitle);
   });
   // subtree is required even though songElement only contains text: the
   // mutation target is the child text node, not songElement itself.
@@ -87,24 +98,3 @@ function setupPlayerAdvance() {
     });
 }
 setupPlayerAdvance();
-
-/**
- *
- * @param {(songTitle: string) => void} handler
- */
-export function onPlayerAdvance(handler) {
-  if (!eventHandlers.has('playerAdvance')) {
-    eventHandlers.set('playerAdvance', new Set());
-  }
-  eventHandlers.get('playerAdvance')?.add(handler);
-}
-
-/**
- *
- * @param {(songTitle: string) => void} handler
- */
-export function offPlayerAdvance(handler) {
-  if (eventHandlers.has('playerAdvance')) {
-    eventHandlers.get('playerAdvance')?.delete(handler);
-  }
-}

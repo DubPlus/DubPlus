@@ -9,6 +9,7 @@ import { getDubUp } from './queup.ui';
 // ----- Session -----
 
 /**
+ * This is the ID of the currently logged in user.
  * @returns {string}
  */
 export function getSessionId() {
@@ -19,9 +20,7 @@ export function getSessionId() {
  * @returns {string}
  */
 export function getSessionUsername() {
-  // there are 2 links with href="/user/username" in the header,
-  //  one for the avatar and one for the username. The user name is first
-  return document.querySelector('a[href^="/user/"]')?.textContent || '';
+  return window.QueUp.session.get('username');
 }
 
 // ----- Events -----

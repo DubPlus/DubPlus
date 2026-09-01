@@ -1,13 +1,9 @@
 import { settings } from '../stores/settings.svelte';
 import { t } from '../stores/i18n.svelte';
-import { CHAT_MESSAGE } from '../../events-constants';
+import { CHAT_MESSAGE, queupEvents } from '../../utils/events';
 import { sendChatMessage } from '../../utils/chat-message';
-import {
-  bindEvent,
-  getSessionId,
-  getSessionUsername,
-  unbindEvent,
-} from '../queup';
+import { getUserName } from '../queup.v2';
+
 /**
  * AFK -  Away from Keyboard
  * Toggles the afk auto response on/off
@@ -26,12 +22,9 @@ function afk_chat_respond(e) {
     return; // do nothing until it's back to true
   }
   const content = e.message;
-  const user = getSessionUsername();
+  const user = getUserName();
 
-  if (
-    content.includes(`@${user}`) &&
-    getSessionId() !== e.user.userInfo.userid
-  ) {
+  if (content.includes(`@${user}`) && user !== e.user.username) {
     let chatMessage = '';
     if (settings.custom.afk) {
       chatMessage = `[AFK] ${settings.custom.afk}`;
@@ -58,10 +51,10 @@ export const afk = {
   description: 'afk.description',
   category: 'general',
   turnOn() {
-    bindEvent(CHAT_MESSAGE, afk_chat_respond);
+    queupEvents.on(CHAT_MESSAGE, afk_chat_respond);
   },
   turnOff() {
-    unbindEvent(CHAT_MESSAGE, afk_chat_respond);
+    queupEvents.off(CHAT_MESSAGE, afk_chat_respond);
   },
   custom: {
     title: 'afk.modal.title',

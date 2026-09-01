@@ -50,11 +50,7 @@
 }
 
 /* Make the volume controller visible all the time */
-.dubplus
-  #main_player
-  .player_sharing
-  .player-controller-container
-  .volume-controller-container {
+.dubplus #main_player .player_sharing .player-controller-container .volume-controller-container {
   display: block;
 }
 
@@ -75,24 +71,21 @@
  * User Interface styles
  */
 
-.dubplus-split-chat .split,
-.dubplus-split-chat .chat-main li:nth-child(2n) {
-  background: linear-gradient(
-    to right,
-    rgba(155, 157, 160, 0.1) 0%,
-    rgba(0, 0, 0, 0) 100%
-  );
-  box-shadow: -16px 0px 0px 0px rgba(155, 157, 160, 0.1);
-  width: 100%;
+.dubplus-split-chat main~div>div>div>div>div:nth-child(2)>div>div>div>div>div {
+  /* reset all chat messages so that they span the full width */
+  padding-top: 10px;
+  left: 0 !important;
+  right: 0 !important;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
-.dubplus-split-chat .chat-main li:nth-child(2n) .chatDelete {
-  right: 1.7em !important;
+.dubplus-split-chat main~div>div>div>div>div:nth-child(2)>div>div>div>div>div:nth-child(odd) {
+  background: linear-gradient(to right,
+      rgba(155, 157, 160, 0.1) 0%,
+      rgba(0, 0, 0, 0) 100%);
 }
 
-.dubplus-split-chat .splitfix {
-  right: 1.7em !important;
-}
 
 /* hide the chat and only show the video */
 .dubplus-video-only .right_section {
@@ -112,6 +105,7 @@
 .dubplus-chat-only .left_section {
   display: none !important;
 }
+
 .dubplus-chat-only .right_section {
   width: 40rem !important;
   margin: 0 auto !important;
@@ -170,6 +164,7 @@
 .dubplus-chat-system-downdub {
   color: var(--queup-magenta);
 }
+
 .dubplus-chat-system .icon-close {
   font-family: icomoon;
 }
@@ -255,6 +250,7 @@
   .dubplus-pin-menu-right #main-room {
     padding-right: calc(var(--dubplus-menu-width) + 1rem);
   }
+
   .dubplus-pin-menu-right .dubplus-menu {
     transform: translate3d(0, 0, 0) !important;
   }
@@ -262,6 +258,7 @@
   .dubplus-pin-menu-left #main-room {
     padding-left: calc(var(--dubplus-menu-width) + 1rem);
   }
+
   .dubplus-pin-menu-left .dubplus-menu {
     transform: translate3d(0, 0, 0) !important;
     right: unset !important;

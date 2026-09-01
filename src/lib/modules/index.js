@@ -1,5 +1,5 @@
 import { autovote } from './autovote';
-// import { afk } from './afk';
+import { afk } from './afk';
 // import { emotes } from './emotes';
 // import { autocomplete } from './autocomplete';
 // import { customMentions } from './customMentions';
@@ -8,9 +8,6 @@ import { autovote } from './autovote';
 // import { pmNotifications } from './pmNotifications';
 // import { djNotification } from './djNotification';
 // import { showDubsOnHover } from './showDubsOnHover';
-// import { downdubsInChat } from './downDubInChat';
-// import { upDubInChat } from './upDubInChat';
-// import { grabsInChat } from './grabsInChat';
 import { snow } from './snow';
 import { rain } from './rain';
 import { fullscreen } from './fullscreen';
@@ -19,7 +16,6 @@ import { hideChat } from './hideChat';
 import { hideVideo } from './hideVideo';
 import { hideAvatars } from './hideAvatars';
 import { hideBackground } from './hideBackground';
-// import { showTimestamps } from './showTimestamps';
 import { spacebarMute } from './spacebarMute';
 import { warnOnNavigation } from './warnOnNavigation';
 import { communityTheme } from './communityTheme';
@@ -37,7 +33,7 @@ import { pinMenu } from './pin-menu';
  */
 export const general = [
   autovote,
-  // afk,
+  afk,
   // autoAfk,
   // emotes,
   // autocomplete,
@@ -48,9 +44,6 @@ export const general = [
   // pmNotifications,
   // djNotification,
   // showDubsOnHover,
-  // downdubsInChat,
-  // upDubInChat,
-  // grabsInChat,
   // grabResponse,
   snow,
   rain,
@@ -66,7 +59,6 @@ export const userInterface = [
   hideVideo,
   hideAvatars,
   hideBackground,
-  // showTimestamps,
   flipInterface,
   pinMenu,
 ];

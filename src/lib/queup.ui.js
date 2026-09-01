@@ -3,12 +3,15 @@
  * future changes to the UI, we'll just need to update this file.
  */
 
+// The chat input is actually a contenteditable div and is the only contenteditable
+// element on the page. if that ever changes, we can add `[aria-label="Type a message..."]`
+export const CHAT_INPUT_CONTAINER = '[contenteditable="true"]';
+
 /**
  * @returns {HTMLTextAreaElement | null}
  */
 export function getChatInput() {
-  return document.querySelector('[role="textbox"]');
-  // also '[contenteditable]' and '[aria-label="Type a message..."]'
+  return document.querySelector(CHAT_INPUT_CONTAINER);
 }
 
 const CHAT_CONTAINER_SELECTOR =
@@ -102,10 +105,6 @@ export function getAddToPlaylist() {
  * Selectors for some elements
  */
 
-// The chat input is actually a contenteditable div and is the only contenteditable
-// element on the page. if that ever changes, we can add `[aria-label="Type a message..."]`
-export const CHAT_INPUT_CONTAINER = '[contenteditable="true"]';
-
 /**
  * This is the location where the DubPlus menu will be placed.
  */
@@ -123,12 +122,34 @@ export function getBottomBar() {
   );
 }
 
+export function getCurrentDjEl() {
+  // div: bottom bar
+  //   [0] div DJ pic
+  //   [1] div everything else (bottomBarRight)
+  //     [0] div DJ and Song title (djAndSongInfo)
+  //       [0] div
+  //         [0] div DJ info
+  //           [0] span Name
+  //           [1] span "is playing"
+  //     [1] div track time
+  //     [2] div buttons
+  const bottomBar = getBottomBar();
+  const bottomBarRight = bottomBar?.children[1];
+  const djAndSongInfo = bottomBarRight?.children[0];
+  const djNameEl = djAndSongInfo?.children[0]?.children[0]?.children[0];
+  return djNameEl;
+}
+
 export function getCurrentlyPlayingSong() {
-  // bottom bar
-  //     div DJ pic, div everything else
-  //                     div song info, div track time, div buttons
-  //                          div
-  //                             div DJ, div title
+  // div: bottom bar
+  //   [0] div DJ pic
+  //   [1] div everything else (bottomBarRight)
+  //     [0] div DJ and Song title (djAndSongInfo)
+  //       [0] div
+  //         [0] div DJ info
+  //         [1] div song title
+  //     [1] div track time
+  //     [2] div buttons
   const bottomBar = getBottomBar();
   const bottomBarRight = bottomBar?.children[1];
   const songInfo = bottomBarRight?.children[0];

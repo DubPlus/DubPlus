@@ -3,7 +3,7 @@
  * @param {() => boolean} callback a function that returns true when ready
  * @param {object} [options] options to pass
  * @param {number} [options.interval] how often to ping
- * @param {number} [options.seconds] how long to keep trying before failing, default 10, Number.POSITIVE_INFINITY for no timeout
+ * @param {number} [options.seconds] how long to keep trying before failing, default 10, null or Infinity for no timeout
  * @return {Promise<void>}
  */
 export function waitFor(callback, options = {}) {
@@ -14,7 +14,8 @@ export function waitFor(callback, options = {}) {
   const opts = Object.assign({}, defaults, options);
 
   return new Promise((resolve, reject) => {
-    if (opts.seconds === Number.POSITIVE_INFINITY) {
+    if (!Number.isFinite(opts.seconds)) {
+      // if seconds is infinite, we just keep checking every interval until it returns true
       if (callback()) {
         resolve();
         return;
@@ -29,6 +30,7 @@ export function waitFor(callback, options = {}) {
       return;
     }
 
+    // if seconds is finite, we check every interval until it returns true or we hit the timeout
     let tryCount = 0;
     const tryLimit = (opts.seconds * 1000) / opts.interval; // how many intervals
 
