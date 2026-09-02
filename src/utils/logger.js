@@ -8,26 +8,26 @@ function getTimeStamp() {
  * @param {unknown[]} args
  */
 export function logInfo(...args) {
-  console.log(`[${getTimeStamp()}] ${PREFIX}:`, ...args);
+  console.log(`[${getTimeStamp()}] INFO - ${PREFIX}:`, ...args);
 }
 
 /**
  * @param {unknown[]} args
  */
 export function logDebug(...args) {
-  console.debug(`[${getTimeStamp()}] ${PREFIX}:`, ...args);
+  console.debug(`[${getTimeStamp()}] DEBUG - ${PREFIX}:`, ...args);
 }
 
 /**
  * @param {unknown[]} args
  */
 export function logWarn(...args) {
-  console.warn(`[${getTimeStamp()}] ${PREFIX}:`, ...args);
+  console.warn(`[${getTimeStamp()}] WARN - ${PREFIX}:`, ...args);
 }
 
 /**
  * @param {unknown[]} args
  */
 export function logError(...args) {
-  console.error(`[${getTimeStamp()}] ${PREFIX}:`, ...args);
+  console.error(`[${getTimeStamp()}] ERROR - ${PREFIX}:`, ...args);
 }

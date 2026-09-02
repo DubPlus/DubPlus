@@ -2,7 +2,7 @@
   import { teleport } from '../actions/teleport.svelte';
   import { getPlayerIframe, PLAYER_BUTTONS_CONTAINER } from '../queup.ui';
   import { t } from '../stores/i18n.svelte';
-  import { queupEvents, PLAYER_ADVANCE } from '../../utils/events';
+  import { queupEvents, PLAYER_ADVANCE } from '../../utils/events.js';
   import Monitor from '../svg/Monitor.svelte';
   import MonitorOff from '../svg/MonitorOff.svelte';
   import { onDestroy } from 'svelte';
