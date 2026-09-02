@@ -134,8 +134,18 @@
 .dubplus-collapsible-images main~div>div>div>div>div:nth-child(2)>div:nth-child(1)>div:nth-child(1)>div:nth-child(1)>div>div {
   a:has(img) {
     img {
-      max-height: 2rem;
+      max-height: 0rem;
       transition: max-height .2s ease;
+      position: relative;
+    }
+    &::after {
+      content: 'Image collapsed. Hover to expand';
+      display: block;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--dubplus-text-color);
+      border: 1px solid var(--dubplus-text-color);
+      padding: 2px 4px;
     }
     &:hover img {
       max-height: 25rem;
