@@ -3,7 +3,6 @@ import { afk } from './afk';
 // import { emotes } from './emotes';
 // import { autocomplete } from './autocomplete';
 import { customMentions } from './customMentions';
-// import { chatCleaner } from './chatCleaner';
 // import { mentionNotifications } from './mentionNotifications';
 // import { pmNotifications } from './pmNotifications';
 // import { djNotification } from './djNotification';
@@ -37,7 +36,6 @@ export const general = [
   // emotes,
   // autocomplete,
   customMentions,
-  // chatCleaner,
   collapsibleImages,
   // mentionNotifications,
   // pmNotifications,
