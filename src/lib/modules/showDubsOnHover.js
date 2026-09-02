@@ -101,9 +101,9 @@ function resetDubs() {
     fetch(dubsURL)
       .then((response) => response.json())
       .then((response) => {
-        updateUpdubs(response.data.upDubs);
-        updateGrabs(response.data.grabs);
-        updateDowndubs(response.data.downDubs);
+        updateUpdubs(response.data.upDubs || []);
+        updateGrabs(response.data.grabs || []);
+        updateDowndubs(response.data.downDubs || []);
       })
       .catch((error) => logError('Failed to fetch dubs data from API.', error));
   }

@@ -1,13 +1,9 @@
 import { notifyCheckPermission, showNotification } from '../../utils/notify';
 import { settings } from '../stores/settings.svelte';
 import { activeTabState } from '../stores/activeTabState.svelte';
-import { CHAT_MESSAGE } from '../../events-constants';
-import {
-  bindEvent,
-  getSessionId,
-  getSessionUsername,
-  unbindEvent,
-} from '../queup';
+import { queupEvents, CHAT_MESSAGE } from '../../utils/events.js';
+import { getMentionRegex } from '../../utils/mention-helpers.js';
+import { getUserName } from '../queup.v2';
 
 /**
  *
@@ -15,8 +11,8 @@ import {
  */
 function notifyOnMention(e) {
   const content = e.message;
-  const user = getSessionUsername().toLowerCase();
-  let mentionTriggers = ['@' + user];
+  const user = getUserName();
+  let mentionTriggers = [user];
 
   // is custom mentions enabled AND user has entered text in the custom mentions modal
   if (
@@ -26,25 +22,20 @@ function notifyOnMention(e) {
     //add custom mention triggers to array
     mentionTriggers = mentionTriggers
       .concat(settings.custom['custom-mentions'].split(','))
-      .map((v) => v.trim());
-
-    // custom mentions work with or without the @ symbol
-    // so we add the @ to the beginning of each one
-    mentionTriggers = mentionTriggers.concat(
-      mentionTriggers.map((v) => '@' + v),
-    );
+      .map((v) => v.trim())
+      .filter(Boolean);
   }
 
-  const bigRegex = new RegExp(`\\b(${mentionTriggers.join('|')})\\b`, 'ig');
+  const bigRegex = getMentionRegex(mentionTriggers);
 
   if (
     bigRegex.test(content) &&
     !activeTabState.isActive && // notifications only if you're not focused on the tab
-    getSessionId() !== e.user.userInfo.userid
+    window.dubplus.userId !== e.user.userInfo.userid
   ) {
     showNotification({
       title: `Message from ${e.user.username}`,
-      content: content,
+      content,
     });
   }
 }
@@ -64,7 +55,7 @@ export const mentionNotifications = {
   turnOn() {
     notifyCheckPermission()
       .then(() => {
-        bindEvent(CHAT_MESSAGE, notifyOnMention);
+        queupEvents.on(CHAT_MESSAGE, notifyOnMention);
       })
       .catch(() => {
         // turn back off until it's granted
@@ -73,6 +64,6 @@ export const mentionNotifications = {
   },
 
   turnOff() {
-    unbindEvent(CHAT_MESSAGE, notifyOnMention);
+    queupEvents.off(CHAT_MESSAGE, notifyOnMention);
   },
 };

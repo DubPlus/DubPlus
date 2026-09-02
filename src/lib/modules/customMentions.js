@@ -10,6 +10,7 @@
 import { settings } from '../stores/settings.svelte';
 import { playSound } from '../../utils/play-sound.js';
 import { queupEvents, CHAT_MESSAGE } from '../../utils/events.js';
+import { getMentionRegex } from '../../utils/mention-helpers.js';
 
 const MODULE_ID = 'custom-mentions';
 
@@ -28,15 +29,12 @@ function customMentionCheck(e) {
   ) {
     const namesForRegex = custom
       .split(',')
-      .map((name) =>
-        name.replace(/\s+/g, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
-      )
-      .filter(Boolean)
-      .join('|');
+      .map((name) => name.trim())
+      .filter(Boolean);
 
-    if (namesForRegex === '') return;
+    if (namesForRegex.length === 0) return;
 
-    const reg = new RegExp(`\\b@?(${namesForRegex})\\b`, 'ig');
+    const reg = getMentionRegex(namesForRegex);
     const shouldPlaySound = reg.test(e.message);
 
     if (shouldPlaySound) {

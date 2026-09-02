@@ -25,14 +25,14 @@ Anything else means I am still working on it (or haven't gotten to it yet)
 - [ ] Notification on Mentions
 - [ ] Notification on PM
 - [ ] DJ Notification
-- [ ] Show Dubs on Hover
+- ✅ Show Dubs on Hover
 - ❌ Chat Cleaner
 - ❌ Grabs in Chat
 - ❌ Updubs in Chat
 - ❌ Downdubs in Chat (mods only)
-- [ ] Grab Response
+- ✅ Grab Response
 - ✅ Snow
-- [ ] Rain
+- ✅ Rain
 
 ## User Interface
 

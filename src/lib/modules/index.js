@@ -3,7 +3,7 @@ import { afk } from './afk';
 // import { emotes } from './emotes';
 // import { autocomplete } from './autocomplete';
 import { customMentions } from './customMentions';
-// import { mentionNotifications } from './mentionNotifications';
+import { mentionNotifications } from './mentionNotifications';
 // import { pmNotifications } from './pmNotifications';
 // import { djNotification } from './djNotification';
 import { showDubsOnHover } from './showDubsOnHover';
@@ -22,7 +22,7 @@ import { customBackground } from './customBackground';
 // import { customNotificationSound } from './customNotificationSound';
 import { flipInterface } from './flipInterface';
 import { autoAfk } from './auto-afk';
-// import { grabResponse } from './grabResponse';
+import { grabResponse } from './grabResponse';
 import { collapsibleImages } from './collapsible-images';
 import { pinMenu } from './pin-menu';
 
@@ -37,11 +37,11 @@ export const general = [
   // autocomplete,
   customMentions,
   collapsibleImages,
-  // mentionNotifications,
+  mentionNotifications,
   // pmNotifications,
   // djNotification,
   showDubsOnHover,
-  // grabResponse,
+  grabResponse,
   snow,
   rain,
 ];
