@@ -97,6 +97,10 @@
   display: none !important;
 }
 
+.dubplus-flip-interface div:has(> main) {
+  flex-direction: row-reverse;
+}
+
 .dubplus-flip-interface .lucide-panel-right-close,
 .dubplus-flip-interface .lucide-panel-left-close,
 .dubplus-flip-interface .lucide-panel-right-open,
