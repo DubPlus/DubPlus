@@ -1,5 +1,5 @@
 import { getChatInput } from '../lib/queup.ui';
-import { logError, logDebug } from './logger';
+import { logError, logDebug, logInfo } from './logger';
 
 /**
  *
@@ -41,6 +41,34 @@ function restoreWhenCleared(el, original, attempts = 20) {
 }
 
 /**
+ * Sends whatever is currently in the chat input.
+ */
+export function submitChatMessage() {
+  const chatInput = getChatInput();
+  if (!chatInput) {
+    logError('submitChatMessage: Chat input not found, can not send message');
+    return;
+  }
+
+  if (chatInput.textContent.trim() === '') {
+    logInfo('submitChatMessage: Chat input is empty, not sending message');
+    return;
+  }
+
+  chatInput.dispatchEvent(
+    new KeyboardEvent('keydown', {
+      key: 'Enter',
+      code: 'Enter',
+      keyCode: 13,
+      which: 13,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }),
+  );
+}
+
+/**
  * Inserts text into the chat input and programmatically submits it.
  * @param {string} message
  */
@@ -62,17 +90,7 @@ export function sendChatMessage(message) {
 
   logDebug('sendChatMessage: sending message', { message });
   setTimeout(() => {
-    chatInput.dispatchEvent(
-      new KeyboardEvent('keydown', {
-        key: 'Enter',
-        code: 'Enter',
-        keyCode: 13,
-        which: 13,
-        bubbles: true,
-        cancelable: true,
-        composed: true,
-      }),
-    );
+    submitChatMessage();
   }, 0);
 
   if (messageOriginal) restoreWhenCleared(chatInput, messageOriginal);
