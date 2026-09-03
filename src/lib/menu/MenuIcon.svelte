@@ -1,11 +1,10 @@
 <script>
   import Logo from '../svg/Logo.svelte';
   import { teleport } from '../actions/teleport.svelte';
-  import { DUBPLUS_MENU_CONTAINER } from '../queup.ui';
 </script>
 
 <button
-  use:teleport={{ to: DUBPLUS_MENU_CONTAINER }}
+  use:teleport={{ to: 'body' }}
   id="dubplus-menu-icon"
   type="button"
   aria-label="Dub+ menu"
@@ -32,5 +31,14 @@
     width: 26px;
     height: 26px;
     cursor: pointer;
+
+    position: absolute;
+    top: 14px;
+    right: 15px;
+    z-index: 1000;
+  }
+
+  :global(header > div:last-child) {
+    padding-right: 36px !important;
   }
 </style>
