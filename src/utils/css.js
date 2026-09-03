@@ -41,6 +41,36 @@ export function link(cssFile, className, specificVersion = '') {
   });
 }
 
+export const COMMUNITY_CSS_ID = 'dubplus-community-css';
+export const CUSTOM_CSS_ID = 'dubplus-user-custom-css';
+
+/**
+ * Dub+'s stylesheets, weakest first.
+ *
+ * QueUp ships no cascade layers (Tailwind v3 strips its own `@layer`
+ * directives at build time), so we deliberately stay unlayered too - layered
+ * CSS always loses to unlayered CSS, which would cost us every override. That
+ * leaves document order as the tie-breaker between our own sheets, and the
+ * order they arrive in is just whichever fetch finished first: the community
+ * theme needs a room API call before it even knows its url, so it reliably
+ * lands after the user's custom CSS and wins by accident.
+ *
+ * So we place them instead of appending them.
+ */
+const STYLE_PRECEDENCE = [COMMUNITY_CSS_ID, CUSTOM_CSS_ID];
+
+/**
+ * Re-appends our stylesheets to <head> in precedence order. Appending a node
+ * that's already in the document moves it, so this is a reorder, not a
+ * duplicate. Sheets we don't know about are left where they are.
+ */
+function orderStyles() {
+  for (const id of STYLE_PRECEDENCE) {
+    const el = document.getElementById(id);
+    if (el) document.head.appendChild(el);
+  }
+}
+
 /**
  * @param  {string} cssFile
  * @param  {string} id
@@ -55,6 +85,7 @@ export function style(cssFile, id) {
       style.id = id;
       style.textContent = css;
       document.head.appendChild(style);
+      orderStyles();
     });
 }
 

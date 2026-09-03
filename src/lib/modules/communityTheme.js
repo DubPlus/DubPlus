@@ -1,6 +1,6 @@
 import { logError, logInfo } from '../../utils/logger';
-import { style } from '../../utils/css';
-import { getRoomUrl } from '../queup';
+import { COMMUNITY_CSS_ID, style } from '../../utils/css';
+
 /**
  * Community Theme
  * Toggle Community CSS theme
@@ -16,7 +16,7 @@ import { getRoomUrl } from '../queup';
  * @dubx=https://example.com/style.css
  */
 
-const LINK_ELEM_ID = 'dubplus-community-css';
+const LINK_ELEM_ID = COMMUNITY_CSS_ID;
 
 /**
  * @type {import("./module").DubPlusModule}
@@ -27,8 +27,7 @@ export const communityTheme = {
   description: 'community-theme.description',
   category: 'customize',
   turnOn() {
-    const location = getRoomUrl();
-    fetch(`https://api.queup.net/room/${location}`)
+    fetch(`https://api.queup.net/room/${window.dubplus.roomId}`)
       .then((response) => response.json())
       .then((e) => {
         const content = e.data.description;

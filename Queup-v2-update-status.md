@@ -53,7 +53,7 @@ Anything else means I am still working on it (or haven't gotten to it yet)
 
 ## Customize
 
-- [ ] Community Theme
-- [ ] Custom CSS
+- ✅ Community Theme
+- ✅ Custom CSS
 - [ ] Custom Background
 - ❌ Custom Notification Sound
