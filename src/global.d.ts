@@ -181,6 +181,11 @@ declare global {
        */
       __originalConsoleLog?: typeof console.log;
       /**
+       * Set once src/utils/route.js has installed its route watcher, so a dev
+       * rebuild doesn't patch history a second time.
+       */
+      __routeEmitterInstalled?: boolean;
+      /**
        * Removes the '*' listener src/utils/events.js put on QueUp's
        * RealtimeManager, so a dev rebuild doesn't stack a second one on a
        * RealtimeManager that outlives the module.
