@@ -4,7 +4,7 @@ import { afk } from './afk';
 // import { autocomplete } from './autocomplete';
 import { customMentions } from './customMentions';
 import { mentionNotifications } from './mentionNotifications';
-// import { pmNotifications } from './pmNotifications';
+import { pmNotifications } from './pmNotifications';
 // import { djNotification } from './djNotification';
 import { showDubsOnHover } from './showDubsOnHover';
 import { snow } from './snow';
@@ -19,7 +19,6 @@ import { warnOnNavigation } from './warnOnNavigation';
 import { communityTheme } from './communityTheme';
 import { customCss } from './customCSS';
 import { customBackground } from './customBackground';
-// import { customNotificationSound } from './customNotificationSound';
 import { flipInterface } from './flipInterface';
 import { autoAfk } from './auto-afk';
 import { grabResponse } from './grabResponse';
@@ -38,7 +37,7 @@ export const general = [
   customMentions,
   collapsibleImages,
   mentionNotifications,
-  // pmNotifications,
+  pmNotifications,
   // djNotification,
   showDubsOnHover,
   grabResponse,
@@ -67,9 +66,4 @@ export const settingsModules = [spacebarMute, warnOnNavigation];
 /**
  * @type {import("./module").DubPlusModule[]}
  */
-export const customize = [
-  communityTheme,
-  customCss,
-  customBackground,
-  // customNotificationSound,
-];
+export const customize = [communityTheme, customCss, customBackground];

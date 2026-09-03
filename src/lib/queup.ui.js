@@ -60,47 +60,31 @@ export function getPlayerIframe() {
 }
 
 /**
- * TODO: update this for queup v2
  * @returns {HTMLDivElement | null}
  */
 export function getPrivateMessageButton() {
-  return document.querySelector('.user-messages');
-}
-
-/**
- * TODO: update this for queup v2
- * @param {string} messageId
- * @returns {HTMLLIElement | null}
- */
-export function getPrivateMessage(messageId) {
-  return document.querySelector(`.message-item[data-messageid="${messageId}"]`);
+  return document.querySelector('button:has(> .lucide-mail)');
 }
 
 /**
  * @returns {HTMLButtonElement | null | undefined}
  */
 export function getDubUp() {
-  return /** @type {HTMLButtonElement | null} */ (
-    document.querySelector('.lucide-chevron-up')?.parentElement
-  );
+  return document.querySelector('button:has(> .lucide-chevron-up)');
 }
 
 /**
  * @returns {HTMLButtonElement | null}
  */
 export function getDubDown() {
-  return /** @type {HTMLButtonElement | null} */ (
-    document.querySelector('.lucide-chevron-down')?.parentElement
-  );
+  return document.querySelector('button:has(> .lucide-chevron-down)');
 }
 
 /**
  * @returns {HTMLButtonElement | null}
  */
 export function getAddToPlaylist() {
-  return /** @type {HTMLButtonElement | null} */ (
-    document.querySelector('.lucide-heart')?.parentElement
-  );
+  return document.querySelector('button:has(> .lucide-heart)');
 }
 
 /**
@@ -200,8 +184,9 @@ export function getCurrentSongTime() {
 }
 
 /**
- * @returns {HTMLSpanElement | null}
+ * How many people are curretly in the queue.
+ * @returns {HTMLElement | null | undefined}
  */
 export function getQueueTotal() {
-  return document.querySelector('.queue-total');
+  return getBottomBar()?.querySelector('.lucide-users')?.parentElement;
 }

@@ -7,24 +7,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 Updated to handle the new version of Queup (v2).
 
-## Removed
+## Removed features
 
-Some features have been removed because v2 now natively handles them or it doesn't support it.
+These features were removed because QueUp v2 does this natively now so it's no longer needed:
 
-- Snooze - Natively handled by v2
-- Grabs in Chat - v2 now natively handles this
-- Show Timestamps - timestamps are always showing now so it's no longer needed. There's also other timestamps that show on hover but I can't force show them with CSS as they are insert during hover
+- Snooze
+- Grabs in Chat
+- Show Timestamps - The top level timestamp always shows. There's also other timestamps that show on hover but I can't force show them with CSS as they are not in the DOM, they are insert by React on hover.
 - Hide Chat - v2 now allows you to collapse the whole chat area so this is no longer necessary
+- autocomplete - v2 added its own autocomplete so ours is not needed anymore
 
-Because v2 now uses React and the chat message area uses virtualization, we can no longer insert elements into the chat area because they will get removed by React when a new message comes in or a user scrolls. So the following features are no longer available:
+These features were removed because the changes to v2 doesn't allow us to implement them:
 
-- Updubs in Chat
-- Downdubs in Chat
+- Chat Cleaner - v2 now uses list virtualization to handle long chat sessions. This helps reduce memory and CPU strain by only showing chat messages that can be visible to the user. So we no longer need this because it was only used to reduce the load on the browser when there were many many messages, especially if they had gifs and images. This one is actually good that we don't need this anymore.
+- Updubs in Chat - Because v2 now uses React we can no longer insert our elements into the chat area because they will get removed by React.
+- Downdubs in Chat - same reason as Updubs
+- Custom Notification Sound - v2 doesn't give us a way to alter the notification sound like it did before
 
 ## Changed
 
+I've altered the way some of the features work:
+
 - Hide Video - now just blacks out the video itself. The controls are still visible and the space it takes up is still there.
-- Collapsible Images - works a little differently now. The image is now reduced to a small thumbnail size and when you hover over it, the image will expand back to the original size. I had to do it this way because I could no longer insert elements into the DOM anymore.
+- Collapsible Images - works via hover instead of a toggle button.
+- Notification on Private Message (PM) - opens up the main PM modal but no longer goes direclty to the message itself
 
 ## [4.1.3] - 2026-06-19
 

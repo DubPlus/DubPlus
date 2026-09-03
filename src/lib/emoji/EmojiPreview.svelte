@@ -1,7 +1,7 @@
 <script>
   import { teleport } from '../actions/teleport.svelte';
   import { insertEmote } from '../modules/autocomplete';
-  import { CHAT_INPUT_CONTAINER, getChatInput } from '../queup.ui';
+  import { getChatInput } from '../queup.ui';
   import { t } from '../stores/i18n.svelte';
   import { emojiState } from './emojiState.svelte';
 
@@ -34,7 +34,8 @@
 </script>
 
 <div
-  use:teleport={{ to: CHAT_INPUT_CONTAINER, position: 'prepend' }}
+  use:teleport={{ to: 'body' }}
+  id="dubplus-emoji-preview"
   class="ac-preview-container"
   class:ac-show={emojiState.emojiList.length > 0}
 >

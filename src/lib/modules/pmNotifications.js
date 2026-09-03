@@ -2,8 +2,8 @@ import { notifyCheckPermission, showNotification } from '../../utils/notify';
 import { settings } from '../stores/settings.svelte';
 import { t } from '../stores/i18n.svelte';
 import { NEW_PM_MESSAGE } from '../../events-constants';
-import { getPrivateMessage, getPrivateMessageButton } from '../queup.ui';
-import { bindEvent, getSessionId, unbindEvent } from '../queup';
+import { getPrivateMessageButton } from '../queup.ui';
+import { queupEvents } from '../../utils/events.js';
 
 /**
  *
@@ -11,19 +11,14 @@ import { bindEvent, getSessionId, unbindEvent } from '../queup';
  * @returns
  */
 function pmNotify(e) {
-  if (getSessionId() === e.userid) {
+  if (window.dubplus.userId === e.userid) {
     return;
   }
   showNotification({
     title: t('pm-notifications.notification.title'),
     ignoreActiveTab: true,
     callback: function () {
-      const openPmButton = getPrivateMessageButton();
-      openPmButton?.click();
-      setTimeout(function () {
-        const messageItem = getPrivateMessage(e.messageid);
-        messageItem?.click();
-      }, 500);
+      getPrivateMessageButton()?.click();
     },
     wait: 10000,
   });
@@ -40,7 +35,7 @@ export const pmNotifications = {
   turnOn() {
     notifyCheckPermission()
       .then(() => {
-        bindEvent(NEW_PM_MESSAGE, pmNotify);
+        queupEvents.on(NEW_PM_MESSAGE, pmNotify);
       })
       .catch(() => {
         // turn back off until it's granted
@@ -48,6 +43,6 @@ export const pmNotifications = {
       });
   },
   turnOff() {
-    unbindEvent(NEW_PM_MESSAGE, pmNotify);
+    queupEvents.off(NEW_PM_MESSAGE, pmNotify);
   },
 };
