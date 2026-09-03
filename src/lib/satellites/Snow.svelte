@@ -1,15 +1,15 @@
 <script>
   import { teleport } from '../actions/teleport.svelte';
   import { createSnow } from '../../scripts/pure-snow';
-  import { onDestroy, onMount } from 'svelte';
+  import { onMount } from 'svelte';
 
   onMount(() => {
     createSnow();
     window.addEventListener('resize', createSnow);
-  });
 
-  onDestroy(() => {
-    window.removeEventListener('resize', createSnow);
+    return () => {
+      window.removeEventListener('resize', createSnow);
+    };
   });
 
   function teleportTo() {

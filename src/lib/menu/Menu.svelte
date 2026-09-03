@@ -17,6 +17,9 @@
 
   onMount(() => {
     document.querySelector('html')?.classList.add('dubplus');
+    // main.js unmounts the whole app on room -> room navigation, so this has to
+    // come back off with it or the next mount inherits a half-styled page.
+    return () => document.querySelector('html')?.classList.remove('dubplus');
   });
 </script>
 
