@@ -2,7 +2,7 @@ import './dubplus.css';
 import { mount, unmount } from 'svelte';
 import DubPlus from './DubPlus.svelte';
 import { loadDubPlusCSSforBookmarklet } from './utils/css';
-import { logDebug, logInfo } from './utils/logger';
+import { logDebug, logInfo, logWarn } from './utils/logger';
 import { getRoomSlug, onRouteChange } from './utils/route';
 import { waitFor } from './utils/waitFor';
 import { getChatInput } from './lib/queup.ui';
@@ -15,7 +15,7 @@ const loadedAsExtension = 'dubplusExtensionLoaded' in window;
 logInfo('loaded as extension:', loadedAsExtension);
 
 // We only load the CSS when Dub+ is loaded from a bookmarklet.
-if (!import.meta.env.DEV && !loadedAsExtension) {
+if (!loadedAsExtension) {
   loadDubPlusCSSforBookmarklet();
 }
 
@@ -34,74 +34,57 @@ if (!import.meta.env.DEV && !loadedAsExtension) {
  * ========================================================================== */
 
 /**
- * The room we're currently mounted in, or null when we aren't mounted.
+ * The room we're mounted in, or the one we're in the middle of mounting into.
+ * Null when neither. Mounting is async - it waits for QueUp to render the room
+ * - so this has to be claimed up front: two route events can land before the
+ * first mount finishes, and without it the second would start a mount of its
+ * own and we'd end up with two apps.
  * @type {string | null}
  */
-let mountedRoom = null;
+let currentRoom = null;
 
-/** Bumped on every mount/unmount so a pending mount can tell it's stale. */
+/**
+ * Bumped on every mount and unmount so a pending mount can tell it's stale.
+ * `currentRoom` alone isn't enough: leaving a room and coming straight back
+ * re-claims the same slug, and the first mount would happily finish into it.
+ */
 let mountToken = 0;
 
-/**
- * The mounted app is stashed on the container element rather than in this
- * module, because the module scope doesn't survive what we need it to: a
- * bookmarklet clicked twice, or a dev rebuild, evaluates a whole new bundle
- * against a page that still has the old app mounted. The container outlives
- * both, and Svelte 5's `unmount` needs the component instance - removing the
- * container's children would strand every module with its `turnOff` unrun.
- * @typedef {HTMLElement & { _dubplusApp?: Record<string, any> }} DubPlusContainer
- */
-
-/**
- * @returns {DubPlusContainer}
- */
-function getContainer() {
-  let container = /** @type {DubPlusContainer | null} */ (
-    document.getElementById('dubplus-container')
-  );
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'dubplus-container';
-    document.body.appendChild(container);
-  }
-  return container;
-}
+/** @type {Record<string, any> | null} */
+let app = null;
 
 function unmountDubPlus() {
+  // Also cancels any mount still waiting on the room UI.
   mountToken++;
-  mountedRoom = null;
 
-  const container = /** @type {DubPlusContainer | null} */ (
-    document.getElementById('dubplus-container')
-  );
-  if (!container) return;
+  logDebug(`unmounting from room "${currentRoom}" mountToken=${mountToken}`);
+  currentRoom = null;
 
-  if (container._dubplusApp) {
-    try {
-      unmount(container._dubplusApp);
-    } catch (err) {
-      logDebug('could not unmount the previous Dub+ instance', err);
-    }
-    container._dubplusApp = undefined;
+  if (app) {
+    unmount(app);
+    app = null;
   }
 
-  container.replaceChildren();
-  // Menu.svelte adds this on mount and has no matching teardown.
-  document.querySelector('html')?.classList.remove('dubplus');
+  document.getElementById('dubplus-container')?.remove();
 }
 
 /**
  * @param {string} roomSlug
  */
 async function mountDubPlus(roomSlug) {
-  const token = mountToken;
+  const token = ++mountToken;
+  logDebug(`mounting in room "${roomSlug}" mountToken=${token}`);
+  currentRoom = roomSlug;
 
   try {
     // On an SPA navigation the room UI is rendered after the route commits,
     // and turnOn handlers assume it's there.
     await waitFor(() => !!getChatInput(), { seconds: 30 });
   } catch {
-    logInfo(`room UI never showed up for "${roomSlug}", not mounting`);
+    // Nothing retries after this: no further route event fires while we sit in
+    // the room, so Dub+ stays down until the next navigation.
+    logWarn(`room UI never showed up for "${roomSlug}", not mounting`);
+    if (token === mountToken) currentRoom = null;
     return;
   }
 
@@ -111,19 +94,23 @@ async function mountDubPlus(roomSlug) {
     return;
   }
 
-  const container = getContainer();
-  container._dubplusApp = mount(DubPlus, { target: container });
-  mountedRoom = roomSlug;
+  // A fresh container every time. Svelte 5's `unmount` is async, so reusing one
+  // element would race the previous app's teardown against the new app's nodes.
+  const container = document.createElement('div');
+  container.id = 'dubplus-container';
+  document.body.appendChild(container);
+
+  app = mount(DubPlus, { target: container });
   logInfo(`mounted in room "${roomSlug}"`);
 }
 
 function syncToRoute() {
   const roomSlug = getRoomSlug();
 
-  if (roomSlug === mountedRoom) return;
+  if (roomSlug === currentRoom) return;
 
-  if (mountedRoom) {
-    logInfo(`leaving room "${mountedRoom}"`);
+  if (currentRoom) {
+    logInfo(`leaving room "${currentRoom}"`);
     unmountDubPlus();
   }
 
@@ -138,8 +125,27 @@ function syncToRoute() {
   mountDubPlus(roomSlug);
 }
 
-// Clear out anything a previous load left behind before taking over.
-unmountDubPlus();
+/* --------------------------------------------------------------------------
+ * Taking over from a previous load.
+ *
+ * A bookmarklet clicked twice, or a dev rebuild, evaluates a whole new bundle
+ * against a page that still has the old one running. Module scope doesn't
+ * survive that, but the page does - and so does the old bundle's route
+ * listener, which would keep mounting apps this bundle can't see or unmount.
+ * So the previous load leaves a teardown on `window.dubplus` (the same pattern
+ * as `__detachRealtimeBridge`) and we call it before installing our own.
+ * ------------------------------------------------------------------------ */
 
-onRouteChange(syncToRoute);
+window.dubplus.__teardown?.();
+
+// A load that predates __teardown can only be cleaned up by hand.
+document.getElementById('dubplus-container')?.remove();
+
+const stopRouteListener = onRouteChange(syncToRoute);
+
+window.dubplus.__teardown = () => {
+  stopRouteListener();
+  unmountDubPlus();
+};
+
 syncToRoute();

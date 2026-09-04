@@ -40,6 +40,18 @@ window.dubplusExtensionLoaded = true;
  * returning null - so callers must always have a fallback.
  * ========================================================================== */
 (function () {
+  /* A `web-ext run` reload re-injects this script into the tab that's already
+   * open, long after Turbopack's runtime has booted and swapped itself into
+   * globalThis.TURBOPACK. Running the setup below a second time would redefine
+   * that accessor (it's configurable) and hand the page a fresh empty array in
+   * place of the live runtime, so chunks loaded from then on - every lazy route
+   * - would register with nothing. The tap installed by the first run is still
+   * attached to that runtime and has already resolved the singleton, so the
+   * only safe thing to do on a re-run is leave it alone. */
+  if (window.dubplus && window.dubplus.getQueupRealtime) {
+    return;
+  }
+
   // A string from the RealtimeManager module that survives minification. Used
   // to find which module id holds the realtime singleton, since ids change on
   // every QueUp build.

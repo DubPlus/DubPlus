@@ -191,6 +191,14 @@ declare global {
        * RealtimeManager that outlives the module.
        */
       __detachRealtimeBridge?: (() => void) | undefined;
+      /**
+       * Stops the route listener and unmounts the app of the bundle that is
+       * already running on this page. A dev rebuild or a second bookmarklet
+       * click evaluates a whole new bundle over a live page; src/main.js calls
+       * this before installing its own listener so the old bundle can't keep
+       * mounting apps the new one has no handle on.
+       */
+      __teardown?: (() => void) | undefined;
     };
   }
 }

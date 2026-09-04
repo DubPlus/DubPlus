@@ -26,7 +26,7 @@ export function link(cssFile, className, specificVersion = '') {
   cssFile = cssFile.replace(/^\//, ''); // remove leading slash
   return new Promise((resolve, reject) => {
     document.querySelector(`link.${className}`)?.remove();
-    const cacheBuster = import.meta.env.DEV ? Date.now() : pkg.version;
+    const cacheBuster = pkg.version;
     let cdnPath = 'DubPlus';
     if (specificVersion) {
       cdnPath += `@${specificVersion}`;
