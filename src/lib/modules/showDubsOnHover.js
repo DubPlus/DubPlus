@@ -182,7 +182,7 @@ export const showDubsOnHover = {
 
     // setup hover listener
     updubHoverTeardown = delegateHoverMount(
-      'button:has(> svg.lucide-chevron-up)',
+      'body > div > div > div > div:last-child > div:last-child button:has(> svg.lucide-chevron-up)',
       DubsInfo,
       (target) => {
         const rect = target.getBoundingClientRect();
@@ -197,7 +197,7 @@ export const showDubsOnHover = {
       },
     );
     downdubHoverTeardown = delegateHoverMount(
-      'button:has(> svg.lucide-chevron-down)',
+      'body > div > div > div > div:last-child > div:last-child button:has(> svg.lucide-chevron-down)',
       DubsInfo,
       (target) => {
         const rect = target.getBoundingClientRect();
@@ -212,7 +212,7 @@ export const showDubsOnHover = {
       },
     );
     grabHoverTeardown = delegateHoverMount(
-      'button:has(> svg.lucide-heart)',
+      'body > div > div > div > div:last-child > div:last-child button:has(> svg.lucide-heart)',
       DubsInfo,
       (target) => {
         const rect = target.getBoundingClientRect();
