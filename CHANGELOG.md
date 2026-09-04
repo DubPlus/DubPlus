@@ -7,6 +7,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 Updated to handle the new version of Queup (v2).
 
+## BREAKING
+
+This extension is no longer compatible with Dubtrack.fm, which is not really an issue as that site no longer exits. QueUp.net is its successor and their v1 started off from the same codebase, hence why this extension still listed dubtrack.fm in its manifest.json, but now that QueUp has heavily diverged in their latest version, I've completely removed any reference to dubtrack.fm.
+
+Also, the QueUp update broke a few things for Dub+ that currently has no workaround so certain features have been removed. See the next section below.
+
 ## Removed features
 
 These features were removed because QueUp v2 does this natively now so it's no longer needed:

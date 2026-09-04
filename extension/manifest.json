@@ -16,14 +16,14 @@
   "content_scripts": [
     {
       "js": ["register-dubplus.js"],
-      "matches": ["*://*.dubtrack.fm/*", "*://*.queup.net/*"],
+      "matches": ["*://*.queup.net/*"],
       "run_at": "document_start",
       "world": "MAIN"
     },
     {
       "js": ["dist/dubplus.js"],
       "css": ["dist/dubplus.css"],
-      "matches": ["*://*.dubtrack.fm/*", "*://*.queup.net/*"],
+      "matches": ["*://*.queup.net/*"],
       "run_at": "document_end",
       "world": "MAIN"
     }
@@ -36,7 +36,7 @@
     "96": "icons/96.png",
     "128": "icons/128.png"
   },
-  "host_permissions": ["*://*.dubtrack.fm/*", "*://*.queup.net/*"],
+  "host_permissions": ["*://*.queup.net/*"],
   "browser_specific_settings": {
     "gecko": {
       "id": "{00319163-9639-49e6-ac0f-7d1fb989707d}",
