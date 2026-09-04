@@ -28,17 +28,29 @@
     appearance: none;
     padding: 0;
 
-    width: 26px;
-    height: 26px;
     cursor: pointer;
 
     position: absolute;
-    top: 14px;
-    right: 15px;
+    top: 0;
+    right: 1rem;
     z-index: 1000;
+
+    /* 
+      3.5rem is the height of the <header> set with class .h-14 
+      1px is a bottom border of the header
+    */
+    height: calc(3.5rem - 1px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    :global(svg) {
+      width: 26px;
+      height: 26px;
+    }
   }
 
   :global(header > div:last-child) {
-    padding-right: 36px !important;
+    padding-right: calc(0.5rem + 26px) !important;
   }
 </style>
