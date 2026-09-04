@@ -13,7 +13,7 @@
     "build": "npm run clean && vite build && cd extension && web-ext build --filename dubplus-extension.zip --overwrite-dest --artifacts-dir ../dist",
     "ci:build": "eslint src && vite build",
     "watch": "vite build --watch",
-    "firefox": "cd extension && web-ext run --start-url queup.net --watch-files extension/dist/dubplus.js extension/dist/dubplus.css",
+    "firefox": "web-ext run --source-dir ./extension --start-url queup.net",
     "prepare": "husky install",
     "prettier": "prettier --write .",
     "purge-cache": "node ./tasks/purge-cache.js",
