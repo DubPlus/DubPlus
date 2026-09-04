@@ -11,7 +11,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v4.1.3
+    v5.0.0
 
     MIT License 
 
@@ -35,7 +35,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-var dubplus = (function() {
+(function() {
 	//#region node_modules/svelte/src/internal/shared/utils.js
 	var is_array = Array.isArray;
 	var index_of = Array.prototype.indexOf;
@@ -49,10 +49,6 @@ var dubplus = (function() {
 	var get_prototype_of = Object.getPrototypeOf;
 	var is_extensible = Object.isExtensible;
 	var noop = () => {};
-	/** @param {Function} fn */
-	function run(fn) {
-		return fn();
-	}
 	/** @param {Array<() => void>} arr */
 	function run_all(arr) {
 		for (var i = 0; i < arr.length; i++) arr[i]();
@@ -265,7 +261,7 @@ var dubplus = (function() {
 		return set_hydrate_node(/* @__PURE__ */ get_next_sibling(hydrate_node));
 	}
 	/** @param {TemplateNode} node */
-	function reset$2(node) {
+	function reset$1(node) {
 		if (!hydrating) return;
 		if (/* @__PURE__ */ get_next_sibling(hydrate_node) !== null) {
 			hydration_mismatch();
@@ -337,9 +333,6 @@ var dubplus = (function() {
 	var async_mode_flag = false;
 	/** True if we're not certain that we only have Svelte 5 code in the compilation */
 	var legacy_mode_flag = false;
-	function enable_legacy_mode_flag() {
-		legacy_mode_flag = true;
-	}
 	//#endregion
 	//#region node_modules/svelte/src/internal/client/context.js
 	/** @import { ComponentContext, DevStackEntry, Effect } from '#client' */
@@ -529,6 +522,67 @@ var dubplus = (function() {
 		}
 	}
 	//#endregion
+	//#region node_modules/svelte/src/internal/client/dom/elements/misc.js
+	/**
+	* The child of a textarea actually corresponds to the defaultValue property, so we need
+	* to remove it upon hydration to avoid a bug when someone resets the form value.
+	* @param {HTMLTextAreaElement} dom
+	* @returns {void}
+	*/
+	function remove_textarea_child(dom) {
+		if (hydrating && /* @__PURE__ */ get_first_child(dom) !== null) clear_text_content(dom);
+	}
+	var listening_to_form_reset = false;
+	function add_form_reset_listener() {
+		if (!listening_to_form_reset) {
+			listening_to_form_reset = true;
+			document.addEventListener("reset", (evt) => {
+				Promise.resolve().then(() => {
+					if (!evt.defaultPrevented) for (const e of evt.target.elements)
+ /** @type {any} */ e[FORM_RESET_HANDLER]?.();
+				});
+			}, { capture: true });
+		}
+	}
+	//#endregion
+	//#region node_modules/svelte/src/internal/client/dom/elements/bindings/shared.js
+	/**
+	* @template T
+	* @param {() => T} fn
+	*/
+	function without_reactive_context(fn) {
+		var previous_reaction = active_reaction;
+		var previous_effect = active_effect;
+		set_active_reaction(null);
+		set_active_effect(null);
+		try {
+			return fn();
+		} finally {
+			set_active_reaction(previous_reaction);
+			set_active_effect(previous_effect);
+		}
+	}
+	/**
+	* Listen to the given event, and then instantiate a global form reset listener if not already done,
+	* to notify all bindings when the form is reset
+	* @param {HTMLElement} element
+	* @param {string} event
+	* @param {(is_reset?: true) => void} handler
+	* @param {(is_reset?: true) => void} [on_reset]
+	*/
+	function listen_to_event_and_reset_event(element, event, handler, on_reset = handler) {
+		element.addEventListener(event, () => without_reactive_context(handler));
+		const prev = element[FORM_RESET_HANDLER];
+		if (prev)
+ /** @type {any} */ element[FORM_RESET_HANDLER] = () => {
+			prev();
+			on_reset(true);
+		};
+		else
+ /** @type {any} */ element[FORM_RESET_HANDLER] = () => on_reset(true);
+		add_form_reset_listener();
+	}
+	//#endregion
 	//#region node_modules/svelte/src/reactivity/create-subscriber.js
 	/**
 	* Returns a `subscribe` function that integrates external event-based systems with Svelte's reactivity.
@@ -585,7 +639,7 @@ var dubplus = (function() {
 			if (effect_tracking()) {
 				get(version);
 				render_effect(() => {
-					if (subscribers === 0) stop = untrack(() => start(() => increment$1(version)));
+					if (subscribers === 0) stop = untrack(() => start(() => increment(version)));
 					subscribers += 1;
 					return () => {
 						queue_micro_task(() => {
@@ -593,7 +647,7 @@ var dubplus = (function() {
 							if (subscribers === 0) {
 								stop?.();
 								stop = void 0;
-								increment$1(version);
+								increment(version);
 							}
 						});
 					};
@@ -714,10 +768,49 @@ var dubplus = (function() {
 		*/
 		#hydrate_failed_content(error) {
 			const failed = this.#props.failed;
+			const { reset, invoke_onerror } = this.#create_reset(error);
+			queue_micro_task(invoke_onerror);
 			if (!failed) return;
 			this.#failed_effect = branch(() => {
-				failed(this.#anchor, () => error, () => () => {});
+				failed(this.#anchor, () => error, () => reset);
 			});
+		}
+		/**
+		* Creates the `reset` function for a failed boundary, along with a function
+		* that invokes `onerror` with it (if provided)
+		* @param {unknown} error
+		* @returns {{ reset: () => void, invoke_onerror: () => void }}
+		*/
+		#create_reset(error) {
+			var did_reset = false;
+			var calling_on_error = false;
+			const reset = () => {
+				if (did_reset) {
+					svelte_boundary_reset_noop();
+					return;
+				}
+				did_reset = true;
+				if (calling_on_error) svelte_boundary_reset_onerror();
+				if (this.#failed_effect !== null) pause_effect(this.#failed_effect, () => {
+					this.#failed_effect = null;
+				});
+				this.#run(() => {
+					this.#render();
+				});
+			};
+			const invoke_onerror = () => {
+				try {
+					calling_on_error = true;
+					this.#props.onerror?.(error, reset);
+					calling_on_error = false;
+				} catch (err) {
+					invoke_error_boundary(err, this.#effect && this.#effect.parent);
+				}
+			};
+			return {
+				reset,
+				invoke_onerror
+			};
 		}
 		#hydrate_pending_content() {
 			const pending = this.#props.pending;
@@ -883,33 +976,11 @@ var dubplus = (function() {
 				next();
 				set_hydrate_node(skip_nodes());
 			}
-			var onerror = this.#props.onerror;
 			let failed = this.#props.failed;
-			var did_reset = false;
-			var calling_on_error = false;
-			const reset = () => {
-				if (did_reset) {
-					svelte_boundary_reset_noop();
-					return;
-				}
-				did_reset = true;
-				if (calling_on_error) svelte_boundary_reset_onerror();
-				if (this.#failed_effect !== null) pause_effect(this.#failed_effect, () => {
-					this.#failed_effect = null;
-				});
-				this.#run(() => {
-					this.#render();
-				});
-			};
 			/** @param {unknown} transformed_error */
 			const handle_error_result = (transformed_error) => {
-				try {
-					calling_on_error = true;
-					onerror?.(transformed_error, reset);
-					calling_on_error = false;
-				} catch (error) {
-					invoke_error_boundary(error, this.#effect && this.#effect.parent);
-				}
+				const { reset, invoke_onerror } = this.#create_reset(transformed_error);
+				invoke_onerror();
 				if (failed) this.#failed_effect = this.#run(() => {
 					try {
 						return branch(() => {
@@ -1216,9 +1287,11 @@ var dubplus = (function() {
 		if (derived.effects === null) return;
 		for (const e of derived.effects) if (e.teardown || e.ac) {
 			e.teardown?.();
-			e.ac?.abort(STALE_REACTION);
+			if (e.ac !== null) without_reactive_context(() => {
+				/** @type {AbortController} */ e.ac.abort(STALE_REACTION);
+				e.ac = null;
+			});
 			if (e.fn !== null) e.teardown = noop;
-			e.ac = null;
 			remove_reactions(e, 0);
 			destroy_effect_children(e);
 		}
@@ -1487,10 +1560,12 @@ var dubplus = (function() {
 					current_batch = next_batch;
 				}
 			}
-			if (this.#roots.length > 0) if (next_batch !== null) {
-				const batch = next_batch;
-				batch.#roots.push(...this.#roots.filter((r) => !batch.#roots.includes(r)));
-			} else next_batch = this;
+			if (this.#roots.length > 0) {
+				if (next_batch !== null) {
+					const batch = next_batch;
+					batch.#roots.push(...this.#roots.filter((r) => !batch.#roots.includes(r)));
+				} else next_batch = this;
+			}
 			if (next_batch !== null) next_batch.#process();
 		}
 		/**
@@ -1565,6 +1640,7 @@ var dubplus = (function() {
 			const mark = (value) => {
 				var reactions = value.reactions;
 				if (reactions === null) return;
+				if ((value.f & 2) !== 0 && (value.f & 6144) === 0) return;
 				for (const reaction of reactions) {
 					var flags = reaction.f;
 					if ((flags & 2) !== 0) mark(reaction);
@@ -1681,10 +1757,12 @@ var dubplus = (function() {
 						return v2[0] !== v1[0] || v2[1] !== v1[1];
 					}).map(([c]) => c);
 					if (current_unequal.length > 0) {
-						for (const effect of this.#new_effects) if ((effect.f & 155648) === 0 && depends_on(effect, current_unequal, checked)) if ((effect.f & 4194320) !== 0) {
-							set_signal_status(effect, DIRTY);
-							batch.schedule(effect);
-						} else batch.#dirty_effects.add(effect);
+						for (const effect of this.#new_effects) if ((effect.f & 155648) === 0 && depends_on(effect, current_unequal, checked)) {
+							if ((effect.f & 4194320) !== 0) {
+								set_signal_status(effect, DIRTY);
+								batch.schedule(effect);
+							} else batch.#dirty_effects.add(effect);
+						}
 					}
 					if (batch.#roots.length > 0 && !batch.#decrement_queued) {
 						batch.apply();
@@ -2040,8 +2118,10 @@ var dubplus = (function() {
 			}
 			source.wv = increment_write_version();
 			mark_reactions(source, DIRTY, updated_during_traversal);
-			if (is_runes() && active_effect !== null && (active_effect.f & 1024) !== 0 && (active_effect.f & 96) === 0) if (untracked_writes === null) set_untracked_writes([source]);
-			else untracked_writes.push(source);
+			if (is_runes() && active_effect !== null && (active_effect.f & 1024) !== 0 && (active_effect.f & 96) === 0) {
+				if (untracked_writes === null) set_untracked_writes([source]);
+				else untracked_writes.push(source);
+			}
 			if (!batch.is_fork && eager_effects.size > 0 && !eager_effects_deferred) flush_eager_effects();
 		}
 		return value;
@@ -2064,7 +2144,7 @@ var dubplus = (function() {
 	* Silently (without using `get`) increment a source
 	* @param {Source<number>} source
 	*/
-	function increment$1(source) {
+	function increment(source) {
 		set(source, source.v + 1);
 	}
 	/**
@@ -2154,11 +2234,11 @@ var dubplus = (function() {
 					if (prop in target) {
 						const s = with_parent(() => /* @__PURE__ */ state(UNINITIALIZED, stack));
 						sources.set(prop, s);
-						increment$1(version);
+						increment(version);
 					}
 				} else {
 					set(s, UNINITIALIZED);
-					increment$1(version);
+					increment(version);
 				}
 				return true;
 			},
@@ -2240,7 +2320,7 @@ var dubplus = (function() {
 						var n = Number(prop);
 						if (Number.isInteger(n) && n >= ls.v) set(ls, n + 1);
 					}
-					increment$1(version);
+					increment(version);
 				}
 				return true;
 			},
@@ -2258,17 +2338,6 @@ var dubplus = (function() {
 			}
 		});
 	}
-	new Set([
-		"copyWithin",
-		"fill",
-		"pop",
-		"push",
-		"reverse",
-		"shift",
-		"sort",
-		"splice",
-		"unshift"
-	]);
 	//#endregion
 	//#region node_modules/svelte/src/internal/client/dom/operations.js
 	/** @import { Effect, TemplateNode } from '#client' */
@@ -2448,67 +2517,6 @@ var dubplus = (function() {
 		}
 	}
 	//#endregion
-	//#region node_modules/svelte/src/internal/client/dom/elements/misc.js
-	/**
-	* The child of a textarea actually corresponds to the defaultValue property, so we need
-	* to remove it upon hydration to avoid a bug when someone resets the form value.
-	* @param {HTMLTextAreaElement} dom
-	* @returns {void}
-	*/
-	function remove_textarea_child(dom) {
-		if (hydrating && /* @__PURE__ */ get_first_child(dom) !== null) clear_text_content(dom);
-	}
-	var listening_to_form_reset = false;
-	function add_form_reset_listener() {
-		if (!listening_to_form_reset) {
-			listening_to_form_reset = true;
-			document.addEventListener("reset", (evt) => {
-				Promise.resolve().then(() => {
-					if (!evt.defaultPrevented) for (const e of evt.target.elements)
- /** @type {any} */ e[FORM_RESET_HANDLER]?.();
-				});
-			}, { capture: true });
-		}
-	}
-	//#endregion
-	//#region node_modules/svelte/src/internal/client/dom/elements/bindings/shared.js
-	/**
-	* @template T
-	* @param {() => T} fn
-	*/
-	function without_reactive_context(fn) {
-		var previous_reaction = active_reaction;
-		var previous_effect = active_effect;
-		set_active_reaction(null);
-		set_active_effect(null);
-		try {
-			return fn();
-		} finally {
-			set_active_reaction(previous_reaction);
-			set_active_effect(previous_effect);
-		}
-	}
-	/**
-	* Listen to the given event, and then instantiate a global form reset listener if not already done,
-	* to notify all bindings when the form is reset
-	* @param {HTMLElement} element
-	* @param {string} event
-	* @param {(is_reset?: true) => void} handler
-	* @param {(is_reset?: true) => void} [on_reset]
-	*/
-	function listen_to_event_and_reset_event(element, event, handler, on_reset = handler) {
-		element.addEventListener(event, () => without_reactive_context(handler));
-		const prev = element[FORM_RESET_HANDLER];
-		if (prev)
- /** @type {any} */ element[FORM_RESET_HANDLER] = () => {
-			prev();
-			on_reset(true);
-		};
-		else
- /** @type {any} */ element[FORM_RESET_HANDLER] = () => on_reset(true);
-		add_form_reset_listener();
-	}
-	//#endregion
 	//#region node_modules/svelte/src/internal/client/reactivity/effects.js
 	/** @import { Blocker, ComponentContext, ComponentContextLegacy, Derived, Effect, TemplateNode, TransitionManager } from '#client' */
 	/**
@@ -2562,9 +2570,10 @@ var dubplus = (function() {
 		current_batch?.register_created_effect(effect);
 		/** @type {Effect | null} */
 		var e = effect;
-		if ((type & 4) !== 0) if (collected_effects !== null) collected_effects.push(effect);
-		else Batch.ensure().schedule(effect);
-		else if (fn !== null) {
+		if ((type & 4) !== 0) {
+			if (collected_effects !== null) collected_effects.push(effect);
+			else Batch.ensure().schedule(effect);
+		} else if (fn !== null) {
 			try {
 				update_effect(effect);
 			} catch (e) {
@@ -2619,15 +2628,6 @@ var dubplus = (function() {
 	*/
 	function create_user_effect(fn) {
 		return create_effect(4 | USER_EFFECT, fn);
-	}
-	/**
-	* Internal representation of `$effect.pre(...)`
-	* @param {() => void | (() => void)} fn
-	* @returns {Effect}
-	*/
-	function user_pre_effect(fn) {
-		validate_effect("$effect.pre");
-		return create_effect(8 | USER_EFFECT, fn);
 	}
 	/**
 	* An effect root whose children can transition out
@@ -2901,6 +2901,9 @@ var dubplus = (function() {
 	//#endregion
 	//#region node_modules/svelte/src/internal/client/runtime.js
 	/** @import { Derived, Effect, Reaction, Source, Value } from '#client' */
+	/**
+	* True if updating in an effect context that is reactive (i.e. not branch/root effects)
+	*/
 	var is_updating_effect = false;
 	var is_destroying_effect = false;
 	/** @param {boolean} value */
@@ -3053,8 +3056,10 @@ var dubplus = (function() {
 				read_version++;
 				if (previous_reaction.deps !== null) for (let i = 0; i < previous_skipped_deps; i += 1) previous_reaction.deps[i].rv = read_version;
 				if (previous_deps !== null) for (const dep of previous_deps) dep.rv = read_version;
-				if (untracked_writes !== null) if (previous_untracked_writes === null) previous_untracked_writes = untracked_writes;
-				else previous_untracked_writes.push(...untracked_writes);
+				if (untracked_writes !== null) {
+					if (previous_untracked_writes === null) previous_untracked_writes = untracked_writes;
+					else previous_untracked_writes.push(...untracked_writes);
+				}
 			}
 			if ((reaction.f & 8388608) !== 0) reaction.f ^= ERROR_VALUE;
 			return result;
@@ -3098,6 +3103,11 @@ var dubplus = (function() {
 				derived.f &= ~WAS_MARKED;
 			}
 			if (derived.v !== UNINITIALIZED) update_derived_status(derived);
+			if (derived.ac !== null) without_reactive_context(() => {
+				/** @type {AbortController} */ derived.ac.abort(STALE_REACTION);
+				derived.ac = null;
+				set_signal_status(derived, DIRTY);
+			});
 			freeze_derived_effects(derived);
 			remove_reactions(derived, 0);
 		}
@@ -3123,7 +3133,7 @@ var dubplus = (function() {
 		var previous_effect = active_effect;
 		var was_updating_effect = is_updating_effect;
 		active_effect = effect;
-		is_updating_effect = true;
+		is_updating_effect = (flags & 96) === 0;
 		try {
 			if ((flags & 16777232) !== 0) destroy_block_effect_children(effect);
 			else destroy_effect_children(effect);
@@ -3866,15 +3876,17 @@ createHTML: (html) => {
 		ensure(key, fn) {
 			var batch = current_batch;
 			var defer = should_defer_append();
-			if (fn && !this.#onscreen.has(key) && !this.#offscreen.has(key)) if (defer) {
-				var fragment = document.createDocumentFragment();
-				var target = create_text();
-				fragment.append(target);
-				this.#offscreen.set(key, {
-					effect: branch(() => fn(target)),
-					fragment
-				});
-			} else this.#onscreen.set(key, branch(() => fn(this.anchor)));
+			if (fn && !this.#onscreen.has(key) && !this.#offscreen.has(key)) {
+				if (defer) {
+					var fragment = document.createDocumentFragment();
+					var target = create_text();
+					fragment.append(target);
+					this.#offscreen.set(key, {
+						effect: branch(() => fn(target)),
+						fragment
+					});
+				} else this.#onscreen.set(key, branch(() => fn(this.anchor)));
+			}
 			this.#batches.set(batch, key);
 			if (defer) {
 				for (const [k, effect] of this.#onscreen) if (k === key) batch.unskip_effect(effect);
@@ -4049,14 +4061,17 @@ createHTML: (html) => {
 			state.pending.delete(batch);
 			state.fallback = fallback;
 			reconcile(state, array, anchor, flags, get_key);
-			if (fallback !== null) if (array.length === 0) if ((fallback.f & 33554432) === 0) resume_effect(fallback);
-			else {
-				fallback.f ^= EFFECT_OFFSCREEN;
-				move(fallback, null, anchor);
+			if (fallback !== null) {
+				if (array.length === 0) {
+					if ((fallback.f & 33554432) === 0) resume_effect(fallback);
+					else {
+						fallback.f ^= EFFECT_OFFSCREEN;
+						move(fallback, null, anchor);
+					}
+				} else pause_effect(fallback, () => {
+					fallback = null;
+				});
 			}
-			else pause_effect(fallback, () => {
-				fallback = null;
-			});
 		}
 		/**
 		* @param {Batch} batch
@@ -4102,10 +4117,12 @@ createHTML: (html) => {
 					}
 					keys.add(key);
 				}
-				if (length === 0 && fallback_fn && !fallback) if (first_run) fallback = branch(() => fallback_fn(anchor));
-				else {
-					fallback = branch(() => fallback_fn(offscreen_anchor ??= create_text()));
-					fallback.f |= EFFECT_OFFSCREEN;
+				if (length === 0 && fallback_fn && !fallback) {
+					if (first_run) fallback = branch(() => fallback_fn(anchor));
+					else {
+						fallback = branch(() => fallback_fn(offscreen_anchor ??= create_text()));
+						fallback.f |= EFFECT_OFFSCREEN;
+					}
 				}
 				if (length > keys.size) each_key_duplicate("", "", "");
 				if (hydrating && length > 0) set_hydrate_node(skip_nodes());
@@ -4425,7 +4442,31 @@ createHTML: (html) => {
 		});
 	}
 	//#endregion
+	//#region node_modules/clsx/dist/clsx.mjs
+	function r(e) {
+		var t, f, n = "";
+		if ("string" == typeof e || "number" == typeof e) n += e;
+		else if ("object" == typeof e) if (Array.isArray(e)) {
+			var o = e.length;
+			for (t = 0; t < o; t++) e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
+		} else for (f in e) e[f] && (n && (n += " "), n += f);
+		return n;
+	}
+	function clsx$1() {
+		for (var e, t, f = 0, n = "", o = arguments.length; f < o; f++) (e = arguments[f]) && (t = r(e)) && (n && (n += " "), n += t);
+		return n;
+	}
+	//#endregion
 	//#region node_modules/svelte/src/internal/shared/attributes.js
+	/**
+	* Small wrapper around clsx to preserve Svelte's (weird) handling of falsy values.
+	* TODO Svelte 6 revisit this, and likely turn all falsy values into the empty string (what clsx also does)
+	* @param  {any} value
+	*/
+	function clsx(value) {
+		if (typeof value === "object") return clsx$1(value);
+		else return value ?? "";
+	}
 	var whitespace = [..." 	\n\r\f\xA0\v﻿"];
 	/**
 	* @param {any} value
@@ -4549,9 +4590,11 @@ createHTML: (html) => {
 		var prev = dom[CLASS_CACHE];
 		if (hydrating || prev !== value || prev === void 0) {
 			var next_class_name = to_class(value, hash, next_classes);
-			if (!hydrating || next_class_name !== dom.getAttribute("class")) if (next_class_name == null) dom.removeAttribute("class");
-			else if (is_html) dom.className = next_class_name;
-			else dom.setAttribute("class", next_class_name);
+			if (!hydrating || next_class_name !== dom.getAttribute("class")) {
+				if (next_class_name == null) dom.removeAttribute("class");
+				else if (is_html) dom.className = next_class_name;
+				else dom.setAttribute("class", next_class_name);
+			}
 			/** @type {any} */ dom[CLASS_CACHE] = value;
 		} else if (next_classes && prev_classes !== next_classes) for (var key in next_classes) {
 			var is_present = !!next_classes[key];
@@ -4570,8 +4613,10 @@ createHTML: (html) => {
 	function update_styles(dom, prev = {}, next, priority) {
 		for (var key in next) {
 			var value = next[key];
-			if (prev[key] !== value) if (next[key] == null) dom.style.removeProperty(key);
-			else dom.style.setProperty(key, value, priority);
+			if (prev[key] !== value) {
+				if (next[key] == null) dom.style.removeProperty(key);
+				else dom.style.setProperty(key, value, priority);
+			}
 		}
 	}
 	/**
@@ -4584,13 +4629,17 @@ createHTML: (html) => {
 		var prev = dom[STYLE_CACHE];
 		if (hydrating || prev !== value) {
 			var next_style_attr = to_style(value, next_styles);
-			if (!hydrating || next_style_attr !== dom.getAttribute("style")) if (next_style_attr == null) dom.removeAttribute("style");
-			else dom.style.cssText = next_style_attr;
+			if (!hydrating || next_style_attr !== dom.getAttribute("style")) {
+				if (next_style_attr == null) dom.removeAttribute("style");
+				else dom.style.cssText = next_style_attr;
+			}
 			/** @type {any} */ dom[STYLE_CACHE] = value;
-		} else if (next_styles) if (Array.isArray(next_styles)) {
-			update_styles(dom, prev_styles?.[0], next_styles[0]);
-			update_styles(dom, prev_styles?.[1], next_styles[1], "important");
-		} else update_styles(dom, prev_styles, next_styles);
+		} else if (next_styles) {
+			if (Array.isArray(next_styles)) {
+				update_styles(dom, prev_styles?.[0], next_styles[0]);
+				update_styles(dom, prev_styles?.[1], next_styles[1], "important");
+			} else update_styles(dom, prev_styles, next_styles);
+		}
 		return next_styles;
 	}
 	//#endregion
@@ -4710,77 +4759,6 @@ createHTML: (html) => {
 	*/
 	function to_number(value) {
 		return value === "" ? null : +value;
-	}
-	//#endregion
-	//#region node_modules/svelte/src/internal/client/dom/legacy/lifecycle.js
-	/** @import { ComponentContextLegacy } from '#client' */
-	/**
-	* Legacy-mode only: Call `onMount` callbacks and set up `beforeUpdate`/`afterUpdate` effects
-	* @param {boolean} [immutable]
-	*/
-	function init(immutable = false) {
-		const context = component_context;
-		const callbacks = context.l.u;
-		if (!callbacks) return;
-		let props = () => deep_read_state(context.s);
-		if (immutable) {
-			let version = 0;
-			let prev = {};
-			const d = /* @__PURE__ */ derived(() => {
-				let changed = false;
-				const props = context.s;
-				for (const key in props) if (props[key] !== prev[key]) {
-					prev[key] = props[key];
-					changed = true;
-				}
-				if (changed) version++;
-				return version;
-			});
-			props = () => get(d);
-		}
-		if (callbacks.b.length) user_pre_effect(() => {
-			observe_all(context, props);
-			run_all(callbacks.b);
-		});
-		user_effect(() => {
-			const fns = untrack(() => callbacks.m.map(run));
-			return () => {
-				for (const fn of fns) if (typeof fn === "function") fn();
-			};
-		});
-		if (callbacks.a.length) user_effect(() => {
-			observe_all(context, props);
-			run_all(callbacks.a);
-		});
-	}
-	/**
-	* Invoke the getter of all signals associated with a component
-	* so they can be registered to the effect this function is called in.
-	* @param {ComponentContextLegacy} context
-	* @param {(() => void)} props
-	*/
-	function observe_all(context, props) {
-		if (context.l.s) for (const signal of context.l.s) get(signal);
-		props();
-	}
-	//#endregion
-	//#region node_modules/svelte/src/internal/client/dom/legacy/misc.js
-	/**
-	* Under some circumstances, imports may be reactive in legacy mode. In that case,
-	* they should be using `reactive_import` as part of the transformation
-	* @param {() => any} fn
-	*/
-	function reactive_import(fn) {
-		var s = source(0);
-		return function() {
-			if (arguments.length === 1) {
-				set(s, get(s) + 1);
-				return arguments[0];
-			} else {
-				get(s);
-				return fn();
-			}
-		};
 	}
 	//#endregion
 	//#region node_modules/svelte/src/internal/client/reactivity/props.js
@@ -4927,6 +4905,12 @@ createHTML: (html) => {
 	//#region node_modules/svelte/src/internal/disclose-version.js
 	if (typeof window !== "undefined") ((window.__svelte ??= {}).v ??= /* @__PURE__ */ new Set()).add("5");
 	//#endregion
+	//#region src/lib/svg/Logo.svelte
+	var root$28 = /* @__PURE__ */ from_svg(`<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" viewBox="0 0 2078.496 2083.914" enable-background="new 0 0 2078.496 2083.914" xml:space="preserve"><rect x="769.659" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#660078" width="539.178" height="539.178"></rect><g><rect x="1308.837" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.488" height="539.178"></rect><polygon fill="#EB008B" points="2045.015,1042.035 1845.324,1311.625 1845.324,772.446 	"></polygon></g><g><rect x="232.172" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.487" height="539.178"></rect><polygon fill="#EB008B" points="33.481,1042.034 233.172,772.445 233.172,1311.623 	"></polygon></g><g><rect x="769.659" y="1311.624" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.248,2047.802 769.659,1848.111 1308.837,1848.111 	"></polygon></g><g><rect x="769.659" y="234.958" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.249,35.268 1308.837,235.958 769.659,235.958 	"></polygon></g></svg>`);
+	function Logo($$anchor) {
+		append($$anchor, root$28());
+	}
+	//#endregion
 	//#region src/utils/logger.js
 	var PREFIX = "Dub+";
 	function getTimeStamp() {
@@ -4936,64 +4920,34 @@ createHTML: (html) => {
 	* @param {unknown[]} args
 	*/
 	function logInfo(...args) {
-		console.log(`[${getTimeStamp()}] ${PREFIX}:`, ...args);
+		console.log(`[${getTimeStamp()}] INFO - ${PREFIX}:`, ...args);
+	}
+	/**
+	* @param {unknown[]} args
+	*/
+	function logDebug(...args) {
+		console.debug(`[${getTimeStamp()}] DEBUG - ${PREFIX}:`, ...args);
+	}
+	/**
+	* @param {unknown[]} args
+	*/
+	function logWarn(...args) {
+		console.warn(`[${getTimeStamp()}] WARN - ${PREFIX}:`, ...args);
 	}
 	/**
 	* @param {unknown[]} args
 	*/
 	function logError(...args) {
-		console.error(`[${getTimeStamp()}] ${PREFIX}:`, ...args);
+		console.error(`[${getTimeStamp()}] ERROR - ${PREFIX}:`, ...args);
 	}
 	//#endregion
 	//#region src/utils/waitFor.js
-	/**
-	* Looks for a property to exist in the provided starting scope. Handles
-	* nested property lookups. Similar to lodash `_.get()` but only checks for
-	* existence, not the value.
-	*
-	* For example:
-	* if `objectPath` is `"QueUp.room.chat"` and the `startingScope` is the window
-	* object, it would check in the following order:
-	* 1. `window.Queup`
-	* 2. `window.Queup.room`
-	* 3. `window.Queup.room.chat`
-	*
-	* All have to be defined for it to return true.
-	*
-	* @param  {string} objectPath  the item you are looking for
-	* @param  {object} [startingScope=window] where to start looking. default: `window`
-	* @return {boolean} if it is defined or not
-	*/
-	function deepCheck(objectPath, startingScope = window) {
-		const props = objectPath.split(".");
-		let depth = startingScope;
-		for (let i = 0; i < props.length; i++) {
-			if (typeof depth[props[i]] === "undefined") return false;
-			depth = depth[props[i]];
-		}
-		return true;
-	}
-	/**
-	* Iterates over an array and checks for the existence of each item in the
-	* provided starting scope.
-	* @param {string[]} arr
-	* @param {object} [startingScope=window] default: `window`
-	* @returns
-	*/
-	function arrayDeepCheck(arr, startingScope = window) {
-		const scope = startingScope;
-		for (let i = 0; i < arr.length; i++) if (!deepCheck(arr[i], scope)) {
-			logInfo(arr[i], "is not found yet");
-			return false;
-		}
-		return true;
-	}
 	/**
 	* Checks for the existence of the provides properties
 	* @param {() => boolean} callback a function that returns true when ready
 	* @param {object} [options] options to pass
 	* @param {number} [options.interval] how often to ping
-	* @param {number} [options.seconds] how long to keep trying before failing, default 10
+	* @param {number} [options.seconds] how long to keep trying before failing, default 10, null or Infinity for no timeout
 	* @return {Promise<void>}
 	*/
 	function waitFor(callback, options = {}) {
@@ -5002,6 +4956,19 @@ createHTML: (html) => {
 			seconds: 10
 		}, options);
 		return new Promise((resolve, reject) => {
+			if (!Number.isFinite(opts.seconds)) {
+				if (callback()) {
+					resolve();
+					return;
+				}
+				const intervalId = window.setInterval(() => {
+					if (callback()) {
+						window.clearInterval(intervalId);
+						resolve();
+					}
+				}, opts.interval);
+				return;
+			}
 			let tryCount = 0;
 			const tryLimit = opts.seconds * 1e3 / opts.interval;
 			const check = () => {
@@ -5014,510 +4981,44 @@ createHTML: (html) => {
 		});
 	}
 	//#endregion
-	//#region node_modules/svelte/src/internal/flags/legacy.js
-	enable_legacy_mode_flag();
-	//#endregion
-	//#region src/lib/svg/Logo.svelte
-	var root$28 = /* @__PURE__ */ from_svg(`<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" viewBox="0 0 2078.496 2083.914" enable-background="new 0 0 2078.496 2083.914" xml:space="preserve"><rect x="769.659" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#660078" width="539.178" height="539.178"></rect><g><rect x="1308.837" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.488" height="539.178"></rect><polygon fill="#EB008B" points="2045.015,1042.035 1845.324,1311.625 1845.324,772.446 	"></polygon></g><g><rect x="232.172" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.487" height="539.178"></rect><polygon fill="#EB008B" points="33.481,1042.034 233.172,772.445 233.172,1311.623 	"></polygon></g><g><rect x="769.659" y="1311.624" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.248,2047.802 769.659,1848.111 1308.837,1848.111 	"></polygon></g><g><rect x="769.659" y="234.958" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.249,35.268 1308.837,235.958 769.659,235.958 	"></polygon></g></svg>`);
-	function Logo($$anchor) {
-		append($$anchor, root$28());
-	}
-	//#endregion
-	//#region src/translation.js
-	/**
-	* @type {Record<string, Record<string, string>>}
-	*/
-	var translations = { en: {
-		"Modal.confirm": "OK",
-		"Modal.cancel": "Cancel",
-		"Modal.close": "Close",
-		"Modal.defaultValue": "Default Value",
-		"Error.modal.title": "Dub+ Error",
-		"Error.modal.loggedout": "You're not logged in. Please login to use Dub+.",
-		"Error.unknown": "Something went wrong starting Dub+. Please refresh and try again.",
-		"Loading.text": "Waiting for QueUp...",
-		"Eta.tooltip.notInQueue": "You're not in the queue",
-		"Eta.tootltip": "ETA: {{minutes}} minutes",
-		"Snooze.tooltip": "Mute for current song",
-		"Snooze.tooltip.undo": "Cancel mute for current song",
-		"SnoozeVideo.tooltip": "Hide video for current song",
-		"SnoozeVideo.tooltip.undo": "Cancel hiding video for current song",
-		"Notifcation.permission.title": "Desktop Notification",
-		"Notification.permission.denied": "You have dismissed, or chosen to deny, the request to allow desktop notifications. If you change your mind, you will need to reset this in your browser's site settings.",
-		"Notification.permission.notSupported": "Sorry this browser does not support desktop notifications.  Please update your browser to the lastest version",
-		"Menu.title": "Dub+ Options",
-		"general.title": "General",
-		"user-interface.title": "User Interface",
-		"settings.title": "Settings",
-		"customize.title": "Customize",
-		"contact.title": "Contact",
-		"contact.bugs": "Report bugs on Discord",
-		"Switch.on": "On",
-		"Switch.off": "Off",
-		"MenuItem.edit": "Edit",
-		"autovote.label": "Autovote",
-		"autovote.description": "Toggles auto upvoting for every song",
-		"afk.label": "AFK Auto-respond",
-		"afk.description": "Toggle Away from Keyboard and customize AFK message.",
-		"afk.modal.title": "Custom AFK Message",
-		"afk.modal.content": "Enter a custom \"Away From Keyboard\" [AFK] message here. Message will be prefixed with '[AFK]'",
-		"afk.modal.placeholder": "Be right back!",
-		"auto-afk.label": "Auto AFK",
-		"auto-afk.description": "Automatically set yourself to AFK after a certain amount of time of inactivity",
-		"auto-afk.modal.title": "Auto AFK Timer",
-		"auto-afk.modal.content": "Enter the amount of time, in minutes, before you are set to AFK.",
-		"auto-afk.modal.validation": "Please enter a whole number greater than 0",
-		"emotes.label": "Emotes",
-		"emotes.description": "Adds Twitch, Bttv, and FrankerFacez emotes in chat.",
-		"autocomplete.label": "Autocomplete Emoji",
-		"autocomplete.description": "Toggle autocompleting emojis and emotes. Shows a preview box in the chat",
-		"autocomplete.preview.a11y": "press up and down to navigate, press enter or tab to select, press esc to close",
-		"autocomplete.preview.navigate": "navigate",
-		"autocomplete.preview.select": "select",
-		"autocomplete.preview.close": "close",
-		"custom-mentions.label": "Custom Mentions",
-		"custom-mentions.description": "Toggle using custom mentions to trigger sounds in chat",
-		"custom-mentions.modal.title": "Custom Mentions",
-		"custom-mentions.modal.content": "Add your custom mention triggers here (separate by comma)",
-		"custom-mentions.modal.placeholder": "separate, custom mentions, by, comma, :heart:",
-		"chat-cleaner.label": "Chat Cleaner",
-		"chat-cleaner.description": "Help keep CPU stress down by setting a limit of how many chat messages to keep in the chat box, deleting older messages.",
-		"chat-cleaner.modal.title": "Chat Cleaner",
-		"chat-cleaner.modal.content": "Please specify the number of most recent chat items that will remain in your chat history",
-		"chat-cleaner.modal.validation": "Please enter a whole number greater than, or equal to, 1",
-		"chat-cleaner.modal.placeholder": "500",
-		"collapsible-images.label": "Collapsible Images",
-		"collapsible-images.description": "Make images in the chat collapsible",
-		"mention-notifications.label": "Notification on Mentions",
-		"mention-notifications.description": "Enable desktop notifications when a user mentions you in chat",
-		"pm-notifications.label": "Notification on PM",
-		"pm-notifications.description": "Enable desktop notifications when a user receives a private message",
-		"pm-notifications.notification.title": "You have a new PM",
-		"dj-notification.label": "DJ Notification",
-		"dj-notification.description": "Get a notification when you are coming up to be the DJ",
-		"dj-notification.modal.title": "DJ Notification",
-		"dj-notification.modal.content": "Please specify the position in queue you want to be notified at. Use \"0\" to be notified when you start playing.",
-		"dj-notification.notification.title": "DJ Alert!",
-		"dj-notification.notification.content": "You will be DJing shortly! Make sure your song is set!",
-		"dj-notification.modal.validation": "Please enter a whole number greater than, or equal to, 0",
-		"dubs-hover.label": "Show Dubs on Hover",
-		"dubs-hover.description": "Show who dubs a song when hovering over the dubs count",
-		"dubs-hover.no-votes": "No {{dubType}}s have been casted yet!",
-		"dubs-hover.no-grabs": "No one has grabbed this song yet!",
-		"downdubs-in-chat.label": "Downdubs in Chat (mods only)",
-		"downdubs-in-chat.description": "Toggle showing downdubs in the chat box (mods only)",
-		"downdubs-in-chat.chat-message": "@{{username}} has downdubbed your song {{song_name}}",
-		"updubs-in-chat.label": "Updubs in Chat",
-		"updubs-in-chat.description": "Toggle showing updubs in the chat box",
-		"updubs-in-chat.chat-message": "@{{username}} has updubbed your song {{song_name}}",
-		"grabs-in-chat.label": "Grabs in Chat",
-		"grabs-in-chat.description": "Toggle showing grabs in the chat box",
-		"grabs-in-chat.chat-message": "@{{username}} has grabbed your song {{song_name}}",
-		"snow.label": "Snow",
-		"snow.description": "Make it snow!",
-		"rain.label": "Rain",
-		"rain.description": "Make it rain!",
-		"fullscreen.label": "Fullscreen",
-		"fullscreen.description": "Toggle fullscreen video mode",
-		"split-chat.label": "Split Chat",
-		"split-chat.description": "Toggle Split Chat UI enhancement",
-		"hide-chat.label": "Hide Chat",
-		"hide-chat.description": "Toggles hiding the chat box",
-		"hide-video.label": "Hide Video",
-		"hide-video.description": "Toggles hiding the video box",
-		"hide-avatars.label": "Hide Avatars",
-		"hide-avatars.description": "Toggle hiding user avatars in the chat box",
-		"hide-bg.label": "Hide Background",
-		"hide-bg.description": "Toggle hiding background image",
-		"show-timestamps.label": "Show Timestamps",
-		"show-timestamps.description": "Toggle always showing chat message timestamps",
-		"flip-interface.label": "Flip Interface",
-		"flip-interface.description": "Swap the video and chat positions",
-		"pin-menu.label": "Pin Menu",
-		"pin-menu.description": "Pin the Dub+ menu to the left or right side. Use the action button to toggle which side it is pinned to. Only works in the non-mobile view",
-		"pin-menu.secondaryAction.description": "Click to toggle between pinning to the left or right side",
-		"spacebar-mute.label": "Spacebar Mute",
-		"spacebar-mute.description": "Turn on/off the ability to mute current song with the spacebar",
-		"warn-redirect.label": "Warn on Navigation",
-		"warn-redirect.description": "Warns you when accidentally clicking on a link that takes you out of QueUp",
-		"community-theme.label": "Community Theme",
-		"community-theme.description": "Toggle Community CSS theme",
-		"custom-css.label": "Custom CSS",
-		"custom-css.description": "Add your own custom CSS.",
-		"custom-css.modal.title": "Custom CSS",
-		"custom-css.modal.content": "Enter a url location for your custom css",
-		"custom-css.modal.placeholder": "https://example.com/example.css",
-		"custom-css.modal.validation": "Invalid URL",
-		"custom-bg.label": "Custom Background",
-		"custom-bg.description": "Add your own custom background.",
-		"custom-bg.modal.title": "Custom Background Image",
-		"custom-bg.modal.content": "Enter the full URL of an image. We recommend using a .jpg file. Leave blank to remove the current background image",
-		"custom-bg.modal.placeholder": "https://example.com/big-image.jpg",
-		"custom-notification-sound.label": "Custom Notification Sound",
-		"custom-notification-sound.description": "Change the notification sound to a custom one.",
-		"custom-notification-sound.modal.title": "Custom Notification Sound",
-		"custom-notification-sound.modal.content": "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to QueUp's default sound",
-		"custom-notification-sound.modal.placeholder": "https://example.com/sweet-sound.mp3",
-		"custom-notification-sound.modal.validation": "Can't play sound from this URL. Please enter a valid URL to an MP3 file.",
-		"grab-response.label": "Grab Response",
-		"grab-response.description": "Sends a chat message when you grab a song",
-		"grab-response.modal.title": "Grab Response",
-		"grab-response.modal.content": "Enter a message to send when you grab a song",
-		"grab-response.modal.placeholder": "Thanks for the song!"
-	} };
-	//#endregion
-	//#region src/lib/stores/i18n.svelte.js
-	var locale = proxy({ current: "en" });
-	function translate(loc, key, vars = {}) {
-		if (!key) {
-			logError("No translation key provided", {
-				locale: loc,
-				key,
-				vars
-			});
-			return "";
-		}
-		const normalizedLocale = normalizeLocale(loc);
-		let text = translations[normalizedLocale]?.[key];
-		if (!text && normalizedLocale !== "en") text = translations["en"][key];
-		if (!text) {
-			logError(`No translation found for ${normalizedLocale}.${key}`);
-			return key;
-		}
-		Object.keys(vars).forEach((item) => {
-			const regex = new RegExp(`{{${item}}}`, "g");
-			text = text.replace(regex, () => String(vars[item]));
-		});
-		return text;
-	}
-	/**
-	*
-	* @param {string} [key]
-	* @param {Record<string, string|number|boolean>} [vars]
-	* @returns
-	*/
-	function t(key, vars = {}) {
-		return translate(locale.current, key, vars);
-	}
-	/**
-	* @param {string} loc
-	* @returns {string}
-	*/
-	function normalizeLocale(loc) {
-		if (loc.toLowerCase().startsWith("en")) return "en";
-		return loc;
-	}
-	//#endregion
-	//#region src/lib/Loading.svelte
-	var root$27 = /* @__PURE__ */ from_html(`<div class="dubplus-waiting svelte-gftfsn"><div style="width: 26px; margin-right:5px"><!></div> <span style="flex: 1;"> </span></div>`);
-	function Loading($$anchor, $$props) {
-		push($$props, false);
-		init();
-		var div = root$27();
-		var div_1 = child(div);
-		Logo(child(div_1), {});
-		reset$2(div_1);
-		var span = sibling(div_1, 2);
-		var text = child(span, true);
-		reset$2(span);
-		reset$2(div);
-		template_effect(($0) => set_text(text, $0), [() => t("Loading.text")]);
-		append($$anchor, div);
-		pop();
-	}
-	//#endregion
-	//#region src/lib/stores/modalState.svelte.js
-	var modalState = proxy({
-		id: "",
-		open: false,
-		title: "Dub+",
-		content: "",
-		value: "",
-		placeholder: "",
-		defaultValue: "",
-		maxlength: 999,
-		validation: () => {
-			return true;
-		},
-		onConfirm: () => {
-			return true;
-		},
-		onCancel: () => {}
-	});
-	/**
-	*
-	* @param {import('../../global').ModalProps} nextState
-	*/
-	function updateModalState(nextState) {
-		modalState.open = nextState.open ?? false;
-		modalState.title = nextState.title || "Dub+";
-		modalState.content = nextState.content || "";
-		modalState.value = nextState.value || "";
-		modalState.placeholder = nextState.placeholder || "";
-		modalState.defaultValue = nextState.defaultValue;
-		modalState.maxlength = nextState.maxlength || 999;
-		modalState.onConfirm = nextState.onConfirm;
-		modalState.onCancel = nextState.onCancel;
-		modalState.validation = nextState.validation || (() => true);
-	}
-	//#endregion
-	//#region src/lib/Modal.svelte
-	var root$26 = /* @__PURE__ */ from_html(`<div class="default svelte-5awcn0"><span class="default-label svelte-5awcn0"> </span> <span class="default-value svelte-5awcn0"> </span></div>`);
-	var root_1$5 = /* @__PURE__ */ from_html(`<textarea class="svelte-5awcn0"></textarea>`);
-	var root_2$1 = /* @__PURE__ */ from_html(`<p class="dp-modal--error svelte-5awcn0"> </p>`);
-	var root_3 = /* @__PURE__ */ from_html(`<button class="dp-modal--cancel cancel svelte-5awcn0"> </button> <button class="dp-modal--confirm confirm svelte-5awcn0"> </button>`, 1);
-	var root_4 = /* @__PURE__ */ from_html(`<button class="dp-modal--cancel cancel svelte-5awcn0"> </button>`);
-	var root_5 = /* @__PURE__ */ from_html(`<dialog id="dubplus-dialog" class="dp-modal svelte-5awcn0"><h1 class="svelte-5awcn0"> </h1> <div class="dp-modal--content content svelte-5awcn0"><p class="svelte-5awcn0"> </p> <!> <!> <!></div> <div class="dp-modal--buttons buttons svelte-5awcn0"><!></div></dialog>`);
-	function Modal($$anchor, $$props) {
-		push($$props, true);
-		let errorMessage = /* @__PURE__ */ state("");
-		/** @type {HTMLDialogElement} */
-		let dialog;
-		onMount(() => {
-			dialog = document.getElementById("dubplus-dialog");
-			dialog.addEventListener("close", () => {
-				modalState.open = false;
-			});
-		});
-		user_effect(() => {
-			if (modalState.open && dialog && !dialog.open) dialog.showModal();
-		});
-		var dialog_1 = root_5();
-		var h1 = child(dialog_1);
-		var text = child(h1, true);
-		reset$2(h1);
-		var div = sibling(h1, 2);
-		var p = child(div);
-		var text_1 = child(p, true);
-		reset$2(p);
-		var node = sibling(p, 2);
-		var consequent = ($$anchor) => {
-			var div_1 = root$26();
-			var span = child(div_1);
-			var text_2 = child(span);
-			reset$2(span);
-			var span_1 = sibling(span, 2);
-			var text_3 = child(span_1, true);
-			reset$2(span_1);
-			reset$2(div_1);
-			template_effect(($0) => {
-				set_text(text_2, `${$0 ?? ""}:`);
-				set_text(text_3, modalState.defaultValue);
-			}, [() => t("Modal.defaultValue")]);
-			append($$anchor, div_1);
-		};
-		if_block(node, ($$render) => {
-			if (modalState.defaultValue) $$render(consequent);
-		});
-		var node_1 = sibling(node, 2);
-		var consequent_1 = ($$anchor) => {
-			var textarea = root_1$5();
-			remove_textarea_child(textarea);
-			template_effect(() => {
-				set_attribute(textarea, "placeholder", modalState.placeholder);
-				set_attribute(textarea, "maxlength", modalState.maxlength && modalState.maxlength < 999 ? modalState.maxlength : 999);
-			});
-			bind_value(textarea, () => modalState.value, ($$value) => modalState.value = $$value);
-			append($$anchor, textarea);
-		};
-		if_block(node_1, ($$render) => {
-			if (modalState.placeholder || modalState.value) $$render(consequent_1);
-		});
-		var node_2 = sibling(node_1, 2);
-		var consequent_2 = ($$anchor) => {
-			var p_1 = root_2$1();
-			var text_4 = child(p_1, true);
-			reset$2(p_1);
-			template_effect(() => set_text(text_4, get(errorMessage)));
-			append($$anchor, p_1);
-		};
-		if_block(node_2, ($$render) => {
-			if (get(errorMessage)) $$render(consequent_2);
-		});
-		reset$2(div);
-		var div_2 = sibling(div, 2);
-		var node_3 = child(div_2);
-		var consequent_3 = ($$anchor) => {
-			var fragment = root_3();
-			var button = first_child(fragment);
-			var text_5 = child(button, true);
-			reset$2(button);
-			var button_1 = sibling(button, 2);
-			var text_6 = child(button_1, true);
-			reset$2(button_1);
-			template_effect(($0, $1) => {
-				set_text(text_5, $0);
-				set_text(text_6, $1);
-			}, [() => t("Modal.cancel"), () => t("Modal.confirm")]);
-			delegated("click", button, () => {
-				dialog.close();
-				modalState.open = false;
-				set(errorMessage, "");
-				if (typeof modalState.onCancel === "function") modalState.onCancel();
-			});
-			delegated("click", button_1, () => {
-				const isValidOrErrorMessage = modalState.validation?.(modalState.value ?? "") ?? true;
-				if (isValidOrErrorMessage === true) {
-					dialog.close();
-					modalState.open = false;
-					modalState.onConfirm?.(modalState.value ?? "");
-					set(errorMessage, "");
-				} else set(errorMessage, isValidOrErrorMessage, true);
-			});
-			append($$anchor, fragment);
-		};
-		var alternate = ($$anchor) => {
-			var button_2 = root_4();
-			var text_7 = child(button_2, true);
-			reset$2(button_2);
-			template_effect(($0) => set_text(text_7, $0), [() => t("Modal.close")]);
-			delegated("click", button_2, () => {
-				dialog.close();
-				modalState.open = false;
-				set(errorMessage, "");
-			});
-			append($$anchor, button_2);
-		};
-		if_block(node_3, ($$render) => {
-			if (typeof modalState.onConfirm === "function") $$render(consequent_3);
-			else $$render(alternate, -1);
-		});
-		reset$2(div_2);
-		reset$2(dialog_1);
-		template_effect(() => {
-			set_text(text, modalState.title);
-			set_text(text_1, modalState.content);
-		});
-		append($$anchor, dialog_1);
-		pop();
-	}
-	delegate(["click"]);
-	//#endregion
 	//#region src/lib/actions/teleport.svelte.js
-	var teleport = (node, { to, position = "append" }) => {
-		user_effect(() => {
+	var teleport = (node, initialParams) => {
+		let { to, position = "append" } = initialParams;
+		function init() {
 			if (node.id) document.getElementById(node.id)?.remove();
-			const teleportContainer = document.querySelector(to);
-			if (!teleportContainer) throw new Error(`teleport container not found: ${to}`);
-			if (position === "append") teleportContainer.appendChild(node);
-			else teleportContainer.prepend(node);
-			return () => {
+			else logError("teleport node must have an id", node);
+			const getTeleportContainer = () => typeof to === "string" ? document.querySelector(to) : to();
+			waitFor(() => !!getTeleportContainer(), { seconds: 5 }).then(() => {
+				const teleportContainer = getTeleportContainer();
+				if (teleportContainer) {
+					if (position === "append") teleportContainer.appendChild(node);
+					else teleportContainer.prepend(node);
+				}
+			}).catch(() => {
+				logError(`teleport container not found: ${to}`);
+			});
+		}
+		init();
+		return {
+			update(newParams) {
+				to = newParams.to;
+				position = newParams.position ?? "append";
+				init();
+			},
+			destroy() {
 				node.remove();
-			};
-		});
+			}
+		};
 	};
 	//#endregion
-	//#region src/lib/queup.ui.js
-	/**
-	* Anything that access the UI for QueUp should go here so that when there's any
-	* future changes to the UI, we'll just need to update this file.
-	*/
-	/**
-	* @returns {HTMLTextAreaElement | null}
-	*/
-	function getChatInput() {
-		return document.querySelector("#chat-txt-message");
-	}
-	function getChatContainer() {
-		return document.querySelector("ul.chat-main");
-	}
-	/**
-	* @param {string} [extra] example: ":not([data-emote-processed])"
-	* @returns {NodeListOf<HTMLLIElement>}
-	*/
-	function getChatMessages(extra = "") {
-		return document.querySelectorAll(`ul.chat-main > li${extra}`);
-	}
-	/**
-	* @returns {NodeListOf<HTMLAnchorElement>}
-	*/
-	function getImagesInChat() {
-		return document.querySelectorAll(".chat-main > li .autolink-image");
-	}
-	/**
-	* @returns {HTMLImageElement | null}
-	*/
-	function getBackgroundImage() {
-		return document.querySelector(".backstretch img");
-	}
-	/**
-	* @returns {HTMLSpanElement | null}
-	*/
-	function getQueuePosition() {
-		return document.querySelector(".queue-position");
-	}
-	/**
-	* @returns {HTMLSpanElement | null}
-	*/
-	function getQueueTotal() {
-		return document.querySelector(".queue-total");
-	}
-	/**
-	* @returns {HTMLIFrameElement | null}
-	*/
-	function getPlayerIframe() {
-		return document.querySelector(".player_container iframe");
-	}
-	/**
-	*
-	* @returns {HTMLDivElement | null}
-	*/
-	function getPrivateMessageButton() {
-		return document.querySelector(".user-messages");
-	}
-	/**
-	* @param {string} messageId
-	* @returns {HTMLLIElement | null}
-	*/
-	function getPrivateMessage(messageId) {
-		return document.querySelector(`.message-item[data-messageid="${messageId}"]`);
-	}
-	/**
-	* @returns {HTMLAnchorElement | null}
-	*/
-	function getDubUp() {
-		return document.querySelector(".dubup");
-	}
-	/**
-	* @returns {HTMLAnchorElement | null}
-	*/
-	function getDubDown() {
-		return document.querySelector(".dubdown");
-	}
-	/**
-	* @returns {HTMLLIElement | null}
-	*/
-	function getAddToPlaylist() {
-		return document.querySelector(".add-to-playlist");
-	}
-	/**
-	* @returns {HTMLSpanElement | null}
-	*/
-	function getCurrentSongMinutes() {
-		return document.querySelector("div.currentTime span.min");
-	}
-	/**
-	* Selectors for some elements
-	*/
-	var CHAT_INPUT_CONTAINER = ".pusher-chat-widget-input";
-	/**
-	* This is the location where the DubPlus menu will be placed.
-	*/
-	var DUBPLUS_MENU_CONTAINER = ".header-right-navigation";
-	/**
-	* This is where the ETA, Snooze, and Snooze Video buttons are placed.
-	*/
-	var PLAYER_SHARING_CONTAINER = ".player_sharing";
-	//#endregion
 	//#region src/lib/menu/MenuIcon.svelte
-	var root$25 = /* @__PURE__ */ from_html(`<button id="dubplus-menu-icon" type="button" aria-label="Dub+ menu" class="dubplus-icon svelte-4l9n7d"><!></button>`);
+	var root$27 = /* @__PURE__ */ from_html(`<button id="dubplus-menu-icon" type="button" aria-label="Dub+ menu" class="dubplus-icon svelte-4l9n7d"><!></button>`);
 	function MenuIcon($$anchor, $$props) {
-		push($$props, false);
-		init();
-		var button = root$25();
+		push($$props, true);
+		var button = root$27();
 		Logo(child(button), {});
-		reset$2(button);
-		action(button, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({ to: DUBPLUS_MENU_CONTAINER }));
+		reset$1(button);
+		action(button, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({ to: "body" }));
 		delegated("click", button, () => {
 			document.querySelector(".dubplus-menu")?.classList.toggle("dubplus-menu-open");
 		});
@@ -5580,13 +5081,13 @@ createHTML: (html) => {
 	};
 	/**
 	*
-	* @param {import("../global").Settings} oldSettings
-	* @returns {import("../global").Settings}
+	* @param {import("../types/global").Settings} oldSettings
+	* @returns {import("../types/global").Settings}
 	*/
 	function migrate(oldSettings) {
 		logInfo("Old Settings", oldSettings);
 		/**
-		* @type {import("../global").Settings}
+		* @type {import("../types/global").Settings}
 		*/
 		const newOptions = {
 			options: {},
@@ -5642,15 +5143,15 @@ createHTML: (html) => {
 	};
 	function loadSettings() {
 		try {
-			const v2Settings = JSON.parse(localStorage.getItem(STORAGE_KEY_NEW) ?? "");
+			const v2Settings = JSON.parse(localStorage.getItem(STORAGE_KEY_NEW) ?? "{}");
 			if (v2Settings) return v2Settings;
 		} catch (e) {
 			logInfo("Error loading v2 settings, trying old settings. Error:", e);
 		}
 		try {
-			const oldSettings = JSON.parse(localStorage.getItem(STORAGE_KEY_OLD) ?? "");
+			const oldSettings = JSON.parse(localStorage.getItem(STORAGE_KEY_OLD) ?? "{}");
 			if (oldSettings) return migrate(
-				/**@type {import("../../global").Settings}*/
+				/**@type {import("../../types/global").Settings}*/
 				oldSettings
 			);
 		} catch (e) {
@@ -5659,7 +5160,7 @@ createHTML: (html) => {
 		return {};
 	}
 	/**
-	* @type {import("../../global").Settings}
+	* @type {import("../../types/global").Settings}
 	*/
 	var settings = proxy(Object.assign({}, defaults, loadSettings()));
 	function persist() {
@@ -5671,7 +5172,7 @@ createHTML: (html) => {
 	}
 	/**
 	*
-	* @param {import("../../global").SettingsSections} section
+	* @param {import("../../types/global").SettingsSections} section
 	* @param {string} property
 	* @param {any} value
 	*/
@@ -5695,7 +5196,7 @@ createHTML: (html) => {
 	}
 	//#endregion
 	//#region src/lib/menu/MenuHeader.svelte
-	var root$24 = /* @__PURE__ */ from_html(`<button type="button" class="dubplus-menu-section-header svelte-ou161d"><span></span> <p class="svelte-ou161d"> </p></button>`);
+	var root$26 = /* @__PURE__ */ from_html(`<button type="button" class="dubplus-menu-section-header svelte-ou161d"><span></span> <p class="svelte-ou161d"> </p></button>`);
 	function MenuHeader($$anchor, $$props) {
 		push($$props, true);
 		/**
@@ -5719,12 +5220,12 @@ createHTML: (html) => {
 			settings.menu[$$props.settingsId] = settings.menu[$$props.settingsId] === "closed" ? "open" : "closed";
 			saveSetting("menu", $$props.settingsId, settings.menu[$$props.settingsId]);
 		}
-		var button = root$24();
+		var button = root$26();
 		var span = child(button);
 		var p = sibling(span, 2);
 		var text = child(p, true);
-		reset$2(p);
-		reset$2(button);
+		reset$1(p);
+		reset$1(button);
 		template_effect(() => {
 			set_attribute(button, "id", `dubplus-menu-section-header-${$$props.settingsId}`);
 			set_attribute(button, "aria-expanded", get(expanded));
@@ -5739,11 +5240,11 @@ createHTML: (html) => {
 	delegate(["click"]);
 	//#endregion
 	//#region src/lib/menu/MenuSection.svelte
-	var root$23 = /* @__PURE__ */ from_html(`<ul class="dubplus-menu-section svelte-1njz3ux" role="region"><!></ul>`);
+	var root$25 = /* @__PURE__ */ from_html(`<ul class="dubplus-menu-section svelte-1njz3ux" role="region"><!></ul>`);
 	function MenuSection($$anchor, $$props) {
-		var ul = root$23();
+		var ul = root$25();
 		snippet(child(ul), () => $$props.children);
-		reset$2(ul);
+		reset$1(ul);
 		template_effect(() => {
 			set_attribute(ul, "id", `dubplus-menu-section-${$$props.settingsId}`);
 			set_attribute(ul, "aria-labelledby", `dubplus-menu-section-header-${$$props.settingsId}`);
@@ -5752,17 +5253,17 @@ createHTML: (html) => {
 	}
 	//#endregion
 	//#region src/lib/menu/MenuLink.svelte
-	var root$22 = /* @__PURE__ */ from_html(`<li class="dubplus-menu-icon svelte-705sau"><!> <a class="dubplus-menu-label svelte-705sau" target="_blank"> </a></li>`);
+	var root$24 = /* @__PURE__ */ from_html(`<li class="dubplus-menu-icon svelte-705sau"><!> <a class="dubplus-menu-label svelte-705sau" target="_blank"> </a></li>`);
 	function MenuLink($$anchor, $$props) {
-		var li = root$22();
+		var li = root$24();
 		var node = child(li);
 		component(node, () => $$props.icon, ($$anchor, Icon_1) => {
 			Icon_1($$anchor, {});
 		});
 		var a = sibling(node, 2);
 		var text_1 = child(a, true);
-		reset$2(a);
-		reset$2(li);
+		reset$1(a);
+		reset$1(li);
 		template_effect(() => {
 			set_attribute(a, "href", $$props.href);
 			set_text(text_1, $$props.text);
@@ -5770,40 +5271,226 @@ createHTML: (html) => {
 		append($$anchor, li);
 	}
 	//#endregion
+	//#region src/translation.js
+	/**
+	* @type {Record<string, Record<string, string>>}
+	*/
+	var translations = { en: {
+		"Modal.confirm": "OK",
+		"Modal.cancel": "Cancel",
+		"Modal.close": "Close",
+		"Modal.defaultValue": "Default Value",
+		"Error.modal.title": "Dub+ Error",
+		"Error.modal.loggedout": "You're not logged in. Please login to use Dub+.",
+		"Error.unknown": "Something went wrong starting Dub+. Please refresh and try again.",
+		"Loading.text": "Waiting for QueUp...",
+		"Eta.tooltip.notInQueue": "You're not in the queue",
+		"Eta.tootltip": "ETA: {{time}}",
+		"SnoozeVideo.tooltip": "Hide video for current song",
+		"SnoozeVideo.tooltip.undo": "Cancel hiding video for current song",
+		"Notifcation.permission.title": "Desktop Notification",
+		"Notification.permission.denied": "You have dismissed, or chosen to deny, the request to allow desktop notifications. If you change your mind, you will need to reset this in your browser's site settings.",
+		"Notification.permission.notSupported": "Sorry this browser does not support desktop notifications.  Please update your browser to the lastest version",
+		"Menu.title": "Dub+ Options",
+		"general.title": "General",
+		"user-interface.title": "User Interface",
+		"settings.title": "Settings",
+		"customize.title": "Customize",
+		"contact.title": "Contact",
+		"contact.bugs": "Report bugs on Discord",
+		"Switch.on": "On",
+		"Switch.off": "Off",
+		"MenuItem.edit": "Edit",
+		"autovote.label": "Autovote",
+		"autovote.description": "Toggles auto upvoting for every song",
+		"afk.label": "AFK Auto-respond",
+		"afk.description": "Toggle Away from Keyboard and customize AFK message.",
+		"afk.modal.title": "Custom AFK Message",
+		"afk.modal.content": "Enter a custom \"Away From Keyboard\" [AFK] message here. Message will be prefixed with '[AFK]'",
+		"afk.modal.placeholder": "Be right back!",
+		"auto-afk.label": "Auto AFK",
+		"auto-afk.description": "Automatically set yourself to AFK after a certain amount of time of inactivity",
+		"auto-afk.modal.title": "Auto AFK Timer",
+		"auto-afk.modal.content": "Enter the amount of time, in minutes, before you are set to AFK.",
+		"auto-afk.modal.validation": "Please enter a whole number greater than 0",
+		"auto-afk.modal.placeholder": "30",
+		"auto-afk.modal.defaultValue": "30",
+		"emotes.label": "Emotes",
+		"emotes.description": "Adds Twitch, Bttv, and FrankerFacez emotes in chat.",
+		"autocomplete.label": "Autocomplete Emoji",
+		"autocomplete.description": "Toggle autocompleting emojis and emotes. Shows a preview box in the chat",
+		"autocomplete.preview.a11y": "press up and down to navigate, press enter or tab to select, press esc to close",
+		"autocomplete.preview.navigate": "navigate",
+		"autocomplete.preview.select": "select",
+		"autocomplete.preview.close": "close",
+		"custom-mentions.label": "Custom Mentions",
+		"custom-mentions.description": "Toggle using custom mentions to trigger sounds in chat",
+		"custom-mentions.modal.title": "Custom Mentions",
+		"custom-mentions.modal.content": "Add your custom mention triggers here (separate by comma)",
+		"custom-mentions.modal.placeholder": "separate, custom mentions, by, comma, :heart:",
+		"chat-cleaner.label": "Chat Cleaner",
+		"chat-cleaner.description": "Help keep CPU stress down by setting a limit of how many chat messages to keep in the chat box, deleting older messages.",
+		"chat-cleaner.modal.title": "Chat Cleaner",
+		"chat-cleaner.modal.content": "Please specify the number of most recent chat items that will remain in your chat history",
+		"chat-cleaner.modal.validation": "Please enter a whole number greater than, or equal to, 1",
+		"chat-cleaner.modal.placeholder": "500",
+		"collapsible-images.label": "Collapsible Images",
+		"collapsible-images.description": "Make images in the chat collapsible",
+		"mention-notifications.label": "Notification on Mentions",
+		"mention-notifications.description": "Enable desktop notifications when a user mentions you in chat",
+		"pm-notifications.label": "Notification on PM",
+		"pm-notifications.description": "Enable desktop notifications when a user receives a private message",
+		"pm-notifications.notification.title": "You have a new PM",
+		"dj-notification.label": "DJ Notification",
+		"dj-notification.description": "Get a notification when you are coming up to be the DJ",
+		"dj-notification.modal.title": "DJ Notification",
+		"dj-notification.modal.content": `Please specify the position in queue you want to be notified at. 
+        "0" means you are on now.
+        "1" means you're up next.
+        "2" means you're two spots away from playing.
+      `,
+		"dj-notification.notification.title": "DJ Alert!",
+		"dj-notification.notification.content": "You will be DJing shortly! Make sure your song is set!",
+		"dj-notification.modal.validation": "Please enter a whole number greater than, or equal to, 0",
+		"dubs-hover.label": "Show Dubs on Hover",
+		"dubs-hover.description": "Show who dubs a song when hovering over the dubs count",
+		"dubs-hover.no-votes": "No {{dubType}}s have been casted yet!",
+		"dubs-hover.no-grabs": "No one has grabbed this song yet!",
+		"downdubs-in-chat.label": "Downdubs in Chat (mods only)",
+		"downdubs-in-chat.description": "Toggle showing downdubs in the chat box (mods only)",
+		"downdubs-in-chat.chat-message": "@{{username}} has downdubbed your song {{song_name}}",
+		"updubs-in-chat.label": "Updubs in Chat",
+		"updubs-in-chat.description": "Toggle showing updubs in the chat box",
+		"updubs-in-chat.chat-message": "@{{username}} has updubbed your song {{song_name}}",
+		"snow.label": "Snow",
+		"snow.description": "Make it snow!",
+		"rain.label": "Rain",
+		"rain.description": "Make it rain!",
+		"fullscreen.label": "Fullscreen",
+		"fullscreen.description": "Toggle fullscreen video mode",
+		"split-chat.label": "Split Chat",
+		"split-chat.description": "Toggle Split Chat UI enhancement",
+		"hide-chat.label": "Hide Chat",
+		"hide-chat.description": "Toggles hiding the chat box",
+		"hide-video.label": "Hide Video",
+		"hide-video.description": "Toggles hiding the video box",
+		"hide-avatars.label": "Hide Avatars",
+		"hide-avatars.description": "Toggle hiding user avatars in the chat box",
+		"hide-bg.label": "Hide Background",
+		"hide-bg.description": "Toggle hiding background image",
+		"show-timestamps.label": "Show Timestamps",
+		"show-timestamps.description": "Toggle always showing chat message timestamps",
+		"flip-interface.label": "Flip Interface",
+		"flip-interface.description": "Swap the video and chat positions",
+		"pin-menu.label": "Pin Menu",
+		"pin-menu.description": "Pin the Dub+ menu to the left or right side. Use the action button to toggle which side it is pinned to. Only works in the non-mobile view",
+		"pin-menu.secondaryAction.description": "Click to toggle between pinning to the left or right side",
+		"spacebar-mute.label": "Spacebar Mute",
+		"spacebar-mute.description": "Turn on/off the ability to mute current song with the spacebar",
+		"warn-redirect.label": "Warn on Navigation",
+		"warn-redirect.description": "Warns you when accidentally clicking on a link that takes you out of QueUp",
+		"community-theme.label": "Community Theme",
+		"community-theme.description": "Toggle Community CSS theme",
+		"custom-css.label": "Custom CSS",
+		"custom-css.description": "Add your own custom CSS.",
+		"custom-css.modal.title": "Custom CSS",
+		"custom-css.modal.content": "Enter a url location for your custom css",
+		"custom-css.modal.placeholder": "https://example.com/example.css",
+		"custom-css.modal.validation": "Invalid URL",
+		"custom-bg.label": "Custom Background",
+		"custom-bg.description": "Add your own custom background.",
+		"custom-bg.modal.title": "Custom Background Image",
+		"custom-bg.modal.content": "Enter the full URL of an image. We recommend using a .jpg file. Leave blank to remove the current background image",
+		"custom-bg.modal.placeholder": "https://example.com/big-image.jpg",
+		"custom-notification-sound.label": "Custom Notification Sound",
+		"custom-notification-sound.description": "Change the notification sound to a custom one.",
+		"custom-notification-sound.modal.title": "Custom Notification Sound",
+		"custom-notification-sound.modal.content": "Enter the full URL of a sound file. We recommend using an .mp3 file. Leave blank to go back to QueUp's default sound",
+		"custom-notification-sound.modal.placeholder": "https://example.com/sweet-sound.mp3",
+		"custom-notification-sound.modal.validation": "Can't play sound from this URL. Please enter a valid URL to an MP3 file.",
+		"grab-response.label": "Grab Response",
+		"grab-response.description": "Sends a chat message when you grab a song",
+		"grab-response.modal.title": "Grab Response",
+		"grab-response.modal.content": "Enter a message to send when you grab a song",
+		"grab-response.modal.placeholder": "Thanks for the song!"
+	} };
+	//#endregion
+	//#region src/lib/stores/i18n.svelte.js
+	var locale = proxy({ current: "en" });
+	Object.keys(translations);
+	function translate(loc, key, vars = {}) {
+		if (!key) {
+			logError("No translation key provided", {
+				locale: loc,
+				key,
+				vars
+			});
+			return "";
+		}
+		const normalizedLocale = normalizeLocale(loc);
+		let text = translations[normalizedLocale]?.[key];
+		if (!text && normalizedLocale !== "en") text = translations["en"][key];
+		if (!text) {
+			logError(`No translation found for ${normalizedLocale}.${key}`);
+			return key;
+		}
+		Object.keys(vars).forEach((item) => {
+			const regex = new RegExp(`{{${item}}}`, "g");
+			text = text.replace(regex, () => String(vars[item]));
+		});
+		return text;
+	}
+	/**
+	*
+	* @param {string} [key]
+	* @param {Record<string, string|number|boolean>} [vars]
+	* @returns
+	*/
+	function t(key, vars = {}) {
+		return translate(locale.current, key, vars);
+	}
+	/**
+	* @param {string} loc
+	* @returns {string}
+	*/
+	function normalizeLocale(loc) {
+		if (loc.toLowerCase().startsWith("en")) return "en";
+		return loc;
+	}
+	//#endregion
 	//#region src/lib/svg/IconBug.svelte
-	var root$21 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 0c53 0 96 43 96 96l0 3.6c0 15.7-12.7 28.4-28.4 28.4l-135.1 0c-15.7 0-28.4-12.7-28.4-28.4l0-3.6c0-53 43-96 96-96zM41.4 105.4c12.5-12.5 32.8-12.5 45.3 0l64 64c.7 .7 1.3 1.4 1.9 2.1c14.2-7.3 30.4-11.4 47.5-11.4l112 0c17.1 0 33.2 4.1 47.5 11.4c.6-.7 1.2-1.4 1.9-2.1l64-64c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-64 64c-.7 .7-1.4 1.3-2.1 1.9c6.2 12 10.1 25.3 11.1 39.5l64.3 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c0 24.6-5.5 47.8-15.4 68.6c2.2 1.3 4.2 2.9 6 4.8l64 64c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0l-63.1-63.1c-24.5 21.8-55.8 36.2-90.3 39.6L272 240c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 239.2c-34.5-3.4-65.8-17.8-90.3-39.6L86.6 502.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l64-64c1.9-1.9 3.9-3.4 6-4.8C101.5 367.8 96 344.6 96 320l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64.3 0c1.1-14.1 5-27.5 11.1-39.5c-.7-.6-1.4-1.2-2.1-1.9l-64-64c-12.5-12.5-12.5-32.8 0-45.3z"></path></svg>`);
+	var root$23 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 0c53 0 96 43 96 96l0 3.6c0 15.7-12.7 28.4-28.4 28.4l-135.1 0c-15.7 0-28.4-12.7-28.4-28.4l0-3.6c0-53 43-96 96-96zM41.4 105.4c12.5-12.5 32.8-12.5 45.3 0l64 64c.7 .7 1.3 1.4 1.9 2.1c14.2-7.3 30.4-11.4 47.5-11.4l112 0c17.1 0 33.2 4.1 47.5 11.4c.6-.7 1.2-1.4 1.9-2.1l64-64c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-64 64c-.7 .7-1.4 1.3-2.1 1.9c6.2 12 10.1 25.3 11.1 39.5l64.3 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c0 24.6-5.5 47.8-15.4 68.6c2.2 1.3 4.2 2.9 6 4.8l64 64c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0l-63.1-63.1c-24.5 21.8-55.8 36.2-90.3 39.6L272 240c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 239.2c-34.5-3.4-65.8-17.8-90.3-39.6L86.6 502.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l64-64c1.9-1.9 3.9-3.4 6-4.8C101.5 367.8 96 344.6 96 320l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64.3 0c1.1-14.1 5-27.5 11.1-39.5c-.7-.6-1.4-1.2-2.1-1.9l-64-64c-12.5-12.5-12.5-32.8 0-45.3z"></path></svg>`);
 	function IconBug($$anchor) {
-		append($$anchor, root$21());
+		append($$anchor, root$23());
 	}
 	//#endregion
 	//#region src/lib/svg/IconReddit.svelte
-	var root$20 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32zM305.9 166.4c20.6 0 37.3-16.7 37.3-37.3s-16.7-37.3-37.3-37.3c-18 0-33.1 12.8-36.6 29.8c-30.2 3.2-53.8 28.8-53.8 59.9l0 .2c-32.8 1.4-62.8 10.7-86.6 25.5c-8.8-6.8-19.9-10.9-32-10.9c-28.9 0-52.3 23.4-52.3 52.3c0 21 12.3 39 30.1 47.4c1.7 60.7 67.9 109.6 149.3 109.6s147.6-48.9 149.3-109.7c17.7-8.4 29.9-26.4 29.9-47.3c0-28.9-23.4-52.3-52.3-52.3c-12 0-23 4-31.9 10.8c-24-14.9-54.3-24.2-87.5-25.4l0-.1c0-22.2 16.5-40.7 37.9-43.7l0 0c3.9 16.5 18.7 28.7 36.3 28.7zM155 248.1c14.6 0 25.8 15.4 25 34.4s-11.8 25.9-26.5 25.9s-27.5-7.7-26.6-26.7s13.5-33.5 28.1-33.5zm166.4 33.5c.9 19-12 26.7-26.6 26.7s-25.6-6.9-26.5-25.9c-.9-19 10.3-34.4 25-34.4s27.3 14.6 28.1 33.5zm-42.1 49.6c-9 21.5-30.3 36.7-55.1 36.7s-46.1-15.1-55.1-36.7c-1.1-2.6 .7-5.4 3.4-5.7c16.1-1.6 33.5-2.5 51.7-2.5s35.6 .9 51.7 2.5c2.7 .3 4.5 3.1 3.4 5.7z"></path></svg>`);
+	var root$22 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32zM305.9 166.4c20.6 0 37.3-16.7 37.3-37.3s-16.7-37.3-37.3-37.3c-18 0-33.1 12.8-36.6 29.8c-30.2 3.2-53.8 28.8-53.8 59.9l0 .2c-32.8 1.4-62.8 10.7-86.6 25.5c-8.8-6.8-19.9-10.9-32-10.9c-28.9 0-52.3 23.4-52.3 52.3c0 21 12.3 39 30.1 47.4c1.7 60.7 67.9 109.6 149.3 109.6s147.6-48.9 149.3-109.7c17.7-8.4 29.9-26.4 29.9-47.3c0-28.9-23.4-52.3-52.3-52.3c-12 0-23 4-31.9 10.8c-24-14.9-54.3-24.2-87.5-25.4l0-.1c0-22.2 16.5-40.7 37.9-43.7l0 0c3.9 16.5 18.7 28.7 36.3 28.7zM155 248.1c14.6 0 25.8 15.4 25 34.4s-11.8 25.9-26.5 25.9s-27.5-7.7-26.6-26.7s13.5-33.5 28.1-33.5zm166.4 33.5c.9 19-12 26.7-26.6 26.7s-25.6-6.9-26.5-25.9c-.9-19 10.3-34.4 25-34.4s27.3 14.6 28.1 33.5zm-42.1 49.6c-9 21.5-30.3 36.7-55.1 36.7s-46.1-15.1-55.1-36.7c-1.1-2.6 .7-5.4 3.4-5.7c16.1-1.6 33.5-2.5 51.7-2.5s35.6 .9 51.7 2.5c2.7 .3 4.5 3.1 3.4 5.7z"></path></svg>`);
 	function IconReddit($$anchor) {
-		append($$anchor, root$20());
+		append($$anchor, root$22());
 	}
 	//#endregion
 	//#region src/lib/svg/IconFacebook.svelte
-	var root$19 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64h98.2V334.2H109.4V256h52.8V222.3c0-87.1 39.4-127.5 125-127.5c16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1c-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H255V480H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64z"></path></svg>`);
+	var root$21 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64h98.2V334.2H109.4V256h52.8V222.3c0-87.1 39.4-127.5 125-127.5c16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1c-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H255V480H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64z"></path></svg>`);
 	function IconFacebook($$anchor) {
-		append($$anchor, root$19());
+		append($$anchor, root$21());
 	}
 	//#endregion
 	//#region src/lib/svg/IconTwitter.svelte
-	var root$18 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM351.3 199.3v0c0 86.7-66 186.6-186.6 186.6c-37.2 0-71.7-10.8-100.7-29.4c5.3 .6 10.4 .8 15.8 .8c30.7 0 58.9-10.4 81.4-28c-28.8-.6-53-19.5-61.3-45.5c10.1 1.5 19.2 1.5 29.6-1.2c-30-6.1-52.5-32.5-52.5-64.4v-.8c8.7 4.9 18.9 7.9 29.6 8.3c-9-6-16.4-14.1-21.5-23.6s-7.8-20.2-7.7-31c0-12.2 3.2-23.4 8.9-33.1c32.3 39.8 80.8 65.8 135.2 68.6c-9.3-44.5 24-80.6 64-80.6c18.9 0 35.9 7.9 47.9 20.7c14.8-2.8 29-8.3 41.6-15.8c-4.9 15.2-15.2 28-28.8 36.1c13.2-1.4 26-5.1 37.8-10.2c-8.9 13.1-20.1 24.7-32.9 34c.2 2.8 .2 5.7 .2 8.5z"></path></svg>`);
+	var root$20 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM351.3 199.3v0c0 86.7-66 186.6-186.6 186.6c-37.2 0-71.7-10.8-100.7-29.4c5.3 .6 10.4 .8 15.8 .8c30.7 0 58.9-10.4 81.4-28c-28.8-.6-53-19.5-61.3-45.5c10.1 1.5 19.2 1.5 29.6-1.2c-30-6.1-52.5-32.5-52.5-64.4v-.8c8.7 4.9 18.9 7.9 29.6 8.3c-9-6-16.4-14.1-21.5-23.6s-7.8-20.2-7.7-31c0-12.2 3.2-23.4 8.9-33.1c32.3 39.8 80.8 65.8 135.2 68.6c-9.3-44.5 24-80.6 64-80.6c18.9 0 35.9 7.9 47.9 20.7c14.8-2.8 29-8.3 41.6-15.8c-4.9 15.2-15.2 28-28.8 36.1c13.2-1.4 26-5.1 37.8-10.2c-8.9 13.1-20.1 24.7-32.9 34c.2 2.8 .2 5.7 .2 8.5z"></path></svg>`);
 	function IconTwitter($$anchor) {
-		append($$anchor, root$18());
+		append($$anchor, root$20());
 	}
 	//#endregion
 	//#region src/lib/sections/Contact.svelte
-	var root$17 = /* @__PURE__ */ from_html(`<!> <!> <!> <!>`, 1);
-	var root_1$4 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
+	var root$19 = /* @__PURE__ */ from_html(`<!> <!> <!> <!>`, 1);
+	var root_1$5 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
 	function Contact($$anchor, $$props) {
-		push($$props, false);
-		init();
-		var fragment = root_1$4();
+		push($$props, true);
+		var fragment = root_1$5();
 		var node = first_child(fragment);
 		{
-			let $0 = /* @__PURE__ */ derived_safe_equal(() => t("contact.title"));
+			let $0 = /* @__PURE__ */ user_derived(() => t("contact.title"));
 			MenuHeader(node, {
 				settingsId: "contact",
 				get name() {
@@ -5814,10 +5501,10 @@ createHTML: (html) => {
 		MenuSection(sibling(node, 2), {
 			settingsId: "contact",
 			children: ($$anchor, $$slotProps) => {
-				var fragment_1 = root$17();
+				var fragment_1 = root$19();
 				var node_2 = first_child(fragment_1);
 				{
-					let $0 = /* @__PURE__ */ derived_safe_equal(() => t("contact.bugs"));
+					let $0 = /* @__PURE__ */ user_derived(() => t("contact.bugs"));
 					MenuLink(node_2, {
 						get icon() {
 							return IconBug;
@@ -5860,7 +5547,7 @@ createHTML: (html) => {
 	}
 	//#endregion
 	//#region src/lib/menu/Switch.svelte
-	var root$16 = /* @__PURE__ */ from_html(`<div role="switch" tabindex="0" class="svelte-1g2jwmf"><span class="dubplus-switch svelte-1g2jwmf"><span class="svelte-1g2jwmf"></span></span> <span class="dubplus-switch-label svelte-1g2jwmf"> </span></div>`);
+	var root$18 = /* @__PURE__ */ from_html(`<div role="switch" tabindex="0" class="svelte-1g2jwmf"><span class="dubplus-switch svelte-1g2jwmf"><span class="svelte-1g2jwmf"></span></span> <span class="dubplus-switch-label svelte-1g2jwmf"> </span></div>`);
 	function Switch($$anchor, $$props) {
 		push($$props, true);
 		/**
@@ -5891,11 +5578,11 @@ createHTML: (html) => {
 			if ($$props.disabled) return;
 			toggleOption();
 		}
-		var div = root$16();
+		var div = root$18();
 		var span = sibling(child(div), 2);
 		var text = child(span, true);
-		reset$2(span);
-		reset$2(div);
+		reset$1(span);
+		reset$1(div);
 		template_effect(() => {
 			set_attribute(div, "aria-disabled", $$props.disabled ? "true" : "false");
 			set_attribute(div, "aria-checked", settings.options[$$props.optionId] ? "true" : "false");
@@ -5909,10 +5596,467 @@ createHTML: (html) => {
 	delegate(["click", "keydown"]);
 	//#endregion
 	//#region src/lib/svg/IconPencil.svelte
-	var root$15 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1 0 32c0 8.8 7.2 16 16 16l32 0zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"></path></svg>`);
+	var root$17 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1 0 32c0 8.8 7.2 16 16 16l32 0zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"></path></svg>`);
 	function IconPencil($$anchor) {
-		append($$anchor, root$15());
+		append($$anchor, root$17());
 	}
+	//#endregion
+	//#region src/lib/stores/modalState.svelte.js
+	var modalState = proxy({
+		id: "",
+		open: false,
+		title: "Dub+",
+		content: "",
+		value: "",
+		placeholder: "",
+		defaultValue: "",
+		maxlength: 999,
+		validation: () => {
+			return true;
+		},
+		onConfirm: () => {
+			return true;
+		},
+		onCancel: () => {}
+	});
+	/**
+	*
+	* @param {import('../../types/global').ModalProps} nextState
+	*/
+	function updateModalState(nextState) {
+		modalState.open = nextState.open ?? false;
+		modalState.title = nextState.title || "Dub+";
+		modalState.content = nextState.content || "";
+		modalState.value = nextState.value || "";
+		modalState.placeholder = nextState.placeholder || "";
+		modalState.defaultValue = nextState.defaultValue;
+		modalState.maxlength = nextState.maxlength || 999;
+		modalState.onConfirm = nextState.onConfirm;
+		modalState.onCancel = nextState.onCancel;
+		modalState.validation = nextState.validation || (() => true);
+	}
+	//#endregion
+	//#region src/lib/api.js
+	/**
+	* QueUp API wrappers
+	*/
+	var apiBase = window.location.hostname.includes("staging") ? "https://staging-api.queup.dev" : "https://api.queup.net";
+	/**
+	* @param {string} userid
+	*/
+	function userData(userid) {
+		return `${apiBase}/user/${userid}`;
+	}
+	/**
+	*
+	* @param {string} roomId
+	*/
+	function activeDubs(roomId) {
+		return `${apiBase}/room/${roomId}/playlist/active/dubs`;
+	}
+	/**
+	* @param {string} userid
+	*/
+	function userImage(userid) {
+		return `${apiBase}/user/${userid}/image`;
+	}
+	/**
+	*
+	* @param {string} roomId
+	* @returns
+	*/
+	function usersInRoom(roomId) {
+		return `${apiBase}/room/${roomId}/users`;
+	}
+	//#endregion
+	//#region src/utils/queup-ids.js
+	/**
+	* Recovering the current room id and user id at any moment.
+	*
+	* As an extension we get these from QueUp's RealtimeManager the instant we
+	* bridge to it. As a bookmarklet we can't: the module-registry tap has to be
+	* installed at document_start, and the console.log lines we used to scrape
+	* ("setting current user", "connected to real channel room:") were printed
+	* while the room was connecting, which may have been many minutes before the
+	* user clicked the bookmarklet. Scraping a log you missed is not an option, so
+	* we read the ids back out of the page instead.
+	*
+	* Three sources, cheapest first. Each one is independently verified before
+	* being trusted, so a source going stale degrades to the next rather than
+	* handing us a wrong id.
+	*/
+	/** ID Regex */
+	var OBJECT_ID = /^[0-9a-f]{24}$/;
+	/**
+	* @typedef {object} QueupIds
+	* @property {string | null} roomId
+	* @property {string | null} userId
+	*/
+	/**
+	* Source 1: the RealtimeManager, when the document_start tap got hold of it.
+	* @returns {QueupIds}
+	*/
+	function fromRealtime() {
+		/** @type {QueupIds} */
+		const ids = {
+			roomId: null,
+			userId: null
+		};
+		try {
+			const snapshot = window.dubplus.getQueupRealtime?.()?.getDebugSnapshot();
+			if (snapshot?.roomId) ids.roomId = snapshot.roomId;
+			if (snapshot?.currentUserId) ids.userId = snapshot.currentUserId;
+		} catch (err) {
+			logDebug("could not read ids from the RealtimeManager", err);
+		}
+		return ids;
+	}
+	/**
+	* Source 2: the `queup_last_room` cookie, which QueUp writes as
+	* `encodeURIComponent(JSON.stringify({ roomUrl, roomId }))` every time it
+	* opens a room - before it connects, so it's already there by the time any
+	* room UI exists.
+	*
+	* It's a year-long cookie, so it also survives into rooms it no longer
+	* describes. Hence the roomUrl check against the address bar.
+	* @returns {string | null}
+	*/
+	function getRoomIdFromCookie() {
+		const match = document.cookie.match(/(?:^|; )queup_last_room=([^;]*)/);
+		if (!match) return null;
+		try {
+			const { roomUrl, roomId } = JSON.parse(decodeURIComponent(match[1]));
+			if (!OBJECT_ID.test(roomId)) return null;
+			const slug = window.location.pathname.split("/").filter(Boolean).pop();
+			if (roomUrl && slug && roomUrl !== slug) {
+				logDebug(`ignoring queup_last_room cookie: ${roomUrl} is not ${slug}`);
+				return null;
+			}
+			return roomId;
+		} catch (err) {
+			logDebug("could not parse the queup_last_room cookie", err);
+			return null;
+		}
+	}
+	/**
+	* @param {Element} node
+	* @returns {any}
+	*/
+	function getFiber(node) {
+		const key = Object.keys(node).find((k) => k.startsWith("__reactFiber$") || k.startsWith("__reactContainer$"));
+		return key ? node[key] : null;
+	}
+	/**
+	* @returns {any} the HostRoot fiber, or null if React isn't reachable
+	*/
+	function getRootFiber() {
+		const candidates = [document.body, ...document.body.querySelectorAll("div")];
+		for (const node of candidates.slice(0, 50)) {
+			let fiber = getFiber(node);
+			if (!fiber) continue;
+			while (fiber.return) fiber = fiber.return;
+			return fiber;
+		}
+		return null;
+	}
+	/**
+	* @param {any} value a context provider's current value
+	* @returns {string | null}
+	*/
+	function readUserId(value) {
+		const user = value.user;
+		if (!user || typeof user !== "object") return null;
+		if (!OBJECT_ID.test(user._id)) return null;
+		if (!user.username && !user.userInfo) return null;
+		return user._id;
+	}
+	/**
+	* @param {any} value a context provider's current value
+	* @returns {string | null}
+	*/
+	function readRoomId(value) {
+		const room = value.roomInfo;
+		if (!room || typeof room !== "object") return null;
+		return OBJECT_ID.test(room._id) ? room._id : null;
+	}
+	/**
+	* @returns {QueupIds}
+	*/
+	function scanFiberTree() {
+		/** @type {QueupIds} */
+		const ids = {
+			roomId: null,
+			userId: null
+		};
+		const root = getRootFiber();
+		if (!root) {
+			logDebug("no React fiber found on the page");
+			return ids;
+		}
+		let budget = 2e4;
+		const stack = [root];
+		while (stack.length > 0 && budget-- > 0) {
+			const fiber = stack.pop();
+			const value = fiber.memoizedProps?.value;
+			if (value && typeof value === "object") {
+				ids.userId = ids.userId || readUserId(value);
+				ids.roomId = ids.roomId || readRoomId(value);
+				if (ids.userId && ids.roomId) break;
+			}
+			if (fiber.child) stack.push(fiber.child);
+			if (fiber.sibling) stack.push(fiber.sibling);
+		}
+		return ids;
+	}
+	/**
+	* Fills in whichever of `window.dubplus.roomId` / `window.dubplus.userId` are
+	* still missing, from the cheapest source that can supply them.
+	* @returns {boolean} true once both ids are known
+	*/
+	function resolveQueupIds() {
+		if (window.dubplus.roomId && window.dubplus.userId) return true;
+		const realtime = fromRealtime();
+		window.dubplus.roomId = window.dubplus.roomId || realtime.roomId || void 0;
+		window.dubplus.userId = window.dubplus.userId || realtime.userId || void 0;
+		if (!window.dubplus.roomId) window.dubplus.roomId = getRoomIdFromCookie() || void 0;
+		if (!window.dubplus.roomId || !window.dubplus.userId) {
+			const scanned = scanFiberTree();
+			window.dubplus.roomId = window.dubplus.roomId || scanned.roomId || void 0;
+			window.dubplus.userId = window.dubplus.userId || scanned.userId || void 0;
+		}
+		return Boolean(window.dubplus.roomId && window.dubplus.userId);
+	}
+	/**
+	* Same as {@link resolveQueupIds}, but keeps retrying: the bookmarklet can be
+	* clicked before the room has finished loading, and a logged out user has no
+	* user id to find until they log in.
+	* @param {object} [options]
+	* @param {number} [options.interval] ms between attempts
+	* @param {number} [options.attempts] how many times to try before giving up
+	* @returns {Promise<boolean>} whether both ids were found
+	*/
+	function waitForQueupIds({ interval = 1e3, attempts = 30 } = {}) {
+		return new Promise((resolve) => {
+			if (resolveQueupIds()) {
+				resolve(true);
+				return;
+			}
+			let remaining = attempts;
+			const timer = setInterval(() => {
+				if (resolveQueupIds() || --remaining <= 0) {
+					clearInterval(timer);
+					const found = Boolean(window.dubplus.roomId && window.dubplus.userId);
+					logDebug(`resolved QueUp ids: room=${window.dubplus.roomId} user=${window.dubplus.userId}`);
+					resolve(found);
+				}
+			}, interval);
+		});
+	}
+	//#endregion
+	//#region src/events-constants.js
+	/**
+	* Event names for `queupEvents` (see ./utils/events.js).
+	*
+	* QueUp's RealtimeManager emits `realtime:` + the payload's `type`, and we
+	* re-emit under that exact name, so these constants match QueUp's own naming.
+	* Dub+'s own synthetic events use a `dubplus:` prefix instead.
+	*/
+	/**
+	* When the song changes.
+	* This one is a custom event from Dub+ and not a Queup event.
+	* It is triggered by a MutationObserver on the song title element
+	*/
+	var PLAYER_ADVANCE = "dubplus:playerAdvance";
+	/**
+	* When a user in the room up/down dubs a song
+	*/
+	var DUB = "realtime:room_playlist-dub";
+	/**
+	* When user in the room grabs a song
+	*/
+	var GRAB = "realtime:room_playlist-queue-update-grabs";
+	/**
+	* When a user joins the room
+	*/
+	var USER_JOIN = "realtime:user-join";
+	/**
+	* When any chat message arrives in the chat
+	*/
+	var CHAT_MESSAGE = "realtime:chat-message";
+	/**
+	* When user receives a private message
+	*/
+	var NEW_PM_MESSAGE = "realtime:new-message";
+	/**
+	* The full set of event types QueUp validates against a schema, for reference.
+	* Anything not listed here still gets emitted - QueUp only logs a validation
+	* warning for unknown types - so this is not an exhaustive list of what can
+	* arrive, just of what QueUp considers known.
+	*
+	* To watch everything live, paste this into the console:
+	*
+	*   const stop = window.dubplus.debugQueupRealtime();
+	*
+	* user-join, user-leave, user-setrole, user-unsetrole, user-kick, user-ban,
+	* user-unban, user-mute, user-unmute, user_update, user-avatar-update,
+	* user-pause-queue-mod, room-lock-queue, room-update, room-slow-mode,
+	* room-allow-guest-chat, room-allow-guest-embed, chat-skip, chat-message,
+	* delete-chat-message, new-message, room_playlist-update, room_playlist-dub,
+	* room_playlist-queue-reorder, room_playlist-queue-update,
+	* room_playlist-queue-update-dub, room_playlist-queue-update-grabs,
+	* room_playlist-queue-remove-user, room_playlist-queue-remove-user-song
+	*/
+	//#endregion
+	//#region src/utils/events.js
+	/**
+	* Dub+'s own event bus. Everything QueUp's RealtimeManager emits gets
+	* re-emitted here under the same name, alongside Dub+'s synthetic events
+	* (PLAYER_ADVANCE), so modules only ever talk to this one emitter.
+	*/
+	var QueupEvents = class {
+		/**
+		* @type {Map<string, Set<(data: any) => void>>}
+		*/
+		handlers = /* @__PURE__ */ new Map();
+		constructor() {
+			logDebug("QueupEvents initialized");
+		}
+		/**
+		* @template T
+		* @param {string} eventName
+		* @param {(data: T) => void} handler
+		*/
+		on(eventName, handler) {
+			if (!this.handlers.has(eventName)) this.handlers.set(eventName, /* @__PURE__ */ new Set());
+			this.handlers.get(eventName)?.add(handler);
+		}
+		/**
+		*
+		* @param {string} eventName
+		* @param {(data: any) => void} handler
+		*/
+		off(eventName, handler) {
+			if (this.handlers.has(eventName)) this.handlers.get(eventName)?.delete(handler);
+		}
+		/**
+		* @template T
+		* @param {string} eventName
+		* @param {(data: T) => void} handler
+		*/
+		once(eventName, handler) {
+			/**
+			* @param {T} data
+			*/
+			const wrapper = (data) => {
+				handler(data);
+				this.off(eventName, wrapper);
+			};
+			this.on(eventName, wrapper);
+		}
+		/**
+		* @template T
+		* @param {string} eventName
+		* @param {T} data
+		*/
+		emit(eventName, data) {
+			logDebug(`QueupEvents: emitting event ${eventName} with data:`, data);
+			if (this.handlers.has(eventName)) this.handlers.get(eventName)?.forEach((handler) => {
+				handler(data);
+			});
+		}
+		clear() {
+			this.handlers.clear();
+		}
+	};
+	window.dubplus = window.dubplus || {};
+	var queupEvents = new QueupEvents();
+	window.dubplus.queupEvents = queupEvents;
+	/** Set once we're bridged to the RealtimeManager, so the console.log fallback
+	* knows to stand down instead of double-emitting every event. */
+	var bridged = false;
+	/**
+	* QueUp knows the room and user ids before we do, so take them from the
+	* RealtimeManager rather than parsing them back out of log lines.
+	* @param {import('../types/global').QueupRealtime} realtime
+	*/
+	function syncIds(realtime) {
+		try {
+			const snapshot = realtime.getDebugSnapshot();
+			if (snapshot.roomId) window.dubplus.roomId = snapshot.roomId;
+			if (snapshot.currentUserId) window.dubplus.userId = snapshot.currentUserId;
+		} catch (err) {
+			logDebug("could not read the RealtimeManager snapshot", err);
+		}
+	}
+	/**
+	* @param {import('../types/global').QueupRealtime} realtime
+	*/
+	function bridgeRealtime(realtime) {
+		window.dubplus.__detachRealtimeBridge?.();
+		/**
+		* @param {string} type
+		* @param {any} data
+		*/
+		const onAnyEvent = (type, data) => {
+			if (!window.dubplus.roomId || !window.dubplus.userId) syncIds(realtime);
+			queupEvents.emit(type, data);
+		};
+		const onConnected = () => syncIds(realtime);
+		realtime.on("*", onAnyEvent);
+		realtime.on("connected", onConnected);
+		syncIds(realtime);
+		bridged = true;
+		window.dubplus.__detachRealtimeBridge = () => {
+			realtime.off("*", onAnyEvent);
+			realtime.off("connected", onConnected);
+			bridged = false;
+			window.dubplus.__detachRealtimeBridge = void 0;
+		};
+		logInfo("listening to QueUp events via RealtimeManager");
+	}
+	window.dubplus.onQueupRealtime?.(bridgeRealtime);
+	waitForQueupIds();
+	window.dubplus.__originalConsoleLog = window.dubplus.__originalConsoleLog || console.log;
+	var originalConsoleLog = window.dubplus.__originalConsoleLog;
+	/**
+	* QueUp logs the raw channel message, whose `data` is sometimes still a JSON
+	* string - `normalizeMessageData` is what parses it on their side.
+	* @param {any} raw
+	* @returns {any}
+	*/
+	function parseMessageData(raw) {
+		if (typeof raw !== "string") return raw;
+		try {
+			return JSON.parse(raw);
+		} catch {
+			return null;
+		}
+	}
+	console.log = function(...args) {
+		originalConsoleLog.apply(console, args);
+		if (typeof args[0] !== "string" || !args[0].trim().startsWith("RealtimeManager:")) return;
+		if (args[0].includes("RealtimeManager: setting current user")) {
+			const userId = args[0].trim().split(" ").at(-1);
+			if (userId) window.dubplus.userId = userId;
+		} else if (args[0].includes("RealtimeManager: connected to real channel room:")) window.dubplus.roomId = args[0].split("room:")[1].trim();
+		else if (args[0].includes("RealtimeManager: real time response")) {
+			if (bridged) return;
+			const data = parseMessageData(args[1]?.data);
+			if (!data?.type) return;
+			const events = { [`realtime:${data.type}`]: data };
+			if (data.type.startsWith("user_update_")) events["realtime:user_update"] = {
+				...data,
+				type: "user_update",
+				userid: data.type.slice(12)
+			};
+			else if (data.type.startsWith("user-update-")) events["realtime:user-avatar-update"] = {
+				...data,
+				type: "user-avatar-update",
+				userid: data.type.slice(12)
+			};
+			for (const [name, payload] of Object.entries(events)) window.dubplus?.queupEvents?.emit(name, payload);
+		}
+	};
 	//#endregion
 	//#region src/utils/modcheck.js
 	/**
@@ -5920,12 +6064,194 @@ createHTML: (html) => {
 	* @param {string} userid
 	*/
 	function isMod(userid) {
-		return window.QueUp.helpers.isSiteAdmin(userid) || window.QueUp.room.users.getIfOwner(userid) || window.QueUp.room.users.getIfManager(userid) || window.QueUp.room.users.getIfMod(userid);
+		const user = window.dubplus.roomUsers?.get(userid);
+		if (!user) return false;
+		return user.role.rights.includes("skip");
+	}
+	/**
+	* @param {string} roomId
+	*/
+	async function loadUserData(roomId) {
+		try {
+			return (await (await fetch(usersInRoom(roomId))).json()).data;
+		} catch (error) {
+			logError("Failed to load user data for roomId: " + roomId, error);
+		}
+	}
+	/**
+	*
+	* @param {import('../types/api-response').RoomUser[] | undefined} roomUsers
+	*/
+	function processUserData(roomUsers = []) {
+		window.dubplus = window.dubplus || {};
+		window.dubplus.roomUsers = window.dubplus.roomUsers || /* @__PURE__ */ new Map();
+		roomUsers.forEach((user) => {
+			const simplifiedUser = {
+				userid: user.userid,
+				username: user._user.username,
+				role: {
+					type: user.roleid?.type || "",
+					label: user.roleid?.label || "",
+					rights: user.roleid?.rights || []
+				}
+			};
+			window.dubplus.roomUsers?.set(user.userid, simplifiedUser);
+		});
+	}
+	/**
+	*
+	* @param {import('../types/events').UserJoinEvent} e
+	*/
+	function onUserJoin(e) {
+		if (window.dubplus.roomUsers) window.dubplus.roomUsers.set(e.user.userInfo.userid, {
+			userid: e.user.userInfo.userid,
+			username: e.user.username,
+			role: {
+				type: e.roomUser.roleid?.type || "",
+				label: e.roomUser.roleid?.label || "",
+				rights: e.roomUser.roleid?.rights || []
+			}
+		});
+		else logWarn("User joined but roomUsers map is not initialized");
+	}
+	/**
+	*
+	* @param {string} roomId
+	*/
+	async function setupModCheck(roomId) {
+		await loadUserData(roomId).then(processUserData);
+		queupEvents.on(USER_JOIN, onUserJoin);
+	}
+	/**
+	* do this when unmounting or changing rooms
+	*/
+	async function teardownModCheck() {
+		queupEvents.off(USER_JOIN, onUserJoin);
+		window.dubplus.roomUsers?.clear();
+	}
+	//#endregion
+	//#region src/lib/queup.ui.js
+	/**
+	* Anything that access the UI for QueUp should go here so that when there's any
+	* future changes to the UI, we'll just need to update this file.
+	*/
+	var CHAT_INPUT_CONTAINER = "[contenteditable=\"true\"]";
+	/**
+	* @returns {HTMLDivElement | null}
+	*/
+	function getChatInput() {
+		return document.querySelector(CHAT_INPUT_CONTAINER);
+	}
+	/**
+	* @returns {HTMLDivElement | null}
+	*/
+	function getBackgroundImage() {
+		return document.querySelector("body > div:nth-child(2) > div > div:first-child");
+	}
+	/**
+	* @returns {HTMLIFrameElement | null}
+	*/
+	function getPlayerIframe() {
+		return document.querySelector("main iframe");
+	}
+	/**
+	* @returns {HTMLDivElement | null}
+	*/
+	function getPrivateMessageButton() {
+		return document.querySelector("button:has(> .lucide-mail)");
+	}
+	/**
+	* @returns {HTMLButtonElement | null | undefined}
+	*/
+	function getDubUp() {
+		return getBottomBar()?.querySelector("button:has(> .lucide-chevron-up)");
+	}
+	/**
+	* @returns {HTMLButtonElement | null | undefined}
+	*/
+	function getDubDown() {
+		return getBottomBar()?.querySelector("button:has(> .lucide-chevron-down)");
+	}
+	/**
+	* aka the Grab button
+	* @returns {HTMLButtonElement | null | undefined}
+	*/
+	function getAddToPlaylist() {
+		return getBottomBar()?.querySelector("button:has(> .lucide-heart)");
+	}
+	function getPlayerButtonsContainer() {
+		const iframe = document.querySelector("iframe");
+		if (iframe?.parentElement) {
+			/**
+			* @type {HTMLElement | null}
+			*/
+			let currentNode = iframe.parentElement;
+			while (currentNode && !currentNode?.querySelector(".lucide-refresh-cw") && currentNode !== document.body) currentNode = currentNode.parentElement;
+			if (!currentNode || currentNode === document.body) {
+				logError("Could not find the player buttons container");
+				return null;
+			}
+			return currentNode.querySelector(".lucide-refresh-cw")?.parentElement?.parentElement || null;
+		}
+		return null;
+	}
+	function getBottomBar() {
+		return document.querySelector("header ~ div:has(.lucide-users):has(.lucide-heart):has(.lucide-chevron-up):has(.lucide-chevron-down)");
+	}
+	function getCurrentDjEl() {
+		return ((getBottomBar()?.children[1])?.children[0])?.children[0]?.children[0]?.children[0];
+	}
+	function getCurrentlyPlayingSong() {
+		return (((getBottomBar()?.children[1])?.children[0])?.children[0])?.children[1];
+	}
+	/**
+	* @returns {{ position?: number; total: number } | null}
+	*/
+	function getQueuePosition() {
+		const queueInfo = getBottomBar()?.querySelector(".lucide-users")?.parentElement?.textContent?.trim();
+		if (!queueInfo) return null;
+		if (!queueInfo.includes("/")) return { total: parseInt(queueInfo) };
+		const [position, total] = queueInfo.split("/").map(Number);
+		return {
+			position,
+			total
+		};
+	}
+	/**
+	* Returns how long is left in seconds the currently playing song.
+	* Returns null if it can't be determined.
+	* @returns {[minutes: number, seconds: number] | null}
+	*/
+	function getCurrentSongTime() {
+		const timeParts = ((getBottomBar()?.children[1])?.children[1])?.textContent?.split(":");
+		if (timeParts?.length === 2) return [Number(timeParts[0]), Number(timeParts[1])];
+		else if (timeParts?.length === 3) return [Number(timeParts[0]) * 3600 + Number(timeParts[1]) * 60, Number(timeParts[2])];
+		return null;
+	}
+	//#endregion
+	//#region src/lib/queup.js
+	/**
+	* Anything that accesses window.QueUp (QueUp's internal app instance) should
+	* go here so that when there's any future changes to QueUp's internals,
+	* we'll just need to update this file.
+	*/
+	/**
+	* This is the ID of the currently logged in user.
+	* @returns {string}
+	*/
+	function getSessionId() {
+		return window.QueUp.session.id;
+	}
+	function clickVoteUp() {
+		getDubUp()?.click();
+	}
+	function toggleMute() {
+		document.querySelector("[class*=\"lucide-volume\"]")?.parentElement?.click();
 	}
 	//#endregion
 	//#region src/lib/menu/MenuSwitch.svelte
-	var root$14 = /* @__PURE__ */ from_html(`<button type="button" class="svelte-1aj88xa"><!> <span class="sr-only"> </span></button>`);
-	var root_1$3 = /* @__PURE__ */ from_html(`<li><!> <!> <!></li>`);
+	var root$16 = /* @__PURE__ */ from_html(`<button type="button" class="svelte-1aj88xa"><!> <span class="sr-only"> </span></button>`);
+	var root_1$4 = /* @__PURE__ */ from_html(`<li><!> <!> <!></li>`);
 	function MenuSwitch($$anchor, $$props) {
 		push($$props, true);
 		/**
@@ -5938,7 +6264,7 @@ createHTML: (html) => {
 		* @property {() => void} [turnOff] runs when the switch is turned off
 		* @property {() => void} [init] always runs when the component mounts, whether
 		* the switch is on or off
-		* @property {import('../../global').ModalProps} [customize]
+		* @property {import('../../types/global').ModalProps} [customize]
 		* @property {import('../modules/module').DubPlusModule['secondaryAction']} [secondaryAction]
 		*
 		*/
@@ -5948,9 +6274,7 @@ createHTML: (html) => {
 		const SecondaryIcon = $$props.secondaryAction?.icon || IconPencil;
 		onMount(() => {
 			if ($$props.init) $$props.init();
-			if (settings.options[$$props.id]) {
-				if ($$props.modOnly ? isMod(window.QueUp.session.id) : true) $$props.turnOn?.(true);
-			}
+			if (settings.options[$$props.id]) $$props.turnOn?.(true);
 		});
 		onDestroy(() => {
 			if (settings.options[$$props.id]) $$props.turnOff?.();
@@ -5982,11 +6306,11 @@ createHTML: (html) => {
 			});
 			modalState.open = true;
 		}
-		var li = root_1$3();
+		var li = root_1$4();
 		let classes;
 		var node = child(li);
 		{
-			let $0 = /* @__PURE__ */ user_derived(() => $$props.modOnly ? !isMod(window.QueUp.session.id) : false);
+			let $0 = /* @__PURE__ */ user_derived(() => $$props.modOnly ? !isMod(getSessionId()) : false);
 			let $1 = /* @__PURE__ */ user_derived(() => t($$props.label));
 			Switch(node, {
 				get disabled() {
@@ -6011,13 +6335,13 @@ createHTML: (html) => {
 		}
 		var node_1 = sibling(node, 2);
 		var consequent = ($$anchor) => {
-			var button = root$14();
+			var button = root$16();
 			var node_2 = child(button);
 			IconPencil(node_2, {});
 			var span = sibling(node_2, 2);
 			var text = child(span, true);
-			reset$2(span);
-			reset$2(button);
+			reset$1(span);
+			reset$1(button);
 			template_effect(($0) => set_text(text, $0), [() => t("MenuItem.edit")]);
 			delegated("click", button, openEditModal);
 			append($$anchor, button);
@@ -6027,13 +6351,13 @@ createHTML: (html) => {
 		});
 		var node_3 = sibling(node_1, 2);
 		var consequent_1 = ($$anchor) => {
-			var button_1 = root$14();
+			var button_1 = root$16();
 			var node_4 = child(button_1);
 			SecondaryIcon(node_4, {});
 			var span_1 = sibling(node_4, 2);
 			var text_1 = child(span_1, true);
-			reset$2(span_1);
-			reset$2(button_1);
+			reset$1(span_1);
+			reset$1(button_1);
 			template_effect(($0, $1) => {
 				button_1.disabled = !settings.options[$$props.id];
 				set_attribute(button_1, "title", $0);
@@ -6047,54 +6371,18 @@ createHTML: (html) => {
 		if_block(node_3, ($$render) => {
 			if ($$props.secondaryAction) $$render(consequent_1);
 		});
-		reset$2(li);
+		reset$1(li);
 		template_effect(($0, $1) => {
 			set_attribute(li, "id", `dubplus-${$$props.id}`);
 			set_attribute(li, "title", $0);
 			classes = set_class(li, 1, "svelte-1aj88xa", null, classes, $1);
-		}, [() => t($$props.description), () => ({ disabled: $$props.modOnly ? !isMod(window.QueUp.session.id) : false })]);
+		}, [() => t($$props.description), () => ({ disabled: $$props.modOnly ? !isMod(getSessionId()) : false })]);
 		append($$anchor, li);
 		pop();
 	}
 	delegate(["click"]);
 	//#endregion
-	//#region src/events-constants.js
-	/**
-	* When a user in the room up/down dubs a song
-	*/
-	var DUB = "realtime:room_playlist-dub";
-	/**
-	* When user in the room grabs a song
-	*/
-	var GRAB = "realtime:room_playlist-queue-update-grabs";
-	/**
-	* When a user leaves the room
-	*/
-	var USER_LEAVE = "realtime:user-leave";
-	/**
-	* When the room playlist updates. Many things can trigger this.
-	* - the next track plays
-	* - someone joins the queue
-	* - someone leaves the queue
-	* - someone changes the order of the queue
-	* - someone changes their song in the queue
-	*
-	* Each time it still only gives you information about currently playing song
-	*/
-	var PLAYLIST_UPDATE = "realtime:room_playlist-update";
-	/**
-	* When any chat message arrives in the chat
-	*/
-	var CHAT_MESSAGE = "realtime:chat-message";
-	/**
-	* When user receives a private message
-	*/
-	var NEW_PM_MESSAGE = "realtime:new-message";
-	//#endregion
 	//#region src/lib/modules/autovote.js
-	function voteCheck() {
-		window.QueUp?.playerController?.voteUp?.click();
-	}
 	/**
 	* @type {import("./module").DubPlusModule}
 	*/
@@ -6103,60 +6391,171 @@ createHTML: (html) => {
 		label: "autovote.label",
 		description: "autovote.description",
 		category: "general",
-		turnOff() {
-			window.QueUp.Events.unbind(PLAYLIST_UPDATE, voteCheck);
-		},
 		turnOn() {
-			voteCheck();
-			window.QueUp.Events.bind(PLAYLIST_UPDATE, voteCheck);
+			clickVoteUp();
+			queupEvents.on(PLAYER_ADVANCE, clickVoteUp);
+		},
+		turnOff() {
+			queupEvents.off(PLAYER_ADVANCE, clickVoteUp);
 		}
 	};
 	//#endregion
 	//#region src/utils/chat-message.js
 	/**
-	* This inserts a chat message row into the chat.
-	* @param {string} className
-	* @param {string} textContent
+	*
+	* @param {HTMLElement} el
+	* @param {string} text
+	* @returns {boolean} True if the operation was successful, false otherwise.
 	*/
-	function insertQueupChat(className, textContent) {
-		const chatContainer = getChatContainer();
-		if (!chatContainer) {
-			logError("insertQueupChat: Chat container not found, can not insert message", {
-				className,
-				textContent
-			});
-			return;
-		}
-		const li = document.createElement("li");
-		li.className = `dubplus-chat-system ${className}`;
-		const chatDelete = document.createElement("div");
-		chatDelete.className = "chatDelete";
-		chatDelete.onclick = function(e) {
-			/**@type {HTMLDivElement}*/ e.target.parentElement?.remove();
-		};
-		const span = document.createElement("span");
-		span.className = "icon-close";
-		chatDelete.appendChild(span);
-		li.appendChild(chatDelete);
-		const text = document.createElement("div");
-		text.className = "text";
-		text.textContent = textContent;
-		li.appendChild(text);
-		chatContainer.appendChild(li);
+	function replaceContent(el, text) {
+		el.focus();
+		const range = document.createRange();
+		range.selectNodeContents(el);
+		const sel = window.getSelection();
+		sel?.removeAllRanges();
+		sel?.addRange(range);
+		return text ? document.execCommand("insertText", false, text) : document.execCommand("delete");
 	}
 	/**
-	* This inserts text into the chat input and programmatically
-	* submits the chat message.
+	*
+	* @param {HTMLElement} el
+	* @param {string} original
+	* @param {number} [attempts]
+	* @returns {void}
+	*/
+	function restoreWhenCleared(el, original, attempts = 20) {
+		if (attempts <= 0) return;
+		if (el.textContent === "" || el.textContent !== original) {}
+		requestAnimationFrame(() => {
+			if (el.textContent.trim() === "") replaceContent(el, original);
+			else restoreWhenCleared(el, original, attempts - 1);
+		});
+	}
+	/**
+	* Sends whatever is currently in the chat input.
+	*/
+	function submitChatMessage() {
+		const chatInput = getChatInput();
+		if (!chatInput) {
+			logError("submitChatMessage: Chat input not found, can not send message");
+			return;
+		}
+		if (chatInput.textContent.trim() === "") {
+			logInfo("submitChatMessage: Chat input is empty, not sending message");
+			return;
+		}
+		chatInput.dispatchEvent(new KeyboardEvent("keydown", {
+			key: "Enter",
+			code: "Enter",
+			keyCode: 13,
+			which: 13,
+			bubbles: true,
+			cancelable: true,
+			composed: true
+		}));
+	}
+	/**
+	* Inserts text into the chat input and programmatically submits it.
 	* @param {string} message
 	*/
 	function sendChatMessage(message) {
 		const chatInput = getChatInput();
-		if (chatInput) {
-			const messageOriginal = chatInput.value;
-			chatInput.value = message;
-			window.QueUp.room.chat.sendMessage();
-			if (messageOriginal) chatInput.value = messageOriginal;
-		} else logError("sendChatMessage: Chat input not found, can not send message", { message });
+		if (!chatInput) {
+			logError("sendChatMessage: Chat input not found, can not send message", { message });
+			return;
+		}
+		const messageOriginal = chatInput.textContent;
+		if (!replaceContent(chatInput, message)) {
+			logError("sendChatMessage: insertText failed", { message });
+			return;
+		}
+		logDebug("sendChatMessage: sending message", { message });
+		setTimeout(() => {
+			submitChatMessage();
+		}, 0);
+		if (messageOriginal) restoreWhenCleared(chatInput, messageOriginal);
+	}
+	//#endregion
+	//#region src/lib/queup.v2.js
+	/**
+	* This file is a bunch of temporary hacks because Queup v2 (remix) removed their
+	* public API.
+	*/
+	/**
+	* Get the name of the currently logged in user.
+	* @returns {string}
+	*/
+	function getUserName() {
+		return document.querySelector("a[href^=\"/user/\"]:not(:has(img))")?.textContent?.trim() || "";
+	}
+	/**
+	* Every MutationObserver created by this "instance" of the script, so they
+	* can all be torn down by {@link teardownPlayerAdvance}.
+	* @type {Set<MutationObserver>}
+	*/
+	var playerAdvanceObservers = /* @__PURE__ */ new Set();
+	function teardownPlayerAdvance() {
+		playerAdvanceObservers.forEach((observer) => observer.disconnect());
+		playerAdvanceObservers.clear();
+	}
+	/**
+	* On a dev hot reload, the whole bundle re-executes in the same page, so this
+	* module gets a brand new scope with no memory of the observers the previous
+	* instance created, they're still connected and still firing. Save the
+	* teardown on `window`, which does persist across hot reload, so each new
+	* instance can dispose of whatever the last one left running before it sets
+	* up its own observers.
+	*/
+	var PLAYER_ADVANCE_CLEANUP_KEY = "__dubplusTeardownPlayerAdvance";
+	/** @type {Record<string, (() => void) | undefined>} */
+	var globalCleanupRegistry = window;
+	globalCleanupRegistry[PLAYER_ADVANCE_CLEANUP_KEY]?.();
+	globalCleanupRegistry[PLAYER_ADVANCE_CLEANUP_KEY] = teardownPlayerAdvance;
+	/**
+	* Watches the currently-playing-song element's text for changes, which
+	* signals the player advanced to the next song.
+	* @param {Element} songElement the element returned by {@link getCurrentlyPlayingSong}
+	*/
+	function observeCurrentlyPlayingSong(songElement) {
+		const observer = new MutationObserver((records) => {
+			logDebug("playerAdvance detected", records);
+			const songTitle = records[0]?.target?.textContent || "";
+			queupEvents.emit(PLAYER_ADVANCE, songTitle);
+		});
+		observer.observe(songElement, {
+			characterData: true,
+			subtree: true
+		});
+		playerAdvanceObservers.add(observer);
+	}
+	function setupPlayerAdvance() {
+		waitFor(() => !!getCurrentlyPlayingSong(), {
+			interval: 1e4,
+			seconds: Number.POSITIVE_INFINITY
+		}).then(() => {
+			const songElement = getCurrentlyPlayingSong();
+			if (songElement) observeCurrentlyPlayingSong(songElement);
+		}).catch((err) => {
+			logError("setupPlayerAdvance: wait for DJing failed", err);
+		});
+	}
+	setupPlayerAdvance();
+	//#endregion
+	//#region src/utils/mention-helpers.js
+	/**
+	* @param {string[]} names Array of all names user could use for mentions in chat
+	*/
+	function getMentionRegex(names) {
+		const escapedNames = names.map((name) => name.replace(/\s+/g, "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).filter(Boolean).join("|");
+		return new RegExp(`\\b@?(${escapedNames})\\b`, "ig");
+	}
+	/**
+	* split, trim, and filter a comma-separated list of names
+	* @param {string} [names]
+	* @returns {string[]} Array of cleaned-up names
+	*/
+	function split(names = "") {
+		return names.split(",").map((name) => name.trim()).filter(Boolean);
 	}
 	//#endregion
 	//#region src/lib/modules/afk.js
@@ -6168,14 +6567,17 @@ createHTML: (html) => {
 	var canSend = true;
 	/**
 	*
-	* @param {import("../../events").ChatMessageEvent} e
+	* @param {import("../../types/events").ChatMessageEvent} e
 	* @returns {void}
 	*/
 	function afk_chat_respond(e) {
 		if (!canSend) return;
 		const content = e.message;
-		const user = window.QueUp.session.get("username");
-		if (content.includes(`@${user}`) && window.QueUp.session.id !== e.user.userInfo.userid) {
+		let mentionList = [];
+		const user = getUserName();
+		if (user) mentionList.push(user);
+		if (settings.options["custom-mentions"] && settings.custom["custom-mentions"]) mentionList = mentionList.concat(split(settings.custom["custom-mentions"]));
+		if (getMentionRegex(mentionList).test(content) && user.toLowerCase() !== e.user.username.toLowerCase()) {
 			let chatMessage = "";
 			if (settings.custom.afk) chatMessage = `[AFK] ${settings.custom.afk}`;
 			else chatMessage = `[AFK] ${t("afk.modal.placeholder")}`;
@@ -6195,10 +6597,10 @@ createHTML: (html) => {
 		description: "afk.description",
 		category: "general",
 		turnOn() {
-			window.QueUp.Events.bind(CHAT_MESSAGE, afk_chat_respond);
+			queupEvents.on(CHAT_MESSAGE, afk_chat_respond);
 		},
 		turnOff() {
-			window.QueUp.Events.unbind(CHAT_MESSAGE, afk_chat_respond);
+			queupEvents.off(CHAT_MESSAGE, afk_chat_respond);
 		},
 		custom: {
 			title: "afk.modal.title",
@@ -6209,741 +6611,35 @@ createHTML: (html) => {
 		}
 	};
 	//#endregion
-	//#region src/utils/ldb.js
-	/**
-	* A wrapper around IndexedDB.
-	* IndexedDB has a higher storage limit (50mb) compared to localstorage (5mb).
-	*/
-	var OBJECT_STORE_NAME = "s";
-	var MAX_GET_ATTEMPTS = 50;
-	var LDB = class {
-		constructor() {
-			/**
-			* @type {IDBDatabase|null}
-			*/
-			this.db = null;
-			/**
-			* Set to true when the DB connection fails to open, so reads don't
-			* poll forever waiting for a `db` that will never arrive.
-			* @type {boolean}
-			*/
-			this.failed = false;
-			const dbReq = window.indexedDB.open("d2", 1);
-			const outerThis = this;
-			dbReq.onsuccess = function() {
-				outerThis.db = this.result;
-			};
-			dbReq.onerror = function(e) {
-				outerThis.failed = true;
-				logError("indexedDB request error:", e);
-			};
-			dbReq.onupgradeneeded = function() {
-				outerThis.db = null;
-				var t = this.result.createObjectStore(OBJECT_STORE_NAME, { keyPath: "k" });
-				t.transaction.oncomplete = function() {
-					outerThis.db = this.db;
-				};
-			};
-		}
-		/**
-		*
-		* @param {string} key
-		* @param {number} [attempt] internal retry counter
-		* @returns {Promise<string|null>}
-		*/
-		get(key, attempt = 0) {
-			return new Promise((resolve) => {
-				if (this.db) this.db.transaction(OBJECT_STORE_NAME).objectStore(OBJECT_STORE_NAME).get(key).onsuccess = function() {
-					resolve(this.result?.v || null);
-				};
-				else if (this.failed || attempt >= MAX_GET_ATTEMPTS) {
-					logError("indexedDB not ready. Could not get:", key);
-					resolve(null);
-				} else setTimeout(() => {
-					this.get(key, attempt + 1).then(resolve);
-				}, 100);
-			});
-		}
-		/**
-		*
-		* @param {string} key
-		* @param {string} value
-		*/
-		set(key, value) {
-			if (!this.db) {
-				logError("indexedDB not ready yet. Could not set:", key);
-				return;
-			}
-			this.db.transaction(OBJECT_STORE_NAME, "readwrite").objectStore(OBJECT_STORE_NAME).put({
-				k: key,
-				v: value
-			});
-		}
-	};
-	//#endregion
-	//#region src/lib/emoji/emoji.js
-	var ldb = new LDB();
-	/**
-	* @typedef {object} TwitchEmote
-	* @property {string} description
-	* @property {string} image_id
-	* @property {string|null} first_seen
-	*/
-	/**
-	* @typedef {object} TwitchJsonResponse
-	* @property {object} meta
-	* @property {string} meta.generated_at
-	* @property {object} template
-	* @property {string} template.small
-	* @property {string} template.medium
-	* @property {string} template.large
-	* @property {{[emote: string]: TwitchEmote}} emotes
-	*/
-	/**
-	*
-	* @returns {Promise<TwitchJsonResponse>}
-	*/
-	function fetchTwitchEmotes() {
-		return fetch("//cdn.jsdelivr.net/gh/Jiiks/BetterDiscordApp/data/emotedata_twitch_global.json").then((res) => res.json());
+	//#region src/utils/play-sound.js
+	/** @type {AudioContext} */
+	var audioCtx;
+	function playSound() {
+		audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+		const now = audioCtx.currentTime;
+		/** @param {number} start @param {number} f0 @param {number} f1 */
+		const blip = (start, f0, f1) => {
+			const oscillator = audioCtx.createOscillator();
+			const gain = audioCtx.createGain();
+			const filter = audioCtx.createBiquadFilter();
+			oscillator.type = "sine";
+			oscillator.frequency.setValueAtTime(f0, start);
+			oscillator.frequency.exponentialRampToValueAtTime(f1, start + .01);
+			filter.type = "lowpass";
+			filter.frequency.setValueAtTime(1800, start);
+			filter.Q.setValueAtTime(2.5, start);
+			gain.gain.setValueAtTime(0, start);
+			gain.gain.linearRampToValueAtTime(1, start + .005);
+			gain.gain.exponentialRampToValueAtTime(.001, start + .1);
+			oscillator.connect(filter);
+			filter.connect(gain);
+			gain.connect(audioCtx.destination);
+			oscillator.start(start);
+			oscillator.stop(start + .11);
+		};
+		blip(now, 266, 276);
+		blip(now + .14, 398.5, 413.5);
 	}
-	/**
-	* @typedef {object} BttvEmote
-	* @property {string} id
-	* @property {string} code
-	* @property {string} imageType
-	* @property {boolean} animated
-	* @property {string} userId
-	* @property {boolean} modifier
-	*/
-	/**
-	* @typedef {BttvEmote[]} BttvJsonResponse
-	*/
-	/**
-	* @returns {Promise<BttvJsonResponse>}
-	*/
-	function fetchBTTVEmotes() {
-		return fetch("//api.betterttv.net/3/cached/emotes/global").then((res) => res.json());
-	}
-	/**
-	* @typedef {object} FrankerFacezEmote
-	* @property {number} id
-	* @property {string} name
-	* @property {number} height
-	* @property {number} width
-	* @property {boolean} public
-	* @property {boolean} hidden
-	* @property {boolean} modifier
-	* @property {number} modifier_flags
-	* @property {null} offset
-	* @property {null} margins
-	* @property {null} css
-	* @property {{_id: number, name: string, display_name: string}} owner
-	* @property {null} artist
-	* @property {{1: string, 2: string, 4: string}} urls
-	* @property {number} status
-	* @property {number} usage_count
-	* @property {string} created_at
-	* @property {string} last_updated
-	*/
-	/**
-	* @typedef {object} FrankerFacezJsonResponse
-	* @property {number} _pages
-	* @property {number} _total
-	* @property {FrankerFacezEmote[]} emoticons
-	*/
-	/**
-	* @returns {Promise<FrankerFacezJsonResponse>}
-	*/
-	function fetchFrankerFacezEmotes() {
-		return fetch("//api.frankerfacez.com/v1/emoticons?per_page=200&private=off&sort=count-desc").then((res) => res.json());
-	}
-	var dubplus_emoji = {
-		emoji: { 
-		/**
-		* @param {string} id
-		* @returns {string}
-		*/
-template(id) {
-			id = id.replace(/:/g, "");
-			return `${window.emojify.defaultConfig.img_dir}/${encodeURI(id)}.png`;
-		} },
-		twitchJSONSLoaded: false,
-		bttvJSONSLoaded: false,
-		frankerfacezJSONLoaded: false,
-		twitch: {
-			/**
-			* @param {string} [id]
-			* @returns {string}
-			*/
-			template(id) {
-				if (!id) return "";
-				return `//static-cdn.jtvnw.net/emoticons/v1/${id}/3.0`;
-			},
-			/**
-			* @type {Map<string, string>}
-			*/
-			emotesMap: /* @__PURE__ */ new Map()
-		},
-		bttv: {
-			/**
-			* @param {string} [id]
-			* @returns {string}
-			*/
-			template(id) {
-				if (!id) return "";
-				return `//cdn.betterttv.net/emote/${id}/3x`;
-			},
-			/**
-			* @type {Map<string, string>}
-			*/
-			emotesMap: /* @__PURE__ */ new Map()
-		},
-		frankerFacez: {
-			/**
-			* @param {number} [id]
-			* @returns {string}
-			*/
-			template(id) {
-				if (typeof id !== "number") return "";
-				return `//cdn.frankerfacez.com/emoticon/${id}/1`;
-			},
-			/**
-			* @type {Map<string, number>}
-			*/
-			emotesMap: /* @__PURE__ */ new Map()
-		},
-		/**
-		*
-		* @param {string} apiName
-		* @returns {Promise<boolean>}
-		*/
-		shouldUpdateAPIs(apiName) {
-			const day = 864e5;
-			return ldb.get(`${apiName}_api`).then((savedItem) => {
-				if (savedItem) try {
-					if (typeof JSON.parse(savedItem).error !== "undefined") return true;
-				} catch {
-					return true;
-				}
-				const today = Date.now();
-				const lastSaved = parseInt(localStorage.getItem(`${apiName}_api_timestamp`) || "");
-				return isNaN(lastSaved) || today - lastSaved > day * 5 || !savedItem;
-			});
-		},
-		/**************************************************************************
-		* Loads the twitch emotes from the api.
-		* http://api.twitch.tv/kraken/chat/emoticon_images
-		*/
-		/**
-		* @return {Promise<void>}
-		*/
-		loadTwitchEmotes() {
-			if (this.twitchJSONSLoaded) return Promise.resolve();
-			return this.shouldUpdateAPIs("twitch").then((shouldUpdate) => {
-				if (shouldUpdate) {
-					logInfo("twitch", "loading from api");
-					return fetchTwitchEmotes().then((json) => {
-						/**
-						* @type {{[emote: string]: string}}
-						*/
-						const twitchEmotes = {};
-						for (const emote in json.emotes) if (!twitchEmotes[emote]) twitchEmotes[emote] = json.emotes[emote].image_id;
-						localStorage.setItem("twitch_api_timestamp", Date.now().toString());
-						ldb.set("twitch_api", JSON.stringify(twitchEmotes));
-						dubplus_emoji.processTwitchEmotes(twitchEmotes);
-					}).catch((err) => logError(err));
-				} else return ldb.get("twitch_api").then((data) => {
-					logInfo("twitch", "loading from IndexedDB");
-					/**
-					* @type {{[emote: string]: string}}
-					*/
-					const savedData = JSON.parse(data || "{}");
-					dubplus_emoji.processTwitchEmotes(savedData);
-				});
-			});
-		},
-		/**
-		* @return {Promise<void>}
-		*/
-		loadBTTVEmotes() {
-			if (this.bttvJSONSLoaded) return Promise.resolve();
-			return this.shouldUpdateAPIs("bttv").then((shouldUpdate) => {
-				if (shouldUpdate) {
-					logInfo("bttv", "loading from api");
-					return fetchBTTVEmotes().then((json) => {
-						/**
-						* @type {{[emote: string]: string}}
-						*/
-						const bttvEmotes = {};
-						json.forEach((e) => {
-							if (!bttvEmotes[e.code]) bttvEmotes[e.code] = e.id;
-						});
-						localStorage.setItem("bttv_api_timestamp", Date.now().toString());
-						ldb.set("bttv_api", JSON.stringify(bttvEmotes));
-						dubplus_emoji.processBTTVEmotes(bttvEmotes);
-					}).catch((err) => logError(err));
-				} else return ldb.get("bttv_api").then((data) => {
-					logInfo("bttv", "loading from IndexedDB");
-					/**
-					* @type {{[emote: string]: string}}
-					*/
-					const savedData = JSON.parse(data || "{}");
-					dubplus_emoji.processBTTVEmotes(savedData);
-				});
-			});
-		},
-		/**
-		* @return {Promise<void>}
-		*/
-		loadFrankerFacez() {
-			if (this.frankerfacezJSONLoaded) return Promise.resolve();
-			return this.shouldUpdateAPIs("frankerfacez").then((shouldUpdate) => {
-				if (shouldUpdate) {
-					logInfo("frankerfacez", "loading from api");
-					return fetchFrankerFacezEmotes().then((json) => {
-						const frankerFacez = json;
-						localStorage.setItem("frankerfacez_api_timestamp", Date.now().toString());
-						ldb.set("frankerfacez_api", JSON.stringify(frankerFacez));
-						dubplus_emoji.processFrankerFacez(frankerFacez);
-					}).catch((err) => logError(err));
-				} else return ldb.get("frankerfacez_api").then((data) => {
-					logInfo("frankerfacez", "loading from IndexedDB");
-					const savedData = JSON.parse(data || "{}");
-					dubplus_emoji.processFrankerFacez(savedData);
-				});
-			});
-		},
-		/**
-		*
-		* @param {{[emote: string]: string}} data
-		*/
-		processTwitchEmotes(data) {
-			for (const code in data) if (Object.hasOwn(data, code)) {
-				const key = code.toLowerCase();
-				if (window.emojify.emojiNames.includes(key)) this.twitch.emotesMap.set(`${key}_twitch`, data[code]);
-				else this.twitch.emotesMap.set(key, data[code]);
-			}
-			this.twitchJSONSLoaded = true;
-		},
-		/**
-		* @param {{[emote: string]: string}} data
-		*/
-		processBTTVEmotes(data) {
-			for (const code in data) if (Object.hasOwn(data, code)) {
-				const key = code.toLowerCase();
-				if (code.includes(":")) continue;
-				if (window.emojify.emojiNames.includes(key) || this.twitch.emotesMap.has(key)) this.bttv.emotesMap.set(`${key}_bttv`, data[code]);
-				else this.bttv.emotesMap.set(key, data[code]);
-			}
-			this.bttvJSONSLoaded = true;
-		},
-		/**
-		* @param {FrankerFacezJsonResponse} data
-		*/
-		processFrankerFacez(data) {
-			if (!Array.isArray(data.emoticons)) {
-				logInfo("frankerfacez", "cached data invalid, will refetch next load");
-				localStorage.removeItem("frankerfacez_api_timestamp");
-				return;
-			}
-			for (const emoticon of data.emoticons) {
-				const code = emoticon.name;
-				const key = code.toLowerCase();
-				if (code.includes(":")) continue;
-				if (window.emojify.emojiNames.includes(key) || this.twitch.emotesMap.has(key) || this.bttv.emotesMap.has(key)) this.frankerFacez.emotesMap.set(`${key}_ffz`, emoticon.id);
-				else this.frankerFacez.emotesMap.set(key, emoticon.id);
-			}
-			this.frankerfacezJSONLoaded = true;
-		},
-		/**
-		* @param {string} str
-		* @param {boolean} [emotesEnabled=false]
-		*/
-		findMatchingEmotes(str, emotesEnabled = false) {
-			/**
-			* @type {import("./emojiTypes").Emoji[]}
-			*/
-			const matches = [];
-			window.emojify.emojiNames.forEach((emoji) => {
-				if (emoji.includes(str)) matches.push({
-					src: this.emoji.template(emoji),
-					text: emoji,
-					alt: emoji,
-					platform: "emojify"
-				});
-			});
-			if (!emotesEnabled) return matches;
-			Array.from(this.twitch.emotesMap.keys()).forEach((emoji) => {
-				if (emoji.includes(str)) matches.push({
-					src: this.twitch.template(this.twitch.emotesMap.get(emoji)),
-					text: emoji,
-					alt: emoji,
-					platform: "twitch"
-				});
-			});
-			Array.from(this.bttv.emotesMap.keys()).forEach((emoji) => {
-				if (emoji.includes(str)) matches.push({
-					src: this.bttv.template(this.bttv.emotesMap.get(emoji)),
-					text: emoji,
-					alt: emoji,
-					platform: "bttv"
-				});
-			});
-			Array.from(this.frankerFacez.emotesMap.keys()).forEach((emoji) => {
-				if (emoji.includes(str)) matches.push({
-					src: this.frankerFacez.template(this.frankerFacez.emotesMap.get(emoji)),
-					text: emoji,
-					alt: emoji,
-					platform: "ffz"
-				});
-			});
-			return matches;
-		}
-	};
-	//#endregion
-	//#region src/lib/modules/emotes.js
-	/**
-	*
-	* @param {string} type
-	* @param {string} src
-	* @param {string} name
-	* @param {number} [w]
-	* @param {number} [h]
-	* @returns {HTMLImageElement}
-	*/
-	function makeImage(type, src, name, w, h) {
-		const img = document.createElement("img");
-		img.className = `emoji ${type}-emote`;
-		img.title = name;
-		img.alt = name;
-		img.src = src;
-		if (w) img.width = w;
-		if (h) img.height = h;
-		return img;
-	}
-	/**
-	* @param {string} text
-	* @returns {Array<HTMLImageElement | Text>}
-	*/
-	function processChatText(text) {
-		const regex = /(:[^: ]+:)/g;
-		const chunks = text.split(regex);
-		/**
-		* @type {Array<HTMLImageElement | Text>}
-		*/
-		const nodes = [];
-		chunks.forEach((chunk) => {
-			if (chunk.match(regex)) {
-				const key = chunk.toLowerCase().replace(/^:/, "").replace(/:$/, "");
-				if (dubplus_emoji.twitchJSONSLoaded && dubplus_emoji.twitch.emotesMap.has(key)) {
-					const id = dubplus_emoji.twitch.emotesMap.get(key);
-					const img = makeImage("twitch", dubplus_emoji.twitch.template(id), key);
-					nodes.push(img);
-				} else if (dubplus_emoji.bttvJSONSLoaded && dubplus_emoji.bttv.emotesMap.has(key)) {
-					const id = dubplus_emoji.bttv.emotesMap.get(key);
-					const img = makeImage("bttv", dubplus_emoji.bttv.template(id), key);
-					nodes.push(img);
-				} else if (dubplus_emoji.frankerfacezJSONLoaded && dubplus_emoji.frankerFacez.emotesMap.has(key)) {
-					const id = dubplus_emoji.frankerFacez.emotesMap.get(key);
-					const img = makeImage("frankerFacez", dubplus_emoji.frankerFacez.template(id), key);
-					nodes.push(img);
-				} else nodes.push(document.createTextNode(chunk));
-			} else nodes.push(document.createTextNode(chunk));
-		});
-		return nodes;
-	}
-	/**
-	* @param {HTMLLIElement} li
-	* @return {void}
-	*/
-	function processChatLI(li) {
-		li.querySelectorAll(".text p").forEach((textElem) => {
-			if (!textElem.hasAttribute("dubplus-emotes-processed") && textElem?.textContent.trim() !== "") {
-				[...textElem.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE).forEach((textNode) => {
-					textNode.replaceWith(...processChatText(textNode.textContent ?? ""));
-				});
-				textElem.setAttribute("dubplus-emotes-processed", "true");
-			}
-		});
-	}
-	/**
-	* run this when a new chat message is received
-	* and only replaces emotes in the last message
-	* @param {import('../../events').ChatMessageEvent} [e]
-	* @returns {void}
-	*/
-	function replaceTextWithEmote(e) {
-		if (e?.chatid) {
-			/**
-			* @type {HTMLLIElement | null}
-			*/
-			const chatMessage = document.querySelector(`.chat-id-${e.chatid}`);
-			if (chatMessage) {
-				processChatLI(chatMessage);
-				return;
-			}
-		}
-		const chats = getChatMessages();
-		if (!chats?.length) return;
-		chats.forEach(processChatLI);
-	}
-	/**
-	* Emotes
-	* This module adds support for converting :emote: text into images.
-	* Currently it only supports: Twitch, BTTV, and FrankerFaceZ emotes.
-	* @type {import("./module").DubPlusModule}
-	*/
-	var emotes = {
-		id: "emotes",
-		label: "emotes.label",
-		description: "emotes.description",
-		category: "general",
-		turnOn() {
-			dubplus_emoji.loadTwitchEmotes().then(() => dubplus_emoji.loadBTTVEmotes()).then(() => dubplus_emoji.loadFrankerFacez()).then(() => {
-				replaceTextWithEmote();
-				window.QueUp.Events.bind(CHAT_MESSAGE, replaceTextWithEmote);
-			});
-		},
-		turnOff() {
-			window.QueUp.Events.unbind(CHAT_MESSAGE, replaceTextWithEmote);
-		}
-	};
-	//#endregion
-	//#region src/lib/emoji/emojiState.svelte.js
-	var emojiState = proxy({
-		selectedIndex: 0,
-		emojiList: []
-	});
-	function reset$1() {
-		emojiState.selectedIndex = 0;
-		emojiState.emojiList = [];
-	}
-	/**
-	* @param {Emoji[]} listArray
-	* @param {string} searchStr
-	*/
-	function setEmojiList(listArray, searchStr) {
-		const platforms = [
-			"emojify",
-			"twitch",
-			"bttv",
-			"ffz"
-		];
-		emojiState.emojiList = listArray.filter((emoji, index, self) => index === self.findIndex((e) => e.src === emoji.src && e.platform === emoji.platform)).sort((a, b) => {
-			const platformA = platforms.indexOf(a.platform);
-			const platformB = platforms.indexOf(b.platform);
-			if (platformA === platformB) if (a.text.startsWith(searchStr) && !b.text.startsWith(searchStr)) return -1;
-			else if (!a.text.startsWith(searchStr) && b.text.startsWith(searchStr)) return 1;
-			else return a.text.localeCompare(b.text);
-			return platformA - platformB;
-		});
-		emojiState.selectedIndex = 0;
-	}
-	function decrement() {
-		if (emojiState.selectedIndex > 0) emojiState.selectedIndex--;
-		else emojiState.selectedIndex = emojiState.emojiList.length - 1;
-	}
-	function increment() {
-		if (emojiState.selectedIndex < emojiState.emojiList.length - 1) emojiState.selectedIndex++;
-		else emojiState.selectedIndex = 0;
-	}
-	//#endregion
-	//#region src/lib/emoji/helpers.js
-	/**
-	*
-	* @param {string} char
-	* @returns {boolean}
-	*/
-	function isEdge(char) {
-		return char === " " || char === "\n";
-	}
-	/**
-	* Assuming that the selectionStart is adjacent to, or within, a partial emoji,
-	* get the selection range of the partial emoji
-	*
-	* "This is a :cat example" -> [10, 14]
-	*            ^^^^^ cursor can be anywhere in this range
-	* @param {string} currentText
-	* @param {number} cursorPos
-	* @returns {[number, number]}
-	*/
-	function getSelection(currentText, cursorPos) {
-		let left = cursorPos > 0 ? cursorPos : 0;
-		while (left > 0 && currentText[left] !== ":") left -= 1;
-		let right = cursorPos;
-		while (!isEdge(currentText[right]) && right < currentText.length) right += 1;
-		return [left, right];
-	}
-	//#endregion
-	//#region src/lib/modules/autocomplete.js
-	/**
-	* Autocomplete Emojis/Emotes
-	*/
-	var KEYS = {
-		up: "ArrowUp",
-		down: "ArrowDown",
-		left: "ArrowLeft",
-		right: "ArrowRight",
-		enter: "Enter",
-		esc: "Escape",
-		tab: "Tab",
-		backspace: "Backspace",
-		del: "Delete",
-		space: " "
-	};
-	/**
-	* Minimum number of characters to start filtering emojis.
-	* Includes the ":" character so ":sm" is 3 characters.
-	*/
-	var MIN_CHAR = 2;
-	/**
-	*
-	* @returns {HTMLUListElement | null}
-	*/
-	function getAutocompletePreview() {
-		return document.querySelector("#autocomplete-preview");
-	}
-	/**
-	* @type {string}
-	*/
-	var originalKeyDownEventHandler;
-	/**
-	*
-	* @param {HTMLTextAreaElement} inputEl
-	* @param {number} index
-	*/
-	function insertEmote(inputEl, index) {
-		const selected = emojiState.emojiList[index];
-		if (!selected) return;
-		const [start, end] = getSelection(inputEl.value, inputEl.selectionStart);
-		inputEl.value = inputEl.value.slice(0, start) + `:${selected.text}:` + inputEl.value.slice(end);
-		reset$1();
-	}
-	/**
-	* @param {KeyboardEvent | MouseEvent} e
-	*/
-	function checkInput(e) {
-		const inputEl = e.target;
-		const currentText = inputEl.value;
-		const cursorPos = inputEl.selectionStart;
-		let str = "";
-		let goLeft = cursorPos - 1;
-		while (!isEdge(currentText[goLeft]) && goLeft >= 0) {
-			str = currentText[goLeft] + str;
-			goLeft--;
-		}
-		let goRight = cursorPos;
-		while (!isEdge(currentText[goRight]) && goRight < currentText.length) {
-			str = str + currentText[goRight];
-			goRight++;
-		}
-		if (str.startsWith(":") && str.length >= MIN_CHAR && !str.endsWith(":")) {
-			const searchStr = str.substring(1).trim();
-			setEmojiList(dubplus_emoji.findMatchingEmotes(searchStr, settings.options.emotes), searchStr);
-		} else reset$1();
-	}
-	/**
-	*
-	* @param {KeyboardEvent} e
-	* @returns
-	*/
-	function chatInputKeyupFunc(e) {
-		const acPreview = getAutocompletePreview();
-		if (!acPreview) return;
-		const hasItems = acPreview.children.length > 0;
-		if (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) return;
-		if (e.key === KEYS.up && hasItems) {
-			decrement();
-			return;
-		}
-		if (e.key === KEYS.down && hasItems) {
-			increment();
-			return;
-		}
-		if ((e.key === KEYS.enter || e.key === KEYS.tab) && hasItems) {
-			e.preventDefault();
-			e.stopImmediatePropagation();
-			const inputEl = e.target;
-			insertEmote(inputEl, emojiState.selectedIndex);
-			return;
-		}
-		if (e.key === KEYS.enter && !hasItems) {
-			setTimeout(() => {
-				window.QueUp.room.chat.resizeTextarea();
-			}, 10);
-			return;
-		}
-		if (e.key === KEYS.esc && hasItems) {
-			reset$1();
-			return;
-		}
-		checkInput(e);
-	}
-	/**
-	*
-	* @param {KeyboardEvent} e
-	* @returns
-	*/
-	function chatInputKeydownFunc(e) {
-		const acPreview = getAutocompletePreview();
-		if (!acPreview) return;
-		const emptyPreview = acPreview.children.length === 0;
-		const isValidKey = [
-			KEYS.tab,
-			KEYS.enter,
-			KEYS.up,
-			KEYS.down
-		].includes(e.key);
-		const isModifierKey = e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
-		if (!isModifierKey && !emptyPreview && isValidKey) {
-			e.preventDefault();
-			return;
-		}
-		if (!isModifierKey && e.key === KEYS.enter) {
-			window.QueUp.room.chat.sendMessage();
-			window.QueUp.room.chat.resizeTextarea();
-		} else if (!isModifierKey) window.QueUp.room.chat.ncKeyDown(e);
-	}
-	/**
-	* Autocomplete
-	* This module will allow users to autocomplete emojis/emotes in chat by presenting
-	* a popup window above the chat that users can navigate with the arrow keys and select
-	* @type {import("./module").DubPlusModule}
-	*/
-	var autocomplete = {
-		id: "autocomplete",
-		label: "autocomplete.label",
-		category: "general",
-		description: "autocomplete.description",
-		turnOn() {
-			reset$1();
-			waitFor(() => Boolean(getChatInput()) && Boolean(window.QueUp?.room?.chat)).then(() => {
-				const chatInput = getChatInput();
-				if (!chatInput) return;
-				originalKeyDownEventHandler = window.QueUp.room.chat.events["keydown #chat-txt-message"];
-				const newEventsObject = { ...window.QueUp.room.chat.events };
-				delete newEventsObject["keydown #chat-txt-message"];
-				window.QueUp.room.chat.delegateEvents(newEventsObject);
-				chatInput.addEventListener("keydown", chatInputKeydownFunc);
-				chatInput.addEventListener("keyup", chatInputKeyupFunc);
-				chatInput.addEventListener("click", checkInput);
-			}).catch(() => {
-				logError("Autocomplete: chat input never appeared; module not enabled.");
-			});
-		},
-		turnOff() {
-			reset$1();
-			if (originalKeyDownEventHandler) {
-				window.QueUp.room.chat.events["keydown #chat-txt-message"] = originalKeyDownEventHandler;
-				window.QueUp.room.chat.delegateEvents(window.QueUp.room.chat.events);
-			}
-			const chatInput = getChatInput();
-			if (!chatInput) return;
-			chatInput.removeEventListener("keydown", chatInputKeydownFunc);
-			chatInput.removeEventListener("keyup", chatInputKeyupFunc);
-			chatInput.removeEventListener("click", checkInput);
-		}
-	};
 	//#endregion
 	//#region src/lib/modules/customMentions.js
 	/**
@@ -6957,15 +6653,15 @@ template(id) {
 	*/
 	var MODULE_ID$2 = "custom-mentions";
 	/**
-	* @param {import("../../events").ChatMessageEvent} e
+	* @param {import("../../types/events").ChatMessageEvent} e
 	*/
 	function customMentionCheck(e) {
 		const enabled = settings.options[MODULE_ID$2];
 		const custom = settings.custom[MODULE_ID$2];
-		if (enabled && window.QueUp.session.id !== e.user.userInfo.userid) {
-			if (custom.split(",").some(function(v) {
-				return new RegExp(`\\b@?${v.trim()}\\b`, "ig").test(e.message);
-			})) window.QueUp.room.chat.mentionChatSound.play();
+		if (typeof custom === "string" && custom.trim() !== "" && enabled && window.dubplus.userId !== e.user.userInfo.userid) {
+			const namesForRegex = split(custom);
+			if (namesForRegex.length === 0) return;
+			if (getMentionRegex(namesForRegex).test(e.message)) playSound();
 		}
 	}
 	/**
@@ -6983,64 +6679,17 @@ template(id) {
 			maxlength: 255
 		},
 		turnOn() {
-			window.QueUp.Events.bind(CHAT_MESSAGE, customMentionCheck);
+			queupEvents.on(CHAT_MESSAGE, customMentionCheck);
 		},
 		turnOff() {
-			window.QueUp.Events.unbind(CHAT_MESSAGE, customMentionCheck);
-		}
-	};
-	//#endregion
-	//#region src/lib/modules/chatCleaner.js
-	var MODULE_ID$1 = "chat-cleaner";
-	/**
-	* @param {number} [limit]
-	*/
-	function cleanChat(limit) {
-		const chatMessages = getChatMessages();
-		if (!chatMessages?.length || limit === void 0 || isNaN(limit) || chatMessages.length < limit) return;
-		for (let i = 0; i < chatMessages.length - limit; i++) chatMessages[i].remove();
-	}
-	function onChatMessage() {
-		const limit = settings.custom[MODULE_ID$1];
-		if (typeof limit === "number") cleanChat(limit);
-		else if (typeof limit === "string" && limit.trim() !== "") cleanChat(parseInt(limit, 10));
-	}
-	/**
-	* @type {import('./module').DubPlusModule}
-	*/
-	var chatCleaner = {
-		id: MODULE_ID$1,
-		label: `${MODULE_ID$1}.label`,
-		description: `${MODULE_ID$1}.description`,
-		category: "general",
-		custom: {
-			title: `${MODULE_ID$1}.modal.title`,
-			content: `${MODULE_ID$1}.modal.content`,
-			placeholder: `${MODULE_ID$1}.modal.placeholder`,
-			maxlength: 5,
-			validation(val) {
-				if (val.trim() === "") return true;
-				const num = parseInt(val, 10);
-				if (val.includes(".") || isNaN(num) || num < 1) return t(`${MODULE_ID$1}.modal.validation`);
-				return true;
-			},
-			onConfirm: (value) => {
-				if (settings.options[MODULE_ID$1]) cleanChat(parseInt(value, 10));
-			}
-		},
-		turnOn() {
-			cleanChat(void 0);
-			window.QueUp.Events.bind(CHAT_MESSAGE, onChatMessage);
-		},
-		turnOff() {
-			window.QueUp.Events.unbind(CHAT_MESSAGE, onChatMessage);
+			queupEvents.off(CHAT_MESSAGE, customMentionCheck);
 		}
 	};
 	//#endregion
 	//#region src/lib/stores/activeTabState.svelte.js
 	var activeTabState = proxy({ isActive: true });
-	var onOut = [];
-	var onIn = [];
+	var onOut = /* @__PURE__ */ new Set();
+	var onIn = /* @__PURE__ */ new Set();
 	document.addEventListener("visibilitychange", handleChange);
 	window.onpageshow = handleChange;
 	window.onpagehide = handleChange;
@@ -7066,8 +6715,8 @@ template(id) {
 	* @param {() => void} outHandler
 	*/
 	function registerVisibilityChangeListeners(inHandler, outHandler) {
-		if (inHandler) onIn.push(inHandler);
-		if (outHandler) onOut.push(outHandler);
+		if (inHandler) onIn.add(inHandler);
+		if (outHandler) onOut.add(outHandler);
 	}
 	/**
 	*
@@ -7075,8 +6724,8 @@ template(id) {
 	* @param {() => void} outHandler
 	*/
 	function unRegisterVisibilityChangeListeners(inHandler, outHandler) {
-		if (inHandler) onIn.splice(onIn.indexOf(inHandler), 1);
-		if (outHandler) onOut.splice(onOut.indexOf(outHandler), 1);
+		if (inHandler) onIn.delete(inHandler);
+		if (outHandler) onOut.delete(outHandler);
 	}
 	//#endregion
 	//#region src/utils/notify.js
@@ -7152,16 +6801,15 @@ template(id) {
 	//#region src/lib/modules/mentionNotifications.js
 	/**
 	*
-	* @param {import("../../events").ChatMessageEvent} e
+	* @param {import("../../types/events").ChatMessageEvent} e
 	*/
 	function notifyOnMention(e) {
 		const content = e.message;
-		let mentionTriggers = ["@" + window.QueUp.session.get("username").toLowerCase()];
-		if (settings.options["custom-mentions"] && settings.custom["custom-mentions"]) {
-			mentionTriggers = mentionTriggers.concat(settings.custom["custom-mentions"].split(",")).map((v) => v.trim());
-			mentionTriggers = mentionTriggers.concat(mentionTriggers.map((v) => "@" + v));
-		}
-		if (new RegExp(`\\b(${mentionTriggers.join("|")})\\b`, "ig").test(content) && !activeTabState.isActive && window.QueUp.session.id !== e.user.userInfo.userid) showNotification({
+		let mentionTriggers = [];
+		const user = getUserName();
+		if (user) mentionTriggers.push(user);
+		if (settings.options["custom-mentions"] && settings.custom["custom-mentions"]) mentionTriggers = mentionTriggers.concat(split(settings.custom["custom-mentions"]));
+		if (getMentionRegex(mentionTriggers).test(content) && !activeTabState.isActive && window.dubplus.userId !== e.user.userInfo.userid) showNotification({
 			title: `Message from ${e.user.username}`,
 			content
 		});
@@ -7179,32 +6827,29 @@ template(id) {
 		category: "general",
 		turnOn() {
 			notifyCheckPermission().then(() => {
-				window.QueUp.Events.bind(CHAT_MESSAGE, notifyOnMention);
+				queupEvents.on(CHAT_MESSAGE, notifyOnMention);
 			}).catch(() => {
 				settings.options[this.id] = false;
 			});
 		},
 		turnOff() {
-			window.QueUp.Events.unbind(CHAT_MESSAGE, notifyOnMention);
+			queupEvents.off(CHAT_MESSAGE, notifyOnMention);
 		}
 	};
 	//#endregion
 	//#region src/lib/modules/pmNotifications.js
 	/**
 	*
-	* @param {import("../../events").NewMessageEvent} e
+	* @param {import("../../types/events").NewMessageEvent} e
 	* @returns
 	*/
 	function pmNotify(e) {
-		if (window.QueUp.session.id === e.userid) return;
+		if (window.dubplus.userId === e.userid) return;
 		showNotification({
 			title: t("pm-notifications.notification.title"),
 			ignoreActiveTab: true,
 			callback: function() {
 				getPrivateMessageButton()?.click();
-				setTimeout(function() {
-					getPrivateMessage(e.messageid)?.click();
-				}, 500);
 			},
 			wait: 1e4
 		});
@@ -7219,86 +6864,99 @@ template(id) {
 		category: "general",
 		turnOn() {
 			notifyCheckPermission().then(() => {
-				window.QueUp.Events.bind(NEW_PM_MESSAGE, pmNotify);
+				queupEvents.on(NEW_PM_MESSAGE, pmNotify);
 			}).catch(() => {
 				settings.options[this.id] = false;
 			});
 		},
 		turnOff() {
-			window.QueUp.Events.unbind(NEW_PM_MESSAGE, pmNotify);
+			queupEvents.off(NEW_PM_MESSAGE, pmNotify);
 		}
 	};
 	//#endregion
 	//#region src/lib/modules/djNotification.js
-	var MODULE_ID = "dj-notification";
+	var MODULE_ID$1 = "dj-notification";
+	function notify() {
+		showNotification({
+			title: t(`${MODULE_ID$1}.notification.title`),
+			content: t(`${MODULE_ID$1}.notification.content`),
+			ignoreActiveTab: true,
+			wait: 1e4
+		});
+		playSound();
+	}
 	/**
 	* Sends a notification when the your position in the queue
 	*
 	* examples:
 	* if you want to be notified when you're next you would use position 1.
 	* if you want to be notified when you started playing you would use position 0.
-	* @param {{ startTime: number }} [e]
-	* @returns {void}
 	*/
-	function djNotificationCheck(e) {
-		if (e && e.startTime > 2) return;
+	function djNotificationCheck() {
 		setTimeout(() => {
-			const quePositionText = getQueuePosition()?.textContent?.trim();
-			if (!quePositionText) return;
-			const position = parseInt(quePositionText, 10);
-			if (isNaN(position)) {
-				logError(MODULE_ID, "Could not parse current position:", quePositionText);
+			const queuPositionInfo = getQueuePosition();
+			if (!queuPositionInfo) {
+				logError(MODULE_ID$1, "Could not get Queue Position info from the DOM");
 				return;
 			}
-			let parseSetting = parseInt(settings.custom[MODULE_ID], 10);
+			const { position, total } = queuPositionInfo;
+			if (typeof position !== "number") {
+				logDebug(MODULE_ID$1, "User it not in the queue");
+				return;
+			}
+			let parseSetting = parseInt(settings.custom[MODULE_ID$1], 10);
 			if (isNaN(parseSetting)) {
 				parseSetting = 2;
-				logInfo(MODULE_ID, "Could not parse setting, defaulting to 2");
+				logInfo(MODULE_ID$1, "Could not parse setting, defaulting to 2");
 			}
-			if (getQueueTotal()?.textContent?.trim() === quePositionText && parseSetting === 0 || position === parseSetting) {
-				showNotification({
-					title: t(`${MODULE_ID}.notification.title`),
-					content: t(`${MODULE_ID}.notification.content`),
-					ignoreActiveTab: true,
-					wait: 1e4
-				});
-				window.QueUp.room.chat.mentionChatSound.play();
+			if (parseSetting === 0) {
+				const currentDj = getCurrentDjEl()?.textContent?.trim()?.toLowerCase();
+				const user = getUserName().toLowerCase();
+				if (currentDj && user && currentDj === user) notify();
+				else if (position === total) {
+					logDebug(MODULE_ID$1, "Falling back to end of the queue check", {
+						currentDj,
+						user
+					});
+					notify();
+				}
 				return;
 			}
+			if (position === parseSetting) notify();
 		}, 1e3);
 	}
 	/**
 	* @type {import("./module").DubPlusModule}
 	*/
 	var djNotification = {
-		id: MODULE_ID,
-		label: `${MODULE_ID}.label`,
-		description: `${MODULE_ID}.description`,
+		id: MODULE_ID$1,
+		label: `${MODULE_ID$1}.label`,
+		description: `${MODULE_ID$1}.description`,
 		category: "general",
 		custom: {
-			title: `${MODULE_ID}.modal.title`,
-			content: `${MODULE_ID}.modal.content`,
+			title: `${MODULE_ID$1}.modal.title`,
+			content: `${MODULE_ID$1}.modal.content`,
 			placeholder: "2",
 			defaultValue: "2",
 			maxlength: 3,
 			validation(val) {
 				if (val.trim() === "") return true;
 				const num = parseInt(val, 10);
-				if (val.includes(".") || isNaN(num) || num < 0) return t(`${MODULE_ID}.modal.validation`);
+				if (val.includes(".") || isNaN(num) || num < 0) return t(`${MODULE_ID$1}.modal.validation`);
 				return true;
 			},
 			onConfirm: () => {
-				if (settings.options[MODULE_ID]) djNotificationCheck();
+				if (settings.options[MODULE_ID$1]) djNotificationCheck();
 			}
 		},
 		turnOn() {
 			notifyCheckPermission().then(() => {
 				djNotificationCheck();
-				window.QueUp.Events.bind(PLAYLIST_UPDATE, djNotificationCheck);
+				queupEvents.on(PLAYER_ADVANCE, djNotificationCheck);
 			});
 		},
 		turnOff() {
-			window.QueUp.Events.unbind(PLAYLIST_UPDATE, djNotificationCheck);
+			queupEvents.off(PLAYER_ADVANCE, djNotificationCheck);
 		}
 	};
 	//#endregion
@@ -7315,46 +6973,174 @@ template(id) {
 		return [];
 	}
 	//#endregion
-	//#region src/lib/api.js
+	//#region src/utils/delegateHoverMount.js
 	/**
-	* QueUp API wrappers
+	* @import { Component } from 'svelte';
 	*/
-	var apiBase = window.location.hostname.includes("staging") ? "https://staging-api.queup.dev" : "https://api.queup.net";
 	/**
-	* @param {string} userid
+	* @template {Record<string, any>} Props
+	* @param {() => Element | null | undefined} targetFn Lazily resolves the
+	* element to delegate hover to. Called on every pointer event so it stays
+	* correct if the underlying DOM node is replaced or wasn't mounted yet.
+	* @param {Component<Props>} component
+	* @param {(target: Element) => Props} getProps
+	* @param {object} [options]
+	* @param {ParentNode & EventTarget} [options.root]
+	* @param {number} [options.delay]
+	* @returns {() => void} Teardown.
 	*/
-	function userData(userid) {
-		return `${apiBase}/user/${userid}`;
+	function delegateHoverMount(targetFn, component, getProps, options = {}) {
+		const { root = document.body, delay = 100 } = options;
+		/** @type {Element | null} */ let active = null;
+		/** @type {Record<string, any> | null} */ let instance = null;
+		/** @type {HTMLDivElement | null} */ let container = null;
+		/** @type {ReturnType<typeof setTimeout> | undefined} */ let timer;
+		const teardown = () => {
+			const inst = instance;
+			const el = container;
+			instance = container = active = null;
+			if (inst) unmount(inst);
+			el?.remove();
+		};
+		/** @param {Element} target */
+		const show = (target) => {
+			clearTimeout(timer);
+			if (active === target) return;
+			if (instance) teardown();
+			active = target;
+			container = document.createElement("div");
+			document.body.appendChild(container);
+			instance = mount(component, {
+				target: container,
+				props: getProps(target)
+			});
+		};
+		/** @param {Event} e */
+		const onOver = (e) => {
+			const target = targetFn();
+			if (!target) return;
+			const hovered = e.target;
+			if (hovered && (hovered === target || target.contains(hovered))) show(target);
+		};
+		/** @param {Event} e */
+		const onOut = (e) => {
+			if (targetFn() !== active || !active) return;
+			const to = e.relatedTarget;
+			if (to && (active.contains(to) || container?.contains(to))) return;
+			clearTimeout(timer);
+			timer = setTimeout(teardown, delay);
+		};
+		root.addEventListener("pointerover", onOver, true);
+		root.addEventListener("pointerout", onOut, true);
+		return () => {
+			clearTimeout(timer);
+			root.removeEventListener("pointerover", onOver, true);
+			root.removeEventListener("pointerout", onOut, true);
+			teardown();
+		};
 	}
-	/**
-	*
-	* @param {string} roomId
-	*/
-	function activeDubs(roomId) {
-		return `${apiBase}/room/${roomId}/playlist/active/dubs`;
+	//#endregion
+	//#region src/lib/satellites/DubsInfo.svelte
+	var root$15 = /* @__PURE__ */ from_html(`<li class="preview-dubinfo-item users-previews svelte-p3efhm"><div class="dubinfo-image svelte-p3efhm"><img alt="User Avatar" class="svelte-p3efhm"/></div> <button type="button" class="dubinfo-text svelte-p3efhm"> </button></li>`);
+	var root_1$3 = /* @__PURE__ */ from_html(`<li><!></li>`);
+	var root_2$1 = /* @__PURE__ */ from_html(`<div role="none"><ul id="dubinfo-preview"><!></ul></div>`);
+	function DubsInfo($$anchor, $$props) {
+		push($$props, true);
+		/**
+		* @typedef {object} DubsInfoProps
+		* @property {string} dubType "updub" | "downdub" | "grab"
+		* @property {object} position the position of the hover target
+		* @property {number} position.top
+		* @property {number} position.left
+		* @property {number} position.right
+		*/
+		/**
+		* @type {DubsInfoProps}
+		*/
+		let dubData = /* @__PURE__ */ user_derived(() => getDubCount($$props.dubType));
+		/**
+		* @param {string} username
+		*/
+		function handleClick(username) {
+			const chatInput = getChatInput();
+			if (!chatInput) {
+				logError("Chat input not found, can not insert username", { username });
+				return;
+			}
+			chatInput.textContent = `${chatInput.textContent || ""} @${username} `.trimStart();
+			chatInput.focus();
+		}
+		var div = root_2$1();
+		var ul = child(div);
+		let classes;
+		var node = child(ul);
+		var consequent = ($$anchor) => {
+			var fragment = comment();
+			each(first_child(fragment), 17, () => get(dubData), (dub) => dub.userid, ($$anchor, dub) => {
+				var li = root$15();
+				var div_1 = child(li);
+				var img = child(div_1);
+				reset$1(div_1);
+				var button = sibling(div_1, 2);
+				var text = child(button);
+				reset$1(button);
+				reset$1(li);
+				template_effect(($0) => {
+					set_attribute(img, "src", $0);
+					set_text(text, `@${get(dub).username ?? ""}`);
+				}, [() => userImage(get(dub).userid)]);
+				delegated("click", button, () => handleClick(get(dub).username));
+				append($$anchor, li);
+			});
+			append($$anchor, fragment);
+		};
+		var alternate_1 = ($$anchor) => {
+			var li_1 = root_1$3();
+			var node_2 = child(li_1);
+			var consequent_1 = ($$anchor) => {
+				var text_1 = text();
+				template_effect(($0) => set_text(text_1, $0), [() => t("dubs-hover.no-votes", { dubType: $$props.dubType })]);
+				append($$anchor, text_1);
+			};
+			var alternate = ($$anchor) => {
+				var text_2 = text();
+				template_effect(($0) => set_text(text_2, $0), [() => t("dubs-hover.no-grabs", { dubType: $$props.dubType })]);
+				append($$anchor, text_2);
+			};
+			if_block(node_2, ($$render) => {
+				if ($$props.dubType === "updub" || $$props.dubType === "downdub") $$render(consequent_1);
+				else $$render(alternate, -1);
+			});
+			reset$1(li_1);
+			append($$anchor, li_1);
+		};
+		if_block(node, ($$render) => {
+			if (get(dubData).length > 0) $$render(consequent);
+			else $$render(alternate_1, -1);
+		});
+		reset$1(ul);
+		reset$1(div);
+		template_effect(() => {
+			set_attribute(div, "id", `dubplus-${$$props.dubType}s-container`);
+			set_class(div, 1, `dubplus-dubs-container dubplus-${$$props.dubType}s-container`, "svelte-p3efhm");
+			set_style(div, `top: ${$$props.position.top - 150}px; right: ${$$props.position.right}px;`);
+			classes = set_class(ul, 1, "dubinfo-show svelte-p3efhm", null, classes, { "dubplus-no-dubs": get(dubData).length === 0 });
+		});
+		append($$anchor, div);
+		pop();
 	}
-	/**
-	* @param {string} userid
-	*/
-	function userImage(userid) {
-		return `${apiBase}/user/${userid}/image`;
-	}
+	delegate(["click"]);
 	//#endregion
 	//#region src/lib/modules/showDubsOnHover.js
 	/**
 	* @param {string} userid
 	* @returns {Promise<string>}
 	*/
-	function getUserName(userid) {
+	function getUserNameFromId(userid) {
 		return new Promise((resolve, reject) => {
-			const username = window.QueUp.room.users.collection.findWhere({ userid })?.attributes?._user?.username;
-			if (username) {
-				resolve(username);
-				return;
-			}
 			fetch(userData(userid)).then((response) => response.json()).then((response) => {
-				if (response?.userinfo?.username) {
-					const { username } = response.userinfo;
+				if (response?.data?.username) {
+					const { username } = response.data;
 					resolve(username);
 				} else reject("Failed to get username from API for userid: " + userid);
 			}).catch(reject);
@@ -7366,7 +7152,7 @@ template(id) {
 	function updateUpdubs(updubs) {
 		updubs?.forEach((dub) => {
 			if (dubsState.upDubs.find((el) => el.userid === dub.userid)) return;
-			getUserName(dub.userid).then((username) => {
+			getUserNameFromId(dub.userid).then((username) => {
 				dubsState.upDubs.push({
 					userid: dub.userid,
 					username
@@ -7380,7 +7166,7 @@ template(id) {
 	function updateDowndubs(downdubs) {
 		downdubs?.forEach((dub) => {
 			if (dubsState.downDubs.find((el) => el.userid === dub.userid)) return;
-			getUserName(dub.userid).then((username) => {
+			getUserNameFromId(dub.userid).then((username) => {
 				dubsState.downDubs.push({
 					userid: dub.userid,
 					username
@@ -7388,18 +7174,35 @@ template(id) {
 			}).catch((error) => logError("Failed to get username for downDubs", error));
 		});
 	}
+	/**
+	* @param {Array<{ userid: string}>} grabs
+	*/
+	function updateGrabs(grabs) {
+		grabs.forEach((grab) => {
+			if (dubsState.grabs.find((el) => el.userid === grab.userid)) return;
+			getUserNameFromId(grab.userid).then((username) => {
+				dubsState.grabs.push({
+					userid: grab.userid,
+					username
+				});
+			}).catch((error) => logError("Failed to get username for grab", error));
+		});
+	}
 	function resetDubs() {
 		dubsState.downDubs = [];
 		dubsState.upDubs = [];
 		dubsState.grabs = [];
-		const dubsURL = activeDubs(window.QueUp.room.model.id);
-		fetch(dubsURL).then((response) => response.json()).then((response) => {
-			updateUpdubs(response.data.upDubs);
-			if (isMod(window.QueUp.session.id)) updateDowndubs(response.data.downDubs);
-		}).catch((error) => logError("Failed to fetch dubs data from API.", error));
+		if (window.dubplus.roomId) {
+			const dubsURL = activeDubs(window.dubplus.roomId);
+			fetch(dubsURL).then((response) => response.json()).then((response) => {
+				updateUpdubs(response.data.upDubs || []);
+				updateGrabs(response.data.grabs || []);
+				updateDowndubs(response.data.downDubs || []);
+			}).catch((error) => logError("Failed to fetch dubs data from API.", error));
+		}
 	}
 	/**
-	* @param {import("../../events.js").DubEvent} e
+	* @param {import("../../types/events.js").DubEvent} e
 	* @returns
 	*/
 	function dubWatcher(e) {
@@ -7409,19 +7212,16 @@ template(id) {
 				username: e.user.username
 			});
 			dubsState.downDubs = dubsState.downDubs.filter((el) => el.userid !== e.user._id);
-		} else if (e.dubtype === "downdub" && isMod(window.QueUp.session.id)) {
+		} else if (e.dubtype === "downdub") {
 			if (!dubsState.downDubs.find((el) => el.userid === e.user._id)) dubsState.downDubs.push({
 				userid: e.user._id,
 				username: e.user.username
 			});
 			dubsState.upDubs = dubsState.upDubs.filter((el) => el.userid !== e.user._id);
 		}
-		if (Date.now() - window.QueUp.room.player.activeSong.attributes.song.played < 1e3) return;
-		if (dubsState.upDubs.length !== window.QueUp.room.player.activeSong.attributes.song.updubs) resetDubs();
-		else if (isMod(window.QueUp.session.id) && dubsState.downDubs.length !== window.QueUp.room.player.activeSong.attributes.song.downdubs) resetDubs();
 	}
 	/**
-	* @param {import("../../events.js").GrabEvent} e
+	* @param {import("../../types/events.js").GrabEvent} e
 	*/
 	function grabWatcher(e) {
 		if (!dubsState.grabs.find((el) => el.userid === e.user._id)) dubsState.grabs.push({
@@ -7430,13 +7230,17 @@ template(id) {
 		});
 	}
 	/**
-	* @param {import("../../events.js").UserLeaveEvent} e
+	* @type {ReturnType<typeof delegateHoverMount> | null}
 	*/
-	function dubUserLeaveWatcher(e) {
-		dubsState.upDubs = dubsState.upDubs.filter((el) => el.userid !== e.user._id);
-		dubsState.downDubs = dubsState.downDubs.filter((el) => el.userid !== e.user._id);
-		dubsState.grabs = dubsState.grabs.filter((el) => el.userid !== e.user._id);
-	}
+	var updubHoverTeardown = null;
+	/**
+	* @type {ReturnType<typeof delegateHoverMount> | null}
+	*/
+	var downdubHoverTeardown = null;
+	/**
+	* @type {ReturnType<typeof delegateHoverMount> | null}
+	*/
+	var grabHoverTeardown = null;
 	/**
 	* @type {import("./module.js").DubPlusModule}
 	*/
@@ -7447,99 +7251,59 @@ template(id) {
 		category: "general",
 		turnOn() {
 			resetDubs();
-			window.QueUp.Events.bind(DUB, dubWatcher);
-			window.QueUp.Events.bind(GRAB, grabWatcher);
-			window.QueUp.Events.bind(USER_LEAVE, dubUserLeaveWatcher);
-			window.QueUp.Events.bind(PLAYLIST_UPDATE, resetDubs);
+			queupEvents.on(DUB, dubWatcher);
+			queupEvents.on(GRAB, grabWatcher);
+			queupEvents.on(PLAYER_ADVANCE, resetDubs);
+			updubHoverTeardown = delegateHoverMount(getDubUp, DubsInfo, (target) => {
+				const rect = target.getBoundingClientRect();
+				return {
+					dubType: "updub",
+					position: {
+						top: rect.top,
+						left: rect.left,
+						right: window.innerWidth - rect.right
+					}
+				};
+			});
+			downdubHoverTeardown = delegateHoverMount(getDubDown, DubsInfo, (target) => {
+				const rect = target.getBoundingClientRect();
+				return {
+					dubType: "downdub",
+					position: {
+						top: rect.top,
+						left: rect.left,
+						right: window.innerWidth - rect.right
+					}
+				};
+			});
+			grabHoverTeardown = delegateHoverMount(getAddToPlaylist, DubsInfo, (target) => {
+				const rect = target.getBoundingClientRect();
+				return {
+					dubType: "grab",
+					position: {
+						top: rect.top,
+						left: rect.left,
+						right: window.innerWidth - rect.right
+					}
+				};
+			});
 		},
 		turnOff() {
-			window.QueUp.Events.unbind(DUB, dubWatcher);
-			window.QueUp.Events.unbind(GRAB, grabWatcher);
-			window.QueUp.Events.unbind(USER_LEAVE, dubUserLeaveWatcher);
-			window.QueUp.Events.unbind(PLAYLIST_UPDATE, resetDubs);
-		}
-	};
-	//#endregion
-	//#region src/lib/modules/downDubInChat.js
-	/**
-	* Show downvotes in chat
-	* only mods can use this
-	*/
-	/**
-	* @param {{ dubtype: string, user: { username: string } }} e
-	*/
-	function downdubWatcher(e) {
-		if (window.QueUp.session.id === window.QueUp.room.player.activeSong.attributes.song.userid && e.dubtype === "downdub") insertQueupChat("dubplus-chat-system-downdub", t("downdubs-in-chat.chat-message", {
-			username: e.user.username,
-			song_name: window.QueUp.room.player.activeSong.attributes.songInfo.name
-		}));
-	}
-	var downdubsInChat = {
-		id: "downdubs-in-chat",
-		label: "downdubs-in-chat.label",
-		description: "downdubs-in-chat.description",
-		category: "general",
-		modOnly: true,
-		turnOn() {
-			if (isMod(window.QueUp.session.id)) window.QueUp.Events.bind(DUB, downdubWatcher);
-		},
-		turnOff() {
-			window.QueUp.Events.unbind(DUB, downdubWatcher);
-		}
-	};
-	//#endregion
-	//#region src/lib/modules/upDubInChat.js
-	/**
-	* Show downvotes in chat
-	* only mods can use this
-	*/
-	/**
-	*
-	* @param {import('../../events').DubEvent} e
-	*/
-	function updubWatcher(e) {
-		if (window.QueUp.session.id === window.QueUp.room.player.activeSong.attributes.song.userid && e.dubtype === "updub") insertQueupChat("dubplus-chat-system-updub", t("updubs-in-chat.chat-message", {
-			username: e.user.username,
-			song_name: window.QueUp.room.player.activeSong.attributes.songInfo.name
-		}));
-	}
-	var upDubInChat = {
-		id: "updubs-in-chat",
-		label: "updubs-in-chat.label",
-		description: "updubs-in-chat.description",
-		category: "general",
-		turnOn() {
-			window.QueUp.Events.bind(DUB, updubWatcher);
-		},
-		turnOff() {
-			window.QueUp.Events.unbind(DUB, updubWatcher);
-		}
-	};
-	//#endregion
-	//#region src/lib/modules/grabsInChat.js
-	/**
-	* Show downvotes in chat
-	* only mods can use this
-	*/
-	/**
-	* @param {{ user: { username: string } }} e
-	*/
-	function grabChatWatcher(e) {
-		if (window.QueUp.session.id === window.QueUp.room.player.activeSong.attributes.song.userid) insertQueupChat("dubplus-chat-system-grab", t("grabs-in-chat.chat-message", {
-			username: e.user.username,
-			song_name: window.QueUp.room.player.activeSong.attributes.songInfo.name
-		}));
-	}
-	var grabsInChat = {
-		id: "grabs-in-chat",
-		label: "grabs-in-chat.label",
-		description: "grabs-in-chat.description",
-		category: "general",
-		turnOn() {
-			if (!window.QueUp.room.model.get("displayUserGrab")) window.QueUp.Events.bind("realtime:room_playlist-queue-update-grabs", grabChatWatcher);
-		},
-		turnOff() {
-			if (!window.QueUp.room.model.get("displayUserGrab")) window.QueUp.Events.unbind("realtime:room_playlist-queue-update-grabs", grabChatWatcher);
+			queupEvents.off(DUB, dubWatcher);
+			queupEvents.off(GRAB, grabWatcher);
+			queupEvents.off(PLAYER_ADVANCE, resetDubs);
+			if (typeof updubHoverTeardown === "function") {
+				updubHoverTeardown();
+				updubHoverTeardown = null;
+			}
+			if (typeof downdubHoverTeardown === "function") {
+				downdubHoverTeardown();
+				downdubHoverTeardown = null;
+			}
+			if (typeof grabHoverTeardown === "function") {
+				grabHoverTeardown();
+				grabHoverTeardown = null;
+			}
 		}
 	};
 	//#endregion
@@ -7759,9 +7523,9 @@ template(id) {
 	};
 	//#endregion
 	//#region src/lib/svg/IconFullscreen.svelte
-	var root$13 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M448 344v112a23.9 23.9 0 0 1 -24 24H312c-21.4 0-32.1-25.9-17-41l36.2-36.2L224 295.6 116.8 402.9 153 439c15.1 15.1 4.4 41-17 41H24a23.9 23.9 0 0 1 -24-24V344c0-21.4 25.9-32.1 41-17l36.2 36.2L184.5 256 77.2 148.7 41 185c-15.1 15.1-41 4.4-41-17V56a23.9 23.9 0 0 1 24-24h112c21.4 0 32.1 25.9 17 41l-36.2 36.2L224 216.4l107.2-107.3L295 73c-15.1-15.1-4.4-41 17-41h112a23.9 23.9 0 0 1 24 24v112c0 21.4-25.9 32.1-41 17l-36.2-36.2L263.5 256l107.3 107.3L407 327.1c15.1-15.2 41-4.5 41 16.9z"></path></svg>`);
+	var root$14 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M448 344v112a23.9 23.9 0 0 1 -24 24H312c-21.4 0-32.1-25.9-17-41l36.2-36.2L224 295.6 116.8 402.9 153 439c15.1 15.1 4.4 41-17 41H24a23.9 23.9 0 0 1 -24-24V344c0-21.4 25.9-32.1 41-17l36.2 36.2L184.5 256 77.2 148.7 41 185c-15.1 15.1-41 4.4-41-17V56a23.9 23.9 0 0 1 24-24h112c21.4 0 32.1 25.9 17 41l-36.2 36.2L224 216.4l107.2-107.3L295 73c-15.1-15.1-4.4-41 17-41h112a23.9 23.9 0 0 1 24 24v112c0 21.4-25.9 32.1-41 17l-36.2-36.2L263.5 256l107.3 107.3L407 327.1c15.1-15.2 41-4.5 41 16.9z"></path></svg>`);
 	function IconFullscreen($$anchor) {
-		append($$anchor, root$13());
+		append($$anchor, root$14());
 	}
 	//#endregion
 	//#region src/lib/modules/fullscreen.js
@@ -7809,26 +7573,6 @@ template(id) {
 		},
 		turnOff() {
 			document.body.classList.remove("dubplus-split-chat");
-		}
-	};
-	//#endregion
-	//#region src/lib/modules/hideChat.js
-	/**
-	* Hide the Chat box and only show the video
-	*/
-	/**
-	* @type {import("./module").DubPlusModule}
-	*/
-	var hideChat = {
-		id: "hide-chat",
-		label: "hide-chat.label",
-		description: "hide-chat.description",
-		category: "user-interface",
-		turnOn() {
-			document.body.classList.add("dubplus-video-only");
-		},
-		turnOff() {
-			document.body.classList.remove("dubplus-video-only");
 		}
 	};
 	//#endregion
@@ -7888,32 +7632,14 @@ template(id) {
 		}
 	};
 	//#endregion
-	//#region src/lib/modules/showTimestamps.js
-	/**
-	* Show Timestamps
-	* Toggle always showing chat message timestamps.
-	* @type {import("./module").DubPlusModule}
-	*/
-	var showTimestamps = {
-		id: "show-timestamps",
-		label: "show-timestamps.label",
-		description: "show-timestamps.description",
-		category: "user-interface",
-		turnOn() {
-			document.body.classList.add("dubplus-show-timestamp");
-		},
-		turnOff() {
-			document.body.classList.remove("dubplus-show-timestamp");
-		}
-	};
-	//#endregion
 	//#region src/lib/modules/spacebarMute.js
 	/**
 	* @param {KeyboardEvent} e
 	*/
 	function handleMute(e) {
-		const tag = e.target.tagName.toLowerCase();
-		if (e.key === " " && tag !== "input" && tag !== "textarea") window.QueUp.room.player.mutePlayer();
+		const el = e.target;
+		const tag = el.tagName.toLowerCase();
+		if (e.key === " " && tag !== "input" && tag !== "textarea" && tag !== "button" && tag !== "a" && el.getAttribute("contenteditable") !== "true") toggleMute();
 	}
 	/**
 	* Spacebar Mute
@@ -7964,7 +7690,7 @@ template(id) {
 	};
 	var package_default = {
 		name: "dubplus",
-		version: "4.1.3",
+		version: "5.0.0",
 		type: "module",
 		description: "Dub+ - A simple script/extension for QueUp.net",
 		main: "dubplus.js",
@@ -7977,7 +7703,7 @@ template(id) {
 			"build": "npm run clean && vite build && cd extension && web-ext build --filename dubplus-extension.zip --overwrite-dest --artifacts-dir ../dist",
 			"ci:build": "eslint src && vite build",
 			"watch": "vite build --watch",
-			"firefox": "cd extension && web-ext run --start-url www.queup.net --watch-files dist/dubplus.js dist/dubplus.css",
+			"firefox": "web-ext run --source-dir ./extension --start-url queup.net",
 			"prepare": "husky install",
 			"prettier": "prettier --write .",
 			"purge-cache": "node ./tasks/purge-cache.js",
@@ -7994,24 +7720,24 @@ template(id) {
 		bugs: { "url": "https://github.com/DubPlus/DubPlus/issues" },
 		homepage: "https://dub.plus",
 		devDependencies: {
-			"@babel/preset-env": "8.0.0",
-			"@sveltejs/vite-plugin-svelte": "7.1.2",
-			"@types/chrome": "0.1.43",
+			"@babel/preset-env": "8.0.2",
+			"@sveltejs/vite-plugin-svelte": "7.3.0",
+			"@types/chrome": "0.2.5",
 			"@types/node": "24.1.0",
-			"eslint-plugin-svelte": "3.19.0",
-			"globals": "17.6.0",
+			"eslint-plugin-svelte": "3.22.0",
+			"globals": "17.9.0",
 			"husky": "9.1.7",
 			"lint-staged": "17.0.7",
-			"prettier": "3.8.4",
+			"prettier": "3.9.6",
 			"prettier-plugin-svelte": "4.1.1",
-			"svelte": "5.56.3",
-			"svelte-check": "4.6.0",
-			"vite": "8.0.16",
-			"web-ext": "10.4.0"
+			"svelte": "5.56.8",
+			"svelte-check": "4.7.5",
+			"vite": "8.2.1",
+			"web-ext": "10.6.0"
 		},
 		browserslist: ["> 1%", "last 2 versions"],
 		"lint-staged": {
-			"{dubplus.js,dubplus.min.js,dubplus.css}": "node ./tasks/no-commit-build-files.js",
+			"{dubplus.js,dubplus.min.js,./dubplus.css}": "node ./tasks/no-commit-build-files.js",
 			"*.{js,svelte}": "eslint",
 			"*.{js,svelte,css,ts,yml,yaml,md}": "prettier --list-different --write"
 		}
@@ -8051,6 +7777,33 @@ template(id) {
 			document.head.appendChild(link);
 		});
 	}
+	var COMMUNITY_CSS_ID = "dubplus-community-css";
+	var CUSTOM_CSS_ID = "dubplus-user-custom-css";
+	/**
+	* Dub+'s stylesheets, weakest first.
+	*
+	* QueUp ships no cascade layers (Tailwind v3 strips its own `@layer`
+	* directives at build time), so we deliberately stay unlayered too - layered
+	* CSS always loses to unlayered CSS, which would cost us every override. That
+	* leaves document order as the tie-breaker between our own sheets, and the
+	* order they arrive in is just whichever fetch finished first: the community
+	* theme needs a room API call before it even knows its url, so it reliably
+	* lands after the user's custom CSS and wins by accident.
+	*
+	* So we place them instead of appending them.
+	*/
+	var STYLE_PRECEDENCE = [COMMUNITY_CSS_ID, CUSTOM_CSS_ID];
+	/**
+	* Re-appends our stylesheets to <head> in precedence order. Appending a node
+	* that's already in the document moves it, so this is a reorder, not a
+	* duplicate. Sheets we don't know about are left where they are.
+	*/
+	function orderStyles() {
+		for (const id of STYLE_PRECEDENCE) {
+			const el = document.getElementById(id);
+			if (el) document.head.appendChild(el);
+		}
+	}
 	/**
 	* @param  {string} cssFile
 	* @param  {string} id
@@ -8063,12 +7816,12 @@ template(id) {
 			style.id = id;
 			style.textContent = css;
 			document.head.appendChild(style);
+			orderStyles();
 		});
 	}
 	async function loadDubPlusCSSforBookmarklet() {
 		let version = "";
-		"master".trim();
-		version = package_default.version;
+		version = "beta".trim();
 		try {
 			await link("/dubplus.css", "dubplus-css", version);
 			return;
@@ -8097,7 +7850,7 @@ template(id) {
 	* for backwards compatibility with dubx we're also checking
 	* @dubx=https://example.com/style.css
 	*/
-	var LINK_ELEM_ID$1 = "dubplus-community-css";
+	var LINK_ELEM_ID$1 = COMMUNITY_CSS_ID;
 	/**
 	* @type {import("./module").DubPlusModule}
 	*/
@@ -8107,8 +7860,7 @@ template(id) {
 		description: "community-theme.description",
 		category: "customize",
 		turnOn() {
-			const location = window.QueUp.room.model.get("roomUrl");
-			fetch(`https://api.queup.net/room/${location}`).then((response) => response.json()).then((e) => {
+			fetch(`https://api.queup.net/room/${window.dubplus.roomId}`).then((response) => response.json()).then((e) => {
 				const content = e.data.description;
 				const themeCheck = /* @__PURE__ */ new RegExp(/(@dub(x|plus|\+)=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/, "i");
 				let community = null;
@@ -8146,7 +7898,7 @@ template(id) {
 	* Custom CSS
 	* Add custom CSS
 	*/
-	var LINK_ELEM_ID = "dubplus-user-custom-css";
+	var LINK_ELEM_ID = CUSTOM_CSS_ID;
 	/**
 	* Custom CSS
 	* loads an external CSS file
@@ -8171,8 +7923,7 @@ template(id) {
 				if (!value) {
 					document.getElementById(LINK_ELEM_ID)?.remove();
 					settings.options[customCss.id] = false;
-					return;
-				} else style(value, LINK_ELEM_ID).catch((e) => {
+				} else if (settings.options[customCss.id] === true) style(value, LINK_ELEM_ID).catch((e) => {
 					logError("Error loading custom css file:", e);
 				});
 			}
@@ -8197,19 +7948,19 @@ template(id) {
 	* @param {string} url
 	*/
 	function addCustomBG(url) {
-		const img = getBackgroundImage();
-		if (img) {
-			img.setAttribute("data-original", img.src);
-			img.src = url;
+		const bgImageDiv = getBackgroundImage();
+		if (bgImageDiv) {
+			bgImageDiv.setAttribute("data-original", bgImageDiv.style.backgroundImage);
+			bgImageDiv.style.backgroundImage = `url(${url})`;
 		}
 	}
 	function removeCustomBG() {
-		const img = getBackgroundImage();
-		if (img && img.hasAttribute("data-original")) {
-			const originalSrc = img.getAttribute("data-original") ?? "";
-			if (originalSrc) img.src = originalSrc;
+		const bgImageDiv = getBackgroundImage();
+		if (bgImageDiv && bgImageDiv.hasAttribute("data-original")) {
+			const originalSrc = bgImageDiv.getAttribute("data-original") ?? "";
+			if (originalSrc) bgImageDiv.style.backgroundImage = originalSrc;
 			else logError("customBackground", "removeCustomBG", "No original background image found");
-			img.removeAttribute("data-original");
+			bgImageDiv.removeAttribute("data-original");
 		}
 	}
 	/**
@@ -8246,42 +7997,6 @@ template(id) {
 		}
 	};
 	//#endregion
-	//#region src/lib/modules/customNotificationSound.js
-	var DubtrackDefaultSound = "";
-	/**
-	* @type {import("./module").DubPlusModule}
-	*/
-	var customNotificationSound = {
-		id: "custom-notification-sound",
-		label: "custom-notification-sound.label",
-		description: "custom-notification-sound.description",
-		category: "customize",
-		custom: {
-			title: "custom-notification-sound.modal.title",
-			content: "custom-notification-sound.modal.content",
-			placeholder: "custom-notification-sound.modal.placeholder",
-			maxlength: 500,
-			validation(value) {
-				if (value.trim() === "") return true;
-				if (!window.soundManager.canPlayURL(value)) return t("custom-notification-sound.modal.validation");
-				return true;
-			},
-			onConfirm(value) {
-				if (!value) {
-					window.QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
-					settings.options[customNotificationSound.id] = false;
-				} else window.QueUp.room.chat.mentionChatSound.url = value;
-			}
-		},
-		turnOn() {
-			DubtrackDefaultSound = window.QueUp.room.chat.mentionChatSound.url;
-			if (settings.custom[this.id]) window.QueUp.room.chat.mentionChatSound.url = settings.custom[this.id];
-		},
-		turnOff() {
-			window.QueUp.room.chat.mentionChatSound.url = DubtrackDefaultSound;
-		}
-	};
-	//#endregion
 	//#region src/lib/modules/flipInterface.js
 	/**
 	* Flip Interface
@@ -8305,26 +8020,27 @@ template(id) {
 	};
 	//#endregion
 	//#region src/lib/modules/auto-afk.js
+	var MODULE_ID = "auto-afk";
 	/** @type {ReturnType<typeof setTimeout> | null} */
 	var timer = null;
 	function onTimerExpired() {
 		if (!settings.options.afk) {
-			logInfo("auto-afk timer expired, enabling afk");
+			logInfo(MODULE_ID, "timer expired, enabling afk");
 			document.querySelector("#dubplus-afk [role=switch]")?.click();
-		} else logInfo("auto-afk timer expired, but afk is already enabled");
+		} else logInfo(MODULE_ID, "timer expired, but afk is already enabled");
 	}
 	function onBlur() {
 		let userTime = parseInt(settings.custom["auto-afk"], 10);
 		if (isNaN(userTime)) userTime = 30;
-		logInfo("auto-afk onBlur: starting timer for ", userTime, "minutes");
+		logInfo(MODULE_ID, "onBlur: starting timer for ", userTime, "minutes");
 		timer = setTimeout(onTimerExpired, userTime * 60 * 1e3);
 	}
 	function onFocus() {
 		if (timer) {
-			logInfo("auto-afk onFocus: clearing timer");
+			logInfo(MODULE_ID, "onFocus: clearing timer");
 			clearTimeout(timer);
 			timer = null;
-		} else logInfo("auto-afk onFocus: no timer to clear");
+		} else logInfo(MODULE_ID, "onFocus: no timer to clear");
 	}
 	/**
 	* Setup a timer that will automatically put you in AFK mode when you are
@@ -8333,9 +8049,9 @@ template(id) {
 	* @type {import("./module").DubPlusModule}
 	*/
 	var autoAfk = {
-		id: "auto-afk",
-		label: "auto-afk.label",
-		description: "auto-afk.description",
+		id: MODULE_ID,
+		label: `${MODULE_ID}.label`,
+		description: `${MODULE_ID}.description`,
 		category: "general",
 		turnOn() {
 			registerVisibilityChangeListeners(onFocus, onBlur);
@@ -8345,15 +8061,15 @@ template(id) {
 			onFocus();
 		},
 		custom: {
-			title: "auto-afk.modal.title",
-			content: "auto-afk.modal.content",
-			placeholder: "30",
-			defaultValue: "30",
+			title: `${MODULE_ID}.modal.title`,
+			content: `${MODULE_ID}.modal.content`,
+			placeholder: `${MODULE_ID}.modal.placeholder`,
+			defaultValue: `${MODULE_ID}.modal.defaultValue`,
 			maxlength: 10,
 			validation(value) {
 				if (value.trim() === "") return true;
 				const num = parseInt(value, 10);
-				if (value.includes(".") || isNaN(num) || num < 1) return t(`auto-afk.modal.validation`);
+				if (value.includes(".") || isNaN(num) || num < 1) return t(`${MODULE_ID}.modal.validation`);
 				return true;
 			}
 		}
@@ -8362,10 +8078,10 @@ template(id) {
 	//#region src/lib/modules/grabResponse.js
 	/**
 	*
-	* @param {import("../../events").GrabEvent} e
+	* @param {import("../../types/events").GrabEvent} e
 	*/
 	function onGrab(e) {
-		if (e.user._id === window.QueUp.session.id) {
+		if (e.user._id === window.dubplus.userId) {
 			const message = settings.custom["grab-response"];
 			if (message) sendChatMessage(message);
 		}
@@ -8382,10 +8098,10 @@ template(id) {
 		description: "grab-response.description",
 		category: "general",
 		turnOn() {
-			window.QueUp.Events.bind(GRAB, onGrab);
+			queupEvents.on(GRAB, onGrab);
 		},
 		turnOff() {
-			window.QueUp.Events.unbind(GRAB, onGrab);
+			queupEvents.off(GRAB, onGrab);
 		},
 		custom: {
 			title: "grab-response.modal.title",
@@ -8396,105 +8112,6 @@ template(id) {
 	};
 	//#endregion
 	//#region src/lib/modules/collapsible-images.js
-	var COLLAPSED = "dubplus-collapsed";
-	var COLLAPSIBLE = "dubplus-collapsible-image";
-	var COLLAPSER = "dubplus-collapser";
-	var IMAGE_CONTAINER = "autolink-image";
-	/**
-	*
-	* @param {HTMLButtonElement} button the button element we inserted into each
-	* chat message near each image which will collapse/expand the image
-	*/
-	function handleCollapseButtonClick(button) {
-		const imageContainer = button.parentElement;
-		const image = imageContainer?.querySelector("img");
-		if (!imageContainer || !image) return;
-		if (!imageContainer.classList.contains(COLLAPSED)) {
-			imageContainer.classList.add(COLLAPSED);
-			button.title = "expand image";
-			button.setAttribute("aria-label", "Expand image");
-			image.setAttribute("aria-hidden", "true");
-			button.setAttribute("aria-expanded", "false");
-		} else {
-			imageContainer.classList.remove(COLLAPSED);
-			button.title = "collapse image";
-			button.setAttribute("aria-label", "Collapse image");
-			image.setAttribute("aria-hidden", "false");
-			button.setAttribute("aria-expanded", "true");
-		}
-	}
-	/**
-	* This is the handler that should be attached to the chat container.
-	* @param {Event} event
-	*/
-	function eventDelegatorHandler(event) {
-		if (event.target instanceof HTMLButtonElement && event.target.classList.contains(COLLAPSER)) {
-			event.stopPropagation();
-			event.preventDefault();
-			handleCollapseButtonClick(event.target);
-		}
-	}
-	/**
-	* @param {HTMLAnchorElement} [autolinkImage]
-	*/
-	function addCollapserToImage(autolinkImage) {
-		if (!autolinkImage) return;
-		if (!autolinkImage.classList.contains(COLLAPSIBLE)) {
-			autolinkImage.classList.add(COLLAPSIBLE);
-			const button = document.createElement("button");
-			button.type = "button";
-			button.title = "collapse image";
-			button.setAttribute("aria-label", "Collapse image");
-			button.setAttribute("aria-expanded", "true");
-			button.classList.add(COLLAPSER);
-			autolinkImage.appendChild(button);
-		}
-	}
-	function processAllChatMessages() {
-		getImagesInChat().forEach(addCollapserToImage);
-	}
-	function reset() {
-		document.querySelectorAll(`.${COLLAPSIBLE}`).forEach((el) => {
-			el.classList.remove(COLLAPSIBLE, COLLAPSED);
-		});
-		document.querySelectorAll(`.${COLLAPSER}`).forEach((el) => {
-			el.remove();
-		});
-		getImagesInChat().forEach((el) => el.removeAttribute("aria-hidden"));
-	}
-	/**
-	*
-	* @param {Element} container
-	* @returns {HTMLAnchorElement[]}
-	*/
-	function findUnProcessedImages(container) {
-		const images = container.querySelectorAll(`.${IMAGE_CONTAINER}`);
-		return Array.from(images).filter((el) => !el.classList.contains(COLLAPSIBLE));
-	}
-	/**
-	*
-	* @param {MutationRecord[]} mutations
-	*/
-	function observerCallback(mutations) {
-		for (const mutation of mutations) {
-			if (mutation.type !== "childList") continue;
-			for (const node of mutation.addedNodes) {
-				if (node.nodeType !== Node.ELEMENT_NODE) continue;
-				const el = node;
-				if (el.classList.contains(IMAGE_CONTAINER) && !el.classList.contains(COLLAPSIBLE)) addCollapserToImage(el);
-				findUnProcessedImages(el).forEach(addCollapserToImage);
-			}
-		}
-	}
-	/** @type {MutationObserver | null} */
-	var observer = null;
-	/**
-	* Tracks whether the feature is currently enabled so that async setup scheduled
-	* by waitFor() in turnOn() doesn't re-attach the observer/listener after
-	* turnOff() has already torn everything down.
-	* @type {boolean}
-	*/
-	var enabled = false;
 	/**
 	* @type {import("./module").DubPlusModule}
 	*/
@@ -8504,55 +8121,17 @@ template(id) {
 		description: "collapsible-images.description",
 		category: "general",
 		turnOn() {
-			/**
-			* When this feature is turned on we:
-			*
-			* 1. Add a MutationObserver to the chat container to detect new chat
-			* messages. This works better than QueUp's chat-message event, which could
-			* fire before the message was in the DOM (race condition), leaving new
-			* messages without a collapse button.
-			*
-			* 2. Attach a single delegated click listener to the chat container so the
-			* collapse buttons are easy to clean up when the feature is turned off.
-			*
-			* 3. Process any images already in chat.
-			*
-			* All of this waits for the chat container to exist, and the async callback
-			* is guarded with `enabled` so toggling the feature off while we're still
-			* waiting doesn't re-attach everything after turnOff() has already run.
-			*/
-			enabled = true;
-			waitFor(() => Boolean(getChatContainer())).then(() => {
-				if (!enabled) return;
-				const chatContainer = getChatContainer();
-				if (!chatContainer) {
-					logError("Collapsible Images: No chat container found");
-					return;
-				}
-				observer = new MutationObserver(observerCallback);
-				chatContainer.addEventListener("click", eventDelegatorHandler);
-				observer.observe(chatContainer, {
-					childList: true,
-					subtree: true,
-					attributes: false
-				});
-				processAllChatMessages();
-			}).catch(() => {
-				logError("Collapsible Images: chat container never appeared.");
-			});
+			document.body.classList.add("dubplus-collapsible-images");
 		},
 		turnOff() {
-			enabled = false;
-			if (observer) observer.disconnect();
-			getChatContainer()?.removeEventListener("click", eventDelegatorHandler);
-			reset();
+			document.body.classList.remove("dubplus-collapsible-images");
 		}
 	};
 	//#endregion
 	//#region src/lib/svg/IconLeftRight.svelte
-	var root$12 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M504.3 273.6c4.9-4.5 7.7-10.9 7.7-17.6s-2.8-13-7.7-17.6l-112-104c-7-6.5-17.2-8.2-25.9-4.4s-14.4 12.5-14.4 22l0 56-192 0 0-56c0-9.5-5.7-18.2-14.4-22s-18.9-2.1-25.9 4.4l-112 104C2.8 243 0 249.3 0 256s2.8 13 7.7 17.6l112 104c7 6.5 17.2 8.2 25.9 4.4s14.4-12.5 14.4-22l0-56 192 0 0 56c0 9.5 5.7 18.2 14.4 22s18.9 2.1 25.9-4.4l112-104z"></path></svg>`);
+	var root$13 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M504.3 273.6c4.9-4.5 7.7-10.9 7.7-17.6s-2.8-13-7.7-17.6l-112-104c-7-6.5-17.2-8.2-25.9-4.4s-14.4 12.5-14.4 22l0 56-192 0 0-56c0-9.5-5.7-18.2-14.4-22s-18.9-2.1-25.9 4.4l-112 104C2.8 243 0 249.3 0 256s2.8 13 7.7 17.6l112 104c7 6.5 17.2 8.2 25.9 4.4s14.4-12.5 14.4-22l0-56 192 0 0 56c0 9.5 5.7 18.2 14.4 22s18.9 2.1 25.9-4.4l112-104z"></path></svg>`);
 	function IconLeftRight($$anchor) {
-		append($$anchor, root$12());
+		append($$anchor, root$13());
 	}
 	//#endregion
 	//#region src/lib/modules/pin-menu.js
@@ -8602,18 +8181,12 @@ template(id) {
 		autovote,
 		afk,
 		autoAfk,
-		emotes,
-		autocomplete,
 		customMentions,
-		chatCleaner,
 		collapsibleImages,
 		mentionNotifications,
 		pmNotifications,
 		djNotification,
 		showDubsOnHover,
-		downdubsInChat,
-		upDubInChat,
-		grabsInChat,
 		grabResponse,
 		snow,
 		rain
@@ -8624,11 +8197,9 @@ template(id) {
 	var userInterface = [
 		fullscreen,
 		splitChat,
-		hideChat,
 		hideVideo,
 		hideAvatars,
 		hideBackground,
-		showTimestamps,
 		flipInterface,
 		pinMenu
 	];
@@ -8642,19 +8213,17 @@ template(id) {
 	var customize = [
 		communityTheme,
 		customCss,
-		customBackground,
-		customNotificationSound
+		customBackground
 	];
 	//#endregion
 	//#region src/lib/sections/General.svelte
-	var root$11 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
+	var root$12 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
 	function General($$anchor, $$props) {
-		push($$props, false);
-		init();
-		var fragment = root$11();
+		push($$props, true);
+		var fragment = root$12();
 		var node = first_child(fragment);
 		{
-			let $0 = /* @__PURE__ */ derived_safe_equal(() => t("general.title"));
+			let $0 = /* @__PURE__ */ user_derived(() => t("general.title"));
 			MenuHeader(node, {
 				settingsId: "general",
 				get name() {
@@ -8666,7 +8235,7 @@ template(id) {
 			settingsId: "general",
 			children: ($$anchor, $$slotProps) => {
 				var fragment_1 = comment();
-				each(first_child(fragment_1), 1, () => general, (module) => module.id, ($$anchor, module) => {
+				each(first_child(fragment_1), 17, () => general, (module) => module.id, ($$anchor, module) => {
 					MenuSwitch($$anchor, {
 						get id() {
 							return get(module).id;
@@ -8703,7 +8272,7 @@ template(id) {
 	}
 	//#endregion
 	//#region src/lib/satellites/Eta.svelte
-	var root$10 = /* @__PURE__ */ from_html(`<button id="dubplus-eta" type="button" class="icon-history eta_tooltip_t dubplus-btn-player"></button>`);
+	var root$11 = /* @__PURE__ */ from_html(`<button id="dubplus-eta" type="button" class="text-white/50 hover:text-white transition-colors eta_tooltip_t dubplus-btn-player"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 lucide lucide-rotate-ccw-clock-icon lucide-rotate-ccw-clock"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg></button>`);
 	function Eta($$anchor, $$props) {
 		push($$props, true);
 		let eta = /* @__PURE__ */ state("ETA");
@@ -8711,16 +8280,20 @@ template(id) {
 		* @returns {string}
 		*/
 		function getEta() {
-			const booth_position = getQueuePosition()?.textContent;
-			if (!booth_position) return t("Eta.tooltip.notInQueue");
+			const booth_position = getQueuePosition()?.position;
+			if (typeof booth_position !== "number") return t("Eta.tooltip.notInQueue");
 			const average_song_minutes = 4;
-			const current_time = parseInt(getCurrentSongMinutes()?.textContent ?? "");
-			const booth_time = parseInt(booth_position) * average_song_minutes - average_song_minutes + current_time;
-			if (booth_time >= 0) return t("Eta.tootltip", { minutes: booth_time });
-			else return t("Eta.tooltip.notInQueue");
+			const current_time = getCurrentSongTime();
+			if (current_time !== null) {
+				const [minutes, seconds] = current_time;
+				const booth_time = (booth_position - 1) * average_song_minutes + minutes;
+				if (booth_time >= 0) return t("Eta.tootltip", { time: `${booth_time}m ${seconds}s` });
+				else return t("Eta.tooltip.notInQueue");
+			}
+			return "something went wrong";
 		}
-		var button = root$10();
-		action(button, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({ to: PLAYER_SHARING_CONTAINER }));
+		var button = root$11();
+		action(button, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({ to: getPlayerButtonsContainer }));
 		template_effect(() => {
 			set_attribute(button, "aria-label", get(eta));
 			set_attribute(button, "data-dp-tooltip", get(eta));
@@ -8732,64 +8305,285 @@ template(id) {
 		pop();
 	}
 	//#endregion
-	//#region src/lib/satellites/Snooze.svelte
-	var root$9 = /* @__PURE__ */ from_html(`<button id="dubplus-snooze" type="button" class="icon-mute snooze_btn dubplus-btn-player svelte-6crmqc"><span class="svelte-6crmqc">1</span></button>`);
-	function Snooze($$anchor, $$props) {
+	//#region src/lib/Modal.svelte
+	var root$10 = /* @__PURE__ */ from_html(`<div class="default svelte-5awcn0"><span class="default-label svelte-5awcn0"> </span> <span class="default-value svelte-5awcn0"> </span></div>`);
+	var root_1$2 = /* @__PURE__ */ from_html(`<textarea class="svelte-5awcn0"></textarea>`);
+	var root_2 = /* @__PURE__ */ from_html(`<p class="dp-modal--error svelte-5awcn0"> </p>`);
+	var root_3 = /* @__PURE__ */ from_html(`<button class="dp-modal--cancel cancel svelte-5awcn0"> </button> <button class="dp-modal--confirm confirm svelte-5awcn0"> </button>`, 1);
+	var root_4 = /* @__PURE__ */ from_html(`<button class="dp-modal--cancel cancel svelte-5awcn0"> </button>`);
+	var root_5 = /* @__PURE__ */ from_html(`<dialog id="dubplus-dialog" class="dp-modal svelte-5awcn0"><h1 class="svelte-5awcn0"> </h1> <div class="dp-modal--content content svelte-5awcn0"><p class="svelte-5awcn0"> </p> <!> <!> <!></div> <div class="dp-modal--buttons buttons svelte-5awcn0"><!></div></dialog>`);
+	function Modal($$anchor, $$props) {
 		push($$props, true);
-		let tooltip = /* @__PURE__ */ state(proxy(t("Snooze.tooltip")));
-		/**
-		* Snooze
-		* Mutes audio for one song.
-		*
-		* This module is not a menu item. It is self-contained feature
-		* that will always be automatically run on load.
-		*/
-		const eventUtils = {
-			currentVol: 50,
-			snoozed: false
-		};
-		function revert() {
-			window.QueUp.room.player.setVolume(eventUtils.currentVol);
-			window.QueUp.room.player.updateVolumeBar();
-			eventUtils.snoozed = false;
-			set(tooltip, t("Snooze.tooltip"), true);
-			window.QueUp.Events.unbind(PLAYLIST_UPDATE, eventSongAdvance);
-		}
-		/**
-		* Unmute when the song changes
-		* @param {{startTime: number}} e
-		* @returns
-		*/
-		function eventSongAdvance(e) {
-			if (e.startTime < 2 && eventUtils.snoozed) {
-				revert();
-				return true;
+		let errorMessage = /* @__PURE__ */ state("");
+		/** @type {HTMLDialogElement} */
+		let dialog;
+		onMount(() => {
+			dialog = document.getElementById("dubplus-dialog");
+			function onClose() {
+				modalState.open = false;
 			}
-		}
-		function snooze() {
-			if (!eventUtils.snoozed && !window.QueUp.room.player.muted_player && window.QueUp.playerController.volume > 2) {
-				set(tooltip, t("Snooze.tooltip.undo"), true);
-				eventUtils.currentVol = window.QueUp.playerController.volume;
-				window.QueUp.room.player.mutePlayer();
-				eventUtils.snoozed = true;
-				window.QueUp.Events.bind(PLAYLIST_UPDATE, eventSongAdvance);
-			} else if (eventUtils.snoozed) revert();
-		}
-		var button = root$9();
-		action(button, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({ to: PLAYER_SHARING_CONTAINER }));
-		template_effect(() => {
-			set_attribute(button, "aria-label", get(tooltip));
-			set_attribute(button, "data-dp-tooltip", get(tooltip));
+			dialog.addEventListener("close", onClose);
+			return () => {
+				dialog.removeEventListener("close", onClose);
+			};
 		});
-		delegated("click", button, snooze);
-		append($$anchor, button);
+		user_effect(() => {
+			if (modalState.open && dialog && !dialog.open) dialog.showModal();
+		});
+		var dialog_1 = root_5();
+		var h1 = child(dialog_1);
+		var text = child(h1, true);
+		reset$1(h1);
+		var div = sibling(h1, 2);
+		var p = child(div);
+		var text_1 = child(p, true);
+		reset$1(p);
+		var node = sibling(p, 2);
+		var consequent = ($$anchor) => {
+			var div_1 = root$10();
+			var span = child(div_1);
+			var text_2 = child(span);
+			reset$1(span);
+			var span_1 = sibling(span, 2);
+			var text_3 = child(span_1, true);
+			reset$1(span_1);
+			reset$1(div_1);
+			template_effect(($0) => {
+				set_text(text_2, `${$0 ?? ""}:`);
+				set_text(text_3, modalState.defaultValue);
+			}, [() => t("Modal.defaultValue")]);
+			append($$anchor, div_1);
+		};
+		if_block(node, ($$render) => {
+			if (modalState.defaultValue) $$render(consequent);
+		});
+		var node_1 = sibling(node, 2);
+		var consequent_1 = ($$anchor) => {
+			var textarea = root_1$2();
+			remove_textarea_child(textarea);
+			template_effect(() => {
+				set_attribute(textarea, "placeholder", modalState.placeholder);
+				set_attribute(textarea, "maxlength", modalState.maxlength && modalState.maxlength < 999 ? modalState.maxlength : 999);
+			});
+			bind_value(textarea, () => modalState.value, ($$value) => modalState.value = $$value);
+			append($$anchor, textarea);
+		};
+		if_block(node_1, ($$render) => {
+			if (modalState.placeholder || modalState.value) $$render(consequent_1);
+		});
+		var node_2 = sibling(node_1, 2);
+		var consequent_2 = ($$anchor) => {
+			var p_1 = root_2();
+			var text_4 = child(p_1, true);
+			reset$1(p_1);
+			template_effect(() => set_text(text_4, get(errorMessage)));
+			append($$anchor, p_1);
+		};
+		if_block(node_2, ($$render) => {
+			if (get(errorMessage)) $$render(consequent_2);
+		});
+		reset$1(div);
+		var div_2 = sibling(div, 2);
+		var node_3 = child(div_2);
+		var consequent_3 = ($$anchor) => {
+			var fragment = root_3();
+			var button = first_child(fragment);
+			var text_5 = child(button, true);
+			reset$1(button);
+			var button_1 = sibling(button, 2);
+			var text_6 = child(button_1, true);
+			reset$1(button_1);
+			template_effect(($0, $1) => {
+				set_text(text_5, $0);
+				set_text(text_6, $1);
+			}, [() => t("Modal.cancel"), () => t("Modal.confirm")]);
+			delegated("click", button, () => {
+				dialog.close();
+				modalState.open = false;
+				set(errorMessage, "");
+				if (typeof modalState.onCancel === "function") modalState.onCancel();
+			});
+			delegated("click", button_1, () => {
+				const isValidOrErrorMessage = modalState.validation?.(modalState.value ?? "") ?? true;
+				if (isValidOrErrorMessage === true) {
+					dialog.close();
+					modalState.open = false;
+					modalState.onConfirm?.(modalState.value ?? "");
+					set(errorMessage, "");
+				} else set(errorMessage, isValidOrErrorMessage, true);
+			});
+			append($$anchor, fragment);
+		};
+		var alternate = ($$anchor) => {
+			var button_2 = root_4();
+			var text_7 = child(button_2, true);
+			reset$1(button_2);
+			template_effect(($0) => set_text(text_7, $0), [() => t("Modal.close")]);
+			delegated("click", button_2, () => {
+				dialog.close();
+				modalState.open = false;
+				set(errorMessage, "");
+			});
+			append($$anchor, button_2);
+		};
+		if_block(node_3, ($$render) => {
+			if (typeof modalState.onConfirm === "function") $$render(consequent_3);
+			else $$render(alternate, -1);
+		});
+		reset$1(div_2);
+		reset$1(dialog_1);
+		template_effect(() => {
+			set_text(text, modalState.title);
+			set_text(text_1, modalState.content);
+		});
+		append($$anchor, dialog_1);
 		pop();
 	}
 	delegate(["click"]);
 	//#endregion
+	//#region src/utils/ldb.js
+	/**
+	* A wrapper around IndexedDB.
+	* IndexedDB has a higher storage limit (50mb) compared to localstorage (5mb).
+	*/
+	var OBJECT_STORE_NAME = "s";
+	var MAX_GET_ATTEMPTS = 50;
+	var LDB = class {
+		constructor() {
+			/**
+			* @type {IDBDatabase|null}
+			*/
+			this.db = null;
+			/**
+			* Set to true when the DB connection fails to open, so reads don't
+			* poll forever waiting for a `db` that will never arrive.
+			* @type {boolean}
+			*/
+			this.failed = false;
+			const dbReq = window.indexedDB.open("d2", 1);
+			const outerThis = this;
+			dbReq.onsuccess = function() {
+				outerThis.db = this.result;
+			};
+			dbReq.onerror = function(e) {
+				outerThis.failed = true;
+				logError("indexedDB request error:", e);
+			};
+			dbReq.onupgradeneeded = function() {
+				outerThis.db = null;
+				var t = this.result.createObjectStore(OBJECT_STORE_NAME, { keyPath: "k" });
+				t.transaction.oncomplete = function() {
+					outerThis.db = this.db;
+				};
+			};
+		}
+		/**
+		*
+		* @param {string} key
+		* @param {number} [attempt] internal retry counter
+		* @returns {Promise<string|null>}
+		*/
+		get(key, attempt = 0) {
+			return new Promise((resolve) => {
+				if (this.db) this.db.transaction(OBJECT_STORE_NAME).objectStore(OBJECT_STORE_NAME).get(key).onsuccess = function() {
+					resolve(this.result?.v || null);
+				};
+				else if (this.failed || attempt >= MAX_GET_ATTEMPTS) {
+					logError("indexedDB not ready. Could not get:", key);
+					resolve(null);
+				} else setTimeout(() => {
+					this.get(key, attempt + 1).then(resolve);
+				}, 100);
+			});
+		}
+		/**
+		*
+		* @param {string} key
+		* @param {string} value
+		*/
+		set(key, value) {
+			if (!this.db) {
+				logError("indexedDB not ready yet. Could not set:", key);
+				return;
+			}
+			this.db.transaction(OBJECT_STORE_NAME, "readwrite").objectStore(OBJECT_STORE_NAME).put({
+				k: key,
+				v: value
+			});
+		}
+	};
+	new LDB();
+	//#endregion
+	//#region src/lib/emoji/emojiState.svelte.js
+	var emojiState = proxy({
+		selectedIndex: 0,
+		emojiList: []
+	});
+	function reset() {
+		emojiState.selectedIndex = 0;
+		emojiState.emojiList = [];
+	}
+	//#endregion
+	//#region src/lib/emoji/helpers.js
+	/**
+	*
+	* @param {string} char
+	* @returns {boolean}
+	*/
+	function isEdge(char) {
+		return char === " " || char === "\n";
+	}
+	/**
+	* Assuming that the selectionStart is adjacent to, or within, a partial emoji,
+	* get the selection range of the partial emoji
+	*
+	* "This is a :cat example" -> [10, 14]
+	*            ^^^^^ cursor can be anywhere in this range
+	* @param {string} currentText
+	* @param {number} cursorPos
+	* @returns {[number, number]}
+	*/
+	function getSelection(currentText, cursorPos) {
+		let left = cursorPos > 0 ? cursorPos : 0;
+		while (left > 0 && currentText[left] !== ":") left -= 1;
+		let right = cursorPos;
+		while (!isEdge(currentText[right]) && right < currentText.length) right += 1;
+		return [left, right];
+	}
+	/**
+	* Get the caret offset into a contenteditable element's textContent, i.e. the
+	* contenteditable equivalent of a textarea's selectionStart.
+	* @param {HTMLElement} el
+	* @returns {number}
+	*/
+	function getCaretOffset(el) {
+		const selection = window.getSelection();
+		if (!selection || selection.rangeCount === 0) return 0;
+		const range = selection.getRangeAt(0);
+		if (!el.contains(range.endContainer)) return 0;
+		const preCaretRange = range.cloneRange();
+		preCaretRange.selectNodeContents(el);
+		preCaretRange.setEnd(range.endContainer, range.endOffset);
+		return preCaretRange.toString().length;
+	}
+	//#endregion
+	//#region src/lib/modules/autocomplete.js
+	/**
+	*
+	* @param {HTMLDivElement} inputEl
+	* @param {number} index
+	*/
+	function insertEmote(inputEl, index) {
+		const selected = emojiState.emojiList[index];
+		if (!selected) return;
+		const [start, end] = getSelection(inputEl.textContent, getCaretOffset(inputEl));
+		inputEl.textContent = inputEl.textContent.slice(0, start) + `:${selected.text}:` + inputEl.textContent.slice(end);
+		reset();
+	}
+	//#endregion
 	//#region src/lib/emoji/EmojiPreview.svelte
-	var root$8 = /* @__PURE__ */ from_html(`<li><div class="ac-image svelte-pc9dza"><img class="svelte-pc9dza"/></div></li>`);
-	var root_1$2 = /* @__PURE__ */ from_html(`<div><div class="ac-header svelte-pc9dza"><span class="sr-only"> </span> <div class="tip-container" aria-hidden="true"><span class="tip-navigate"><key class="icon-upvote"></key> &amp; <key class="icon-downvote"></key> </span> <span class="tip-complete"><key>TAB</key> or <key>ENTER</key> </span> <span class="tip-close"><key>ESC</key> </span></div></div> <ul id="autocomplete-preview" class="svelte-pc9dza"></ul> <span class="ac-text-preview svelte-pc9dza"> </span></div>`);
+	var root$9 = /* @__PURE__ */ from_html(`<li><div class="ac-image svelte-pc9dza"><img class="svelte-pc9dza"/></div></li>`);
+	var root_1$1 = /* @__PURE__ */ from_html(`<div id="dubplus-emoji-preview"><div class="ac-header svelte-pc9dza"><span class="sr-only"> </span> <div class="tip-container" aria-hidden="true"><span class="tip-navigate"><kbd class="icon-upvote"></kbd> &amp; <kbd class="icon-downvote"></kbd> </span> <span class="tip-complete"><kbd>TAB</kbd> or <kbd>ENTER</kbd> </span> <span class="tip-close"><kbd>ESC</kbd> </span></div></div> <ul id="autocomplete-preview" class="svelte-pc9dza"></ul> <span class="ac-text-preview svelte-pc9dza"> </span></div>`);
 	function EmojiPreview($$anchor, $$props) {
 		push($$props, true);
 		user_effect(() => {
@@ -8811,36 +8605,36 @@ template(id) {
 			insertEmote(inputEl, index);
 			inputEl.focus();
 		}
-		var div = root_1$2();
+		var div = root_1$1();
 		let classes;
 		var div_1 = child(div);
 		var span = child(div_1);
 		var text_1 = child(span, true);
-		reset$2(span);
+		reset$1(span);
 		var div_2 = sibling(span, 2);
 		var span_1 = child(div_2);
 		var text_2 = sibling(child(span_1), 3);
-		reset$2(span_1);
+		reset$1(span_1);
 		var span_2 = sibling(span_1, 2);
 		var text_3 = sibling(child(span_2), 3);
-		reset$2(span_2);
+		reset$1(span_2);
 		var span_3 = sibling(span_2, 2);
 		var text_4 = sibling(child(span_3));
-		reset$2(span_3);
-		reset$2(div_2);
-		reset$2(div_1);
+		reset$1(span_3);
+		reset$1(div_2);
+		reset$1(div_1);
 		var ul = sibling(div_1, 2);
 		each(ul, 23, () => emojiState.emojiList, ({ src, text, platform, alt }) => src + platform, ($$anchor, $$item, i) => {
 			let src = () => get($$item).src;
 			let text = () => get($$item).text;
 			let platform = () => get($$item).platform;
 			let alt = () => get($$item).alt;
-			var li = root$8();
+			var li = root$9();
 			let classes_1;
 			var div_3 = child(li);
 			var img = child(div_3);
-			reset$2(div_3);
-			reset$2(li);
+			reset$1(div_3);
+			reset$1(li);
 			template_effect(() => {
 				classes_1 = set_class(li, 1, `preview-item ${platform()}-previews`, "svelte-pc9dza", classes_1, { selected: get(i) === emojiState.selectedIndex });
 				set_attribute(li, "title", text());
@@ -8851,15 +8645,12 @@ template(id) {
 			delegated("click", li, () => handleClick(get(i)));
 			append($$anchor, li);
 		});
-		reset$2(ul);
+		reset$1(ul);
 		var span_4 = sibling(ul, 2);
 		var text_5 = child(span_4, true);
-		reset$2(span_4);
-		reset$2(div);
-		action(div, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({
-			to: CHAT_INPUT_CONTAINER,
-			position: "prepend"
-		}));
+		reset$1(span_4);
+		reset$1(div);
+		action(div, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({ to: "body" }));
 		template_effect(($0, $1, $2, $3) => {
 			classes = set_class(div, 1, "ac-preview-container svelte-pc9dza", null, classes, { "ac-show": emojiState.emojiList.length > 0 });
 			set_text(text_1, $0);
@@ -8878,135 +8669,16 @@ template(id) {
 	}
 	delegate(["click"]);
 	//#endregion
-	//#region src/lib/satellites/DubsInfo.svelte
-	var root$7 = /* @__PURE__ */ from_html(`<li class="preview-dubinfo-item users-previews svelte-p3efhm"><div class="dubinfo-image svelte-p3efhm"><img alt="User Avatar" class="svelte-p3efhm"/></div> <button type="button" class="dubinfo-text svelte-p3efhm"> </button></li>`);
-	var root_1$1 = /* @__PURE__ */ from_html(`<li><!></li>`);
-	var root_2 = /* @__PURE__ */ from_html(`<div role="none"><ul id="dubinfo-preview"><!></ul></div>`);
-	function DubsInfo($$anchor, $$props) {
-		push($$props, true);
-		/**
-		* @typedef {object} DubsInfoProps
-		* @property {"updub" | "downdub" | "grab"} dubType
-		*/
-		/**
-		* @type {DubsInfoProps}
-		*/
-		let dubData = /* @__PURE__ */ user_derived(() => getDubCount($$props.dubType));
-		let positionRight = /* @__PURE__ */ state(0);
-		let positionBottom = /* @__PURE__ */ state(0);
-		let display = /* @__PURE__ */ state("none");
-		function getTarget() {
-			if ($$props.dubType === "updub") return getDubUp()?.parentElement;
-			else if ($$props.dubType === "downdub") return getDubDown()?.parentElement;
-			else if ($$props.dubType === "grab") return getAddToPlaylist();
-			return null;
-		}
-		function onHover() {
-			const hoverTarget = getTarget();
-			if (hoverTarget) {
-				const rect = hoverTarget.getBoundingClientRect();
-				set(positionRight, window.innerWidth - rect.right);
-				set(positionBottom, rect.height - 2);
-				set(display, "block");
-			} else logError(`Could not find hover target for ${$$props.dubType} in onHover`);
-		}
-		/**
-		* @param {MouseEvent} e
-		*/
-		function onLeave(e) {
-			if (e.relatedTarget && e.relatedTarget.closest(".dubplus-dubs-container")) return;
-			set(display, "none");
-		}
-		onMount(() => {
-			const hoverTarget = getTarget();
-			if (hoverTarget) {
-				hoverTarget.addEventListener("mouseenter", onHover);
-				hoverTarget.addEventListener("mouseleave", onLeave);
-			} else logError(`Could not find hover target for ${$$props.dubType} in onMount`);
-		});
-		onDestroy(() => {
-			const hoverTarget = getTarget();
-			if (hoverTarget) {
-				hoverTarget.removeEventListener("mouseenter", onHover);
-				hoverTarget.removeEventListener("mouseleave", onLeave);
-			} else logError(`Could not find hover target for ${$$props.dubType} in onDestroy`);
-		});
-		/**
-		* @param {string} username
-		*/
-		function handleClick(username) {
-			const chatInput = getChatInput();
-			if (!chatInput) {
-				logError("Chat input not found, can not insert username", { username });
-				return;
-			}
-			chatInput.value = `${chatInput.value}@${username} `.trimStart();
-			chatInput.focus();
-		}
-		var div = root_2();
-		var ul = child(div);
-		let classes;
-		var node = child(ul);
-		var consequent = ($$anchor) => {
-			var fragment = comment();
-			each(first_child(fragment), 17, () => get(dubData), (dub) => dub.userid, ($$anchor, dub) => {
-				var li = root$7();
-				var div_1 = child(li);
-				var img = child(div_1);
-				reset$2(div_1);
-				var button = sibling(div_1, 2);
-				var text = child(button);
-				reset$2(button);
-				reset$2(li);
-				template_effect(($0) => {
-					set_attribute(img, "src", $0);
-					set_text(text, `@${get(dub).username ?? ""}`);
-				}, [() => userImage(get(dub).userid)]);
-				delegated("click", button, () => handleClick(get(dub).username));
-				append($$anchor, li);
-			});
-			append($$anchor, fragment);
-		};
-		var alternate_1 = ($$anchor) => {
-			var li_1 = root_1$1();
-			var node_2 = child(li_1);
-			var consequent_1 = ($$anchor) => {
-				var text_1 = text();
-				template_effect(($0) => set_text(text_1, $0), [() => t("dubs-hover.no-votes", { dubType: $$props.dubType })]);
-				append($$anchor, text_1);
-			};
-			var alternate = ($$anchor) => {
-				var text_2 = text();
-				template_effect(($0) => set_text(text_2, $0), [() => t("dubs-hover.no-grabs", { dubType: $$props.dubType })]);
-				append($$anchor, text_2);
-			};
-			if_block(node_2, ($$render) => {
-				if ($$props.dubType === "updub" || $$props.dubType === "downdub") $$render(consequent_1);
-				else $$render(alternate, -1);
-			});
-			reset$2(li_1);
-			append($$anchor, li_1);
-		};
-		if_block(node, ($$render) => {
-			if (get(dubData).length > 0) $$render(consequent);
-			else $$render(alternate_1, -1);
-		});
-		reset$2(ul);
-		reset$2(div);
-		action(div, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({ to: "body" }));
-		template_effect(() => {
-			set_attribute(div, "id", `dubplus-${$$props.dubType}s-container`);
-			set_class(div, 1, `dubplus-dubs-container dubplus-${$$props.dubType}s-container`, "svelte-p3efhm");
-			set_style(div, `bottom: ${get(positionBottom)}px; right: ${get(positionRight)}px; display: ${get(display)};`);
-			classes = set_class(ul, 1, "dubinfo-show svelte-p3efhm", null, classes, { "dubplus-no-dubs": get(dubData).length === 0 });
-		});
-		event("mouseleave", div, () => set(display, "none"));
-		append($$anchor, div);
-		pop();
-	}
-	delegate(["click"]);
-	//#endregion
 	//#region src/scripts/pure-snow.js
+	/**
+	* Pure Snow
+	* https://github.com/hyperstown/pure-snow.js
+	*
+	* With some modifications to work as a Svelte component
+	*
+	* The snow is done with CSS animations and keyframes.
+	*
+	*/
 	var snowflakesCount = 200;
 	var baseCSS = "";
 	/**
@@ -9099,31 +8771,37 @@ template(id) {
 		addCSS(rule);
 	}
 	function createSnow() {
-		getSnowAttributes();
-		generateSnowCSS(snowflakesCount);
-		generateSnow(snowflakesCount);
+		waitFor(() => !!getSnowConatiner()).then(() => {
+			getSnowAttributes();
+			generateSnowCSS(snowflakesCount);
+			generateSnow(snowflakesCount);
+		}).catch((error) => {
+			logError("Failed to create snow:", error);
+		});
 	}
 	//#endregion
 	//#region src/lib/satellites/Snow.svelte
-	var root$6 = /* @__PURE__ */ from_html(`<div id="snow-container" class="svelte-11q6bur"></div>`);
+	var root$8 = /* @__PURE__ */ from_html(`<div id="snow-container" class="svelte-11q6bur"></div>`);
 	function Snow($$anchor, $$props) {
-		push($$props, false);
+		push($$props, true);
 		onMount(() => {
 			createSnow();
 			window.addEventListener("resize", createSnow);
+			return () => {
+				window.removeEventListener("resize", createSnow);
+			};
 		});
-		onDestroy(() => {
-			window.removeEventListener("resize", createSnow);
-		});
-		init();
-		var div = root$6();
-		action(div, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({ to: "body" }));
+		function teleportTo() {
+			return document.querySelector("body > div:nth-child(2) > div");
+		}
+		var div = root$8();
+		action(div, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({ to: teleportTo }));
 		append($$anchor, div);
 		pop();
 	}
 	//#endregion
 	//#region src/lib/menu/MenuAction.svelte
-	var root$5 = /* @__PURE__ */ from_html(`<li class="svelte-1oc77ts"><button type="button" class="svelte-1oc77ts"><!> <span class="dubplus-menu-label svelte-1oc77ts"> </span></button></li>`);
+	var root$7 = /* @__PURE__ */ from_html(`<li class="svelte-1oc77ts"><button type="button" class="svelte-1oc77ts"><!> <span class="dubplus-menu-label svelte-1oc77ts"> </span></button></li>`);
 	function MenuAction($$anchor, $$props) {
 		push($$props, true);
 		/**
@@ -9142,7 +8820,7 @@ template(id) {
 		onMount(() => {
 			if ($$props.init) $$props.init();
 		});
-		var li = root$5();
+		var li = root$7();
 		var button = child(li);
 		var node = child(button);
 		component(node, () => $$props.icon, ($$anchor, Icon_1) => {
@@ -9150,9 +8828,9 @@ template(id) {
 		});
 		var span = sibling(node, 2);
 		var text = child(span, true);
-		reset$2(span);
-		reset$2(button);
-		reset$2(li);
+		reset$1(span);
+		reset$1(button);
+		reset$1(li);
 		template_effect(($0, $1, $2) => {
 			set_attribute(li, "id", $$props.id);
 			set_attribute(li, "title", $0);
@@ -9172,14 +8850,13 @@ template(id) {
 	delegate(["click"]);
 	//#endregion
 	//#region src/lib/sections/UserInterface.svelte
-	var root$4 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
+	var root$6 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
 	function UserInterface($$anchor, $$props) {
-		push($$props, false);
-		init();
-		var fragment = root$4();
+		push($$props, true);
+		var fragment = root$6();
 		var node = first_child(fragment);
 		{
-			let $0 = /* @__PURE__ */ derived_safe_equal(() => t("user-interface.title"));
+			let $0 = /* @__PURE__ */ user_derived(() => t("user-interface.title"));
 			MenuHeader(node, {
 				settingsId: "user-interface",
 				get name() {
@@ -9191,7 +8868,7 @@ template(id) {
 			settingsId: "user-interface",
 			children: ($$anchor, $$slotProps) => {
 				var fragment_1 = comment();
-				each(first_child(fragment_1), 1, () => userInterface, (module) => module.id, ($$anchor, module) => {
+				each(first_child(fragment_1), 17, () => userInterface, (module) => module.id, ($$anchor, module) => {
 					var fragment_2 = comment();
 					var node_3 = first_child(fragment_2);
 					var consequent = ($$anchor) => {
@@ -9259,18 +8936,16 @@ template(id) {
 	}
 	//#endregion
 	//#region src/lib/sections/Settings.svelte
-	var $$_import_settings = reactive_import(() => settings);
-	var root$3 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
+	var root$5 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
 	function Settings($$anchor, $$props) {
-		push($$props, false);
+		push($$props, true);
 		settingsModules.forEach((module) => {
-			if (!$$_import_settings().options[module.id]) $$_import_settings($$_import_settings().options[module.id] = false);
+			if (!settings.options[module.id]) settings.options[module.id] = false;
 		});
-		init();
-		var fragment = root$3();
+		var fragment = root$5();
 		var node = first_child(fragment);
 		{
-			let $0 = /* @__PURE__ */ derived_safe_equal(() => t("settings.title"));
+			let $0 = /* @__PURE__ */ user_derived(() => t("settings.title"));
 			MenuHeader(node, {
 				settingsId: "settings",
 				get name() {
@@ -9282,7 +8957,7 @@ template(id) {
 			settingsId: "settings",
 			children: ($$anchor, $$slotProps) => {
 				var fragment_1 = comment();
-				each(first_child(fragment_1), 1, () => settingsModules, (module) => module.id, ($$anchor, module) => {
+				each(first_child(fragment_1), 17, () => settingsModules, (module) => module.id, ($$anchor, module) => {
 					MenuSwitch($$anchor, {
 						get id() {
 							return get(module).id;
@@ -9316,14 +8991,13 @@ template(id) {
 	}
 	//#endregion
 	//#region src/lib/sections/Customize.svelte
-	var root$2 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
+	var root$4 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
 	function Customize($$anchor, $$props) {
-		push($$props, false);
-		init();
-		var fragment = root$2();
+		push($$props, true);
+		var fragment = root$4();
 		var node = first_child(fragment);
 		{
-			let $0 = /* @__PURE__ */ derived_safe_equal(() => t("customize.title"));
+			let $0 = /* @__PURE__ */ user_derived(() => t("customize.title"));
 			MenuHeader(node, {
 				settingsId: "customize",
 				get name() {
@@ -9335,7 +9009,7 @@ template(id) {
 			settingsId: "customize",
 			children: ($$anchor, $$slotProps) => {
 				var fragment_1 = comment();
-				each(first_child(fragment_1), 1, () => customize, (module) => module.id, ($$anchor, module) => {
+				each(first_child(fragment_1), 17, () => customize, (module) => module.id, ($$anchor, module) => {
 					MenuSwitch($$anchor, {
 						get id() {
 							return get(module).id;
@@ -9368,12 +9042,27 @@ template(id) {
 		pop();
 	}
 	//#endregion
+	//#region src/lib/svg/Monitor.svelte
+	var root$3 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"></rect><line x1="8" x2="16" y1="21" y2="21"></line><line x1="12" x2="12" y1="17" y2="21"></line></svg>`);
+	function Monitor($$anchor, $$props) {
+		var svg = root$3();
+		template_effect(() => set_class(svg, 0, clsx(["lucide lucide-monitor-icon lucide-monitor", $$props.class])));
+		append($$anchor, svg);
+	}
+	//#endregion
+	//#region src/lib/svg/MonitorOff.svelte
+	var root$2 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v4"></path><path d="M17 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 1.184-1.826"></path><path d="m2 2 20 20"></path><path d="M8 21h8"></path><path d="M8.656 3H20a2 2 0 0 1 2 2v10a2 2 0 0 1-.293 1.042"></path></svg>`);
+	function MonitorOff($$anchor, $$props) {
+		var svg = root$2();
+		template_effect(() => set_class(svg, 0, clsx(["lucide lucide-monitor-off-icon lucide-monitor-off", $$props.class])));
+		append($$anchor, svg);
+	}
+	//#endregion
 	//#region src/lib/satellites/SnoozeVideo.svelte
-	var root$1 = /* @__PURE__ */ from_html(`<button id="dubplus-snooze-video" type="button"><span class="svelte-1i1rq1b">1</span></button>`);
+	var root$1 = /* @__PURE__ */ from_html(`<div class="dubplus-snooze-video-overlay absolute top-0 left-0 w-full h-full bg-black flex items-center justify-center" id="dubplus-snooze-video-overlay"><!></div>`);
+	var root_1 = /* @__PURE__ */ from_html(`<button id="dubplus-snooze-video" type="button" class="snooze-video-btn dubplus-btn-player text-white/50 hover:text-white transition-colors"><!></button> <!>`, 1);
 	function SnoozeVideo($$anchor, $$props) {
 		push($$props, true);
-		let icon = /* @__PURE__ */ state("icon-eye-blocked");
-		let tooltip = /* @__PURE__ */ state(proxy(t("SnoozeVideo.tooltip")));
 		/**
 		* Snooze Video
 		* Hides the video for the duration of the current song.
@@ -9381,109 +9070,111 @@ template(id) {
 		* This module is not a menu item. It is self-contained feature
 		* that will always be automatically run on load.
 		*/
-		const SNOOZE_CLASS = "dubplus-snooze-video";
+		let isSnoozed = /* @__PURE__ */ state(false);
+		let tooltip = /* @__PURE__ */ state(proxy(t("SnoozeVideo.tooltip")));
+		user_effect(() => {
+			if (!get(isSnoozed)) document.getElementById("dubplus-snooze-video-overlay")?.remove();
+		});
 		function revert() {
 			set(tooltip, t("SnoozeVideo.tooltip"), true);
-			set(icon, "icon-eye-blocked");
-			document.body.classList.remove(SNOOZE_CLASS);
-			window.QueUp.Events.unbind(PLAYLIST_UPDATE, eventSongAdvance);
-		}
-		/**
-		* Show the video again when the song changes
-		* @param {{startTime: number}} e
-		*/
-		function eventSongAdvance(e) {
-			if (e.startTime < 2) {
-				revert();
-				return true;
-			}
+			set(isSnoozed, false);
+			queupEvents.off(PLAYER_ADVANCE, revert);
 		}
 		/**
 		* Hide the video
 		*/
 		function snooze() {
-			if (!document.body.classList.contains(SNOOZE_CLASS)) {
+			if (!get(isSnoozed)) {
 				set(tooltip, t("SnoozeVideo.tooltip.undo"), true);
-				set(icon, "icon-eye-unblocked");
-				document.body.classList.add(SNOOZE_CLASS);
-				window.QueUp.Events.bind(PLAYLIST_UPDATE, eventSongAdvance);
+				set(isSnoozed, true);
+				queupEvents.on(PLAYER_ADVANCE, revert);
 			} else revert();
 		}
-		var button = root$1();
-		action(button, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({ to: PLAYER_SHARING_CONTAINER }));
+		onDestroy(() => {
+			queupEvents.off(PLAYER_ADVANCE, revert);
+		});
+		var fragment = root_1();
+		var button = first_child(fragment);
+		var node = child(button);
+		var consequent = ($$anchor) => {
+			Monitor($$anchor, { class: "w-5 h-5" });
+		};
+		var alternate = ($$anchor) => {
+			MonitorOff($$anchor, { class: "w-5 h-5" });
+		};
+		if_block(node, ($$render) => {
+			if (get(isSnoozed)) $$render(consequent);
+			else $$render(alternate, -1);
+		});
+		reset$1(button);
+		action(button, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({ to: getPlayerButtonsContainer }));
+		var node_1 = sibling(button, 2);
+		var consequent_1 = ($$anchor) => {
+			var div = root$1();
+			MonitorOff(child(div), { class: "w-5 h-5" });
+			reset$1(div);
+			action(div, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({ to: () => getPlayerIframe()?.parentElement }));
+			append($$anchor, div);
+		};
+		if_block(node_1, ($$render) => {
+			if (get(isSnoozed)) $$render(consequent_1);
+		});
 		template_effect(() => {
-			set_class(button, 1, `${get(icon)} snooze-video-btn dubplus-btn-player`, "svelte-1i1rq1b");
 			set_attribute(button, "aria-label", get(tooltip));
 			set_attribute(button, "data-dp-tooltip", get(tooltip));
 		});
 		delegated("click", button, snooze);
-		append($$anchor, button);
+		append($$anchor, fragment);
 		pop();
 	}
 	delegate(["click"]);
 	//#endregion
 	//#region src/lib/menu/Menu.svelte
-	var root = /* @__PURE__ */ from_html(`<!> <!> <!>`, 1);
-	var root_1 = /* @__PURE__ */ from_html(`<!> <!> <!> <!> <!> <!> <!> <aside class="dubplus-menu svelte-mumrn2"><p class="dubplus-menu-header svelte-mumrn2"> <span class="version svelte-mumrn2"> </span></p> <!> <!> <!> <!> <!></aside> <!>`, 1);
+	var root = /* @__PURE__ */ from_html(`<!> <!> <!> <!> <!> <aside class="dubplus-menu svelte-mumrn2"><p class="dubplus-menu-header svelte-mumrn2"> <span class="version svelte-mumrn2"> </span></p> <!> <!> <!> <!> <!></aside> <!>`, 1);
 	function Menu($$anchor, $$props) {
-		push($$props, false);
+		push($$props, true);
 		onMount(() => {
 			document.querySelector("html")?.classList.add("dubplus");
+			return () => document.querySelector("html")?.classList.remove("dubplus");
 		});
-		init();
-		var fragment = root_1();
+		var fragment = root();
 		var node = first_child(fragment);
-		Snooze(node, {});
+		MenuIcon(node, {});
 		var node_1 = sibling(node, 2);
-		MenuIcon(node_1, {});
+		Eta(node_1, {});
 		var node_2 = sibling(node_1, 2);
-		Eta(node_2, {});
+		SnoozeVideo(node_2, {});
 		var node_3 = sibling(node_2, 2);
-		SnoozeVideo(node_3, {});
-		var node_4 = sibling(node_3, 2);
 		var consequent = ($$anchor) => {
 			EmojiPreview($$anchor, {});
 		};
-		if_block(node_4, ($$render) => {
+		if_block(node_3, ($$render) => {
 			if (settings.options.autocomplete) $$render(consequent);
 		});
-		var node_5 = sibling(node_4, 2);
+		var node_4 = sibling(node_3, 2);
 		var consequent_1 = ($$anchor) => {
-			var fragment_2 = root();
-			var node_6 = first_child(fragment_2);
-			DubsInfo(node_6, { dubType: "updub" });
-			var node_7 = sibling(node_6, 2);
-			DubsInfo(node_7, { dubType: "downdub" });
-			DubsInfo(sibling(node_7, 2), { dubType: "grab" });
-			append($$anchor, fragment_2);
-		};
-		if_block(node_5, ($$render) => {
-			if (settings.options["dubs-hover"]) $$render(consequent_1);
-		});
-		var node_9 = sibling(node_5, 2);
-		var consequent_2 = ($$anchor) => {
 			Snow($$anchor, {});
 		};
-		if_block(node_9, ($$render) => {
-			if (settings.options.snow) $$render(consequent_2);
+		if_block(node_4, ($$render) => {
+			if (settings.options.snow) $$render(consequent_1);
 		});
-		var aside = sibling(node_9, 2);
+		var aside = sibling(node_4, 2);
 		var p = child(aside);
 		var text = child(p);
 		var span = sibling(text);
 		var text_1 = child(span);
-		reset$2(span);
-		reset$2(p);
-		var node_10 = sibling(p, 2);
-		General(node_10, {});
-		var node_11 = sibling(node_10, 2);
-		UserInterface(node_11, {});
-		var node_12 = sibling(node_11, 2);
-		Settings(node_12, {});
-		var node_13 = sibling(node_12, 2);
-		Customize(node_13, {});
-		Contact(sibling(node_13, 2), {});
-		reset$2(aside);
+		reset$1(span);
+		reset$1(p);
+		var node_5 = sibling(p, 2);
+		General(node_5, {});
+		var node_6 = sibling(node_5, 2);
+		UserInterface(node_6, {});
+		var node_7 = sibling(node_6, 2);
+		Settings(node_7, {});
+		var node_8 = sibling(node_7, 2);
+		Customize(node_8, {});
+		Contact(sibling(node_8, 2), {});
+		reset$1(aside);
 		Modal(sibling(aside, 2), {});
 		template_effect(($0) => {
 			set_text(text, `${$0 ?? ""} `);
@@ -9496,77 +9187,152 @@ template(id) {
 	//#region src/DubPlus.svelte
 	function DubPlus($$anchor, $$props) {
 		push($$props, true);
-		window.dubplus = Object.assign(window.dubplus || {}, {
-			name: package_default.name,
-			version: package_default.version,
-			description: package_default.description,
-			license: package_default.license,
-			homepage: package_default.homepage
-		});
-		/** @type {"loading" | "ready" | "loggedout" | "error"} */
-		let status = /* @__PURE__ */ state("loading");
-		const checkList = [
-			"QueUp.session.id",
-			"QueUp.room.chat",
-			"QueUp.Events",
-			"QueUp.room.player",
-			"QueUp.helpers.cookie",
-			"QueUp.room.model",
-			"QueUp.room.users"
-		];
-		waitFor(function() {
-			return arrayDeepCheck(checkList);
-		}).then(() => {
-			set(status, "ready");
-		}).catch(() => {
-			if (!window.QueUp?.session?.id) set(status, "loggedout");
-			else set(status, "error");
-		});
-		/**
-		* @param {string} content
-		*/
-		function showErrorModal(content) {
-			modalState.title = t("Error.modal.title");
-			modalState.content = content;
-			modalState.open = true;
-		}
-		user_effect(() => {
-			if (get(status) === "loggedout") showErrorModal(t("Error.modal.loggedout"));
-			else if (get(status) === "error") showErrorModal(t("Error.unknown"));
-		});
-		var fragment = comment();
-		var node = first_child(fragment);
-		var consequent = ($$anchor) => {
-			Loading($$anchor, {});
-		};
-		var consequent_1 = ($$anchor) => {
-			Menu($$anchor, {});
-		};
-		var alternate = ($$anchor) => {
-			Modal($$anchor, {});
-		};
-		if_block(node, ($$render) => {
-			if (get(status) === "loading") $$render(consequent);
-			else if (get(status) === "ready") $$render(consequent_1, 1);
-			else $$render(alternate, -1);
-		});
-		append($$anchor, fragment);
+		window.dubplus = window.dubplus || {};
+		window.dubplus.name = package_default.name;
+		window.dubplus.version = package_default.version;
+		window.dubplus.description = package_default.description;
+		window.dubplus.license = package_default.license;
+		window.dubplus.homepage = package_default.homepage;
+		Menu($$anchor, {});
 		pop();
 	}
 	//#endregion
+	//#region src/utils/route.js
+	/**
+	* QueUp v2 is a React SPA: clicking from /lobby into a room is a client side
+	* route change, not a page load. Content scripts only inject on real
+	* navigations, so Dub+ has to notice route changes itself and mount/unmount
+	* around them. The Navigation API reports SPA pushes, back/forward and
+	* fragment changes as one event, which is all we need.
+	*/
+	var ROOM_PATH = /^\/join\/([^/]+)/;
+	/** Fired on window whenever the SPA finishes navigating. */
+	var ROUTE_EVENT = "dubplus:routechange";
+	/**
+	* @param {string} [url] defaults to the current location
+	* @returns {string | null} the room slug, or null when we're not in a room
+	*/
+	function getRoomSlug(url = window.location.href) {
+		try {
+			const { pathname } = new URL(url, window.location.origin);
+			return pathname.match(ROOM_PATH)?.[1] ?? null;
+		} catch (err) {
+			logDebug("could not parse the url", url, err);
+			return null;
+		}
+	}
+	/**
+	* Republishes the Navigation API's `navigatesuccess` as our own event, so
+	* subscribers don't touch the API directly. Guarded on window because a dev
+	* rebuild re-runs this module against a page that's still alive.
+	*
+	* `navigatesuccess` rather than `navigate`: it fires after the transition
+	* commits, so location is already up to date when we read it.
+	*/
+	function installRouteEmitter() {
+		if (window.dubplus.__routeEmitterInstalled) return;
+		const navigation = window.navigation;
+		if (!navigation?.addEventListener) {
+			logWarn("no Navigation API - route changes will not be detected");
+			return;
+		}
+		window.dubplus.__routeEmitterInstalled = true;
+		navigation.addEventListener("navigatesuccess", () => {
+			window.dispatchEvent(new CustomEvent(ROUTE_EVENT));
+		});
+	}
+	/**
+	* @param {(roomSlug: string | null) => void} callback runs after every route
+	* change with the new room slug, or null if the new route isn't a room.
+	* @returns {() => void} call it to stop listening
+	*/
+	function onRouteChange(callback) {
+		window.dubplus = window.dubplus || {};
+		installRouteEmitter();
+		const handler = () => callback(getRoomSlug());
+		window.addEventListener(ROUTE_EVENT, handler);
+		return () => window.removeEventListener(ROUTE_EVENT, handler);
+	}
+	//#endregion
 	//#region src/main.js
+	window.dubplus = window.dubplus || {};
 	var loadedAsExtension = "dubplusExtensionLoaded" in window;
 	logInfo("loaded as extension:", loadedAsExtension);
 	if (!loadedAsExtension) loadDubPlusCSSforBookmarklet();
-	var container = document.getElementById("dubplus-container");
-	if (!container) {
-		container = document.createElement("div");
+	/**
+	* The room we're mounted in, or the one we're in the middle of mounting into.
+	* Null when neither. Mounting is async - it waits for QueUp to render the room
+	* - so this has to be claimed up front: two route events can land before the
+	* first mount finishes, and without it the second would start a mount of its
+	* own and we'd end up with two apps.
+	* @type {string | null}
+	*/
+	var currentRoom = null;
+	/**
+	* Bumped on every mount and unmount so a pending mount can tell it's stale.
+	* `currentRoom` alone isn't enough: leaving a room and coming straight back
+	* re-claims the same slug, and the first mount would happily finish into it.
+	*/
+	var mountToken = 0;
+	/** @type {Record<string, any> | null} */
+	var app = null;
+	function unmountDubPlus() {
+		mountToken++;
+		logDebug(`unmounting from room "${currentRoom}" mountToken=${mountToken}`);
+		currentRoom = null;
+		if (app) {
+			unmount(app);
+			app = null;
+		}
+		teardownModCheck();
+		document.getElementById("dubplus-container")?.remove();
+	}
+	/**
+	* @param {string} roomSlug
+	*/
+	async function mountDubPlus(roomSlug) {
+		const token = ++mountToken;
+		logDebug(`mounting in room "${roomSlug}" mountToken=${token}`);
+		currentRoom = roomSlug;
+		try {
+			await waitFor(() => !!getChatInput(), { seconds: 30 });
+		} catch {
+			logWarn(`room UI never showed up for "${roomSlug}", not mounting`);
+			if (token === mountToken) currentRoom = null;
+			return;
+		}
+		if (token !== mountToken || getRoomSlug() !== roomSlug) {
+			logDebug(`skipping a stale mount for "${roomSlug}"`);
+			return;
+		}
+		if (!window.dubplus.roomId) resolveQueupIds();
+		if (window.dubplus.roomId) setupModCheck(window.dubplus.roomId);
+		else logWarn(`Failed to resolve room ID for "${roomSlug}", mod check not set up`);
+		const container = document.createElement("div");
 		container.id = "dubplus-container";
 		document.body.appendChild(container);
-	} else if (container.children.length > 0) {
-		unmount(container);
-		container.replaceChildren();
+		app = mount(DubPlus, { target: container });
+		logInfo(`mounted in room "${roomSlug}"`);
 	}
+	function syncToRoute() {
+		const roomSlug = getRoomSlug();
+		if (roomSlug === currentRoom) return;
+		if (currentRoom) {
+			logInfo(`leaving room "${currentRoom}"`);
+			unmountDubPlus();
+		}
+		if (!roomSlug) return;
+		window.dubplus.roomId = void 0;
+		waitForQueupIds();
+		mountDubPlus(roomSlug);
+	}
+	window.dubplus.__teardown?.();
+	document.getElementById("dubplus-container")?.remove();
+	var stopRouteListener = onRouteChange(syncToRoute);
+	window.dubplus.__teardown = () => {
+		stopRouteListener();
+		unmountDubPlus();
+	};
+	syncToRoute();
 	//#endregion
-	return mount(DubPlus, { target: container });
 })();
