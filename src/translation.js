@@ -57,6 +57,8 @@ export const translations = {
     'auto-afk.modal.content':
       'Enter the amount of time, in minutes, before you are set to AFK.',
     'auto-afk.modal.validation': 'Please enter a whole number greater than 0',
+    'auto-afk.modal.placeholder': '30',
+    'auto-afk.modal.defaultValue': '30',
 
     'emotes.label': 'Emotes',
     'emotes.description': 'Adds Twitch, Bttv, and FrankerFacez emotes in chat.',
