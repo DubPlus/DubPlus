@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.0.0] - 2026-??-??
+## [5.0.0] - 2026-09-??
 
 Updated to handle the new version of Queup (v2).
 
@@ -13,9 +13,9 @@ These features were removed because QueUp v2 does this natively now so it's no l
 
 - Snooze
 - Grabs in Chat
-- Show Timestamps - The top level timestamp always shows. There's also other timestamps that show on hover but I can't force show them with CSS as they are not in the DOM, they are insert by React on hover.
+- Show Timestamps - The top level timestamp always shows. There's also other timestamps that show on hover but I can't force then to show with CSS because they are not in the DOM, they get inserted by React on hover.
 - Hide Chat - v2 now allows you to collapse the whole chat area so this is no longer necessary
-- autocomplete - v2 added its own autocomplete so ours is not needed anymore
+- Autocomplete - v2 has their own native autocomplete for the basic emojis now
 
 These features were removed because the changes to v2 doesn't allow us to implement them:
 
@@ -23,6 +23,9 @@ These features were removed because the changes to v2 doesn't allow us to implem
 - Updubs in Chat - Because v2 now uses React we can no longer insert our elements into the chat area because they will get removed by React.
 - Downdubs in Chat - same reason as Updubs
 - Custom Notification Sound - v2 doesn't give us a way to alter the notification sound like it did before
+- Emotes - because Queup v2 switched to React and also now virtualizes the chat list, I can no longer make changes in the chat because they would get undone every time react updates the chat list.
+
+Basically anything where I was either directly altering elements in the DOM or inserting into the Chat messages area is no longer possible.
 
 ## Changed
 

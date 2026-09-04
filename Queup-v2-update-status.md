@@ -16,10 +16,10 @@ Anything else means I am still working on it (or haven't gotten to it yet)
 ## General
 
 - ✅ Autovote
-- [ ] AFK Auto-respond
+- ✅ AFK Auto-respond
 - ✅ Auto AFK
-- [ ] Emotes
-- [ ] Autocomplete Emoji
+- ❌ Emotes
+- ❌ Autocomplete Emoji
 - ✅ Custom Mentions
 - ✅ Collapsible Images
 - ✅ Notification on Mentions
