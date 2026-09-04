@@ -1,4 +1,4 @@
-/** @type {import('../../global').ModalProps} */
+/** @type {import('../../types/global').ModalProps} */
 export const modalState = $state({
   id: '',
   open: false,
@@ -19,7 +19,7 @@ export const modalState = $state({
 
 /**
  *
- * @param {import('../../global').ModalProps} nextState
+ * @param {import('../../types/global').ModalProps} nextState
  */
 export function updateModalState(nextState) {
   modalState.open = nextState.open ?? false;

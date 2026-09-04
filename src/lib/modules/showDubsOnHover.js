@@ -110,7 +110,7 @@ function resetDubs() {
 }
 
 /**
- * @param {import("../../events.js").DubEvent} e
+ * @param {import("../../types/events.js").DubEvent} e
  * @returns
  */
 function dubWatcher(e) {
@@ -142,7 +142,7 @@ function dubWatcher(e) {
 }
 
 /**
- * @param {import("../../events.js").GrabEvent} e
+ * @param {import("../../types/events.js").GrabEvent} e
  */
 function grabWatcher(e) {
   if (!dubsState.grabs.find((el) => el.userid === e.user._id)) {

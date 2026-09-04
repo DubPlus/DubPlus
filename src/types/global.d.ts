@@ -1,4 +1,4 @@
-import { QueupEvents } from './utils/events.js';
+import { QueupEvents } from '../utils/events.js';
 
 export type SettingsSections = 'option' | 'menu' | 'custom';
 
@@ -31,76 +31,6 @@ export interface SongInfo {
   fkid: string;
   name: string;
   type: string;
-}
-
-export interface QueUp {
-  session: {
-    /**
-     * This is the current logged in user's userid
-     */
-    id: string;
-    get: (name: string) => any;
-  };
-  room: {
-    chat: {
-      sendMessage: () => void;
-      delegateEvents: (events: { [key: string]: string }) => void;
-      events: { [key: string]: string };
-      ncKeyDown: (e: Partial<KeyboardEvent>) => void;
-      mentionChatSound: {
-        play: () => void;
-        url: string;
-      };
-      resizeTextarea: () => void;
-    };
-    player: {
-      muted_player: boolean;
-      mutePlayer: () => void;
-      setVolume: (volume: number) => void;
-      updateVolumeBar: () => void;
-      activeSong: {
-        get: (name: string) => Song;
-        attributes: {
-          song: {
-            played: number;
-            updubs: number;
-            downdubs: number;
-            userid: string;
-          };
-          songInfo: SongInfo;
-        };
-      };
-    };
-    model: {
-      get: (name: string) => any;
-      id: string;
-    };
-    // TODO: actually type this
-    users: any;
-  };
-  Events: {
-    bind: (event: string, callback: (e: any) => void) => void;
-    once: (event: string, callback: (e: any) => void) => void;
-    unbind: (event: string, callback: (e: any) => void) => void;
-  };
-  helpers: {
-    cookie: {
-      get: (name: string) => string;
-      set: (name: string, value: string, days: number) => void;
-    };
-    isSiteAdmin: (userid: string) => boolean;
-  };
-  playerController: {
-    volume: number;
-    voteUp: HTMLAnchorElement;
-  };
-}
-
-interface Emojify {
-  defaultConfig: {
-    img_dir: string;
-  };
-  emojiNames: string[];
 }
 
 /**
@@ -155,6 +85,18 @@ declare global {
       homepage?: string;
       roomId?: string;
       userId?: string;
+      roomUsers?: Map<
+        string,
+        {
+          userid: string;
+          username: string;
+          role: {
+            type: string;
+            label: string;
+            rights: string[];
+          };
+        }
+      >;
       queupEvents?: InstanceType<typeof QueupEvents>;
       /**
        * QueUp's RealtimeManager singleton, dug out of their Turbopack module

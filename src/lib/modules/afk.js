@@ -14,7 +14,7 @@ let canSend = true;
 
 /**
  *
- * @param {import("../../events").ChatMessageEvent} e
+ * @param {import("../../types/events").ChatMessageEvent} e
  * @returns {void}
  */
 function afk_chat_respond(e) {

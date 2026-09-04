@@ -7,7 +7,7 @@ import { queupEvents } from '../../utils/events.js';
 
 /**
  *
- * @param {import("../../events").NewMessageEvent} e
+ * @param {import("../../types/events").NewMessageEvent} e
  * @returns
  */
 function pmNotify(e) {

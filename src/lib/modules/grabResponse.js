@@ -4,7 +4,7 @@ import { queupEvents, GRAB } from '../../utils/events.js';
 
 /**
  *
- * @param {import("../../events").GrabEvent} e
+ * @param {import("../../types/events").GrabEvent} e
  */
 function onGrab(e) {
   if (e.user._id === window.dubplus.userId) {

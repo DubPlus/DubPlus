@@ -110,7 +110,7 @@ function processChatLI(li) {
 /**
  * run this when a new chat message is received
  * and only replaces emotes in the last message
- * @param {import('../../events').ChatMessageEvent} [e]
+ * @param {import('../../types/events').ChatMessageEvent} [e]
  * @returns {void}
  */
 function replaceTextWithEmote(e) {

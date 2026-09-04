@@ -22,8 +22,8 @@ Anything else means I am still working on it (or haven't gotten to it yet)
 - [ ] Autocomplete Emoji
 - ✅ Custom Mentions
 - ✅ Collapsible Images
-- [ ] Notification on Mentions
-- [ ] Notification on PM
+- ✅ Notification on Mentions
+- ✅ Notification on PM
 - [ ] DJ Notification
 - ✅ Show Dubs on Hover
 - ❌ Chat Cleaner
@@ -55,5 +55,5 @@ Anything else means I am still working on it (or haven't gotten to it yet)
 
 - ✅ Community Theme
 - ✅ Custom CSS
-- [ ] Custom Background
+- ✅ Custom Background
 - ❌ Custom Notification Sound

@@ -6,7 +6,8 @@ import { logDebug, logInfo, logWarn } from './utils/logger';
 import { getRoomSlug, onRouteChange } from './utils/route';
 import { waitFor } from './utils/waitFor';
 import { getChatInput } from './lib/queup.ui';
-import { waitForQueupIds } from './utils/queup-ids';
+import { resolveQueupIds, waitForQueupIds } from './utils/queup-ids';
+import { setupModCheck, teardownModCheck } from './utils/modcheck';
 
 window.dubplus = window.dubplus || {};
 
@@ -65,6 +66,7 @@ function unmountDubPlus() {
     app = null;
   }
 
+  teardownModCheck();
   document.getElementById('dubplus-container')?.remove();
 }
 
@@ -92,6 +94,17 @@ async function mountDubPlus(roomSlug) {
   if (token !== mountToken || getRoomSlug() !== roomSlug) {
     logDebug(`skipping a stale mount for "${roomSlug}"`);
     return;
+  }
+
+  if (!window.dubplus.roomId) {
+    resolveQueupIds();
+  }
+  if (window.dubplus.roomId) {
+    setupModCheck(window.dubplus.roomId);
+  } else {
+    logWarn(
+      `Failed to resolve room ID for "${roomSlug}", mod check not set up`,
+    );
   }
 
   // A fresh container every time. Svelte 5's `unmount` is async, so reusing one

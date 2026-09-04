@@ -12,19 +12,19 @@ import { settings } from '../stores/settings.svelte';
  * @param {string} url
  */
 function addCustomBG(url) {
-  const img = getBackgroundImage();
-  if (img) {
-    img.setAttribute('data-original', img.src);
-    img.src = url;
+  const bgImageDiv = getBackgroundImage();
+  if (bgImageDiv) {
+    bgImageDiv.setAttribute('data-original', bgImageDiv.style.backgroundImage);
+    bgImageDiv.style.backgroundImage = `url(${url})`;
   }
 }
 
 function removeCustomBG() {
-  const img = getBackgroundImage();
-  if (img && img.hasAttribute('data-original')) {
-    const originalSrc = img.getAttribute('data-original') ?? '';
+  const bgImageDiv = getBackgroundImage();
+  if (bgImageDiv && bgImageDiv.hasAttribute('data-original')) {
+    const originalSrc = bgImageDiv.getAttribute('data-original') ?? '';
     if (originalSrc) {
-      img.src = originalSrc;
+      bgImageDiv.style.backgroundImage = originalSrc;
     } else {
       logError(
         'customBackground',
@@ -32,7 +32,7 @@ function removeCustomBG() {
         'No original background image found',
       );
     }
-    img.removeAttribute('data-original');
+    bgImageDiv.removeAttribute('data-original');
   }
 }
 

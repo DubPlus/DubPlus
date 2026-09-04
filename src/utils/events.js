@@ -108,7 +108,7 @@ let bridged = false;
 /**
  * QueUp knows the room and user ids before we do, so take them from the
  * RealtimeManager rather than parsing them back out of log lines.
- * @param {import('../global').QueupRealtime} realtime
+ * @param {import('../types/global').QueupRealtime} realtime
  */
 function syncIds(realtime) {
   try {
@@ -121,7 +121,7 @@ function syncIds(realtime) {
 }
 
 /**
- * @param {import('../global').QueupRealtime} realtime
+ * @param {import('../types/global').QueupRealtime} realtime
  */
 function bridgeRealtime(realtime) {
   // A dev rebuild re-runs this module against a page (and a RealtimeManager)

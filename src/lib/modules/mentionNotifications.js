@@ -7,7 +7,7 @@ import { getUserName } from '../queup.v2';
 
 /**
  *
- * @param {import("../../events").ChatMessageEvent} e
+ * @param {import("../../types/events").ChatMessageEvent} e
  */
 function notifyOnMention(e) {
   const content = e.message;

@@ -33,21 +33,12 @@ export function getChatMessages(extra = '') {
 }
 
 /**
- * Queup proxies every non-emoji image through images.queup.net,
- * so we can use that to find all images in the chat.
- * @returns {HTMLAnchorElement[]}
- */
-export function getImagesInChat() {
-  return Array.from(
-    getChatContainer()?.querySelectorAll('img[src*="images.queup.net"]') ?? [],
-  );
-}
-
-/**
- * @returns {HTMLImageElement | null}
+ * @returns {HTMLDivElement | null}
  */
 export function getBackgroundImage() {
-  return document.querySelector('.bg-cover');
+  return document.querySelector(
+    'body > div:nth-child(2) > div > div:first-child',
+  );
 }
 
 /**
@@ -90,11 +81,6 @@ export function getAddToPlaylist() {
 /**
  * Selectors for some elements
  */
-
-/**
- * This is the location where the DubPlus menu will be placed.
- */
-export const DUBPLUS_MENU_CONTAINER = 'header > div:last-child';
 
 /**
  * This is where the ETA, Snooze, and Snooze Video buttons are placed.

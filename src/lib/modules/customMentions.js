@@ -15,7 +15,7 @@ import { getMentionRegex } from '../../utils/mention-helpers.js';
 const MODULE_ID = 'custom-mentions';
 
 /**
- * @param {import("../../events").ChatMessageEvent} e
+ * @param {import("../../types/events").ChatMessageEvent} e
  */
 function customMentionCheck(e) {
   const enabled = settings.options[MODULE_ID];

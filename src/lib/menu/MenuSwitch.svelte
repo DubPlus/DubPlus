@@ -18,7 +18,7 @@
    * @property {() => void} [turnOff] runs when the switch is turned off
    * @property {() => void} [init] always runs when the component mounts, whether
    * the switch is on or off
-   * @property {import('../../global').ModalProps} [customize]
+   * @property {import('../../types/global').ModalProps} [customize]
    * @property {import('../modules/module').DubPlusModule['secondaryAction']} [secondaryAction]
    *
    */
