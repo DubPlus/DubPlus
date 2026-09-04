@@ -19,7 +19,7 @@ export const dubsState = $state({
 });
 
 /**
- * @param {"updub" | "downdub" | "grab"} dubType
+ * @param {string} dubType "updub" | "downdub" | "grab"
  * @returns {DubInfo[]}
  */
 export function getDubCount(dubType) {

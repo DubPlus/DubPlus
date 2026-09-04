@@ -61,21 +61,21 @@ export function getPrivateMessageButton() {
  * @returns {HTMLButtonElement | null | undefined}
  */
 export function getDubUp() {
-  return document.querySelector('button:has(> .lucide-chevron-up)');
+  return getBottomBar()?.querySelector('button:has(> .lucide-chevron-up)');
 }
 
 /**
- * @returns {HTMLButtonElement | null}
+ * @returns {HTMLButtonElement | null | undefined}
  */
 export function getDubDown() {
-  return document.querySelector('button:has(> .lucide-chevron-down)');
+  return getBottomBar()?.querySelector('button:has(> .lucide-chevron-down)');
 }
 
 /**
- * @returns {HTMLButtonElement | null}
+ * @returns {HTMLButtonElement | null | undefined}
  */
 export function getAddToPlaylist() {
-  return document.querySelector('button:has(> .lucide-heart)');
+  return getBottomBar()?.querySelector('button:has(> .lucide-heart)');
 }
 
 /**
@@ -101,7 +101,7 @@ export function getCurrentDjEl() {
   //     [0] div DJ and Song title (djAndSongInfo)
   //       [0] div
   //         [0] div DJ info
-  //           [0] span Name
+  //           [0] span Name <--- this is the one we want
   //           [1] span "is playing"
   //     [1] div track time
   //     [2] div buttons

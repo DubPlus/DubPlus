@@ -5,7 +5,7 @@ import { afk } from './afk';
 import { customMentions } from './customMentions';
 import { mentionNotifications } from './mentionNotifications';
 import { pmNotifications } from './pmNotifications';
-// import { djNotification } from './djNotification';
+import { djNotification } from './djNotification';
 import { showDubsOnHover } from './showDubsOnHover';
 import { snow } from './snow';
 import { rain } from './rain';
@@ -38,7 +38,7 @@ export const general = [
   collapsibleImages,
   mentionNotifications,
   pmNotifications,
-  // djNotification,
+  djNotification,
   showDubsOnHover,
   grabResponse,
   snow,

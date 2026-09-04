@@ -105,8 +105,11 @@ export const translations = {
     'dj-notification.description':
       'Get a notification when you are coming up to be the DJ',
     'dj-notification.modal.title': 'DJ Notification',
-    'dj-notification.modal.content':
-      'Please specify the position in queue you want to be notified at. Use "0" to be notified when you start playing.',
+    'dj-notification.modal.content': `Please specify the position in queue you want to be notified at. 
+        "0" means you are on now.
+        "1" means you're up next.
+        "2" means you're two spots away from playing.
+      `,
     'dj-notification.notification.title': 'DJ Alert!',
     'dj-notification.notification.content':
       'You will be DJing shortly! Make sure your song is set!',

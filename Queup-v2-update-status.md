@@ -17,14 +17,14 @@ Anything else means I am still working on it (or haven't gotten to it yet)
 
 - ✅ Autovote
 - [ ] AFK Auto-respond
-- [ ] Auto AFK
+- ✅ Auto AFK
 - [ ] Emotes
 - [ ] Autocomplete Emoji
 - ✅ Custom Mentions
 - ✅ Collapsible Images
 - ✅ Notification on Mentions
 - ✅ Notification on PM
-- [ ] DJ Notification
+- ✅ DJ Notification
 - ✅ Show Dubs on Hover
 - ❌ Chat Cleaner
 - ❌ Grabs in Chat

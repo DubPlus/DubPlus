@@ -7,7 +7,7 @@
 
   /**
    * @typedef {object} DubsInfoProps
-   * @property {"updub" | "downdub" | "grab"} dubType
+   * @property {string} dubType "updub" | "downdub" | "grab"
    * @property {object} position the position of the hover target
    * @property {number} position.top
    * @property {number} position.left

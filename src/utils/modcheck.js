@@ -29,9 +29,9 @@ async function loadUserData(roomId) {
 
 /**
  *
- * @param {import('../types/api-response').RoomUser[]} roomUsers
+ * @param {import('../types/api-response').RoomUser[] | undefined} roomUsers
  */
-function processUserData(roomUsers) {
+function processUserData(roomUsers = []) {
   // save a subset of the user data onto our window.dubplus
   window.dubplus = window.dubplus || {};
   window.dubplus.roomUsers = window.dubplus.roomUsers || new Map();

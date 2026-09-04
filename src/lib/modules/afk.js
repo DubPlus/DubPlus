@@ -39,7 +39,10 @@ function afk_chat_respond(e) {
 
   const mentionRe = getMentionRegex(mentionList);
 
-  if (mentionRe.test(content) && user !== e.user.username) {
+  if (
+    mentionRe.test(content) &&
+    user.toLowerCase() !== e.user.username.toLowerCase()
+  ) {
     let chatMessage = '';
     if (settings.custom.afk) {
       chatMessage = `[AFK] ${settings.custom.afk}`;
