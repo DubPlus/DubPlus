@@ -1,6 +1,6 @@
 <script>
   import { teleport } from '../actions/teleport.svelte';
-  import { getPlayerIframe, PLAYER_BUTTONS_CONTAINER } from '../queup.ui';
+  import { getPlayerIframe, getPlayerButtonsContainer } from '../queup.ui';
   import { t } from '../stores/i18n.svelte';
   import { queupEvents, PLAYER_ADVANCE } from '../../utils/events.js';
   import Monitor from '../svg/Monitor.svelte';
@@ -52,7 +52,7 @@
 </script>
 
 <button
-  use:teleport={{ to: PLAYER_BUTTONS_CONTAINER }}
+  use:teleport={{ to: getPlayerButtonsContainer }}
   id="dubplus-snooze-video"
   type="button"
   class="snooze-video-btn dubplus-btn-player text-white/50 hover:text-white transition-colors"

@@ -3,7 +3,7 @@
   import {
     getQueuePosition,
     getCurrentSongTime,
-    PLAYER_BUTTONS_CONTAINER,
+    getPlayerButtonsContainer,
   } from '../queup.ui';
   import { t } from '../stores/i18n.svelte';
 
@@ -39,7 +39,7 @@
 </script>
 
 <button
-  use:teleport={{ to: PLAYER_BUTTONS_CONTAINER }}
+  use:teleport={{ to: getPlayerButtonsContainer }}
   id="dubplus-eta"
   aria-label={eta}
   type="button"

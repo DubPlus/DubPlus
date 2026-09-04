@@ -3,6 +3,8 @@
  * future changes to the UI, we'll just need to update this file.
  */
 
+import { logError } from '../utils/logger';
+
 // The chat input is actually a contenteditable div and is the only contenteditable
 // element on the page. if that ever changes, we can add `[aria-label="Type a message..."]`
 export const CHAT_INPUT_CONTAINER = '[contenteditable="true"]';
@@ -72,26 +74,46 @@ export function getDubDown() {
 }
 
 /**
+ * aka the Grab button
  * @returns {HTMLButtonElement | null | undefined}
  */
 export function getAddToPlaylist() {
   return getBottomBar()?.querySelector('button:has(> .lucide-heart)');
 }
 
-/**
- * Selectors for some elements
- */
-
-/**
- * This is where the ETA, Snooze, and Snooze Video buttons are placed.
- */
-export const PLAYER_BUTTONS_CONTAINER =
-  'main > div > div > div > div > div > div:last-child > div > div:last-child';
+export function getPlayerButtonsContainer() {
+  // start from the iFrame and go up the DOM tree until we reach a parent element
+  // that contains the '.lucide-refresh-cw' icon. Then find it and return its parent element.
+  const iframe = document.querySelector('iframe');
+  if (iframe?.parentElement) {
+    /**
+     * @type {HTMLElement | null}
+     */
+    let currentNode = iframe.parentElement;
+    while (
+      currentNode &&
+      !currentNode?.querySelector('.lucide-refresh-cw') &&
+      currentNode !== document.body
+    ) {
+      currentNode = currentNode.parentElement;
+    }
+    // if we've reached the body we've gone too far and didn't find the element
+    if (!currentNode || currentNode === document.body) {
+      logError('Could not find the player buttons container');
+      return null;
+    }
+    return (
+      currentNode.querySelector('.lucide-refresh-cw')?.parentElement
+        ?.parentElement || null
+    );
+  }
+  return null;
+}
 
 export function getBottomBar() {
-  return document.querySelector(
-    'body > div > div > div > div:last-child > div:last-child',
-  );
+  const selector =
+    'header ~ div:has(.lucide-users):has(.lucide-heart):has(.lucide-chevron-up):has(.lucide-chevron-down)';
+  return document.querySelector(selector);
 }
 
 export function getCurrentDjEl() {
