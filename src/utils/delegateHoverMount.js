@@ -6,7 +6,9 @@ import { mount, unmount } from 'svelte';
 
 /**
  * @template {Record<string, any>} Props
- * @param {string} selector Matched against event targets via closest().
+ * @param {() => Element | null | undefined} targetFn Lazily resolves the
+ * element to delegate hover to. Called on every pointer event so it stays
+ * correct if the underlying DOM node is replaced or wasn't mounted yet.
  * @param {Component<Props>} component
  * @param {(target: Element) => Props} getProps
  * @param {object} [options]
@@ -15,7 +17,7 @@ import { mount, unmount } from 'svelte';
  * @returns {() => void} Teardown.
  */
 export function delegateHoverMount(
-  selector,
+  targetFn,
   component,
   getProps,
   options = {},
@@ -49,15 +51,18 @@ export function delegateHoverMount(
 
   /** @param {Event} e */
   const onOver = (e) => {
-    const el = /** @type {Element | null} */ (e.target);
-    const target = el?.closest?.(selector);
-    if (target) show(target);
+    const target = targetFn();
+    if (!target) return;
+    const hovered = /** @type {Node | null} */ (e.target);
+    if (hovered && (hovered === target || target.contains(hovered))) {
+      show(target);
+    }
   };
 
   /** @param {Event} e */
   const onOut = (e) => {
-    const el = /** @type {Element | null} */ (e.target);
-    if (el?.closest?.(selector) !== active || !active) return;
+    const target = targetFn();
+    if (target !== active || !active) return;
     const to = /** @type {Node | null} */ (
       /** @type {PointerEvent} */ (e).relatedTarget
     );

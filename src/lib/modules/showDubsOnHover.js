@@ -3,6 +3,7 @@ import { dubsState } from '../stores/dubsState.svelte.js';
 import { queupEvents, DUB, GRAB, PLAYER_ADVANCE } from '../../utils/events.js';
 import { activeDubs, userData } from '../api.js';
 import { delegateHoverMount } from '../../utils/delegateHoverMount.js';
+import { getDubUp, getDubDown, getAddToPlaylist } from '../queup.ui.js';
 import DubsInfo from '../satellites/DubsInfo.svelte';
 
 /**
@@ -181,23 +182,19 @@ export const showDubsOnHover = {
     queupEvents.on(PLAYER_ADVANCE, resetDubs);
 
     // setup hover listener
-    updubHoverTeardown = delegateHoverMount(
-      'body > div > div > div > div:last-child > div:last-child button:has(> svg.lucide-chevron-up)',
-      DubsInfo,
-      (target) => {
-        const rect = target.getBoundingClientRect();
-        return {
-          dubType: 'updub',
-          position: {
-            top: rect.top,
-            left: rect.left,
-            right: window.innerWidth - rect.right,
-          },
-        };
-      },
-    );
+    updubHoverTeardown = delegateHoverMount(getDubUp, DubsInfo, (target) => {
+      const rect = target.getBoundingClientRect();
+      return {
+        dubType: 'updub',
+        position: {
+          top: rect.top,
+          left: rect.left,
+          right: window.innerWidth - rect.right,
+        },
+      };
+    });
     downdubHoverTeardown = delegateHoverMount(
-      'body > div > div > div > div:last-child > div:last-child button:has(> svg.lucide-chevron-down)',
+      getDubDown,
       DubsInfo,
       (target) => {
         const rect = target.getBoundingClientRect();
@@ -212,7 +209,7 @@ export const showDubsOnHover = {
       },
     );
     grabHoverTeardown = delegateHoverMount(
-      'body > div > div > div > div:last-child > div:last-child button:has(> svg.lucide-heart)',
+      getAddToPlaylist,
       DubsInfo,
       (target) => {
         const rect = target.getBoundingClientRect();
