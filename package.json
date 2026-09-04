@@ -1,21 +1,25 @@
 {
   "name": "dubplus",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "type": "module",
   "description": "Dub+ - A simple script/extension for QueUp.net",
   "main": "dubplus.js",
   "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=10.0.0"
+    "node": ">=24.0.0",
+    "npm": ">=11.0.0"
   },
   "scripts": {
-    "build": "eslint src && vite build",
+    "clean": "rm -rf extension/dist",
+    "build": "npm run clean && vite build && cd extension && web-ext build --filename dubplus-extension.zip --overwrite-dest --artifacts-dir ../dist",
+    "ci:build": "eslint src && vite build",
     "watch": "vite build --watch",
-    "ext": "npm run build && web-ext build",
-    "zip": "node ./tasks/zip.js",
-    "firefox": "web-ext run --start-url www.queup.net --watch-files dubplus.js dubplus.css manifest.json",
+    "firefox": "web-ext run --source-dir ./extension --start-url queup.net",
     "prepare": "husky install",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "purge-cache": "node ./tasks/purge-cache.js",
+    "zip-source": "npm run clean && rm -f dist/dubplus-source.zip && node ./tasks/zip.js",
+    "addon-submit": "npm run zip-source && npm run ci:build && node --env-file .env ./tasks/ff-add-on-submit.js",
+    "check": "svelte-check --tsconfig ./jsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -28,31 +32,28 @@
   },
   "homepage": "https://dub.plus",
   "devDependencies": {
-    "@babel/preset-env": "^7.13.12",
-    "@playwright/test": "^1.45.1",
-    "@sveltejs/vite-plugin-svelte": "^5.0.3",
-    "@types/chrome": "^0.0.304",
-    "@types/node": "^20.14.10",
-    "chalk": "^5.4.1",
-    "eslint-plugin-svelte": "^3.0.3",
-    "globals": "^16.0.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^15.4.3",
-    "prettier": "^3.5.1",
-    "prettier-plugin-svelte": "^3.3.3",
-    "svelte": "^5.20.2",
-    "vite": "^6.1.1",
-    "web-ext": "^8.4.0"
+    "@babel/preset-env": "8.0.2",
+    "@sveltejs/vite-plugin-svelte": "7.3.0",
+    "@types/chrome": "0.2.5",
+    "@types/node": "24.1.0",
+    "eslint-plugin-svelte": "3.22.0",
+    "globals": "17.9.0",
+    "husky": "9.1.7",
+    "lint-staged": "17.0.7",
+    "prettier": "3.9.6",
+    "prettier-plugin-svelte": "4.1.1",
+    "svelte": "5.56.8",
+    "svelte-check": "4.7.5",
+    "vite": "8.2.1",
+    "web-ext": "10.6.0"
   },
   "browserslist": [
     "> 1%",
     "last 2 versions"
   ],
   "lint-staged": {
-    "*.{css,md}": "prettier --list-different --write",
-    "*.{js,svelte}": [
-      "prettier --list-different --write",
-      "eslint"
-    ]
+    "{dubplus.js,dubplus.min.js,./dubplus.css}": "node ./tasks/no-commit-build-files.js",
+    "*.{js,svelte}": "eslint",
+    "*.{js,svelte,css,ts,yml,yaml,md}": "prettier --list-different --write"
   }
 }

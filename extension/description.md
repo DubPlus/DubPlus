@@ -1,38 +1,34 @@
 ### Description
 
-A Dubtrack.fm and QueUp.net extension for added features and customizations to improve your Dubtrack/QueUp experience
-
-New features in latest release:
-
-- Auto AFK
-- Flip Interface
-- Snooze Video
-- Grab Response
-- Collapsible Images
+A extension for added features and customizations to improve your QueUp.net experience
 
 Features include:
 
-- AutoVote
 - AFK Auto-respond
-- Emotes
-- AutoComplete Emoji
+- Auto AFK
+- AutoVote
+- Collapsible Images
+- Community Theme
+- Custom Background
+- Custom CSS
 - Custom Mentions
+- DJ Notification
+- Dub Info on Hover
+- Flip Interface
+- FullScreen
+- Grab Response
+- Hide Video
 - Notify on Mentions
 - Notify on PM
-- DJ Notification
-- SpaceBar Mute
-- Warn on navigation
-- Dubvote Info on Hover
-- Dubvote Info in Chat
-- FullScreen
-- Split Chat
-- Hide Elements
-- Show Timestamps
-- Community Theme
-- Custom CSS
-- Custom Background
-- Custom Notification Sound
-- Snow Animation
+- Snooze Video (Hides just the video for 1 song)
 - Rain Animation
+- Snow Animation
+- SpaceBar Mute
+- Split Chat
+- Warn on navigation
+- ETA (an estimate on when you're song will play)
+- Hide Avatars
+- Hide Background
+- Pin Menu
 
 More info at https://dub.plus

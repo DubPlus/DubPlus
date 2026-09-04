@@ -3,6 +3,125 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.0] - 2026-09-??
+
+Updated to handle the new version of Queup (v2).
+
+## BREAKING
+
+This extension is no longer compatible with Dubtrack.fm, which is not really an issue as that site no longer exits. QueUp.net is its successor and their v1 started off from the same codebase, hence why this extension still listed dubtrack.fm in its manifest.json, but now that QueUp has heavily diverged in their latest version, I've completely removed any reference to dubtrack.fm.
+
+Also, the QueUp update broke a few things for Dub+ that currently has no workaround so certain features have been removed. See the next section below.
+
+## Removed features
+
+These features were removed because QueUp v2 does this natively now so it's no longer needed:
+
+- Snooze
+- Grabs in Chat
+- Show Timestamps - The top level timestamp always shows. There's also other timestamps that show on hover but I can't force then to show with CSS because they are not in the DOM, they get inserted by React on hover.
+- Hide Chat - v2 now allows you to collapse the whole chat area so this is no longer necessary
+- Autocomplete - v2 has their own native autocomplete for the basic emojis now
+
+These features were removed because the changes to v2 doesn't allow us to implement them:
+
+- Chat Cleaner - v2 now uses list virtualization to handle long chat sessions. This helps reduce memory and CPU strain by only showing chat messages that can be visible to the user. So we no longer need this because it was only used to reduce the load on the browser when there were many many messages, especially if they had gifs and images. This one is actually good that we don't need this anymore.
+- Updubs in Chat - Because v2 now uses React we can no longer insert our elements into the chat area because they will get removed by React.
+- Downdubs in Chat - same reason as Updubs
+- Custom Notification Sound - v2 doesn't give us a way to alter the notification sound like it did before
+- Emotes - because Queup v2 switched to React and also now virtualizes the chat list, I can no longer make changes in the chat because they would get undone every time react updates the chat list.
+
+Basically anything where I was either directly altering elements in the DOM or inserting into the Chat messages area is no longer possible.
+
+## Changed
+
+I've altered the way some of the features work:
+
+- AFK Auto-Response - now also includes your custom mention names as well
+- Hide Video - now just blacks out the video itself. The controls are still visible and the space it takes up is still there.
+- Collapsible Images - works via hover instead of a toggle button.
+- Notification on Private Message (PM) - opens up the main PM modal but no longer goes direclty to the message itself
+
+## [4.1.3] - 2026-06-19
+
+### Fixed
+
+- Fixed issue with emoji/emotes being wiped out when inserted into chat
+- Improvements and fixes to autocomplete
+- Improvements and fixes in collapsible images
+- Fixed bug in MenuSwitch with secondary action where action was clickable even when switch was off
+
+### Other
+
+- Updated packages
+- Fixed type errors across whole codebase
+- github actions improvements and updated versions
+
+## [4.1.2] - 2026-01-16
+
+Most of the changes in this release are related to development.
+
+### Fixed
+
+- Refactored how we selected which CSS file to load from the CDN when using Dub+ from a bookmarklet. Now it tries to match the same version as the dubplus.js.
+
+### Other
+
+- Set min version of Node to 24 and npm to 11 for development
+- Upgraded dependencies, the most important one being Svelte due to this [CVE](https://svelte.dev/blog/cves-affecting-the-svelte-ecosystem), but it really doesn't affect us because we don't do any server rendering. Still good to updated anyways.
+- Adding scripts to automate extension submitting. They are still experimental.
+- Refactored purge-cache.js to not fail CI/CD on errors
+- Updated git-branch.js with improvements
+- Added .npmrc file configuration
+- updated validate workflow to check if version numbers have been bumped
+- added npm audit check in workflow
+- update vite config to improve how our banner is inserted into the output files
+
+## [4.1.1] - 2025-08-29
+
+### Fixed
+
+- Fixed Collapsible Images bug: https://github.com/DubPlus/DubPlus/issues/154
+
+### Other
+
+- Re-organized build outputs so that built files are inside `extension/dist` folder.
+- Added new task that zips the source code of the repo to help with Firefox add-on submission issues.
+
+## [4.1.0] - 2025-07-24
+
+### New Features
+
+- "Pin Menu", allows user to pin the menu to the left or right and pushes over the content of the page so that it's no longer floating on top of it
+
+### Fixed
+
+- Emotes removes some emoji - https://github.com/DubPlus/DubPlus/issues/147
+
+### Other
+
+- Build process related fixes and updates to address FireFox Add-On review comments.
+- update most packages to latest minor versions
+
+## [4.0.3] - 2025-05-01
+
+Updates to our build process. No changes to the extension itself.
+
+## [4.0.2] - 2025-04-18
+
+Bug fixes and Upgraded dependencies
+
+### Fixed
+
+- Fixed bug in collapsible images: [issue](https://github.com/DubPlus/DubPlus/issues/142)
+- Fixed minor bug in Show Dubs on Hover when data was `undefined`
+
+## [4.0.1] - 2025-03-25
+
+### Fixed
+
+Fixed a css bug that only affected FireFox: [issue](https://github.com/DubPlus/DubPlus/issues/136)
+
 ## [4.0.0] - 2025-03-24
 
 The big leap in version number is to align with the version numbers we've been using for the extensions. We had 2 separate version numbers going and so now we'll just have one and be better about keeping with semantic versioning.
@@ -28,9 +147,8 @@ See the [v1 milestone for more details](https://github.com/DubPlus/DubPlus/miles
 
 Some files deleted or moved. If you were accessing these files you'll need to update your urls. Most people will not have to worry about this.
 
-**Deleted**: We no longer produce minified versions of our code because Chrome and Firefox extensions forbid them.
+**Deleted**:
 
-- ~~`dubplus.min.js`~~
 - ~~`css/dubplus.min.css`~~
 
 **Moved**:

@@ -1,5 +1,6 @@
 import { logError, logInfo } from '../../utils/logger';
-import { style } from '../../utils/css';
+import { COMMUNITY_CSS_ID, style } from '../../utils/css';
+
 /**
  * Community Theme
  * Toggle Community CSS theme
@@ -15,7 +16,7 @@ import { style } from '../../utils/css';
  * @dubx=https://example.com/style.css
  */
 
-const LINK_ELEM_ID = 'dubplus-community-css';
+const LINK_ELEM_ID = COMMUNITY_CSS_ID;
 
 /**
  * @type {import("./module").DubPlusModule}
@@ -26,8 +27,7 @@ export const communityTheme = {
   description: 'community-theme.description',
   category: 'customize',
   turnOn() {
-    const location = window.QueUp.room.model.get('roomUrl');
-    fetch(`https://api.queup.net/room/${location}`)
+    fetch(`https://api.queup.net/room/${window.dubplus.roomId}`)
       .then((response) => response.json())
       .then((e) => {
         const content = e.data.description;
@@ -39,9 +39,20 @@ export const communityTheme = {
           'i',
         );
         let community = null;
-        content.replace(themeCheck, function (match, p1, p2, p3) {
-          community = p3;
-        });
+        content.replace(
+          themeCheck,
+          /**
+           * @param {string} match
+           * @param {string} p1
+           * @param {string} p2
+           * @param {string} p3
+           * @returns {string}
+           */
+          function (match, p1, p2, p3) {
+            community = p3;
+            return match;
+          },
+        );
 
         if (!community) {
           logInfo('No community CSS theme found');

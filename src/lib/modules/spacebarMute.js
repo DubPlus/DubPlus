@@ -1,10 +1,20 @@
+import { toggleMute } from '../queup';
+
 /**
  * @param {KeyboardEvent} e
  */
 function handleMute(e) {
-  const tag = /**@type {HTMLElement}*/ (e.target).tagName.toLowerCase();
-  if (e.key === ' ' && tag !== 'input' && tag !== 'textarea') {
-    window.QueUp.room.player.mutePlayer();
+  const el = /**@type {HTMLElement}*/ (e.target);
+  const tag = el.tagName.toLowerCase();
+  if (
+    e.key === ' ' &&
+    tag !== 'input' &&
+    tag !== 'textarea' &&
+    tag !== 'button' &&
+    tag !== 'a' &&
+    el.getAttribute('contenteditable') !== 'true'
+  ) {
+    toggleMute();
   }
 }
 

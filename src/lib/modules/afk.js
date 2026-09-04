@@ -1,7 +1,10 @@
 import { settings } from '../stores/settings.svelte';
 import { t } from '../stores/i18n.svelte';
-import { CHAT_MESSAGE } from '../../events-constants';
+import { CHAT_MESSAGE, queupEvents } from '../../utils/events';
 import { sendChatMessage } from '../../utils/chat-message';
+import { getUserName } from '../queup.v2';
+import { getMentionRegex, split } from '../../utils/mention-helpers';
+
 /**
  * AFK -  Away from Keyboard
  * Toggles the afk auto response on/off
@@ -12,7 +15,7 @@ let canSend = true;
 
 /**
  *
- * @param {import("../../events").ChatMessageEvent} e
+ * @param {import("../../types/events").ChatMessageEvent} e
  * @returns {void}
  */
 function afk_chat_respond(e) {
@@ -20,11 +23,25 @@ function afk_chat_respond(e) {
     return; // do nothing until it's back to true
   }
   const content = e.message;
-  const user = window.QueUp.session.get('username');
+  let mentionList = [];
+  const user = getUserName();
+
+  if (user) {
+    mentionList.push(user);
+  }
 
   if (
-    content.includes(`@${user}`) &&
-    window.QueUp.session.id !== e.user.userInfo.userid
+    settings.options['custom-mentions'] &&
+    settings.custom['custom-mentions']
+  ) {
+    mentionList = mentionList.concat(split(settings.custom['custom-mentions']));
+  }
+
+  const mentionRe = getMentionRegex(mentionList);
+
+  if (
+    mentionRe.test(content) &&
+    user.toLowerCase() !== e.user.username.toLowerCase()
   ) {
     let chatMessage = '';
     if (settings.custom.afk) {
@@ -52,10 +69,10 @@ export const afk = {
   description: 'afk.description',
   category: 'general',
   turnOn() {
-    window.QueUp.Events.bind(CHAT_MESSAGE, afk_chat_respond);
+    queupEvents.on(CHAT_MESSAGE, afk_chat_respond);
   },
   turnOff() {
-    window.QueUp.Events.unbind(CHAT_MESSAGE, afk_chat_respond);
+    queupEvents.off(CHAT_MESSAGE, afk_chat_respond);
   },
   custom: {
     title: 'afk.modal.title',

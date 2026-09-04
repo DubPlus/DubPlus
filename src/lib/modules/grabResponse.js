@@ -1,13 +1,13 @@
-import { GRAB } from '../../events-constants';
 import { settings } from '../stores/settings.svelte';
 import { sendChatMessage } from '../../utils/chat-message';
+import { queupEvents, GRAB } from '../../utils/events.js';
 
 /**
  *
- * @param {import("../../events").GrabEvent} e
+ * @param {import("../../types/events").GrabEvent} e
  */
 function onGrab(e) {
-  if (e.user._id === window.QueUp.session.id) {
+  if (e.user._id === window.dubplus.userId) {
     const message = settings.custom['grab-response'];
     if (message) {
       sendChatMessage(message);
@@ -27,10 +27,10 @@ export const grabResponse = {
   description: 'grab-response.description',
   category: 'general',
   turnOn() {
-    window.QueUp.Events.bind(GRAB, onGrab);
+    queupEvents.on(GRAB, onGrab);
   },
   turnOff() {
-    window.QueUp.Events.unbind(GRAB, onGrab);
+    queupEvents.off(GRAB, onGrab);
   },
   custom: {
     title: 'grab-response.modal.title',

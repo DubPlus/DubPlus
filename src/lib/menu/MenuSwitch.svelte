@@ -6,6 +6,7 @@
   import { modalState, updateModalState } from '../stores/modalState.svelte';
   import { t } from '../stores/i18n.svelte';
   import { isMod } from '../../utils/modcheck';
+  import { getSessionId } from '../queup';
 
   /**
    * @typedef {object} MenuSwitchProps
@@ -13,56 +14,72 @@
    * @property {string} label
    * @property {string} description
    * @property {boolean} [modOnly]
-   * @property {(onLoad?: boolean) => void} turnOn runs when the switch is turned on
-   * @property {() => void} turnOff runs when the switch is turned off
+   * @property {(onLoad?: boolean) => void} [turnOn] runs when the switch is turned on
+   * @property {() => void} [turnOff] runs when the switch is turned off
    * @property {() => void} [init] always runs when the component mounts, whether
    * the switch is on or off
-   * @property {import('../../global').ModalProps} [customize]
+   * @property {import('../../types/global').ModalProps} [customize]
+   * @property {import('../modules/module').DubPlusModule['secondaryAction']} [secondaryAction]
    *
    */
 
   /**
    * @type {MenuSwitchProps}
    */
-  let { id, label, description, customize, turnOn, turnOff, init, modOnly } =
-    $props();
+  let {
+    id,
+    label,
+    description,
+    customize,
+    turnOn,
+    turnOff,
+    init,
+    modOnly,
+    secondaryAction,
+  } = $props();
+
+  // svelte-ignore state_referenced_locally (this won't change after first mount)
+  const SecondaryIcon = secondaryAction?.icon || IconPencil;
 
   onMount(() => {
     if (init) init();
 
     if (settings.options[id]) {
       // check user mod status if this is a mod only feature
-      const allowed = modOnly ? isMod(window.QueUp.session.id) : true;
-      if (allowed) turnOn(true);
+      // const allowed = modOnly ? isMod(getSessionId()) : true;
+      // if (allowed) turnOn?.(true);
+
+      // TODO: for now we just turn it on since we Queup v2 doesn't have mod check anymore
+      turnOn?.(true);
     }
   });
 
   onDestroy(() => {
     if (settings.options[id]) {
-      turnOff();
+      turnOff?.();
     }
   });
 
   function openEditModal() {
     updateModalState({
-      title: t(customize.title),
-      content: t(customize.content),
-      placeholder: t(customize.placeholder),
-      defaultValue: customize.defaultValue ? t(customize.defaultValue) : '',
-      maxlength: customize.maxlength,
+      title: t(customize?.title),
+      content: t(customize?.content),
+      placeholder: t(customize?.placeholder),
+      defaultValue: customize?.defaultValue ? t(customize.defaultValue) : '',
+      maxlength: customize?.maxlength,
       value: settings.custom[id] || '',
-      validation: customize.validation,
+      validation: customize?.validation,
       onConfirm: (value) => {
         saveSetting('custom', id, value);
 
         // if the value is empty and there is no default value, then we
         // turn off the feature
-        if (value.trim() === '' && !customize.defaultValue) {
+        if (value.trim() === '' && !customize?.defaultValue) {
           saveSetting('option', id, false);
-          turnOff();
+          turnOff?.();
         }
 
-        if (typeof customize.onConfirm === 'function') {
+        if (typeof customize?.onConfirm === 'function') {
           customize.onConfirm(value);
         }
       },
@@ -70,14 +87,14 @@
         // if the saved custom setting is empty and there is no default value,
         // then we turn off the feature
         if (
-          !customize.defaultValue &&
+          !customize?.defaultValue &&
           (typeof settings.custom[id] === 'undefined' ||
             settings.custom[id] === '')
         ) {
           saveSetting('option', id, false);
-          turnOff();
+          turnOff?.();
         }
-        if (typeof customize.onCancel === 'function') customize.onCancel();
+        if (typeof customize?.onCancel === 'function') customize?.onCancel();
       },
     });
 
@@ -88,10 +105,10 @@
 <li
   id={`dubplus-${id}`}
   title={t(description)}
-  class:disabled={modOnly ? !isMod(window.QueUp.session.id) : false}
+  class:disabled={modOnly ? !isMod(getSessionId()) : false}
 >
   <Switch
-    disabled={modOnly ? !isMod(window.QueUp.session.id) : false}
+    disabled={modOnly ? !isMod(getSessionId()) : false}
     label={t(label)}
     onToggle={(state) => {
       // When turning on a feature that requires a custom value, and that
@@ -102,9 +119,9 @@
       }
       saveSetting('option', id, state);
       if (state) {
-        turnOn();
+        turnOn?.();
       } else {
-        turnOff();
+        turnOff?.();
       }
     }}
     optionId={id}
@@ -113,6 +130,17 @@
     <button onclick={openEditModal} type="button">
       <IconPencil />
       <span class="sr-only">{t('MenuItem.edit')}</span>
+    </button>
+  {/if}
+  {#if secondaryAction}
+    <button
+      onclick={secondaryAction.onClick}
+      type="button"
+      disabled={!settings.options[id]}
+      title={t(secondaryAction.description)}
+    >
+      <SecondaryIcon />
+      <span class="sr-only">{t(secondaryAction.description)}</span>
     </button>
   {/if}
 </li>
@@ -143,6 +171,11 @@
   }
   button :global(path) {
     fill: var(--dubplus-text-color);
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .disabled {

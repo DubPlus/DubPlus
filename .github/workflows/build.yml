@@ -1,5 +1,5 @@
 # In this action we build the project
-# which inserts the git branch name replacing __GIT_BRANCH__ in dubplus.js
+# which inserts the git branch name in dubplus.js
 # then we commit this change to the target branch
 
 name: Build
@@ -19,23 +19,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
         with:
-          node-version: 20.x
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
           cache: 'npm'
 
-      - run: npm ci
-      
+      - name: Set git branch env var
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: echo "VITE_GIT_BRANCH=$BASE_REF" >> "$GITHUB_ENV"
+
+      - run: npm audit --audit-level=critical
+
+      - run: npm ci --ignore-scripts
+
       - name: build to insert branch name
-        run: npm run build
-      
+        run: OUTPUT_DIR=. npm run ci:build
+
       - name: commit
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git add dubplus.js
-          git commit -m "[auto]: Update dubplus.js with branch name"
+          git add dubplus.js dubplus.min.js dubplus.css
+          git diff --staged --quiet || git commit -m "[auto]: Update dubplus.js with branch name"
           git push
+
+      - name: Purge jsDelivr cache
+        run: npm run purge-cache

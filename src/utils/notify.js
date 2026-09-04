@@ -11,7 +11,8 @@ function onDenyDismiss() {
 }
 
 export function notifyCheckPermission() {
-  return new Promise((resolve, reject) => {
+  /** @type {Promise<void>} */
+  const permissionCheck = new Promise((resolve, reject) => {
     // first check if browser supports it
     if (!('Notification' in window)) {
       updateModalState({
@@ -46,6 +47,8 @@ export function notifyCheckPermission() {
       resolve();
     });
   });
+
+  return permissionCheck;
 }
 
 /**
@@ -59,13 +62,16 @@ export function notifyCheckPermission() {
  * @returns
  */
 export function showNotification(opts) {
+  /**
+   * @type {{ content: string, ignoreActiveTab: boolean, callback: (() => void) | null, wait: number }}
+   */
   const defaults = {
     content: '',
     ignoreActiveTab: false,
     callback: null,
     wait: 10000,
   };
-  const options = Object.assign({}, defaults, opts);
+  const options = { ...defaults, ...opts };
 
   // don't show a notification if tab is active
   if (activeTabState.isActive && !options.ignoreActiveTab) {

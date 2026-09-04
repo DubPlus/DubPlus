@@ -8,14 +8,21 @@
    * @property {string} label
    * @property {string} description
    * @property {import('svelte').Component} icon An SVG as a .svelte component
-   * @property {() => void} onClick
+   * @property {() => void} [onClick]
    * @property {() => void} [init]
    */
 
   /**
    * @type {MenuActionProps}
    */
-  let { id, label, description, icon: Icon, onClick, init } = $props();
+  let {
+    id,
+    label,
+    description,
+    icon: Icon,
+    onClick = () => {},
+    init,
+  } = $props();
 
   onMount(() => {
     if (init) init();

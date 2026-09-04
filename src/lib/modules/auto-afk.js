@@ -6,6 +6,8 @@ import {
 import { t } from '../stores/i18n.svelte';
 import { settings } from '../stores/settings.svelte';
 
+const MODULE_ID = 'auto-afk';
+
 /*
 state transitions:
 
@@ -18,18 +20,19 @@ idle -> active
   - FYI: not going to disable AFK, once it's on the user must manually disable it
 */
 
+/** @type {ReturnType<typeof setTimeout> | null} */
 let timer = null;
 
 function onTimerExpired() {
   if (!settings.options.afk) {
-    logInfo('auto-afk timer expired, enabling afk');
+    logInfo(MODULE_ID, 'timer expired, enabling afk');
     /**
-     * @type {HTMLElement}
+     * @type {HTMLElement | null}
      */
     const afkSwitch = document.querySelector('#dubplus-afk [role=switch]');
     afkSwitch?.click();
   } else {
-    logInfo('auto-afk timer expired, but afk is already enabled');
+    logInfo(MODULE_ID, 'timer expired, but afk is already enabled');
   }
 }
 
@@ -38,17 +41,17 @@ function onBlur() {
   if (isNaN(userTime)) {
     userTime = 30;
   }
-  logInfo('auto-afk onBlur: starting timer for ', userTime, 'minutes');
+  logInfo(MODULE_ID, 'onBlur: starting timer for ', userTime, 'minutes');
   timer = setTimeout(onTimerExpired, userTime * 60 * 1000);
 }
 
 function onFocus() {
   if (timer) {
-    logInfo('auto-afk onFocus: clearing timer');
+    logInfo(MODULE_ID, 'onFocus: clearing timer');
     clearTimeout(timer);
     timer = null;
   } else {
-    logInfo('auto-afk onFocus: no timer to clear');
+    logInfo(MODULE_ID, 'onFocus: no timer to clear');
   }
 }
 
@@ -59,9 +62,9 @@ function onFocus() {
  * @type {import("./module").DubPlusModule}
  */
 export const autoAfk = {
-  id: 'auto-afk',
-  label: 'auto-afk.label',
-  description: 'auto-afk.description',
+  id: MODULE_ID,
+  label: `${MODULE_ID}.label`,
+  description: `${MODULE_ID}.description`,
   category: 'general',
   turnOn() {
     registerVisibilityChangeListeners(onFocus, onBlur);
@@ -71,10 +74,10 @@ export const autoAfk = {
     onFocus(); // to clear existing timer
   },
   custom: {
-    title: 'auto-afk.modal.title',
-    content: 'auto-afk.modal.content',
-    placeholder: '30',
-    defaultValue: '30',
+    title: `${MODULE_ID}.modal.title`,
+    content: `${MODULE_ID}.modal.content`,
+    placeholder: `${MODULE_ID}.modal.placeholder`,
+    defaultValue: `${MODULE_ID}.modal.defaultValue`,
     maxlength: 10,
     validation(value) {
       // we can allow empty value which will just disable the feature
@@ -82,7 +85,7 @@ export const autoAfk = {
 
       const num = parseInt(value, 10);
       if (value.includes('.') || isNaN(num) || num < 1) {
-        return t(`auto-afk.modal.validation`);
+        return t(`${MODULE_ID}.modal.validation`);
       }
       return true;
     },

@@ -1,11 +1,10 @@
 <script>
   import Logo from '../svg/Logo.svelte';
   import { teleport } from '../actions/teleport.svelte';
-  import { DUBPLUS_MENU_CONTAINER } from '../queup.ui';
 </script>
 
 <button
-  use:teleport={{ to: DUBPLUS_MENU_CONTAINER }}
+  use:teleport={{ to: 'body' }}
   id="dubplus-menu-icon"
   type="button"
   aria-label="Dub+ menu"
@@ -13,7 +12,7 @@
   onclick={() => {
     document
       .querySelector('.dubplus-menu')
-      .classList.toggle('dubplus-menu-open');
+      ?.classList.toggle('dubplus-menu-open');
   }}
 >
   <Logo />
@@ -29,14 +28,29 @@
     appearance: none;
     padding: 0;
 
-    width: 26px;
-    height: 26px;
     cursor: pointer;
-    position: relative;
-    display: inline-block;
-    vertical-align: bottom;
-    margin-left: 1rem;
 
-    top: -4px;
+    position: absolute;
+    top: 0;
+    right: 1rem;
+    z-index: 1000;
+
+    /* 
+      3.5rem is the height of the <header> set with class .h-14 
+      1px is a bottom border of the header
+    */
+    height: calc(3.5rem - 1px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    :global(svg) {
+      width: 26px;
+      height: 26px;
+    }
+  }
+
+  :global(header > div:last-child) {
+    padding-right: calc(0.5rem + 26px) !important;
   }
 </style>

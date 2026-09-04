@@ -5,7 +5,7 @@ const STORAGE_KEY_OLD = 'dubplusUserSettings';
 const STORAGE_KEY_NEW = 'dubplusUserSettingsV2';
 
 /**
- * @type {import("../../global").Settings}
+ * @type {import("../../types/global").Settings}
  */
 const defaults = {
   // this will store all the on/off states
@@ -25,26 +25,30 @@ const defaults = {
 };
 
 /**
- * @return {import("../../global").Settings}
+ * @return {import("../../types/global").Settings}
  */
 function loadSettings() {
   // try loading the v2 settings first
   // if that doesn't exist, try the old settings and migrate them
 
   try {
-    const v2Settings = JSON.parse(localStorage.getItem(STORAGE_KEY_NEW));
+    const v2Settings = JSON.parse(
+      localStorage.getItem(STORAGE_KEY_NEW) ?? '{}',
+    );
     if (v2Settings) {
-      return /**@type {import("../../global").Settings}*/ (v2Settings);
+      return /**@type {import("../../types/global").Settings}*/ (v2Settings);
     }
   } catch (e) {
     logInfo('Error loading v2 settings, trying old settings. Error:', e);
   }
 
   try {
-    const oldSettings = JSON.parse(localStorage.getItem(STORAGE_KEY_OLD));
+    const oldSettings = JSON.parse(
+      localStorage.getItem(STORAGE_KEY_OLD) ?? '{}',
+    );
     if (oldSettings) {
       return migrate(
-        /**@type {import("../../global").Settings}*/ (oldSettings),
+        /**@type {import("../../types/global").Settings}*/ (oldSettings),
       );
     }
   } catch (e) {
@@ -58,7 +62,7 @@ function loadSettings() {
 const intialSettings = Object.assign({}, defaults, loadSettings());
 
 /**
- * @type {import("../../global").Settings}
+ * @type {import("../../types/global").Settings}
  */
 export let settings = $state(intialSettings);
 
@@ -73,7 +77,7 @@ function persist() {
 
 /**
  *
- * @param {import("../../global").SettingsSections} section
+ * @param {import("../../types/global").SettingsSections} section
  * @param {string} property
  * @param {any} value
  */

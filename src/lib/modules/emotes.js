@@ -1,6 +1,7 @@
 import { CHAT_MESSAGE } from '../../events-constants';
 import { dubplus_emoji } from '../emoji/emoji';
 import { getChatMessages } from '../queup.ui';
+import { bindEvent, unbindEvent } from '../queup';
 
 /**
  *
@@ -89,10 +90,18 @@ function processChatLI(li) {
   textElems.forEach((textElem) => {
     if (
       !textElem.hasAttribute('dubplus-emotes-processed') &&
-      textElem?.textContent
+      textElem?.textContent.trim() !== ''
     ) {
-      const processedHTML = processChatText(textElem.textContent);
-      textElem.replaceChildren(...processedHTML);
+      // Only convert :emote: tokens that are still plain text. Existing elements
+      // (QueUp's native emoji <img>, autolinked images, etc.) are left untouched
+      // so we don't destroy already-rendered content. Reading textContent + a
+      // full replaceChildren() used to wipe those imgs, since an emoji's shortcode
+      // lives in its alt attribute and isn't part of textContent.
+      [...textElem.childNodes]
+        .filter((node) => node.nodeType === Node.TEXT_NODE)
+        .forEach((textNode) => {
+          textNode.replaceWith(...processChatText(textNode.textContent ?? ''));
+        });
       textElem.setAttribute('dubplus-emotes-processed', 'true');
     }
   });
@@ -101,13 +110,13 @@ function processChatLI(li) {
 /**
  * run this when a new chat message is received
  * and only replaces emotes in the last message
- * @param {import('../../events').ChatMessageEvent} [e]
+ * @param {import('../../types/events').ChatMessageEvent} [e]
  * @returns {void}
  */
 function replaceTextWithEmote(e) {
   if (e?.chatid) {
     /**
-     * @type {HTMLLIElement}
+     * @type {HTMLLIElement | null}
      */
     const chatMessage = document.querySelector(`.chat-id-${e.chatid}`);
     if (chatMessage) {
@@ -140,11 +149,11 @@ export const emotes = {
       .then(() => dubplus_emoji.loadFrankerFacez())
       .then(() => {
         replaceTextWithEmote();
-        window.QueUp.Events.bind(CHAT_MESSAGE, replaceTextWithEmote);
+        bindEvent(CHAT_MESSAGE, replaceTextWithEmote);
       });
   },
 
   turnOff() {
-    window.QueUp.Events.unbind(CHAT_MESSAGE, replaceTextWithEmote);
+    unbindEvent(CHAT_MESSAGE, replaceTextWithEmote);
   },
 };

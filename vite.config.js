@@ -1,74 +1,96 @@
-import { resolve } from 'path';
-import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import pkg from './package.json';
-import { getCurrentBranch } from './tasks/git-branch';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { defineConfig } from 'vite';
 
-// only want to pass a few things from package, delete the rest
-delete pkg.main;
-delete pkg.scripts;
-delete pkg.repository;
-delete pkg.bugs;
-delete pkg.devDependencies;
-delete pkg.dependencies;
-delete pkg.type;
-delete pkg.browserslist;
-delete pkg.engines;
+// Read version from package.json
+const packageJson = JSON.parse(readFileSync('./package.json', 'utf8'));
+const version = packageJson.version;
+const outputDir = process.env.OUTPUT_DIR || './extension/dist';
 
-function getCdnRoot() {
-  const currentBranch = getCurrentBranch();
-  console.log('currentBranch:', currentBranch);
-  if (currentBranch) {
-    return `DubPlus@${currentBranch}`;
-  } else {
-    return 'DubPlus';
-  }
-}
+/**
+ * Rollup has a "banner" option but it doesn't work for minified files. So
+ * we need to add the banner manually using this custom plugin. It also places
+ * it first above all the code which is an improvement over how Vite injects it.
+ */
+const bannerPlugin = () => {
+  return {
+    name: 'banner-plugin',
+    generateBundle(options, bundle) {
+      // Iterate over all files in the bundle
+      Object.keys(bundle).forEach((fileName) => {
+        const file = bundle[fileName];
+
+        // Process JavaScript files
+        if (file.type === 'chunk' && fileName.endsWith('.js')) {
+          // Add the banner to the top of the file
+          file.code = BANNER + '\n' + file.code;
+        }
+      });
+    },
+  };
+};
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   return {
-    plugins: [svelte()],
-    define: {
-      __TIME_STAMP__: JSON.stringify(Date.now().toString()),
-      __GIT_BRANCH__: JSON.stringify(getCdnRoot()),
-      __PKGINFO__: JSON.stringify(pkg),
-    },
+    plugins: [svelte(), bannerPlugin()],
     build: {
       sourcemap: false,
       minify: false,
-
-      // This places the "dubplus.js" and "dubplus.css" files in the root
-      // of this repo.
-      outDir: '.',
-
-      /*************************************************
-       * !! DO NOT CHANGE THIS !!
-       * 'emptyOutDir' must always be 'false'.
-       * If set to 'true', it will delete the entire repo
-       */
       emptyOutDir: false,
-      /************************************************* */
-
       lib: {
-        entry: resolve(__dirname, '/src/main.js'),
-        name: 'dubplus',
+        entry: resolve(import.meta.dirname, '/src/main.js'),
+        name: 'dubplusBundle',
         fileName: 'dubplus',
-        formats: ['iife'],
       },
       copyPublicDir: false,
-      rollupOptions: {
-        output: {
-          // inserts the Dub+ ascii logo and license into the top of the output
-          banner: BANNER,
+      rolldownOptions: {
+        output: [
+          {
+            format: 'iife',
+            name: 'dubplusBundle',
+            dir: outputDir,
 
-          // makes sure our output JS file is named dubplus.js
-          // otherwise it would create: dubplus.iife.js
-          entryFileNames: (chunkInfo) => {
-            if (chunkInfo.name === 'main') return 'dubplus.js';
-            return chunkInfo.name;
+            // makes sure our output JS file is named dubplus.js
+            // otherwise it would create: dubplus.iife.js
+            entryFileNames: (chunkInfo) => {
+              if (chunkInfo.name === 'main') return 'dubplus.js';
+              return chunkInfo.name;
+            },
           },
-        },
+          {
+            format: 'iife',
+            name: 'dubplusBundle',
+            // Vite 8 / Rolldown's built-in (Oxc) minifier, replaces @rollup/plugin-terser
+            minify: true,
+            dir: outputDir,
+
+            // makes sure our output JS file is named dubplus.min.js
+            // otherwise it would create: dubplus.iife.js
+            entryFileNames: (chunkInfo) => {
+              if (chunkInfo.name === 'main') return 'dubplus.min.js';
+              return chunkInfo.name;
+            },
+          },
+        ],
+      },
+    },
+
+    // this will insert our banner at the top of the CSS files.
+    css: {
+      postcss: {
+        plugins: [
+          {
+            postcssPlugin: 'css-banner',
+            Once(root, { result }) {
+              // Only add banner to the final output
+              if (result.opts.to) {
+                root.prepend(`${BANNER}`);
+              }
+            },
+          },
+        ],
       },
     },
   };
@@ -76,8 +98,7 @@ export default defineConfig(() => {
 
 // this is a var instead of a const so I can leave it down here at the bottom of
 // this file and JS will hoist it up and I can use it in the config above
-var BANNER = `
-/*!
+var BANNER = `/*!
      /#######            /##                
     | ##__  ##          | ##          /##   
     | ##  \\ ## /##   /##| #######    | ##   
@@ -90,9 +111,11 @@ var BANNER = `
                                             
     https://github.com/DubPlus/DubPlus
 
+    v${version}
+
     MIT License 
 
-    Copyright (c) 2024 DubPlus
+    Copyright (c) ${new Date().getFullYear()} DubPlus
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
