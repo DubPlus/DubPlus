@@ -13,10 +13,16 @@
       document.getElementById('dubplus-dialog')
     );
 
-    // this handles the closing via the ESC key
-    dialog.addEventListener('close', () => {
+    function onClose() {
       modalState.open = false;
-    });
+    }
+
+    // this handles the closing via the ESC key
+    dialog.addEventListener('close', onClose);
+
+    return () => {
+      dialog.removeEventListener('close', onClose);
+    };
   });
 
   $effect(() => {

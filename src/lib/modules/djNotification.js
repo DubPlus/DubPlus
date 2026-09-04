@@ -1,11 +1,23 @@
-import { PLAYLIST_UPDATE } from '../../events-constants';
-import { logError, logInfo } from '../../utils/logger';
+import { logDebug, logError, logInfo } from '../../utils/logger';
 import { notifyCheckPermission, showNotification } from '../../utils/notify';
-import { getQueuePosition, getQueueTotal } from '../queup.ui';
+import { getQueuePosition, getCurrentDjEl } from '../queup.ui';
 import { t } from '../stores/i18n.svelte';
 import { settings } from '../stores/settings.svelte';
+import { queupEvents, PLAYER_ADVANCE } from '../../utils/events';
+import { playSound } from '../../utils/play-sound';
+import { getUserName } from '../queup.v2';
 
 const MODULE_ID = 'dj-notification';
+
+function notify() {
+  showNotification({
+    title: t(`${MODULE_ID}.notification.title`),
+    content: t(`${MODULE_ID}.notification.content`),
+    ignoreActiveTab: true,
+    wait: 10000,
+  });
+  playSound();
+}
 
 /**
  * Sends a notification when the your position in the queue
@@ -13,25 +25,24 @@ const MODULE_ID = 'dj-notification';
  * examples:
  * if you want to be notified when you're next you would use position 1.
  * if you want to be notified when you started playing you would use position 0.
- * @param {{ startTime: number }} [e]
- * @returns {void}
  */
-function djNotificationCheck(e) {
-  if (e && e.startTime > 2) return;
-
+function djNotificationCheck() {
   // we rely on the queue position to be updated in the DOM and sometimes this
   // event is fired before the DOM is updated, so we wait a bit before checking
   // the queue position
   setTimeout(() => {
-    const quePositionText = getQueuePosition()?.textContent?.trim();
-    if (!quePositionText) {
-      // if the user is NOT in the queue then we don't need to do anything
+    const queuPositionInfo = getQueuePosition();
+    // if this returns null that means we had an issue access the DOM element
+    if (!queuPositionInfo) {
+      logError(MODULE_ID, 'Could not get Queue Position info from the DOM');
       return;
     }
 
-    const position = parseInt(quePositionText, 10);
-    if (isNaN(position)) {
-      logError(MODULE_ID, 'Could not parse current position:', quePositionText);
+    const { position, total } = queuPositionInfo;
+
+    // if the user is NOT in the queue, position will be missing
+    if (typeof position !== 'number') {
+      logDebug(MODULE_ID, 'User it not in the queue');
       return;
     }
 
@@ -44,23 +55,32 @@ function djNotificationCheck(e) {
 
     // when you are actively DJing, the UI will show you at the end of the
     // the queue total. So if 4 people are in the queue and you are DJing,
-    // the UI will show you as position 4 of 4. If user sets the notification
-    // threshold to 0, we need to check if the queue total is equal to the position
-    // to trigger the notification
+    // the UI will show you as position 4 of 4. So if the user sets their setting
+    // to "0", that means they want to be notified when they start playing,
+    // However, if someone joins the queue while you're DJ-ing, you're no longer the
+    // last person in the queue anymore. But the likelyhood of someone joining just
+    // after the DJs changed is low.
 
-    const queueTotalText = getQueueTotal()?.textContent?.trim();
-    if (
-      (queueTotalText === quePositionText && parseSetting === 0) ||
-      position === parseSetting
-    ) {
-      showNotification({
-        title: t(`${MODULE_ID}.notification.title`),
-        content: t(`${MODULE_ID}.notification.content`),
-        ignoreActiveTab: true,
-        wait: 10000,
-      });
-      window.QueUp.room.chat.mentionChatSound.play();
+    // user wants a notification when they start playing (position 0)
+    // to accurately get this info we check the current DJ element in the DOM
+    // against the currently logged in user name
+    if (parseSetting === 0) {
+      const currentDj = getCurrentDjEl()?.textContent?.trim()?.toLowerCase();
+      const user = getUserName().toLowerCase();
+      if (currentDj && user && currentDj === user) {
+        notify();
+      } else if (position === total) {
+        logDebug(MODULE_ID, 'Falling back to end of the queue check', {
+          currentDj,
+          user,
+        });
+        notify();
+      }
       return;
+    }
+
+    if (position === parseSetting) {
+      notify();
     }
   }, 1000);
 }
@@ -98,10 +118,10 @@ export const djNotification = {
   turnOn() {
     notifyCheckPermission().then(() => {
       djNotificationCheck();
-      window.QueUp.Events.bind(PLAYLIST_UPDATE, djNotificationCheck);
+      queupEvents.on(PLAYER_ADVANCE, djNotificationCheck);
     });
   },
   turnOff() {
-    window.QueUp.Events.unbind(PLAYLIST_UPDATE, djNotificationCheck);
+    queupEvents.off(PLAYER_ADVANCE, djNotificationCheck);
   },
 };

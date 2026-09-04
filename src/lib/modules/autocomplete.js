@@ -10,10 +10,11 @@ import {
   reset,
 } from '../emoji/emojiState.svelte';
 import { settings } from '../stores/settings.svelte';
-import { getSelection, isEdge } from '../emoji/helpers';
+import { getSelection, isEdge, getCaretOffset } from '../emoji/helpers';
 import { getChatInput } from '../queup.ui';
 import { waitFor } from '../../utils/waitFor';
 import { logError } from '../../utils/logger';
+import { submitChatMessage } from '../../utils/chat-message';
 
 const KEYS = {
   up: 'ArrowUp',
@@ -43,27 +44,25 @@ function getAutocompletePreview() {
 }
 
 /**
- * @type {string}
- */
-let originalKeyDownEventHandler;
-
-/**
  *
- * @param {HTMLTextAreaElement} inputEl
+ * @param {HTMLDivElement} inputEl
  * @param {number} index
  */
 export function insertEmote(inputEl, index) {
   const selected = emojiState.emojiList[index];
   if (!selected) return;
-  const [start, end] = getSelection(inputEl.value, inputEl.selectionStart);
+  const [start, end] = getSelection(
+    inputEl.textContent,
+    getCaretOffset(inputEl),
+  );
   // Splice in the emote using the exact [start, end] range of the partial at the
   // cursor. Using String.replace(target, ...) would rewrite the FIRST matching
   // substring anywhere in the input (e.g. a ":ca" inside an earlier ":cats:"),
   // not necessarily the token the cursor is actually on.
-  inputEl.value =
-    inputEl.value.slice(0, start) +
+  inputEl.textContent =
+    inputEl.textContent.slice(0, start) +
     `:${selected.text}:` +
-    inputEl.value.slice(end);
+    inputEl.textContent.slice(end);
   reset();
 }
 
@@ -71,9 +70,9 @@ export function insertEmote(inputEl, index) {
  * @param {KeyboardEvent | MouseEvent} e
  */
 function checkInput(e) {
-  const inputEl = /**@type {HTMLTextAreaElement}*/ (e.target);
-  const currentText = inputEl.value;
-  const cursorPos = inputEl.selectionStart;
+  const inputEl = /**@type {HTMLDivElement}*/ (e.target);
+  const currentText = inputEl.textContent;
+  const cursorPos = getCaretOffset(inputEl);
 
   /*  
     In here we are finding the nearest incomplete emoji/emote to the cursor position
@@ -148,7 +147,7 @@ function chatInputKeyupFunc(e) {
   if ((e.key === KEYS.enter || e.key === KEYS.tab) && hasItems) {
     e.preventDefault();
     e.stopImmediatePropagation();
-    const inputEl = /**@type {HTMLTextAreaElement}*/ (e.target);
+    const inputEl = /**@type {HTMLDivElement}*/ (e.target);
     insertEmote(inputEl, emojiState.selectedIndex);
     return;
   }
@@ -156,9 +155,9 @@ function chatInputKeyupFunc(e) {
   if (e.key === KEYS.enter && !hasItems) {
     // let Queup handle submitting the message
     // but we need to resize the textarea after the message is sent
-    setTimeout(() => {
-      window.QueUp.room.chat.resizeTextarea();
-    }, 10);
+    // setTimeout(() => {
+    //   resizeChatTextarea();
+    // }, 10);
     return;
   }
 
@@ -193,10 +192,10 @@ function chatInputKeydownFunc(e) {
   // temporary fix to restore enter key functionality for sending messages
   // due to the new multiline chat textarea
   if (!isModifierKey && e.key === KEYS.enter) {
-    window.QueUp.room.chat.sendMessage();
-    window.QueUp.room.chat.resizeTextarea();
+    submitChatMessage();
+    // resizeChatTextarea();
   } else if (!isModifierKey) {
-    window.QueUp.room.chat.ncKeyDown(e);
+    // chatNcKeyDown(e);
   }
 }
 
@@ -216,25 +215,15 @@ export const autocomplete = {
 
     // Wait until both the chat input and QueUp's chat view exist before we swap
     // out QueUp's native keydown handler.
-    waitFor(() => Boolean(getChatInput()) && Boolean(window.QueUp?.room?.chat))
+    waitFor(() => Boolean(getChatInput()))
       .then(() => {
         const chatInput = getChatInput();
-        if (!chatInput) {
-          // This should never happen because of the waitFor above, but need it
-          // to satisfy TypeScript that chatInput is not null below.
-          return;
+        if (chatInput) {
+          // need this to satisfy TypeScript that chatInput is not null.
+          chatInput.addEventListener('keydown', chatInputKeydownFunc);
+          chatInput.addEventListener('keyup', chatInputKeyupFunc);
+          chatInput.addEventListener('click', checkInput);
         }
-
-        originalKeyDownEventHandler =
-          window.QueUp.room.chat.events['keydown #chat-txt-message'];
-
-        const newEventsObject = { ...window.QueUp.room.chat.events };
-        delete newEventsObject['keydown #chat-txt-message'];
-        window.QueUp.room.chat.delegateEvents(newEventsObject);
-
-        chatInput.addEventListener('keydown', chatInputKeydownFunc);
-        chatInput.addEventListener('keyup', chatInputKeyupFunc);
-        chatInput.addEventListener('click', checkInput);
       })
       .catch(() => {
         logError(
@@ -245,19 +234,11 @@ export const autocomplete = {
 
   turnOff() {
     reset();
-    // Only restore QueUp's handler if turnOn actually captured and swapped it
-    // (it may have timed out without ever doing so).
-    if (originalKeyDownEventHandler) {
-      window.QueUp.room.chat.events['keydown #chat-txt-message'] =
-        originalKeyDownEventHandler;
-      window.QueUp.room.chat.delegateEvents(window.QueUp.room.chat.events);
-    }
     const chatInput = getChatInput();
-    if (!chatInput) {
-      return;
+    if (chatInput) {
+      chatInput.removeEventListener('keydown', chatInputKeydownFunc);
+      chatInput.removeEventListener('keyup', chatInputKeyupFunc);
+      chatInput.removeEventListener('click', checkInput);
     }
-    chatInput.removeEventListener('keydown', chatInputKeydownFunc);
-    chatInput.removeEventListener('keyup', chatInputKeyupFunc);
-    chatInput.removeEventListener('click', checkInput);
   },
 };

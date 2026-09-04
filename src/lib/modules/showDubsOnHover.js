@@ -1,36 +1,23 @@
 import { logError } from '../../utils/logger.js';
-import { isMod } from '../../utils/modcheck.js';
 import { dubsState } from '../stores/dubsState.svelte.js';
-import {
-  DUB,
-  GRAB,
-  PLAYLIST_UPDATE,
-  USER_LEAVE,
-} from '../../events-constants.js';
+import { queupEvents, DUB, GRAB, PLAYER_ADVANCE } from '../../utils/events.js';
 import { activeDubs, userData } from '../api.js';
+import { delegateHoverMount } from '../../utils/delegateHoverMount.js';
+import { getDubUp, getDubDown, getAddToPlaylist } from '../queup.ui.js';
+import DubsInfo from '../satellites/DubsInfo.svelte';
 
 /**
  * @param {string} userid
  * @returns {Promise<string>}
  */
-function getUserName(userid) {
+function getUserNameFromId(userid) {
   return new Promise((resolve, reject) => {
-    // check if we already have the username
-    const username = window.QueUp.room.users.collection.findWhere({
-      userid,
-    })?.attributes?._user?.username;
-
-    if (username) {
-      resolve(username);
-      return;
-    }
-
     // or try getting it via the API
     fetch(userData(userid))
       .then((response) => response.json())
       .then((response) => {
-        if (response?.userinfo?.username) {
-          const { username } = response.userinfo;
+        if (response?.data?.username) {
+          const { username } = response.data;
           resolve(username);
         } else {
           reject('Failed to get username from API for userid: ' + userid);
@@ -51,7 +38,7 @@ function updateUpdubs(updubs) {
       return;
     }
 
-    getUserName(dub.userid)
+    getUserNameFromId(dub.userid)
       .then((username) => {
         dubsState.upDubs.push({
           userid: dub.userid,
@@ -73,7 +60,7 @@ function updateDowndubs(downdubs) {
       return;
     }
 
-    getUserName(dub.userid)
+    getUserNameFromId(dub.userid)
       .then((username) => {
         dubsState.downDubs.push({
           userid: dub.userid,
@@ -84,48 +71,47 @@ function updateDowndubs(downdubs) {
   });
 }
 
-// /**
-//  * @param {Array<{ userid: string}>} grabs
-//  */
-// function updateGrabs(grabs) {
-//   grabs.forEach((grab) => {
-//     if (dubsState.grabs.find((el) => el.userid === grab.userid)) {
-//       return;
-//     }
+/**
+ * @param {Array<{ userid: string}>} grabs
+ */
+function updateGrabs(grabs) {
+  grabs.forEach((grab) => {
+    if (dubsState.grabs.find((el) => el.userid === grab.userid)) {
+      return;
+    }
 
-//     getUserName(grab.userid)
-//       .then((username) => {
-//         dubsState.grabs.push({
-//           userid: grab.userid,
-//           username,
-//         });
-//       })
-//       .catch((error) => logError('Failed to get username for grab', error));
-//   });
-// }
+    getUserNameFromId(grab.userid)
+      .then((username) => {
+        dubsState.grabs.push({
+          userid: grab.userid,
+          username,
+        });
+      })
+      .catch((error) => logError('Failed to get username for grab', error));
+  });
+}
 
 function resetDubs() {
   dubsState.downDubs = [];
   dubsState.upDubs = [];
   dubsState.grabs = [];
 
-  const dubsURL = activeDubs(window.QueUp.room.model.id);
-  fetch(dubsURL)
-    .then((response) => response.json())
-    .then((response) => {
-      updateUpdubs(response.data.upDubs);
-      // updateGrabs(response.data.grabs);
-
-      //Only let mods or higher access down dubs
-      if (isMod(window.QueUp.session.id)) {
-        updateDowndubs(response.data.downDubs);
-      }
-    })
-    .catch((error) => logError('Failed to fetch dubs data from API.', error));
+  // hit the API to get the current dubs
+  if (window.dubplus.roomId) {
+    const dubsURL = activeDubs(window.dubplus.roomId);
+    fetch(dubsURL)
+      .then((response) => response.json())
+      .then((response) => {
+        updateUpdubs(response.data.upDubs || []);
+        updateGrabs(response.data.grabs || []);
+        updateDowndubs(response.data.downDubs || []);
+      })
+      .catch((error) => logError('Failed to fetch dubs data from API.', error));
+  }
 }
 
 /**
- * @param {import("../../events.js").DubEvent} e
+ * @param {import("../../types/events.js").DubEvent} e
  * @returns
  */
 function dubWatcher(e) {
@@ -141,7 +127,7 @@ function dubWatcher(e) {
     dubsState.downDubs = dubsState.downDubs.filter(
       (el) => el.userid !== e.user._id,
     );
-  } else if (e.dubtype === 'downdub' && isMod(window.QueUp.session.id)) {
+  } else if (e.dubtype === 'downdub') {
     if (!dubsState.downDubs.find((el) => el.userid === e.user._id)) {
       dubsState.downDubs.push({
         userid: e.user._id,
@@ -154,33 +140,10 @@ function dubWatcher(e) {
       (el) => el.userid !== e.user._id,
     );
   }
-
-  const msSinceSongStart =
-    Date.now() - window.QueUp.room.player.activeSong.attributes.song.played;
-
-  // not sure why we are checking this, maybe to give the API time to update?
-  // if the song started less than 1 second ago, don't reset the dubs
-  if (msSinceSongStart < 1000) {
-    return;
-  }
-
-  // if the dubs don't match the API, reset them
-  if (
-    dubsState.upDubs.length !==
-    window.QueUp.room.player.activeSong.attributes.song.updubs
-  ) {
-    resetDubs();
-  } else if (
-    isMod(window.QueUp.session.id) &&
-    dubsState.downDubs.length !==
-      window.QueUp.room.player.activeSong.attributes.song.downdubs
-  ) {
-    resetDubs();
-  }
 }
 
 /**
- * @param {import("../../events.js").GrabEvent} e
+ * @param {import("../../types/events.js").GrabEvent} e
  */
 function grabWatcher(e) {
   if (!dubsState.grabs.find((el) => el.userid === e.user._id)) {
@@ -192,18 +155,17 @@ function grabWatcher(e) {
 }
 
 /**
- * @param {import("../../events.js").UserLeaveEvent} e
+ * @type {ReturnType<typeof delegateHoverMount> | null}
  */
-function dubUserLeaveWatcher(e) {
-  // remove from up dubs
-  dubsState.upDubs = dubsState.upDubs.filter((el) => el.userid !== e.user._id);
-  // remove from down dubs
-  dubsState.downDubs = dubsState.downDubs.filter(
-    (el) => el.userid !== e.user._id,
-  );
-  // remove from grabs
-  dubsState.grabs = dubsState.grabs.filter((el) => el.userid !== e.user._id);
-}
+let updubHoverTeardown = null;
+/**
+ * @type {ReturnType<typeof delegateHoverMount> | null}
+ */
+let downdubHoverTeardown = null;
+/**
+ * @type {ReturnType<typeof delegateHoverMount> | null}
+ */
+let grabHoverTeardown = null;
 
 /**
  * @type {import("./module.js").DubPlusModule}
@@ -215,16 +177,69 @@ export const showDubsOnHover = {
   category: 'general',
   turnOn() {
     resetDubs();
-    window.QueUp.Events.bind(DUB, dubWatcher);
-    window.QueUp.Events.bind(GRAB, grabWatcher);
-    window.QueUp.Events.bind(USER_LEAVE, dubUserLeaveWatcher);
-    window.QueUp.Events.bind(PLAYLIST_UPDATE, resetDubs);
+    queupEvents.on(DUB, dubWatcher);
+    queupEvents.on(GRAB, grabWatcher);
+    queupEvents.on(PLAYER_ADVANCE, resetDubs);
+
+    // setup hover listener
+    updubHoverTeardown = delegateHoverMount(getDubUp, DubsInfo, (target) => {
+      const rect = target.getBoundingClientRect();
+      return {
+        dubType: 'updub',
+        position: {
+          top: rect.top,
+          left: rect.left,
+          right: window.innerWidth - rect.right,
+        },
+      };
+    });
+    downdubHoverTeardown = delegateHoverMount(
+      getDubDown,
+      DubsInfo,
+      (target) => {
+        const rect = target.getBoundingClientRect();
+        return {
+          dubType: 'downdub',
+          position: {
+            top: rect.top,
+            left: rect.left,
+            right: window.innerWidth - rect.right,
+          },
+        };
+      },
+    );
+    grabHoverTeardown = delegateHoverMount(
+      getAddToPlaylist,
+      DubsInfo,
+      (target) => {
+        const rect = target.getBoundingClientRect();
+        return {
+          dubType: 'grab',
+          position: {
+            top: rect.top,
+            left: rect.left,
+            right: window.innerWidth - rect.right,
+          },
+        };
+      },
+    );
   },
 
   turnOff() {
-    window.QueUp.Events.unbind(DUB, dubWatcher);
-    window.QueUp.Events.unbind(GRAB, grabWatcher);
-    window.QueUp.Events.unbind(USER_LEAVE, dubUserLeaveWatcher);
-    window.QueUp.Events.unbind(PLAYLIST_UPDATE, resetDubs);
+    queupEvents.off(DUB, dubWatcher);
+    queupEvents.off(GRAB, grabWatcher);
+    queupEvents.off(PLAYER_ADVANCE, resetDubs);
+    if (typeof updubHoverTeardown === 'function') {
+      updubHoverTeardown();
+      updubHoverTeardown = null;
+    }
+    if (typeof downdubHoverTeardown === 'function') {
+      downdubHoverTeardown();
+      downdubHoverTeardown = null;
+    }
+    if (typeof grabHoverTeardown === 'function') {
+      grabHoverTeardown();
+      grabHoverTeardown = null;
+    }
   },
 };

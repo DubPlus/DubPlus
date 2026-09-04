@@ -3,12 +3,12 @@
  * Add custom CSS
  */
 
-import { style } from '../../utils/css';
+import { CUSTOM_CSS_ID, style } from '../../utils/css';
 import { logError } from '../../utils/logger';
 import { t } from '../stores/i18n.svelte';
 import { settings } from '../stores/settings.svelte';
 
-const LINK_ELEM_ID = 'dubplus-user-custom-css';
+const LINK_ELEM_ID = CUSTOM_CSS_ID;
 
 /**
  * Custom CSS
@@ -41,11 +41,13 @@ export const customCss = {
         document.getElementById(LINK_ELEM_ID)?.remove();
         // a blank value means the user wanted to remove the custom CSS
         settings.options[customCss.id] = false; // turn it back off
-        return;
       } else {
-        style(value, LINK_ELEM_ID).catch((e) => {
-          logError('Error loading custom css file:', e);
-        });
+        // only insert the css if the option is enabled
+        if (settings.options[customCss.id] === true) {
+          style(value, LINK_ELEM_ID).catch((e) => {
+            logError('Error loading custom css file:', e);
+          });
+        }
       }
     },
   },

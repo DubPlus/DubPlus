@@ -6,6 +6,7 @@
   import { modalState, updateModalState } from '../stores/modalState.svelte';
   import { t } from '../stores/i18n.svelte';
   import { isMod } from '../../utils/modcheck';
+  import { getSessionId } from '../queup';
 
   /**
    * @typedef {object} MenuSwitchProps
@@ -17,7 +18,7 @@
    * @property {() => void} [turnOff] runs when the switch is turned off
    * @property {() => void} [init] always runs when the component mounts, whether
    * the switch is on or off
-   * @property {import('../../global').ModalProps} [customize]
+   * @property {import('../../types/global').ModalProps} [customize]
    * @property {import('../modules/module').DubPlusModule['secondaryAction']} [secondaryAction]
    *
    */
@@ -45,8 +46,11 @@
 
     if (settings.options[id]) {
       // check user mod status if this is a mod only feature
-      const allowed = modOnly ? isMod(window.QueUp.session.id) : true;
-      if (allowed) turnOn?.(true);
+      // const allowed = modOnly ? isMod(getSessionId()) : true;
+      // if (allowed) turnOn?.(true);
+
+      // TODO: for now we just turn it on since we Queup v2 doesn't have mod check anymore
+      turnOn?.(true);
     }
   });
 
@@ -101,10 +105,10 @@
 <li
   id={`dubplus-${id}`}
   title={t(description)}
-  class:disabled={modOnly ? !isMod(window.QueUp.session.id) : false}
+  class:disabled={modOnly ? !isMod(getSessionId()) : false}
 >
   <Switch
-    disabled={modOnly ? !isMod(window.QueUp.session.id) : false}
+    disabled={modOnly ? !isMod(getSessionId()) : false}
     label={t(label)}
     onToggle={(state) => {
       // When turning on a feature that requires a custom value, and that
