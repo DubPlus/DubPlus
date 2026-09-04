@@ -10,7 +10,7 @@
 import { settings } from '../stores/settings.svelte';
 import { playSound } from '../../utils/play-sound.js';
 import { queupEvents, CHAT_MESSAGE } from '../../utils/events.js';
-import { getMentionRegex } from '../../utils/mention-helpers.js';
+import { getMentionRegex, split } from '../../utils/mention-helpers.js';
 
 const MODULE_ID = 'custom-mentions';
 
@@ -27,10 +27,7 @@ function customMentionCheck(e) {
     // we only want to play the sound if the message is not from the current user
     window.dubplus.userId !== e.user.userInfo.userid
   ) {
-    const namesForRegex = custom
-      .split(',')
-      .map((name) => name.trim())
-      .filter(Boolean);
+    const namesForRegex = split(custom);
 
     if (namesForRegex.length === 0) return;
 

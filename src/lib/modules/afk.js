@@ -3,6 +3,7 @@ import { t } from '../stores/i18n.svelte';
 import { CHAT_MESSAGE, queupEvents } from '../../utils/events';
 import { sendChatMessage } from '../../utils/chat-message';
 import { getUserName } from '../queup.v2';
+import { getMentionRegex, split } from '../../utils/mention-helpers';
 
 /**
  * AFK -  Away from Keyboard
@@ -22,9 +23,23 @@ function afk_chat_respond(e) {
     return; // do nothing until it's back to true
   }
   const content = e.message;
+  let mentionList = [];
   const user = getUserName();
 
-  if (content.includes(`@${user}`) && user !== e.user.username) {
+  if (user) {
+    mentionList.push(user);
+  }
+
+  if (
+    settings.options['custom-mentions'] &&
+    settings.custom['custom-mentions']
+  ) {
+    mentionList = mentionList.concat(split(settings.custom['custom-mentions']));
+  }
+
+  const mentionRe = getMentionRegex(mentionList);
+
+  if (mentionRe.test(content) && user !== e.user.username) {
     let chatMessage = '';
     if (settings.custom.afk) {
       chatMessage = `[AFK] ${settings.custom.afk}`;

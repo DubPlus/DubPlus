@@ -2,7 +2,7 @@ import { notifyCheckPermission, showNotification } from '../../utils/notify';
 import { settings } from '../stores/settings.svelte';
 import { activeTabState } from '../stores/activeTabState.svelte';
 import { queupEvents, CHAT_MESSAGE } from '../../utils/events.js';
-import { getMentionRegex } from '../../utils/mention-helpers.js';
+import { getMentionRegex, split } from '../../utils/mention-helpers.js';
 import { getUserName } from '../queup.v2';
 
 /**
@@ -11,8 +11,12 @@ import { getUserName } from '../queup.v2';
  */
 function notifyOnMention(e) {
   const content = e.message;
+  let mentionTriggers = [];
   const user = getUserName();
-  let mentionTriggers = [user];
+
+  if (user) {
+    mentionTriggers.push(user);
+  }
 
   // is custom mentions enabled AND user has entered text in the custom mentions modal
   if (
@@ -20,10 +24,9 @@ function notifyOnMention(e) {
     settings.custom['custom-mentions']
   ) {
     //add custom mention triggers to array
-    mentionTriggers = mentionTriggers
-      .concat(settings.custom['custom-mentions'].split(','))
-      .map((v) => v.trim())
-      .filter(Boolean);
+    mentionTriggers = mentionTriggers.concat(
+      split(settings.custom['custom-mentions']),
+    );
   }
 
   const bigRegex = getMentionRegex(mentionTriggers);

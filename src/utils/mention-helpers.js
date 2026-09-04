@@ -11,3 +11,15 @@ export function getMentionRegex(names) {
   const reg = new RegExp(`\\b@?(${escapedNames})\\b`, 'ig');
   return reg;
 }
+
+/**
+ * split, trim, and filter a comma-separated list of names
+ * @param {string} [names]
+ * @returns {string[]} Array of cleaned-up names
+ */
+export function split(names = '') {
+  return names
+    .split(',')
+    .map((name) => name.trim())
+    .filter(Boolean);
+}

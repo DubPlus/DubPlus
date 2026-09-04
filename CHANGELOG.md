@@ -28,6 +28,7 @@ These features were removed because the changes to v2 doesn't allow us to implem
 
 I've altered the way some of the features work:
 
+- AFK Auto-Response - now also includes your custom mention names as well
 - Hide Video - now just blacks out the video itself. The controls are still visible and the space it takes up is still there.
 - Collapsible Images - works via hover instead of a toggle button.
 - Notification on Private Message (PM) - opens up the main PM modal but no longer goes direclty to the message itself
