@@ -9,8 +9,9 @@
  */
 import { settings } from '../stores/settings.svelte';
 import { playSound } from '../../utils/play-sound.js';
-import { queupEvents, CHAT_MESSAGE } from '../../utils/events.js';
+import { REALTIME_EVENT } from '../../events-constants.js';
 import { getMentionRegex, split } from '../../utils/mention-helpers.js';
+import { getUserId, onRealtime, offRealtime } from '../queup.v2';
 
 const MODULE_ID = 'custom-mentions';
 
@@ -25,7 +26,7 @@ function customMentionCheck(e) {
     custom.trim() !== '' &&
     enabled &&
     // we only want to play the sound if the message is not from the current user
-    window.dubplus.userId !== e.user.userInfo.userid
+    getUserId() !== e.user.userInfo.userid
   ) {
     const namesForRegex = split(custom);
 
@@ -56,9 +57,9 @@ export const customMentions = {
   },
 
   turnOn() {
-    queupEvents.on(CHAT_MESSAGE, customMentionCheck);
+    onRealtime(REALTIME_EVENT.CHAT_MESSAGE, customMentionCheck);
   },
   turnOff() {
-    queupEvents.off(CHAT_MESSAGE, customMentionCheck);
+    offRealtime(REALTIME_EVENT.CHAT_MESSAGE, customMentionCheck);
   },
 };

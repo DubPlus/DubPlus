@@ -1,9 +1,9 @@
 import { notifyCheckPermission, showNotification } from '../../utils/notify';
 import { settings } from '../stores/settings.svelte';
 import { activeTabState } from '../stores/activeTabState.svelte';
-import { queupEvents, CHAT_MESSAGE } from '../../utils/events.js';
+import { REALTIME_EVENT } from '../../events-constants.js';
 import { getMentionRegex, split } from '../../utils/mention-helpers.js';
-import { getUserName } from '../queup.v2';
+import { getUserId, getUserName, onRealtime, offRealtime } from '../queup.v2';
 
 /**
  *
@@ -34,7 +34,7 @@ function notifyOnMention(e) {
   if (
     bigRegex.test(content) &&
     !activeTabState.isActive && // notifications only if you're not focused on the tab
-    window.dubplus.userId !== e.user.userInfo.userid
+    getUserId() !== e.user.userInfo.userid
   ) {
     showNotification({
       title: `Message from ${e.user.username}`,
@@ -58,7 +58,7 @@ export const mentionNotifications = {
   turnOn() {
     notifyCheckPermission()
       .then(() => {
-        queupEvents.on(CHAT_MESSAGE, notifyOnMention);
+        onRealtime(REALTIME_EVENT.CHAT_MESSAGE, notifyOnMention);
       })
       .catch(() => {
         // turn back off until it's granted
@@ -67,6 +67,6 @@ export const mentionNotifications = {
   },
 
   turnOff() {
-    queupEvents.off(CHAT_MESSAGE, notifyOnMention);
+    offRealtime(REALTIME_EVENT.CHAT_MESSAGE, notifyOnMention);
   },
 };

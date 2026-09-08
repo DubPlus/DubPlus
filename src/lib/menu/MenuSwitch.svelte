@@ -6,7 +6,7 @@
   import { modalState, updateModalState } from '../stores/modalState.svelte';
   import { t } from '../stores/i18n.svelte';
   import { isMod } from '../../utils/modcheck';
-  import { getSessionId } from '../queup';
+  import { getUserId } from '../queup.v2';
 
   /**
    * @typedef {object} MenuSwitchProps
@@ -46,11 +46,8 @@
 
     if (settings.options[id]) {
       // check user mod status if this is a mod only feature
-      // const allowed = modOnly ? isMod(getSessionId()) : true;
-      // if (allowed) turnOn?.(true);
-
-      // TODO: for now we just turn it on since we Queup v2 doesn't have mod check anymore
-      turnOn?.(true);
+      const allowed = modOnly ? isMod(getUserId()) : true;
+      if (allowed) turnOn?.(true);
     }
   });
 
@@ -105,10 +102,10 @@
 <li
   id={`dubplus-${id}`}
   title={t(description)}
-  class:disabled={modOnly ? !isMod(getSessionId()) : false}
+  class:disabled={modOnly ? !isMod(getUserId()) : false}
 >
   <Switch
-    disabled={modOnly ? !isMod(getSessionId()) : false}
+    disabled={modOnly ? !isMod(getUserId()) : false}
     label={t(label)}
     onToggle={(state) => {
       // When turning on a feature that requires a custom value, and that

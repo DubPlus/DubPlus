@@ -1,8 +1,8 @@
 import { settings } from '../stores/settings.svelte';
 import { t } from '../stores/i18n.svelte';
-import { CHAT_MESSAGE, queupEvents } from '../../utils/events';
+import { REALTIME_EVENT } from '../../events-constants';
 import { sendChatMessage } from '../../utils/chat-message';
-import { getUserName } from '../queup.v2';
+import { getUserName, onRealtime, offRealtime } from '../queup.v2';
 import { getMentionRegex, split } from '../../utils/mention-helpers';
 
 /**
@@ -69,10 +69,10 @@ export const afk = {
   description: 'afk.description',
   category: 'general',
   turnOn() {
-    queupEvents.on(CHAT_MESSAGE, afk_chat_respond);
+    onRealtime(REALTIME_EVENT.CHAT_MESSAGE, afk_chat_respond);
   },
   turnOff() {
-    queupEvents.off(CHAT_MESSAGE, afk_chat_respond);
+    offRealtime(REALTIME_EVENT.CHAT_MESSAGE, afk_chat_respond);
   },
   custom: {
     title: 'afk.modal.title',

@@ -1,12 +1,20 @@
 import { usersInRoom } from '../lib/api';
 import { logError, logWarn } from './logger';
-import { queupEvents, USER_JOIN } from '../utils/events.js';
+import { REALTIME_EVENT } from '../events-constants.js';
+import { onRealtime, offRealtime } from '../lib/queup.v2.js';
 
 /**
  * Check if a user is at least a mod or above
  * @param {string} userid
  */
 export function isMod(userid) {
+  if (!window.dubplus?.roomUsers) {
+    logWarn(
+      'isMod: roomUsers map is not initialized, returning false. userid: ' +
+        userid,
+    );
+    return false;
+  }
   const user = window.dubplus.roomUsers?.get(userid);
   if (!user) return false;
   // if user has the "skip" rights, they are considered a mod
@@ -76,13 +84,13 @@ function onUserJoin(e) {
  */
 export async function setupModCheck(roomId) {
   await loadUserData(roomId).then(processUserData);
-  queupEvents.on(USER_JOIN, onUserJoin);
+  onRealtime(REALTIME_EVENT.USER_JOIN, onUserJoin);
 }
 
 /**
  * do this when unmounting or changing rooms
  */
 export async function teardownModCheck() {
-  queupEvents.off(USER_JOIN, onUserJoin);
+  offRealtime(REALTIME_EVENT.USER_JOIN, onUserJoin);
   window.dubplus.roomUsers?.clear();
 }

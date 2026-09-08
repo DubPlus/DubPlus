@@ -1,11 +1,10 @@
-import { logDebug, logError, logInfo } from '../../utils/logger';
+import { logDebug, logInfo } from '../../utils/logger';
 import { notifyCheckPermission, showNotification } from '../../utils/notify';
-import { getQueuePosition, getCurrentDjEl } from '../queup.ui';
 import { t } from '../stores/i18n.svelte';
 import { settings } from '../stores/settings.svelte';
-import { queupEvents, PLAYER_ADVANCE } from '../../utils/events';
+import { QUEUP_EVENT } from '../../events-constants';
 import { playSound } from '../../utils/play-sound';
-import { getUserName } from '../queup.v2';
+import { getUserName, onQueup, offQueup } from '../queup.v2';
 
 const MODULE_ID = 'dj-notification';
 
@@ -31,17 +30,11 @@ function djNotificationCheck() {
   // event is fired before the DOM is updated, so we wait a bit before checking
   // the queue position
   setTimeout(() => {
-    const queuPositionInfo = getQueuePosition();
-    // if this returns null that means we had an issue access the DOM element
-    if (!queuPositionInfo) {
-      logError(MODULE_ID, 'Could not get Queue Position info from the DOM');
-      return;
-    }
+    const position = window.QueUp.room.queue.getMyPosition();
+    const total = window.QueUp.room.queue.getRoomQueue().length;
 
-    const { position, total } = queuPositionInfo;
-
-    // if the user is NOT in the queue, position will be missing
-    if (typeof position !== 'number') {
+    // if the user is NOT in the queue, position will be missing or 0
+    if (typeof position !== 'number' || position <= 0) {
       logDebug(MODULE_ID, 'User it not in the queue');
       return;
     }
@@ -65,7 +58,9 @@ function djNotificationCheck() {
     // to accurately get this info we check the current DJ element in the DOM
     // against the currently logged in user name
     if (parseSetting === 0) {
-      const currentDj = getCurrentDjEl()?.textContent?.trim()?.toLowerCase();
+      const currentDj = window.QueUp.room
+        .getCurrentDJ()
+        ?.username?.toLowerCase();
       const user = getUserName().toLowerCase();
       if (currentDj && user && currentDj === user) {
         notify();
@@ -118,10 +113,10 @@ export const djNotification = {
   turnOn() {
     notifyCheckPermission().then(() => {
       djNotificationCheck();
-      queupEvents.on(PLAYER_ADVANCE, djNotificationCheck);
+      onQueup(QUEUP_EVENT.SONG_CHANGED, djNotificationCheck);
     });
   },
   turnOff() {
-    queupEvents.off(PLAYER_ADVANCE, djNotificationCheck);
+    offQueup(QUEUP_EVENT.SONG_CHANGED, djNotificationCheck);
   },
 };
