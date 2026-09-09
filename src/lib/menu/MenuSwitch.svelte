@@ -63,50 +63,67 @@
   title={t(description)}
   class:disabled={modOnly ? !isMod(getUserId()) : false}
 >
-  <Switch
-    disabled={modOnly ? !isMod(getUserId()) : false}
-    label={t(label)}
-    onToggle={(state) => {
-      // When turning on a feature that requires a custom value, and that
-      // value hasn't been set by the user yet, then we popup the modal
-      if (customize && state === true && !settings.custom[id]) {
-        openEditModal(id, customize, turnOff);
-        return;
-      }
-      saveSetting('options', id, state);
-      if (state) {
-        turnOn?.();
-      } else {
-        turnOff?.();
-      }
-    }}
-    optionId={id}
-  />
-  {#if customize}
-    <button onclick={() => openEditModal(id, customize, turnOff)} type="button">
-      <IconPencil />
-      <span class="sr-only">{t('MenuItem.edit')}</span>
-    </button>
-  {/if}
-  {#if secondaryAction}
-    <button
-      onclick={secondaryAction.onClick}
-      type="button"
-      disabled={!settings.options[id]}
-      title={t(secondaryAction.description)}
-    >
-      <SecondaryIcon />
-      <span class="sr-only">{t(secondaryAction.description)}</span>
-    </button>
-  {/if}
+  <div class="menu-switch-content">
+    <Switch
+      disabled={modOnly ? !isMod(getUserId()) : false}
+      label={t(label)}
+      onToggle={(state) => {
+        // When turning on a feature that requires a custom value, and that
+        // value hasn't been set by the user yet, then we popup the modal
+        if (customize && state === true && !settings.custom[id]) {
+          openEditModal(id, customize, turnOff);
+          return;
+        }
+        saveSetting('options', id, state);
+        if (state) {
+          turnOn?.();
+        } else {
+          turnOff?.();
+        }
+      }}
+      optionId={id}
+    />
+    {#if customize}
+      <button
+        onclick={() => openEditModal(id, customize, turnOff)}
+        type="button"
+      >
+        <IconPencil />
+        <span class="sr-only">{t('MenuItem.edit')}</span>
+      </button>
+    {/if}
+    {#if secondaryAction}
+      <button
+        onclick={secondaryAction.onClick}
+        type="button"
+        disabled={!settings.options[id]}
+        title={t(secondaryAction.description)}
+      >
+        <SecondaryIcon />
+        <span class="sr-only">{t(secondaryAction.description)}</span>
+      </button>
+    {/if}
+  </div>
+  <div class="menu-switch-command">
+    /{id}
+  </div>
 </li>
 
 <style>
   li {
+    margin: 10px 0;
+  }
+
+  .menu-switch-content {
     display: flex;
     align-items: center;
-    margin: 10px 0;
     justify-content: space-between;
+  }
+
+  .menu-switch-command {
+    margin-left: calc(29px + 11px);
+    font-size: 0.9em;
+    color: rgb(var(--dubplus-text-color) / 0.6);
   }
 
   button {
@@ -126,7 +143,7 @@
     height: 100%;
   }
   button :global(path) {
-    fill: var(--dubplus-text-color);
+    fill: rgb(var(--dubplus-text-color));
   }
 
   button:disabled {

@@ -7,7 +7,7 @@
 
   /**
    * @typedef {object} DubsInfoProps
-   * @property {string} dubType "updub" | "downdub" | "grab"
+   * @property {import('../stores/dubsState.svelte.js').DubType} dubType
    * @property {object} position the position of the hover target
    * @property {number} position.top
    * @property {number} position.left

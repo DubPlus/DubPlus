@@ -2,7 +2,7 @@
   /* colors */
   --dubplus-primary-color: #eb008b;
   --dubplus-secondary-color: #6fcbdc;
-  --dubplus-text-color: #999;
+  --dubplus-text-color: 153 153 153;
 
   /* fonts */
   --dubplus-font-size: 13px;
@@ -21,6 +21,7 @@
   cursor: pointer;
 }
 
+/* By default tooltips appear above the element */
 [data-dp-tooltip]::after {
   position: absolute;
   opacity: 0;
@@ -59,14 +60,14 @@
  */
 
 .dubplus-menu a {
-  color: var(--dubplus-text-color);
+  color: rgb(var(--dubplus-text-color));
 }
 
 /***************************************************************
  * User Interface styles
  */
 
-.dubplus-split-chat main~div>div>div>div>div:nth-child(2)>div>div>div>div>div {
+.dubplus-split-chat [data-queup="chat-message-list"] > div {
   /* reset all chat messages so that they span the full width */
   padding-top: 10px;
   left: 0 !important;
@@ -75,14 +76,14 @@
   padding-right: 16px;
 }
 
-.dubplus-split-chat main~div>div>div>div>div:nth-child(2)>div>div>div>div>div:nth-child(odd) {
+.dubplus-split-chat [data-queup="chat-message-list"] > div:nth-child(odd) {
   background: linear-gradient(to right,
       rgba(155, 157, 160, 0.1) 0%,
       rgba(0, 0, 0, 0) 100%);
 }
 
 /* turns off the video and only shows the chat */
-.dubplus-chat-only main>div>div>div>div>div>div:first-child {
+.dubplus-chat-only div:has(+ [data-queup="player-controls"]) { 
   display: none !important;
 }
 
@@ -101,13 +102,13 @@
   flex-direction: row-reverse;
 }
 
-.dubplus-flip-interface .lucide-panel-right-close,
+/* flip the icons for the chat expand  and collapse */
+.dubplus-flip-interface  [data-queup="chat-collapse-button"] svg,
+.dubplus-flip-interface  [data-queup="chat-expand-button"] svg,
+/* flip the icons for the sidebar expand and collapse */
 .dubplus-flip-interface .lucide-panel-left-close,
-.dubplus-flip-interface .lucide-panel-right-open,
-.dubplus-flip-interface .lucide-panel-left-open,
-.dubplus-flip-interface .lucide-chevron-left {
-  /* flip horizontally */
-  transform: scaleX(-1);
+.dubplus-flip-interface .lucide-panel-left-open {
+  transform: scaleX(-1); /* flip horizontally */
 }
 
 .dubplus-chat-system-grab,
@@ -131,7 +132,7 @@
  * Collapsible Images styles
  */
 
-.dubplus-collapsible-images main~div>div>div>div>div:nth-child(2)>div:nth-child(1)>div:nth-child(1)>div:nth-child(1)>div>div {
+.dubplus-collapsible-images [data-queup="chat-message-list"] > div {
   a:has(img) {
     img {
       max-height: 0rem;
@@ -143,8 +144,8 @@
       display: block;
       text-align: center;
       font-size: 0.8rem;
-      color: var(--dubplus-text-color);
-      border: 1px solid var(--dubplus-text-color);
+      color: rgb(var(--dubplus-text-color));
+      border: 1px solid rgb(var(--dubplus-text-color));
       padding: 2px 4px;
     }
     &:hover img {
