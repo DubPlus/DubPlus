@@ -5177,7 +5177,7 @@ createHTML: (html) => {
 	* @param {any} value
 	*/
 	function saveSetting(section, property, value) {
-		if (section === "option") {
+		if (section === "options") {
 			settings.options[property] = value;
 			persist();
 			return;
@@ -5280,6 +5280,7 @@ createHTML: (html) => {
 		"Modal.cancel": "Cancel",
 		"Modal.close": "Close",
 		"Modal.defaultValue": "Default Value",
+		"Modal.validation.maxlength": "Value exceeds maximum length of {{maxlength}}",
 		"Error.modal.title": "Dub+ Error",
 		"Error.modal.loggedout": "You're not logged in. Please login to use Dub+.",
 		"Error.unknown": "Something went wrong starting Dub+. Please refresh and try again.",
@@ -5601,41 +5602,6 @@ createHTML: (html) => {
 		append($$anchor, root$17());
 	}
 	//#endregion
-	//#region src/lib/stores/modalState.svelte.js
-	var modalState = proxy({
-		id: "",
-		open: false,
-		title: "Dub+",
-		content: "",
-		value: "",
-		placeholder: "",
-		defaultValue: "",
-		maxlength: 999,
-		validation: () => {
-			return true;
-		},
-		onConfirm: () => {
-			return true;
-		},
-		onCancel: () => {}
-	});
-	/**
-	*
-	* @param {import('../../types/global').ModalProps} nextState
-	*/
-	function updateModalState(nextState) {
-		modalState.open = nextState.open ?? false;
-		modalState.title = nextState.title || "Dub+";
-		modalState.content = nextState.content || "";
-		modalState.value = nextState.value || "";
-		modalState.placeholder = nextState.placeholder || "";
-		modalState.defaultValue = nextState.defaultValue;
-		modalState.maxlength = nextState.maxlength || 999;
-		modalState.onConfirm = nextState.onConfirm;
-		modalState.onCancel = nextState.onCancel;
-		modalState.validation = nextState.validation || (() => true);
-	}
-	//#endregion
 	//#region src/lib/api.js
 	/**
 	* QueUp API wrappers
@@ -5669,394 +5635,239 @@ createHTML: (html) => {
 		return `${apiBase}/room/${roomId}/users`;
 	}
 	//#endregion
-	//#region src/utils/queup-ids.js
-	/**
-	* Recovering the current room id and user id at any moment.
-	*
-	* As an extension we get these from QueUp's RealtimeManager the instant we
-	* bridge to it. As a bookmarklet we can't: the module-registry tap has to be
-	* installed at document_start, and the console.log lines we used to scrape
-	* ("setting current user", "connected to real channel room:") were printed
-	* while the room was connecting, which may have been many minutes before the
-	* user clicked the bookmarklet. Scraping a log you missed is not an option, so
-	* we read the ids back out of the page instead.
-	*
-	* Three sources, cheapest first. Each one is independently verified before
-	* being trusted, so a source going stale degrades to the next rather than
-	* handing us a wrong id.
-	*/
-	/** ID Regex */
-	var OBJECT_ID = /^[0-9a-f]{24}$/;
-	/**
-	* @typedef {object} QueupIds
-	* @property {string | null} roomId
-	* @property {string | null} userId
-	*/
-	/**
-	* Source 1: the RealtimeManager, when the document_start tap got hold of it.
-	* @returns {QueupIds}
-	*/
-	function fromRealtime() {
-		/** @type {QueupIds} */
-		const ids = {
-			roomId: null,
-			userId: null
-		};
-		try {
-			const snapshot = window.dubplus.getQueupRealtime?.()?.getDebugSnapshot();
-			if (snapshot?.roomId) ids.roomId = snapshot.roomId;
-			if (snapshot?.currentUserId) ids.userId = snapshot.currentUserId;
-		} catch (err) {
-			logDebug("could not read ids from the RealtimeManager", err);
-		}
-		return ids;
-	}
-	/**
-	* Source 2: the `queup_last_room` cookie, which QueUp writes as
-	* `encodeURIComponent(JSON.stringify({ roomUrl, roomId }))` every time it
-	* opens a room - before it connects, so it's already there by the time any
-	* room UI exists.
-	*
-	* It's a year-long cookie, so it also survives into rooms it no longer
-	* describes. Hence the roomUrl check against the address bar.
-	* @returns {string | null}
-	*/
-	function getRoomIdFromCookie() {
-		const match = document.cookie.match(/(?:^|; )queup_last_room=([^;]*)/);
-		if (!match) return null;
-		try {
-			const { roomUrl, roomId } = JSON.parse(decodeURIComponent(match[1]));
-			if (!OBJECT_ID.test(roomId)) return null;
-			const slug = window.location.pathname.split("/").filter(Boolean).pop();
-			if (roomUrl && slug && roomUrl !== slug) {
-				logDebug(`ignoring queup_last_room cookie: ${roomUrl} is not ${slug}`);
-				return null;
-			}
-			return roomId;
-		} catch (err) {
-			logDebug("could not parse the queup_last_room cookie", err);
-			return null;
-		}
-	}
-	/**
-	* @param {Element} node
-	* @returns {any}
-	*/
-	function getFiber(node) {
-		const key = Object.keys(node).find((k) => k.startsWith("__reactFiber$") || k.startsWith("__reactContainer$"));
-		return key ? node[key] : null;
-	}
-	/**
-	* @returns {any} the HostRoot fiber, or null if React isn't reachable
-	*/
-	function getRootFiber() {
-		const candidates = [document.body, ...document.body.querySelectorAll("div")];
-		for (const node of candidates.slice(0, 50)) {
-			let fiber = getFiber(node);
-			if (!fiber) continue;
-			while (fiber.return) fiber = fiber.return;
-			return fiber;
-		}
-		return null;
-	}
-	/**
-	* @param {any} value a context provider's current value
-	* @returns {string | null}
-	*/
-	function readUserId(value) {
-		const user = value.user;
-		if (!user || typeof user !== "object") return null;
-		if (!OBJECT_ID.test(user._id)) return null;
-		if (!user.username && !user.userInfo) return null;
-		return user._id;
-	}
-	/**
-	* @param {any} value a context provider's current value
-	* @returns {string | null}
-	*/
-	function readRoomId(value) {
-		const room = value.roomInfo;
-		if (!room || typeof room !== "object") return null;
-		return OBJECT_ID.test(room._id) ? room._id : null;
-	}
-	/**
-	* @returns {QueupIds}
-	*/
-	function scanFiberTree() {
-		/** @type {QueupIds} */
-		const ids = {
-			roomId: null,
-			userId: null
-		};
-		const root = getRootFiber();
-		if (!root) {
-			logDebug("no React fiber found on the page");
-			return ids;
-		}
-		let budget = 2e4;
-		const stack = [root];
-		while (stack.length > 0 && budget-- > 0) {
-			const fiber = stack.pop();
-			const value = fiber.memoizedProps?.value;
-			if (value && typeof value === "object") {
-				ids.userId = ids.userId || readUserId(value);
-				ids.roomId = ids.roomId || readRoomId(value);
-				if (ids.userId && ids.roomId) break;
-			}
-			if (fiber.child) stack.push(fiber.child);
-			if (fiber.sibling) stack.push(fiber.sibling);
-		}
-		return ids;
-	}
-	/**
-	* Fills in whichever of `window.dubplus.roomId` / `window.dubplus.userId` are
-	* still missing, from the cheapest source that can supply them.
-	* @returns {boolean} true once both ids are known
-	*/
-	function resolveQueupIds() {
-		if (window.dubplus.roomId && window.dubplus.userId) return true;
-		const realtime = fromRealtime();
-		window.dubplus.roomId = window.dubplus.roomId || realtime.roomId || void 0;
-		window.dubplus.userId = window.dubplus.userId || realtime.userId || void 0;
-		if (!window.dubplus.roomId) window.dubplus.roomId = getRoomIdFromCookie() || void 0;
-		if (!window.dubplus.roomId || !window.dubplus.userId) {
-			const scanned = scanFiberTree();
-			window.dubplus.roomId = window.dubplus.roomId || scanned.roomId || void 0;
-			window.dubplus.userId = window.dubplus.userId || scanned.userId || void 0;
-		}
-		return Boolean(window.dubplus.roomId && window.dubplus.userId);
-	}
-	/**
-	* Same as {@link resolveQueupIds}, but keeps retrying: the bookmarklet can be
-	* clicked before the room has finished loading, and a logged out user has no
-	* user id to find until they log in.
-	* @param {object} [options]
-	* @param {number} [options.interval] ms between attempts
-	* @param {number} [options.attempts] how many times to try before giving up
-	* @returns {Promise<boolean>} whether both ids were found
-	*/
-	function waitForQueupIds({ interval = 1e3, attempts = 30 } = {}) {
-		return new Promise((resolve) => {
-			if (resolveQueupIds()) {
-				resolve(true);
-				return;
-			}
-			let remaining = attempts;
-			const timer = setInterval(() => {
-				if (resolveQueupIds() || --remaining <= 0) {
-					clearInterval(timer);
-					const found = Boolean(window.dubplus.roomId && window.dubplus.userId);
-					logDebug(`resolved QueUp ids: room=${window.dubplus.roomId} user=${window.dubplus.userId}`);
-					resolve(found);
-				}
-			}, interval);
-		});
-	}
-	//#endregion
 	//#region src/events-constants.js
 	/**
-	* Event names for `queupEvents` (see ./utils/events.js).
-	*
-	* QueUp's RealtimeManager emits `realtime:` + the payload's `type`, and we
-	* re-emit under that exact name, so these constants match QueUp's own naming.
-	* Dub+'s own synthetic events use a `dubplus:` prefix instead.
+	* Every QueUp event Dub+ listens to, split by which emitter it comes from.
 	*/
 	/**
-	* When the song changes.
-	* This one is a custom event from Dub+ and not a Queup event.
-	* It is triggered by a MutationObserver on the song title element
+	* QueUp's app-level lifecycle events, via `window.QueUp.on/off`.
+	* @satisfies {Record<string, keyof import('./types/global').QueUpEventMap>}
 	*/
-	var PLAYER_ADVANCE = "dubplus:playerAdvance";
-	/**
-	* When a user in the room up/down dubs a song
-	*/
-	var DUB = "realtime:room_playlist-dub";
-	/**
-	* When user in the room grabs a song
-	*/
-	var GRAB = "realtime:room_playlist-queue-update-grabs";
-	/**
-	* When a user joins the room
-	*/
-	var USER_JOIN = "realtime:user-join";
-	/**
-	* When any chat message arrives in the chat
-	*/
-	var CHAT_MESSAGE = "realtime:chat-message";
-	/**
-	* When user receives a private message
-	*/
-	var NEW_PM_MESSAGE = "realtime:new-message";
-	/**
-	* The full set of event types QueUp validates against a schema, for reference.
-	* Anything not listed here still gets emitted - QueUp only logs a validation
-	* warning for unknown types - so this is not an exhaustive list of what can
-	* arrive, just of what QueUp considers known.
-	*
-	* To watch everything live, paste this into the console:
-	*
-	*   const stop = window.dubplus.debugQueupRealtime();
-	*
-	* user-join, user-leave, user-setrole, user-unsetrole, user-kick, user-ban,
-	* user-unban, user-mute, user-unmute, user_update, user-avatar-update,
-	* user-pause-queue-mod, room-lock-queue, room-update, room-slow-mode,
-	* room-allow-guest-chat, room-allow-guest-embed, chat-skip, chat-message,
-	* delete-chat-message, new-message, room_playlist-update, room_playlist-dub,
-	* room_playlist-queue-reorder, room_playlist-queue-update,
-	* room_playlist-queue-update-dub, room_playlist-queue-update-grabs,
-	* room_playlist-queue-remove-user, room_playlist-queue-remove-user-song
-	*/
-	//#endregion
-	//#region src/utils/events.js
-	/**
-	* Dub+'s own event bus. Everything QueUp's RealtimeManager emits gets
-	* re-emitted here under the same name, alongside Dub+'s synthetic events
-	* (PLAYER_ADVANCE), so modules only ever talk to this one emitter.
-	*/
-	var QueupEvents = class {
+	var QUEUP_EVENT = {
+		/** The signed-in user's id or username changes - login, logout, or a rename */
+		SESSION_CHANGED: "session:changed",
+		/** A room finishes loading (including switching rooms) */
+		ROOM_JOINED: "room:joined",
+		/** The user left a room. */
+		ROOM_LEFT: "room:left",
 		/**
-		* @type {Map<string, Set<(data: any) => void>>}
-		*/
-		handlers = /* @__PURE__ */ new Map();
-		constructor() {
-			logDebug("QueupEvents initialized");
-		}
-		/**
-		* @template T
-		* @param {string} eventName
-		* @param {(data: T) => void} handler
-		*/
-		on(eventName, handler) {
-			if (!this.handlers.has(eventName)) this.handlers.set(eventName, /* @__PURE__ */ new Set());
-			this.handlers.get(eventName)?.add(handler);
-		}
-		/**
+		* The room's active song or its DJ changes, including to/from nothing playing.
 		*
-		* @param {string} eventName
-		* @param {(data: any) => void} handler
+		* Not fired for vote counts ticking up on the same song.
+		*
+		* `startTime` is how many seconds into the song playback was when the change
+		* was seen, not a live position
+		*
+		* Prefer this over `REALTIME_EVENT.PLAYLIST_UPDATE`, which also fires for
+		* queue joins and reorders.
 		*/
-		off(eventName, handler) {
-			if (this.handlers.has(eventName)) this.handlers.get(eventName)?.delete(handler);
-		}
+		SONG_CHANGED: "room:song-changed",
 		/**
-		* @template T
-		* @param {string} eventName
-		* @param {(data: T) => void} handler
-		*/
-		once(eventName, handler) {
-			/**
-			* @param {T} data
-			*/
-			const wrapper = (data) => {
-				handler(data);
-				this.off(eventName, wrapper);
-			};
-			this.on(eventName, wrapper);
-		}
-		/**
-		* @template T
-		* @param {string} eventName
-		* @param {T} data
-		*/
-		emit(eventName, data) {
-			logDebug(`QueupEvents: emitting event ${eventName} with data:`, data);
-			if (this.handlers.has(eventName)) this.handlers.get(eventName)?.forEach((handler) => {
-				handler(data);
-			});
-		}
-		clear() {
-			this.handlers.clear();
-		}
+		* The resolved DJ changes. Just the DJ half of room:song-changed, for
+		* scripts that only care who's playing */
+		DJ_CHANGED: "room:dj-changed"
 	};
-	window.dubplus = window.dubplus || {};
-	var queupEvents = new QueupEvents();
-	window.dubplus.queupEvents = queupEvents;
-	/** Set once we're bridged to the RealtimeManager, so the console.log fallback
-	* knows to stand down instead of double-emitting every event. */
-	var bridged = false;
 	/**
-	* QueUp knows the room and user ids before we do, so take them from the
-	* RealtimeManager rather than parsing them back out of log lines.
-	* @param {import('../types/global').QueupRealtime} realtime
+	* QueUp's realtime socket feed, via `window.QueUp.realtime.on/off`.
 	*/
-	function syncIds(realtime) {
-		try {
-			const snapshot = realtime.getDebugSnapshot();
-			if (snapshot.roomId) window.dubplus.roomId = snapshot.roomId;
-			if (snapshot.currentUserId) window.dubplus.userId = snapshot.currentUserId;
-		} catch (err) {
-			logDebug("could not read the RealtimeManager snapshot", err);
-		}
-	}
-	/**
-	* @param {import('../types/global').QueupRealtime} realtime
-	*/
-	function bridgeRealtime(realtime) {
-		window.dubplus.__detachRealtimeBridge?.();
+	var REALTIME_EVENT = {
+		/** When a user in the room up/down dubs a song. */
+		DUB: "realtime:room_playlist-dub",
+		/** When a user in the room grabs a song. */
+		GRAB: "realtime:room_playlist-queue-update-grabs",
+		/** When a user leaves the room. */
+		USER_LEAVE: "realtime:user-leave",
+		/** When a user joins the room. */
+		USER_JOIN: "realtime:user-join",
 		/**
-		* @param {string} type
-		* @param {any} data
+		* When the room playlist updates. Many things can trigger this.
+		* - the next track plays
+		* - someone joins the queue
+		* - someone leaves the queue
+		* - someone changes the order of the queue
+		* - someone changes their song in the queue
 		*/
-		const onAnyEvent = (type, data) => {
-			if (!window.dubplus.roomId || !window.dubplus.userId) syncIds(realtime);
-			queupEvents.emit(type, data);
-		};
-		const onConnected = () => syncIds(realtime);
-		realtime.on("*", onAnyEvent);
-		realtime.on("connected", onConnected);
-		syncIds(realtime);
-		bridged = true;
-		window.dubplus.__detachRealtimeBridge = () => {
-			realtime.off("*", onAnyEvent);
-			realtime.off("connected", onConnected);
-			bridged = false;
-			window.dubplus.__detachRealtimeBridge = void 0;
-		};
-		logInfo("listening to QueUp events via RealtimeManager");
-	}
-	window.dubplus.onQueupRealtime?.(bridgeRealtime);
-	waitForQueupIds();
-	window.dubplus.__originalConsoleLog = window.dubplus.__originalConsoleLog || console.log;
-	var originalConsoleLog = window.dubplus.__originalConsoleLog;
-	/**
-	* QueUp logs the raw channel message, whose `data` is sometimes still a JSON
-	* string - `normalizeMessageData` is what parses it on their side.
-	* @param {any} raw
-	* @returns {any}
-	*/
-	function parseMessageData(raw) {
-		if (typeof raw !== "string") return raw;
-		try {
-			return JSON.parse(raw);
-		} catch {
-			return null;
-		}
-	}
-	console.log = function(...args) {
-		originalConsoleLog.apply(console, args);
-		if (typeof args[0] !== "string" || !args[0].trim().startsWith("RealtimeManager:")) return;
-		if (args[0].includes("RealtimeManager: setting current user")) {
-			const userId = args[0].trim().split(" ").at(-1);
-			if (userId) window.dubplus.userId = userId;
-		} else if (args[0].includes("RealtimeManager: connected to real channel room:")) window.dubplus.roomId = args[0].split("room:")[1].trim();
-		else if (args[0].includes("RealtimeManager: real time response")) {
-			if (bridged) return;
-			const data = parseMessageData(args[1]?.data);
-			if (!data?.type) return;
-			const events = { [`realtime:${data.type}`]: data };
-			if (data.type.startsWith("user_update_")) events["realtime:user_update"] = {
-				...data,
-				type: "user_update",
-				userid: data.type.slice(12)
-			};
-			else if (data.type.startsWith("user-update-")) events["realtime:user-avatar-update"] = {
-				...data,
-				type: "user-avatar-update",
-				userid: data.type.slice(12)
-			};
-			for (const [name, payload] of Object.entries(events)) window.dubplus?.queupEvents?.emit(name, payload);
-		}
+		PLAYLIST_UPDATE: "realtime:room_playlist-update",
+		/** When any chat message arrives in the chat. */
+		CHAT_MESSAGE: "realtime:chat-message",
+		/** When a chat message is deleted by a moderator. */
+		DELETE_CHAT_MESSAGE: "realtime:delete-chat-message",
+		/** When user receives a private message. */
+		NEW_PM_MESSAGE: "realtime:new-message"
 	};
+	//#endregion
+	//#region src/lib/queup.ui.js
+	var CHAT_INPUT_CONTAINER = "[data-queup=\"chat-input-container\"] [contenteditable]";
+	/**
+	* @returns {HTMLDivElement | null}
+	*/
+	function getChatInput() {
+		return document.querySelector(CHAT_INPUT_CONTAINER);
+	}
+	/**
+	* @returns {HTMLDivElement | null}
+	*/
+	function getBackgroundImage() {
+		return document.querySelector("body > div:nth-child(2) > div > div:first-child");
+	}
+	/**
+	* @returns {HTMLIFrameElement | null}
+	*/
+	function getPlayerIframe() {
+		return document.querySelector("main iframe");
+	}
+	/**
+	* @returns {HTMLDivElement | null}
+	*/
+	function getPrivateMessageButton() {
+		return document.querySelector("button:has(> .lucide-mail)");
+	}
+	/**
+	* @returns {HTMLButtonElement | null | undefined}
+	*/
+	function getDubUp() {
+		return document.querySelector("[data-queup=\"updub-button\"]");
+	}
+	/**
+	* @returns {HTMLButtonElement | null | undefined}
+	*/
+	function getDubDown() {
+		return document.querySelector("[data-queup=\"downdub-button\"]");
+	}
+	/**
+	* aka the Grab button
+	* @returns {HTMLButtonElement | null | undefined}
+	*/
+	function getAddToPlaylist() {
+		return document.querySelector("[data-queup=\"grab-button\"]");
+	}
+	function getPlayerButtonsContainer() {
+		return document.querySelector("[data-queup=\"player-controls\"] > div > div:last-child");
+	}
+	//#endregion
+	//#region src/lib/queup.v2.js
+	/**
+	* Wrappers around QueUp's internal API (window.QueUp)
+	*
+	* Queup extension API documentation:
+	* https://gitlab.com/queup/extension-sdk/-/blob/main/README.md
+	*/
+	/**
+	* The currently logged in user, or null when logged out.
+	* @returns {{ id: string; username: string } | null}
+	*/
+	function getUser() {
+		return window.QueUp.session.getUser();
+	}
+	/**
+	* The id of the currently logged in user.
+	* @returns {string}
+	*/
+	function getUserId() {
+		return getUser()?.id || "";
+	}
+	/**
+	* The name of the currently logged in user.
+	* @returns {string}
+	*/
+	function getUserName() {
+		return getUser()?.username || "";
+	}
+	/**
+	* @returns {string} the current room's id, or '' when we're not in a room
+	*/
+	function getRoomId() {
+		return window.QueUp.room.getRoomId() || "";
+	}
+	/**
+	* @returns {ReturnType<import('../types/global').QueUp['room']['getCurrentSong']>}
+	*/
+	function getCurrentSong() {
+		return window.QueUp.room.getCurrentSong();
+	}
+	function toggleMute() {
+		const player = window.QueUp.room.player;
+		if (player.isMuted()) player.unmute();
+		else player.mute();
+	}
+	/**
+	* There's no vote in the official API yet, so this is still a DOM click.
+	*/
+	function clickVoteUp() {
+		getDubUp()?.click();
+	}
+	/**
+	*
+	* @returns {{ minutes: number, seconds: number }} time left in the currently playing song
+	*/
+	function getRemainingTimeForCurrentSong() {
+		const { durationSeconds, played } = getCurrentSong() || {};
+		if (!played || !durationSeconds) return {
+			minutes: 0,
+			seconds: 0
+		};
+		const remainingSeconds = Math.max(0, durationSeconds - (Date.now() - played) / 1e3);
+		return {
+			minutes: Math.floor(remainingSeconds / 60),
+			seconds: Math.floor(remainingSeconds % 60)
+		};
+	}
+	/**
+	* Store all attached handlers so that we can clear them later with {@link reset}
+	* @type {Map<string, Set<(arg: any) => void>>}
+	*/
+	var event_handlers = /* @__PURE__ */ new Map();
+	/**
+	* QueUp's app lifecycle events, as opposed to the realtime socket feed.
+	* @param {keyof import('../types/global').QueUpEventMap} eventName one of {@link QUEUP_EVENT}
+	* @param {(data: any) => void} handler
+	*/
+	function onQueup(eventName, handler) {
+		if (!event_handlers.has(eventName)) event_handlers.set(eventName, /* @__PURE__ */ new Set());
+		event_handlers.get(eventName)?.add(handler);
+		window.QueUp.on(eventName, handler);
+	}
+	/**
+	* @param {keyof import('../types/global').QueUpEventMap} eventName one of {@link QUEUP_EVENT}
+	* @param {(data: any) => void} handler must be the same reference passed to
+	* {@link onQueup}
+	*/
+	function offQueup(eventName, handler) {
+		event_handlers.get(eventName)?.delete(handler);
+		window.QueUp.off(eventName, handler);
+	}
+	/**
+	* QueUp's realtime socket feed.
+	* @param {string} eventName one of {@link REALTIME_EVENT}
+	* @param {(data: any) => void} handler
+	*/
+	function onRealtime(eventName, handler) {
+		if (!event_handlers.has(eventName)) event_handlers.set(eventName, /* @__PURE__ */ new Set());
+		event_handlers.get(eventName)?.add(handler);
+		window.QueUp.realtime.on(eventName, handler);
+	}
+	/**
+	* @param {string} eventName one of {@link REALTIME_EVENT}
+	* @param {(data: any) => void} handler must be the same reference passed to
+	* {@link onRealtime}
+	*/
+	function offRealtime(eventName, handler) {
+		event_handlers.get(eventName)?.delete(handler);
+		window.QueUp.realtime.off(eventName, handler);
+	}
+	function clearAllEventHandlers() {
+		for (const [eventName, handlers] of event_handlers) for (const handler of handlers) {
+			offRealtime(eventName, handler);
+			offQueup(eventName, handler);
+		}
+		event_handlers.clear();
+	}
+	/**
+	* @return {boolean} true if QueUp is ready to be used, false if it's still booting
+	*/
+	function isQueupReady() {
+		return window.QueUp?.session?.isLoggedIn() && !!window.QueUp?.session?.getUser()?.id && !!window.QueUp?.room?.getRoomId();
+	}
 	//#endregion
 	//#region src/utils/modcheck.js
 	/**
@@ -6064,6 +5875,10 @@ createHTML: (html) => {
 	* @param {string} userid
 	*/
 	function isMod(userid) {
+		if (!window.dubplus?.roomUsers) {
+			logWarn("isMod: roomUsers map is not initialized, returning false. userid: " + userid);
+			return false;
+		}
 		const user = window.dubplus.roomUsers?.get(userid);
 		if (!user) return false;
 		return user.role.rights.includes("skip");
@@ -6120,133 +5935,165 @@ createHTML: (html) => {
 	*/
 	async function setupModCheck(roomId) {
 		await loadUserData(roomId).then(processUserData);
-		queupEvents.on(USER_JOIN, onUserJoin);
+		onRealtime(REALTIME_EVENT.USER_JOIN, onUserJoin);
 	}
 	/**
 	* do this when unmounting or changing rooms
 	*/
 	async function teardownModCheck() {
-		queupEvents.off(USER_JOIN, onUserJoin);
+		offRealtime(REALTIME_EVENT.USER_JOIN, onUserJoin);
 		window.dubplus.roomUsers?.clear();
 	}
 	//#endregion
-	//#region src/lib/queup.ui.js
+	//#region src/lib/stores/modalState.svelte.js
+	var modalState = proxy({
+		id: "",
+		open: false,
+		title: "Dub+",
+		content: "",
+		value: "",
+		placeholder: "",
+		defaultValue: "",
+		maxlength: 999,
+		validation: () => {
+			return true;
+		},
+		onConfirm: () => {
+			return true;
+		},
+		onCancel: () => {}
+	});
 	/**
-	* Anything that access the UI for QueUp should go here so that when there's any
-	* future changes to the UI, we'll just need to update this file.
+	*
+	* @param {import('../../types/global').ModalProps} nextState
 	*/
-	var CHAT_INPUT_CONTAINER = "[contenteditable=\"true\"]";
-	/**
-	* @returns {HTMLDivElement | null}
-	*/
-	function getChatInput() {
-		return document.querySelector(CHAT_INPUT_CONTAINER);
-	}
-	/**
-	* @returns {HTMLDivElement | null}
-	*/
-	function getBackgroundImage() {
-		return document.querySelector("body > div:nth-child(2) > div > div:first-child");
-	}
-	/**
-	* @returns {HTMLIFrameElement | null}
-	*/
-	function getPlayerIframe() {
-		return document.querySelector("main iframe");
-	}
-	/**
-	* @returns {HTMLDivElement | null}
-	*/
-	function getPrivateMessageButton() {
-		return document.querySelector("button:has(> .lucide-mail)");
-	}
-	/**
-	* @returns {HTMLButtonElement | null | undefined}
-	*/
-	function getDubUp() {
-		return getBottomBar()?.querySelector("button:has(> .lucide-chevron-up)");
-	}
-	/**
-	* @returns {HTMLButtonElement | null | undefined}
-	*/
-	function getDubDown() {
-		return getBottomBar()?.querySelector("button:has(> .lucide-chevron-down)");
-	}
-	/**
-	* aka the Grab button
-	* @returns {HTMLButtonElement | null | undefined}
-	*/
-	function getAddToPlaylist() {
-		return getBottomBar()?.querySelector("button:has(> .lucide-heart)");
-	}
-	function getPlayerButtonsContainer() {
-		const iframe = document.querySelector("iframe");
-		if (iframe?.parentElement) {
-			/**
-			* @type {HTMLElement | null}
-			*/
-			let currentNode = iframe.parentElement;
-			while (currentNode && !currentNode?.querySelector(".lucide-refresh-cw") && currentNode !== document.body) currentNode = currentNode.parentElement;
-			if (!currentNode || currentNode === document.body) {
-				logError("Could not find the player buttons container");
-				return null;
-			}
-			return currentNode.querySelector(".lucide-refresh-cw")?.parentElement?.parentElement || null;
-		}
-		return null;
-	}
-	function getBottomBar() {
-		return document.querySelector("header ~ div:has(.lucide-users):has(.lucide-heart):has(.lucide-chevron-up):has(.lucide-chevron-down)");
-	}
-	function getCurrentDjEl() {
-		return ((getBottomBar()?.children[1])?.children[0])?.children[0]?.children[0]?.children[0];
-	}
-	function getCurrentlyPlayingSong() {
-		return (((getBottomBar()?.children[1])?.children[0])?.children[0])?.children[1];
-	}
-	/**
-	* @returns {{ position?: number; total: number } | null}
-	*/
-	function getQueuePosition() {
-		const queueInfo = getBottomBar()?.querySelector(".lucide-users")?.parentElement?.textContent?.trim();
-		if (!queueInfo) return null;
-		if (!queueInfo.includes("/")) return { total: parseInt(queueInfo) };
-		const [position, total] = queueInfo.split("/").map(Number);
-		return {
-			position,
-			total
-		};
-	}
-	/**
-	* Returns how long is left in seconds the currently playing song.
-	* Returns null if it can't be determined.
-	* @returns {[minutes: number, seconds: number] | null}
-	*/
-	function getCurrentSongTime() {
-		const timeParts = ((getBottomBar()?.children[1])?.children[1])?.textContent?.split(":");
-		if (timeParts?.length === 2) return [Number(timeParts[0]), Number(timeParts[1])];
-		else if (timeParts?.length === 3) return [Number(timeParts[0]) * 3600 + Number(timeParts[1]) * 60, Number(timeParts[2])];
-		return null;
+	function updateModalState(nextState) {
+		modalState.open = nextState.open ?? false;
+		modalState.title = nextState.title || "Dub+";
+		modalState.content = nextState.content || "";
+		modalState.value = nextState.value || "";
+		modalState.placeholder = nextState.placeholder || "";
+		modalState.defaultValue = nextState.defaultValue || "";
+		modalState.maxlength = nextState.maxlength || 999;
+		modalState.onConfirm = nextState.onConfirm;
+		modalState.onCancel = nextState.onCancel;
+		modalState.validation = nextState.validation || (() => true);
 	}
 	//#endregion
-	//#region src/lib/queup.js
+	//#region src/utils/module-setup-utils.js
 	/**
-	* Anything that accesses window.QueUp (QueUp's internal app instance) should
-	* go here so that when there's any future changes to QueUp's internals,
-	* we'll just need to update this file.
+	*
+	* @param {import("../lib/modules/module").DubPlusModule} module
+	* @returns {import('../types/global').ExternalChatCommand}
 	*/
+	function getCommandConfig(module) {
+		/**
+		* @type {import('../types/global').ExternalChatCommand}
+		*/
+		const chatCommandConfig = {
+			name: module.id,
+			usage: `/${module.id}`,
+			description: "Dub+ - " + t(module.description),
+			run: (context) => {
+				/**
+				* Example usage:
+				* /afk -> this will just toggle on/off the option
+				* /afk I am away -> this will set the custom message for the afk module and turn it on.
+				*   Note: You can't clear a custom message from the slash commands, that still needs to be
+				*   done through the UI.
+				*
+				* Updating the custom settings should follow the same rules:
+				* - It must pass the custom validation if one is defined.
+				* - It must not exceed the maximum length defined for the custom setting.
+				* - If it successfully saves the custom setting, it should turn on the option if it's not on already.
+				* - If trying to turn a module on that requires a custom setting and that setting is not set, it should
+				*   display the customization modal. This mimics the behavior of the UI.
+				*/
+				logDebug(`/${module.id} context:`, context);
+				if (typeof module.onClick === "function") {
+					module.onClick();
+					return;
+				}
+				const argsValue = context.args?.trim();
+				const current = settings.options[module.id];
+				if (argsValue) applyCustomArgs(module, argsValue, current);
+				else toggleModule(module, current);
+			}
+		};
+		if (module.custom) chatCommandConfig.argSlots = ["text"];
+		return chatCommandConfig;
+	}
 	/**
-	* This is the ID of the currently logged in user.
-	* @returns {string}
+	* Validates a custom setting value supplied via slash command args and, if valid,
+	* saves it and turns the module on (if it isn't already). Shows an alert on failure.
+	* @param {import("../lib/modules/module").DubPlusModule} module
+	* @param {string} argsValue
+	* @param {boolean} isOn - Whether the module is currently on.
 	*/
-	function getSessionId() {
-		return window.QueUp.session.id;
+	function applyCustomArgs(module, argsValue, isOn) {
+		const maxLength = Math.min(module.custom?.maxlength ?? 999, 999);
+		const validationResult = module.custom?.validation ? module.custom.validation(argsValue) : true;
+		const exceedsMaxLength = argsValue.length > maxLength;
+		if (validationResult !== true || exceedsMaxLength) {
+			const errorMessages = [`Invalid value for /${module.id}: "${argsValue}".`];
+			if (typeof validationResult === "string") errorMessages.push(validationResult);
+			if (exceedsMaxLength) errorMessages.push(t("Modal.validation.maxlength", { maxlength: Math.min(modalState.maxlength ?? 999, 999) }));
+			window.alert(errorMessages.join("\n"));
+			return;
+		}
+		saveSetting("custom", module.id, argsValue);
+		if (!isOn) {
+			saveSetting("options", module.id, true);
+			module.turnOn?.();
+		}
 	}
-	function clickVoteUp() {
-		getDubUp()?.click();
+	/**
+	* Toggles a module on/off.
+	* If module requires a custom setting that hasn't been set, it will open the
+	* customization modal (mimicking the behavior of the UI).
+	* @param {import("../lib/modules/module").DubPlusModule} module
+	* @param {boolean} isOn - Whether the module is currently on.
+	*/
+	function toggleModule(module, isOn) {
+		if (module.custom && !settings.custom[module.id]) {
+			openEditModal(module.id, module.custom, () => saveSetting("options", module.id, false));
+			return;
+		}
+		saveSetting("options", module.id, !isOn);
+		if (isOn) module.turnOff?.();
+		else module.turnOn?.();
 	}
-	function toggleMute() {
-		document.querySelector("[class*=\"lucide-volume\"]")?.parentElement?.click();
+	/**
+	* @param {import("../lib/modules/module").DubPlusModule['id']} id - The ID of the module being edited.
+	* @param {import("../lib/modules/module").DubPlusModule['custom']} customize
+	* @param {import("../lib/modules/module").DubPlusModule['turnOff']} turnOff - The function to turn off the module.
+	*/
+	function openEditModal(id, customize, turnOff) {
+		updateModalState({
+			title: t(customize?.title),
+			content: t(customize?.content),
+			placeholder: t(customize?.placeholder),
+			defaultValue: customize?.defaultValue ? t(customize.defaultValue) : "",
+			maxlength: customize?.maxlength,
+			value: settings.custom[id] || "",
+			validation: customize?.validation,
+			onConfirm: (value) => {
+				saveSetting("custom", id, value);
+				if (value.trim() === "" && !customize?.defaultValue) {
+					saveSetting("options", id, false);
+					turnOff?.();
+				}
+				if (typeof customize?.onConfirm === "function") customize.onConfirm(value);
+			},
+			onCancel: () => {
+				if (!customize?.defaultValue && (typeof settings.custom[id] === "undefined" || settings.custom[id] === "")) {
+					saveSetting("options", id, false);
+					turnOff?.();
+				}
+				if (typeof customize?.onCancel === "function") customize?.onCancel();
+			}
+		});
+		modalState.open = true;
 	}
 	//#endregion
 	//#region src/lib/menu/MenuSwitch.svelte
@@ -6274,43 +6121,18 @@ createHTML: (html) => {
 		const SecondaryIcon = $$props.secondaryAction?.icon || IconPencil;
 		onMount(() => {
 			if ($$props.init) $$props.init();
-			if (settings.options[$$props.id]) $$props.turnOn?.(true);
+			if (settings.options[$$props.id]) {
+				if ($$props.modOnly ? isMod(getUserId()) : true) $$props.turnOn?.(true);
+			}
 		});
 		onDestroy(() => {
 			if (settings.options[$$props.id]) $$props.turnOff?.();
 		});
-		function openEditModal() {
-			updateModalState({
-				title: t($$props.customize?.title),
-				content: t($$props.customize?.content),
-				placeholder: t($$props.customize?.placeholder),
-				defaultValue: $$props.customize?.defaultValue ? t($$props.customize.defaultValue) : "",
-				maxlength: $$props.customize?.maxlength,
-				value: settings.custom[$$props.id] || "",
-				validation: $$props.customize?.validation,
-				onConfirm: (value) => {
-					saveSetting("custom", $$props.id, value);
-					if (value.trim() === "" && !$$props.customize?.defaultValue) {
-						saveSetting("option", $$props.id, false);
-						$$props.turnOff?.();
-					}
-					if (typeof $$props.customize?.onConfirm === "function") $$props.customize.onConfirm(value);
-				},
-				onCancel: () => {
-					if (!$$props.customize?.defaultValue && (typeof settings.custom[$$props.id] === "undefined" || settings.custom[$$props.id] === "")) {
-						saveSetting("option", $$props.id, false);
-						$$props.turnOff?.();
-					}
-					if (typeof $$props.customize?.onCancel === "function") $$props.customize?.onCancel();
-				}
-			});
-			modalState.open = true;
-		}
 		var li = root_1$4();
 		let classes;
 		var node = child(li);
 		{
-			let $0 = /* @__PURE__ */ user_derived(() => $$props.modOnly ? !isMod(getSessionId()) : false);
+			let $0 = /* @__PURE__ */ user_derived(() => $$props.modOnly ? !isMod(getUserId()) : false);
 			let $1 = /* @__PURE__ */ user_derived(() => t($$props.label));
 			Switch(node, {
 				get disabled() {
@@ -6321,10 +6143,10 @@ createHTML: (html) => {
 				},
 				onToggle: (state) => {
 					if ($$props.customize && state === true && !settings.custom[$$props.id]) {
-						openEditModal();
+						openEditModal($$props.id, $$props.customize, $$props.turnOff);
 						return;
 					}
-					saveSetting("option", $$props.id, state);
+					saveSetting("options", $$props.id, state);
 					if (state) $$props.turnOn?.();
 					else $$props.turnOff?.();
 				},
@@ -6343,7 +6165,7 @@ createHTML: (html) => {
 			reset$1(span);
 			reset$1(button);
 			template_effect(($0) => set_text(text, $0), [() => t("MenuItem.edit")]);
-			delegated("click", button, openEditModal);
+			delegated("click", button, () => openEditModal($$props.id, $$props.customize, $$props.turnOff));
 			append($$anchor, button);
 		};
 		if_block(node_1, ($$render) => {
@@ -6376,7 +6198,7 @@ createHTML: (html) => {
 			set_attribute(li, "id", `dubplus-${$$props.id}`);
 			set_attribute(li, "title", $0);
 			classes = set_class(li, 1, "svelte-1aj88xa", null, classes, $1);
-		}, [() => t($$props.description), () => ({ disabled: $$props.modOnly ? !isMod(getSessionId()) : false })]);
+		}, [() => t($$props.description), () => ({ disabled: $$props.modOnly ? !isMod(getUserId()) : false })]);
 		append($$anchor, li);
 		pop();
 	}
@@ -6393,10 +6215,10 @@ createHTML: (html) => {
 		category: "general",
 		turnOn() {
 			clickVoteUp();
-			queupEvents.on(PLAYER_ADVANCE, clickVoteUp);
+			onQueup(QUEUP_EVENT.SONG_CHANGED, clickVoteUp);
 		},
 		turnOff() {
-			queupEvents.off(PLAYER_ADVANCE, clickVoteUp);
+			offQueup(QUEUP_EVENT.SONG_CHANGED, clickVoteUp);
 		}
 	};
 	//#endregion
@@ -6476,71 +6298,6 @@ createHTML: (html) => {
 		if (messageOriginal) restoreWhenCleared(chatInput, messageOriginal);
 	}
 	//#endregion
-	//#region src/lib/queup.v2.js
-	/**
-	* This file is a bunch of temporary hacks because Queup v2 (remix) removed their
-	* public API.
-	*/
-	/**
-	* Get the name of the currently logged in user.
-	* @returns {string}
-	*/
-	function getUserName() {
-		return document.querySelector("a[href^=\"/user/\"]:not(:has(img))")?.textContent?.trim() || "";
-	}
-	/**
-	* Every MutationObserver created by this "instance" of the script, so they
-	* can all be torn down by {@link teardownPlayerAdvance}.
-	* @type {Set<MutationObserver>}
-	*/
-	var playerAdvanceObservers = /* @__PURE__ */ new Set();
-	function teardownPlayerAdvance() {
-		playerAdvanceObservers.forEach((observer) => observer.disconnect());
-		playerAdvanceObservers.clear();
-	}
-	/**
-	* On a dev hot reload, the whole bundle re-executes in the same page, so this
-	* module gets a brand new scope with no memory of the observers the previous
-	* instance created, they're still connected and still firing. Save the
-	* teardown on `window`, which does persist across hot reload, so each new
-	* instance can dispose of whatever the last one left running before it sets
-	* up its own observers.
-	*/
-	var PLAYER_ADVANCE_CLEANUP_KEY = "__dubplusTeardownPlayerAdvance";
-	/** @type {Record<string, (() => void) | undefined>} */
-	var globalCleanupRegistry = window;
-	globalCleanupRegistry[PLAYER_ADVANCE_CLEANUP_KEY]?.();
-	globalCleanupRegistry[PLAYER_ADVANCE_CLEANUP_KEY] = teardownPlayerAdvance;
-	/**
-	* Watches the currently-playing-song element's text for changes, which
-	* signals the player advanced to the next song.
-	* @param {Element} songElement the element returned by {@link getCurrentlyPlayingSong}
-	*/
-	function observeCurrentlyPlayingSong(songElement) {
-		const observer = new MutationObserver((records) => {
-			logDebug("playerAdvance detected", records);
-			const songTitle = records[0]?.target?.textContent || "";
-			queupEvents.emit(PLAYER_ADVANCE, songTitle);
-		});
-		observer.observe(songElement, {
-			characterData: true,
-			subtree: true
-		});
-		playerAdvanceObservers.add(observer);
-	}
-	function setupPlayerAdvance() {
-		waitFor(() => !!getCurrentlyPlayingSong(), {
-			interval: 1e4,
-			seconds: Number.POSITIVE_INFINITY
-		}).then(() => {
-			const songElement = getCurrentlyPlayingSong();
-			if (songElement) observeCurrentlyPlayingSong(songElement);
-		}).catch((err) => {
-			logError("setupPlayerAdvance: wait for DJing failed", err);
-		});
-	}
-	setupPlayerAdvance();
-	//#endregion
 	//#region src/utils/mention-helpers.js
 	/**
 	* @param {string[]} names Array of all names user could use for mentions in chat
@@ -6597,10 +6354,10 @@ createHTML: (html) => {
 		description: "afk.description",
 		category: "general",
 		turnOn() {
-			queupEvents.on(CHAT_MESSAGE, afk_chat_respond);
+			onRealtime(REALTIME_EVENT.CHAT_MESSAGE, afk_chat_respond);
 		},
 		turnOff() {
-			queupEvents.off(CHAT_MESSAGE, afk_chat_respond);
+			offRealtime(REALTIME_EVENT.CHAT_MESSAGE, afk_chat_respond);
 		},
 		custom: {
 			title: "afk.modal.title",
@@ -6658,7 +6415,7 @@ createHTML: (html) => {
 	function customMentionCheck(e) {
 		const enabled = settings.options[MODULE_ID$2];
 		const custom = settings.custom[MODULE_ID$2];
-		if (typeof custom === "string" && custom.trim() !== "" && enabled && window.dubplus.userId !== e.user.userInfo.userid) {
+		if (typeof custom === "string" && custom.trim() !== "" && enabled && getUserId() !== e.user.userInfo.userid) {
 			const namesForRegex = split(custom);
 			if (namesForRegex.length === 0) return;
 			if (getMentionRegex(namesForRegex).test(e.message)) playSound();
@@ -6679,10 +6436,10 @@ createHTML: (html) => {
 			maxlength: 255
 		},
 		turnOn() {
-			queupEvents.on(CHAT_MESSAGE, customMentionCheck);
+			onRealtime(REALTIME_EVENT.CHAT_MESSAGE, customMentionCheck);
 		},
 		turnOff() {
-			queupEvents.off(CHAT_MESSAGE, customMentionCheck);
+			offRealtime(REALTIME_EVENT.CHAT_MESSAGE, customMentionCheck);
 		}
 	};
 	//#endregion
@@ -6809,7 +6566,7 @@ createHTML: (html) => {
 		const user = getUserName();
 		if (user) mentionTriggers.push(user);
 		if (settings.options["custom-mentions"] && settings.custom["custom-mentions"]) mentionTriggers = mentionTriggers.concat(split(settings.custom["custom-mentions"]));
-		if (getMentionRegex(mentionTriggers).test(content) && !activeTabState.isActive && window.dubplus.userId !== e.user.userInfo.userid) showNotification({
+		if (getMentionRegex(mentionTriggers).test(content) && !activeTabState.isActive && getUserId() !== e.user.userInfo.userid) showNotification({
 			title: `Message from ${e.user.username}`,
 			content
 		});
@@ -6827,13 +6584,13 @@ createHTML: (html) => {
 		category: "general",
 		turnOn() {
 			notifyCheckPermission().then(() => {
-				queupEvents.on(CHAT_MESSAGE, notifyOnMention);
+				onRealtime(REALTIME_EVENT.CHAT_MESSAGE, notifyOnMention);
 			}).catch(() => {
 				settings.options[this.id] = false;
 			});
 		},
 		turnOff() {
-			queupEvents.off(CHAT_MESSAGE, notifyOnMention);
+			offRealtime(REALTIME_EVENT.CHAT_MESSAGE, notifyOnMention);
 		}
 	};
 	//#endregion
@@ -6844,7 +6601,7 @@ createHTML: (html) => {
 	* @returns
 	*/
 	function pmNotify(e) {
-		if (window.dubplus.userId === e.userid) return;
+		if (getUserId() === e.userid) return;
 		showNotification({
 			title: t("pm-notifications.notification.title"),
 			ignoreActiveTab: true,
@@ -6864,13 +6621,13 @@ createHTML: (html) => {
 		category: "general",
 		turnOn() {
 			notifyCheckPermission().then(() => {
-				queupEvents.on(NEW_PM_MESSAGE, pmNotify);
+				onRealtime(REALTIME_EVENT.NEW_PM_MESSAGE, pmNotify);
 			}).catch(() => {
 				settings.options[this.id] = false;
 			});
 		},
 		turnOff() {
-			queupEvents.off(NEW_PM_MESSAGE, pmNotify);
+			offRealtime(REALTIME_EVENT.NEW_PM_MESSAGE, pmNotify);
 		}
 	};
 	//#endregion
@@ -6894,13 +6651,9 @@ createHTML: (html) => {
 	*/
 	function djNotificationCheck() {
 		setTimeout(() => {
-			const queuPositionInfo = getQueuePosition();
-			if (!queuPositionInfo) {
-				logError(MODULE_ID$1, "Could not get Queue Position info from the DOM");
-				return;
-			}
-			const { position, total } = queuPositionInfo;
-			if (typeof position !== "number") {
+			const position = window.QueUp.room.queue.getMyPosition();
+			const total = window.QueUp.room.queue.getRoomQueue().length;
+			if (typeof position !== "number" || position <= 0) {
 				logDebug(MODULE_ID$1, "User it not in the queue");
 				return;
 			}
@@ -6910,7 +6663,7 @@ createHTML: (html) => {
 				logInfo(MODULE_ID$1, "Could not parse setting, defaulting to 2");
 			}
 			if (parseSetting === 0) {
-				const currentDj = getCurrentDjEl()?.textContent?.trim()?.toLowerCase();
+				const currentDj = window.QueUp.room.getCurrentDJ()?.username?.toLowerCase();
 				const user = getUserName().toLowerCase();
 				if (currentDj && user && currentDj === user) notify();
 				else if (position === total) {
@@ -6952,11 +6705,11 @@ createHTML: (html) => {
 		turnOn() {
 			notifyCheckPermission().then(() => {
 				djNotificationCheck();
-				queupEvents.on(PLAYER_ADVANCE, djNotificationCheck);
+				onQueup(QUEUP_EVENT.SONG_CHANGED, djNotificationCheck);
 			});
 		},
 		turnOff() {
-			queupEvents.off(PLAYER_ADVANCE, djNotificationCheck);
+			offQueup(QUEUP_EVENT.SONG_CHANGED, djNotificationCheck);
 		}
 	};
 	//#endregion
@@ -7133,6 +6886,17 @@ createHTML: (html) => {
 	//#endregion
 	//#region src/lib/modules/showDubsOnHover.js
 	/**
+	* Show Dubs on hover module
+	* @module showDubsOnHover
+	*
+	* The way this works is that we listen for events from the queup API for upDubs, downDubs, and grabs.
+	* When we get an event, we update our local state with the new information.
+	* We also listen for when the song changes, and reset our state when that happens.
+	*
+	* The actual display of the dubs is handled by a Svelte component called {@link DubsInfo},
+	* which is mounted when the user hovers over the upDub, downDub, or grab buttons.
+	*/
+	/**
 	* @param {string} userid
 	* @returns {Promise<string>}
 	*/
@@ -7192,8 +6956,9 @@ createHTML: (html) => {
 		dubsState.downDubs = [];
 		dubsState.upDubs = [];
 		dubsState.grabs = [];
-		if (window.dubplus.roomId) {
-			const dubsURL = activeDubs(window.dubplus.roomId);
+		const roomId = getRoomId();
+		if (roomId) {
+			const dubsURL = activeDubs(roomId);
 			fetch(dubsURL).then((response) => response.json()).then((response) => {
 				updateUpdubs(response.data.upDubs || []);
 				updateGrabs(response.data.grabs || []);
@@ -7251,9 +7016,9 @@ createHTML: (html) => {
 		category: "general",
 		turnOn() {
 			resetDubs();
-			queupEvents.on(DUB, dubWatcher);
-			queupEvents.on(GRAB, grabWatcher);
-			queupEvents.on(PLAYER_ADVANCE, resetDubs);
+			onRealtime(REALTIME_EVENT.DUB, dubWatcher);
+			onRealtime(REALTIME_EVENT.GRAB, grabWatcher);
+			onQueup(QUEUP_EVENT.SONG_CHANGED, resetDubs);
 			updubHoverTeardown = delegateHoverMount(getDubUp, DubsInfo, (target) => {
 				const rect = target.getBoundingClientRect();
 				return {
@@ -7289,9 +7054,9 @@ createHTML: (html) => {
 			});
 		},
 		turnOff() {
-			queupEvents.off(DUB, dubWatcher);
-			queupEvents.off(GRAB, grabWatcher);
-			queupEvents.off(PLAYER_ADVANCE, resetDubs);
+			offRealtime(REALTIME_EVENT.DUB, dubWatcher);
+			offRealtime(REALTIME_EVENT.GRAB, grabWatcher);
+			offQueup(QUEUP_EVENT.SONG_CHANGED, resetDubs);
 			if (typeof updubHoverTeardown === "function") {
 				updubHoverTeardown();
 				updubHoverTeardown = null;
@@ -7860,7 +7625,7 @@ createHTML: (html) => {
 		description: "community-theme.description",
 		category: "customize",
 		turnOn() {
-			fetch(`https://api.queup.net/room/${window.dubplus.roomId}`).then((response) => response.json()).then((e) => {
+			fetch(`https://api.queup.net/room/${getRoomId()}`).then((response) => response.json()).then((e) => {
 				const content = e.data.description;
 				const themeCheck = /* @__PURE__ */ new RegExp(/(@dub(x|plus|\+)=)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/, "i");
 				let community = null;
@@ -8065,7 +7830,7 @@ createHTML: (html) => {
 			content: `${MODULE_ID}.modal.content`,
 			placeholder: `${MODULE_ID}.modal.placeholder`,
 			defaultValue: `${MODULE_ID}.modal.defaultValue`,
-			maxlength: 10,
+			maxlength: 3,
 			validation(value) {
 				if (value.trim() === "") return true;
 				const num = parseInt(value, 10);
@@ -8081,7 +7846,7 @@ createHTML: (html) => {
 	* @param {import("../../types/events").GrabEvent} e
 	*/
 	function onGrab(e) {
-		if (e.user._id === window.dubplus.userId) {
+		if (e.user._id === getUserId()) {
 			const message = settings.custom["grab-response"];
 			if (message) sendChatMessage(message);
 		}
@@ -8098,10 +7863,10 @@ createHTML: (html) => {
 		description: "grab-response.description",
 		category: "general",
 		turnOn() {
-			queupEvents.on(GRAB, onGrab);
+			onRealtime(REALTIME_EVENT.GRAB, onGrab);
 		},
 		turnOff() {
-			queupEvents.off(GRAB, onGrab);
+			offRealtime(REALTIME_EVENT.GRAB, onGrab);
 		},
 		custom: {
 			title: "grab-response.modal.title",
@@ -8220,6 +7985,10 @@ createHTML: (html) => {
 	var root$12 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
 	function General($$anchor, $$props) {
 		push($$props, true);
+		general.forEach((module) => {
+			const chatCommandConfig = getCommandConfig(module);
+			window.QueUp.chat.registerCommand(chatCommandConfig);
+		});
 		var fragment = root$12();
 		var node = first_child(fragment);
 		{
@@ -8276,21 +8045,17 @@ createHTML: (html) => {
 	function Eta($$anchor, $$props) {
 		push($$props, true);
 		let eta = /* @__PURE__ */ state("ETA");
+		const average_song_minutes = 4;
 		/**
 		* @returns {string}
 		*/
 		function getEta() {
-			const booth_position = getQueuePosition()?.position;
-			if (typeof booth_position !== "number") return t("Eta.tooltip.notInQueue");
-			const average_song_minutes = 4;
-			const current_time = getCurrentSongTime();
-			if (current_time !== null) {
-				const [minutes, seconds] = current_time;
-				const booth_time = (booth_position - 1) * average_song_minutes + minutes;
-				if (booth_time >= 0) return t("Eta.tootltip", { time: `${booth_time}m ${seconds}s` });
-				else return t("Eta.tooltip.notInQueue");
-			}
-			return "something went wrong";
+			const booth_position = window.QueUp.room.queue.getMyPosition();
+			if (typeof booth_position !== "number" || booth_position <= 0) return t("Eta.tooltip.notInQueue");
+			const { minutes, seconds } = getRemainingTimeForCurrentSong();
+			const booth_time = (booth_position - 1) * average_song_minutes + minutes;
+			if (booth_time >= 0) return t("Eta.tootltip", { time: `${booth_time}m ${seconds}s` });
+			else return t("Eta.tooltip.notInQueue");
 		}
 		var button = root$11();
 		action(button, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({ to: getPlayerButtonsContainer }));
@@ -8361,10 +8126,10 @@ createHTML: (html) => {
 		var consequent_1 = ($$anchor) => {
 			var textarea = root_1$2();
 			remove_textarea_child(textarea);
-			template_effect(() => {
+			template_effect(($0) => {
 				set_attribute(textarea, "placeholder", modalState.placeholder);
-				set_attribute(textarea, "maxlength", modalState.maxlength && modalState.maxlength < 999 ? modalState.maxlength : 999);
-			});
+				set_attribute(textarea, "maxlength", $0);
+			}, [() => Math.min(modalState.maxlength ?? 999, 999)]);
 			bind_value(textarea, () => modalState.value, ($$value) => modalState.value = $$value);
 			append($$anchor, textarea);
 		};
@@ -8404,13 +8169,19 @@ createHTML: (html) => {
 				if (typeof modalState.onCancel === "function") modalState.onCancel();
 			});
 			delegated("click", button_1, () => {
+				const isValidLength = (modalState.value?.trim() ?? "").length <= Math.min(modalState.maxlength ?? 999, 999);
 				const isValidOrErrorMessage = modalState.validation?.(modalState.value ?? "") ?? true;
-				if (isValidOrErrorMessage === true) {
+				if (isValidOrErrorMessage === true && isValidLength) {
 					dialog.close();
 					modalState.open = false;
 					modalState.onConfirm?.(modalState.value ?? "");
 					set(errorMessage, "");
-				} else set(errorMessage, isValidOrErrorMessage, true);
+					return;
+				}
+				const errorMessages = [];
+				if (typeof isValidOrErrorMessage === "string") errorMessages.push(isValidOrErrorMessage);
+				if (!isValidLength) errorMessages.push(t("Modal.validation.maxlength", { maxlength: Math.min(modalState.maxlength ?? 999, 999) }));
+				set(errorMessage, errorMessages.join("\n"), true);
 			});
 			append($$anchor, fragment);
 		};
@@ -8853,6 +8624,10 @@ createHTML: (html) => {
 	var root$6 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
 	function UserInterface($$anchor, $$props) {
 		push($$props, true);
+		userInterface.forEach((module) => {
+			const chatCommandConfig = getCommandConfig(module);
+			window.QueUp.chat.registerCommand(chatCommandConfig);
+		});
 		var fragment = root$6();
 		var node = first_child(fragment);
 		{
@@ -8941,6 +8716,8 @@ createHTML: (html) => {
 		push($$props, true);
 		settingsModules.forEach((module) => {
 			if (!settings.options[module.id]) settings.options[module.id] = false;
+			const chatCommandConfig = getCommandConfig(module);
+			window.QueUp.chat.registerCommand(chatCommandConfig);
 		});
 		var fragment = root$5();
 		var node = first_child(fragment);
@@ -8994,6 +8771,10 @@ createHTML: (html) => {
 	var root$4 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
 	function Customize($$anchor, $$props) {
 		push($$props, true);
+		customize.forEach((module) => {
+			const chatCommandConfig = getCommandConfig(module);
+			window.QueUp.chat.registerCommand(chatCommandConfig);
+		});
 		var fragment = root$4();
 		var node = first_child(fragment);
 		{
@@ -9078,7 +8859,7 @@ createHTML: (html) => {
 		function revert() {
 			set(tooltip, t("SnoozeVideo.tooltip"), true);
 			set(isSnoozed, false);
-			queupEvents.off(PLAYER_ADVANCE, revert);
+			offQueup(QUEUP_EVENT.SONG_CHANGED, revert);
 		}
 		/**
 		* Hide the video
@@ -9087,11 +8868,11 @@ createHTML: (html) => {
 			if (!get(isSnoozed)) {
 				set(tooltip, t("SnoozeVideo.tooltip.undo"), true);
 				set(isSnoozed, true);
-				queupEvents.on(PLAYER_ADVANCE, revert);
+				onQueup(QUEUP_EVENT.SONG_CHANGED, revert);
 			} else revert();
 		}
 		onDestroy(() => {
-			queupEvents.off(PLAYER_ADVANCE, revert);
+			offQueup(QUEUP_EVENT.SONG_CHANGED, revert);
 		});
 		var fragment = root_1();
 		var button = first_child(fragment);
@@ -9198,14 +8979,6 @@ createHTML: (html) => {
 	}
 	//#endregion
 	//#region src/utils/route.js
-	/**
-	* QueUp v2 is a React SPA: clicking from /lobby into a room is a client side
-	* route change, not a page load. Content scripts only inject on real
-	* navigations, so Dub+ has to notice route changes itself and mount/unmount
-	* around them. The Navigation API reports SPA pushes, back/forward and
-	* fragment changes as one event, which is all we need.
-	*/
-	var ROOM_PATH = /^\/join\/([^/]+)/;
 	/** Fired on window whenever the SPA finishes navigating. */
 	var ROUTE_EVENT = "dubplus:routechange";
 	/**
@@ -9215,7 +8988,7 @@ createHTML: (html) => {
 	function getRoomSlug(url = window.location.href) {
 		try {
 			const { pathname } = new URL(url, window.location.origin);
-			return pathname.match(ROOM_PATH)?.[1] ?? null;
+			return pathname.startsWith("/join/") ? pathname.split("/")[2] : null;
 		} catch (err) {
 			logDebug("could not parse the url", url, err);
 			return null;
@@ -9261,23 +9034,18 @@ createHTML: (html) => {
 	if (!loadedAsExtension) loadDubPlusCSSforBookmarklet();
 	/**
 	* The room we're mounted in, or the one we're in the middle of mounting into.
-	* Null when neither. Mounting is async - it waits for QueUp to render the room
-	* - so this has to be claimed up front: two route events can land before the
-	* first mount finishes, and without it the second would start a mount of its
-	* own and we'd end up with two apps.
+	* Null when neither.
 	* @type {string | null}
 	*/
 	var currentRoom = null;
 	/**
 	* Bumped on every mount and unmount so a pending mount can tell it's stale.
-	* `currentRoom` alone isn't enough: leaving a room and coming straight back
-	* re-claims the same slug, and the first mount would happily finish into it.
 	*/
 	var mountToken = 0;
 	/** @type {Record<string, any> | null} */
 	var app = null;
 	function unmountDubPlus() {
-		mountToken++;
+		mountToken = mountToken += 1;
 		logDebug(`unmounting from room "${currentRoom}" mountToken=${mountToken}`);
 		currentRoom = null;
 		if (app) {
@@ -9291,11 +9059,11 @@ createHTML: (html) => {
 	* @param {string} roomSlug
 	*/
 	async function mountDubPlus(roomSlug) {
-		const token = ++mountToken;
+		const token = mountToken += 1;
 		logDebug(`mounting in room "${roomSlug}" mountToken=${token}`);
 		currentRoom = roomSlug;
 		try {
-			await waitFor(() => !!getChatInput(), { seconds: 30 });
+			await waitFor(() => isQueupReady() && !!getChatInput(), { seconds: 10 });
 		} catch {
 			logWarn(`room UI never showed up for "${roomSlug}", not mounting`);
 			if (token === mountToken) currentRoom = null;
@@ -9305,8 +9073,8 @@ createHTML: (html) => {
 			logDebug(`skipping a stale mount for "${roomSlug}"`);
 			return;
 		}
-		if (!window.dubplus.roomId) resolveQueupIds();
-		if (window.dubplus.roomId) setupModCheck(window.dubplus.roomId);
+		const roomId = getRoomId();
+		if (roomId) setupModCheck(roomId);
 		else logWarn(`Failed to resolve room ID for "${roomSlug}", mod check not set up`);
 		const container = document.createElement("div");
 		container.id = "dubplus-container";
@@ -9316,22 +9084,28 @@ createHTML: (html) => {
 	}
 	function syncToRoute() {
 		const roomSlug = getRoomSlug();
-		if (roomSlug === currentRoom) return;
+		if (roomSlug === currentRoom) {
+			logDebug(`already mounted in room "${roomSlug}"`);
+			return;
+		}
 		if (currentRoom) {
 			logInfo(`leaving room "${currentRoom}"`);
 			unmountDubPlus();
 		}
-		if (!roomSlug) return;
-		window.dubplus.roomId = void 0;
-		waitForQueupIds();
+		if (!roomSlug) {
+			logDebug("not in a room, not mounting");
+			return;
+		}
 		mountDubPlus(roomSlug);
 	}
 	window.dubplus.__teardown?.();
 	document.getElementById("dubplus-container")?.remove();
 	var stopRouteListener = onRouteChange(syncToRoute);
 	window.dubplus.__teardown = () => {
+		logDebug("tearing down Dub+");
 		stopRouteListener();
 		unmountDubPlus();
+		clearAllEventHandlers();
 	};
 	syncToRoute();
 	//#endregion
