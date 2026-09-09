@@ -5281,6 +5281,8 @@ createHTML: (html) => {
 		"Modal.close": "Close",
 		"Modal.defaultValue": "Default Value",
 		"Modal.validation.maxlength": "Value exceeds maximum length of {{maxlength}}",
+		"SlashCommand.args": "Customize by adding arguments. Example: /afk I am away",
+		"SlashCommand.invalid.value": "Invalid value for slash command",
 		"Error.modal.title": "Dub+ Error",
 		"Error.modal.loggedout": "You're not logged in. Please login to use Dub+.",
 		"Error.unknown": "Something went wrong starting Dub+. Please refresh and try again.",
@@ -5987,13 +5989,16 @@ createHTML: (html) => {
 	* @returns {import('../types/global').ExternalChatCommand}
 	*/
 	function getCommandConfig(module) {
+		const description = [t(module.description)];
+		if (module.custom) description.push(t("SlashCommand.args"));
 		/**
 		* @type {import('../types/global').ExternalChatCommand}
 		*/
 		const chatCommandConfig = {
 			name: module.id,
 			usage: `/${module.id}`,
-			description: "Dub+ - " + t(module.description),
+			description: description.join(" "),
+			appName: "Dub+",
 			run: (context) => {
 				/**
 				* Example usage:
@@ -6035,9 +6040,9 @@ createHTML: (html) => {
 		const validationResult = module.custom?.validation ? module.custom.validation(argsValue) : true;
 		const exceedsMaxLength = argsValue.length > maxLength;
 		if (validationResult !== true || exceedsMaxLength) {
-			const errorMessages = [`Invalid value for /${module.id}: "${argsValue}".`];
+			const errorMessages = [t("SlashCommand.invalid.value")];
 			if (typeof validationResult === "string") errorMessages.push(validationResult);
-			if (exceedsMaxLength) errorMessages.push(t("Modal.validation.maxlength", { maxlength: Math.min(modalState.maxlength ?? 999, 999) }));
+			if (exceedsMaxLength) errorMessages.push(t("Modal.validation.maxlength", { maxlength: Math.min(module.custom?.maxlength ?? 999, 999) }));
 			window.alert(errorMessages.join("\n"));
 			return;
 		}
@@ -6098,7 +6103,7 @@ createHTML: (html) => {
 	//#endregion
 	//#region src/lib/menu/MenuSwitch.svelte
 	var root$16 = /* @__PURE__ */ from_html(`<button type="button" class="svelte-1aj88xa"><!> <span class="sr-only"> </span></button>`);
-	var root_1$4 = /* @__PURE__ */ from_html(`<li><!> <!> <!></li>`);
+	var root_1$4 = /* @__PURE__ */ from_html(`<li><div class="menu-switch-content svelte-1aj88xa"><!> <!> <!></div> <div class="menu-switch-command svelte-1aj88xa"> </div></li>`);
 	function MenuSwitch($$anchor, $$props) {
 		push($$props, true);
 		/**
@@ -6130,7 +6135,8 @@ createHTML: (html) => {
 		});
 		var li = root_1$4();
 		let classes;
-		var node = child(li);
+		var div = child(li);
+		var node = child(div);
 		{
 			let $0 = /* @__PURE__ */ user_derived(() => $$props.modOnly ? !isMod(getUserId()) : false);
 			let $1 = /* @__PURE__ */ user_derived(() => t($$props.label));
@@ -6193,11 +6199,16 @@ createHTML: (html) => {
 		if_block(node_3, ($$render) => {
 			if ($$props.secondaryAction) $$render(consequent_1);
 		});
+		reset$1(div);
+		var div_1 = sibling(div, 2);
+		var text_2 = child(div_1);
+		reset$1(div_1);
 		reset$1(li);
 		template_effect(($0, $1) => {
 			set_attribute(li, "id", `dubplus-${$$props.id}`);
 			set_attribute(li, "title", $0);
 			classes = set_class(li, 1, "svelte-1aj88xa", null, classes, $1);
+			set_text(text_2, `/${$$props.id ?? ""}`);
 		}, [() => t($$props.description), () => ({ disabled: $$props.modOnly ? !isMod(getUserId()) : false })]);
 		append($$anchor, li);
 		pop();
@@ -6801,7 +6812,7 @@ createHTML: (html) => {
 		push($$props, true);
 		/**
 		* @typedef {object} DubsInfoProps
-		* @property {string} dubType "updub" | "downdub" | "grab"
+		* @property {import('../stores/dubsState.svelte.js').DubType} dubType
 		* @property {object} position the position of the hover target
 		* @property {number} position.top
 		* @property {number} position.left
@@ -6901,55 +6912,37 @@ createHTML: (html) => {
 	* @returns {Promise<string>}
 	*/
 	function getUserNameFromId(userid) {
-		return new Promise((resolve, reject) => {
-			fetch(userData(userid)).then((response) => response.json()).then((response) => {
-				if (response?.data?.username) {
-					const { username } = response.data;
-					resolve(username);
-				} else reject("Failed to get username from API for userid: " + userid);
-			}).catch(reject);
+		return fetch(userData(userid)).then((response) => response.json()).then((response) => {
+			if (!response?.data?.username) throw new Error("Failed to get username from API for userid: " + userid);
+			return response.data.username;
 		});
 	}
 	/**
-	* @param {Array<{ userid: string}>} updubs
+	* Pushes {userid, username} onto the given dub type's list, unless it's
+	* already there. Safe to call from racing async callbacks since the
+	* presence check and the push happen without an intervening await.
+	* @param {import("../stores/dubsState.svelte.js").DubType} dubType
+	* @param {string} userid
+	* @param {string} username
 	*/
-	function updateUpdubs(updubs) {
-		updubs?.forEach((dub) => {
-			if (dubsState.upDubs.find((el) => el.userid === dub.userid)) return;
-			getUserNameFromId(dub.userid).then((username) => {
-				dubsState.upDubs.push({
-					userid: dub.userid,
-					username
-				});
-			}).catch((error) => logError("Failed to get username for upDubs:", error));
+	function addDubIfAbsent(dubType, userid, username) {
+		const list = getDubCount(dubType);
+		if (list.find((el) => el.userid === userid)) return;
+		list.push({
+			userid,
+			username
 		});
 	}
 	/**
-	* @param {Array<{ userid: string}>} downdubs
+	* Resolves usernames for a batch of dubs (from the initial API fetch) and
+	* adds each one to state.
+	* @param {import("../stores/dubsState.svelte.js").DubType} dubType
+	* @param {Array<{ userid: string }>} [dubs]
 	*/
-	function updateDowndubs(downdubs) {
-		downdubs?.forEach((dub) => {
-			if (dubsState.downDubs.find((el) => el.userid === dub.userid)) return;
-			getUserNameFromId(dub.userid).then((username) => {
-				dubsState.downDubs.push({
-					userid: dub.userid,
-					username
-				});
-			}).catch((error) => logError("Failed to get username for downDubs", error));
-		});
-	}
-	/**
-	* @param {Array<{ userid: string}>} grabs
-	*/
-	function updateGrabs(grabs) {
-		grabs.forEach((grab) => {
-			if (dubsState.grabs.find((el) => el.userid === grab.userid)) return;
-			getUserNameFromId(grab.userid).then((username) => {
-				dubsState.grabs.push({
-					userid: grab.userid,
-					username
-				});
-			}).catch((error) => logError("Failed to get username for grab", error));
+	function updateDubs(dubType, dubs) {
+		dubs?.forEach(({ userid }) => {
+			if (getDubCount(dubType).find((el) => el.userid === userid)) return;
+			getUserNameFromId(userid).then((username) => addDubIfAbsent(dubType, userid, username)).catch((error) => logError(`Failed to get username for ${dubType}s:`, error));
 		});
 	}
 	function resetDubs() {
@@ -6960,28 +6953,21 @@ createHTML: (html) => {
 		if (roomId) {
 			const dubsURL = activeDubs(roomId);
 			fetch(dubsURL).then((response) => response.json()).then((response) => {
-				updateUpdubs(response.data.upDubs || []);
-				updateGrabs(response.data.grabs || []);
-				updateDowndubs(response.data.downDubs || []);
+				updateDubs("updub", response.data.upDubs);
+				updateDubs("grab", response.data.grabs);
+				updateDubs("downdub", response.data.downDubs);
 			}).catch((error) => logError("Failed to fetch dubs data from API.", error));
 		}
 	}
 	/**
 	* @param {import("../../types/events.js").DubEvent} e
-	* @returns
 	*/
 	function dubWatcher(e) {
 		if (e.dubtype === "updub") {
-			if (!dubsState.upDubs.find((el) => el.userid === e.user._id)) dubsState.upDubs.push({
-				userid: e.user._id,
-				username: e.user.username
-			});
+			addDubIfAbsent("updub", e.user._id, e.user.username);
 			dubsState.downDubs = dubsState.downDubs.filter((el) => el.userid !== e.user._id);
 		} else if (e.dubtype === "downdub") {
-			if (!dubsState.downDubs.find((el) => el.userid === e.user._id)) dubsState.downDubs.push({
-				userid: e.user._id,
-				username: e.user.username
-			});
+			addDubIfAbsent("downdub", e.user._id, e.user.username);
 			dubsState.upDubs = dubsState.upDubs.filter((el) => el.userid !== e.user._id);
 		}
 	}
@@ -6989,10 +6975,26 @@ createHTML: (html) => {
 	* @param {import("../../types/events.js").GrabEvent} e
 	*/
 	function grabWatcher(e) {
-		if (!dubsState.grabs.find((el) => el.userid === e.user._id)) dubsState.grabs.push({
-			userid: e.user._id,
-			username: e.user.username
-		});
+		addDubIfAbsent("grab", e.user._id, e.user.username);
+	}
+	/**
+	* @param {import("../stores/dubsState.svelte.js").DubType} dubType
+	* @param {Element} target
+	* @returns {{
+	*   dubType: import("../stores/dubsState.svelte.js").DubType,
+	*   position: { top: number, left: number, right: number },
+	* }}
+	*/
+	function buildHoverProps(dubType, target) {
+		const rect = target.getBoundingClientRect();
+		return {
+			dubType,
+			position: {
+				top: rect.top,
+				left: rect.left,
+				right: window.innerWidth - rect.right
+			}
+		};
 	}
 	/**
 	* @type {ReturnType<typeof delegateHoverMount> | null}
@@ -7019,39 +7021,9 @@ createHTML: (html) => {
 			onRealtime(REALTIME_EVENT.DUB, dubWatcher);
 			onRealtime(REALTIME_EVENT.GRAB, grabWatcher);
 			onQueup(QUEUP_EVENT.SONG_CHANGED, resetDubs);
-			updubHoverTeardown = delegateHoverMount(getDubUp, DubsInfo, (target) => {
-				const rect = target.getBoundingClientRect();
-				return {
-					dubType: "updub",
-					position: {
-						top: rect.top,
-						left: rect.left,
-						right: window.innerWidth - rect.right
-					}
-				};
-			});
-			downdubHoverTeardown = delegateHoverMount(getDubDown, DubsInfo, (target) => {
-				const rect = target.getBoundingClientRect();
-				return {
-					dubType: "downdub",
-					position: {
-						top: rect.top,
-						left: rect.left,
-						right: window.innerWidth - rect.right
-					}
-				};
-			});
-			grabHoverTeardown = delegateHoverMount(getAddToPlaylist, DubsInfo, (target) => {
-				const rect = target.getBoundingClientRect();
-				return {
-					dubType: "grab",
-					position: {
-						top: rect.top,
-						left: rect.left,
-						right: window.innerWidth - rect.right
-					}
-				};
-			});
+			updubHoverTeardown = delegateHoverMount(getDubUp, DubsInfo, (target) => buildHoverProps("updub", target));
+			downdubHoverTeardown = delegateHoverMount(getDubDown, DubsInfo, (target) => buildHoverProps("downdub", target));
+			grabHoverTeardown = delegateHoverMount(getAddToPlaylist, DubsInfo, (target) => buildHoverProps("grab", target));
 		},
 		turnOff() {
 			offRealtime(REALTIME_EVENT.DUB, dubWatcher);
@@ -8916,6 +8888,15 @@ createHTML: (html) => {
 		push($$props, true);
 		onMount(() => {
 			document.querySelector("html")?.classList.add("dubplus");
+			window.QueUp.chat.registerCommand({
+				name: "dubplus",
+				usage: `/dubplus`,
+				description: `Toggle the Dub+ menu`,
+				appName: "Dub+",
+				run: () => {
+					document.querySelector(".dubplus-menu")?.classList.toggle("dubplus-menu-open");
+				}
+			});
 			return () => document.querySelector("html")?.classList.remove("dubplus");
 		});
 		var fragment = root();
