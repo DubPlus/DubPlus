@@ -1,5 +1,5 @@
-import { clickVoteUp } from '../queup';
-import { PLAYER_ADVANCE, queupEvents } from '../../utils/events';
+import { QUEUP_EVENT } from '../../events-constants';
+import { clickVoteUp, onQueup, offQueup } from '../queup.v2';
 
 /**
  * @type {import("./module").DubPlusModule}
@@ -11,9 +11,9 @@ export const autovote = {
   category: 'general',
   turnOn() {
     clickVoteUp();
-    queupEvents.on(PLAYER_ADVANCE, clickVoteUp);
+    onQueup(QUEUP_EVENT.SONG_CHANGED, clickVoteUp);
   },
   turnOff() {
-    queupEvents.off(PLAYER_ADVANCE, clickVoteUp);
+    offQueup(QUEUP_EVENT.SONG_CHANGED, clickVoteUp);
   },
 };

@@ -4,6 +4,12 @@
   import MenuSwitch from '../menu/MenuSwitch.svelte';
   import { general } from '../modules';
   import { t } from '../stores/i18n.svelte';
+  import { getCommandConfig } from '../../utils/module-setup-utils.js';
+
+  general.forEach((module) => {
+    const chatCommandConfig = getCommandConfig(module);
+    window.QueUp.chat.registerCommand(chatCommandConfig);
+  });
 </script>
 
 <MenuHeader settingsId="general" name={t('general.title')} />

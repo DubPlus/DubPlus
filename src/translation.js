@@ -7,6 +7,8 @@ export const translations = {
     'Modal.cancel': 'Cancel',
     'Modal.close': 'Close',
     'Modal.defaultValue': 'Default Value',
+    'Modal.validation.maxlength':
+      'Value exceeds maximum length of {{maxlength}}',
 
     'Error.modal.title': 'Dub+ Error',
     'Error.modal.loggedout': "You're not logged in. Please login to use Dub+.",

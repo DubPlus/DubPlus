@@ -1,9 +1,9 @@
 import { notifyCheckPermission, showNotification } from '../../utils/notify';
 import { settings } from '../stores/settings.svelte';
 import { t } from '../stores/i18n.svelte';
-import { NEW_PM_MESSAGE } from '../../events-constants';
+import { REALTIME_EVENT } from '../../events-constants';
 import { getPrivateMessageButton } from '../queup.ui';
-import { queupEvents } from '../../utils/events.js';
+import { getUserId, onRealtime, offRealtime } from '../queup.v2';
 
 /**
  *
@@ -11,7 +11,7 @@ import { queupEvents } from '../../utils/events.js';
  * @returns
  */
 function pmNotify(e) {
-  if (window.dubplus.userId === e.userid) {
+  if (getUserId() === e.userid) {
     return;
   }
   showNotification({
@@ -35,7 +35,7 @@ export const pmNotifications = {
   turnOn() {
     notifyCheckPermission()
       .then(() => {
-        queupEvents.on(NEW_PM_MESSAGE, pmNotify);
+        onRealtime(REALTIME_EVENT.NEW_PM_MESSAGE, pmNotify);
       })
       .catch(() => {
         // turn back off until it's granted
@@ -43,6 +43,6 @@ export const pmNotifications = {
       });
   },
   turnOff() {
-    queupEvents.off(NEW_PM_MESSAGE, pmNotify);
+    offRealtime(REALTIME_EVENT.NEW_PM_MESSAGE, pmNotify);
   },
 };

@@ -1,4 +1,4 @@
-import { toggleMute } from '../queup';
+import { toggleMute } from '../queup.v2';
 
 /**
  * @param {KeyboardEvent} e

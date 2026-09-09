@@ -1,5 +1,6 @@
 import { logError, logInfo } from '../../utils/logger';
 import { COMMUNITY_CSS_ID, style } from '../../utils/css';
+import { getRoomId } from '../queup.v2';
 
 /**
  * Community Theme
@@ -27,7 +28,7 @@ export const communityTheme = {
   description: 'community-theme.description',
   category: 'customize',
   turnOn() {
-    fetch(`https://api.queup.net/room/${window.dubplus.roomId}`)
+    fetch(`https://api.queup.net/room/${getRoomId()}`)
       .then((response) => response.json())
       .then((e) => {
         const content = e.data.description;

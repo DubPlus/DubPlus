@@ -5,11 +5,14 @@
   import { settings } from '../stores/settings.svelte';
   import { settingsModules } from '../modules';
   import { t } from '../stores/i18n.svelte';
+  import { getCommandConfig } from '../../utils/module-setup-utils';
 
   settingsModules.forEach((module) => {
     if (!settings.options[module.id]) {
       settings.options[module.id] = false;
     }
+    const chatCommandConfig = getCommandConfig(module);
+    window.QueUp.chat.registerCommand(chatCommandConfig);
   });
 </script>
 

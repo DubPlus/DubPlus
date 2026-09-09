@@ -27,7 +27,7 @@ export function updateModalState(nextState) {
   modalState.content = nextState.content || '';
   modalState.value = nextState.value || '';
   modalState.placeholder = nextState.placeholder || '';
-  modalState.defaultValue = nextState.defaultValue;
+  modalState.defaultValue = nextState.defaultValue || '';
   modalState.maxlength = nextState.maxlength || 999;
   modalState.onConfirm = nextState.onConfirm;
   modalState.onCancel = nextState.onCancel;

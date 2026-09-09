@@ -1,9 +1,27 @@
+/**
+ * Show Dubs on hover module
+ * @module showDubsOnHover
+ *
+ * The way this works is that we listen for events from the queup API for upDubs, downDubs, and grabs.
+ * When we get an event, we update our local state with the new information.
+ * We also listen for when the song changes, and reset our state when that happens.
+ *
+ * The actual display of the dubs is handled by a Svelte component called {@link DubsInfo},
+ * which is mounted when the user hovers over the upDub, downDub, or grab buttons.
+ */
 import { logError } from '../../utils/logger.js';
 import { dubsState } from '../stores/dubsState.svelte.js';
-import { queupEvents, DUB, GRAB, PLAYER_ADVANCE } from '../../utils/events.js';
+import { QUEUP_EVENT, REALTIME_EVENT } from '../../events-constants.js';
 import { activeDubs, userData } from '../api.js';
 import { delegateHoverMount } from '../../utils/delegateHoverMount.js';
 import { getDubUp, getDubDown, getAddToPlaylist } from '../queup.ui.js';
+import {
+  getRoomId,
+  onQueup,
+  offQueup,
+  onRealtime,
+  offRealtime,
+} from '../queup.v2.js';
 import DubsInfo from '../satellites/DubsInfo.svelte';
 
 /**
@@ -97,8 +115,9 @@ function resetDubs() {
   dubsState.grabs = [];
 
   // hit the API to get the current dubs
-  if (window.dubplus.roomId) {
-    const dubsURL = activeDubs(window.dubplus.roomId);
+  const roomId = getRoomId();
+  if (roomId) {
+    const dubsURL = activeDubs(roomId);
     fetch(dubsURL)
       .then((response) => response.json())
       .then((response) => {
@@ -177,9 +196,9 @@ export const showDubsOnHover = {
   category: 'general',
   turnOn() {
     resetDubs();
-    queupEvents.on(DUB, dubWatcher);
-    queupEvents.on(GRAB, grabWatcher);
-    queupEvents.on(PLAYER_ADVANCE, resetDubs);
+    onRealtime(REALTIME_EVENT.DUB, dubWatcher);
+    onRealtime(REALTIME_EVENT.GRAB, grabWatcher);
+    onQueup(QUEUP_EVENT.SONG_CHANGED, resetDubs);
 
     // setup hover listener
     updubHoverTeardown = delegateHoverMount(getDubUp, DubsInfo, (target) => {
@@ -226,9 +245,9 @@ export const showDubsOnHover = {
   },
 
   turnOff() {
-    queupEvents.off(DUB, dubWatcher);
-    queupEvents.off(GRAB, grabWatcher);
-    queupEvents.off(PLAYER_ADVANCE, resetDubs);
+    offRealtime(REALTIME_EVENT.DUB, dubWatcher);
+    offRealtime(REALTIME_EVENT.GRAB, grabWatcher);
+    offQueup(QUEUP_EVENT.SONG_CHANGED, resetDubs);
     if (typeof updubHoverTeardown === 'function') {
       updubHoverTeardown();
       updubHoverTeardown = null;

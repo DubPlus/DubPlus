@@ -6,7 +6,7 @@ import { logDebug, logInfo, logWarn } from './utils/logger';
 import { getRoomSlug, onRouteChange } from './utils/route';
 import { waitFor } from './utils/waitFor';
 import { getChatInput } from './lib/queup.ui';
-import { resolveQueupIds, waitForQueupIds } from './utils/queup-ids';
+import { clearAllEventHandlers, getRoomId, isQueupReady } from './lib/queup.v2';
 import { setupModCheck, teardownModCheck } from './utils/modcheck';
 
 window.dubplus = window.dubplus || {};
@@ -23,31 +23,22 @@ if (!loadedAsExtension) {
 /* ==========================================================================
  * Mounting
  *
- * Dub+ only makes sense inside a room, but as of QueUp v2 we can be loaded
- * anywhere on the site: the content script now matches every path so the
- * realtime tap gets installed before QueUp's bundle runs, no matter which page
- * the user lands on first.
- *
- * Every module's turnOn/turnOff already runs from MenuSwitch's
- * onMount/onDestroy, so mounting and unmounting the app is all it takes to
- * bind and rebind the whole feature set. That's also what makes room ->room
- * navigation work: modules that captured a DOM node in turnOn get a fresh one.
+ * Dub+ only works inside a room. But as of QueUp v2, we've updated the content
+ * script to match any page on the site so it can load in the lobby if the user
+ * lands there first. In this file we unmount Dub+ when a user leaves a room
+ * and mount it when they enter one, and we also handle the case where a user
+ * navigates to a room before Dub+ has finished loading.
  * ========================================================================== */
 
 /**
  * The room we're mounted in, or the one we're in the middle of mounting into.
- * Null when neither. Mounting is async - it waits for QueUp to render the room
- * - so this has to be claimed up front: two route events can land before the
- * first mount finishes, and without it the second would start a mount of its
- * own and we'd end up with two apps.
+ * Null when neither.
  * @type {string | null}
  */
 let currentRoom = null;
 
 /**
  * Bumped on every mount and unmount so a pending mount can tell it's stale.
- * `currentRoom` alone isn't enough: leaving a room and coming straight back
- * re-claims the same slug, and the first mount would happily finish into it.
  */
 let mountToken = 0;
 
@@ -56,7 +47,7 @@ let app = null;
 
 function unmountDubPlus() {
   // Also cancels any mount still waiting on the room UI.
-  mountToken++;
+  mountToken = mountToken += 1;
 
   logDebug(`unmounting from room "${currentRoom}" mountToken=${mountToken}`);
   currentRoom = null;
@@ -74,14 +65,14 @@ function unmountDubPlus() {
  * @param {string} roomSlug
  */
 async function mountDubPlus(roomSlug) {
-  const token = ++mountToken;
+  const token = (mountToken += 1);
   logDebug(`mounting in room "${roomSlug}" mountToken=${token}`);
   currentRoom = roomSlug;
 
   try {
     // On an SPA navigation the room UI is rendered after the route commits,
     // and turnOn handlers assume it's there.
-    await waitFor(() => !!getChatInput(), { seconds: 30 });
+    await waitFor(() => isQueupReady() && !!getChatInput(), { seconds: 10 });
   } catch {
     // Nothing retries after this: no further route event fires while we sit in
     // the room, so Dub+ stays down until the next navigation.
@@ -96,11 +87,12 @@ async function mountDubPlus(roomSlug) {
     return;
   }
 
-  if (!window.dubplus.roomId) {
-    resolveQueupIds();
-  }
-  if (window.dubplus.roomId) {
-    setupModCheck(window.dubplus.roomId);
+  // isQueupReady guarantees that getRoomId() returns a non-empty string,
+  // and the conditional just above checks to see if user has navigated away from the room,
+  // so this should always succeed. But if it doesn't, we don't want to leave the mod check hanging.
+  const roomId = getRoomId();
+  if (roomId) {
+    setupModCheck(roomId);
   } else {
     logWarn(
       `Failed to resolve room ID for "${roomSlug}", mod check not set up`,
@@ -120,20 +112,20 @@ async function mountDubPlus(roomSlug) {
 function syncToRoute() {
   const roomSlug = getRoomSlug();
 
-  if (roomSlug === currentRoom) return;
+  if (roomSlug === currentRoom) {
+    logDebug(`already mounted in room "${roomSlug}"`);
+    return;
+  }
 
   if (currentRoom) {
     logInfo(`leaving room "${currentRoom}"`);
     unmountDubPlus();
   }
 
-  if (!roomSlug) return;
-
-  // The room id changes with the room. The RealtimeManager bridge re-syncs it
-  // on reconnect, but the bookmarklet has no bridge, so clear it and let
-  // queup-ids find the new one.
-  window.dubplus.roomId = undefined;
-  waitForQueupIds();
+  if (!roomSlug) {
+    logDebug('not in a room, not mounting');
+    return;
+  }
 
   mountDubPlus(roomSlug);
 }
@@ -145,8 +137,9 @@ function syncToRoute() {
  * against a page that still has the old one running. Module scope doesn't
  * survive that, but the page does - and so does the old bundle's route
  * listener, which would keep mounting apps this bundle can't see or unmount.
- * So the previous load leaves a teardown on `window.dubplus` (the same pattern
- * as `__detachRealtimeBridge`) and we call it before installing our own.
+ * So the previous load leaves a teardown on `window.dubplus` and we call it
+ * before installing our own. Unmounting also runs every module's turnOff,
+ * which is what detaches their `window.QueUp` listeners.
  * ------------------------------------------------------------------------ */
 
 window.dubplus.__teardown?.();
@@ -157,8 +150,10 @@ document.getElementById('dubplus-container')?.remove();
 const stopRouteListener = onRouteChange(syncToRoute);
 
 window.dubplus.__teardown = () => {
+  logDebug('tearing down Dub+');
   stopRouteListener();
   unmountDubPlus();
+  clearAllEventHandlers();
 };
 
 syncToRoute();

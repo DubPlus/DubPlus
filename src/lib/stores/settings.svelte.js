@@ -82,7 +82,7 @@ function persist() {
  * @param {any} value
  */
 export function saveSetting(section, property, value) {
-  if (section === 'option') {
+  if (section === 'options') {
     settings.options[property] = value;
     persist();
     return;

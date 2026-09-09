@@ -78,7 +78,7 @@ export const autoAfk = {
     content: `${MODULE_ID}.modal.content`,
     placeholder: `${MODULE_ID}.modal.placeholder`,
     defaultValue: `${MODULE_ID}.modal.defaultValue`,
-    maxlength: 10,
+    maxlength: 3,
     validation(value) {
       // we can allow empty value which will just disable the feature
       if (value.trim() === '') return true;

@@ -2,7 +2,8 @@
   import { teleport } from '../actions/teleport.svelte';
   import { getPlayerIframe, getPlayerButtonsContainer } from '../queup.ui';
   import { t } from '../stores/i18n.svelte';
-  import { queupEvents, PLAYER_ADVANCE } from '../../utils/events.js';
+  import { QUEUP_EVENT } from '../../events-constants.js';
+  import { onQueup, offQueup } from '../queup.v2.js';
   import Monitor from '../svg/Monitor.svelte';
   import MonitorOff from '../svg/MonitorOff.svelte';
   import { onDestroy } from 'svelte';
@@ -30,7 +31,7 @@
   function revert() {
     tooltip = t('SnoozeVideo.tooltip');
     isSnoozed = false;
-    queupEvents.off(PLAYER_ADVANCE, revert);
+    offQueup(QUEUP_EVENT.SONG_CHANGED, revert);
   }
 
   /**
@@ -40,14 +41,14 @@
     if (!isSnoozed) {
       tooltip = t('SnoozeVideo.tooltip.undo');
       isSnoozed = true;
-      queupEvents.on(PLAYER_ADVANCE, revert);
+      onQueup(QUEUP_EVENT.SONG_CHANGED, revert);
     } else {
       revert();
     }
   }
 
   onDestroy(() => {
-    queupEvents.off(PLAYER_ADVANCE, revert);
+    offQueup(QUEUP_EVENT.SONG_CHANGED, revert);
   });
 </script>
 

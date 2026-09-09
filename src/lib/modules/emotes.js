@@ -1,7 +1,7 @@
-import { CHAT_MESSAGE } from '../../events-constants';
+import { REALTIME_EVENT } from '../../events-constants';
 import { dubplus_emoji } from '../emoji/emoji';
 import { getChatMessages } from '../queup.ui';
-import { bindEvent, unbindEvent } from '../queup';
+import { onRealtime, offRealtime } from '../queup.v2';
 
 /**
  *
@@ -149,11 +149,11 @@ export const emotes = {
       .then(() => dubplus_emoji.loadFrankerFacez())
       .then(() => {
         replaceTextWithEmote();
-        bindEvent(CHAT_MESSAGE, replaceTextWithEmote);
+        onRealtime(REALTIME_EVENT.CHAT_MESSAGE, replaceTextWithEmote);
       });
   },
 
   turnOff() {
-    unbindEvent(CHAT_MESSAGE, replaceTextWithEmote);
+    offRealtime(REALTIME_EVENT.CHAT_MESSAGE, replaceTextWithEmote);
   },
 };

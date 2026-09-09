@@ -3,10 +3,10 @@
   import IconPencil from '../svg/IconPencil.svelte';
   import { onMount, onDestroy } from 'svelte';
   import { saveSetting, settings } from '../stores/settings.svelte';
-  import { modalState, updateModalState } from '../stores/modalState.svelte';
   import { t } from '../stores/i18n.svelte';
   import { isMod } from '../../utils/modcheck';
-  import { getSessionId } from '../queup';
+  import { getUserId } from '../queup.v2';
+  import { openEditModal } from '../../utils/module-setup-utils';
 
   /**
    * @typedef {object} MenuSwitchProps
@@ -46,11 +46,8 @@
 
     if (settings.options[id]) {
       // check user mod status if this is a mod only feature
-      // const allowed = modOnly ? isMod(getSessionId()) : true;
-      // if (allowed) turnOn?.(true);
-
-      // TODO: for now we just turn it on since we Queup v2 doesn't have mod check anymore
-      turnOn?.(true);
+      const allowed = modOnly ? isMod(getUserId()) : true;
+      if (allowed) turnOn?.(true);
     }
   });
 
@@ -59,65 +56,24 @@
       turnOff?.();
     }
   });
-
-  function openEditModal() {
-    updateModalState({
-      title: t(customize?.title),
-      content: t(customize?.content),
-      placeholder: t(customize?.placeholder),
-      defaultValue: customize?.defaultValue ? t(customize.defaultValue) : '',
-      maxlength: customize?.maxlength,
-      value: settings.custom[id] || '',
-      validation: customize?.validation,
-      onConfirm: (value) => {
-        saveSetting('custom', id, value);
-
-        // if the value is empty and there is no default value, then we
-        // turn off the feature
-        if (value.trim() === '' && !customize?.defaultValue) {
-          saveSetting('option', id, false);
-          turnOff?.();
-        }
-
-        if (typeof customize?.onConfirm === 'function') {
-          customize.onConfirm(value);
-        }
-      },
-      onCancel: () => {
-        // if the saved custom setting is empty and there is no default value,
-        // then we turn off the feature
-        if (
-          !customize?.defaultValue &&
-          (typeof settings.custom[id] === 'undefined' ||
-            settings.custom[id] === '')
-        ) {
-          saveSetting('option', id, false);
-          turnOff?.();
-        }
-        if (typeof customize?.onCancel === 'function') customize?.onCancel();
-      },
-    });
-
-    modalState.open = true;
-  }
 </script>
 
 <li
   id={`dubplus-${id}`}
   title={t(description)}
-  class:disabled={modOnly ? !isMod(getSessionId()) : false}
+  class:disabled={modOnly ? !isMod(getUserId()) : false}
 >
   <Switch
-    disabled={modOnly ? !isMod(getSessionId()) : false}
+    disabled={modOnly ? !isMod(getUserId()) : false}
     label={t(label)}
     onToggle={(state) => {
       // When turning on a feature that requires a custom value, and that
       // value hasn't been set by the user yet, then we popup the modal
       if (customize && state === true && !settings.custom[id]) {
-        openEditModal();
+        openEditModal(id, customize, turnOff);
         return;
       }
-      saveSetting('option', id, state);
+      saveSetting('options', id, state);
       if (state) {
         turnOn?.();
       } else {
@@ -127,7 +83,7 @@
     optionId={id}
   />
   {#if customize}
-    <button onclick={openEditModal} type="button">
+    <button onclick={() => openEditModal(id, customize, turnOff)} type="button">
       <IconPencil />
       <span class="sr-only">{t('MenuItem.edit')}</span>
     </button>
