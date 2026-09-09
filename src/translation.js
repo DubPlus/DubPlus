@@ -10,6 +10,10 @@ export const translations = {
     'Modal.validation.maxlength':
       'Value exceeds maximum length of {{maxlength}}',
 
+    'SlashCommand.args':
+      'Customize by adding arguments. Example: /afk I am away',
+    'SlashCommand.invalid.value': 'Invalid value for slash command',
+
     'Error.modal.title': 'Dub+ Error',
     'Error.modal.loggedout': "You're not logged in. Please login to use Dub+.",
     'Error.unknown':

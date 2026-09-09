@@ -9,13 +9,19 @@ import { saveSetting, settings } from '../lib/stores/settings.svelte';
  * @returns {import('../types/global').ExternalChatCommand}
  */
 export function getCommandConfig(module) {
+  const description = [t(module.description)];
+  if (module.custom) {
+    description.push(t('SlashCommand.args'));
+  }
+
   /**
    * @type {import('../types/global').ExternalChatCommand}
    */
   const chatCommandConfig = {
     name: module.id,
     usage: `/${module.id}`,
-    description: 'Dub+ - ' + t(module.description),
+    description: description.join(' '),
+    appName: 'Dub+',
     run: (context) => {
       /**
        * Example usage:
@@ -70,14 +76,14 @@ function applyCustomArgs(module, argsValue, isOn) {
   const exceedsMaxLength = argsValue.length > maxLength;
 
   if (validationResult !== true || exceedsMaxLength) {
-    const errorMessages = [`Invalid value for /${module.id}: "${argsValue}".`];
+    const errorMessages = [t('SlashCommand.invalid.value')];
     if (typeof validationResult === 'string') {
       errorMessages.push(validationResult);
     }
     if (exceedsMaxLength) {
       errorMessages.push(
         t('Modal.validation.maxlength', {
-          maxlength: Math.min(modalState.maxlength ?? 999, 999),
+          maxlength: Math.min(module.custom?.maxlength ?? 999, 999),
         }),
       );
     }

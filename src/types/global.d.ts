@@ -108,6 +108,10 @@ export interface ExternalChatCommand {
   name: string;
   usage?: string;
   description?: string;
+  /** Groups your commands together in the "/" list's app rail. Defaults to a slug of `appName`. */
+  appId?: string;
+  /** Shown on each of your command's rows and in the app rail. Defaults to "Extension". */
+  appName?: string;
   /**
    * 'username' gets a live autocomplete popup sourced from the room's current
    * user list; 'text' is free-form. Omit for a no-argument command.
