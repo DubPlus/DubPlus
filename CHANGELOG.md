@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.0.0] - 2026-09-??
+## [5.0.0] - 2026-09-09
 
 Updated to handle the new version of Queup that launched in Aug 2026.
 
@@ -39,14 +39,14 @@ These features were removed because the changes to QueUp doesn't allow us to imp
 - Updubs in Chat - Because QueUp now uses React we can no longer insert our own elements into the chat area because they will get removed by React, especially with the list virtualization
 - Downdubs in Chat - same reason as Updubs
 - Custom Notification Sound - QueUp doesn't give us a way to alter the notification sound like it did before
-- Emotes - because Queup QueUp switched to React and also now virtualizes the chat list, I can no longer alter the DOM in the chat area because they would get undone every time react updates the chat list.
+- Emotes - because QueUp switched to React and also now virtualizes the chat list, I can no longer alter the DOM in the chat area because they would get undone every time react updates the chat list.
 
 ### Changed
 
 I've altered the way some of the features work:
 
 - AFK Auto-Response - now also includes your custom mention names as well.
-- Hide Video - now just blacks out the video itself. The controls are still visible and the space it takes up is still there.
+- Hide Video - now just hides the video itself, the controls are still visible.
 - Collapsible Images - works via hover instead of a toggle button. It's a pure CSS solution and was the only way I could implement this because it doesn't involve touching the DOM.
 - Notification on Private Message (PM) - opens up the main PM modal but no longer goes direclty to the message itself.
 - Auto-AFK - set the max length to 3 meaning the largest value you can now put in there is 999 minutes, which is just over 16 hours.
