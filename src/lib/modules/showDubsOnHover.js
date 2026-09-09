@@ -10,7 +10,7 @@
  * which is mounted when the user hovers over the upDub, downDub, or grab buttons.
  */
 import { logError } from '../../utils/logger.js';
-import { dubsState } from '../stores/dubsState.svelte.js';
+import { dubsState, getDubCount } from '../stores/dubsState.svelte.js';
 import { QUEUP_EVENT, REALTIME_EVENT } from '../../events-constants.js';
 import { activeDubs, userData } from '../api.js';
 import { delegateHoverMount } from '../../utils/delegateHoverMount.js';
@@ -29,95 +29,53 @@ import DubsInfo from '../satellites/DubsInfo.svelte';
  * @returns {Promise<string>}
  */
 function getUserNameFromId(userid) {
-  return new Promise((resolve, reject) => {
-    // or try getting it via the API
-    fetch(userData(userid))
-      .then((response) => response.json())
-      .then((response) => {
-        if (response?.data?.username) {
-          const { username } = response.data;
-          resolve(username);
-        } else {
-          reject('Failed to get username from API for userid: ' + userid);
-        }
-      })
-      .catch(reject);
-  });
+  return fetch(userData(userid))
+    .then((response) => response.json())
+    .then((response) => {
+      if (!response?.data?.username) {
+        throw new Error(
+          'Failed to get username from API for userid: ' + userid,
+        );
+      }
+      return response.data.username;
+    });
 }
 
 /**
- * @param {Array<{ userid: string}>} updubs
+ * Pushes {userid, username} onto the given dub type's list, unless it's
+ * already there. Safe to call from racing async callbacks since the
+ * presence check and the push happen without an intervening await.
+ * @param {import("../stores/dubsState.svelte.js").DubType} dubType
+ * @param {string} userid
+ * @param {string} username
  */
-function updateUpdubs(updubs) {
-  updubs?.forEach((dub) => {
+function addDubIfAbsent(dubType, userid, username) {
+  const list = getDubCount(dubType);
+  if (list.find((el) => el.userid === userid)) {
+    return;
+  }
+  list.push({ userid, username });
+}
+
+/**
+ * Resolves usernames for a batch of dubs (from the initial API fetch) and
+ * adds each one to state.
+ * @param {import("../stores/dubsState.svelte.js").DubType} dubType
+ * @param {Array<{ userid: string }>} [dubs]
+ */
+function updateDubs(dubType, dubs) {
+  dubs?.forEach(({ userid }) => {
     // even though we reset before calling this, because this is async we could have
-    // had an upDub in the time it took to fetch the data
-    if (dubsState.upDubs.find((el) => el.userid === dub.userid)) {
+    // had a dub added (e.g. via a realtime event) in the time it took to fetch the data
+    if (getDubCount(dubType).find((el) => el.userid === userid)) {
       return;
     }
 
-    getUserNameFromId(dub.userid)
-      .then((username) => {
-        // re-check here (not just before the fetch) since a realtime event
-        // for the same user can land while this fetch was in flight
-        if (!dubsState.upDubs.find((el) => el.userid === dub.userid)) {
-          dubsState.upDubs.push({
-            userid: dub.userid,
-            username,
-          });
-        }
-      })
-      .catch((error) => logError('Failed to get username for upDubs:', error));
-  });
-}
-
-/**
- * @param {Array<{ userid: string}>} downdubs
- */
-function updateDowndubs(downdubs) {
-  downdubs?.forEach((dub) => {
-    // even though we reset before calling this, because this is async we could have
-    // had an upDub in the time it took to fetch the data
-    if (dubsState.downDubs.find((el) => el.userid === dub.userid)) {
-      return;
-    }
-
-    getUserNameFromId(dub.userid)
-      .then((username) => {
-        // re-check here (not just before the fetch) since a realtime event
-        // for the same user can land while this fetch was in flight
-        if (!dubsState.downDubs.find((el) => el.userid === dub.userid)) {
-          dubsState.downDubs.push({
-            userid: dub.userid,
-            username,
-          });
-        }
-      })
-      .catch((error) => logError('Failed to get username for downDubs', error));
-  });
-}
-
-/**
- * @param {Array<{ userid: string}>} grabs
- */
-function updateGrabs(grabs) {
-  grabs.forEach((grab) => {
-    if (dubsState.grabs.find((el) => el.userid === grab.userid)) {
-      return;
-    }
-
-    getUserNameFromId(grab.userid)
-      .then((username) => {
-        // re-check here (not just before the fetch) since a realtime event
-        // for the same user can land while this fetch was in flight
-        if (!dubsState.grabs.find((el) => el.userid === grab.userid)) {
-          dubsState.grabs.push({
-            userid: grab.userid,
-            username,
-          });
-        }
-      })
-      .catch((error) => logError('Failed to get username for grab', error));
+    getUserNameFromId(userid)
+      .then((username) => addDubIfAbsent(dubType, userid, username))
+      .catch((error) =>
+        logError(`Failed to get username for ${dubType}s:`, error),
+      );
   });
 }
 
@@ -133,9 +91,9 @@ function resetDubs() {
     fetch(dubsURL)
       .then((response) => response.json())
       .then((response) => {
-        updateUpdubs(response.data.upDubs || []);
-        updateGrabs(response.data.grabs || []);
-        updateDowndubs(response.data.downDubs || []);
+        updateDubs('updub', response.data.upDubs);
+        updateDubs('grab', response.data.grabs);
+        updateDubs('downdub', response.data.downDubs);
       })
       .catch((error) => logError('Failed to fetch dubs data from API.', error));
   }
@@ -143,30 +101,17 @@ function resetDubs() {
 
 /**
  * @param {import("../../types/events.js").DubEvent} e
- * @returns
  */
 function dubWatcher(e) {
   if (e.dubtype === 'updub') {
-    if (!dubsState.upDubs.find((el) => el.userid === e.user._id)) {
-      dubsState.upDubs.push({
-        userid: e.user._id,
-        username: e.user.username,
-      });
-    }
-
-    //Remove user from other dubtype if exists
+    addDubIfAbsent('updub', e.user._id, e.user.username);
+    // Remove user from the other dub type if it exists there
     dubsState.downDubs = dubsState.downDubs.filter(
       (el) => el.userid !== e.user._id,
     );
   } else if (e.dubtype === 'downdub') {
-    if (!dubsState.downDubs.find((el) => el.userid === e.user._id)) {
-      dubsState.downDubs.push({
-        userid: e.user._id,
-        username: e.user.username,
-      });
-    }
-
-    //Remove user from other dubtype if exists
+    addDubIfAbsent('downdub', e.user._id, e.user.username);
+    // Remove user from the other dub type if it exists there
     dubsState.upDubs = dubsState.upDubs.filter(
       (el) => el.userid !== e.user._id,
     );
@@ -177,12 +122,27 @@ function dubWatcher(e) {
  * @param {import("../../types/events.js").GrabEvent} e
  */
 function grabWatcher(e) {
-  if (!dubsState.grabs.find((el) => el.userid === e.user._id)) {
-    dubsState.grabs.push({
-      userid: e.user._id,
-      username: e.user.username,
-    });
-  }
+  addDubIfAbsent('grab', e.user._id, e.user.username);
+}
+
+/**
+ * @param {import("../stores/dubsState.svelte.js").DubType} dubType
+ * @param {Element} target
+ * @returns {{
+ *   dubType: import("../stores/dubsState.svelte.js").DubType,
+ *   position: { top: number, left: number, right: number },
+ * }}
+ */
+function buildHoverProps(dubType, target) {
+  const rect = target.getBoundingClientRect();
+  return {
+    dubType,
+    position: {
+      top: rect.top,
+      left: rect.left,
+      right: window.innerWidth - rect.right,
+    },
+  };
 }
 
 /**
@@ -213,46 +173,16 @@ export const showDubsOnHover = {
     onQueup(QUEUP_EVENT.SONG_CHANGED, resetDubs);
 
     // setup hover listener
-    updubHoverTeardown = delegateHoverMount(getDubUp, DubsInfo, (target) => {
-      const rect = target.getBoundingClientRect();
-      return {
-        dubType: 'updub',
-        position: {
-          top: rect.top,
-          left: rect.left,
-          right: window.innerWidth - rect.right,
-        },
-      };
-    });
-    downdubHoverTeardown = delegateHoverMount(
-      getDubDown,
-      DubsInfo,
-      (target) => {
-        const rect = target.getBoundingClientRect();
-        return {
-          dubType: 'downdub',
-          position: {
-            top: rect.top,
-            left: rect.left,
-            right: window.innerWidth - rect.right,
-          },
-        };
-      },
+    updubHoverTeardown = delegateHoverMount(getDubUp, DubsInfo, (target) =>
+      buildHoverProps('updub', target),
+    );
+    downdubHoverTeardown = delegateHoverMount(getDubDown, DubsInfo, (target) =>
+      buildHoverProps('downdub', target),
     );
     grabHoverTeardown = delegateHoverMount(
       getAddToPlaylist,
       DubsInfo,
-      (target) => {
-        const rect = target.getBoundingClientRect();
-        return {
-          dubType: 'grab',
-          position: {
-            top: rect.top,
-            left: rect.left,
-            right: window.innerWidth - rect.right,
-          },
-        };
-      },
+      (target) => buildHoverProps('grab', target),
     );
   },
 
