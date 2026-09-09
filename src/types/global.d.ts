@@ -1,4 +1,4 @@
-export type SettingsSections = 'option' | 'menu' | 'custom';
+export type SettingsSections = 'options' | 'menu' | 'custom';
 
 export interface Settings {
   options: { [key: string]: boolean };

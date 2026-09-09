@@ -6,7 +6,7 @@ import { logDebug, logInfo, logWarn } from './utils/logger';
 import { getRoomSlug, onRouteChange } from './utils/route';
 import { waitFor } from './utils/waitFor';
 import { getChatInput } from './lib/queup.ui';
-import { getRoomId, isQueupReady } from './lib/queup.v2';
+import { clearAllEventHandlers, getRoomId, isQueupReady } from './lib/queup.v2';
 import { setupModCheck, teardownModCheck } from './utils/modcheck';
 
 window.dubplus = window.dubplus || {};
@@ -153,6 +153,7 @@ window.dubplus.__teardown = () => {
   logDebug('tearing down Dub+');
   stopRouteListener();
   unmountDubPlus();
+  clearAllEventHandlers();
 };
 
 syncToRoute();

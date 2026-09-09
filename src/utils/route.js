@@ -1,15 +1,5 @@
 import { logDebug, logWarn } from './logger';
 
-/**
- * QueUp v2 is a React SPA: clicking from /lobby into a room is a client side
- * route change, not a page load. Content scripts only inject on real
- * navigations, so Dub+ has to notice route changes itself and mount/unmount
- * around them. The Navigation API reports SPA pushes, back/forward and
- * fragment changes as one event, which is all we need.
- */
-
-const ROOM_PATH = /^\/join\/([^/]+)/;
-
 /** Fired on window whenever the SPA finishes navigating. */
 const ROUTE_EVENT = 'dubplus:routechange';
 
@@ -20,19 +10,11 @@ const ROUTE_EVENT = 'dubplus:routechange';
 export function getRoomSlug(url = window.location.href) {
   try {
     const { pathname } = new URL(url, window.location.origin);
-    return pathname.match(ROOM_PATH)?.[1] ?? null;
+    return pathname.startsWith('/join/') ? pathname.split('/')[2] : null;
   } catch (err) {
     logDebug('could not parse the url', url, err);
     return null;
   }
-}
-
-/**
- * @param {string} [url]
- * @returns {boolean}
- */
-export function isRoomPage(url) {
-  return getRoomSlug(url) !== null;
 }
 
 /**

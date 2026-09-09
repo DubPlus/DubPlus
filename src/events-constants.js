@@ -7,24 +7,31 @@
  * @satisfies {Record<string, keyof import('./types/global').QueUpEventMap>}
  */
 export const QUEUP_EVENT = {
-  /** The logged in user changed */
+  /** The signed-in user's id or username changes - login, logout, or a rename */
   SESSION_CHANGED: 'session:changed',
 
-  /** The user entered a room. */
+  /** A room finishes loading (including switching rooms) */
   ROOM_JOINED: 'room:joined',
 
   /** The user left a room. */
   ROOM_LEFT: 'room:left',
 
   /**
-   * The player advanced to the next song.
+   * The room's active song or its DJ changes, including to/from nothing playing.
+   *
+   * Not fired for vote counts ticking up on the same song.
+   *
+   * `startTime` is how many seconds into the song playback was when the change
+   * was seen, not a live position
    *
    * Prefer this over `REALTIME_EVENT.PLAYLIST_UPDATE`, which also fires for
    * queue joins and reorders.
    */
   SONG_CHANGED: 'room:song-changed',
 
-  /** Someone else took over the decks. */
+  /**
+   * The resolved DJ changes. Just the DJ half of room:song-changed, for
+   * scripts that only care who's playing */
   DJ_CHANGED: 'room:dj-changed',
 };
 

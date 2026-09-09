@@ -170,11 +170,21 @@ export function unregisterChatCommand(name) {
  * ========================================================================== */
 
 /**
+ * Store all attached handlers so that we can clear them later with {@link reset}
+ * @type {Map<string, Set<(arg: any) => void>>}
+ */
+const event_handlers = new Map();
+
+/**
  * QueUp's app lifecycle events, as opposed to the realtime socket feed.
  * @param {keyof import('../types/global').QueUpEventMap} eventName one of {@link QUEUP_EVENT}
  * @param {(data: any) => void} handler
  */
 export function onQueup(eventName, handler) {
+  if (!event_handlers.has(eventName)) {
+    event_handlers.set(eventName, new Set());
+  }
+  event_handlers.get(eventName)?.add(handler);
   window.QueUp.on(eventName, handler);
 }
 
@@ -184,6 +194,7 @@ export function onQueup(eventName, handler) {
  * {@link onQueup}
  */
 export function offQueup(eventName, handler) {
+  event_handlers.get(eventName)?.delete(handler);
   window.QueUp.off(eventName, handler);
 }
 
@@ -193,6 +204,10 @@ export function offQueup(eventName, handler) {
  * @param {(data: any) => void} handler
  */
 export function onRealtime(eventName, handler) {
+  if (!event_handlers.has(eventName)) {
+    event_handlers.set(eventName, new Set());
+  }
+  event_handlers.get(eventName)?.add(handler);
   window.QueUp.realtime.on(eventName, handler);
 }
 
@@ -202,7 +217,19 @@ export function onRealtime(eventName, handler) {
  * {@link onRealtime}
  */
 export function offRealtime(eventName, handler) {
+  event_handlers.get(eventName)?.delete(handler);
   window.QueUp.realtime.off(eventName, handler);
+}
+
+export function clearAllEventHandlers() {
+  for (const [eventName, handlers] of event_handlers) {
+    for (const handler of handlers) {
+      offRealtime(eventName, handler);
+      // @ts-ignore
+      offQueup(eventName, handler);
+    }
+  }
+  event_handlers.clear();
 }
 
 /**

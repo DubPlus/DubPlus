@@ -13,6 +13,12 @@ This extension is no longer compatible with Dubtrack.fm, which is not really an 
 
 Also, the QueUp update broke a few things for Dub+ that currently has no workaround so certain features have been removed. See the next section below.
 
+## New
+
+### Chat Commands
+
+QueUp added a cool new feature to their extension API that allows us to register slash commands in the chat input. For all of the modules in the menu you can run `/<module-id>` (example: `/afk`) to toggle on/off the module. If a module has a customization, you can just pass that after the slash command to save it (example: `/grab-response love this track!`) .
+
 ## Removed features
 
 These features were removed because QueUp v2 does this natively now so it's no longer needed:
@@ -41,6 +47,11 @@ I've altered the way some of the features work:
 - Hide Video - now just blacks out the video itself. The controls are still visible and the space it takes up is still there.
 - Collapsible Images - works via hover instead of a toggle button.
 - Notification on Private Message (PM) - opens up the main PM modal but no longer goes direclty to the message itself
+- Auto-AFK - set the max length to 3 meaning the largest value you can now put in there is 999 minutes, which is just over 16 hours.
+
+## Fixed
+
+- In the customization modal it was only using the maxlength for the HTML input attribute, which is easily circumvented via the chrome devtools. I am now also validating maxlength when trying to save a new value.
 
 ## [4.1.3] - 2026-06-19
 
