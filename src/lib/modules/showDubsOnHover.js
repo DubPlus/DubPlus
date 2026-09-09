@@ -58,10 +58,14 @@ function updateUpdubs(updubs) {
 
     getUserNameFromId(dub.userid)
       .then((username) => {
-        dubsState.upDubs.push({
-          userid: dub.userid,
-          username,
-        });
+        // re-check here (not just before the fetch) since a realtime event
+        // for the same user can land while this fetch was in flight
+        if (!dubsState.upDubs.find((el) => el.userid === dub.userid)) {
+          dubsState.upDubs.push({
+            userid: dub.userid,
+            username,
+          });
+        }
       })
       .catch((error) => logError('Failed to get username for upDubs:', error));
   });
@@ -80,10 +84,14 @@ function updateDowndubs(downdubs) {
 
     getUserNameFromId(dub.userid)
       .then((username) => {
-        dubsState.downDubs.push({
-          userid: dub.userid,
-          username,
-        });
+        // re-check here (not just before the fetch) since a realtime event
+        // for the same user can land while this fetch was in flight
+        if (!dubsState.downDubs.find((el) => el.userid === dub.userid)) {
+          dubsState.downDubs.push({
+            userid: dub.userid,
+            username,
+          });
+        }
       })
       .catch((error) => logError('Failed to get username for downDubs', error));
   });
@@ -100,10 +108,14 @@ function updateGrabs(grabs) {
 
     getUserNameFromId(grab.userid)
       .then((username) => {
-        dubsState.grabs.push({
-          userid: grab.userid,
-          username,
-        });
+        // re-check here (not just before the fetch) since a realtime event
+        // for the same user can land while this fetch was in flight
+        if (!dubsState.grabs.find((el) => el.userid === grab.userid)) {
+          dubsState.grabs.push({
+            userid: grab.userid,
+            username,
+          });
+        }
       })
       .catch((error) => logError('Failed to get username for grab', error));
   });
