@@ -32,50 +32,20 @@ export function getCommandConfig(module) {
        *   display the customization modal. This mimics the behavior of the UI.
        */
       logDebug(`/${module.id} context:`, context);
+
+      // Some modules are just actions (example: fullscreen).
+      if (typeof module.onClick === 'function') {
+        module.onClick();
+        return;
+      }
+
       const argsValue = context.args?.trim();
       const current = settings.options[module.id];
 
       if (argsValue) {
-        // if args is supplied, then user is editing custom setting
-        const maxLength = Math.min(module.custom?.maxlength ?? 999, 999);
-        const isValidLength = argsValue.length <= maxLength;
-        const isValidValueOrErrorMessage = module.custom?.validation
-          ? module.custom.validation(argsValue)
-          : true;
-        if (isValidValueOrErrorMessage === true && isValidLength) {
-          saveSetting('custom', module.id, argsValue);
-          if (!current) {
-            saveSetting('options', module.id, true);
-            module.turnOn?.();
-          }
-        } else {
-          const errorMessages = [
-            `Invalid value for /${module.id}: "${argsValue}".`,
-          ];
-          if (typeof isValidValueOrErrorMessage === 'string') {
-            errorMessages.push(isValidValueOrErrorMessage);
-          }
-          if (!isValidLength) {
-            errorMessages.push(`Value exceeds maximum length of ${maxLength}.`);
-          }
-          window.alert(errorMessages.join('\n'));
-        }
+        applyCustomArgs(module, argsValue, current);
       } else {
-        if (module.custom && !settings.custom[module.id]) {
-          openEditModal(module.id, module.custom, () =>
-            saveSetting('options', module.id, false),
-          );
-          return;
-        }
-        if (current) {
-          // turn it off
-          saveSetting('options', module.id, false);
-          module.turnOff?.();
-        } else {
-          // turn it on
-          saveSetting('options', module.id, true);
-          module.turnOn?.();
-        }
+        toggleModule(module, current);
       }
     },
   };
@@ -83,6 +53,66 @@ export function getCommandConfig(module) {
     chatCommandConfig.argSlots = ['text'];
   }
   return chatCommandConfig;
+}
+
+/**
+ * Validates a custom setting value supplied via slash command args and, if valid,
+ * saves it and turns the module on (if it isn't already). Shows an alert on failure.
+ * @param {import("../lib/modules/module").DubPlusModule} module
+ * @param {string} argsValue
+ * @param {boolean} isOn - Whether the module is currently on.
+ */
+function applyCustomArgs(module, argsValue, isOn) {
+  const maxLength = Math.min(module.custom?.maxlength ?? 999, 999);
+  const validationResult = module.custom?.validation
+    ? module.custom.validation(argsValue)
+    : true;
+  const exceedsMaxLength = argsValue.length > maxLength;
+
+  if (validationResult !== true || exceedsMaxLength) {
+    const errorMessages = [`Invalid value for /${module.id}: "${argsValue}".`];
+    if (typeof validationResult === 'string') {
+      errorMessages.push(validationResult);
+    }
+    if (exceedsMaxLength) {
+      errorMessages.push(
+        t('Modal.validation.maxlength', {
+          maxlength: Math.min(modalState.maxlength ?? 999, 999),
+        }),
+      );
+    }
+    window.alert(errorMessages.join('\n'));
+    return;
+  }
+
+  saveSetting('custom', module.id, argsValue);
+  if (!isOn) {
+    saveSetting('options', module.id, true);
+    module.turnOn?.();
+  }
+}
+
+/**
+ * Toggles a module on/off.
+ * If module requires a custom setting that hasn't been set, it will open the
+ * customization modal (mimicking the behavior of the UI).
+ * @param {import("../lib/modules/module").DubPlusModule} module
+ * @param {boolean} isOn - Whether the module is currently on.
+ */
+function toggleModule(module, isOn) {
+  if (module.custom && !settings.custom[module.id]) {
+    openEditModal(module.id, module.custom, () =>
+      saveSetting('options', module.id, false),
+    );
+    return;
+  }
+
+  saveSetting('options', module.id, !isOn);
+  if (isOn) {
+    module.turnOff?.();
+  } else {
+    module.turnOn?.();
+  }
 }
 
 /**
