@@ -1,4 +1,4 @@
-import type { ModalProps } from '../../global';
+import type { ModalProps } from '../../types/global';
 import type { Component } from 'svelte';
 
 export interface DubPlusModule {

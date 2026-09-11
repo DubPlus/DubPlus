@@ -1,4 +1,4 @@
-/** @type {import('../../global').ModalProps} */
+/** @type {import('../../types/global').ModalProps} */
 export const modalState = $state({
   id: '',
   open: false,
@@ -19,7 +19,7 @@ export const modalState = $state({
 
 /**
  *
- * @param {import('../../global').ModalProps} nextState
+ * @param {import('../../types/global').ModalProps} nextState
  */
 export function updateModalState(nextState) {
   modalState.open = nextState.open ?? false;
@@ -27,7 +27,7 @@ export function updateModalState(nextState) {
   modalState.content = nextState.content || '';
   modalState.value = nextState.value || '';
   modalState.placeholder = nextState.placeholder || '';
-  modalState.defaultValue = nextState.defaultValue;
+  modalState.defaultValue = nextState.defaultValue || '';
   modalState.maxlength = nextState.maxlength || 999;
   modalState.onConfirm = nextState.onConfirm;
   modalState.onCancel = nextState.onCancel;

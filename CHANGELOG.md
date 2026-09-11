@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.0] - 2026-09-10
+
+Updated to handle the new version of Queup that launched in Aug 2026.
+
+### Breaking change
+
+This probably won't affect anyone but wanted to note this here anyways. This extension is no longer compatible with Dubtrack.fm, which is not really an issue as that site no longer exits. QueUp.net is its successor and they started off from the same codebase, hence why this extension still listed dubtrack.fm in its manifest.json. But now that QueUp's code has completely diverged in their latest version, I've removed any reference to dubtrack.fm.
+
+Also, the QueUp update broke a few things for Dub+ that currently has no workaround so certain features have been removed. See the "Removed features" section below.
+
+### New
+
+#### Chat Commands
+
+QueUp added a new feature to their extension API that allows us to register slash commands in the chat input. For all of the modules in the menu you can run `/<module-id>` (example: `/afk`) to toggle on/off the module. If a module has a customization, you can just pass that after the slash command to save it (example: `/grab-response love this track!`).
+
+### Removed features
+
+#### Handled natively by QueUp
+
+These features are no longer needed because QueUp now handles them natively:
+
+- Snooze
+- Grabs in Chat
+- Show Timestamps - The top level timestamp always shows. There's also other timestamps that show on hover but I can't force them to show with CSS because they are not in the DOM, they get inserted by React on hover.
+- Hide Chat - QueUp now allows you to collapse the whole chat area, so this is no longer necessary.
+- Autocomplete - QueUp has their own native autocomplete for the basic emojis now.
+- Chat Cleaner - QueUp now uses list virtualization for their chat messages. This helps reduce memory and CPU strain by only showing chat messages that can be visible to the user. So we no longer need this because it was only used to reduce the load on the browser when there were many many messages, especially if they had gifs and images.
+
+#### No longer possible
+
+These features were removed because the changes to QueUp doesn't allow us to implement them:
+
+- Updubs in Chat - Because QueUp now uses React we can no longer insert our own elements into the chat area because they will get removed by React, especially with the list virtualization
+- Downdubs in Chat - same reason as Updubs
+- Custom Notification Sound - QueUp doesn't give us a way to alter the notification sound like it did before
+- Emotes - because QueUp switched to React and also now virtualizes the chat list, I can no longer alter the DOM in the chat area because they would get undone every time react updates the chat list.
+
+### Changed
+
+I've altered the way some of the features work:
+
+- AFK Auto-Response - now also includes your custom mention names as well.
+- Hide Video - now just hides the video itself, the controls are still visible.
+- Collapsible Images - works via hover instead of a toggle button. It's a pure CSS solution and was the only way I could implement this because it doesn't involve touching the DOM.
+- Notification on Private Message (PM) - opens up the main PM modal but no longer goes direclty to the message itself.
+- Auto-AFK - set the max length to 3 meaning the largest value you can now put in there is 999 minutes, which is just over 16 hours.
+- Custom Modal maxlength validation - In the customization modal it was only using the maxlength for the HTML input attribute, which is easily circumvented via the browser devtools. Now I've included maxlength validation via JS as well to ensure the maxlength is enforced.
+
+### Other
+
+I've also added github actions to allow submitting to the Firefox and Chrome Webstore via a click of a button in Github Actions
+
 ## [4.1.3] - 2026-06-19
 
 ### Fixed

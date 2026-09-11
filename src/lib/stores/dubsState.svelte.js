@@ -3,6 +3,10 @@
  */
 
 /**
+ * @typedef {'updub' | 'downdub' | 'grab'} DubType
+ */
+
+/**
  * @typedef {object} DubsState
  * @property {DubInfo[]} upDubs
  * @property {DubInfo[]} downDubs
@@ -19,7 +23,7 @@ export const dubsState = $state({
 });
 
 /**
- * @param {"updub" | "downdub" | "grab"} dubType
+ * @param {DubType} dubType
  * @returns {DubInfo[]}
  */
 export function getDubCount(dubType) {

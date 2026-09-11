@@ -4,21 +4,31 @@
   import Contact from '../sections/Contact.svelte';
   import General from '../sections/General.svelte';
   import Eta from '../satellites/Eta.svelte';
-  import Snooze from '../satellites/Snooze.svelte';
   import Modal from '../Modal.svelte';
   import EmojiPreview from '../emoji/EmojiPreview.svelte';
   import { t } from '../stores/i18n.svelte';
-  import DubsInfo from '../satellites/DubsInfo.svelte';
   import { settings } from '../stores/settings.svelte';
   import Snow from '../satellites/Snow.svelte';
   import UserInterface from '../sections/UserInterface.svelte';
   import Settings from '../sections/Settings.svelte';
   import Customize from '../sections/Customize.svelte';
-  import SnoozeVideo from '../satellites/SnoozeVideo.svelte';
   import pkg from '../../../package.json';
+  import SnoozeVideo from '../satellites/SnoozeVideo.svelte';
 
   onMount(() => {
     document.querySelector('html')?.classList.add('dubplus');
+    window.QueUp.chat.registerCommand({
+      name: 'dubplus',
+      usage: `/dubplus`,
+      description: `Toggle the Dub+ menu`,
+      appName: 'Dub+',
+      run: () => {
+        document
+          .querySelector('.dubplus-menu')
+          ?.classList.toggle('dubplus-menu-open');
+      },
+    });
+    return () => document.querySelector('html')?.classList.remove('dubplus');
   });
 </script>
 
@@ -26,17 +36,11 @@
   these components are controlled by Svelte but
   placed outside of the root menu container 
 -->
-<Snooze />
 <MenuIcon />
 <Eta />
 <SnoozeVideo />
 {#if settings.options.autocomplete}
   <EmojiPreview />
-{/if}
-{#if settings.options['dubs-hover']}
-  <DubsInfo dubType="updub" />
-  <DubsInfo dubType="downdub" />
-  <DubsInfo dubType="grab" />
 {/if}
 {#if settings.options.snow}
   <Snow />
@@ -70,7 +74,7 @@
     right: 0;
     transform: translateX(var(--dubplus-menu-width));
     box-sizing: border-box;
-    color: var(--dubplus-text-color);
+    color: rgb(var(--dubplus-text-color));
     font-family: var(--dubplus-font-family);
     font-size: var(--dubplus-font-size);
     line-height: 1.4;

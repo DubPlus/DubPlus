@@ -33,3 +33,22 @@ export function getSelection(currentText, cursorPos) {
 
   return [left, right];
 }
+
+/**
+ * Get the caret offset into a contenteditable element's textContent, i.e. the
+ * contenteditable equivalent of a textarea's selectionStart.
+ * @param {HTMLElement} el
+ * @returns {number}
+ */
+export function getCaretOffset(el) {
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0) return 0;
+
+  const range = selection.getRangeAt(0);
+  if (!el.contains(range.endContainer)) return 0;
+
+  const preCaretRange = range.cloneRange();
+  preCaretRange.selectNodeContents(el);
+  preCaretRange.setEnd(range.endContainer, range.endOffset);
+  return preCaretRange.toString().length;
+}

@@ -27,3 +27,12 @@ export function activeDubs(roomId) {
 export function userImage(userid) {
   return `${apiBase}/user/${userid}/image`;
 }
+
+/**
+ *
+ * @param {string} roomId
+ * @returns
+ */
+export function usersInRoom(roomId) {
+  return `${apiBase}/room/${roomId}/users`;
+}

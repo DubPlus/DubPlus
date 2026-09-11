@@ -57,14 +57,14 @@ const customKeyMap = {
 
 /**
  *
- * @param {import("../global").Settings} oldSettings
- * @returns {import("../global").Settings}
+ * @param {import("../types/global").Settings} oldSettings
+ * @returns {import("../types/global").Settings}
  */
 export function migrate(oldSettings) {
   logInfo('Old Settings', oldSettings);
 
   /**
-   * @type {import("../global").Settings}
+   * @type {import("../types/global").Settings}
    */
   const newOptions = {
     options: {},
