@@ -18,7 +18,8 @@
     "prettier": "prettier --write .",
     "purge-cache": "node ./tasks/purge-cache.js",
     "zip-source": "npm run clean && node ./tasks/zip.js",
-    "addon-submit": "npm run zip-source && npm run ci:build && node --env-file .env ./tasks/ff-add-on-submit.js",
+    "addon-submit": "npm run zip-source && npm run ci:build && node --env-file-if-exists .env ./tasks/ff-add-on-submit.js",
+    "chrome-submit": "npm run build && node --env-file-if-exists .env ./tasks/chrome-webstore-submit.js",
     "check": "svelte-check --tsconfig ./jsconfig.json"
   },
   "repository": {

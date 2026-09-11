@@ -52,6 +52,10 @@ I've altered the way some of the features work:
 - Auto-AFK - set the max length to 3 meaning the largest value you can now put in there is 999 minutes, which is just over 16 hours.
 - Custom Modal maxlength validation - In the customization modal it was only using the maxlength for the HTML input attribute, which is easily circumvented via the browser devtools. Now I've included maxlength validation via JS as well to ensure the maxlength is enforced.
 
+### Other
+
+I've also added github actions to allow submitting to the Firefox and Chrome Webstore via a click of a button in Github Actions
+
 ## [4.1.3] - 2026-06-19
 
 ### Fixed

@@ -4,7 +4,7 @@
   "name": "DubPlus",
   "short_name": "Dub+",
   "author": "Dub+ Devs",
-  "description": "Dub+ - A Dubtrack.fm and QueUp.net script/extension for added features and customizations",
+  "description": "Dub+ - A QueUp.net script/extension for added features and customizations",
   "homepage_url": "https://dub.plus/",
   "action": {
     "default_icon": {

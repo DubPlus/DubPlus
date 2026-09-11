@@ -22,6 +22,8 @@ import { access, readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { compareVersions, parseVersion } from './version.js';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -115,44 +117,6 @@ const CONFIG = {
 };
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-/**
- * Parse a Chrome extension version ("1", "1.2", "1.2.3", "1.2.3.4" - each part
- * an integer between 0 and 65535).
- * https://developer.chrome.com/docs/extensions/reference/manifest/version
- * @param {string} version
- * @returns {number[] | null} The version parts, or null if it isn't valid.
- */
-function parseVersion(version) {
-  if (typeof version !== 'string') return null;
-  const parts = version.trim().split('.');
-  if (parts.length === 0 || parts.length > 4) return null;
-  const numbers = parts.map((part) =>
-    /^\d+$/.test(part) ? Number(part) : NaN,
-  );
-  if (numbers.some((n) => !Number.isInteger(n) || n < 0 || n > 65535)) {
-    return null;
-  }
-  return numbers;
-}
-
-/**
- * @param {string} a
- * @param {string} b
- * @returns {number | null} 1 if a > b, -1 if a < b, 0 if equal, null if either
- * version could not be parsed.
- */
-function compareVersions(a, b) {
-  const left = parseVersion(a);
-  const right = parseVersion(b);
-  if (!left || !right) return null;
-
-  for (let i = 0; i < Math.max(left.length, right.length); i++) {
-    const diff = (left[i] ?? 0) - (right[i] ?? 0);
-    if (diff !== 0) return diff > 0 ? 1 : -1;
-  }
-  return 0;
-}
 
 /**
  * The highest crxVersion across a revision's distribution channels.
