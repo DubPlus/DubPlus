@@ -27,7 +27,7 @@ These features are no longer needed because QueUp now handles them natively:
 
 - Snooze
 - Grabs in Chat
-- Show Timestamps - The top level timestamp always shows. There's also other timestamps that show on hover but I can't force then to show with CSS because they are not in the DOM, they get inserted by React on hover.
+- Show Timestamps - The top level timestamp always shows. There's also other timestamps that show on hover but I can't force them to show with CSS because they are not in the DOM, they get inserted by React on hover.
 - Hide Chat - QueUp now allows you to collapse the whole chat area, so this is no longer necessary.
 - Autocomplete - QueUp has their own native autocomplete for the basic emojis now.
 - Chat Cleaner - QueUp now uses list virtualization for their chat messages. This helps reduce memory and CPU strain by only showing chat messages that can be visible to the user. So we no longer need this because it was only used to reduce the load on the browser when there were many many messages, especially if they had gifs and images.
