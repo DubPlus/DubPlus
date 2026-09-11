@@ -7436,7 +7436,7 @@ createHTML: (html) => {
 			"npm": ">=11.0.0"
 		},
 		scripts: {
-			"clean": "rm -rf extension/dist",
+			"clean": "rm -rf extension/dist && rm -rf dist",
 			"build": "npm run clean && vite build && cd extension && web-ext build --filename dubplus-extension.zip --overwrite-dest --artifacts-dir ../dist",
 			"ci:build": "eslint src && vite build",
 			"watch": "vite build --watch",
@@ -7444,8 +7444,9 @@ createHTML: (html) => {
 			"prepare": "husky install",
 			"prettier": "prettier --write .",
 			"purge-cache": "node ./tasks/purge-cache.js",
-			"zip-source": "npm run clean && rm -f dist/dubplus-source.zip && node ./tasks/zip.js",
-			"addon-submit": "npm run zip-source && npm run ci:build && node --env-file .env ./tasks/ff-add-on-submit.js",
+			"zip-source": "npm run clean && node ./tasks/zip.js",
+			"addon-submit": "npm run zip-source && npm run ci:build && node --env-file-if-exists .env ./tasks/ff-add-on-submit.js",
+			"chrome-submit": "npm run build && node --env-file-if-exists .env ./tasks/chrome-webstore-submit.js",
 			"check": "svelte-check --tsconfig ./jsconfig.json"
 		},
 		repository: {
@@ -7558,7 +7559,8 @@ createHTML: (html) => {
 	}
 	async function loadDubPlusCSSforBookmarklet() {
 		let version = "";
-		version = "beta".trim();
+		"master".trim();
+		version = package_default.version;
 		try {
 			await link("/dubplus.css", "dubplus-css", version);
 			return;
