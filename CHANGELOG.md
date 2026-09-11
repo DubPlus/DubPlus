@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.0.0] - 2026-09-09
+## [5.0.0] - 2026-09-10
 
 Updated to handle the new version of Queup that launched in Aug 2026.
 
