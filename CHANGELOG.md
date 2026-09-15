@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.1] - 2026-09-15
+
+### Fixed
+
+- when Queup inserted a banner above its header the dub+ menu icon would sit right on top of the close `x` button. I fixed this by using css anchor position to make sure the icon is always tied to the header.
+
 ## [5.0.0] - 2026-09-10
 
 Updated to handle the new version of Queup that launched in Aug 2026.
