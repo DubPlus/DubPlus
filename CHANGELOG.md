@@ -3,11 +3,21 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.0.1] - 2026-09-15
+## [5.1.0] - 2026-09-22
+
+### New
+
+- Keep Awake - When this is on it will prevent your device from going to sleep
 
 ### Fixed
 
-- when Queup inserted a banner above its header the dub+ menu icon would sit right on top of the close `x` button. I fixed this by using css anchor position to make sure the icon is always tied to the header.
+- When Queup inserted a banner above its header the dub+ menu icon would sit right on top of the close `x` button. I fixed this by using css anchor position to make sure the icon is always tied to the header.
+- Fixed DJ Notification error when loading a modal. This was a silent error only logged to the console. I had just forgotten to include the placeholder and defaultValue in the tranlation doc for this module.
+
+### Other
+
+- improved placement of Dub+ icon and menu by using anchor positioning
+- removed any reference to emojify since it's no longer part of QueUp anymore.
 
 ## [5.0.0] - 2026-09-10
 
