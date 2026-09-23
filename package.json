@@ -1,6 +1,6 @@
 {
   "name": "dubplus",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "type": "module",
   "description": "Dub+ - A simple script/extension for QueUp.net",
   "main": "dubplus.js",
@@ -20,7 +20,8 @@
     "zip-source": "npm run clean && node ./tasks/zip.js",
     "addon-submit": "npm run zip-source && npm run ci:build && node --env-file-if-exists .env ./tasks/ff-add-on-submit.js",
     "chrome-submit": "npm run build && node --env-file-if-exists .env ./tasks/chrome-webstore-submit.js",
-    "check": "svelte-check --tsconfig ./jsconfig.json"
+    "check": "svelte-check --tsconfig ./jsconfig.json",
+    "bump": "node ./tasks/bump.js"
   },
   "repository": {
     "type": "git",
@@ -33,19 +34,19 @@
   },
   "homepage": "https://dub.plus",
   "devDependencies": {
-    "@babel/preset-env": "8.0.2",
+    "@babel/preset-env": "8.0.6",
     "@sveltejs/vite-plugin-svelte": "7.3.0",
-    "@types/chrome": "0.2.5",
-    "@types/node": "24.1.0",
-    "eslint-plugin-svelte": "3.22.0",
-    "globals": "17.9.0",
+    "@types/chrome": "0.3.0",
+    "@types/node": "26.6.2",
+    "eslint-plugin-svelte": "3.23.0",
+    "globals": "17.12.0",
     "husky": "9.1.7",
-    "lint-staged": "17.0.7",
-    "prettier": "3.9.6",
+    "lint-staged": "17.5.1",
+    "prettier": "3.9.8",
     "prettier-plugin-svelte": "4.1.1",
-    "svelte": "5.56.8",
-    "svelte-check": "4.7.5",
-    "vite": "8.2.1",
+    "svelte": "5.57.1",
+    "svelte-check": "4.7.6",
+    "vite": "8.3.0",
     "web-ext": "10.6.0"
   },
   "browserslist": [

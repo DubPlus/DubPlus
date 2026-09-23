@@ -93,16 +93,6 @@ function fetchFrankerFacezEmotes() {
 }
 
 export const dubplus_emoji = {
-  emoji: {
-    /**
-     * @param {string} id
-     * @returns {string}
-     */
-    template(id) {
-      id = id.replace(/:/g, '');
-      return `${window.emojify.defaultConfig.img_dir}/${encodeURI(id)}.png`;
-    },
-  },
   twitchJSONSLoaded: false,
   bttvJSONSLoaded: false,
   frankerfacezJSONLoaded: false,
@@ -319,12 +309,7 @@ export const dubplus_emoji = {
     for (const code in data) {
       if (Object.hasOwn(data, code)) {
         const key = code.toLowerCase();
-
-        if (window.emojify.emojiNames.includes(key)) {
-          this.twitch.emotesMap.set(`${key}_twitch`, data[code]);
-        } else {
-          this.twitch.emotesMap.set(key, data[code]);
-        }
+        this.twitch.emotesMap.set(key, data[code]);
       }
     }
     this.twitchJSONSLoaded = true;
@@ -342,10 +327,7 @@ export const dubplus_emoji = {
           continue; // don't want any emotes with smileys and stuff
         }
 
-        if (
-          window.emojify.emojiNames.includes(key) ||
-          this.twitch.emotesMap.has(key)
-        ) {
+        if (this.twitch.emotesMap.has(key)) {
           this.bttv.emotesMap.set(`${key}_bttv`, data[code]);
         } else {
           this.bttv.emotesMap.set(key, data[code]);
@@ -377,11 +359,7 @@ export const dubplus_emoji = {
         continue; // don't want any emotes with smileys and stuff
       }
 
-      if (
-        window.emojify.emojiNames.includes(key) ||
-        this.twitch.emotesMap.has(key) ||
-        this.bttv.emotesMap.has(key)
-      ) {
+      if (this.twitch.emotesMap.has(key) || this.bttv.emotesMap.has(key)) {
         this.frankerFacez.emotesMap.set(`${key}_ffz`, emoticon.id);
       } else {
         this.frankerFacez.emotesMap.set(key, emoticon.id);
@@ -395,25 +373,15 @@ export const dubplus_emoji = {
    * @param {boolean} [emotesEnabled=false]
    */
   findMatchingEmotes(str, emotesEnabled = false) {
+    if (!emotesEnabled) {
+      return [];
+    }
+
     /**
      * @type {import("./emojiTypes").Emoji[]}
      */
     const matches = [];
 
-    // first we check the QueUp native emoji
-    window.emojify.emojiNames.forEach((emoji) => {
-      if (emoji.includes(str)) {
-        matches.push({
-          src: this.emoji.template(emoji),
-          text: emoji,
-          alt: emoji,
-          platform: 'emojify',
-        });
-      }
-    });
-    if (!emotesEnabled) {
-      return matches;
-    }
     Array.from(this.twitch.emotesMap.keys()).forEach((emoji) => {
       if (emoji.includes(str)) {
         matches.push({

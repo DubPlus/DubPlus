@@ -19,6 +19,10 @@
 </button>
 
 <style>
+  :global(header > div:last-child) {
+    padding-right: calc(0.5rem + 26px) !important;
+  }
+
   /* This is the Dub+ icon in the top right that's always showing
      and triggers the open/close of Dub+ */
   .dubplus-icon {
@@ -30,8 +34,9 @@
 
     cursor: pointer;
 
-    position: absolute;
+    position: fixed;
     top: 0;
+    top: anchor(--queup-header top);
     right: 1rem;
     z-index: 1000;
 
@@ -48,9 +53,5 @@
       width: 26px;
       height: 26px;
     }
-  }
-
-  :global(header > div:last-child) {
-    padding-right: calc(0.5rem + 26px) !important;
   }
 </style>

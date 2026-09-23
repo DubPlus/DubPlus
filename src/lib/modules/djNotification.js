@@ -91,8 +91,8 @@ export const djNotification = {
   custom: {
     title: `${MODULE_ID}.modal.title`,
     content: `${MODULE_ID}.modal.content`,
-    placeholder: '2',
-    defaultValue: '2',
+    placeholder: `${MODULE_ID}.modal.placeholder`,
+    defaultValue: `${MODULE_ID}.modal.defaultValue`,
     maxlength: 3,
     validation(val) {
       // we can allow empty value which will just disable the feature
