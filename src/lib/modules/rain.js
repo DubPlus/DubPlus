@@ -253,15 +253,7 @@ class RainEffect {
 }
 
 /**
- * @type {{
- *   id: string,
- *   label: string,
- *   description: string,
- *   category: string,
- *   rainEffect?: RainEffect,
- *   turnOn(): void,
- *   turnOff(): void,
- * }}
+ * @type {import("./module.js").DubPlusModule & { rainEffect?: RainEffect }}
  */
 export const rain = {
   id: 'rain',
