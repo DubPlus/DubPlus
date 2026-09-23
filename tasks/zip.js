@@ -32,6 +32,7 @@ const exclude_patterns = [
 
 function createZip() {
   try {
+    fs.mkdirSync('dist', { recursive: true });
     const zipFileName = `dist/dubplus-source.zip`;
 
     console.log('Creating zip file:', zipFileName);
