@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.1.1] - 2026-09-29
+
+### Fixed
+
+- Refactored Keep Awake to retry when tab visibility changes and also reset the switch to off state if it's truly lost
+
 ## [5.1.0] - 2026-09-22
 
 ### New
