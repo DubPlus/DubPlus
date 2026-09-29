@@ -70,7 +70,9 @@
     transition: transform 0.3s;
     width: var(--dubplus-menu-width);
     overflow-y: hidden;
-    top: 58px;
+    top: 56px; /* fallback for browsers that don't support anchors */
+    top: anchor(--queup-header bottom);
+    bottom: anchor(--queup-footer top);
     right: 0;
     transform: translateX(var(--dubplus-menu-width));
     box-sizing: border-box;
@@ -79,10 +81,17 @@
     font-size: var(--dubplus-font-size);
     line-height: 1.4;
     padding-bottom: 100px;
-    height: calc(100% - 114px);
     overflow-y: auto;
     scrollbar-color: #999 transparent;
     scrollbar-width: thin;
+  }
+
+  @supports not (top: anchor(--queup-header bottom)) {
+    .dubplus-menu {
+      top: 56px;
+      bottom: unset;
+      height: calc(100% - 114px);
+    }
   }
 
   .dubplus-menu-header {

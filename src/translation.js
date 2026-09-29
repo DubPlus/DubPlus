@@ -123,6 +123,8 @@ export const translations = {
       'You will be DJing shortly! Make sure your song is set!',
     'dj-notification.modal.validation':
       'Please enter a whole number greater than, or equal to, 0',
+    'dj-notification.modal.placeholder': '2',
+    'dj-notification.modal.defaultValue': '2',
 
     'dubs-hover.label': 'Show Dubs on Hover',
     'dubs-hover.description':
@@ -220,5 +222,8 @@ export const translations = {
     'grab-response.modal.content':
       'Enter a message to send when you grab a song',
     'grab-response.modal.placeholder': 'Thanks for the song!',
+
+    'keep-awake.label': 'Keep Awake',
+    'keep-awake.description': 'Prevent your device from going to sleep',
   },
 };

@@ -3,6 +3,7 @@ import { afk } from './afk';
 // import { emotes } from './emotes';
 // import { autocomplete } from './autocomplete';
 import { customMentions } from './customMentions';
+import { keepAwake } from './keepAwake';
 import { mentionNotifications } from './mentionNotifications';
 import { pmNotifications } from './pmNotifications';
 import { djNotification } from './djNotification';
@@ -34,8 +35,9 @@ export const general = [
   autoAfk,
   // emotes,
   // autocomplete,
-  customMentions,
   collapsibleImages,
+  customMentions,
+  keepAwake,
   mentionNotifications,
   pmNotifications,
   djNotification,

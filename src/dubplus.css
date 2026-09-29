@@ -55,6 +55,16 @@
   margin-top: 0.5em !important;
 }
 
+/* helpful anchors */
+
+header {
+  anchor-name: --queup-header;
+}
+
+div:has(> header)>div:last-child {
+  anchor-name: --queup-footer;
+}
+
 /***************************************************************
  * Dub+ menu styles
  */
@@ -67,7 +77,7 @@
  * User Interface styles
  */
 
-.dubplus-split-chat [data-queup="chat-message-list"] > div {
+.dubplus-split-chat [data-queup="chat-message-list"]>div {
   /* reset all chat messages so that they span the full width */
   padding-top: 10px;
   left: 0 !important;
@@ -76,14 +86,14 @@
   padding-right: 16px;
 }
 
-.dubplus-split-chat [data-queup="chat-message-list"] > div:nth-child(odd) {
+.dubplus-split-chat [data-queup="chat-message-list"]>div:nth-child(odd) {
   background: linear-gradient(to right,
       rgba(155, 157, 160, 0.1) 0%,
       rgba(0, 0, 0, 0) 100%);
 }
 
 /* turns off the video and only shows the chat */
-.dubplus-chat-only div:has(+ [data-queup="player-controls"]) { 
+.dubplus-chat-only div:has(+ [data-queup="player-controls"]) {
   display: none !important;
 }
 
@@ -103,12 +113,13 @@
 }
 
 /* flip the icons for the chat expand  and collapse */
-.dubplus-flip-interface  [data-queup="chat-collapse-button"] svg,
-.dubplus-flip-interface  [data-queup="chat-expand-button"] svg,
+.dubplus-flip-interface [data-queup="chat-collapse-button"] svg,
+.dubplus-flip-interface [data-queup="chat-expand-button"] svg,
 /* flip the icons for the sidebar expand and collapse */
 .dubplus-flip-interface .lucide-panel-left-close,
 .dubplus-flip-interface .lucide-panel-left-open {
-  transform: scaleX(-1); /* flip horizontally */
+  transform: scaleX(-1);
+  /* flip horizontally */
 }
 
 .dubplus-chat-system-grab,
@@ -132,13 +143,14 @@
  * Collapsible Images styles
  */
 
-.dubplus-collapsible-images [data-queup="chat-message-list"] > div {
+.dubplus-collapsible-images [data-queup="chat-message-list"]>div {
   a:has(img) {
     img {
       max-height: 0rem;
       transition: max-height .2s ease;
       position: relative;
     }
+
     &::after {
       content: 'Image collapsed. Hover to expand';
       display: block;
@@ -148,6 +160,7 @@
       border: 1px solid rgb(var(--dubplus-text-color));
       padding: 2px 4px;
     }
+
     &:hover img {
       max-height: 25rem;
     }
@@ -160,7 +173,7 @@
  */
 
 @media screen and (min-width: 72em) {
-  .dubplus-pin-menu-right>div:nth-child(2)>div>div:nth-child(2)>div:nth-child(2) {
+  .dubplus-pin-menu-right header~div {
     padding-right: calc(var(--dubplus-menu-width));
   }
 
@@ -168,7 +181,7 @@
     transform: translate3d(0, 0, 0) !important;
   }
 
-  .dubplus-pin-menu-left>div:nth-child(2)>div>div:nth-child(2)>div:nth-child(2) {
+  .dubplus-pin-menu-left header~div {
     padding-left: calc(var(--dubplus-menu-width));
   }
 
