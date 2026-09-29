@@ -1,7 +1,7 @@
 <script>
   import { teleport } from '../actions/teleport.svelte';
   import { insertEmote } from '../modules/autocomplete';
-  import { CHAT_INPUT_CONTAINER, getChatInput } from '../queup.ui';
+  import { getChatInput } from '../queup.ui';
   import { t } from '../stores/i18n.svelte';
   import { emojiState } from './emojiState.svelte';
 
@@ -34,7 +34,8 @@
 </script>
 
 <div
-  use:teleport={{ to: CHAT_INPUT_CONTAINER, position: 'prepend' }}
+  use:teleport={{ to: 'body' }}
+  id="dubplus-emoji-preview"
   class="ac-preview-container"
   class:ac-show={emojiState.emojiList.length > 0}
 >
@@ -44,18 +45,18 @@
     </span>
     <div class="tip-container" aria-hidden="true">
       <span class="tip-navigate">
-        <key class="icon-upvote"></key> &amp;
-        <key class="icon-downvote"></key> ({t(
+        <kbd class="icon-upvote"></kbd> &amp;
+        <kbd class="icon-downvote"></kbd> ({t(
           'autocomplete.preview.navigate',
         )})</span
       >
       <span class="tip-complete">
-        <key>TAB</key> or <key>ENTER</key> ({t(
+        <kbd>TAB</kbd> or <kbd>ENTER</kbd> ({t(
           'autocomplete.preview.select',
         )})</span
       >
       <span class="tip-close"
-        ><key>ESC</key> ({t('autocomplete.preview.close')})</span
+        ><kbd>ESC</kbd> ({t('autocomplete.preview.close')})</span
       >
     </div>
   </div>

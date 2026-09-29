@@ -16,6 +16,10 @@ const outputDir = process.env.OUTPUT_DIR || './extension/dist';
 const bannerPlugin = () => {
   return {
     name: 'banner-plugin',
+    // Vite's internal CSS-emitting plugin runs with enforce: 'post', so it
+    // hasn't added the CSS asset to the bundle yet during a normal-priority
+    // generateBundle. Run after it so the CSS asset is present here.
+    enforce: 'post',
     generateBundle(options, bundle) {
       // Iterate over all files in the bundle
       Object.keys(bundle).forEach((fileName) => {
@@ -25,6 +29,14 @@ const bannerPlugin = () => {
         if (file.type === 'chunk' && fileName.endsWith('.js')) {
           // Add the banner to the top of the file
           file.code = BANNER + '\n' + file.code;
+        }
+
+        // Process the final CSS asset. Unlike JS chunks, CSS goes through
+        // PostCSS once per source file (once per component's <style> block)
+        // before being merged into a single output asset here, so this is
+        // the only point where the banner should be added exactly once.
+        if (file.type === 'asset' && fileName.endsWith('.css')) {
+          file.source = BANNER + '\n' + file.source;
         }
       });
     },
@@ -40,8 +52,8 @@ export default defineConfig(() => {
       minify: false,
       emptyOutDir: false,
       lib: {
-        entry: resolve(__dirname, '/src/main.js'),
-        name: 'dubplus',
+        entry: resolve(import.meta.dirname, '/src/main.js'),
+        name: 'dubplusBundle',
         fileName: 'dubplus',
       },
       copyPublicDir: false,
@@ -49,7 +61,7 @@ export default defineConfig(() => {
         output: [
           {
             format: 'iife',
-            name: 'dubplus',
+            name: 'dubplusBundle',
             dir: outputDir,
 
             // makes sure our output JS file is named dubplus.js
@@ -61,7 +73,7 @@ export default defineConfig(() => {
           },
           {
             format: 'iife',
-            name: 'dubplus',
+            name: 'dubplusBundle',
             // Vite 8 / Rolldown's built-in (Oxc) minifier, replaces @rollup/plugin-terser
             minify: true,
             dir: outputDir,
@@ -71,23 +83,6 @@ export default defineConfig(() => {
             entryFileNames: (chunkInfo) => {
               if (chunkInfo.name === 'main') return 'dubplus.min.js';
               return chunkInfo.name;
-            },
-          },
-        ],
-      },
-    },
-
-    // this will insert our banner at the top of the CSS files.
-    css: {
-      postcss: {
-        plugins: [
-          {
-            postcssPlugin: 'css-banner',
-            Once(root, { result }) {
-              // Only add banner to the final output
-              if (result.opts.to) {
-                root.prepend(`${BANNER}`);
-              }
             },
           },
         ],

@@ -13,10 +13,16 @@
       document.getElementById('dubplus-dialog')
     );
 
-    // this handles the closing via the ESC key
-    dialog.addEventListener('close', () => {
+    function onClose() {
       modalState.open = false;
-    });
+    }
+
+    // this handles the closing via the ESC key
+    dialog.addEventListener('close', onClose);
+
+    return () => {
+      dialog.removeEventListener('close', onClose);
+    };
   });
 
   $effect(() => {
@@ -42,9 +48,7 @@
       <textarea
         bind:value={modalState.value}
         placeholder={modalState.placeholder}
-        maxlength={modalState.maxlength && modalState.maxlength < 999
-          ? modalState.maxlength
-          : 999}></textarea>
+        maxlength={Math.min(modalState.maxlength ?? 999, 999)}></textarea>
     {/if}
     {#if errorMessage}
       <p class="dp-modal--error">{errorMessage}</p>
@@ -67,16 +71,30 @@
       <button
         class="dp-modal--confirm confirm"
         onclick={() => {
+          const isValidLength =
+            (modalState.value?.trim() ?? '').length <=
+            Math.min(modalState.maxlength ?? 999, 999);
           const isValidOrErrorMessage =
             modalState.validation?.(modalState.value ?? '') ?? true;
-          if (isValidOrErrorMessage === true) {
+          if (isValidOrErrorMessage === true && isValidLength) {
             dialog.close();
             modalState.open = false;
             modalState.onConfirm?.(modalState.value ?? '');
             errorMessage = '';
-          } else {
-            errorMessage = isValidOrErrorMessage;
+            return;
           }
+          const errorMessages = [];
+          if (typeof isValidOrErrorMessage === 'string') {
+            errorMessages.push(isValidOrErrorMessage);
+          }
+          if (!isValidLength) {
+            errorMessages.push(
+              t('Modal.validation.maxlength', {
+                maxlength: Math.min(modalState.maxlength ?? 999, 999),
+              }),
+            );
+          }
+          errorMessage = errorMessages.join('\n');
         }}
         >{t('Modal.confirm')}
       </button>

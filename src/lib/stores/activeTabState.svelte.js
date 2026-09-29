@@ -2,15 +2,19 @@ export const activeTabState = $state({ isActive: true });
 
 /**
  * An array of functions to call when the visibility state changes to hidden.
- * @type {Array<() => void>}
+ * @type {Set<() => void>}
  */
-const onOut = [];
+// Ignoring this because this Set is just for internal use and not reactive
+// eslint-disable-next-line svelte/prefer-svelte-reactivity
+const onOut = new Set();
 
 /**
  * An array of functions to call when the visibility state changes to visible.
- * @type {Array<() => void>}
+ * @type {Set<() => void>}
  */
-const onIn = [];
+// Ignoring this because this Set is just for internal use and not reactive
+// eslint-disable-next-line svelte/prefer-svelte-reactivity
+const onIn = new Set();
 
 document.addEventListener('visibilitychange', handleChange);
 
@@ -50,8 +54,8 @@ function handleChange(evt) {
  * @param {() => void} outHandler
  */
 export function registerVisibilityChangeListeners(inHandler, outHandler) {
-  if (inHandler) onIn.push(inHandler);
-  if (outHandler) onOut.push(outHandler);
+  if (inHandler) onIn.add(inHandler);
+  if (outHandler) onOut.add(outHandler);
 }
 
 /**
@@ -60,6 +64,6 @@ export function registerVisibilityChangeListeners(inHandler, outHandler) {
  * @param {() => void} outHandler
  */
 export function unRegisterVisibilityChangeListeners(inHandler, outHandler) {
-  if (inHandler) onIn.splice(onIn.indexOf(inHandler), 1);
-  if (outHandler) onOut.splice(onOut.indexOf(outHandler), 1);
+  if (inHandler) onIn.delete(inHandler);
+  if (outHandler) onOut.delete(outHandler);
 }

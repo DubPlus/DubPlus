@@ -1,118 +1,81 @@
-/**
- * Anything that access the UI for QueUp should go here so that when there's any
- * future changes to the UI, we'll just need to update this file.
- */
+// The chat input is actually a contenteditable div and is the only contenteditable
+// element on the page. if that ever changes, we can add `[aria-label="Type a message..."]`
+export const CHAT_INPUT_CONTAINER =
+  '[data-queup="chat-input-container"] [contenteditable]';
+
+const CHAT_CONTAINER_SELECTOR = '[data-queup="chat-message-scroll-area"]';
 
 /**
- * @returns {HTMLTextAreaElement | null}
+ * @returns {HTMLDivElement | null}
  */
 export function getChatInput() {
-  return document.querySelector('#chat-txt-message');
+  return /** @type {HTMLDivElement | null} */ (
+    document.querySelector(CHAT_INPUT_CONTAINER)
+  );
 }
 
 export function getChatContainer() {
-  return document.querySelector('ul.chat-main');
+  return document.querySelector(CHAT_CONTAINER_SELECTOR);
 }
 
 /**
- * @param {string} [extra] example: ":not([data-emote-processed])"
- * @returns {NodeListOf<HTMLLIElement>}
+ * @param {string} [extra] additional css selector or pseudo class. example: ":not([data-emote-processed])"
+ * @returns {HTMLDivElement[]}
  */
 export function getChatMessages(extra = '') {
-  return document.querySelectorAll(`ul.chat-main > li${extra}`);
+  const selector = `${CHAT_CONTAINER_SELECTOR} > div${extra}`;
+  return Array.from(document.querySelectorAll(selector));
 }
 
 /**
- * @returns {NodeListOf<HTMLAnchorElement>}
- */
-export function getImagesInChat() {
-  return document.querySelectorAll('.chat-main > li .autolink-image');
-}
-
-/**
- * @returns {HTMLImageElement | null}
+ * @returns {HTMLDivElement | null}
  */
 export function getBackgroundImage() {
-  return document.querySelector('.backstretch img');
-}
-
-/**
- * @returns {HTMLSpanElement | null}
- */
-export function getQueuePosition() {
-  return document.querySelector('.queue-position');
-}
-
-/**
- * @returns {HTMLSpanElement | null}
- */
-export function getQueueTotal() {
-  return document.querySelector('.queue-total');
+  return document.querySelector(
+    'body > div:nth-child(2) > div > div:first-child',
+  );
 }
 
 /**
  * @returns {HTMLIFrameElement | null}
  */
 export function getPlayerIframe() {
-  return document.querySelector('.player_container iframe');
+  // there's only 1 iframe on the page but just in case I'm adding the
+  // `main` parent selector
+  return document.querySelector('main iframe');
 }
 
 /**
- *
  * @returns {HTMLDivElement | null}
  */
 export function getPrivateMessageButton() {
-  return document.querySelector('.user-messages');
+  return document.querySelector('button:has(> .lucide-mail)');
 }
 
 /**
- * @param {string} messageId
- * @returns {HTMLLIElement | null}
- */
-export function getPrivateMessage(messageId) {
-  return document.querySelector(`.message-item[data-messageid="${messageId}"]`);
-}
-
-/**
- * @returns {HTMLAnchorElement | null}
+ * @returns {HTMLButtonElement | null | undefined}
  */
 export function getDubUp() {
-  return document.querySelector('.dubup');
+  return document.querySelector('[data-queup="updub-button"]');
 }
 
 /**
- * @returns {HTMLAnchorElement | null}
+ * @returns {HTMLButtonElement | null | undefined}
  */
 export function getDubDown() {
-  return document.querySelector('.dubdown');
+  return document.querySelector('[data-queup="downdub-button"]');
 }
 
 /**
- * @returns {HTMLLIElement | null}
+ * aka the Grab button
+ * @returns {HTMLButtonElement | null | undefined}
  */
 export function getAddToPlaylist() {
-  return document.querySelector('.add-to-playlist');
+  return document.querySelector('[data-queup="grab-button"]');
 }
 
-/**
- * @returns {HTMLSpanElement | null}
- */
-export function getCurrentSongMinutes() {
-  return document.querySelector('div.currentTime span.min');
+export function getPlayerButtonsContainer() {
+  return document.querySelector(
+    '[data-queup="player-controls"] > div > div:last-child',
+  );
 }
-
-/**
- * Selectors for some elements
- */
-
-export const CHAT_INPUT_CONTAINER = '.pusher-chat-widget-input';
-
-/**
- * This is the location where the DubPlus menu will be placed.
- */
-export const DUBPLUS_MENU_CONTAINER = '.header-right-navigation';
-
-/**
- * This is where the ETA, Snooze, and Snooze Video buttons are placed.
- */
-export const PLAYER_SHARING_CONTAINER = '.player_sharing';

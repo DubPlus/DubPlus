@@ -7,6 +7,12 @@ export const translations = {
     'Modal.cancel': 'Cancel',
     'Modal.close': 'Close',
     'Modal.defaultValue': 'Default Value',
+    'Modal.validation.maxlength':
+      'Value exceeds maximum length of {{maxlength}}',
+
+    'SlashCommand.args':
+      'Customize by adding arguments. Example: /afk I am away',
+    'SlashCommand.invalid.value': 'Invalid value for slash command',
 
     'Error.modal.title': 'Dub+ Error',
     'Error.modal.loggedout': "You're not logged in. Please login to use Dub+.",
@@ -15,9 +21,7 @@ export const translations = {
 
     'Loading.text': 'Waiting for QueUp...',
     'Eta.tooltip.notInQueue': "You're not in the queue",
-    'Eta.tootltip': 'ETA: {{minutes}} minutes',
-    'Snooze.tooltip': 'Mute for current song',
-    'Snooze.tooltip.undo': 'Cancel mute for current song',
+    'Eta.tootltip': 'ETA: {{time}}',
     'SnoozeVideo.tooltip': 'Hide video for current song',
     'SnoozeVideo.tooltip.undo': 'Cancel hiding video for current song',
 
@@ -59,6 +63,8 @@ export const translations = {
     'auto-afk.modal.content':
       'Enter the amount of time, in minutes, before you are set to AFK.',
     'auto-afk.modal.validation': 'Please enter a whole number greater than 0',
+    'auto-afk.modal.placeholder': '30',
+    'auto-afk.modal.defaultValue': '30',
 
     'emotes.label': 'Emotes',
     'emotes.description': 'Adds Twitch, Bttv, and FrankerFacez emotes in chat.',
@@ -107,13 +113,18 @@ export const translations = {
     'dj-notification.description':
       'Get a notification when you are coming up to be the DJ',
     'dj-notification.modal.title': 'DJ Notification',
-    'dj-notification.modal.content':
-      'Please specify the position in queue you want to be notified at. Use "0" to be notified when you start playing.',
+    'dj-notification.modal.content': `Please specify the position in queue you want to be notified at. 
+        "0" means you are on now.
+        "1" means you're up next.
+        "2" means you're two spots away from playing.
+      `,
     'dj-notification.notification.title': 'DJ Alert!',
     'dj-notification.notification.content':
       'You will be DJing shortly! Make sure your song is set!',
     'dj-notification.modal.validation':
       'Please enter a whole number greater than, or equal to, 0',
+    'dj-notification.modal.placeholder': '2',
+    'dj-notification.modal.defaultValue': '2',
 
     'dubs-hover.label': 'Show Dubs on Hover',
     'dubs-hover.description':
@@ -131,11 +142,6 @@ export const translations = {
     'updubs-in-chat.description': 'Toggle showing updubs in the chat box',
     'updubs-in-chat.chat-message':
       '@{{username}} has updubbed your song {{song_name}}',
-
-    'grabs-in-chat.label': 'Grabs in Chat',
-    'grabs-in-chat.description': 'Toggle showing grabs in the chat box',
-    'grabs-in-chat.chat-message':
-      '@{{username}} has grabbed your song {{song_name}}',
 
     'snow.label': 'Snow',
     'snow.description': 'Make it snow!',
@@ -216,5 +222,8 @@ export const translations = {
     'grab-response.modal.content':
       'Enter a message to send when you grab a song',
     'grab-response.modal.placeholder': 'Thanks for the song!',
+
+    'keep-awake.label': 'Keep Awake',
+    'keep-awake.description': 'Prevent your device from going to sleep',
   },
 };

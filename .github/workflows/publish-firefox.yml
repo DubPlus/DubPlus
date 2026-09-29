@@ -1,0 +1,62 @@
+# In this action we publish the extension to Mozilla Add-ons (AMO).
+#
+# This never runs on its own. You trigger it from the Actions tab with the
+# "Run workflow" button, and whatever branch you pick in that dropdown is what
+# gets published - there is no branch guard, so check the dropdown.
+#
+# tasks/ff-add-on-submit.js checks the version in extension/manifest.json
+# against the version currently listed on AMO and refuses to sign anything that
+# isn't higher, so re-running an already listed version fails instead of doing
+# something surprising.
+#
+# Chrome is published by its own workflow: publish-chrome.yml
+
+name: Publish to Mozilla Add-ons
+
+on:
+  workflow_dispatch:
+
+# Queue overlapping runs instead of cancelling them. Cancelling a run that is
+# mid-upload to the store is the outcome we least want, so unlike validate.yml
+# this deliberately does not cancel in progress.
+concurrency:
+  group: publish-firefox
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Mozilla Add-ons
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+          cache: 'npm'
+
+      - run: npm audit --audit-level=critical
+
+      - run: npm ci --ignore-scripts
+
+      - name: Build and submit
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}
+        run: npm run addon-submit
+
+      # Mozilla requires the source zip for review, so keep a copy of the one
+      # we uploaded alongside the submission.
+      - name: Upload source zip
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: dubplus-source-zip
+          path: dist/dubplus-source.zip
+          retention-days: 30
+          if-no-files-found: warn

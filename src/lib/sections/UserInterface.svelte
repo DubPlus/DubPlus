@@ -3,8 +3,14 @@
   import MenuSection from '../menu/MenuSection.svelte';
   import MenuItem from '../menu/MenuSwitch.svelte';
   import { userInterface } from '../modules';
+  import { getCommandConfig } from '../../utils/module-setup-utils';
   import { t } from '../stores/i18n.svelte';
   import MenuAction from '../menu/MenuAction.svelte';
+
+  userInterface.forEach((module) => {
+    const chatCommandConfig = getCommandConfig(module);
+    window.QueUp.chat.registerCommand(chatCommandConfig);
+  });
 </script>
 
 <MenuHeader settingsId="user-interface" name={t('user-interface.title')} />

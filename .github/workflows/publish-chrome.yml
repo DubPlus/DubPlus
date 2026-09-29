@@ -1,0 +1,74 @@
+# In this action we publish the extension to the Chrome Web Store.
+#
+# This never runs on its own. You trigger it from the Actions tab with the
+# "Run workflow" button, and whatever branch you pick in that dropdown is what
+# gets published - there is no branch guard, so check the dropdown.
+#
+# tasks/chrome-webstore-submit.js checks the version in extension/manifest.json
+# against the version currently published in the store and refuses to upload
+# anything that isn't higher, so re-running an already published version fails
+# instead of doing something surprising.
+#
+# Firefox is published by its own workflow: publish-firefox.yml
+
+name: Publish to Chrome Web Store
+
+on:
+  workflow_dispatch:
+    inputs:
+      allow_warnings:
+        description: 'Publish even if the Web Store reports validation warnings'
+        type: boolean
+        default: true
+
+# Queue overlapping runs instead of cancelling them. Cancelling a run that is
+# mid-upload to the store is the outcome we least want, so unlike validate.yml
+# this deliberately does not cancel in progress.
+concurrency:
+  group: publish-chrome
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Chrome Web Store
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+          cache: 'npm'
+
+      - run: npm audit --audit-level=critical
+
+      - run: npm ci --ignore-scripts
+
+      - name: Read version from manifest
+        run: echo "NEW_EXTENSION_VERSION=$(jq -r '.version' extension/manifest.json)" >> "$GITHUB_ENV"
+
+      - name: Build and submit
+        env:
+          CHROME_WS_CLIENT_ID: ${{ secrets.CHROME_WS_CLIENT_ID }}
+          CHROME_WS_CLIENT_SECRET: ${{ secrets.CHROME_WS_CLIENT_SECRET }}
+          CHROME_WS_REFRESH_TOKEN: ${{ secrets.CHROME_WS_REFRESH_TOKEN }}
+          CHROME_WS_EXTENSION_ID: ${{ secrets.CHROME_WS_EXTENSION_ID }}
+          CHROME_WS_PUBLISHER_ID: ${{ secrets.CHROME_WS_PUBLISHER_ID }}
+          CHROME_WS_ALLOW_WARNINGS: ${{ inputs.allow_warnings }}
+        run: npm run chrome-submit
+
+      # Keep the exact bytes we sent to the store. If it gets rejected days
+      # later this is the only copy of what was actually submitted.
+      - name: Upload extension zip
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: dubplus-extension-zip
+          path: dist/dubplus-extension.zip
+          retention-days: 30
+          if-no-files-found: warn

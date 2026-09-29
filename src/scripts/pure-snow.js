@@ -7,6 +7,8 @@
  * The snow is done with CSS animations and keyframes.
  *
  */
+import { logError } from '../utils/logger';
+import { waitFor } from '../utils/waitFor.js';
 
 const SNOWFLAKES_COUNT = 200;
 
@@ -122,7 +124,13 @@ function generateSnowCSS(snowDensity = 200) {
 
 // Load the rules and execute after the DOM loads
 export function createSnow() {
-  getSnowAttributes();
-  generateSnowCSS(snowflakesCount);
-  generateSnow(snowflakesCount);
+  waitFor(() => !!getSnowConatiner())
+    .then(() => {
+      getSnowAttributes();
+      generateSnowCSS(snowflakesCount);
+      generateSnow(snowflakesCount);
+    })
+    .catch((error) => {
+      logError('Failed to create snow:', error);
+    });
 }

@@ -70,6 +70,14 @@ CONS:
 
 - The process of seeing your changes after save is a little slower and not automatic.
 
+### CSS
+
+Queup now uses Tailwind so we can take advantage of that as well which will help us reduce some code.
+
+### Icons
+
+Queup uses icons from: <https://lucide.dev/icons/>. Look for icons there and copy the SVG to `src/lib/svg` and import them as components when needed.
+
 ### npm scripts
 
 `npm run build` - Lints src, builds files from sources, then builds the extension zip

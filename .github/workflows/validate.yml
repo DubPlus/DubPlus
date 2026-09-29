@@ -1,7 +1,7 @@
 # In this action we validate that:
 # - the project builds without error
-# - when targeting master/main, both package.json and manifest.json versions have been updated
-# - when targeting master/main, CHANGELOG.md has been updated with the new version
+# - when targeting the default branch, both package.json and manifest.json versions have been updated
+# - when targeting the default branch, CHANGELOG.md has been updated with the new version
 
 name: Validate
 
@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Use Node.js 24.x
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24.x
           cache: 'npm'
@@ -38,14 +38,14 @@ jobs:
       # build should succeed
       - run: npm run ci:build
 
-      # If we are merging any changes into master/main, we should be bumping the version,
+      # If we are merging any changes into the default branch, we should be bumping the version,
       # and we should be updating the changelog.
       # This step ensures that we don't forget to do that. We should only merge into
       # the default branch when we are ready to push a new release, otherwise if you
       # plan on breaking up work into smaller changes and having multiple PRs, use an
       # intermediate branch like 'develop'
       - name: Check version bump and changelog update
-        if: github.base_ref == 'master' || github.base_ref == 'main'
+        if: github.base_ref == github.event.repository.default_branch
         env:
           BASE_REF: ${{ github.base_ref }}
         run: |

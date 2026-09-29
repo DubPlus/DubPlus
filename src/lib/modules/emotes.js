@@ -1,6 +1,7 @@
-import { CHAT_MESSAGE } from '../../events-constants';
+import { REALTIME_EVENT } from '../../events-constants';
 import { dubplus_emoji } from '../emoji/emoji';
 import { getChatMessages } from '../queup.ui';
+import { onRealtime, offRealtime } from '../queup.v2';
 
 /**
  *
@@ -81,7 +82,7 @@ function processChatText(text) {
 }
 
 /**
- * @param {HTMLLIElement} li
+ * @param {HTMLDivElement} li
  * @return {void}
  */
 function processChatLI(li) {
@@ -109,13 +110,13 @@ function processChatLI(li) {
 /**
  * run this when a new chat message is received
  * and only replaces emotes in the last message
- * @param {import('../../events').ChatMessageEvent} [e]
+ * @param {import('../../types/events').ChatMessageEvent} [e]
  * @returns {void}
  */
 function replaceTextWithEmote(e) {
   if (e?.chatid) {
     /**
-     * @type {HTMLLIElement | null}
+     * @type {HTMLDivElement | null}
      */
     const chatMessage = document.querySelector(`.chat-id-${e.chatid}`);
     if (chatMessage) {
@@ -148,11 +149,11 @@ export const emotes = {
       .then(() => dubplus_emoji.loadFrankerFacez())
       .then(() => {
         replaceTextWithEmote();
-        window.QueUp.Events.bind(CHAT_MESSAGE, replaceTextWithEmote);
+        onRealtime(REALTIME_EVENT.CHAT_MESSAGE, replaceTextWithEmote);
       });
   },
 
   turnOff() {
-    window.QueUp.Events.unbind(CHAT_MESSAGE, replaceTextWithEmote);
+    offRealtime(REALTIME_EVENT.CHAT_MESSAGE, replaceTextWithEmote);
   },
 };
