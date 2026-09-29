@@ -7558,19 +7558,19 @@ createHTML: (html) => {
 		homepage: "https://dub.plus",
 		devDependencies: {
 			"@babel/preset-env": "8.0.6",
-			"@sveltejs/vite-plugin-svelte": "7.3.0",
+			"@sveltejs/vite-plugin-svelte": "7.3.1",
 			"@types/chrome": "0.3.0",
-			"@types/node": "26.6.2",
+			"@types/node": "26.6.3",
 			"eslint-plugin-svelte": "3.23.0",
 			"globals": "17.12.0",
 			"husky": "9.1.7",
-			"lint-staged": "17.5.1",
-			"prettier": "3.9.8",
+			"lint-staged": "17.6.0",
+			"prettier": "3.9.9",
 			"prettier-plugin-svelte": "4.1.1",
 			"svelte": "5.57.1",
 			"svelte-check": "4.7.6",
-			"vite": "8.3.0",
-			"web-ext": "10.6.0"
+			"vite": "8.3.1",
+			"web-ext": "10.7.0"
 		},
 		browserslist: ["> 1%", "last 2 versions"],
 		"lint-staged": {
@@ -7658,8 +7658,7 @@ createHTML: (html) => {
 	}
 	async function loadDubPlusCSSforBookmarklet() {
 		let version = "";
-		"master".trim();
-		version = package_default.version;
+		version = "develop".trim();
 		try {
 			await link("/dubplus.css", "dubplus-css", version);
 			return;
