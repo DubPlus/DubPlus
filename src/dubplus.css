@@ -65,6 +65,11 @@ div:has(> header)>div:last-child {
   anchor-name: --queup-footer;
 }
 
+[data-queup="player-controls"] {
+  anchor-name: --queup-player-controls;
+}
+
+
 /***************************************************************
  * Dub+ menu styles
  */
@@ -189,6 +194,16 @@ div:has(> header)>div:last-child {
     transform: translate3d(0, 0, 0) !important;
     right: unset !important;
     left: 0 !important;
+  }
+}
+
+/************************************************
+ * Pin Room Queue styles
+ */
+
+@media screen and (min-width: 72em) {
+  [data-room-queue] {
+    top: anchor(--queup-player-controls bottom);
   }
 }
 

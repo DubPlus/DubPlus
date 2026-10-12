@@ -180,6 +180,10 @@ export const translations = {
     'pin-menu.secondaryAction.description':
       'Click to toggle between pinning to the left or right side',
 
+    'pin-room-queue.label': 'Pin Room Queue',
+    'pin-room-queue.description':
+      'Pin the room queue under the video so that it stays visible at all times. Only works in the non-mobile view',
+
     'spacebar-mute.label': 'Spacebar Mute',
     'spacebar-mute.description':
       'Turn on/off the ability to mute current song with the spacebar',

@@ -79,3 +79,36 @@ export function getPlayerButtonsContainer() {
     '[data-queup="player-controls"] > div > div:last-child',
   );
 }
+
+/**
+ *
+ * @returns {HTMLButtonElement | null}
+ */
+export function getRoomQueueButton() {
+  // first try to find the button by its text content which would give use the most accurate result
+  const button =
+    Array.from(document.querySelectorAll('button')).filter((b) =>
+      b.textContent.trim().toLowerCase().includes('room queue'),
+    )?.[0] || null;
+  if (button) return button;
+  // if the panel is collapsed, the "room queue" text is gone so we need to rely on something else.
+  // There are 2 elements with lucide-users icons and right now the button we want turns up first
+  // TODO: see if Queup could add a data-attribute to this button
+  return document.querySelector('button:has(svg.lucide-users)');
+}
+
+/**
+ *
+ * @returns {HTMLDivElement | null}
+ */
+export function getRoomQueueContainer() {
+  return document.querySelector('main > div:last-child');
+}
+
+/**
+ *
+ * @returns {HTMLButtonElement | null | undefined}
+ */
+export function getRoomQueueCloseButton() {
+  return getRoomQueueContainer()?.querySelector('button[aria-label="Close"]');
+}

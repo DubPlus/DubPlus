@@ -103,3 +103,5 @@ $RECYCLE.BIN/
 .amo-upload-uuid
 # copy of queup's js so that AI can parse it for help
 queup.js
+
+tmp
