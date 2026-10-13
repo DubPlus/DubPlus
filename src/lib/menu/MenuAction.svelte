@@ -1,12 +1,17 @@
 <script>
   import { onMount } from 'svelte';
   import { t } from '../stores/i18n.svelte';
+  import { mobile } from '../stores/mobileState.svelte.js';
+  import { isMod } from '../../utils/modcheck';
+  import { getUserId } from '../queup.v2';
 
   /**
    * @typedef {object} MenuActionProps
    * @property {string} id
    * @property {string} label
    * @property {string} description
+   * @property {boolean} [modOnly]
+   * @property {boolean} [desktopOnly]
    * @property {import('svelte').Component} icon An SVG as a .svelte component
    * @property {() => void} [onClick]
    * @property {() => void} [init]
@@ -22,18 +27,29 @@
     icon: Icon,
     onClick = () => {},
     init,
+    modOnly = false,
+    desktopOnly = false,
   } = $props();
+
+  function getDisabled() {
+    if (desktopOnly && mobile.current) return true;
+    if (modOnly && !isMod(getUserId())) return true;
+    return false;
+  }
 
   onMount(() => {
     if (init) init();
   });
 </script>
 
-<li {id} title={t(description)}>
+<li {id} title={t(description)} class:disabled={getDisabled()}>
   <button aria-label={t(description)} type="button" onclick={onClick}>
     <Icon />
     <span class="dubplus-menu-label">{t(label)}</span>
   </button>
+  <div class="dubplus-slash-command">
+    /{id}
+  </div>
 </li>
 
 <style>

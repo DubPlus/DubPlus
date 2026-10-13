@@ -22,6 +22,7 @@
       init={module.init}
       customize={module.custom}
       modOnly={module.modOnly}
+      desktopOnly={module.desktopOnly}
       turnOn={module.turnOn}
       turnOff={module.turnOff}
     />

@@ -27,6 +27,8 @@
       customize={module.custom}
       turnOn={module.turnOn}
       turnOff={module.turnOff}
+      modOnly={module.modOnly}
+      desktopOnly={module.desktopOnly}
     />
   {/each}
 </MenuSection>

@@ -1,7 +1,7 @@
 <script>
   import MenuHeader from '../menu/MenuHeader.svelte';
   import MenuSection from '../menu/MenuSection.svelte';
-  import MenuItem from '../menu/MenuSwitch.svelte';
+  import MenuSwitch from '../menu/MenuSwitch.svelte';
   import { userInterface } from '../modules';
   import { getCommandConfig } from '../../utils/module-setup-utils';
   import { t } from '../stores/i18n.svelte';
@@ -24,9 +24,11 @@
         icon={module.altIcon}
         onClick={module.onClick}
         init={module.init}
+        modOnly={module.modOnly}
+        desktopOnly={module.desktopOnly}
       />
     {:else}
-      <MenuItem
+      <MenuSwitch
         id={module.id}
         label={module.label}
         description={module.description}
@@ -35,6 +37,8 @@
         secondaryAction={module.secondaryAction}
         turnOn={module.turnOn}
         turnOff={module.turnOff}
+        modOnly={module.modOnly}
+        desktopOnly={module.desktopOnly}
       />
     {/if}
   {/each}

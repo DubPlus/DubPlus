@@ -1,3 +1,5 @@
+export const mobileBreakpoint = '(max-width: 768px)';
+
 // The chat input is actually a contenteditable div and is the only contenteditable
 // element on the page. if that ever changes, we can add `[aria-label="Type a message..."]`
 export const CHAT_INPUT_CONTAINER =
