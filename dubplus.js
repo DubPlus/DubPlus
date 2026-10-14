@@ -11,7 +11,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v5.1.1
+    v5.2.1
 
     MIT License 
 
@@ -550,6 +550,10 @@
 			Promise.all(async.map((expression) => /* @__PURE__ */ async_derived(expression))).then(finish).catch((error) => invoke_error_boundary(error, parent)).finally(decrement_pending);
 		}
 		if (blocker_promise) blocker_promise.then(() => {
+			if ((parent.f & 16384) !== 0) {
+				decrement_pending();
+				return;
+			}
 			restore();
 			run();
 			unset_context();
@@ -1420,11 +1424,13 @@
 	*/
 	function flushSync(fn) {
 		var was_flushing_sync = is_flushing_sync;
+		var prev_previous_batch = previous_batch;
+		previous_batch = null;
 		is_flushing_sync = true;
 		try {
 			var result;
 			if (fn) {
-				if (current_batch !== null && !current_batch.is_fork) current_batch.flush();
+				flushSync();
 				result = fn();
 			}
 			while (true) {
@@ -1434,6 +1440,7 @@
 			}
 		} finally {
 			is_flushing_sync = was_flushing_sync;
+			previous_batch = prev_previous_batch;
 		}
 	}
 	function infinite_loop_guard() {
@@ -1566,7 +1573,7 @@
 	/** @import { Derived, Effect, Source, Value } from '#client' */
 	/** @type {Set<Effect>} */
 	var eager_effects = /* @__PURE__ */ new Set();
-	/** @type {Map<Source, any>} */
+	/** @type {Map<Value, any>} */
 	var old_values = /* @__PURE__ */ new Map();
 	var eager_effects_deferred = false;
 	/**
@@ -1611,7 +1618,7 @@
 	}
 	/**
 	* @template V
-	* @param {Source<V>} source
+	* @param {Value<V>} source
 	* @param {V} value
 	* @param {boolean} [should_proxy]
 	* @returns {V}
@@ -1632,7 +1639,7 @@
 	var count_deps = 0;
 	/**
 	* @template V
-	* @param {Source<V>} source
+	* @param {Value<V>} source
 	* @param {V} value
 	* @param {Effect[] | null} [updated_during_traversal]
 	* @returns {V}
@@ -2086,6 +2093,7 @@
 	* @param {Effect | null} effect
 	*/
 	function invoke_error_boundary(error, effect) {
+		if (error === HYDRATION_ERROR) throw error;
 		if (effect !== null && (effect.f & 16384) !== 0) return;
 		while (effect !== null) {
 			if ((effect.f & 128) !== 0 && (effect.f & 33570816) === 0) {
@@ -2491,10 +2499,6 @@
 	//#endregion
 	//#region node_modules/svelte/src/internal/client/runtime.js
 	/** @import { Derived, Effect, Reaction, Source, Value } from '#client' */
-	/**
-	* True if updating in an effect context that is reactive (i.e. not branch/root effects)
-	*/
-	var is_updating_effect = false;
 	var is_destroying_effect = false;
 	/** @param {boolean} value */
 	function set_is_destroying_effect(value) {
@@ -2516,7 +2520,7 @@
 	/**
 	* When sources are created within a reaction, reading and writing
 	* them within that reaction should not cause a re-run
-	* @type {null | Set<Source>}
+	* @type {null | Set<Value>}
 	*/
 	var current_sources = null;
 	/** @param {Value} value */
@@ -2534,10 +2538,10 @@
 	/**
 	* Tracks writes that the effect it's executed in doesn't listen to yet,
 	* so that the dependency can be added to the effect later on if it then reads it
-	* @type {null | Source[]}
+	* @type {null | Value[]}
 	*/
 	var untracked_writes = null;
-	/** @param {null | Source[]} value */
+	/** @param {null | Value[]} value */
 	function set_untracked_writes(value) {
 		untracked_writes = value;
 	}
@@ -2725,9 +2729,7 @@
 		if ((flags & 16384) !== 0) return;
 		set_signal_status(effect, CLEAN);
 		var previous_effect = active_effect;
-		var was_updating_effect = is_updating_effect;
 		active_effect = effect;
-		is_updating_effect = (flags & 96) === 0;
 		try {
 			if ((flags & 16777232) !== 0) destroy_block_effect_children(effect);
 			else destroy_effect_children(effect);
@@ -2736,7 +2738,6 @@
 			effect.teardown = typeof teardown === "function" ? teardown : null;
 			effect.wv = write_version;
 		} finally {
-			is_updating_effect = was_updating_effect;
 			active_effect = previous_effect;
 		}
 	}
@@ -2788,7 +2789,7 @@
 				old_values.set(derived, value);
 				return value;
 			}
-			var should_connect = (derived.f & 512) === 0 && !untracking && active_reaction !== null && (is_updating_effect || (active_reaction.f & 512) !== 0);
+			var should_connect = (derived.f & 512) === 0 && !untracking && active_reaction !== null && (active_reaction.f & 512) !== 0;
 			var is_new = (derived.f & REACTION_RAN) === 0;
 			if (is_dirty(derived)) {
 				if (should_connect) derived.f |= 512;
@@ -2812,7 +2813,9 @@
 		derived.f |= 512;
 		if (derived.deps === null) return;
 		for (const dep of derived.deps) {
-			(dep.reactions ??= []).push(derived);
+			var reactions = dep.reactions;
+			if (reactions === null) dep.reactions = [derived];
+			else if (!includes.call(reactions, derived)) reactions.push(derived);
 			if ((dep.f & 2) !== 0 && (dep.f & 512) === 0) {
 				unfreeze_derived_effects(dep);
 				reconnect(dep);
@@ -2945,6 +2948,23 @@
 			});
 		} else dom.addEventListener(event_name, target_handler, options);
 		return target_handler;
+	}
+	/**
+	* Attaches an event handler to an element and returns a function that removes the handler. Using this
+	* rather than `addEventListener` will preserve the correct order relative to handlers added declaratively
+	* (with attributes like `onclick`), which use event delegation for performance reasons
+	*
+	* @param {EventTarget} element
+	* @param {string} type
+	* @param {EventListener} handler
+	* @param {AddEventListenerOptions} [options]
+	*/
+	function on(element, type, handler, options = {}) {
+		var target_handler = create_event(type, element, handler, options);
+		return () => {
+			target_handler.__removed = true;
+			element.removeEventListener(type, target_handler, options);
+		};
 	}
 	/**
 	* @param {string} event_name
@@ -3389,11 +3409,11 @@ createHTML: (html) => {
 			this.transform_error = transform_error ?? this.parent?.transform_error ?? ((e) => e);
 			this.#effect = block(() => {
 				if (hydrating) {
-					const comment = this.#hydrate_open;
+					const comment_data = read_hydration_instruction(this.#hydrate_open);
 					hydrate_next();
-					const server_rendered_pending = comment.data === "[!";
-					if (comment.data.startsWith("[?")) {
-						const serialized_error = JSON.parse(comment.data.slice(2));
+					const server_rendered_pending = comment_data === "[!";
+					if (comment_data.startsWith("[?")) {
+						const serialized_error = JSON.parse(comment_data.slice(2));
 						this.#hydrate_failed_content(serialized_error);
 					} else if (server_rendered_pending) this.#hydrate_pending_content();
 					else this.#hydrate_resolved_content();
@@ -3430,6 +3450,7 @@ createHTML: (html) => {
 			var did_reset = false;
 			var calling_on_error = false;
 			const reset = () => {
+				if (this.#is_destroyed()) return;
 				if (did_reset) {
 					svelte_boundary_reset_noop();
 					return;
@@ -3444,6 +3465,7 @@ createHTML: (html) => {
 				});
 			};
 			const invoke_onerror = () => {
+				if (this.#is_destroyed()) return;
 				try {
 					calling_on_error = true;
 					this.#props.onerror?.(error, reset);
@@ -3457,12 +3479,16 @@ createHTML: (html) => {
 				invoke_onerror
 			};
 		}
+		#is_destroyed() {
+			return (this.#effect.f & (DESTROYED | DESTROYING)) !== 0;
+		}
 		#hydrate_pending_content() {
 			const pending = this.#props.pending;
 			if (!pending) return;
 			this.is_pending = true;
 			this.#pending_effect = branch(() => pending(this.#anchor));
 			queue_micro_task(() => {
+				if (this.#is_destroyed()) return;
 				var fragment = this.#offscreen_fragment = document.createDocumentFragment();
 				var anchor = create_text();
 				var handled = false;
@@ -3603,13 +3629,14 @@ createHTML: (html) => {
 		}
 		/** @param {unknown} error */
 		error(error) {
+			if (error === HYDRATION_ERROR) throw error;
 			if (!this.#props.onerror && !this.#props.failed) throw error;
 			if (current_batch?.is_fork) {
 				if (this.#main_effect) current_batch.skip_effect(this.#main_effect);
 				if (this.#pending_effect) current_batch.skip_effect(this.#pending_effect);
 				if (this.#failed_effect) current_batch.skip_effect(this.#failed_effect);
 				current_batch.oncommit(() => {
-					this.#handle_error(error);
+					if (!this.#is_destroyed()) this.#handle_error(error);
 				});
 			} else this.#handle_error(error);
 		}
@@ -3637,9 +3664,10 @@ createHTML: (html) => {
 			let failed = this.#props.failed;
 			/** @param {unknown} transformed_error */
 			const handle_error_result = (transformed_error) => {
+				if (this.#is_destroyed()) return;
 				const { reset, invoke_onerror } = this.#create_reset(transformed_error);
 				invoke_onerror();
-				if (failed) this.#failed_effect = this.#run(() => {
+				if (failed && !this.#is_destroyed()) this.#failed_effect = this.#run(() => {
 					try {
 						return branch(() => {
 							var effect = active_effect;
@@ -3654,6 +3682,7 @@ createHTML: (html) => {
 				});
 			};
 			queue_micro_task(() => {
+				if (this.#is_destroyed()) return;
 				/** @type {unknown} */
 				var result;
 				try {
@@ -3999,7 +4028,7 @@ createHTML: (html) => {
 	}
 	//#endregion
 	//#region node_modules/svelte/src/internal/client/dom/blocks/each.js
-	/** @import { EachItem, EachOutroGroup, EachState, Effect, EffectNodes, MaybeSource, Source, TemplateNode, TransitionManager, Value } from '#client' */
+	/** @import { EachItem, EachOutroGroup, EachState, Effect, EffectNodes, MaybeSource, TemplateNode, TransitionManager } from '#client' */
 	/** @import { Batch } from '../../reactivity/batch.js'; */
 	/**
 	* Pause multiple effects simultaneously, and coordinate their
@@ -4098,8 +4127,6 @@ createHTML: (html) => {
 			var collection = get_collection();
 			return is_array(collection) ? collection : collection == null ? [] : array_from(collection);
 		});
-		/** @type {V[]} */
-		var array;
 		/** @type {Map<Batch, Set<any>>} */
 		var pending = /* @__PURE__ */ new Map();
 		var first_run = true;
@@ -4109,6 +4136,7 @@ createHTML: (html) => {
 		function commit(batch) {
 			if ((state.effect.f & 16384) !== 0) return;
 			state.pending.delete(batch);
+			var array = get(each_array);
 			state.fallback = fallback;
 			reconcile(state, array, anchor, flags, get_key);
 			if (fallback !== null) {
@@ -4132,7 +4160,7 @@ createHTML: (html) => {
 		/** @type {EachState} */
 		var state = {
 			effect: block(() => {
-				array = get(each_array);
+				var array = get(each_array);
 				var length = array.length;
 				/** `true` if there was a hydration mismatch. Needs to be a `let` or else it isn't treeshaken out */
 				let mismatch = false;
@@ -4360,7 +4388,7 @@ createHTML: (html) => {
 	* @param {V} value
 	* @param {unknown} key
 	* @param {number} index
-	* @param {(anchor: Node, item: V | Source<V>, index: number | Value<number>, collection: () => V[]) => void} render_fn
+	* @param {(anchor: Node, item: MaybeSource<V>, index: MaybeSource<number>, collection: () => V[]) => void} render_fn
 	* @param {number} flags
 	* @param {() => V[]} get_collection
 	* @returns {EachItem}
@@ -5459,6 +5487,8 @@ createHTML: (html) => {
 		"pin-menu.label": "Pin Menu",
 		"pin-menu.description": "Pin the Dub+ menu to the left or right side. Use the action button to toggle which side it is pinned to. Only works in the non-mobile view",
 		"pin-menu.secondaryAction.description": "Click to toggle between pinning to the left or right side",
+		"pin-room-queue.label": "Pin Room Queue",
+		"pin-room-queue.description": "Pin the room queue under the video so that it stays visible at all times. Only works in the non-mobile view",
 		"spacebar-mute.label": "Spacebar Mute",
 		"spacebar-mute.description": "Turn on/off the ability to mute current song with the spacebar",
 		"warn-redirect.label": "Warn on Navigation",
@@ -5770,6 +5800,7 @@ createHTML: (html) => {
 	};
 	//#endregion
 	//#region src/lib/queup.ui.js
+	var mobileBreakpoint = "(max-width: 768px)";
 	var CHAT_INPUT_CONTAINER = "[data-queup=\"chat-input-container\"] [contenteditable]";
 	/**
 	* @returns {HTMLDivElement | null}
@@ -5816,6 +5847,29 @@ createHTML: (html) => {
 	}
 	function getPlayerButtonsContainer() {
 		return document.querySelector("[data-queup=\"player-controls\"] > div > div:last-child");
+	}
+	/**
+	*
+	* @returns {HTMLButtonElement | null}
+	*/
+	function getRoomQueueButton() {
+		const button = Array.from(document.querySelectorAll("button")).filter((b) => b.textContent.trim().toLowerCase().includes("room queue"))?.[0] || null;
+		if (button) return button;
+		return document.querySelector("button:has(svg.lucide-users)");
+	}
+	/**
+	*
+	* @returns {HTMLDivElement | null}
+	*/
+	function getRoomQueueContainer() {
+		return document.querySelector("main > div:last-child");
+	}
+	/**
+	*
+	* @returns {HTMLButtonElement | null | undefined}
+	*/
+	function getRoomQueueCloseButton() {
+		return getRoomQueueContainer()?.querySelector("button[aria-label=\"Close\"]");
 	}
 	//#endregion
 	//#region src/lib/queup.v2.js
@@ -6172,9 +6226,75 @@ createHTML: (html) => {
 		modalState.open = true;
 	}
 	//#endregion
+	//#region node_modules/svelte/src/reactivity/reactive-value.js
+	/**
+	* @template T
+	*/
+	var ReactiveValue = class {
+		#fn;
+		#subscribe;
+		/**
+		*
+		* @param {() => T} fn
+		* @param {(update: () => void) => void} onsubscribe
+		*/
+		constructor(fn, onsubscribe) {
+			this.#fn = fn;
+			this.#subscribe = createSubscriber(onsubscribe);
+		}
+		get current() {
+			this.#subscribe();
+			return this.#fn();
+		}
+	};
+	//#endregion
+	//#region node_modules/svelte/src/reactivity/media-query.js
+	var parenthesis_regex = /\(.+\)/;
+	var non_parenthesized_keywords = /* @__PURE__ */ new Set([
+		"all",
+		"print",
+		"screen",
+		"and",
+		"or",
+		"not",
+		"only"
+	]);
+	/**
+	* Creates a media query and provides a `current` property that reflects whether or not it matches.
+	*
+	* Use it carefully — during server-side rendering, there is no way to know what the correct value should be, potentially causing content to change upon hydration.
+	* If you can use the media query in CSS to achieve the same effect, do that.
+	*
+	* ```svelte
+	* <script>
+	* 	import { MediaQuery } from 'svelte/reactivity';
+	*
+	* 	const large = new MediaQuery('min-width: 800px');
+	* <\/script>
+	*
+	* <h1>{large.current ? 'large screen' : 'small screen'}</h1>
+	* ```
+	* @extends {ReactiveValue<boolean>}
+	* @since 5.7.0
+	*/
+	var MediaQuery = class extends ReactiveValue {
+		/**
+		* @param {string} query A media query string
+		* @param {boolean} [fallback] Fallback value for the server
+		*/
+		constructor(query, fallback) {
+			let final_query = parenthesis_regex.test(query) || query.split(/[\s,]+/).some((keyword) => non_parenthesized_keywords.has(keyword.trim())) ? query : `(${query})`;
+			const q = window.matchMedia(final_query);
+			super(() => q.matches, (update) => on(q, "change", update));
+		}
+	};
+	//#endregion
+	//#region src/lib/stores/mobileState.svelte.js
+	var mobile = new MediaQuery(mobileBreakpoint);
+	//#endregion
 	//#region src/lib/menu/MenuSwitch.svelte
 	var root$16 = /* @__PURE__ */ from_html(`<button type="button" class="svelte-1aj88xa"><!> <span class="sr-only"> </span></button>`);
-	var root_1$4 = /* @__PURE__ */ from_html(`<li><div class="menu-switch-content svelte-1aj88xa"><!> <!> <!></div> <div class="menu-switch-command svelte-1aj88xa"> </div></li>`);
+	var root_1$4 = /* @__PURE__ */ from_html(`<li><div class="menu-switch-content svelte-1aj88xa"><!> <!> <!></div> <div class="dubplus-slash-command"> </div></li>`);
 	function MenuSwitch($$anchor, $$props) {
 		push($$props, true);
 		/**
@@ -6183,6 +6303,7 @@ createHTML: (html) => {
 		* @property {string} label
 		* @property {string} description
 		* @property {boolean} [modOnly]
+		* @property {boolean} [desktopOnly]
 		* @property {(onLoad?: boolean) => void} [turnOn] runs when the switch is turned on
 		* @property {() => void} [turnOff] runs when the switch is turned off
 		* @property {() => void} [init] always runs when the component mounts, whether
@@ -6194,11 +6315,17 @@ createHTML: (html) => {
 		/**
 		* @type {MenuSwitchProps}
 		*/
+		let modOnly = prop($$props, "modOnly", 3, false), desktopOnly = prop($$props, "desktopOnly", 3, false);
 		const SecondaryIcon = $$props.secondaryAction?.icon || IconPencil;
+		function getDisabled() {
+			if (desktopOnly() && mobile.current) return true;
+			if (modOnly() && !isMod(getUserId())) return true;
+			return false;
+		}
 		onMount(() => {
 			if ($$props.init) $$props.init();
 			if (settings.options[$$props.id]) {
-				if ($$props.modOnly ? isMod(getUserId()) : true) $$props.turnOn?.(true);
+				if (modOnly() ? isMod(getUserId()) : true) $$props.turnOn?.(true);
 			}
 		});
 		onDestroy(() => {
@@ -6209,7 +6336,7 @@ createHTML: (html) => {
 		var div = child(li);
 		var node = child(div);
 		{
-			let $0 = /* @__PURE__ */ user_derived(() => $$props.modOnly ? !isMod(getUserId()) : false);
+			let $0 = /* @__PURE__ */ user_derived(getDisabled);
 			let $1 = /* @__PURE__ */ user_derived(() => t($$props.label));
 			Switch(node, {
 				get disabled() {
@@ -6274,7 +6401,7 @@ createHTML: (html) => {
 			set_attribute(li, "title", $0);
 			classes = set_class(li, 1, "svelte-1aj88xa", null, classes, { disabled: $1 });
 			set_text(text_2, `/${$$props.id ?? ""}`);
-		}, [() => t($$props.description), () => $$props.modOnly ? !isMod(getUserId()) : false]);
+		}, [() => t($$props.description), () => getDisabled()]);
 		append($$anchor, li);
 		pop();
 	}
@@ -6484,13 +6611,13 @@ createHTML: (html) => {
 	* This works with or without the "@". So if you set your custom mention to
 	* be dubplus, it will trigger the sound when someone says "dubplus" or "@dubplus".
 	*/
-	var MODULE_ID$3 = "custom-mentions";
+	var MODULE_ID$5 = "custom-mentions";
 	/**
 	* @param {import("../../types/events").ChatMessageEvent} e
 	*/
 	function customMentionCheck(e) {
-		const enabled = settings.options[MODULE_ID$3];
-		const custom = settings.custom[MODULE_ID$3];
+		const enabled = settings.options[MODULE_ID$5];
+		const custom = settings.custom[MODULE_ID$5];
 		if (typeof custom === "string" && custom.trim() !== "" && enabled && getUserId() !== e.user.userInfo.userid) {
 			const namesForRegex = split(custom);
 			if (namesForRegex.length === 0) return;
@@ -6501,14 +6628,14 @@ createHTML: (html) => {
 	* @type {import('./module').DubPlusModule}
 	*/
 	var customMentions = {
-		id: MODULE_ID$3,
-		label: `${MODULE_ID$3}.label`,
-		description: `${MODULE_ID$3}.description`,
+		id: MODULE_ID$5,
+		label: `${MODULE_ID$5}.label`,
+		description: `${MODULE_ID$5}.description`,
 		category: "general",
 		custom: {
-			title: `${MODULE_ID$3}.modal.title`,
-			content: `${MODULE_ID$3}.modal.content`,
-			placeholder: `${MODULE_ID$3}.modal.placeholder`,
+			title: `${MODULE_ID$5}.modal.title`,
+			content: `${MODULE_ID$5}.modal.content`,
+			placeholder: `${MODULE_ID$5}.modal.placeholder`,
 			maxlength: 255
 		},
 		turnOn() {
@@ -6520,7 +6647,7 @@ createHTML: (html) => {
 	};
 	//#endregion
 	//#region src/lib/modules/keepAwake.js
-	var MODULE_ID$2 = "keep-awake";
+	var MODULE_ID$4 = "keep-awake";
 	/**
 	* @type {WakeLockSentinel|null}
 	*/
@@ -6531,26 +6658,26 @@ createHTML: (html) => {
 			wakeLock.addEventListener("release", () => {
 				logInfo("Wake Lock was released");
 				wakeLock = null;
-				if (document.visibilityState === "visible") saveSetting("options", MODULE_ID$2, false);
+				if (document.visibilityState === "visible") saveSetting("options", MODULE_ID$4, false);
 			}, { once: true });
 			logInfo("Wake Lock is active");
 		} catch (err) {
-			saveSetting("options", MODULE_ID$2, false);
+			saveSetting("options", MODULE_ID$4, false);
 			if (err instanceof Error) logError(`Error requesting wake lock: ${err.name}, ${err.message}`);
 			else logError(`Error requesting wake lock: Unknown error: ${err}`);
 			alert("Could not enable Dub+ Keep Awake. This could happen because your machine is in battery saver mode or the tab is hidden on load. See dev console for more details.");
 		}
 	}
 	async function handleVisibilityChange() {
-		if (settings.options[MODULE_ID$2] && wakeLock === null && document.visibilityState === "visible") await requestWakeLock();
+		if (settings.options[MODULE_ID$4] && wakeLock === null && document.visibilityState === "visible") await requestWakeLock();
 	}
 	/**
 	* @type {import("./module").DubPlusModule}
 	*/
 	var keepAwake = {
-		id: MODULE_ID$2,
-		label: `${MODULE_ID$2}.label`,
-		description: `${MODULE_ID$2}.description`,
+		id: MODULE_ID$4,
+		label: `${MODULE_ID$4}.label`,
+		description: `${MODULE_ID$4}.description`,
 		category: "general",
 		turnOn() {
 			requestWakeLock();
@@ -6751,11 +6878,11 @@ createHTML: (html) => {
 	};
 	//#endregion
 	//#region src/lib/modules/djNotification.js
-	var MODULE_ID$1 = "dj-notification";
+	var MODULE_ID$3 = "dj-notification";
 	function notify() {
 		showNotification({
-			title: t(`${MODULE_ID$1}.notification.title`),
-			content: t(`${MODULE_ID$1}.notification.content`),
+			title: t(`${MODULE_ID$3}.notification.title`),
+			content: t(`${MODULE_ID$3}.notification.content`),
 			ignoreActiveTab: true,
 			wait: 1e4
 		});
@@ -6773,20 +6900,20 @@ createHTML: (html) => {
 			const position = window.QueUp.room.queue.getMyPosition();
 			const total = window.QueUp.room.queue.getRoomQueue().length;
 			if (typeof position !== "number" || position <= 0) {
-				logDebug(MODULE_ID$1, "User it not in the queue");
+				logDebug(MODULE_ID$3, "User it not in the queue");
 				return;
 			}
-			let parseSetting = parseInt(settings.custom[MODULE_ID$1], 10);
+			let parseSetting = parseInt(settings.custom[MODULE_ID$3], 10);
 			if (isNaN(parseSetting)) {
 				parseSetting = 2;
-				logInfo(MODULE_ID$1, "Could not parse setting, defaulting to 2");
+				logInfo(MODULE_ID$3, "Could not parse setting, defaulting to 2");
 			}
 			if (parseSetting === 0) {
 				const currentDj = window.QueUp.room.getCurrentDJ()?.username?.toLowerCase();
 				const user = getUserName().toLowerCase();
 				if (currentDj && user && currentDj === user) notify();
 				else if (position === total) {
-					logDebug(MODULE_ID$1, "Falling back to end of the queue check", {
+					logDebug(MODULE_ID$3, "Falling back to end of the queue check", {
 						currentDj,
 						user
 					});
@@ -6801,24 +6928,24 @@ createHTML: (html) => {
 	* @type {import("./module").DubPlusModule}
 	*/
 	var djNotification = {
-		id: MODULE_ID$1,
-		label: `${MODULE_ID$1}.label`,
-		description: `${MODULE_ID$1}.description`,
+		id: MODULE_ID$3,
+		label: `${MODULE_ID$3}.label`,
+		description: `${MODULE_ID$3}.description`,
 		category: "general",
 		custom: {
-			title: `${MODULE_ID$1}.modal.title`,
-			content: `${MODULE_ID$1}.modal.content`,
-			placeholder: `${MODULE_ID$1}.modal.placeholder`,
-			defaultValue: `${MODULE_ID$1}.modal.defaultValue`,
+			title: `${MODULE_ID$3}.modal.title`,
+			content: `${MODULE_ID$3}.modal.content`,
+			placeholder: `${MODULE_ID$3}.modal.placeholder`,
+			defaultValue: `${MODULE_ID$3}.modal.defaultValue`,
 			maxlength: 3,
 			validation(val) {
 				if (val.trim() === "") return true;
 				const num = parseInt(val, 10);
-				if (val.includes(".") || isNaN(num) || num < 0) return t(`${MODULE_ID$1}.modal.validation`);
+				if (val.includes(".") || isNaN(num) || num < 0) return t(`${MODULE_ID$3}.modal.validation`);
 				return true;
 			},
 			onConfirm: () => {
-				if (settings.options[MODULE_ID$1]) djNotificationCheck();
+				if (settings.options[MODULE_ID$3]) djNotificationCheck();
 			}
 		},
 		turnOn() {
@@ -7525,7 +7652,7 @@ createHTML: (html) => {
 	};
 	var package_default = {
 		name: "dubplus",
-		version: "5.1.1",
+		version: "5.2.1",
 		type: "module",
 		description: "Dub+ - A simple script/extension for QueUp.net",
 		main: "dubplus.js",
@@ -7557,19 +7684,19 @@ createHTML: (html) => {
 		bugs: { "url": "https://github.com/DubPlus/DubPlus/issues" },
 		homepage: "https://dub.plus",
 		devDependencies: {
-			"@babel/preset-env": "8.0.6",
+			"@babel/preset-env": "8.0.7",
 			"@sveltejs/vite-plugin-svelte": "7.3.1",
-			"@types/chrome": "0.3.0",
-			"@types/node": "26.6.3",
-			"eslint-plugin-svelte": "3.23.0",
-			"globals": "17.12.0",
+			"@types/chrome": "0.3.5",
+			"@types/node": "26.6.5",
+			"eslint-plugin-svelte": "3.23.1",
+			"globals": "17.13.0",
 			"husky": "9.1.7",
 			"lint-staged": "17.6.0",
-			"prettier": "3.9.9",
+			"prettier": "3.9.10",
 			"prettier-plugin-svelte": "4.1.1",
-			"svelte": "5.57.1",
+			"svelte": "5.57.2",
 			"svelte-check": "4.7.6",
-			"vite": "8.3.1",
+			"vite": "8.3.4",
 			"web-ext": "10.7.0"
 		},
 		browserslist: ["> 1%", "last 2 versions"],
@@ -7577,7 +7704,8 @@ createHTML: (html) => {
 			"{dubplus.js,dubplus.min.js,./dubplus.css}": "node ./tasks/no-commit-build-files.js",
 			"*.{js,svelte}": "eslint",
 			"*.{js,svelte,css,ts,yml,yaml,md}": "prettier --list-different --write"
-		}
+		},
+		overrides: { "shell-quote": "1.12.0" }
 	};
 	//#endregion
 	//#region src/utils/css.js
@@ -7658,7 +7786,8 @@ createHTML: (html) => {
 	}
 	async function loadDubPlusCSSforBookmarklet() {
 		let version = "";
-		version = "develop".trim();
+		"master".trim();
+		version = package_default.version;
 		try {
 			await link("/dubplus.css", "dubplus-css", version);
 			return;
@@ -7857,27 +7986,27 @@ createHTML: (html) => {
 	};
 	//#endregion
 	//#region src/lib/modules/auto-afk.js
-	var MODULE_ID = "auto-afk";
+	var MODULE_ID$2 = "auto-afk";
 	/** @type {ReturnType<typeof setTimeout> | null} */
 	var timer = null;
 	function onTimerExpired() {
 		if (!settings.options.afk) {
-			logInfo(MODULE_ID, "timer expired, enabling afk");
+			logInfo(MODULE_ID$2, "timer expired, enabling afk");
 			document.querySelector("#dubplus-afk [role=switch]")?.click();
-		} else logInfo(MODULE_ID, "timer expired, but afk is already enabled");
+		} else logInfo(MODULE_ID$2, "timer expired, but afk is already enabled");
 	}
 	function onBlur() {
 		let userTime = parseInt(settings.custom["auto-afk"], 10);
 		if (isNaN(userTime)) userTime = 30;
-		logInfo(MODULE_ID, "onBlur: starting timer for ", userTime, "minutes");
+		logInfo(MODULE_ID$2, "onBlur: starting timer for ", userTime, "minutes");
 		timer = setTimeout(onTimerExpired, userTime * 60 * 1e3);
 	}
 	function onFocus() {
 		if (timer) {
-			logInfo(MODULE_ID, "onFocus: clearing timer");
+			logInfo(MODULE_ID$2, "onFocus: clearing timer");
 			clearTimeout(timer);
 			timer = null;
-		} else logInfo(MODULE_ID, "onFocus: no timer to clear");
+		} else logInfo(MODULE_ID$2, "onFocus: no timer to clear");
 	}
 	/**
 	* Setup a timer that will automatically put you in AFK mode when you are
@@ -7886,9 +8015,9 @@ createHTML: (html) => {
 	* @type {import("./module").DubPlusModule}
 	*/
 	var autoAfk = {
-		id: MODULE_ID,
-		label: `${MODULE_ID}.label`,
-		description: `${MODULE_ID}.description`,
+		id: MODULE_ID$2,
+		label: `${MODULE_ID$2}.label`,
+		description: `${MODULE_ID$2}.description`,
 		category: "general",
 		turnOn() {
 			registerVisibilityChangeListeners(onFocus, onBlur);
@@ -7898,15 +8027,15 @@ createHTML: (html) => {
 			onFocus();
 		},
 		custom: {
-			title: `${MODULE_ID}.modal.title`,
-			content: `${MODULE_ID}.modal.content`,
-			placeholder: `${MODULE_ID}.modal.placeholder`,
-			defaultValue: `${MODULE_ID}.modal.defaultValue`,
+			title: `${MODULE_ID$2}.modal.title`,
+			content: `${MODULE_ID$2}.modal.content`,
+			placeholder: `${MODULE_ID$2}.modal.placeholder`,
+			defaultValue: `${MODULE_ID$2}.modal.defaultValue`,
 			maxlength: 3,
 			validation(value) {
 				if (value.trim() === "") return true;
 				const num = parseInt(value, 10);
-				if (value.includes(".") || isNaN(num) || num < 1) return t(`${MODULE_ID}.modal.validation`);
+				if (value.includes(".") || isNaN(num) || num < 1) return t(`${MODULE_ID$2}.modal.validation`);
 				return true;
 			}
 		}
@@ -7972,6 +8101,8 @@ createHTML: (html) => {
 	}
 	//#endregion
 	//#region src/lib/modules/pin-menu.js
+	var MODULE_ID$1 = "pin-menu";
+	var mobileMediaQuery$1 = window.matchMedia(mobileBreakpoint);
 	/**
 	* Pin Menu
 	*
@@ -7986,20 +8117,24 @@ createHTML: (html) => {
 	* @type {import("./module").DubPlusModule}
 	*/
 	var pinMenu = {
-		id: "pin-menu",
-		label: "pin-menu.label",
-		description: "pin-menu.description",
+		id: MODULE_ID$1,
+		label: `${MODULE_ID$1}.label`,
+		description: `${MODULE_ID$1}.description`,
 		category: "user-interface",
+		desktopOnly: true,
 		turnOn() {
-			const side = settings.custom[this.id] || "right";
-			document.body.classList.add(`dubplus-pin-menu-${side}`);
+			if (mobileMediaQuery$1.matches) saveSetting("options", MODULE_ID$1, false);
+			else {
+				const side = settings.custom[this.id] || "right";
+				mobileMediaQuery$1.addEventListener("change", handleMobileBreakpoint$1);
+				document.body.classList.add(`dubplus-pin-menu-${side}`);
+			}
 		},
 		turnOff() {
-			document.body.classList.remove("dubplus-pin-menu-left");
-			document.body.classList.remove("dubplus-pin-menu-right");
+			cleanup$1();
 		},
 		secondaryAction: {
-			description: "pin-menu.secondaryAction.description",
+			description: `${MODULE_ID$1}.secondaryAction.description`,
 			icon: IconLeftRight,
 			onClick: () => {
 				const side = (settings.custom[pinMenu.id] || "right") === "left" ? "right" : "left";
@@ -8009,6 +8144,96 @@ createHTML: (html) => {
 			}
 		}
 	};
+	function cleanup$1() {
+		document.body.classList.remove("dubplus-pin-menu-left");
+		document.body.classList.remove("dubplus-pin-menu-right");
+		mobileMediaQuery$1.removeEventListener("change", cleanup$1);
+	}
+	/**
+	* @param {MediaQueryListEvent} event
+	*/
+	function handleMobileBreakpoint$1(event) {
+		if (event.matches) {
+			cleanup$1();
+			saveSetting("options", MODULE_ID$1, false);
+		}
+	}
+	//#endregion
+	//#region src/lib/modules/pin-room-queue.js
+	var MODULE_ID = "pin-room-queue";
+	var mobileMediaQuery = window.matchMedia(mobileBreakpoint);
+	/**
+	* Pin Room Queue
+	*
+	* When this is turned on it sets up 2 event listeners
+	* - adds a click listener to the room queue close button
+	* - adds a media query listener for mobile breakpoints
+	*
+	* After this is turned on, there are multiple ways this can be turned off and each
+	* way has to properly clean up the event listeners
+	*
+	* There are 4 things that need to cleaned up but not all 4 need to be done for all paths.
+	* 1. Room queue close button click listener
+	* 2. Media query listener for mobile breakpoints
+	* 3. Virtually click the close button to close and reset the room queue
+	* 4. Save the setting to turn off the switch in the menu
+	*
+	* Users manually turns it off in the Dub+ menu
+	* - 1, 2, 3
+	*
+	* User clicks on the room queue close button
+	* - 2, 4
+	*
+	* User changes width to a mobile breakpoint
+	* - 1,2,3,4
+	*/
+	/**
+	* @type {import("./module").DubPlusModule}
+	*/
+	var pinRoomQueue = {
+		id: MODULE_ID,
+		label: `${MODULE_ID}.label`,
+		description: `${MODULE_ID}.description`,
+		category: "user-interface",
+		desktopOnly: true,
+		async turnOn() {
+			try {
+				if (mobileMediaQuery.matches) saveSetting("options", MODULE_ID, false);
+				else {
+					mobileMediaQuery.addEventListener("change", handleMobileBreakpoint);
+					getRoomQueueButton()?.click();
+					await waitFor(() => !!getRoomQueueContainer());
+					const container = getRoomQueueContainer();
+					container?.classList.remove("h-full");
+					container?.setAttribute("data-room-queue", "true");
+					getRoomQueueCloseButton()?.addEventListener("click", userClickedCloseButton, { once: true });
+				}
+			} catch (error) {
+				logError("pinRoomQueue", error);
+			}
+		},
+		turnOff() {
+			cleanup();
+		}
+	};
+	function cleanup() {
+		getRoomQueueCloseButton()?.removeEventListener("click", userClickedCloseButton);
+		mobileMediaQuery.removeEventListener("change", handleMobileBreakpoint);
+		getRoomQueueCloseButton()?.click();
+	}
+	/**
+	* @param {MediaQueryListEvent} event
+	*/
+	function handleMobileBreakpoint(event) {
+		if (event.matches) {
+			cleanup();
+			saveSetting("options", MODULE_ID, false);
+		}
+	}
+	function userClickedCloseButton() {
+		mobileMediaQuery.removeEventListener("change", handleMobileBreakpoint);
+		saveSetting("options", MODULE_ID, false);
+	}
 	//#endregion
 	//#region src/lib/modules/index.js
 	/**
@@ -8039,7 +8264,8 @@ createHTML: (html) => {
 		hideAvatars,
 		hideBackground,
 		flipInterface,
-		pinMenu
+		pinMenu,
+		pinRoomQueue
 	];
 	/**
 	* @type {import("./module").DubPlusModule[]}
@@ -8096,6 +8322,9 @@ createHTML: (html) => {
 						},
 						get modOnly() {
 							return get(module).modOnly;
+						},
+						get desktopOnly() {
+							return get(module).desktopOnly;
 						},
 						get turnOn() {
 							return get(module).turnOn;
@@ -8631,7 +8860,7 @@ createHTML: (html) => {
 	}
 	//#endregion
 	//#region src/lib/menu/MenuAction.svelte
-	var root$7 = /* @__PURE__ */ from_html(`<li class="svelte-1oc77ts"><button type="button" class="svelte-1oc77ts"><!> <span class="dubplus-menu-label svelte-1oc77ts"> </span></button></li>`);
+	var root$7 = /* @__PURE__ */ from_html(`<li><button type="button" class="svelte-1oc77ts"><!> <span class="dubplus-menu-label svelte-1oc77ts"> </span></button> <div class="dubplus-slash-command"> </div></li>`);
 	function MenuAction($$anchor, $$props) {
 		push($$props, true);
 		/**
@@ -8639,6 +8868,8 @@ createHTML: (html) => {
 		* @property {string} id
 		* @property {string} label
 		* @property {string} description
+		* @property {boolean} [modOnly]
+		* @property {boolean} [desktopOnly]
 		* @property {import('svelte').Component} icon An SVG as a .svelte component
 		* @property {() => void} [onClick]
 		* @property {() => void} [init]
@@ -8646,11 +8877,17 @@ createHTML: (html) => {
 		/**
 		* @type {MenuActionProps}
 		*/
-		let onClick = prop($$props, "onClick", 3, () => {});
+		let onClick = prop($$props, "onClick", 3, () => {}), modOnly = prop($$props, "modOnly", 3, false), desktopOnly = prop($$props, "desktopOnly", 3, false);
+		function getDisabled() {
+			if (desktopOnly() && mobile.current) return true;
+			if (modOnly() && !isMod(getUserId())) return true;
+			return false;
+		}
 		onMount(() => {
 			if ($$props.init) $$props.init();
 		});
 		var li = root$7();
+		let classes;
 		var button = child(li);
 		var node = child(button);
 		component(node, () => $$props.icon, ($$anchor, Icon_1) => {
@@ -8658,14 +8895,18 @@ createHTML: (html) => {
 		});
 		var text = only_child(sibling(node, 2), true);
 		reset$1(button);
+		var text_1 = only_child(sibling(button, 2));
 		reset$1(li);
-		template_effect(($0, $1, $2) => {
+		template_effect(($0, $1, $2, $3) => {
 			set_attribute(li, "id", $$props.id);
 			set_attribute(li, "title", $0);
-			set_attribute(button, "aria-label", $1);
-			set_text(text, $2);
+			classes = set_class(li, 1, "svelte-1oc77ts", null, classes, { disabled: $1 });
+			set_attribute(button, "aria-label", $2);
+			set_text(text, $3);
+			set_text(text_1, `/${$$props.id ?? ""}`);
 		}, [
 			() => t($$props.description),
+			() => getDisabled(),
 			() => t($$props.description),
 			() => t($$props.label)
 		]);
@@ -8722,6 +8963,12 @@ createHTML: (html) => {
 							},
 							get init() {
 								return get(module).init;
+							},
+							get modOnly() {
+								return get(module).modOnly;
+							},
+							get desktopOnly() {
+								return get(module).desktopOnly;
 							}
 						});
 					};
@@ -8750,6 +8997,12 @@ createHTML: (html) => {
 							},
 							get turnOff() {
 								return get(module).turnOff;
+							},
+							get modOnly() {
+								return get(module).modOnly;
+							},
+							get desktopOnly() {
+								return get(module).desktopOnly;
 							}
 						});
 					};
@@ -8813,6 +9066,12 @@ createHTML: (html) => {
 						},
 						get turnOff() {
 							return get(module).turnOff;
+						},
+						get modOnly() {
+							return get(module).modOnly;
+						},
+						get desktopOnly() {
+							return get(module).desktopOnly;
 						}
 					});
 				});
@@ -8869,6 +9128,12 @@ createHTML: (html) => {
 						},
 						get turnOff() {
 							return get(module).turnOff;
+						},
+						get modOnly() {
+							return get(module).modOnly;
+						},
+						get desktopOnly() {
+							return get(module).desktopOnly;
 						}
 					});
 				});
