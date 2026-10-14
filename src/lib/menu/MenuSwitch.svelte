@@ -7,6 +7,7 @@
   import { isMod } from '../../utils/modcheck';
   import { getUserId } from '../queup.v2';
   import { openEditModal } from '../../utils/module-setup-utils';
+  import { mobile } from '../stores/mobileState.svelte.js';
 
   /**
    * @typedef {object} MenuSwitchProps
@@ -14,6 +15,7 @@
    * @property {string} label
    * @property {string} description
    * @property {boolean} [modOnly]
+   * @property {boolean} [desktopOnly]
    * @property {(onLoad?: boolean) => void} [turnOn] runs when the switch is turned on
    * @property {() => void} [turnOff] runs when the switch is turned off
    * @property {() => void} [init] always runs when the component mounts, whether
@@ -34,12 +36,19 @@
     turnOn,
     turnOff,
     init,
-    modOnly,
+    modOnly = false,
+    desktopOnly = false,
     secondaryAction,
   } = $props();
 
   // svelte-ignore state_referenced_locally (this won't change after first mount)
   const SecondaryIcon = secondaryAction?.icon || IconPencil;
+
+  function getDisabled() {
+    if (desktopOnly && mobile.current) return true;
+    if (modOnly && !isMod(getUserId())) return true;
+    return false;
+  }
 
   onMount(() => {
     if (init) init();
@@ -58,14 +67,10 @@
   });
 </script>
 
-<li
-  id={`dubplus-${id}`}
-  title={t(description)}
-  class:disabled={modOnly ? !isMod(getUserId()) : false}
->
+<li id={`dubplus-${id}`} title={t(description)} class:disabled={getDisabled()}>
   <div class="menu-switch-content">
     <Switch
-      disabled={modOnly ? !isMod(getUserId()) : false}
+      disabled={getDisabled()}
       label={t(label)}
       onToggle={(state) => {
         // When turning on a feature that requires a custom value, and that
@@ -104,7 +109,7 @@
       </button>
     {/if}
   </div>
-  <div class="menu-switch-command">
+  <div class="dubplus-slash-command">
     /{id}
   </div>
 </li>
@@ -118,12 +123,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
-
-  .menu-switch-command {
-    margin-left: calc(29px + 11px);
-    font-size: 0.9em;
-    color: rgb(var(--dubplus-text-color) / 0.6);
   }
 
   button {

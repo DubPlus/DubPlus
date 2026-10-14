@@ -25,6 +25,7 @@ import { autoAfk } from './auto-afk';
 import { grabResponse } from './grabResponse';
 import { collapsibleImages } from './collapsible-images';
 import { pinMenu } from './pin-menu';
+import { pinRoomQueue } from './pin-room-queue';
 
 /**
  * @type {import("./module").DubPlusModule[]}
@@ -58,6 +59,7 @@ export const userInterface = [
   hideBackground,
   flipInterface,
   pinMenu,
+  pinRoomQueue,
 ];
 
 /**

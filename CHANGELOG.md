@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.0] - 2026-10-13
+
+### New
+
+- Pin Room Queue - pins the room queue under the video so you can have it visible all the time
+
+### Fixed
+
+- Fixed the Dub+ menu button in the top right clashing with menu items in mobile view
+- Pin Menu now turns itself off when in mobile view
+- Added missing slash commands under non-switch menu items (like full screen)
+
+### Other
+
+- Added a way to disable menu items when in mobile view
+- Updated dependencies
+
 ## [5.1.1] - 2026-09-29
 
 ### Fixed

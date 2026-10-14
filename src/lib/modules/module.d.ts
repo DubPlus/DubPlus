@@ -25,6 +25,8 @@ export interface DubPlusModule {
 
   modOnly?: boolean;
 
+  desktopOnly?: boolean;
+
   /**
    * Runs when the module is enabled
    */
