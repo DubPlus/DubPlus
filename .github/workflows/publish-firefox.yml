@@ -50,6 +50,14 @@ jobs:
           WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}
         run: npm run addon-submit
 
+      - name: commit updated amo-upload-uuid
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add extension/.amo-upload-uuid
+          git diff --staged --quiet || git commit -m "[auto]: Update amo-upload-uuid after publishing to Mozilla Add-ons"
+          git push
+
       # Mozilla requires the source zip for review, so keep a copy of the one
       # we uploaded alongside the submission.
       - name: Upload source zip

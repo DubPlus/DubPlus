@@ -1,6 +1,6 @@
 {
   "name": "dubplus",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "type": "module",
   "description": "Dub+ - A simple script/extension for QueUp.net",
   "main": "dubplus.js",
@@ -57,5 +57,8 @@
     "{dubplus.js,dubplus.min.js,./dubplus.css}": "node ./tasks/no-commit-build-files.js",
     "*.{js,svelte}": "eslint",
     "*.{js,svelte,css,ts,yml,yaml,md}": "prettier --list-different --write"
+  },
+  "overrides": {
+    "shell-quote": "1.12.0"
   }
 }
