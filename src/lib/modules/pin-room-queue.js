@@ -21,7 +21,7 @@ const mobileMediaQuery = window.matchMedia(mobileBreakpoint);
  * After this is turned on, there are multiple ways this can be turned off and each
  * way has to properly clean up the event listeners
  *
- * There are 4 things that need to cleaned up but not all 4 need to be done for all paths.
+ * There are 4 things that need to be cleaned up, but not all 4 need to be done for all paths.
  * 1. Room queue close button click listener
  * 2. Media query listener for mobile breakpoints
  * 3. Virtually click the close button to close and reset the room queue
