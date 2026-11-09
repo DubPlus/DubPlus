@@ -33,9 +33,8 @@ export function getChatMessages(extra = '') {
  * @returns {HTMLDivElement | null}
  */
 export function getBackgroundImage() {
-  return document.querySelector(
-    'body > div:nth-child(2) > div > div:first-child',
-  );
+  // TODO: get Queup to add a data-queup="background-image"
+  return document.querySelector('[style^=background-image][class~=bg-cover]');
 }
 
 /**
@@ -78,7 +77,7 @@ export function getAddToPlaylist() {
 
 export function getPlayerButtonsContainer() {
   return document.querySelector(
-    '[data-queup="player-controls"] > div > div:last-child',
+    '[data-queup="player-controls"] div:has([data-queup="player-snooze-toggle"])',
   );
 }
 
@@ -87,16 +86,7 @@ export function getPlayerButtonsContainer() {
  * @returns {HTMLButtonElement | null}
  */
 export function getRoomQueueButton() {
-  // first try to find the button by its text content which would give use the most accurate result
-  const button =
-    Array.from(document.querySelectorAll('button')).filter((b) =>
-      b.textContent.trim().toLowerCase().includes('room queue'),
-    )?.[0] || null;
-  if (button) return button;
-  // if the panel is collapsed, the "room queue" text is gone so we need to rely on something else.
-  // There are 2 elements with lucide-users icons and right now the button we want turns up first
-  // TODO: see if Queup could add a data-attribute to this button
-  return document.querySelector('button:has(svg.lucide-users)');
+  return document.querySelector('[data-queup="room-queue-button"]');
 }
 
 /**

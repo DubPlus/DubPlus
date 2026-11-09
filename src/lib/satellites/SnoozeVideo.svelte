@@ -56,15 +56,15 @@
   use:teleport={{ to: getPlayerButtonsContainer }}
   id="dubplus-snooze-video"
   type="button"
-  class="snooze-video-btn dubplus-btn-player text-white/50 hover:text-white transition-colors"
+  class="snooze-video-btn dubplus-btn-player text-white/50 hover:text-white transition-colors w-8 h-8"
   aria-label={tooltip}
   data-dp-tooltip={tooltip}
   onclick={snooze}
 >
   {#if isSnoozed}
-    <Monitor class="w-5 h-5" />
+    <Monitor />
   {:else}
-    <MonitorOff class="w-5 h-5" />
+    <MonitorOff />
   {/if}
 </button>
 
