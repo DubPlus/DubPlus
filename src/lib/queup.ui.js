@@ -78,7 +78,7 @@ export function getAddToPlaylist() {
 
 export function getPlayerButtonsContainer() {
   return document.querySelector(
-    '[data-queup="player-controls"] > div > div:last-child',
+    '[data-queup="player-controls"] div:has([data-queup="player-snooze-toggle"])',
   );
 }
 
