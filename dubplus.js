@@ -11,7 +11,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v5.2.1
+    v5.2.2
 
     MIT License 
 
@@ -5812,7 +5812,7 @@ createHTML: (html) => {
 	* @returns {HTMLDivElement | null}
 	*/
 	function getBackgroundImage() {
-		return document.querySelector("body > div:nth-child(2) > div > div:first-child");
+		return document.querySelector("[style^=background-image][class~=bg-cover]");
 	}
 	/**
 	* @returns {HTMLIFrameElement | null}
@@ -5846,16 +5846,14 @@ createHTML: (html) => {
 		return document.querySelector("[data-queup=\"grab-button\"]");
 	}
 	function getPlayerButtonsContainer() {
-		return document.querySelector("[data-queup=\"player-controls\"] > div > div:last-child");
+		return document.querySelector("[data-queup=\"player-controls\"] div:has([data-queup=\"player-snooze-toggle\"])");
 	}
 	/**
 	*
 	* @returns {HTMLButtonElement | null}
 	*/
 	function getRoomQueueButton() {
-		const button = Array.from(document.querySelectorAll("button")).filter((b) => b.textContent.trim().toLowerCase().includes("room queue"))?.[0] || null;
-		if (button) return button;
-		return document.querySelector("button:has(svg.lucide-users)");
+		return document.querySelector("[data-queup=\"room-queue-button\"]");
 	}
 	/**
 	*
@@ -7652,7 +7650,7 @@ createHTML: (html) => {
 	};
 	var package_default = {
 		name: "dubplus",
-		version: "5.2.1",
+		version: "5.2.2",
 		type: "module",
 		description: "Dub+ - A simple script/extension for QueUp.net",
 		main: "dubplus.js",
@@ -8172,7 +8170,7 @@ createHTML: (html) => {
 	* After this is turned on, there are multiple ways this can be turned off and each
 	* way has to properly clean up the event listeners
 	*
-	* There are 4 things that need to cleaned up but not all 4 need to be done for all paths.
+	* There are 4 things that need to be cleaned up, but not all 4 need to be done for all paths.
 	* 1. Room queue close button click listener
 	* 2. Media query listener for mobile breakpoints
 	* 3. Virtually click the close button to close and reset the room queue
@@ -8343,7 +8341,7 @@ createHTML: (html) => {
 	}
 	//#endregion
 	//#region src/lib/satellites/Eta.svelte
-	var root$11 = /* @__PURE__ */ from_html(`<button id="dubplus-eta" type="button" class="text-white/50 hover:text-white transition-colors eta_tooltip_t dubplus-btn-player"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 lucide lucide-rotate-ccw-clock-icon lucide-rotate-ccw-clock"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg></button>`);
+	var root$11 = /* @__PURE__ */ from_html(`<button id="dubplus-eta" type="button" class="text-white/50 hover:text-white transition-colors eta_tooltip_t dubplus-btn-player w-8 h-8"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-ccw-clock-icon lucide-rotate-ccw-clock"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg></button>`);
 	function Eta($$anchor, $$props) {
 		push($$props, true);
 		let eta = /* @__PURE__ */ state("ETA");
@@ -9163,7 +9161,7 @@ createHTML: (html) => {
 	//#endregion
 	//#region src/lib/satellites/SnoozeVideo.svelte
 	var root$1 = /* @__PURE__ */ from_html(`<div class="dubplus-snooze-video-overlay absolute top-0 left-0 w-full h-full bg-black flex items-center justify-center" id="dubplus-snooze-video-overlay"><!></div>`);
-	var root_1 = /* @__PURE__ */ from_html(`<button id="dubplus-snooze-video" type="button" class="snooze-video-btn dubplus-btn-player text-white/50 hover:text-white transition-colors"><!></button> <!>`, 1);
+	var root_1 = /* @__PURE__ */ from_html(`<button id="dubplus-snooze-video" type="button" class="snooze-video-btn dubplus-btn-player text-white/50 hover:text-white transition-colors w-8 h-8"><!></button> <!>`, 1);
 	function SnoozeVideo($$anchor, $$props) {
 		push($$props, true);
 		/**
@@ -9200,10 +9198,10 @@ createHTML: (html) => {
 		var button = first_child(fragment);
 		var node = child(button);
 		var consequent = ($$anchor) => {
-			Monitor($$anchor, { class: "w-5 h-5" });
+			Monitor($$anchor, {});
 		};
 		var alternate = ($$anchor) => {
-			MonitorOff($$anchor, { class: "w-5 h-5" });
+			MonitorOff($$anchor, {});
 		};
 		if_block(node, ($$render) => {
 			if (get(isSnoozed)) $$render(consequent);
