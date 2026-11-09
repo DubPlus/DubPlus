@@ -9,6 +9,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Fixed missing ETA and Snooze buttons in the player controls under the video. Queup changed the structure of their html which causes this to break
 
+### Other
+
+- improved a couple selectors in queup.ui.js
+
 ## [5.2.1] - 2026-10-14
 
 ### Other
