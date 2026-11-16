@@ -86,6 +86,13 @@
     scrollbar-width: thin;
   }
 
+  :global(.dubplus-pin-menu-right, .dubplus-pin-menu-left) {
+    .dubplus-menu {
+      top: 0;
+      bottom: 0;
+    }
+  }
+
   @supports not (top: anchor(--queup-header bottom)) {
     .dubplus-menu {
       top: 56px;

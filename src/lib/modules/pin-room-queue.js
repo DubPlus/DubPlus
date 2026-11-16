@@ -56,7 +56,7 @@ export const pinRoomQueue = {
         getRoomQueueButton()?.click();
         await waitFor(() => !!getRoomQueueContainer());
         const container = getRoomQueueContainer();
-        container?.classList.remove('h-full');
+        document.body.classList.add('dubplus-pin-room-queue');
         container?.setAttribute('data-room-queue', 'true');
         getRoomQueueCloseButton()?.addEventListener(
           'click',
@@ -74,6 +74,7 @@ export const pinRoomQueue = {
 };
 
 function cleanup() {
+  document.body.classList.remove('dubplus-pin-room-queue');
   getRoomQueueCloseButton()?.removeEventListener(
     'click',
     userClickedCloseButton,
