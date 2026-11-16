@@ -1,5 +1,8 @@
 <script>
   import { settings, saveSetting } from '../stores/settings.svelte';
+  import ChevronDown from '../svg/ChevronDown.svelte';
+  import ChevronRight from '../svg/ChevronRight.svelte';
+
   /**
    * @typedef {object} MenuHeaderProps
    * @property {string} props.settingsId
@@ -8,15 +11,12 @@
 
   /** @type {MenuHeaderProps} */
   let { settingsId, name } = $props();
-  let arrow = $state('down');
   let expanded = $state(true);
 
   $effect(() => {
     if (settings.menu[settingsId] === 'closed') {
-      arrow = 'right';
       expanded = false;
     } else {
-      arrow = 'down';
       expanded = true;
     }
   });
@@ -37,14 +37,19 @@
   aria-expanded={expanded}
   aria-controls={`dubplus-menu-section-${settingsId}`}
 >
-  <span class="fa fa-angle-{arrow}"></span>
   <p>{name}</p>
+  {#if expanded}
+    <ChevronDown />
+  {:else}
+    <ChevronRight />
+  {/if}
 </button>
 
 <style>
   button {
     border: none;
-    display: block;
+    display: flex;
+    align-items: center;
     width: 100%;
     color: inherit;
     text-align: left;
@@ -54,14 +59,9 @@
     cursor: pointer;
     background-color: #202020;
   }
-  button span {
-    display: block;
-    width: 10%;
-    float: left;
-  }
   button p {
     width: 90%;
-    float: left;
+    flex: 1;
     margin: 0;
     line-height: 1;
   }

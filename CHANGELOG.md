@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   - Pin menu was broken
   - Flip interface was broken
   - Pin Room Queue was broken
+- Fixed missing arrows from Menu headers
 
 ### Other
 
