@@ -11,7 +11,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v5.2.2
+    v5.2.3
 
     MIT License 
 
@@ -98,7 +98,7 @@ header {
   anchor-name: --queup-header;
 }
 
-div:has(> header)>div:last-child {
+[data-queup="now-playing-bar"] {
   anchor-name: --queup-footer;
 }
 
@@ -152,12 +152,14 @@ div:has(> header)>div:last-child {
 }
 
 /* Hide the background image */
-.dubplus-hide-bg div[style^='background-image: url'] {
+.dubplus-hide-bg [data-queup="background-image"] {
   display: none !important;
 }
 
-.dubplus-flip-interface div:has(> main) {
-  flex-direction: row-reverse;
+.dubplus-flip-interface .app-frame-grid {
+  grid-template-areas: "top     top  top  "
+                       "aside   main sidebar" 
+                       "bar     bar  bar  ";
 }
 
 /* flip the icons for the chat expand  and collapse */
@@ -221,16 +223,16 @@ div:has(> header)>div:last-child {
  */
 
 @media screen and (min-width: 768px) {
-  .dubplus-pin-menu-right header~div {
-    padding-right: calc(var(--dubplus-menu-width));
+  
+  .dubplus-pin-menu-right .app-frame-grid {
+    padding-right: var(--dubplus-menu-width);
+  }
+  .dubplus-pin-menu-left .app-frame-grid {
+    padding-left: var(--dubplus-menu-width);
   }
 
   .dubplus-pin-menu-right .dubplus-menu {
     transform: translate3d(0, 0, 0) !important;
-  }
-
-  .dubplus-pin-menu-left header~div {
-    padding-left: calc(var(--dubplus-menu-width));
   }
 
   .dubplus-pin-menu-left .dubplus-menu {
@@ -245,8 +247,16 @@ div:has(> header)>div:last-child {
  */
 
 @media screen and (min-width: 72em) {
+  .dubplus-pin-room-queue .app-frame-grid {
+    position: relative;
+  }
+
   [data-room-queue] {
     top: anchor(--queup-player-controls bottom);
+    bottom: anchor(--queup-footer top);
+    height: auto;
+    position: absolute;
+    width: 100%;
   }
 }
 
@@ -308,9 +318,16 @@ div:has(> header)>div:last-child {
     }
   }
 
+  .dubplus-pin-menu-right {
+    .dubplus-icon.svelte-4l9n7d {
+      right: calc(var(--dubplus-menu-width) + 1rem);
+    }
+  }
+
   button.svelte-ou161d {
     border: none;
-    display: block;
+    display: flex;
+    align-items: center;
     width: 100%;
     color: inherit;
     text-align: left;
@@ -320,14 +337,9 @@ div:has(> header)>div:last-child {
     cursor: pointer;
     background-color: #202020;
   }
-  button.svelte-ou161d span:where(.svelte-ou161d) {
-    display: block;
-    width: 10%;
-    float: left;
-  }
   button.svelte-ou161d p:where(.svelte-ou161d) {
     width: 90%;
-    float: left;
+    flex: 1;
     margin: 0;
     line-height: 1;
   }
@@ -819,6 +831,13 @@ div:has(> header)>div:last-child {
     overflow-y: auto;
     scrollbar-color: #999 transparent;
     scrollbar-width: thin;
+  }
+
+  .dubplus-pin-menu-right, .dubplus-pin-menu-left {
+    .dubplus-menu.svelte-mumrn2 {
+      top: 0;
+      bottom: 0;
+    }
   }
 
   @supports not (top: anchor(--queup-header bottom)) {

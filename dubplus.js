@@ -11,7 +11,7 @@
                                             
     https://github.com/DubPlus/DubPlus
 
-    v5.2.2
+    v5.2.3
 
     MIT License 
 
@@ -5009,9 +5009,9 @@ createHTML: (html) => {
 	if (typeof window !== "undefined") ((window.__svelte ??= {}).v ??= /* @__PURE__ */ new Set()).add("5");
 	//#endregion
 	//#region src/lib/svg/Logo.svelte
-	var root$28 = /* @__PURE__ */ from_svg(`<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" viewBox="0 0 2078.496 2083.914" enable-background="new 0 0 2078.496 2083.914" xml:space="preserve"><rect x="769.659" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#660078" width="539.178" height="539.178"></rect><g><rect x="1308.837" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.488" height="539.178"></rect><polygon fill="#EB008B" points="2045.015,1042.035 1845.324,1311.625 1845.324,772.446 	"></polygon></g><g><rect x="232.172" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.487" height="539.178"></rect><polygon fill="#EB008B" points="33.481,1042.034 233.172,772.445 233.172,1311.623 	"></polygon></g><g><rect x="769.659" y="1311.624" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.248,2047.802 769.659,1848.111 1308.837,1848.111 	"></polygon></g><g><rect x="769.659" y="234.958" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.249,35.268 1308.837,235.958 769.659,235.958 	"></polygon></g></svg>`);
+	var root$30 = /* @__PURE__ */ from_svg(`<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" viewBox="0 0 2078.496 2083.914" enable-background="new 0 0 2078.496 2083.914" xml:space="preserve"><rect x="769.659" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#660078" width="539.178" height="539.178"></rect><g><rect x="1308.837" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.488" height="539.178"></rect><polygon fill="#EB008B" points="2045.015,1042.035 1845.324,1311.625 1845.324,772.446 	"></polygon></g><g><rect x="232.172" y="772.445" fill-rule="evenodd" clip-rule="evenodd" fill="#EB008B" width="537.487" height="539.178"></rect><polygon fill="#EB008B" points="33.481,1042.034 233.172,772.445 233.172,1311.623 	"></polygon></g><g><rect x="769.659" y="1311.624" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.248,2047.802 769.659,1848.111 1308.837,1848.111 	"></polygon></g><g><rect x="769.659" y="234.958" fill-rule="evenodd" clip-rule="evenodd" fill="#6FCBDC" width="539.178" height="537.487"></rect><polygon fill="#6FCBDC" points="1039.249,35.268 1308.837,235.958 769.659,235.958 	"></polygon></g></svg>`);
 	function Logo($$anchor) {
-		append($$anchor, root$28());
+		append($$anchor, root$30());
 	}
 	//#endregion
 	//#region src/utils/logger.js
@@ -5115,10 +5115,10 @@ createHTML: (html) => {
 	};
 	//#endregion
 	//#region src/lib/menu/MenuIcon.svelte
-	var root$27 = /* @__PURE__ */ from_html(`<button id="dubplus-menu-icon" type="button" aria-label="Dub+ menu" class="dubplus-icon svelte-4l9n7d"><!></button>`);
+	var root$29 = /* @__PURE__ */ from_html(`<button id="dubplus-menu-icon" type="button" aria-label="Dub+ menu" class="dubplus-icon svelte-4l9n7d"><!></button>`);
 	function MenuIcon($$anchor, $$props) {
 		push($$props, true);
-		var button = root$27();
+		var button = root$29();
 		Logo(child(button), {});
 		reset$1(button);
 		action(button, ($$node, $$action_arg) => teleport?.($$node, $$action_arg), () => ({ to: "body" }));
@@ -5295,8 +5295,20 @@ createHTML: (html) => {
 		throw new Error(`Invalid section: "${section}"`);
 	}
 	//#endregion
+	//#region src/lib/svg/ChevronDown.svelte
+	var root$28 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down preview-icon"><path d="m6 9 6 6 6-6"></path></svg>`);
+	function ChevronDown($$anchor) {
+		append($$anchor, root$28());
+	}
+	//#endregion
+	//#region src/lib/svg/ChevronRight.svelte
+	var root$27 = /* @__PURE__ */ from_svg(`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right preview-icon"><path d="m9 18 6-6-6-6"></path></svg>`);
+	function ChevronRight($$anchor) {
+		append($$anchor, root$27());
+	}
+	//#endregion
 	//#region src/lib/menu/MenuHeader.svelte
-	var root$26 = /* @__PURE__ */ from_html(`<button type="button" class="dubplus-menu-section-header svelte-ou161d"><span></span> <p class="svelte-ou161d"> </p></button>`);
+	var root$26 = /* @__PURE__ */ from_html(`<button type="button" class="dubplus-menu-section-header svelte-ou161d"><p class="svelte-ou161d"> </p> <!></button>`);
 	function MenuHeader($$anchor, $$props) {
 		push($$props, true);
 		/**
@@ -5305,30 +5317,34 @@ createHTML: (html) => {
 		* @property {string} props.name
 		*/
 		/** @type {MenuHeaderProps} */
-		let arrow = /* @__PURE__ */ state("down");
 		let expanded = /* @__PURE__ */ state(true);
 		user_effect(() => {
-			if (settings.menu[$$props.settingsId] === "closed") {
-				set(arrow, "right");
-				set(expanded, false);
-			} else {
-				set(arrow, "down");
-				set(expanded, true);
-			}
+			if (settings.menu[$$props.settingsId] === "closed") set(expanded, false);
+			else set(expanded, true);
 		});
 		function toggle() {
 			settings.menu[$$props.settingsId] = settings.menu[$$props.settingsId] === "closed" ? "open" : "closed";
 			saveSetting("menu", $$props.settingsId, settings.menu[$$props.settingsId]);
 		}
 		var button = root$26();
-		var span = child(button);
-		var text = only_child(sibling(span, 2), true);
+		var p = child(button);
+		var text = only_child(p, true);
+		var node = sibling(p, 2);
+		var consequent = ($$anchor) => {
+			ChevronDown($$anchor, {});
+		};
+		var alternate = ($$anchor) => {
+			ChevronRight($$anchor, {});
+		};
+		if_block(node, ($$render) => {
+			if (get(expanded)) $$render(consequent);
+			else $$render(alternate, -1);
+		});
 		reset$1(button);
 		template_effect(() => {
 			set_attribute(button, "id", `dubplus-menu-section-header-${$$props.settingsId}`);
 			set_attribute(button, "aria-expanded", get(expanded));
 			set_attribute(button, "aria-controls", `dubplus-menu-section-${$$props.settingsId}`);
-			set_class(span, 1, `fa fa-angle-${get(arrow) ?? ""}`, "svelte-ou161d");
 			set_text(text, $$props.name);
 		});
 		delegated("click", button, toggle);
@@ -5812,7 +5828,7 @@ createHTML: (html) => {
 	* @returns {HTMLDivElement | null}
 	*/
 	function getBackgroundImage() {
-		return document.querySelector("[style^=background-image][class~=bg-cover]");
+		return document.querySelector("[data-queup=\"background-image\"]");
 	}
 	/**
 	* @returns {HTMLIFrameElement | null}
@@ -5824,7 +5840,7 @@ createHTML: (html) => {
 	* @returns {HTMLDivElement | null}
 	*/
 	function getPrivateMessageButton() {
-		return document.querySelector("button:has(> .lucide-mail)");
+		return document.querySelector("[data-queup=\"private-messages-button\"]");
 	}
 	/**
 	* @returns {HTMLButtonElement | null | undefined}
@@ -5857,10 +5873,10 @@ createHTML: (html) => {
 	}
 	/**
 	*
-	* @returns {HTMLDivElement | null}
+	* @returns {Element | null}
 	*/
 	function getRoomQueueContainer() {
-		return document.querySelector("main > div:last-child");
+		return document.querySelector("[style^=\"grid-area: main\"]:has([data-queup=\"room-queue\"])");
 	}
 	/**
 	*
@@ -7650,7 +7666,7 @@ createHTML: (html) => {
 	};
 	var package_default = {
 		name: "dubplus",
-		version: "5.2.2",
+		version: "5.2.3",
 		type: "module",
 		description: "Dub+ - A simple script/extension for QueUp.net",
 		main: "dubplus.js",
@@ -8202,7 +8218,7 @@ createHTML: (html) => {
 					getRoomQueueButton()?.click();
 					await waitFor(() => !!getRoomQueueContainer());
 					const container = getRoomQueueContainer();
-					container?.classList.remove("h-full");
+					document.body.classList.add("dubplus-pin-room-queue");
 					container?.setAttribute("data-room-queue", "true");
 					getRoomQueueCloseButton()?.addEventListener("click", userClickedCloseButton, { once: true });
 				}
@@ -8215,6 +8231,7 @@ createHTML: (html) => {
 		}
 	};
 	function cleanup() {
+		document.body.classList.remove("dubplus-pin-room-queue");
 		getRoomQueueCloseButton()?.removeEventListener("click", userClickedCloseButton);
 		mobileMediaQuery.removeEventListener("change", handleMobileBreakpoint);
 		getRoomQueueCloseButton()?.click();
