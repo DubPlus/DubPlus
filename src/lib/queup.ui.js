@@ -33,8 +33,7 @@ export function getChatMessages(extra = '') {
  * @returns {HTMLDivElement | null}
  */
 export function getBackgroundImage() {
-  // TODO: get Queup to add a data-queup="background-image"
-  return document.querySelector('[style^=background-image][class~=bg-cover]');
+  return document.querySelector('[data-queup="background-image"]');
 }
 
 /**
@@ -50,7 +49,7 @@ export function getPlayerIframe() {
  * @returns {HTMLDivElement | null}
  */
 export function getPrivateMessageButton() {
-  return document.querySelector('button:has(> .lucide-mail)');
+  return document.querySelector('[data-queup="private-messages-button"]');
 }
 
 /**
@@ -91,10 +90,12 @@ export function getRoomQueueButton() {
 
 /**
  *
- * @returns {HTMLDivElement | null}
+ * @returns {Element | null}
  */
 export function getRoomQueueContainer() {
-  return document.querySelector('main > div:last-child');
+  return document.querySelector(
+    '[style^="grid-area: main"]:has([data-queup="room-queue"])',
+  );
 }
 
 /**

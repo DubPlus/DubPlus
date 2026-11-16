@@ -60,4 +60,10 @@
       height: 26px;
     }
   }
+
+  :global(.dubplus-pin-menu-right) {
+    .dubplus-icon {
+      right: calc(var(--dubplus-menu-width) + 1rem);
+    }
+  }
 </style>

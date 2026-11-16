@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.3] - 2026-11-16
+
+### Fixed
+
+- Fixed layout bugs caused by Queup changing their HTML and CSS structure.
+  - The dub+ menu wasn't scrolling
+  - The dub+ menu's bottom wasn't anchoring to the right place.
+  - Pin menu was broken
+  - Flip interface was broken
+  - Pin Room Queue was broken
+
+### Other
+
+- updated background image getters to new `[data-queup="background-image"]` selector
+
 ## [5.2.2] - 2026-11-09
 
 ### Fixed
