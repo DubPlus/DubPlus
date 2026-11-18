@@ -52,7 +52,7 @@ export interface DubPlusModule {
    * a switch, it will render this icon instead. The icon should be an svg
    * element as a .svelte file.
    */
-  altIcon?: Component;
+  altIcon?: Component<{ class?: string }>;
 
   /**
    * This pairs with the altIcon property. If this is provided then
@@ -69,7 +69,7 @@ export interface DubPlusModule {
      * The svg icon component to render for the secondary action button
      * This should be an svg element as a .svelte file.
      */
-    icon: Component;
+    icon: Component<any>;
 
     /**
      * the hover text for the secondary action button

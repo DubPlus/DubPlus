@@ -1,6 +1,6 @@
 <script>
   /** @type {{ class?: string }} */
-  let { class: className } = $props();
+  let { class: className = undefined } = $props();
 </script>
 
 <svg
