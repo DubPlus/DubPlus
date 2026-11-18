@@ -1,3 +1,8 @@
+<script>
+  /** @type {{ class?: string }} */
+  let { class: className } = $props();
+</script>
+
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"
@@ -8,6 +13,6 @@
   stroke-width="2"
   stroke-linecap="round"
   stroke-linejoin="round"
-  class="lucide lucide-chevron-right preview-icon"
+  class={['lucide lucide-chevron-right preview-icon', className]}
   ><path d="m9 18 6-6-6-6" /></svg
 >
