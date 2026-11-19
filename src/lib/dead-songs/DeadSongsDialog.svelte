@@ -63,9 +63,27 @@
 
   /** @param {{type: string | null, fkid: string | null}} song */
   function songLink(song) {
+    // the api.soundcloud.com URL itself 401s in a browser; the embed player opens it
     return String(song.type).toLowerCase() === 'soundcloud'
-      ? `https://api.soundcloud.com/tracks/${song.fkid}`
+      ? `https://w.soundcloud.com/player/?url=${encodeURIComponent(`https://api.soundcloud.com/tracks/${song.fkid}`)}`
       : `https://www.youtube.com/watch?v=${song.fkid}`;
+  }
+
+  const cannotDelete = $derived(
+    selected.length === 0 || deadSongs.scanning || deadSongs.deleting,
+  );
+  // closing would throw away a running scan or its results
+  const hasWork = $derived(deadSongs.scanning || deadSongs.findings.length > 0);
+
+  /** @param {string[]} playlistIds */
+  function scan(playlistIds) {
+    confirming = false;
+    startScan(playlistIds);
+  }
+
+  function close() {
+    confirming = false;
+    closeDeadSongs();
   }
 
   /** @param {boolean} value */
@@ -89,16 +107,23 @@
 <dialog
   {@attach syncOpen}
   class="dp-dead-songs"
-  onclose={() => {
-    // minimizing closes the element too, but keeps everything running
-    if (deadSongs.minimized) return;
-    // the browser can force-close (e.g. repeated ESC) even while deleting;
-    // fall back to the pill so the deletes stay visible
+  onclose={(e) => {
+    // already closed on purpose (state reset), or minimized: nothing to do
+    if (!deadSongs.open || deadSongs.minimized) return;
+    // the browser can force-close on a repeated ESC without a cancel event.
+    // While deleting, fall back to the pill so the deletes stay visible
     if (deadSongs.deleting) deadSongs.minimized = true;
-    else closeDeadSongs();
+    else if (hasWork && !window.confirm(t('deadsongs.closeConfirm'))) {
+      e.currentTarget.showModal();
+    } else close();
   }}
   oncancel={(e) => {
-    if (deadSongs.deleting) e.preventDefault();
+    if (deadSongs.deleting) {
+      e.preventDefault();
+    } else if (hasWork) {
+      e.preventDefault();
+      if (window.confirm(t('deadsongs.closeConfirm'))) close();
+    }
   }}
 >
   <div class="dp-ds-header flex items-center justify-between px-4 py-3">
@@ -114,7 +139,7 @@
         type="button"
         class="dp-ds-btn"
         disabled={deadSongs.deleting}
-        onclick={() => closeDeadSongs()}
+        onclick={close}
       >
         {t('Modal.close')}
       </button>
@@ -143,7 +168,7 @@
         type="button"
         class="dp-ds-btn"
         disabled={deadSongs.scanning || deadSongs.deleting || !selectedId}
-        onclick={() => startScan([selectedId])}
+        onclick={() => scan([selectedId])}
       >
         {t('deadsongs.scan')}
       </button>
@@ -153,7 +178,7 @@
         disabled={deadSongs.scanning ||
           deadSongs.deleting ||
           deadSongs.playlists.length === 0}
-        onclick={() => startScan(deadSongs.playlists.map((p) => p.id))}
+        onclick={() => scan(deadSongs.playlists.map((p) => p.id))}
       >
         {t('deadsongs.scanAll')}
       </button>
@@ -207,7 +232,7 @@
             class="flex justify-between mb-1 mt-3 text-base font-bold border-b"
           >
             <h2 class="m-0">{group.name}</h2>
-            <span>Reason</span>
+            <span>{t('deadsongs.reason')}</span>
           </div>
           <ul class="m-0 list-none p-0">
             {#each group.rows as row (row.song.entryId)}
@@ -272,6 +297,7 @@
           <button
             type="button"
             class="dp-ds-btn dp-ds-danger"
+            disabled={cannotDelete}
             onclick={confirmDelete}
           >
             {t('deadsongs.delete')}
@@ -280,9 +306,7 @@
           <button
             type="button"
             class="dp-ds-btn dp-ds-danger"
-            disabled={selected.length === 0 ||
-              deadSongs.scanning ||
-              deadSongs.deleting}
+            disabled={cannotDelete}
             onclick={() => (confirming = true)}
           >
             {t('deadsongs.delete')}

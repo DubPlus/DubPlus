@@ -41,6 +41,11 @@ export const deadSongs = $state(initialState());
 
 /** @type {AbortController | null} */
 let controller = null;
+// the delete run in progress. A forced close marks it stale: its requests
+// can't be cancelled, so it keeps `deleting` true (blocking new scans and
+// deletes) until it finishes, but its results aren't written into the reset state
+/** @type {{stale: boolean} | null} */
+let deleteRun = null;
 
 export function openDeadSongs() {
   deadSongs.open = true;
@@ -117,7 +122,9 @@ export function closeDeadSongs({ force = false } = {}) {
   if (deadSongs.deleting && !force) return;
   stopScan();
   controller = null;
+  if (deleteRun) deleteRun.stale = true;
   Object.assign(deadSongs, initialState());
+  deadSongs.deleting = deleteRun !== null;
 }
 
 export async function deleteSelected() {
@@ -127,11 +134,18 @@ export async function deleteSelected() {
   if (rows.length === 0 || deadSongs.scanning || deadSongs.deleting) return;
 
   deadSongs.deleting = true;
+  const ours = { stale: false };
+  deleteRun = ours;
   const { deleted, failed } = await deleteFindings(
     // plain copies: the loop shouldn't hold onto reactive proxies
     rows.map(({ playlist, song, result }) => ({ playlist, song, result })),
     deps,
   );
+  deleteRun = null;
+  if (ours.stale) {
+    deadSongs.deleting = false;
+    return;
+  }
 
   const deletedIds = deleted.map((f) => f.song.entryId);
   /** @type {Record<string, string>} */

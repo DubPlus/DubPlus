@@ -1,5 +1,10 @@
-import { checkSong, REQUEST_DELAY_MS } from './check.js';
-import { readPlaylistPage, deleteSong, PAGE_SIZE } from './playlists.js';
+import { checkSong, CONFIRM_MS, REQUEST_DELAY_MS } from './check.js';
+import {
+  readPlaylistPage,
+  deleteSong,
+  PAGE_SIZE,
+  QueUpApiError,
+} from './playlists.js';
 
 /**
  * @typedef {import('./check.js').DeadReason} DeadReason
@@ -9,6 +14,31 @@ import { readPlaylistPage, deleteSong, PAGE_SIZE } from './playlists.js';
  * @typedef {'done' | 'stopped' | 'rate-limited' | 'error'} ScanEnd
  * @typedef {{fetch: typeof fetch, apiBase: string, sleep: (ms: number) => Promise<void>}} LoopDeps
  */
+
+/** @param {unknown} err */
+const isRateLimited = (err) =>
+  err instanceof QueUpApiError && err.status === 429;
+
+/** @param {unknown} err */
+const errorMessage = (err) =>
+  err instanceof Error ? err.message : String(err);
+
+/**
+ * Reads a playlist page, retrying once after a pause so one blip doesn't end a
+ * long "Scan all". A 429 isn't retried: that means slow down, not try again.
+ * @param {string} playlistId
+ * @param {number} page
+ * @param {LoopDeps} deps
+ */
+async function readPage(playlistId, page, deps) {
+  try {
+    return await readPlaylistPage(playlistId, page, deps);
+  } catch (err) {
+    if (isRateLimited(err)) throw err;
+    await deps.sleep(CONFIRM_MS);
+    return readPlaylistPage(playlistId, page, deps);
+  }
+}
 
 /**
  * Checks every song of every playlist, in order, and reports the ones that aren't ok.
@@ -29,9 +59,10 @@ export async function scanPlaylists(playlists, deps) {
 
       let read;
       try {
-        read = await readPlaylistPage(playlist.id, page, deps);
+        read = await readPage(playlist.id, page, deps);
       } catch (err) {
-        return { end: 'error', error: /** @type {Error} */ (err).message };
+        if (isRateLimited(err)) return { end: 'rate-limited' };
+        return { end: 'error', error: errorMessage(err) };
       }
       await deps.sleep(REQUEST_DELAY_MS);
 
@@ -77,7 +108,7 @@ export async function deleteFindings(findings, deps) {
       await deleteSong(finding.playlist.id, finding.song.entryId, deps);
       deleted.push(finding);
     } catch (err) {
-      failed.push({ finding, error: /** @type {Error} */ (err).message });
+      failed.push({ finding, error: errorMessage(err) });
     }
   }
 

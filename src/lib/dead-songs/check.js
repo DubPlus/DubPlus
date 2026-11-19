@@ -78,5 +78,6 @@ export async function checkSong(song, deps) {
   // deletes can't be undone, so a dead answer has to come back the same twice
   await deps.sleep(CONFIRM_MS);
   const second = await ask();
+  if (second === 'rate-limited') return second;
   return second === first ? first : 'unknown';
 }

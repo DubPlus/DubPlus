@@ -9,6 +9,16 @@
 // how many songs QueUp puts on one page of a playlist
 export const PAGE_SIZE = 20;
 
+/** QueUp answered with an HTTP status we didn't expect */
+export class QueUpApiError extends Error {
+  /** @param {number} status */
+  constructor(status) {
+    super(`QueUp answered ${status}`);
+    this.name = 'QueUpApiError';
+    this.status = status;
+  }
+}
+
 /** @type {Record<string, string>} */
 const NAMED_ENTITIES = {
   amp: '&',
@@ -40,7 +50,7 @@ export function decodeEntities(text) {
 }
 
 /**
- * @param {any} body
+ * @param {import('../../types/api-response').RoomPlaylistApiResponse} body
  * @returns {Playlist[] | null}
  */
 export function parsePlaylists(body) {
@@ -50,7 +60,7 @@ export function parsePlaylists(body) {
     .filter((p) => p && typeof p._id === 'string' && !p.removed)
     .map((p) => ({
       id: p._id,
-      name: String(p.name || '(unnamed)'),
+      name: decodeEntities(String(p.name || '(unnamed)')),
       totalItems: typeof p.totalItems === 'number' ? p.totalItems : null,
     }))
     .sort((a, b) =>
@@ -92,9 +102,7 @@ async function getJson(path, deps) {
   const res = await deps.fetch(`${deps.apiBase}/${path}`, {
     credentials: 'include',
   });
-  if (res.status !== 200) {
-    throw new Error(`QueUp answered ${res.status}`);
-  }
+  if (res.status !== 200) throw new QueUpApiError(res.status);
   return res.json();
 }
 
@@ -134,6 +142,6 @@ export async function deleteSong(playlistId, entryId, deps) {
     { method: 'DELETE', credentials: 'include' },
   );
   if (res.status < 200 || res.status >= 300) {
-    throw new Error(`QueUp answered ${res.status}`);
+    throw new QueUpApiError(res.status);
   }
 }

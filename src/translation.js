@@ -163,6 +163,9 @@ export const translations = {
     'deadsongs.estimate': 'Estimated time: about {{time}} for {{total}} songs',
     'deadsongs.estimate.minutes': '{{minutes}} min',
     'deadsongs.estimate.hours': '{{hours}} h {{minutes}} min',
+    'deadsongs.reason': 'Reason',
+    'deadsongs.closeConfirm':
+      'Closing stops the scan and clears its results. Close anyway?',
     'deadsongs.reason.deleted': 'Deleted',
     'deadsongs.reason.private': 'Private',
     'deadsongs.reason.embed-disabled': 'Embedding disabled',

@@ -56,6 +56,25 @@ export interface RoomUser {
   bannedUntil?: number;
 }
 
+/**
+ * Response for the room's `/playlist` endpoint. Same entries as RoomUsersApiResponse,
+ * but `_user` and `roleid` are ids instead of populated objects.
+ */
+export interface RoomPlaylistApiResponse extends BaseApiResponse {
+  data: RoomPlaylistUser[];
+}
+
+export interface RoomPlaylistUser extends Omit<
+  RoomUser,
+  '_user' | 'roleid' | 'queuePaused'
+> {
+  _user: string;
+  roleid: string;
+  roleids: string[];
+  queuePaused?: number | null;
+  __v: number;
+}
+
 export interface RoomUserProfile {
   username: string;
   status: number;

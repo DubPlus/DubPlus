@@ -14,7 +14,6 @@ export const deadSongs = {
   label: 'deadsongs.label',
   description: 'deadsongs.description',
   category: 'general',
-  desktopOnly: true,
   altIcon: Icon,
   onClick: openDeadSongs,
 };

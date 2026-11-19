@@ -88,3 +88,11 @@ test('checkSong never fetches an unsupported song and survives network errors', 
   );
   assert.equal(calls, 1);
 });
+
+test('checkSong reports a 429 on the confirm request as rate-limited', async () => {
+  const result = await checkSong(YT, {
+    fetch: fetchSequence([404, 429]),
+    sleep: noSleep,
+  });
+  assert.equal(result, 'rate-limited');
+});

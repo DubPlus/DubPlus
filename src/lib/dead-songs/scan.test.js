@@ -238,3 +238,26 @@ test('estimateScanSeconds counts one delay per song and per page read', () => {
   assert.equal(estimateScanSeconds(1, 1000), 2);
   assert.equal(estimateScanSeconds(0, 1000), 0);
 });
+
+test('scanPlaylists reports a 429 from QueUp as rate-limited', async () => {
+  const { fetch } = fakeFetch({ pages: { p1: { 1: 429 } } });
+  const r = await scanPlaylists([P1], scanDeps(fetch));
+  assert.deepEqual(r, { end: 'rate-limited' });
+});
+
+test('scanPlaylists retries a failed page read once before giving up', async () => {
+  const { fetch: base } = fakeFetch({
+    pages: { p1: { 1: twentySongs, 2: [] } },
+  });
+  let failedOnce = false;
+  /** @type {any} */
+  const fetch = async (/** @type {string} */ url) => {
+    if (url.endsWith('?page=2') && !failedOnce) {
+      failedOnce = true;
+      return { status: 503, json: async () => ({}) };
+    }
+    return base(url);
+  };
+  const r = await scanPlaylists([P1], scanDeps(fetch));
+  assert.deepEqual(r, { end: 'done' });
+});

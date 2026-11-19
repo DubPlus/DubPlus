@@ -7,6 +7,7 @@ import {
   listPlaylists,
   readPlaylistPage,
   deleteSong,
+  QueUpApiError,
 } from './playlists.js';
 
 const apiBase = 'https://api.test';
@@ -112,4 +113,25 @@ test('deleteSong sends DELETE with cookies and throws on failure', async () => {
     'DELETE',
     'include',
   ]);
+});
+
+test('parsePlaylists decodes playlist names', () => {
+  const body = { data: [{ _id: 'a', name: 'Rock &amp; Roll', totalItems: 1 }] };
+  assert.equal(parsePlaylists(body)?.[0].name, 'Rock & Roll');
+});
+
+test('failed QueUp requests reject with a QueUpApiError carrying the status', async () => {
+  /** @type {any} */
+  const fetch = async () => ({ status: 429, json: async () => ({}) });
+  await assert.rejects(readPlaylistPage('p1', 1, { fetch, apiBase }), (err) => {
+    assert.ok(err instanceof QueUpApiError);
+    assert.ok(err instanceof Error);
+    assert.equal(err.status, 429);
+    assert.equal(err.message, 'QueUp answered 429');
+    return true;
+  });
+  await assert.rejects(
+    deleteSong('p1', 'e1', { fetch, apiBase }),
+    (err) => err instanceof QueUpApiError && err.status === 429,
+  );
 });
