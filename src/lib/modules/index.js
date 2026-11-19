@@ -26,6 +26,7 @@ import { grabResponse } from './grabResponse';
 import { collapsibleImages } from './collapsible-images';
 import { pinMenu } from './pin-menu';
 import { pinRoomQueue } from './pin-room-queue';
+import { deadSongs } from './deadSongs';
 
 /**
  * @type {import("./module").DubPlusModule[]}
@@ -46,6 +47,7 @@ export const general = [
   grabResponse,
   snow,
   rain,
+  deadSongs,
 ];
 
 /**

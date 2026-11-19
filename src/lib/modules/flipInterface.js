@@ -12,6 +12,7 @@ export const flipInterface = {
   label: 'flip-interface.label',
   description: 'flip-interface.description',
   category: 'user-interface',
+  desktopOnly: true,
   turnOn() {
     document.body.classList.add('dubplus-flip-interface');
   },

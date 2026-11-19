@@ -1,3 +1,8 @@
+<script>
+  /** @type {{ class?: string }} */
+  let { class: className = undefined } = $props();
+</script>
+
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"
@@ -8,7 +13,7 @@
   stroke-width="2"
   stroke-linecap="round"
   stroke-linejoin="round"
-  class="lucide lucide-eye-off-icon lucide-eye-off"
+  class={['lucide lucide-eye-off-icon lucide-eye-off', className]}
 >
   <path
     d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"

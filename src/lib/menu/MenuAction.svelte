@@ -68,10 +68,11 @@
     font-size: inherit;
   }
 
-  button :global(svg) {
-    width: 29px;
-    height: 18px;
-    fill: var(--dubplus-primary-color);
+  button {
+    :global(svg) {
+      width: 29px;
+      color: var(--dubplus-primary-color);
+    }
   }
 
   .dubplus-menu-label {

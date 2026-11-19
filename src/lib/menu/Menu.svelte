@@ -14,6 +14,8 @@
   import Customize from '../sections/Customize.svelte';
   import pkg from '../../../package.json';
   import SnoozeVideo from '../satellites/SnoozeVideo.svelte';
+  import DeadSongsDialog from '../dead-songs/DeadSongsDialog.svelte';
+  import DeadSongsPill from '../dead-songs/DeadSongsPill.svelte';
 
   onMount(() => {
     document.querySelector('html')?.classList.add('dubplus');
@@ -60,6 +62,8 @@
 
 <!-- One Modal that is controlled via the modalState -->
 <Modal />
+<DeadSongsDialog />
+<DeadSongsPill />
 
 <style>
   /* the main container for the whole menu that slides in */
