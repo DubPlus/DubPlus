@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.3.0] - 2026-11-19
+
+### New
+
+- Added "Find dead songs" to the General section (desktop only), also available as the `/deadsongs` chat command. Based on [queup-dead-song-finder](https://github.com/supaflysnooka/queup-dead-song-finder) by supaflysnooka.
+  - Scans one playlist, or all of your playlists, for YouTube songs that were deleted, made private, or had embedding disabled, and SoundCloud songs that were deleted
+  - Results are grouped by playlist with a link to each song, and nothing is selected by default
+  - Delete the songs you select after a confirmation. Deleting can't be undone
+  - Shows progress and an estimated time for longer scans, and can be stopped at any point
+  - Minimize the scan to keep using the site while it runs
+
 ## [5.2.3] - 2026-11-16
 
 ### Fixed

@@ -11,6 +11,10 @@ Dub+ - A Dubtrack.fm and QueUp.net script/extension for added features and custo
 
 The extension will load into any browser that supports the WebExtensions API and manifest v3 (Chrome, Firefox, Edge, etc.). Please note that we've only tested the extension on Chrome and Firefox and we only make it available on their respective extension stores. See https://dub.plus for more details.
 
+## Credits
+
+- The "Find dead songs" feature is ported from [queup-dead-song-finder](https://github.com/supaflysnooka/queup-dead-song-finder) by supaflysnooka (MIT).
+
 ## Contributing
 
 - Fork us

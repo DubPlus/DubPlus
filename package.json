@@ -1,6 +1,6 @@
 {
   "name": "dubplus",
-  "version": "5.2.3",
+  "version": "5.3.0",
   "type": "module",
   "description": "Dub+ - A simple script/extension for QueUp.net",
   "main": "dubplus.js",
@@ -21,7 +21,8 @@
     "addon-submit": "npm run zip-source && npm run ci:build && node --env-file-if-exists .env ./tasks/ff-add-on-submit.js",
     "chrome-submit": "npm run build && node --env-file-if-exists .env ./tasks/chrome-webstore-submit.js",
     "check": "svelte-check --tsconfig ./jsconfig.json",
-    "bump": "node ./tasks/bump.js"
+    "bump": "node ./tasks/bump.js",
+    "test": "node --test src/lib/dead-songs/"
   },
   "repository": {
     "type": "git",

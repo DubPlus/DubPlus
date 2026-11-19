@@ -28,5 +28,7 @@
    * Use global.d.ts instead of compilerOptions.types
    * to avoid limiting type declarations.
    */
-  "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.svelte"]
+  "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.svelte"],
+  // node --test files: no @types/node installed, and they stub fetch loosely
+  "exclude": ["src/**/*.test.js"]
 }
