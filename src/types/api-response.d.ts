@@ -75,6 +75,75 @@ export interface RoomPlaylistUser extends Omit<
   __v: number;
 }
 
+/**
+ * Response for GET /playlist: the logged-in user's playlists
+ */
+export interface UserPlaylistsApiResponse extends BaseApiResponse {
+  data: UserPlaylist[];
+}
+
+export interface UserPlaylist {
+  _id: string;
+  name: string;
+  status: number;
+  removed: boolean;
+  isPublic: boolean;
+  /** epoch milliseconds */
+  created: number;
+  type: string | null;
+  fkid: string | null;
+  userid: string;
+  __v: number;
+  /** number of songs in the playlist */
+  totalItems: number;
+  order: number;
+  rev: number;
+  /** epoch milliseconds */
+  updated: number;
+  sortKey: string;
+}
+
+/**
+ * Response for GET /playlist/:playlistid/songs?name=&page=N
+ */
+export interface PlaylistSongsApiResponse extends BaseApiResponse {
+  data: PlaylistSong[];
+}
+
+export interface PlaylistSong {
+  _id: string;
+  added: number;
+  songid: string;
+  _song: PlaylistSongDetails;
+  playlistid: string;
+  source: string | null;
+  __v: number;
+  addedBy: string;
+  rev: number;
+  sortKey: string;
+}
+
+export interface PlaylistSongDetails {
+  _id: string;
+  name: string;
+  images: { thumbnail: string };
+  type: 'youtube' | 'soundcloud';
+  /** YouTube video id or SoundCloud track id */
+  fkid: string;
+  /** milliseconds */
+  songLength: number;
+  /** ISO date string */
+  created: string | null;
+  /** ISO date string */
+  lastUpdated?: string;
+  __v: number;
+  categoryId?: string;
+  genre?: string | null;
+  regionRestriction?: { allowed?: string[]; blocked?: string[] } | null;
+  streamUrl?: string | null;
+  name_fuzzy?: string[];
+}
+
 export interface RoomUserProfile {
   username: string;
   status: number;

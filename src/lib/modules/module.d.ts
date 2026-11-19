@@ -69,7 +69,7 @@ export interface DubPlusModule {
      * The svg icon component to render for the secondary action button
      * This should be an svg element as a .svelte file.
      */
-    icon: Component<any>;
+    icon: Component<{ class?: string }>;
 
     /**
      * the hover text for the secondary action button

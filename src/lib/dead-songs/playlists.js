@@ -50,7 +50,7 @@ export function decodeEntities(text) {
 }
 
 /**
- * @param {import('../../types/api-response').RoomPlaylistApiResponse} body
+ * @param {import('../../types/api-response').UserPlaylistsApiResponse} body
  * @returns {Playlist[] | null}
  */
 export function parsePlaylists(body) {
@@ -72,7 +72,7 @@ export function parsePlaylists(body) {
 }
 
 /**
- * @param {any} body
+ * @param {import('../../types/api-response').PlaylistSongsApiResponse} body
  * @returns {{songs: Song[], last: boolean} | null}
  */
 export function parseSongs(body) {
