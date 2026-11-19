@@ -119,20 +119,22 @@ header {
   display: none !important;
 }
 
-.dubplus-flip-interface .app-frame-grid {
-  grid-template-areas: "top     top  top  "
-                       "aside   main sidebar" 
-                       "bar     bar  bar  ";
-}
+@media screen and (min-width: 768px) {
+  .dubplus-flip-interface .app-frame-grid {
+    grid-template-areas: "top     top  top  "
+                        "aside   main sidebar" 
+                        "bar     bar  bar  ";
+  }
 
-/* flip the icons for the chat expand  and collapse */
-.dubplus-flip-interface [data-queup="chat-collapse-button"] svg,
-.dubplus-flip-interface [data-queup="chat-expand-button"] svg,
-/* flip the icons for the sidebar expand and collapse */
-.dubplus-flip-interface .lucide-panel-left-close,
-.dubplus-flip-interface .lucide-panel-left-open {
-  transform: scaleX(-1);
-  /* flip horizontally */
+  /* flip the icons for the chat expand  and collapse */
+  .dubplus-flip-interface [data-queup="chat-collapse-button"] svg,
+  .dubplus-flip-interface [data-queup="chat-expand-button"] svg,
+  /* flip the icons for the sidebar expand and collapse */
+  .dubplus-flip-interface .lucide-panel-left-close,
+  .dubplus-flip-interface .lucide-panel-left-open {
+    transform: scaleX(-1);
+    /* flip horizontally */
+  }
 }
 
 .dubplus-chat-system-grab,
